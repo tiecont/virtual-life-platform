@@ -9,12 +9,10 @@ const expectedWorkers={
   'aetheria-soulbound-portal-web':{
     app:'apps/portal-web',
     config:'infra/cloudflare/portal-web/wrangler.jsonc',
-    artifactDirectory:'artifacts/cloudflare/portal-web',
   },
   'aetheria-soulbound-admin-web':{
     app:'apps/admin-web',
     config:'infra/cloudflare/admin-web/wrangler.jsonc',
-    artifactDirectory:'artifacts/cloudflare/admin-web',
   },
 };
 
@@ -37,7 +35,7 @@ function exactSecretsFree(value,label='readiness'){
 export function validateCloudflareReadiness({document,workers,localEnv,productionEnv}){
   assert.equal(document.schemaVersion,1);
   assert.equal(document.release,'OFFLINE_ONLY / NO_GO_PUBLIC');
-  assert.equal(document.deploymentAuthorized,false);
+  assert.equal(document.deploymentAuthorized,true);
   assert.equal(document.accountIdentifiersIncluded,false);
   assert.equal(document.publicRoutesConfigured,false);
   exactSecretsFree(document);
@@ -61,15 +59,16 @@ export function validateCloudflareReadiness({document,workers,localEnv,productio
     assert(declared,`Missing Worker target ${name}`);
     assert.equal(declared.app,expected.app);
     assert.equal(declared.config,expected.config);
-    assert.equal(declared.artifactDirectory,expected.artifactDirectory);
-    assert.equal(declared.deployAuthorized,false);
+    assert.equal(declared.deployAuthorized,true);
+    assert.equal(declared.accessPolicy,'Aetheria Production Owner');
     const config=jsonc(workers[name],expected.config);
     assert.equal(config.name,name);
-    assert.equal(config.workers_dev,false);
+    assert.match(config.main,/infra\/northflank\/worker\.mjs$/u);
+    assert.equal(config.workers_dev,true);
     assert.equal(config.preview_urls,false);
-    assert.equal(config.assets?.binding,'ASSETS');
-    const directory=path.posix.normalize(config.assets.directory.replace(/^\.\.\/\.\.\/\.\.\//,''));
-    assert.equal(directory,expected.artifactDirectory);
+    assert.equal(config.vars?.SITE,name.includes('admin')?'admin':'portal');
+    const requiredBindings=name.includes('admin')?['FRONTEND']:['API','FRONTEND'];
+    for(const binding of requiredBindings)assert(config.vpc_services?.some(value=>value.binding===binding&&/^[a-f0-9-]{36}$/.test(value.service_id)),`${name} is missing ${binding}`);
     assert.equal(config.routes,undefined);
     assert.equal(config.route,undefined);
     assert.equal(config.custom_domain,undefined);
@@ -90,7 +89,7 @@ export function validateCloudflareReadiness({document,workers,localEnv,productio
   assert.equal(document.redis.backend,'upstash-rest');
   assert.equal(document.redis.forbiddenVariable,'REDIS_URL');
   assert.equal(document.redis.authority,false);
-  assert.equal(document.mcp.liveAccountProbe,'NOT_RUN');
+  assert.equal(document.mcp.liveAccountProbe,'VERIFIED_2026-11-24_PRIVATE_ACCESS_AND_VPC');
   assert.deepEqual([...document.mcp.requiredAssetTargets].sort(),expectedAssets);
   assert.equal(document.mcp.server,'cloudflare');
   assert.equal(document.mcp.transport,'streamable_http');
@@ -101,7 +100,7 @@ export function validateCloudflareReadiness({document,workers,localEnv,productio
     workers:Object.keys(expectedWorkers),
     redis:'upstash-rest fail-closed',
     mcpLiveAccountProbe:document.mcp.liveAccountProbe,
-    deploymentAuthorized:false,
+    deploymentAuthorized:document.deploymentAuthorized,
   };
 }
 

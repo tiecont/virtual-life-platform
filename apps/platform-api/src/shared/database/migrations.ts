@@ -13,12 +13,17 @@ export async function migrationManifest(directory = resolve(__dirname, 'migratio
   return Object.fromEntries(await Promise.all(names.map(async name=>[name,createHash('sha256').update(await readFile(resolve(directory,name),'utf8')).digest('hex')])));
 }
 // Transactional, checksum-verified, additive migrations; never share a legacy journal.
-export async function migrate(pool: Pool, directory = resolve(__dirname, 'migrations'), compatibility?:SchemaCompatibility): Promise<void> {
+export async function migrate(pool: Pool, directory = resolve(__dirname, 'migrations'), compatibility?:SchemaCompatibility, migrationRole?:string): Promise<void> {
   const manifest=await migrationManifest(directory),policy=resolveSchemaCompatibility(manifest,compatibility);
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('SELECT pg_advisory_xact_lock(86732401)');
+    if(migrationRole){
+      const role=(await client.query<{name:string}>('SELECT quote_ident($1) AS name',[migrationRole])).rows[0]?.name;
+      if(!role)throw Error('Migration role unavailable');
+      await client.query(`SET LOCAL ROLE ${role}`);
+    }
     await client.query('CREATE TABLE IF NOT EXISTS city_schema_migrations(name text PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())');
     const previous=(await client.query<{name:string;checksum:string}>('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;
     assertMigrationHistory(policy,Object.fromEntries(previous.map(row=>[row.name,row.checksum])));

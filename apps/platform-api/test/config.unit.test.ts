@@ -10,3 +10,8 @@ it('validates explicit local defaults and rejects insecure or path-bearing produ
 it('never includes credentials in configuration errors', () => {
   expect(() => readConfig({ SESSION_SECRET: 'test-only-session-secret-not-production-0001', DATABASE_URL: 'mysql://user:private@localhost/db' })).toThrow('Invalid environment fields: DATABASE_URL');
 });
+it('accepts only a bounded PostgreSQL identifier for an optional migration role',()=>{
+  expect(readConfig({...local,DATABASE_MIGRATION_ROLE:'pg_database_owner'}).DATABASE_MIGRATION_ROLE).toBe('pg_database_owner');
+  expect(readConfig({...local,DATABASE_MIGRATION_ROLE:''}).DATABASE_MIGRATION_ROLE).toBeUndefined();
+  for(const value of ['owner; DROP DATABASE postgres','1owner','owner-name','owner"name'])expect(()=>readConfig({...local,DATABASE_MIGRATION_ROLE:value})).toThrow('DATABASE_MIGRATION_ROLE');
+});

@@ -14,6 +14,12 @@ the Prisma Free deployment to leave room for database administration. Initialize
 only the assigned production database using a one-off backend image job with argument `migrate`.
 Starting or restarting the backend service does not run migrations.
 
+For Prisma Postgres, set `DATABASE_MIGRATION_ROLE=pg_database_owner` only on the
+one-off migrate job. Prisma's restricted superuser cannot execute `GRANT` or
+`REVOKE`; the migrator switches to PostgreSQL's predefined database-owner role
+for the transaction so the checked-in ACL migrations still execute unchanged.
+Do not put this migration-only setting on the long-running API service.
+
 Set `API_INTERNAL_URL` and `ADMIN_API_ORIGIN` to the private backend HTTP origin.
 Set `PUBLIC_SOCKET_ORIGIN` and `ADMIN_ORIGIN` to the separate, exact HTTPS
 origins for the portal and admin. Store `TUNNEL_TOKEN` only on the frontend

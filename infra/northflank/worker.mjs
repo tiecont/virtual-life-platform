@@ -1,5 +1,5 @@
 const apiPath = /^\/(?:v1|socket\.io)(?:\/|$)/;
-const headersFromEdge = ['cf-access-jwt-assertion', 'cf-access-client-id', 'cf-access-client-secret'];
+const headersFromEdge = ['cf-access-authenticated-user-email', 'cf-access-jwt-assertion', 'cf-access-client-id', 'cf-access-client-secret'];
 
 function error(message, status) {
   return new globalThis.Response(message, {status, headers: {'cache-control': 'no-store'}});
@@ -7,7 +7,9 @@ function error(message, status) {
 
 export default {
   async fetch(request, env, context) {
-    if (!context.access) return error('Access required', 403);
+    // Hostname-based Access supplies this header even where ctx.access is not populated.
+    const accessEmail = request.headers.get('cf-access-authenticated-user-email');
+    if (!context.access && !accessEmail) return error('Access required', 403);
     if (env.SITE !== 'portal' && env.SITE !== 'admin') return error('Private origin unavailable', 503);
     const url = new URL(request.url);
     const service = env.SITE === 'portal' && apiPath.test(url.pathname) ? env.API : env.FRONTEND;
@@ -30,7 +32,8 @@ export default {
       return await service.fetch(new globalThis.Request(origin, {
         method: request.method, headers, body: request.body, duplex: 'half', redirect: 'manual',
       }));
-    } catch {
+    } catch (cause) {
+      console.error('VPC origin request failed', {site: env.SITE, path: url.pathname, cause: cause instanceof Error ? cause.message : 'unknown'});
       return error('Private origin unavailable', 502);
     }
   },

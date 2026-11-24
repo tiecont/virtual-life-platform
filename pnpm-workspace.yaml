@@ -13,9 +13,13 @@ minimumReleaseAgeExclude:
   - '@next/swc-win32-arm64-msvc@16.4.4'
   - '@next/swc-win32-x64-msvc@16.4.4'
   - fastify@5.12.8
+  - '@cloudflare/workers-utils@0.57.0'
+  - miniflare@5.20261123.0-beta
+  - wrangler@4.167.0
 allowBuilds:
   '@nestjs/core': false
   esbuild: true
   sharp: true
+  workerd: true
 overrides:
   fastify: 5.12.8
