@@ -43,7 +43,7 @@
       "priority": 0,
       "dependsOn": [],
       "acceptance": ["Actual main Quality/Rust green at recorded SHA", "PR33 and rebased PR35 self-reviewed and merged only through complete green CI; local Compose ports bind 127.0.0.1 and secrets remain local"],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
       "implementation": {
         "nov24ChromiumPreflight": {
@@ -72,7 +72,20 @@
               "exitCode": 0
             }
           ],
-          "remaining": "Final hosted checks and merge remain pending."
+          "remaining": "Superseded by finalMainVerification at main 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2."
+        },
+        "finalMainVerification": {
+          "sourceRevision": "0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/77",
+          "finding": "Hosted PR verification exposed an exact integration-count mismatch after the database-owner migration regression: the shards passed 838 tests while config/ci-capacity.json still expected 837. It also exposed an obsolete virtual-life-platform preview-branch Worker build trigger that added non-product checks to branch heads.",
+          "change": "Raised the exact integration capacity to 838, disabled preview-branch builds on the obsolete Worker, removed its orphan feature-branch trigger, and retained only a main-only no-op legacy trigger. No application assertion or test timeout was weakened.",
+          "commands": [
+            {"command": "node --test tests/governance/vitest-reports.test.mjs tests/governance/ci.test.mjs tests/governance/task-plan.test.mjs", "exitCode": 0, "result": "10 PASS"},
+            {"command": "pnpm ci:check; pnpm governance:check; git diff --check", "exitCode": 0, "result": "CI workflow contract, governance consistency and whitespace checks PASS."},
+            {"command": "GitHub Quality push 45340017859 at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2", "exitCode": 0, "result": "SUCCESS. Aggregate gate verified 4 reports, 838 total, 838 passed, 0 pending, 0 todo and 0 skipped."},
+            {"command": "GitHub Rust runtime push 45340017927 at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2", "exitCode": 0, "result": "SUCCESS."}
+          ]
         },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "observedMain": "b2b1a079662556c45ab7f9e135d38d72d107237c",
@@ -95,7 +108,7 @@
           "ci": "All PR36-40 report26 SUCCESS checks and CLEAN at the recorded heads. Same-source failed-job reruns43995822670,43995833635,44037174790 all SUCCESS on attempt2. Prior failure artifacts retained under ignored artifacts/v4-audit/; no assertions weakened or source fixes inferred from transient navigation failures.",
           "mergeStatus": "PR36-40 remain OPEN; PR38/40 remain DRAFT with art gates unmet. No merge performed. PR41 is a separate intake DRAFT; final-head CI pending."
         },
-        "remaining": "Review any source merge through green exact-final-source CI and verify resulting main. Draft art acceptance remains blocked independently. VL-169/VL-055 retention, export and deletion requirements remain open; no Gate0-wide or production acceptance claimed."
+        "remaining": "The scoped Gate 0 CI criteria are verified at main 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2. Draft art acceptance remains blocked independently. VL-169/VL-055 retention, export and deletion requirements remain open; no Gate0-wide or public-release acceptance is claimed."
       },
       "verification": {
         "sourceRevision": "49d1b5fe500f5e261ff3ceda5b68a4d20e71f861",
@@ -3750,7 +3763,7 @@
         "VL-022"
       ],
       "acceptance": [
-        "staging deploy with versioned digest and trace correlation",
+        "private production deploy with versioned digest and trace correlation",
         "one writer and legacy route unaffected"
       ],
       "status": "IN_PROGRESS",
@@ -3798,9 +3811,9 @@
           "remaining": "Owner decision on a PostgreSQL provider that permits the existing ACL migrations. Then create the two private Northflank services, verify the tunnel and unauthenticated denial, and enable the protected production endpoints only after verification."
         },
     "privateProductionDeployment": {
-      "sourceRevision": "eb7d3980ab6d090753896b8fe4bb20a115d0782d",
+      "sourceRevision": "0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
       "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
-      "runtimeRevision": "d6f9d5a78dd9269f2d328c0d81751d178c862a26",
+      "runtimeRevision": "0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
       "scope": "Private owner-only production deployment on Prisma Postgres, Northflank Free and Cloudflare Free. No staging environment, public release, registration, purchase, signing or Rust gameplay activation.",
       "database": "Prisma Postgres accepted all54 migrations through the predefined pg_database_owner role. The production runtime uses the direct URL for the legacy session-level room-owner advisory lock and DATABASE_POOL_MAX=4.",
       "northflank": "aetheria-frontend and aetheria-backend each run one instance at0.2vCPU/512MiB with CI and CD enabled. Portal3300, admin3400, API4300 and default-off Rust4400 remain private.",
@@ -3819,7 +3832,44 @@
         {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/foundation.test.ts","exitCode":0,"result":"4 PASS including complete migration execution under an explicit database-owner role."},
         {"command":"pnpm check","exitCode":143,"result":"Interrupted during the governance test launch on the local host after earlier check stages passed; not recorded as a full local pass. Hosted CI remains required."}
       ],
-      "remaining": "Merge only after exact-head hosted Quality and Rust pass. The capacity contract is 838 integration tests after adding the explicit database-owner migration case. Both Northflank services already target main and both Workers Builds triggers are main-only; verify their automatic deployments at the merged revision. No public release is authorized."
+      "mainDeploymentVerification": {
+        "sourceRevision": "0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {
+            "command": "GitHub Quality push 45340017859 at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+            "exitCode": 0,
+            "result": "SUCCESS. Core, runtime images, all four PostgreSQL shards and all eight browser groups passed; aggregate reported 838/838 tests with zero pending, todo or skipped."
+          },
+          {
+            "command": "GitHub Rust runtime push 45340017927 at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+            "exitCode": 0,
+            "result": "SUCCESS."
+          },
+          {
+            "command": "Northflank automatic main builds at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+            "exitCode": 0,
+            "result": "aetheria-frontend build burly-infinity-6291 and aetheria-backend build visionary-joy-1205 both completed successfully; each service reports its current revision as 0d3d1b6 on main with one running instance."
+          },
+          {
+            "command": "Cloudflare Workers Builds automatic main deployments at 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2",
+            "exitCode": 0,
+            "result": "Portal build d06b1871-4c08-485f-8c58-291ef8c21c72 and admin build 885fd00a-b63d-481d-ad79-b67f5d4c77be both SUCCESS. Active Worker versions are b43ac193-014e-4e1b-a9f7-7be7b9809732 and 64629369-ff36-4fce-b54b-13c7117d206d."
+          },
+          {
+            "command": "Post-deploy production edge and private-origin smoke",
+            "exitCode": 0,
+            "result": "Anonymous portal/admin requests returned302 to the owner-only Access app. Owner-authenticated portal rendered Database connected, admin rendered operator/MFA login, API proxy returned expected application-level401, and WebSocket upgrade opened with an Engine.IO message."
+          },
+          {
+            "command": "Rotate Cloudflare tunnel token, update Northflank frontend secret and restart",
+            "exitCode": 0,
+            "result": "Tunnel shows one healthy replica and three routes after rotation; the updated frontend service restarted and served both production hosts through the new token."
+          }
+        ],
+        "remaining": "The owner-only private production path is deployed and serving from main with automatic builds for both Northflank services and both Cloudflare Workers. No staging environment was created. Versioned artifact/digest publication, trace correlation, full drain/recovery qualification and Windows hardware acceptance remain separate; no public release is authorized."
+      },
+      "remaining": "Main 0d3d1b6c3a1e3db8aec275414cae2f9493d272f2 has green hosted Quality/Rust, successful automatic Northflank and Cloudflare deployments, and passing owner-only production smoke. Preserve Rust gameplay disabled and public release NO_GO_PUBLIC."
     },
     "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
     "ciTurboVerification": {
@@ -3907,7 +3957,7 @@
           "failedAttempts": "Initial readonly Next dev root failed on next-env writes; writes now stay inside frontend containers without host mounts. Loopback HMR initially403; explicit127.0.0.1 allowed, untrusted Origin still403. Cold control clicks fixed upstream PR33. Launcher inherited env/project overrides reproduced and fixed.922 full check exited1 with788/789 integration under memory/swap pressure; precise cause unproven, unchanged shutdown rerun2/2 PASS. f12 check deliberately stopped143 before tests to fix project override. Initial fake-Docker fixture lacked a newline and was corrected.",
           "limitations": "Full check excludes browser framing acceptance. Subsequent six-concept probe and hosted PR33 exposed Aurelune clipping; upstream camera fix61dfc2e passed28 browser cases, recorded under VL-163. Final composed source must include that fix. No public/signup/mail, production media, hardware or deployment qualification inferred. Keys remain ignored/private; original environment required for the retained volume. Exact final-head hosted Quality/Rust required before merge. VL-065 stays IN_PROGRESS."
         },
-    "remainingAcceptance": "The private owner-only production path is deployed and verified. Versioned staging artifact and trace correlation, full drain/recovery qualification and Windows gaming hardware acceptance still require verification; no public release is authorized.",
+    "remainingAcceptance": "The private owner-only production path is deployed and verified from main without a staging environment. Versioned artifact/digest publication and trace correlation, full drain/recovery qualification and Windows gaming hardware acceptance still require verification; no public release is authorized.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "verification": {
           "sourceRevision": "87a16e46d049666a88a9c5aa786d34bdfb99d0ea",
