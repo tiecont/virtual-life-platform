@@ -3,6 +3,8 @@ import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 
 const statuses=new Set(['TODO','IN_PROGRESS','VERIFIED','DEFERRED_APPROVED']);
+const milestones=new Set(['M0','M1','M2','M3','M4','M5','M6']);
+const scopes=new Set(['MVP','DEFERRED_EXPANSION']);
 export function validateTaskPlan(plan){
  assert.equal(plan.schemaVersion,2);
  assert(['single-agent','opt-in-multi-agent'].includes(plan.execution),'Unknown execution policy');
@@ -18,6 +20,10 @@ export function validateTaskPlan(plan){
   assert(Array.isArray(task.dependsOn)&&new Set(task.dependsOn).size===task.dependsOn.length);
   assert(Array.isArray(task.acceptance)&&task.acceptance.length>0);
   assert(Array.isArray(task.qualificationRequirements));
+  if(task.mvpMilestone!==undefined)assert(milestones.has(task.mvpMilestone),'Invalid MVP milestone for '+task.id);
+  if(task.mvpScope!==undefined)assert(scopes.has(task.mvpScope),'Invalid MVP scope for '+task.id);
+  if(task.mvpCriticalPath!==undefined)assert.equal(typeof task.mvpCriticalPath,'boolean','Invalid MVP critical-path flag for '+task.id);
+  if(task.mvpScope==='DEFERRED_EXPANSION')assert(typeof task.deferredExpansion==='string'&&task.deferredExpansion.trim(),'Deferred task needs an explicit scope note: '+task.id);
   if(task.status==='VERIFIED'){
    const v=task.verification;
    assert(v&&/^[a-f0-9]{40}$/.test(v.sourceRevision),'Verified task needs exact source revision');
@@ -25,6 +31,13 @@ export function validateTaskPlan(plan){
    assert(['HISTORICAL_INDEPENDENT','SINGLE_AGENT_AUDIT','SINGLE_AGENT_SEQUENTIAL_AUDIT','INDEPENDENT'].includes(v.reviewMode),'Honest review mode required');
   }
   tasks.set(task.id,task);
+ }
+ if(plan.mvpProgram!==undefined){
+  assert.equal(plan.mvpProgram.schemaVersion,1,'Unknown MVP program schema');
+  assert(Array.isArray(plan.mvpProgram.milestones),'MVP program needs milestones');
+  assert.deepEqual(plan.mvpProgram.milestones.map(m=>m.id),['M0','M1','M2','M3','M4','M5','M6'],'MVP program must declare M0-M6 in order');
+  assert(plan.mvpProgram.milestones.every(m=>m.title&&m.objective&&Array.isArray(m.exitCriteria)&&m.exitCriteria.length),'MVP milestone lacks exit criteria');
+  assert(typeof plan.mvpProgram.operatingRule==='string'&&plan.mvpProgram.operatingRule.includes('coordinated'),'MVP program needs the coordinated-wave operating rule');
  }
  const visited=new Set(),active=new Set();
  function visit(id){

@@ -26,6 +26,16 @@ test('priority orders ready work without overriding real dependencies or imposin
  assert.deepEqual(taskStatus(p).waitingOnImplementation,[{id:'VL-003',dependencies:['VL-001']}]);
  for(const priority of [-1,3,0.5,'0',null])assert.throws(()=>validateTaskPlan(plan([task('VL-001',[],{priority})])));
 });
+test('the active backlog classifies every task by MVP milestone and scope',async()=>{
+ const p=await readTaskPlan();
+ assert.equal(p.mvpProgram.milestones.length,7);
+ assert.deepEqual(p.mvpProgram.milestones.map(m=>m.id),['M0','M1','M2','M3','M4','M5','M6']);
+ for(const t of p.tasks){assert(t.mvpMilestone,'missing milestone '+t.id);assert(t.mvpScope,'missing scope '+t.id);}
+ const deferred=p.tasks.filter(t=>t.mvpScope==='DEFERRED_EXPANSION');
+ assert(deferred.length>0&&deferred.every(t=>t.deferredExpansion?.trim()));
+ assert.throws(()=>validateTaskPlan({...p,tasks:[...p.tasks,{...p.tasks[0],id:'VL-999',mvpMilestone:'M9'}]}));
+ assert.throws(()=>validateTaskPlan({...p,tasks:[...p.tasks,{...p.tasks[0],id:'VL-998',mvpScope:'DEFERRED_EXPANSION',deferredExpansion:undefined}]}));
+});
 test('the active backlog preserves historical work and exposes independent work immediately',async()=>{
  const p=await readTaskPlan(),s=taskStatus(p);
   assert(s.total>=110);

@@ -95,6 +95,41 @@ world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
 
+Aetheria is managed as one MVP program in [config/development-plan.json](config/development-plan.json).
+The program has seven milestones; tasks carry `mvpMilestone`, `mvpCriticalPath`,
+`mvpScope` and `deferredExpansion` fields. Deferred work keeps its design history
+and task IDs but is not an implementation or qualification dependency of the MVP.
+
+| Milestone | Exit focus | State |
+| --- | --- | --- |
+| **M0** Scope, rules and catalog | One 8x8 ruleset boundary, canonical 55-Pet roster, six gated Off-rate candidates, explicit deferred list | IN_PROGRESS |
+| **M1** Playable combat and progression | Deterministic 8x8 Rust combat, Artifact inventory/equipment/upgrades, authoritative settlement | IN_PROGRESS |
+| **M2** Character, environment, audio and visual foundations | Icarus game-ready path, reusable morphology intakes, Fire/Water arenas, AudioMixer/VFX | IN_PROGRESS |
+| **M3** Integrated playable vertical slice | Session → Pet → real 8x8 battle → reward → Artifact equip → observable stat change → restart recovery | TODO |
+| **M4** Full MVP content production | All 55 active Pets, six maps and approved art/audio content | TODO |
+| **M5** Human playtesting, balance and polish | Measured fun, clarity, accessibility and balance; no silent candidate-value promotion | TODO |
+| **M6** Windows qualification and closed-beta readiness | Physical Windows build qualification, legal/privacy/signing and explicit release authorization | TODO |
+
+**Current Wave A** targets **M0–M2**, with **M3** as the integration goal:
+a new versioned **8×8** tactical ruleset in Rust (frozen V1/V3 and the 6×6 legacy
+board remain untouched), a three-slot **Core/Aegis/Rune** Artifact loop, a
+canonical **55 active Pet / 61 candidate** roster (the six Off-rate S identities
+are gated, not a silent banner replacement), Icarus plus six Dragon and six Bird
+families, Unity 8×8/collection/Artifact presentation, and Fire/Water arena plus
+audio/VFX foundations. The ten shared race bases are presentation bases, not
+extra collectible Pets. See [the Wave A specification](specs/pet-arena/mvp-wave-a.md).
+
+**Operating rule:** future development requests are executed as substantial,
+coordinated development waves. Each wave names its MVP milestone, file-owned
+workstreams, integration owner, measurable acceptance and exact-source checks.
+Do not substitute an audit, a specification or an isolated micro-fix for
+playable progress when independent MVP work remains executable.
+
+**Deferred from MVP:** the five additional Limited S characters, 19-map/19-element
+expansion, the 240-Pet catalog, permanent fusion, ranked PvP, weekly bosses,
+Maid Café/Card Lounge/social-world expansion and mobile/macOS ports. These remain
+designed and classified in the backlog; none blocks M0–M3.
+
 The repository has two canonical 3D-production skills. Use
 [Aetheria Hero Character VRM](.agents/skills/aetheria-hero-character-vrm/SKILL.md)
 with `$aetheria-hero-character-vrm` for flagship/Limited S humanoids and key NPCs
