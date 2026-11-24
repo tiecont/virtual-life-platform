@@ -9030,6 +9030,84 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A"
       }
+    },
+    {
+      "id": "VL-182",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "M4: 55-Pet models, rigs, animation and VFX production",
+      "objective": "Produce and admit the complete active-Pet content set using reusable morphology profiles and owner-gated asset production.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "All 55 active identities have an explicit model/rig/animation/VFX readiness state",
+        "Reusable humanoid/quadruped/avian/serpent/floating intakes are admitted through the asset gate",
+        "The six Off-rate candidates remain content-gated until OD-1"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner H1-H4 art review and paid-provider authorization per OD-7"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
+    },
+    {
+      "id": "VL-183",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "M4: six-map modular environment production",
+      "objective": "Extend the Central Plaza/Fire/Water foundation into the six approved MVP arena identities with reusable kits and qualification.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "All six map identities have reusable modular kits and functional arena compositions",
+        "Fire/Water are rendered and playable first; the other four reuse the same kit conventions",
+        "No seamless open-world or social-world expansion is implied"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner environment H-gate acceptance"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
+    },
+    {
+      "id": "VL-184",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Media",
+      "title": "M4: licensed audio, ambience and combat music production",
+      "objective": "Replace procedural fallbacks with approved licensed/produced audio while preserving the mixer/event contract and volume/mute behavior.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Hub, Fire/Water ambience, regular/boss music and required combat/reward cues have cleared media",
+        "No unlicensed media is committed or represented as production",
+        "Mixer groups, persisted volumes and event hooks remain intact"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner media licence approval per OD-10"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
     }
   ]
 }
