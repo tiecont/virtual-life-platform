@@ -397,6 +397,29 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "phase1IntegrationShard": {
+          "sourceRevision": "7edebb128e270077b98c64904e870abcd9dfb331",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "Quality integration (4/4), job 138188762512 on b501cbd, passed 222 of 223. The room-owner disconnect test found three sessions because it matched advisory locks by class across unrelated fixtures.",
+          "change": "Match the room-owner lock by database and the fixture schema key. Scope lock-wait observations to the fixture connection application name.",
+          "commands": [
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/games --maxWorkers=4",
+              "exitCode": 0,
+              "result": "30 PASS on disposable PostgreSQL."
+            },
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=4/4 --maxWorkers=4 --reporter=json",
+              "exitCode": 0,
+              "result": "223 PASS across 18 files with zero failed or pending on disposable PostgreSQL."
+            },
+            {
+              "command": "pnpm exec eslint tests/games/fault-recovery.integration.test.ts tests/games/journal-fixture.ts; pnpm exec tsc -p tests/games/tsconfig.json",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "Hosted CI on the updated draft and owner H2 review."
+        },
         "phase1CoreChecks": {
           "sourceRevision": "241ed0c146caabf22854c598fa5d27f3a23a7eb2",
           "reviewMode": "SINGLE_AGENT_AUDIT",
