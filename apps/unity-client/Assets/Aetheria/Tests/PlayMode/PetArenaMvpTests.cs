@@ -3,6 +3,7 @@ using Aetheria.PetArena.Domain;
 using Aetheria.PetArena.Presentation;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Aetheria.Tests.PlayMode
@@ -12,11 +13,15 @@ namespace Aetheria.Tests.PlayMode
         [UnityTest]
         public IEnumerator BuildsPlayableStageAndEvolutionReference()
         {
-            var root = new GameObject("Arena test root");
-            var controller = root.AddComponent<PetArenaMvpController>();
-            yield return null;
+            const string scenePath = "Assets/Aetheria/Scenes/PetArenaPve.unity";
+            var load = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+            Assert.That(load, Is.Not.Null);
+            yield return load;
+            var scene = SceneManager.GetSceneByPath(scenePath);
             try
             {
+                var controller = scene.GetRootGameObjects()[0].GetComponent<PetArenaMvpController>();
+                Assert.That(controller, Is.Not.Null);
                 Assert.That(controller.Battle, Is.Not.Null);
                 Assert.That(controller.Battle.Phase, Is.EqualTo(ArenaPhase.Intro));
                 Assert.That(controller.PlayerEvolution, Is.Not.Null);
@@ -33,7 +38,7 @@ namespace Aetheria.Tests.PlayMode
             }
             finally
             {
-                Object.Destroy(root);
+                SceneManager.UnloadSceneAsync(scene);
             }
         }
     }
