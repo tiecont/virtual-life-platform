@@ -52,6 +52,9 @@ namespace Aetheria.Editor
                 new EditorBuildSettingsScene(Scene, true),
                 new EditorBuildSettingsScene(new GUID(AssetDatabase.AssetPathToGUID(PetArenaScene)), true),
             };
+            // Hub and the two developer arenas are committed scene assets and
+            // are appended without disturbing the existing blockout entries.
+            WorldSceneBuilder.EnsureBuildEntries();
             AssetDatabase.SaveAssets();
             BlockoutCollisionExport.Write();
         }
