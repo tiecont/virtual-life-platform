@@ -1,4 +1,5 @@
 //! Deterministic Pet Arena PvE domain. No I/O, authentication, rewards or routes.
+pub mod arena8;
 pub mod board;
 pub mod combat;
 mod combat_codec;
