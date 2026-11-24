@@ -2,7 +2,7 @@ const apiPath = /^\/(?:v1|socket\.io)(?:\/|$)/;
 const headersFromEdge = ['cf-access-jwt-assertion', 'cf-access-client-id', 'cf-access-client-secret'];
 
 function error(message, status) {
-  return new Response(message, {status, headers: {'cache-control': 'no-store'}});
+  return new globalThis.Response(message, {status, headers: {'cache-control': 'no-store'}});
 }
 
 export default {
@@ -13,7 +13,7 @@ export default {
     const service = env.SITE === 'portal' && apiPath.test(url.pathname) ? env.API : env.FRONTEND;
     if (!service) return error('Private origin unavailable', 503);
 
-    const headers = new Headers(request.headers);
+    const headers = new globalThis.Headers(request.headers);
     for (const name of headersFromEdge) headers.delete(name);
     const applicationCookies = (headers.get('cookie') ?? '').split(';')
       .map(cookie => cookie.trim()).filter(cookie => cookie && !cookie.startsWith('CF_Authorization='));
@@ -27,7 +27,7 @@ export default {
     const origin = new URL(url);
     origin.protocol = 'http:';
     try {
-      return await service.fetch(new Request(origin, {
+      return await service.fetch(new globalThis.Request(origin, {
         method: request.method, headers, body: request.body, duplex: 'half', redirect: 'manual',
       }));
     } catch {
