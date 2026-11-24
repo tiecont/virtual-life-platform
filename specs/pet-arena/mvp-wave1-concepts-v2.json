@@ -148,8 +148,8 @@
       "generatedAtUtc": "2026-11-24T12:28:03.163Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 2,
@@ -175,8 +175,8 @@
       "generatedAtUtc": "2026-11-24T12:28:31.521Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 3,
@@ -202,8 +202,8 @@
       "generatedAtUtc": "2026-11-24T11:57:55.639Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 4,
@@ -229,8 +229,8 @@
       "generatedAtUtc": "2026-11-24T11:58:26.017Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 5,
@@ -256,8 +256,8 @@
       "generatedAtUtc": "2026-11-24T12:10:32.260Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 6,
@@ -283,8 +283,8 @@
       "generatedAtUtc": "2026-11-24T11:59:24.477Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "S",
-      "classLabel": "S · Standard"
+      "powerClass": "A",
+      "classLabel": "A · Standard"
     },
     {
       "order": 7,
@@ -757,12 +757,12 @@
   ],
   "powerClasses": {
     "counts": {
-      "S": 12,
-      "A": 0,
+      "S": 6,
+      "A": 6,
       "B": 10
     },
     "ladder": "S > A > B",
     "spec": "specs/pet-arena/power-tiers-mvp-wave1.md",
-    "note": "Presentation ladder only; not summon rarity or stats."
+    "note": "The six Standard-S summons are Power Class A by owner direction (A-tier appearance); summon rarity is unchanged. S off-rate pets live in mvp-wave1-concepts-v4.json."
   }
 }

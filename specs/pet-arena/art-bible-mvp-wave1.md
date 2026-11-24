@@ -40,7 +40,7 @@ Non-negotiables:
 
 Rules: shadows are Body darkened and tinted toward Ink, never neutral grey; highlights lean toward Surface plus a warm rim light;
 Accent appears in at most three places (focal, one seam, one small utility). Light stays pearl/ivory with a coloured accent, never a
-white emissive silhouette. Gold, jewel and ornamental pearl trim are **legendary-only** signals; race-base socket rings stay matte pearl-grey, never ornamental gold.
+white emissive silhouette. Gold, jewel and ornamental pearl trim are **S-class** signals — map legendaries, S off-rate summons and Limited S. A-class Pets and race bases avoid ornamental gold; race-base socket rings stay matte pearl-grey.
 
 ## 3. Silhouette and expression
 
@@ -96,10 +96,12 @@ Modular bodies that carry six element variants and the Lv 20/40/60 accessory set
 ## 8. Power-class presentation
 
 Power class **S / A / B** is a presentation ladder defined in [power-tiers-mvp-wave1.md](power-tiers-mvp-wave1.md); it is not summon
-rarity or a stat block. **S** covers the six Standard-S summon units, the six map legendaries, the six dragon families and Icarus
-(Limited S); **A** covers the six bird family; **B** covers the ten shared race bases. Show class as a badge only — S gold
-`#E9C46A`, A violet `#B9A6F2`, B teal `#7FE0D0`. Class never recolours a creature or changes its element palette, silhouette,
-materials or evolution modules, and the badge must not cover the face, core, board tile or target indicator. The catalog rank field is unchanged.
+rarity or a stat block. **S** covers the six S off-rate summons, the six map legendaries, the six dragon families and Icarus (Limited S);
+**A** covers the six Standard-S summons (A-tier appearance) and the six bird family; **B** covers the ten shared race bases. Show class as
+a badge only — S gold `#E9C46A`, A violet `#B9A6F2`, B teal `#7FE0D0`. Class never recolours a creature or changes its element palette,
+silhouette, materials or evolution modules, and the badge must not cover the face, core, board tile or target indicator. S off-rate Pets
+each carry one unique regalia language (crest, tiara, antenna prongs, bell cowl, forehead plate, diadem); a shared motif such as identical
+floating rings is forbidden across the family.
 
 ## 9. Review and cost rules
 

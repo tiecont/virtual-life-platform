@@ -8,21 +8,21 @@
   "notSummonRarity": true,
   "counts": {
     "S": 19,
-    "A": 6,
+    "A": 12,
     "B": 10
   },
-  "total": 35,
+  "total": 41,
   "classes": {
     "S": {
-      "meaning": "Apex: mythic, map-ending and headliner summons",
-      "contents": "6 Standard-S summons + 6 Map Legendary + 6 Dragon family + Icarus (Limited S)",
+      "meaning": "Apex: mythic, map-ending and S off-rate summons",
+      "contents": "6 S off-rate + 6 Map Legendary + 6 Dragon family + Icarus (Limited S)",
       "count": 19,
       "badge": "#E9C46A"
     },
     "A": {
-      "meaning": "Rare: agile species",
-      "contents": "6 Bird family",
-      "count": 6,
+      "meaning": "Rare: wave headliners and agile species",
+      "contents": "6 Standard-S summons (A-tier appearance) + 6 Bird family",
+      "count": 12,
       "badge": "#B9A6F2"
     },
     "B": {
@@ -34,9 +34,11 @@
   },
   "rules": [
     "Power Class is presentation only; it defines no stats, damage, drop rate, acquisition or authority.",
-    "The six Standard-S summon units are Power Class S, matching their Standard-S rarity and the owner's ladder.",
-    "Icarus is S Limited and is shown as a reference card in the unified review sheet; its image is existing approved art, not a new generation.",
-    "The 30 map regular Pets keep catalog ranks 12 A / 18 B; shared race bases are labelled B as bodies, not as a claim about every member Pet.",
+    "The six original Standard-S summons are Power Class A by owner direction: their concept appearance reads A, not S. Their summon rarity stays Standard S.",
+    "Six new S off-rate summons fill the S tier, one per element: Vulcaryn, Nerivelle, Fulgarys, Umbryss, Jadewarden, Solenne.",
+    "Each S off-rate pet has unique regalia and no shared accessory motif; the first pass's repeated three-ring regalia was rejected and regenerated.",
+    "Icarus is S Limited and shown as a reference card using existing approved art, not a new generation.",
+    "The 30 map regular Pets keep catalog ranks 12 A / 18 B; shared race bases are labelled B as bodies.",
     "Class badges never replace or recolour element identity."
   ],
   "rosterContext": {
@@ -61,80 +63,80 @@
   "entries": [
     {
       "order": 1,
-      "id": "pet-v31-fire-cindrelis",
-      "name": "Cindrelis",
-      "category": "standard_gacha",
+      "id": "pet-s-fire-vulcaryn",
+      "name": "Vulcaryn",
+      "category": "s_offrate",
       "element": "fire",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-cindrelis.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-fire-vulcaryn.png",
       "ownerDecision": null
     },
     {
       "order": 2,
-      "id": "pet-v31-water-marivell",
-      "name": "Marivell",
-      "category": "standard_gacha",
+      "id": "pet-s-water-nerivelle",
+      "name": "Nerivelle",
+      "category": "s_offrate",
       "element": "water",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-marivell.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-water-nerivelle.png",
       "ownerDecision": null
     },
     {
       "order": 3,
-      "id": "pet-v31-electric-quorion",
-      "name": "Quorion",
-      "category": "standard_gacha",
+      "id": "pet-s-electric-fulgarys",
+      "name": "Fulgarys",
+      "category": "s_offrate",
       "element": "electric",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-quorion.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-electric-fulgarys.png",
       "ownerDecision": null
     },
     {
       "order": 4,
-      "id": "pet-v31-ghost-vesperyn",
-      "name": "Vesperyn",
-      "category": "standard_gacha",
+      "id": "pet-s-ghost-umbryss",
+      "name": "Umbryss",
+      "category": "s_offrate",
       "element": "ghost",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-vesperyn.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-ghost-umbryss.png",
       "ownerDecision": null
     },
     {
       "order": 5,
-      "id": "pet-v31-ground-gravorn",
-      "name": "Gravorn",
-      "category": "standard_gacha",
+      "id": "pet-s-ground-jadewarden",
+      "name": "Jadewarden",
+      "category": "s_offrate",
       "element": "ground",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-gravorn.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-ground-jadewarden.png",
       "ownerDecision": null
     },
     {
       "order": 6,
-      "id": "pet-v31-light-aurelune",
-      "name": "Aurelune",
-      "category": "standard_gacha",
+      "id": "pet-s-light-solenne",
+      "name": "Solenne",
+      "category": "s_offrate",
       "element": "light",
       "powerClass": "S",
-      "classLabel": "S · Standard",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-aurelune.png",
+      "classLabel": "S · Off-rate",
+      "summonRarity": "Standard S off-rate",
+      "conceptBatch": "concepts-v4",
+      "filename": "s-offrate-light-solenne.png",
       "ownerDecision": null
     },
     {
@@ -308,6 +310,84 @@
     },
     {
       "order": 20,
+      "id": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "category": "standard_gacha",
+      "element": "fire",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-cindrelis.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 21,
+      "id": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "category": "standard_gacha",
+      "element": "water",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-marivell.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 22,
+      "id": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "category": "standard_gacha",
+      "element": "electric",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-quorion.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 23,
+      "id": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "category": "standard_gacha",
+      "element": "ghost",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-vesperyn.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 24,
+      "id": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "category": "standard_gacha",
+      "element": "ground",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-gravorn.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 25,
+      "id": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "category": "standard_gacha",
+      "element": "light",
+      "powerClass": "A",
+      "classLabel": "A · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-aurelune.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 26,
       "id": "bird-fire-cinderquill",
       "name": "Cinderquill",
       "category": "bird_family",
@@ -320,7 +400,7 @@
       "ownerDecision": null
     },
     {
-      "order": 21,
+      "order": 27,
       "id": "bird-water-tidewren",
       "name": "Tidewren",
       "category": "bird_family",
@@ -333,7 +413,7 @@
       "ownerDecision": null
     },
     {
-      "order": 22,
+      "order": 28,
       "id": "bird-electric-arcswift",
       "name": "Arcswift",
       "category": "bird_family",
@@ -346,7 +426,7 @@
       "ownerDecision": null
     },
     {
-      "order": 23,
+      "order": 29,
       "id": "bird-ghost-pallidrone",
       "name": "Pallidrone",
       "category": "bird_family",
@@ -359,7 +439,7 @@
       "ownerDecision": null
     },
     {
-      "order": 24,
+      "order": 30,
       "id": "bird-ground-dustrunner",
       "name": "Dustrunner",
       "category": "bird_family",
@@ -372,7 +452,7 @@
       "ownerDecision": null
     },
     {
-      "order": 25,
+      "order": 31,
       "id": "bird-light-prismkite",
       "name": "Prismkite",
       "category": "bird_family",
@@ -385,7 +465,7 @@
       "ownerDecision": null
     },
     {
-      "order": 26,
+      "order": 32,
       "id": "base-rig-centaur",
       "name": "Centaur Race Base",
       "category": "shared_race_base",
@@ -398,7 +478,7 @@
       "ownerDecision": null
     },
     {
-      "order": 27,
+      "order": 33,
       "id": "base-rig-golem",
       "name": "Golem Race Base",
       "category": "shared_race_base",
@@ -411,7 +491,7 @@
       "ownerDecision": null
     },
     {
-      "order": 28,
+      "order": 34,
       "id": "base-rig-humanoid",
       "name": "Humanoid Familiar Base",
       "category": "shared_race_base",
@@ -424,7 +504,7 @@
       "ownerDecision": null
     },
     {
-      "order": 29,
+      "order": 35,
       "id": "base-rig-soft",
       "name": "Soft Amorphous Race Base",
       "category": "shared_race_base",
@@ -437,7 +517,7 @@
       "ownerDecision": null
     },
     {
-      "order": 30,
+      "order": 36,
       "id": "base-rig-floating",
       "name": "Living Artifact Race Base",
       "category": "shared_race_base",
@@ -450,7 +530,7 @@
       "ownerDecision": null
     },
     {
-      "order": 31,
+      "order": 37,
       "id": "base-rig-flora",
       "name": "Flora and Fungal Race Base",
       "category": "shared_race_base",
@@ -463,7 +543,7 @@
       "ownerDecision": null
     },
     {
-      "order": 32,
+      "order": 38,
       "id": "base-rig-aquatic",
       "name": "Aquatic Race Base",
       "category": "shared_race_base",
@@ -476,7 +556,7 @@
       "ownerDecision": null
     },
     {
-      "order": 33,
+      "order": 39,
       "id": "base-rig-spectral",
       "name": "Spectral Race Base",
       "category": "shared_race_base",
@@ -489,7 +569,7 @@
       "ownerDecision": null
     },
     {
-      "order": 34,
+      "order": 40,
       "id": "base-rig-serpent",
       "name": "Serpentine Race Base",
       "category": "shared_race_base",
@@ -502,7 +582,7 @@
       "ownerDecision": null
     },
     {
-      "order": 35,
+      "order": 41,
       "id": "base-rig-mechanical",
       "name": "Mechanical Race Base",
       "category": "shared_race_base",
@@ -529,5 +609,11 @@
     "height": 1152,
     "generatedInBatch": false,
     "note": "Existing owner-reviewed Icarus reference art, background-composited to 4:3 for the review card. No Tripo generation and no credit spent."
+  },
+  "sOffrateBatch": {
+    "path": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts-v4",
+    "count": 6,
+    "state": "CONCEPT_REVIEW_REQUIRED",
+    "ledger": "specs/pet-arena/mvp-wave1-concepts-v4.json"
   }
 }
