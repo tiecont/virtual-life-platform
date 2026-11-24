@@ -103,6 +103,9 @@ import { registerStudy } from './features/library/modules/study/presentation/htt
 import {registerWave1Mvp} from './features/pets/modules/wave1/presentation/http';
 import {Wave1Service, type Wave1Entropy} from './features/pets/modules/wave1/application/service';
 import {Wave1Store} from './features/pets/modules/wave1/infrastructure/store';
+import {registerArtifacts} from './features/pets/modules/wave-a-artifacts/presentation/http';
+import {ArtifactService} from './features/pets/modules/wave-a-artifacts/application/service';
+import {ArtifactStore} from './features/pets/modules/wave-a-artifacts/infrastructure/store';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -117,8 +120,9 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean} } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
+  if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
   if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
@@ -287,6 +291,14 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const wave1=new Wave1Service(new Wave1Store(db),options.petArenaWave1?.entropy);
   registerWave1Mvp(http,config,identity,wave1,options.petArenaWave1?.enabled??false,options.now);
   identity.registerExportOwner('petArenaWave1',(account,transaction)=>wave1.exportAccount(transaction,account));
+  // Wave A Artifacts stay default-off: no route and no export domain is added
+  // unless the local composition opts in.
+  const artifactsEnabled=options.petArtifacts?.enabled??false;
+  const artifacts=new ArtifactService(new ArtifactStore(db));
+  if(artifactsEnabled){
+    registerArtifacts(http,config,identity,artifacts,true,options.now);
+    identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
+  }
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
   rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));
   registerProgression(http, config, identity, progression, appearance, options.now,avatarParts);
