@@ -397,6 +397,43 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "phase1CoreChecks": {
+          "sourceRevision": "241ed0c146caabf22854c598fa5d27f3a23a7eb2",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "Quality pull_request core-checks job 138182997436 at e080152 stopped in infra:check. The isolated legacy verifier identified missing canonical manifests for newly queued Icarus binaries, and its type map lacked VRM support.",
+          "change": "Register the eight queued files using verified tracked SHA-256 and sizes. Recognize VRM in the legacy verifier, and check manifest counts against the queue.",
+          "commands": [
+            {
+              "command": "pnpm lint",
+              "exitCode": 0,
+              "result": "Zero errors and one existing generated-protocol warning."
+            },
+            {
+              "command": "pnpm typecheck",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm assets:check",
+              "exitCode": 0,
+              "result": "Both pinned Wings and Bow waivers applied."
+            },
+            {
+              "command": "pnpm infra:check",
+              "exitCode": 0,
+              "result": "31 of 31 legacy manifests and offline Kubernetes validation passed."
+            },
+            {
+              "command": "node --test tests/governance/{legacy-asset-manifests,binary-hygiene}.test.mjs",
+              "exitCode": 0,
+              "result": "6 PASS."
+            }
+          ],
+          "remaining": "Hosted core-checks on the updated draft and owner H2 review."
+        },
         "nov24DraftStabilization": {
           "sourceRevision": "a207cd13601f1d29a88580f43aece835084226d5",
           "reviewMode": "SINGLE_AGENT_AUDIT",
