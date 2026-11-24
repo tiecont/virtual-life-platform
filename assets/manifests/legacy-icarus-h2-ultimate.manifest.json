@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-h2-ultimate",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-h2-ultimate/1.0.0/02-ultimate-wings-bow-fire-zone.png",
+  "sha256": "6b6f49f7194b43300189329a5148aec09953ba02cc3a820f4d4023c99fda11ee",
+  "sizeBytes": 358430,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-h2-ultimate/1.0.0/02-ultimate-wings-bow-fire-zone.png"
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-presentation-vfx",
+  "action": "world_walk_or_hover",
+  "family": "intro",
+  "cue": "ICARUS_INTRO",
+  "intensity": 0.25,
+  "durationSeconds": 1.2,
+  "palette": "warm-fire",
+  "authoredIndex": 1,
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

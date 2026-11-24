@@ -12,7 +12,14 @@ export async function readNodeWorkspace(root,path) {
       assert(/^m_EditorVersion: \d+\.\d+\.\d+f\d+$/m.test(version),'Unity application needs exact stable Editor pin');
       const manifest=JSON.parse(await readFile(resolve(root,path,'Packages/manifest.json'),'utf8'));
       assert(Object.keys(manifest.dependencies??{}).length>0,'Unity package manifest required');
-      for(const pin of Object.values(manifest.dependencies))assert(/^\d+\.\d+\.\d+$/.test(pin),'Unity packages need exact pins');
+      for(const [name,pin] of Object.entries(manifest.dependencies)){
+        if(/^\d+\.\d+\.\d+$/.test(pin))continue;
+        const match=/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\.git\?path=\/?[\w/-]+#([0-9a-f]{40})$/.exec(pin);
+        assert(match,'Unity packages need exact pins');
+        const lock=JSON.parse(await readFile(resolve(root,path,'Packages/packages-lock.json'),'utf8'));
+        const entry=lock.dependencies[name];
+        assert(entry?.source==='git'&&entry.version===pin&&entry.hash===match[1],'Unity Git pin must match its lock entry');
+      }
       return null;
     }
     if(path!=='apps/game-runtime')throw error;

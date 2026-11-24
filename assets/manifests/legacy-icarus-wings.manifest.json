@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-wings",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-wings/1.0.0/Icarus_Wings.glb",
+  "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+  "sizeBytes": 3497684,
+  "contentType": "model/gltf-binary",
+  "localCachePath": ".cache/assets/legacy-icarus-wings/1.0.0/Icarus_Wings.glb"
+}

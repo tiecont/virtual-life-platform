@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-h2-idle-wings-off",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-h2-idle-wings-off/1.0.0/01-idle-wings-off.png",
+  "sha256": "cc217497342bd20d8ec6c2ead222a88e44f9dd0fff2439ab205ac4442a95abc7",
+  "sizeBytes": 327066,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-h2-idle-wings-off/1.0.0/01-idle-wings-off.png"
+}

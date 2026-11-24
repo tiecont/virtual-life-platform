@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "importer": "Unity 6000.3.14f1 / Generic AnimationClip and local presentation descriptors",
+  "source": "assets/characters/icarus/white-gold-study/round5-bindings/authoring/round5-binding-source.json",
+  "actions": [
+    "idle",
+    "world_walk_or_hover",
+    "world_follow",
+    "emote",
+    "summon",
+    "normal_sword_hit",
+    "damage_reaction",
+    "defend",
+    "status_affected",
+    "rage_sword_100",
+    "victory",
+    "defeat",
+    "signature_skill_windup",
+    "signature_skill_cast",
+    "ultimate_cut_in",
+    "ultimate_impact"
+  ],
+  "vfxFormat": "JSON cue descriptor consumed by presentation binding review",
+  "audioFormat": "PCM 16-bit mono WAV, 48kHz, locally authored tone cues",
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-round5-binding-source",
+  "petId": "pet-v3-fire-icarus",
+  "signatureOpcode": "FIRE_ZONE",
+  "canonicalProfile": "specs/pet-arena/v3.1/data/limited_animation_profiles.json",
+  "sourceModel": "assets/characters/icarus/white-gold-study/icarus-blockout.blend",
+  "authoredBy": "Codex local authoring pack",
+  "actionFamilies": {
+    "idle": "intro",
+    "world_walk_or_hover": "intro",
+    "world_follow": "intro",
+    "emote": "intro",
+    "summon": "intro",
+    "normal_sword_hit": "normal",
+    "damage_reaction": "normal",
+    "defend": "normal",
+    "status_affected": "normal",
+    "rage_sword_100": "rage",
+    "victory": "rage",
+    "defeat": "rage",
+    "signature_skill_windup": "signature",
+    "signature_skill_cast": "signature",
+    "ultimate_cut_in": "signature",
+    "ultimate_impact": "signature"
+  },
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

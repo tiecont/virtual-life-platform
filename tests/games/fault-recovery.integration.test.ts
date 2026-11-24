@@ -32,7 +32,18 @@ it('logout winning a real SQL identity wait invalidates the queued command and r
 });
 it('actual room-owner connection loss fences a waiting command and a new owner aborts without a phantom winner',async()=>{
  const g=await f.started(),lock=await f.pool.connect();await lock.query('BEGIN');await lock.query('SELECT 1 FROM engine_game_matches WHERE id=$1 FOR UPDATE',[g.matchId]);const pending=f.app.gameJournal.command(g.a.token,draw(g.view,source(g.ar))).then(()=>null,error=>error);
- try{await f.waitLocked('SELECT * FROM engine_game_matches');const owners=(await f.admin.query("SELECT DISTINCT pid FROM pg_locks WHERE locktype='advisory' AND classid=$1 AND granted",[ROOM_OWNER_LOCK_CLASS])).rows;expect(owners).toHaveLength(1);await f.admin.query('SELECT pg_terminate_backend($1)',[owners[0].pid]);}finally{await lock.query('ROLLBACK');lock.release();}expect(await pending).not.toBeNull();expect((await f.pool.query('SELECT 1 FROM engine_game_receipts WHERE accepted')).rowCount).toBe(0);await f.restart();expect(await f.app.gameJournal.status(g.b.token,g.matchId)).toMatchObject({status:'ABORTED',privateStateAvailable:false});expect((await f.pool.query('SELECT outcome FROM engine_game_results')).rows[0].outcome).toBe('aborted');expect((await f.pool.query('SELECT 1 FROM engine_game_active_claims')).rowCount).toBe(0);
+ try{
+  await f.waitLocked('SELECT * FROM engine_game_matches');
+  const {rows:owners}=await f.admin.query<{pid:number}>(`
+    SELECT pid FROM pg_locks
+    WHERE locktype='advisory' AND granted AND objsubid=2
+      AND database=(SELECT oid FROM pg_database WHERE datname=current_database())
+      AND classid=$1::oid AND objid=(hashtext($2)::bigint & 4294967295)::oid
+  `,[ROOM_OWNER_LOCK_CLASS,f.schema]);
+  expect(owners).toHaveLength(1);
+  await f.admin.query('SELECT pg_terminate_backend($1)',[owners[0].pid]);
+ }finally{await lock.query('ROLLBACK');lock.release();}
+ expect(await pending).not.toBeNull();expect((await f.pool.query('SELECT 1 FROM engine_game_receipts WHERE accepted')).rowCount).toBe(0);await f.restart();expect(await f.app.gameJournal.status(g.b.token,g.matchId)).toMatchObject({status:'ABORTED',privateStateAvailable:false});expect((await f.pool.query('SELECT outcome FROM engine_game_results')).rows[0].outcome).toBe('aborted');expect((await f.pool.query('SELECT 1 FROM engine_game_active_claims')).rowCount).toBe(0);
 });
 it('statement timeout releases a blocked journal transaction without ending the shared pool',async()=>{
  const g=await f.started();let armed=false;const store=f.store(f.faultPool(async(db,text,_args,run)=>{if(armed&&text.startsWith('INSERT INTO engine_game_receipts')){armed=false;await db.query('SELECT pg_sleep(10)');}return run();}));await store.recover();armed=true;const began=performance.now();await expect(store.command(g.a.token,draw(g.view,source(g.ar)))).rejects.toMatchObject({code:'UNAVAILABLE'});expect(performance.now()-began).toBeLessThan(5000);expect((await f.pool.query('SELECT 1 AS alive')).rows[0].alive).toBe(1);expect((await f.pool.query('SELECT 1 FROM engine_game_receipts WHERE accepted')).rowCount).toBe(0);

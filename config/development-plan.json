@@ -425,6 +425,115 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "unityMainConflictResolution": {
+          "sourceRevision": "0ea02b80775e19e6cfb9c163fadfb8c95d70c9fc",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "change": "Resolved three Unity assembly reference conflicts and the Unity package lock after main aca6d59. Addressables dependencies, Icarus references and all pinned Git packages coexist.",
+          "commands": [
+            {
+              "command": "UNITY_EDITOR=<6000.3.14f1>/Editor/Unity node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "29 EditMode and 6 PlayMode PASS, zero failed or skipped. NativePlayerFixture belongs to the standalone runner."
+            },
+            {
+              "command": "pnpm governance:check; pnpm assets:check",
+              "exitCode": 0,
+              "result": "Both asset hashes match; Wings uses the existing waiver and Bow is within the triangle budget."
+            }
+          ],
+          "remaining": "Hosted verification for the merge result and separate owner H2 review."
+        },
+        "phase1IntegrationShard": {
+          "sourceRevision": "7edebb128e270077b98c64904e870abcd9dfb331",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "Quality integration (4/4), job 138188762512 on b501cbd, passed 222 of 223. The room-owner disconnect test found three sessions because it matched advisory locks by class across unrelated fixtures.",
+          "change": "Match the room-owner lock by database and the fixture schema key. Scope lock-wait observations to the fixture connection application name.",
+          "commands": [
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/games --maxWorkers=4",
+              "exitCode": 0,
+              "result": "30 PASS on disposable PostgreSQL."
+            },
+            {
+              "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=4/4 --maxWorkers=4 --reporter=json",
+              "exitCode": 0,
+              "result": "223 PASS across 18 files with zero failed or pending on disposable PostgreSQL."
+            },
+            {
+              "command": "pnpm exec eslint tests/games/fault-recovery.integration.test.ts tests/games/journal-fixture.ts; pnpm exec tsc -p tests/games/tsconfig.json",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "Hosted CI on the updated draft and owner H2 review."
+        },
+        "phase1CoreChecks": {
+          "sourceRevision": "241ed0c146caabf22854c598fa5d27f3a23a7eb2",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "Quality pull_request core-checks job 138182997436 at e080152 stopped in infra:check. The isolated legacy verifier identified missing canonical manifests for newly queued Icarus binaries, and its type map lacked VRM support.",
+          "change": "Register the eight queued files using verified tracked SHA-256 and sizes. Recognize VRM in the legacy verifier, and check manifest counts against the queue.",
+          "commands": [
+            {
+              "command": "pnpm lint",
+              "exitCode": 0,
+              "result": "Zero errors and one existing generated-protocol warning."
+            },
+            {
+              "command": "pnpm typecheck",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm governance:check",
+              "exitCode": 0
+            },
+            {
+              "command": "pnpm assets:check",
+              "exitCode": 0,
+              "result": "Both pinned accessory hashes matched. Wings used the waiver and Bow was within the triangle budget."
+            },
+            {
+              "command": "pnpm infra:check",
+              "exitCode": 0,
+              "result": "31 of 31 legacy manifests and offline Kubernetes validation passed."
+            },
+            {
+              "command": "node --test tests/governance/{legacy-asset-manifests,binary-hygiene}.test.mjs",
+              "exitCode": 0,
+              "result": "6 PASS."
+            }
+          ],
+          "remaining": "Hosted core-checks on the updated draft and owner H2 review."
+        },
+        "nov24DraftStabilization": {
+          "sourceRevision": "a207cd13601f1d29a88580f43aece835084226d5",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/66",
+          "mergedPreflight": "Source a777cd29a5dc6fe8ddcd440facc970924d5dddf1: node scripts/prepare-ci-browser.mjs and node scripts/verify-binary-hygiene.mjs --base origin/main both exited 0 after integrating main.",
+          "finding": "At 9a5279c, Quality pull_request runtime-images job 137938281843 failed in the host Chromium screenshot preflight before any image smoke. The Icarus prefab had FIRE_ZONE signature routing but lacked the presenter emitted by the existing prefab builder.",
+          "change": "Recover the exact transient Chromium capture failure with one fresh-browser retry. Resave the prefab through its existing Editor builder to bind the FIRE_ZONE presenter.",
+          "commands": [
+            {
+              "command": "node scripts/prepare-ci-browser.mjs",
+              "exitCode": 0,
+              "result": "Pinned Chromium, fonts and screenshot preflight PASS."
+            },
+            {
+              "command": "Unity 6000.3.14f1 Editor MCP script_eval",
+              "exitCode": 0,
+              "result": "Socket_Wings and Socket_Bow with resolved accessory bindings, FIRE_ZONE signature and presenter, zero missing scripts and unresolved references after reimport."
+            },
+            {
+              "command": "unity command test run --mode editor --filter IcarusPrefabSetupTests",
+              "exitCode": 0,
+              "result": "3 PASS."
+            },
+            {
+              "command": "sha256sum <Icarus Wings and Bow GLBs>; node scripts/verify-binary-hygiene.mjs --base origin/main",
+              "exitCode": 0,
+              "result": "Both accessory SHA-256 pins match and binary hygiene passes."
+            }
+          ],
+          "remaining": "A cold Unity import attempted material creation before shaders were ready. The existing offline VRM prefab menu reimports the same files successfully once the Editor settles. Draft H2 review and hosted checks remain pending."
+        },
         "productionWorkPlan": {
           "baseTemplateReview": {
             "gate": "B1",
@@ -451,6 +560,65 @@
               "05_wings_or_tail.png": "826b9bda11ee3332b8b5c12c94663b90282f66d6c3d1520c5adb892eea852825",
               "06_weapon_prop.png": "55f366664c32bd8d7a11f985d3866fd233bc4e48bbac46bd422169c8b4a80948"
             }
+          },
+          "tripoAccessoryH2Review": {
+            "sourceRevision": "843205f35574c79b6b1d5fb0a458d2ef349fcf54",
+            "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+            "state": "H2_OWNER_REVIEW_PENDING",
+            "providerVisibility": "private",
+            "creditsConsumed": 360,
+            "ownerWaiver": {
+              "asset": "Icarus_Wings",
+              "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+              "triangles": 26133,
+              "ceilingTriangles": 28000,
+              "authorizedAt": "2026-11-23"
+            },
+            "assets": {
+              "wings": {
+                "providerProjectId": "8dd6dc74-9b98-440a-b241-168a001e6ea2",
+                "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Modular/Accessories/Icarus_Wings.glb",
+                "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+                "triangles": 26133,
+                "uvZeroAreaTriangles": 4,
+                "texture": "embedded 4096x4096 JPEG"
+              },
+              "bow": {
+                "providerProjectId": "159eaf11-406d-4b55-9256-92123f6071c8",
+                "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/Modular/Accessories/Icarus_Bow.glb",
+                "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4",
+                "triangles": 10489,
+                "uvZeroAreaTriangles": 0,
+                "texture": "embedded 4096x4096 JPEG"
+              }
+            },
+            "sockets": {
+              "wings": "UpperChest/Socket_Wings via IcarusWingController; default OFF",
+              "bow": "RightHand/Socket_Bow; Unity LineRenderer endpoints at normalized ±0.55 m"
+            },
+            "h2Renders": {
+              "01-idle-wings-off.png": "cc217497342bd20d8ec6c2ead222a88e44f9dd0fff2439ab205ac4442a95abc7",
+              "02-ultimate-wings-bow-fire-zone.png": "6b6f49f7194b43300189329a5148aec09953ba02cc3a820f4d4023c99fda11ee",
+              "03-back-closeup.png": "c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b",
+              "04-side-profile.png": "c0fca8439f608ccdddb0f5cc038f2a9033d1c59501caa76beb428818fe8e86d6"
+            },
+            "commands": [
+              {"command": "pnpm assets:check", "exitCode": 0, "result": "Both exact Tripo GLBs passed hash, triangle, UV-range, pivot, embedded 4096x4096 texture, material and pinned 28K Wings-waiver validation."},
+              {"command": "node --test tests/governance/icarus-accessories.test.mjs tests/governance/unity-metadata.test.mjs", "exitCode": 0, "result": "4 PASS."},
+              {"command": "UNITY_EDITOR=<6000.3.14f1/Editor/Unity> node scripts/unity-validate.mjs tests", "exitCode": 0, "result": "EditMode 19/19 PASS and PlayMode 5/5 PASS, including both attached accessory triangle contracts, default-OFF Wings and bowstring endpoint checks."},
+              {"command": "VL_ICARUS_H2_OUTPUT=<new absolute directory> <6000.3.14f1/Editor/Unity> -batchmode -projectPath apps/unity-client -executeMethod VirtualLife.Editor.IcarusH2ReviewRender.Render -quit", "exitCode": 0, "result": "ICARUS_H2_REVIEW_RENDER_PASS produced four decoded 960x960 URP PNGs. The FIRE_ZONE frame used a validated IcarusFireZoneSnapshot and Signature/FIRE_ZONE presentation."},
+              {"command": "pnpm check", "exitCode": 1, "result": "All gates through lint, typecheck, assets, 167 governance, 535 unit and 813 PostgreSQL integration tests passed. The final monorepo build hit the existing Next.js 16.4.4 one-time security-advisory exit; standalone admin-web and portal-web production builds then passed."}
+            ],
+            "gates": {
+              "h1": "REVISION_REQUIRED",
+              "h2Technical": "PASS_LOCAL",
+              "h2OwnerReview": "PENDING",
+              "unityImport": "PASS_LOCAL",
+              "renderedPreview": "PASS_LOCAL",
+              "productionReady": false
+            },
+            "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+            "remaining": "Owner H2 visual review remains required. PR66 must remain Draft and unmerged pending that decision; H1 is still REVISION_REQUIRED in the repository plan."
           },
           "consolidatedRuntimeImport": {
             "sourceRevision": "f84b63d9f63c7f0464db726df876fc76df51d48e",

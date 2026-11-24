@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-presentation-vfx",
+  "action": "damage_reaction",
+  "family": "normal",
+  "cue": "ICARUS_NORMAL",
+  "intensity": 0.55,
+  "durationSeconds": 0.65,
+  "palette": "warm-fire",
+  "authoredIndex": 6,
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}
