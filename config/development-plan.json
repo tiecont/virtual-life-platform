@@ -3797,6 +3797,29 @@
           ],
           "remaining": "Owner decision on a PostgreSQL provider that permits the existing ACL migrations. Then create the two private Northflank services, verify the tunnel and unauthenticated denial, and enable the protected production endpoints only after verification."
         },
+    "privateProductionDeployment": {
+      "sourceRevision": "eb7d3980ab6d090753896b8fe4bb20a115d0782d",
+      "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+      "runtimeRevision": "d6f9d5a78dd9269f2d328c0d81751d178c862a26",
+      "scope": "Private owner-only production deployment on Prisma Postgres, Northflank Free and Cloudflare Free. No staging environment, public release, registration, purchase, signing or Rust gameplay activation.",
+      "database": "Prisma Postgres accepted all54 migrations through the predefined pg_database_owner role. The production runtime uses the direct URL for the legacy session-level room-owner advisory lock and DATABASE_POOL_MAX=4.",
+      "northflank": "aetheria-frontend and aetheria-backend each run one instance at0.2vCPU/512MiB with CI and CD enabled. Portal3300, admin3400, API4300 and default-off Rust4400 remain private.",
+      "cloudflare": "Both Workers run the edge relay from main-ready Wrangler configuration with production workers.dev URLs enabled, preview URLs disabled, and the hostname-based Aetheria Production Access application active. Three VPC services use the Northflank namespace FQDN and port mappings.",
+      "commands": [
+        {"command":"DATABASE_URL=$DIRECT_DATABASE_URL DATABASE_MIGRATION_ROLE=pg_database_owner NODE_ENV=production pnpm db:migrate","exitCode":0,"result":"City migrations applied."},
+        {"command":"Prisma direct read-only schema/ACL probe","exitCode":0,"result":"54 migration rows,145 public tables,0 tables with PUBLIC SELECT/INSERT/UPDATE/DELETE, all table owners pg_database_owner."},
+        {"command":"pnpm exec wrangler deploy --config infra/cloudflare/portal-web/wrangler.jsonc","exitCode":0,"result":"Deployed aetheria-soulbound-portal-web version ee113131-173a-4249-bea3-649e4785db14 with FRONTEND/API VPC bindings."},
+        {"command":"pnpm exec wrangler deploy --config infra/cloudflare/admin-web/wrangler.jsonc","exitCode":0,"result":"Deployed aetheria-soulbound-admin-web version03ad3e84-1995-481b-a121-ddbf32ef0705 with FRONTEND VPC binding."},
+        {"command":"Anonymous HTTPS requests to both production Worker URLs","exitCode":0,"result":"HTTP302 to the owner-only Cloudflare Access application."},
+        {"command":"Owner-authenticated browser smoke through the production edge","exitCode":0,"result":"Portal root rendered its database-connected status; /admin rendered the separate operator/MFA form; application API returned401 until application login and WebSocket upgrade opened."},
+        {"command":"Northflank frontend-pod Node probes to private service FQDNs","exitCode":0,"result":"portal200, API live200, API ready200 after migration became visible, Rust live200, Rust ready503 with gameplay disabled."},
+        {"command":"node --test tests/governance/cloudflare-worker.test.mjs tests/governance/cloudflare-environment.test.mjs tests/governance/cloudflare-readiness.test.mjs tests/governance/task-plan.test.mjs","exitCode":0,"result":"15 PASS."},
+        {"command":"pnpm exec eslint focused changed source and tests; pnpm --filter @aetheria/platform-api typecheck; pnpm governance:check; pnpm ci:check; pnpm infra:check","exitCode":0},
+        {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/foundation.test.ts","exitCode":0,"result":"4 PASS including complete migration execution under an explicit database-owner role."},
+        {"command":"pnpm check","exitCode":143,"result":"Interrupted during the governance test launch on the local host after earlier check stages passed; not recorded as a full local pass. Hosted CI remains required."}
+      ],
+      "remaining": "Merge only after exact-head hosted Quality and Rust pass. After merge, switch both Northflank services to main, enable Workers Builds for main if the owner approves Cloudflare GitHub App repository access, and verify resulting main revisions. No public release is authorized."
+    },
     "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
     "ciTurboVerification": {
       "sourceRevision": "398e78c6eac6946d1318d2d74f95035a847ff7a0",
@@ -3883,7 +3906,7 @@
           "failedAttempts": "Initial readonly Next dev root failed on next-env writes; writes now stay inside frontend containers without host mounts. Loopback HMR initially403; explicit127.0.0.1 allowed, untrusted Origin still403. Cold control clicks fixed upstream PR33. Launcher inherited env/project overrides reproduced and fixed.922 full check exited1 with788/789 integration under memory/swap pressure; precise cause unproven, unchanged shutdown rerun2/2 PASS. f12 check deliberately stopped143 before tests to fix project override. Initial fake-Docker fixture lacked a newline and was corrected.",
           "limitations": "Full check excludes browser framing acceptance. Subsequent six-concept probe and hosted PR33 exposed Aurelune clipping; upstream camera fix61dfc2e passed28 browser cases, recorded under VL-163. Final composed source must include that fix. No public/signup/mail, production media, hardware or deployment qualification inferred. Keys remain ignored/private; original environment required for the retained volume. Exact final-head hosted Quality/Rust required before merge. VL-065 stays IN_PROGRESS."
         },
-        "remainingAcceptance": "Versioned staging artifact and trace correlation, runtime readiness/drain and legacy compatibility still require verification; no deployment activated",
+    "remainingAcceptance": "The private owner-only production path is deployed and verified. Versioned staging artifact and trace correlation, full drain/recovery qualification and Windows gaming hardware acceptance still require verification; no public release is authorized.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "verification": {
           "sourceRevision": "87a16e46d049666a88a9c5aa786d34bdfb99d0ea",
