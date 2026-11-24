@@ -8001,7 +8001,25 @@
             "exitCode": 0
           }
         ],
-        "remaining": "Confirm hosted CI for the current PR head before merge. Physical Windows and visual qualification remain separate. Release stays OFFLINE_ONLY / NO_GO_PUBLIC."
+        "remaining": "Confirm hosted CI for the current PR head before merge. Physical Windows and visual qualification remain separate. Release stays OFFLINE_ONLY / NO_GO_PUBLIC.",
+        "compatFix": {
+          "sourceRevision": "cd53d05007190004ec7eb4ba38f04cdb1bd2a29c",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/80",
+          "rootCause": "Migration 0055_wave1_mvp_state.sql was added in 220996f, raising the current migration set to 55, but native-game-migration-compat.mjs and runtime-admission-migration-compat.mjs still asserted 54 and pointed at 54-window policies. linux-foundation therefore failed at the compat archive stage (after.length===54) before the archived-runtime checks.",
+          "implementation": "Added exact archived47/48-to55 expand-compatible policies containing the 0055 checksum, retained the 54 policy as a frozen negative case, and updated both compat scripts to expect 55. No migration bytes, runtime flags, gameplay behavior or release state changed.",
+          "commands": [
+            {"command": "cargo fmt --check", "exitCode": 0},
+            {"command": "cargo clippy --all-targets -- -D warnings", "exitCode": 0},
+            {"command": "cargo test", "exitCode": 0, "result": "All workspace unit/doc tests passed with zero failures."},
+            {"command": "pnpm --filter @aetheria/platform-api build", "exitCode": 0},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs", "exitCode": 0, "result": "Actual archived47 runtime/migrator and current55 expansion/rollback PASS; concurrent migrators, frozen50/53/54 rejection, checksum/unknown-tail negatives, identity and native AEAD preservation passed; owned resources cleaned."},
+            {"command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs", "exitCode": 0, "result": "Actual archived48 runtime and current55 expansion/rollback PASS; closed-world, frozen50/53/54 rejection and checksum/unknown-tail negatives passed; owned resources cleaned."},
+            {"command": "pnpm exec eslint scripts/native-game-migration-compat.mjs scripts/runtime-admission-migration-compat.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "remaining": "Hosted CI must pass on the fix head before auto-merge. No production deployment, public release or paid provider work is authorized by this verification."
+        }
       }
     }
   ]
