@@ -7949,6 +7949,59 @@
           {"command": "git diff --check", "exitCode": 0}
         ],
         "fullGate": "PASS on the combined infra+backend source at the code tree immediately before this metadata-only record: 197 governance,541 unit,837 integration, all builds; zero skipped."
+      },
+      "phase2": {
+        "sourceRevision": "220996fd5c1dc57f76e12d9da59c22a2bc10e91d",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "implementation": "PostgreSQL migration 0055 and authenticated, opt-in loopback API support ownership of the 43 Wave 1 Pets, party, combat replay, currency, evolution, recruits and gacha receipts. PetArenaPve connects the session, party, six regular/boss maps, rewards, evolution and banner, with six URP effects and procedural audio.",
+        "commands": [
+          {
+            "command": "pnpm check",
+            "exitCode": 1,
+            "required": false,
+            "result": "Initial run passed governance, CI policy, infrastructure and frozen legacy checks, then stopped at architecture because migration identifiers contained a digit. Renamed the six new tables and resumed at architecture."
+          },
+          {
+            "command": "pnpm architecture:check && pnpm playwright:config:check && pnpm lint && pnpm typecheck && pnpm release-policy:check && pnpm dating:check && pnpm assets:check && pnpm test && pnpm build && pnpm test:integration",
+            "exitCode": 0,
+            "result": "Verification after the naming correction passed through all remaining checks and builds, including 204 governance, 553 unit and 854 PostgreSQL integration cases with zero skips. The integration run includes 16 durable Wave 1 cases."
+          },
+          {
+            "command": "cargo fmt --all -- --check && cargo check --workspace --all-targets --locked && cargo clippy --workspace --all-targets --locked -- -D warnings && cargo test --workspace --locked",
+            "exitCode": 0,
+            "result": "94 Rust tests including documentation tests and shared Wave 1 replay vectors."
+          },
+          {
+            "command": "Unity 6000.3.14f1 -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.EditMode.ArenaPresentationKitTests",
+            "exitCode": 0,
+            "result": "7/7 effects and audio checks passed."
+          },
+          {
+            "command": "Unity 6000.3.14f1 -batchmode -nographics -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.PlayMode.PetArenaMvpTests",
+            "exitCode": 0,
+            "result": "The training scene regression passed."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/wave1-unity-smoke.mjs",
+            "exitCode": 0,
+            "result": "Two editor processes passed the real PostgreSQL campaign and API restart cases. Restored the four-Pet party, 7,200 coins, Cinder Terraces clear and Icarus at Lv 22 / Stage 1."
+          },
+          {
+            "command": "unity run apps/unity-client -- -nographics -executeMethod Aetheria.Editor.ProjectBuild.Linux",
+            "exitCode": 0,
+            "result": "Linux development player built with the pinned editor."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx artifacts/mvp-phase2/player-smoke.mjs",
+            "exitCode": 0,
+            "result": "Two headless Linux player launches loaded authenticated campaign state from the same disposable API/database and session."
+          },
+          {
+            "command": "node scripts/verify-binary-hygiene.mjs --base origin/main --head 220996fd5c1dc57f76e12d9da59c22a2bc10e91d && git diff --check origin/main...HEAD",
+            "exitCode": 0
+          }
+        ],
+        "remaining": "Confirm hosted CI for the current PR head before merge. Physical Windows and visual qualification remain separate. Release stays OFFLINE_ONLY / NO_GO_PUBLIC."
       }
     }
   ]
