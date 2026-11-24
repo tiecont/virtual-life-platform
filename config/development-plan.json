@@ -100,6 +100,7 @@
         "architecture": "156 SQL tables + journal, 533 source files PASS",
         "migrationCompat": "0056 archived47/48 native and runtime compatibility PASS",
         "unity": "36 EditMode PASS; PlayMode 6 passed/2 pre-existing skipped at source 38a3a53",
+        "linuxPlayer": "Development player build PASS and Linux player test smoke PASS at source 38a3a53; not physical Windows qualification",
         "hostedCi": "PENDING"
       },
       "workstreams": [
