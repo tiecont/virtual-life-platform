@@ -11,7 +11,7 @@
   "dependencies": {
     "@aetheria/contracts": "workspace:*",
     "@aetheria/ui": "workspace:*",
-    "next": "16.4.4",
+    "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "three": "0.187.0",

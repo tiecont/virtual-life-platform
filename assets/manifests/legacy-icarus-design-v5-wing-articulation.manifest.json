@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-design-v5-wing-articulation",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-design-v5-wing-articulation/1.0.0/wing-articulation.png",
+  "sha256": "dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567",
+  "sizeBytes": 2437026,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-design-v5-wing-articulation/1.0.0/wing-articulation.png"
+}

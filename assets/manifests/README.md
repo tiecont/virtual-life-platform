@@ -57,6 +57,14 @@ Cloudflare R2 environment file. Without manifests they read all
 `assets/manifests/*.manifest.json`. `--offline` is an alias for `--dry-run` and
 is useful in CI.
 
+The queued legacy binaries in
+[`legacy-migration-plan.json`](./legacy-migration-plan.json) each have one
+matching manifest. `node scripts/verify-legacy-asset-manifests.mjs` verifies
+the tracked source bytes, sizes, hashes, content types and unique manifest
+binding without credentials or network access. The source binaries remain in
+place; a manifest is private-delivery metadata, not permission to remove or
+publish them.
+
 Dry-run push verifies every declared cache file, size, and SHA-256 before
 reporting what would upload. Dry-run pull only reports cached versus pending
 files. Neither dry-run mode reads credentials or permits network access. Live

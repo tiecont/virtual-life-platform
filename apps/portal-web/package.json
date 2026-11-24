@@ -21,7 +21,7 @@
     "@aetheria/lantern-lodge-world": "workspace:*",
     "@aetheria/world-sdk": "workspace:*",
     "@aetheria/pixi-scene": "workspace:*",
-    "next": "16.4.4",
+    "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "socket.io-client": "4.8.4",

@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-study-video",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-study-video/1.0.0/icarus-study.mp4",
+  "sha256": "1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a",
+  "sizeBytes": 13778752,
+  "contentType": "video/mp4",
+  "localCachePath": ".cache/assets/legacy-icarus-study-video/1.0.0/icarus-study.mp4"
+}

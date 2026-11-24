@@ -4,9 +4,10 @@ import { readFile,readdir } from 'node:fs/promises';
 import { ciResult,validateBrowserGroups,validateBrowserBatches } from '../../scripts/ci-policy.mjs';
 
 test('quality succeeds only for both successful required jobs;failure,cancellation,skip,missing or malformed results cannot pass',()=>{
- assert.equal(ciResult({core:{result:'success'},browser:{result:'success'}}),true);
- for(const status of ['failure','cancelled','skipped','timed_out','unknown'])for(const job of ['core','browser'])assert.equal(ciResult({core:{result:'success'},browser:{result:'success'},[job]:{result:status}}),false);
- for(const value of [null,{},[],{core:{result:'success'}},{core:{result:'success'},browser:{result:'success'},unexpected:{result:'success'}}])assert.equal(ciResult(value),false);
+ const passed={core:{result:'success'},integration:{result:'success'},browser:{result:'success'}};
+ assert.equal(ciResult(passed),true);
+ for(const status of ['failure','cancelled','skipped','timed_out','unknown'])for(const job of ['core','integration','browser'])assert.equal(ciResult({...passed,[job]:{result:status}}),false);
+ for(const value of [null,{},[],{core:{result:'success'}},{...passed,unexpected:{result:'success'}}])assert.equal(ciResult(value),false);
 });
 test('browser groups cover every existing spec exactly once and reject omitted,duplicated,foreign or traversing paths',async()=>{
  const files=(await readdir('tests/e2e')).filter(value=>value.endsWith('.spec.ts')).sort(),plan=JSON.parse(await readFile('config/ci-browser-groups.json','utf8'));

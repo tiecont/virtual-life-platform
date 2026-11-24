@@ -6,6 +6,8 @@ import { resolve,relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { checkResourceBudget } from './verify-resource-budget.mjs';
 import { validateKubernetes } from './validate-kubernetes.mjs';
+import {verifyCloudflareReadiness} from './verify-cloudflare-readiness.mjs';
+import {verifyLegacyAssetManifests} from './verify-legacy-asset-manifests.mjs';
 
 // Return only public configuration. Errors name fields,never secret values.
 export function verifyStackEnv(env){
@@ -35,6 +37,8 @@ async function main(){
  const ignore=await readFile('.dockerignore','utf8');for(const pattern of ['**/.env','**/.env.*','**/.npmrc','**/*.pem','**/*.key','artifacts'])assert(ignore.split('\n').includes(pattern));
  if(process.argv[2])console.log(JSON.stringify(verifyStackEnv(parseEnv(await readFile(process.argv[2],'utf8')))));
  else console.log('Environment matrix/examples/build exclusions verified;not a deployment or secret scan certification');
+ console.log(JSON.stringify(await verifyCloudflareReadiness()));
+ console.log(JSON.stringify(await verifyLegacyAssetManifests()));
  console.log(JSON.stringify(await validateKubernetes()));
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)void main().catch(()=>{console.error('Infrastructure validation failed;check required fields and private artifacts/k8s-validation reports without printing secrets');process.exitCode=1;});

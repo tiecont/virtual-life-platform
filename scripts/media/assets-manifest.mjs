@@ -24,6 +24,7 @@ const contentTypes=new Map([
   ['.mp4','video/mp4'],
   ['.ogg','audio/ogg'],
   ['.png','image/png'],
+  ['.tar','application/x-tar'],
   ['.vrm','model/gltf-binary'],
   ['.wav','audio/wav'],
   ['.webm','video/webm'],
