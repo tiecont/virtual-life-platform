@@ -4489,6 +4489,19 @@
         "Hero VFX meets flash/readability constraints and returns to free roaming"
       ],
       "status": "TODO",
+      "nov24UnityPrototypeVerification": {
+        "sourceRevision": "0472baaa8f61552c05f80008deedda3b1d336da9",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<6000.3.14f1>/Editor/Unity node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "Unity EditMode 26/26 and PlayMode 4/4, zero failed or skipped. NativePlayerFixture belongs to the separate standalone runner."
+          }
+        ],
+        "scope": "Offline Unity prototype with developer primitives and disabled remote content. Build list resolves the serialized scene GUID; PlayMode loads the actual scene with its evolution profile. EditMode fixture cleanup uses DestroyImmediate.",
+        "remaining": "Hosted checks plus task-specific runtime authority, Windows, and art qualification remain pending."
+      },
       "qualificationRequirements": [
         "Physical Windows native player and URP qualification",
         "Approved publishable Pet art and source rights"
@@ -6387,6 +6400,19 @@
         "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json"
       ],
       "status": "TODO",
+      "nov24UnityPrototypeVerification": {
+        "sourceRevision": "0472baaa8f61552c05f80008deedda3b1d336da9",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<6000.3.14f1>/Editor/Unity node scripts/unity-validate.mjs tests",
+            "exitCode": 0,
+            "result": "Unity EditMode 26/26 and PlayMode 4/4, zero failed or skipped. NativePlayerFixture belongs to the separate standalone runner."
+          }
+        ],
+        "scope": "Offline Unity prototype with developer primitives and disabled remote content. Build list resolves the serialized scene GUID; PlayMode loads the actual scene with its evolution profile. EditMode fixture cleanup uses DestroyImmediate.",
+        "remaining": "Hosted checks plus task-specific runtime authority, Windows, and art qualification remain pending."
+      },
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Focused unit/integration and exact CI",
