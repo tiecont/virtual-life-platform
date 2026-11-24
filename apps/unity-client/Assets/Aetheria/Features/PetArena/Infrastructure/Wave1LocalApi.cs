@@ -13,6 +13,7 @@ namespace Aetheria.PetArena.Infrastructure
     public sealed class Wave1LocalApi : IDisposable
     {
         public const string Prefix = "/v1/pets/wave1";
+        public const string ArtifactPrefix = "/v1/pets/artifacts";
         private const string CookieName = "city_session=";
         private readonly HttpClient http;
         private readonly string webOrigin;
@@ -67,6 +68,25 @@ namespace Aetheria.PetArena.Infrastructure
 
         public Task<T> Post<T>(string route, object body, CancellationToken cancellation) where T : class =>
             Request<T>(Prefix + route, body, cancellation);
+
+        public Task<WaveAArtifactState> GetArtifactState(CancellationToken cancellation) =>
+            Request<WaveAArtifactState>(ArtifactPrefix + "/state", null, cancellation);
+
+        public Task<WaveAArtifactMutation> EquipArtifact(WaveAArtifactEquipRequest body,
+            CancellationToken cancellation) =>
+            Request<WaveAArtifactMutation>(ArtifactPrefix + "/equip", body, cancellation);
+
+        public Task<WaveAArtifactMutation> UnequipArtifact(WaveAArtifactUnequipRequest body,
+            CancellationToken cancellation) =>
+            Request<WaveAArtifactMutation>(ArtifactPrefix + "/unequip", body, cancellation);
+
+        public Task<WaveAArtifactMutation> UpgradeArtifact(WaveAArtifactUpgradeRequest body,
+            CancellationToken cancellation) =>
+            Request<WaveAArtifactMutation>(ArtifactPrefix + "/upgrade", body, cancellation);
+
+        public Task<WaveAArtifactMutation> ClaimArtifactReward(WaveAArtifactClaimRequest body,
+            CancellationToken cancellation) =>
+            Request<WaveAArtifactMutation>(ArtifactPrefix + "/pve/claim", body, cancellation);
 
         public void Dispose() => http.Dispose();
 
