@@ -402,10 +402,10 @@ namespace Aetheria.PetArena.Presentation
         private void DrawCollection()
         {
             var current = state.FindPet(selectedPet) ?? state.pets[0];
-            content.Add(Label(PetLabel(current) + " · Stage " + current.stage, "arena-notice"));
+            content.Add(Label(PetLabel(current) + " · Lv " + current.level, "arena-notice"));
             content.Add(Label(current.level == 60 ? "Max level" : current.exp + "/" + current.expToNext + " EXP"));
             var milestones = new[] { 20, 40, 60 };
-            var unlocks = new[] { "Second skill & map 2", "Signature slot & boss assist", "Ultimate & mastery aura" };
+            var unlocks = new[] { "Power skill & Artifact C eligibility", "Signature & Artifact A eligibility", "Ultimate & Artifact S eligibility" };
             for (var index = 0; index < milestones.Length; index++)
                 content.Add(Label("Lv " + milestones[index] + " · " + unlocks[index] +
                     (current.stage > index ? " ✓" : "")));
