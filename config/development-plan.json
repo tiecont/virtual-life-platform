@@ -7500,6 +7500,47 @@
         "Explicit owner public release authorization",
         "Brand/legal, media rights, privacy/retention, sender/domain and SPF/DKIM/DMARC approval"
       ]
+    },
+    {
+      "id": "VL-175",
+      "feature": "Pet-Arena",
+      "title": "Wave 1 MVP deterministic backend game loop",
+      "objective": "Implement a bounded offline/test-only backend contract for the six core combat elements, evolution at20/40/60, six regular-plus-boss maps, and the Icarus Limited banner with six Standard-S off-rate candidates.",
+      "priority": 2,
+      "dependsOn": [],
+      "acceptance": [
+        "Separate versioned Rust rules preserve frozen v1 bytes and cover a complete6x6 effectiveness matrix, max-level60 evolution, deterministic campaign progression and gacha pity/guarantee order",
+        "Platform API DTOs are strict and authenticated, expose no client entropy or mutation, and stay unavailable unless a test/local composition explicitly enables them",
+        "Rust unit tests and24 new real PostgreSQL/HTTP integration cases pass with zero skipped or ignored tests; final aggregate is837 after the813-test foundation"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "sourceRevision": "9adc13311faaf537f3fef8fe96edf015b907ee8b",
+        "source": "crates/aetheria-pet-arena/src/wave1_mvp.rs; apps/platform-api/src/features/pets/modules/wave1",
+        "ruleset": "aetheria-pet-arena-wave1-mvp",
+        "rulesHash": "769f4b614239d4fb083f4e80194b39275521eefc4ef83f451e87f2642b7ce1c5",
+        "scope": "Six gacha-aligned core elements fire/water/electric/ghost/ground/light; six maps from Cinder Terraces through Dawn Prism Sanctum; regular and boss encounters; staged stats and unlocks at20/40/60; Icarus featured at50percent and six equal-weight Standard-S off-rate identities. Preview APIs are authenticated, no-store and default-off.",
+        "remaining": "Durable ownership/progress/wallet persistence, runtime-authoritative match allocation, Unity presentation and production publication remain outside this offline DTO/rules slice. Hosted CI and merge are pending."
+      },
+      "verification": {
+        "sourceRevision": "9adc13311faaf537f3fef8fe96edf015b907ee8b",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {"command": "cargo test --locked --package aetheria-pet-arena", "exitCode": 0, "result": "All existing v1/v3 tests plus10 Wave1 unit tests PASS, including full six-map boss campaign, matrix bounds, evolution boundaries and hard pity"},
+          {"command": "cargo clippy --locked --package aetheria-pet-arena --all-targets -- -D warnings", "exitCode": 0},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0},
+          {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/pet-arena-wave1.test.ts", "exitCode": 0, "result": "24/24 real PostgreSQL/HTTP tests PASS with zero skipped; owned container/network cleanup completed"},
+          {"command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0},
+          {"command": "pnpm --filter @aetheria/platform-api build", "exitCode": 0},
+          {"command": "pnpm exec eslint apps/platform-api/src/features/pets/modules/wave1 apps/platform-api/src/app.ts tests/integration/pet-arena-wave1.test.ts", "exitCode": 0},
+          {"command": "pnpm architecture:check", "exitCode": 0, "result": "144 SQL tables,522 source files and declared Pet public entry PASS"},
+          {"command": "pnpm check", "exitCode": 0, "result": "Combined infra+backend tree passed 197 governance,541 unit and837 real PostgreSQL integration tests with zero skipped, plus lint/types/all package and application builds on exact pre-metadata source"},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "fullGate": "PASS on the combined infra+backend source at the code tree immediately before this metadata-only record: 197 governance,541 unit,837 integration, all builds; zero skipped."
+      }
     }
   ]
 }

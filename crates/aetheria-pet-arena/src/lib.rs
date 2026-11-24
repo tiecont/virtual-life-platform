@@ -7,6 +7,7 @@ pub mod manifest;
 pub mod status;
 pub mod taxonomy_v3;
 pub mod telegraph;
+pub mod wave1_mvp;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
