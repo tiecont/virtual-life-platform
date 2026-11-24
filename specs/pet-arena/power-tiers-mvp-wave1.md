@@ -7,17 +7,16 @@ and the two concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json]
 ## 1. What a power class is
 
 - A three-step presentation ladder, **S > A > B**, used for key art, review sheets and future UI badges.
-- It is **not** summon rarity, a stat block, acquisition, drop rate or gameplay authority. The catalog `rank` field and summon pools stay unchanged.
-- The six **Standard-S summon units are Power Class A** in this ladder: the owner reserved S for map legendaries, the six dragon families and Icarus.
-  Their summon rarity remains **Standard S**. Promoting them to S later is a label change only — no art changes.
+- It is **not** a stat block, acquisition, drop rate or gameplay authority. The catalog `rank` field and summon pools stay unchanged.
+- The six **Standard-S summon units are Power Class S**, matching their Standard-S rarity. S also holds the map legendaries, the six dragon families and Icarus.
 - No stat numbers, damage values or pay-to-win framing are defined here. Balance work needs its own reviewed spec.
 
 ## 2. Classes
 
 | Class | Meaning | Contents | Count |
 | --- | --- | --- | ---: |
-| **S** | Apex: map-ending and mythic species | 6 Map Legendary + 6 Dragon family + Icarus (Limited S) | **13** |
-| **A** | Rare: wave headliners and agile species | 6 Standard-S summon units + 6 Bird family | **12** |
+| **S** | Apex: mythic, map-ending and headliner summons | 6 Standard-S + 6 Map Legendary + 6 Dragon family + Icarus (Limited S) | **19** |
+| **A** | Rare: agile species | 6 Bird family | **6** |
 | **B** | Foundation: modular regular species bodies | 10 Shared Race Bases | **10** |
 | | | **Total** | **35** |
 
@@ -25,30 +24,30 @@ and the two concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json]
 
 | # | Name | ID | Label |
 | ---: | --- | --- | --- |
-| 1 | Pyrecrown | `fire-pyrecrown` | S · Legendary |
-| 2 | Lagoonarch | `water-lagoonarch` | S · Legendary |
-| 3 | Stormdiadem | `electric-stormdiadem` | S · Legendary |
-| 4 | Lanternwake | `ghost-lanternwake` | S · Legendary |
-| 5 | Faultwarden | `ground-faultwarden` | S · Legendary |
-| 6 | Dawnarchon | `light-dawnarchon` | S · Legendary |
-| 7 | Ignivar | `dragon-fire-ignivar` | S · Dragon |
-| 8 | Tidecoil | `dragon-water-tidecoil` | S · Dragon |
-| 9 | Voltrazik | `dragon-electric-voltrazik` | S · Dragon |
-| 10 | Hollowmaw | `dragon-ghost-hollowmaw` | S · Dragon |
-| 11 | Terradrake | `dragon-ground-terradrake` | S · Dragon |
-| 12 | Auroryx | `dragon-light-auroryx` | S · Dragon |
-| 13 | Icarus | `pet-v3-fire-icarus` | S · Limited |
+| 1 | Cindrelis | `pet-v31-fire-cindrelis` | S · Standard |
+| 2 | Marivell | `pet-v31-water-marivell` | S · Standard |
+| 3 | Quorion | `pet-v31-electric-quorion` | S · Standard |
+| 4 | Vesperyn | `pet-v31-ghost-vesperyn` | S · Standard |
+| 5 | Gravorn | `pet-v31-ground-gravorn` | S · Standard |
+| 6 | Aurelune | `pet-v31-light-aurelune` | S · Standard |
+| 7 | Pyrecrown | `fire-pyrecrown` | S · Legendary |
+| 8 | Lagoonarch | `water-lagoonarch` | S · Legendary |
+| 9 | Stormdiadem | `electric-stormdiadem` | S · Legendary |
+| 10 | Lanternwake | `ghost-lanternwake` | S · Legendary |
+| 11 | Faultwarden | `ground-faultwarden` | S · Legendary |
+| 12 | Dawnarchon | `light-dawnarchon` | S · Legendary |
+| 13 | Ignivar | `dragon-fire-ignivar` | S · Dragon |
+| 14 | Tidecoil | `dragon-water-tidecoil` | S · Dragon |
+| 15 | Voltrazik | `dragon-electric-voltrazik` | S · Dragon |
+| 16 | Hollowmaw | `dragon-ghost-hollowmaw` | S · Dragon |
+| 17 | Terradrake | `dragon-ground-terradrake` | S · Dragon |
+| 18 | Auroryx | `dragon-light-auroryx` | S · Dragon |
+| 19 | Icarus | `pet-v3-fire-icarus` | S · Limited |
 
 ## 4. A — rare
 
 | # | Name | ID | Label |
 | ---: | --- | --- | --- |
-| 14 | Cindrelis | `pet-v31-fire-cindrelis` | A · Standard S |
-| 15 | Marivell | `pet-v31-water-marivell` | A · Standard S |
-| 16 | Quorion | `pet-v31-electric-quorion` | A · Standard S |
-| 17 | Vesperyn | `pet-v31-ghost-vesperyn` | A · Standard S |
-| 18 | Gravorn | `pet-v31-ground-gravorn` | A · Standard S |
-| 19 | Aurelune | `pet-v31-light-aurelune` | A · Standard S |
 | 20 | Cinderquill | `bird-fire-cinderquill` | A · Bird family |
 | 21 | Tidewren | `bird-water-tidewren` | A · Bird family |
 | 22 | Arcswift | `bird-electric-arcswift` | A · Bird family |
@@ -76,8 +75,8 @@ and the two concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json]
 - The 30 map regular Pets keep their catalog ranks: **12 A / 18 B**. They are not individually concepted in this batch.
 - The 10 shared race bases are the **bodies** those regular Pets are built on. Marking a base B is a concept-review label, not a claim that
   every member Pet is B; a member Pet's class follows its catalog rank. Each base must serve both A and B members.
-- Icarus (`pet-v3-fire-icarus`) is **S · Limited** and is included in the S list for completeness, but it is not part of the 34-concept batch;
-  its production (H1–H4) is tracked separately. Wave 1's other five Limited S Pets remain under VL-172 and are out of scope.
+- Icarus (`pet-v3-fire-icarus`) is **S · Limited**. The unified review sheet shows her as a reference card using existing approved art; she is not
+  part of the 34-concept batch. Wave 1's other five Limited S Pets remain under VL-172 and are out of scope.
 
 ## 7. Presentation rules
 
@@ -88,6 +87,6 @@ and the two concept ledgers. Machine-readable list: [power-tiers-mvp-wave1.json]
 
 ## 8. Review
 
-- Owner approves the ladder or moves entries; the ledger records the decision per ID. Review all 34 concepts in one sitting at
-  `Aetheria-Workspace/mvp-wave1/review-all.html` (S/A/B filter); the v2 and v3 sheets remain available.
+- Owner approves the ladder or moves entries; the ledger records the decision per ID. Review all 34 concepts plus the Icarus reference card
+  in one sitting at `Aetheria-Workspace/mvp-wave1/review-all.html` (S/A/B filter); the v2 and v3 sheets remain available.
 - Class changes are metadata-only: they require no new images and consume no paid credits.

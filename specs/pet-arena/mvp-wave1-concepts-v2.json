@@ -148,8 +148,8 @@
       "generatedAtUtc": "2026-11-24T12:28:03.163Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 2,
@@ -175,8 +175,8 @@
       "generatedAtUtc": "2026-11-24T12:28:31.521Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 3,
@@ -202,8 +202,8 @@
       "generatedAtUtc": "2026-11-24T11:57:55.639Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 4,
@@ -229,8 +229,8 @@
       "generatedAtUtc": "2026-11-24T11:58:26.017Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 5,
@@ -256,8 +256,8 @@
       "generatedAtUtc": "2026-11-24T12:10:32.260Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 6,
@@ -283,8 +283,8 @@
       "generatedAtUtc": "2026-11-24T11:59:24.477Z",
       "ownerDecision": null,
       "ownerNote": null,
-      "powerClass": "A",
-      "classLabel": "A · Standard S"
+      "powerClass": "S",
+      "classLabel": "S · Standard"
     },
     {
       "order": 7,
@@ -757,8 +757,8 @@
   ],
   "powerClasses": {
     "counts": {
-      "S": 6,
-      "A": 6,
+      "S": 12,
+      "A": 0,
       "B": 10
     },
     "ladder": "S > A > B",

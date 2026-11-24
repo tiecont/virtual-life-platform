@@ -7,22 +7,22 @@
   "notAStatBlock": true,
   "notSummonRarity": true,
   "counts": {
-    "S": 13,
-    "A": 12,
+    "S": 19,
+    "A": 6,
     "B": 10
   },
   "total": 35,
   "classes": {
     "S": {
-      "meaning": "Apex: map-ending and mythic species",
-      "contents": "6 Map Legendary + 6 Dragon family + Icarus (Limited S)",
-      "count": 13,
+      "meaning": "Apex: mythic, map-ending and headliner summons",
+      "contents": "6 Standard-S summons + 6 Map Legendary + 6 Dragon family + Icarus (Limited S)",
+      "count": 19,
       "badge": "#E9C46A"
     },
     "A": {
-      "meaning": "Rare: wave headliners and agile species",
-      "contents": "6 Standard-S summon units + 6 Bird family",
-      "count": 12,
+      "meaning": "Rare: agile species",
+      "contents": "6 Bird family",
+      "count": 6,
       "badge": "#B9A6F2"
     },
     "B": {
@@ -34,10 +34,9 @@
   },
   "rules": [
     "Power Class is presentation only; it defines no stats, damage, drop rate, acquisition or authority.",
-    "The six Standard-S summon units are Power Class A under the owner's S definition; their summon rarity stays Standard S.",
-    "Upgrading Standard-S units to Power Class S is a label change only and needs no new art.",
+    "The six Standard-S summon units are Power Class S, matching their Standard-S rarity and the owner's ladder.",
+    "Icarus is S Limited and is shown as a reference card in the unified review sheet; its image is existing approved art, not a new generation.",
     "The 30 map regular Pets keep catalog ranks 12 A / 18 B; shared race bases are labelled B as bodies, not as a claim about every member Pet.",
-    "Icarus is S Limited and is listed for completeness, not generated in this batch.",
     "Class badges never replace or recolour element identity."
   ],
   "rosterContext": {
@@ -62,6 +61,84 @@
   "entries": [
     {
       "order": 1,
+      "id": "pet-v31-fire-cindrelis",
+      "name": "Cindrelis",
+      "category": "standard_gacha",
+      "element": "fire",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-cindrelis.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 2,
+      "id": "pet-v31-water-marivell",
+      "name": "Marivell",
+      "category": "standard_gacha",
+      "element": "water",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-marivell.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 3,
+      "id": "pet-v31-electric-quorion",
+      "name": "Quorion",
+      "category": "standard_gacha",
+      "element": "electric",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-quorion.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 4,
+      "id": "pet-v31-ghost-vesperyn",
+      "name": "Vesperyn",
+      "category": "standard_gacha",
+      "element": "ghost",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-vesperyn.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 5,
+      "id": "pet-v31-ground-gravorn",
+      "name": "Gravorn",
+      "category": "standard_gacha",
+      "element": "ground",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-gravorn.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 6,
+      "id": "pet-v31-light-aurelune",
+      "name": "Aurelune",
+      "category": "standard_gacha",
+      "element": "light",
+      "powerClass": "S",
+      "classLabel": "S · Standard",
+      "summonRarity": "Standard S",
+      "conceptBatch": "concepts-v2",
+      "filename": "standard-aurelune.png",
+      "ownerDecision": null
+    },
+    {
+      "order": 7,
       "id": "fire-pyrecrown",
       "name": "Pyrecrown",
       "category": "map_legendary",
@@ -74,7 +151,7 @@
       "ownerDecision": null
     },
     {
-      "order": 2,
+      "order": 8,
       "id": "water-lagoonarch",
       "name": "Lagoonarch",
       "category": "map_legendary",
@@ -87,7 +164,7 @@
       "ownerDecision": null
     },
     {
-      "order": 3,
+      "order": 9,
       "id": "electric-stormdiadem",
       "name": "Stormdiadem",
       "category": "map_legendary",
@@ -100,7 +177,7 @@
       "ownerDecision": null
     },
     {
-      "order": 4,
+      "order": 10,
       "id": "ghost-lanternwake",
       "name": "Lanternwake",
       "category": "map_legendary",
@@ -113,7 +190,7 @@
       "ownerDecision": null
     },
     {
-      "order": 5,
+      "order": 11,
       "id": "ground-faultwarden",
       "name": "Faultwarden",
       "category": "map_legendary",
@@ -126,7 +203,7 @@
       "ownerDecision": null
     },
     {
-      "order": 6,
+      "order": 12,
       "id": "light-dawnarchon",
       "name": "Dawnarchon",
       "category": "map_legendary",
@@ -139,7 +216,7 @@
       "ownerDecision": null
     },
     {
-      "order": 7,
+      "order": 13,
       "id": "dragon-fire-ignivar",
       "name": "Ignivar",
       "category": "dragon_family",
@@ -152,7 +229,7 @@
       "ownerDecision": null
     },
     {
-      "order": 8,
+      "order": 14,
       "id": "dragon-water-tidecoil",
       "name": "Tidecoil",
       "category": "dragon_family",
@@ -165,7 +242,7 @@
       "ownerDecision": null
     },
     {
-      "order": 9,
+      "order": 15,
       "id": "dragon-electric-voltrazik",
       "name": "Voltrazik",
       "category": "dragon_family",
@@ -178,7 +255,7 @@
       "ownerDecision": null
     },
     {
-      "order": 10,
+      "order": 16,
       "id": "dragon-ghost-hollowmaw",
       "name": "Hollowmaw",
       "category": "dragon_family",
@@ -191,7 +268,7 @@
       "ownerDecision": null
     },
     {
-      "order": 11,
+      "order": 17,
       "id": "dragon-ground-terradrake",
       "name": "Terradrake",
       "category": "dragon_family",
@@ -204,7 +281,7 @@
       "ownerDecision": null
     },
     {
-      "order": 12,
+      "order": 18,
       "id": "dragon-light-auroryx",
       "name": "Auroryx",
       "category": "dragon_family",
@@ -217,7 +294,7 @@
       "ownerDecision": null
     },
     {
-      "order": 13,
+      "order": 19,
       "id": "pet-v3-fire-icarus",
       "name": "Icarus",
       "category": "limited_event_gacha",
@@ -227,84 +304,6 @@
       "summonRarity": "Limited S",
       "conceptBatch": "none",
       "filename": null,
-      "ownerDecision": null
-    },
-    {
-      "order": 14,
-      "id": "pet-v31-fire-cindrelis",
-      "name": "Cindrelis",
-      "category": "standard_gacha",
-      "element": "fire",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-cindrelis.png",
-      "ownerDecision": null
-    },
-    {
-      "order": 15,
-      "id": "pet-v31-water-marivell",
-      "name": "Marivell",
-      "category": "standard_gacha",
-      "element": "water",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-marivell.png",
-      "ownerDecision": null
-    },
-    {
-      "order": 16,
-      "id": "pet-v31-electric-quorion",
-      "name": "Quorion",
-      "category": "standard_gacha",
-      "element": "electric",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-quorion.png",
-      "ownerDecision": null
-    },
-    {
-      "order": 17,
-      "id": "pet-v31-ghost-vesperyn",
-      "name": "Vesperyn",
-      "category": "standard_gacha",
-      "element": "ghost",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-vesperyn.png",
-      "ownerDecision": null
-    },
-    {
-      "order": 18,
-      "id": "pet-v31-ground-gravorn",
-      "name": "Gravorn",
-      "category": "standard_gacha",
-      "element": "ground",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-gravorn.png",
-      "ownerDecision": null
-    },
-    {
-      "order": 19,
-      "id": "pet-v31-light-aurelune",
-      "name": "Aurelune",
-      "category": "standard_gacha",
-      "element": "light",
-      "powerClass": "A",
-      "classLabel": "A · Standard S",
-      "summonRarity": "Standard S",
-      "conceptBatch": "concepts-v2",
-      "filename": "standard-aurelune.png",
       "ownerDecision": null
     },
     {
@@ -515,5 +514,20 @@
       "filename": "base-mechanical.png",
       "ownerDecision": null
     }
-  ]
+  ],
+  "icarusShowcase": {
+    "id": "pet-v3-fire-icarus",
+    "name": "Icarus",
+    "powerClass": "S",
+    "classLabel": "S · Limited",
+    "summonRarity": "Limited S",
+    "image": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/icarus/icarus-s-limited.png",
+    "sourceImage": "/home/tiecont/Projects/Aetheria/artifacts/character-production/icarus/references/owner-review-v3/references/front_standalone_candidate_native_1024x1536.png",
+    "sourceSha256": "7bdd3153d8a0dca3661fb0970d964eb8599325d0095de6dd7c8fde5347de2729",
+    "outputSha256": "dbeee9e7f68a63d2180fd1294a058444df18647cb9ffe3df89c02c13c5c6cde4",
+    "width": 1536,
+    "height": 1152,
+    "generatedInBatch": false,
+    "note": "Existing owner-reviewed Icarus reference art, background-composited to 4:3 for the review card. No Tripo generation and no credit spent."
+  }
 }
