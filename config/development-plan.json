@@ -401,6 +401,7 @@
           "sourceRevision": "a207cd13601f1d29a88580f43aece835084226d5",
           "reviewMode": "SINGLE_AGENT_AUDIT",
           "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/66",
+          "mergedPreflight": "Source a777cd29a5dc6fe8ddcd440facc970924d5dddf1: node scripts/prepare-ci-browser.mjs and node scripts/verify-binary-hygiene.mjs --base origin/main both exited 0 after integrating main.",
           "finding": "At 9a5279c, Quality pull_request runtime-images job 137938281843 failed in the host Chromium screenshot preflight before any image smoke. The Icarus prefab had FIRE_ZONE signature routing but lacked the presenter emitted by the existing prefab builder.",
           "change": "Recover the exact transient Chromium capture failure with one fresh-browser retry. Resave the prefab through its existing Editor builder to bind the FIRE_ZONE presenter.",
           "commands": [
