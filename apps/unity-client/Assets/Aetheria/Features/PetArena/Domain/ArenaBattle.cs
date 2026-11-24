@@ -41,7 +41,7 @@ namespace Aetheria.PetArena.Domain
     // authoritative reducer; this class never claims or mutates server state.
     public sealed class ArenaBattle
     {
-        public const int BoardSize = 10;
+        public const int BoardSize = 8;
         public const int FireZoneSide = 4;
         public const int MaxRage = 100;
         public const int RageCost = 50;

@@ -14,6 +14,12 @@ to the native synthetic match. Windows player qualification remains separate.
 
 ## Playable Pet Arena MVP
 
+Wave A targets the **8x8** tactical board. The developer training scene now builds
+an 8x8 board and keeps Icarus on the approved base silhouette at every level;
+Lv20/40/60 unlock skills and Artifact eligibility, not mandatory new visual forms.
+The action-based Wave 1 campaign remains a frozen local compatibility slice. See
+[the Wave A specification](../../specs/pet-arena/mvp-wave-a.md).
+
 From the repository root, start local PostgreSQL, apply the migrations and run
 the platform API on loopback:
 

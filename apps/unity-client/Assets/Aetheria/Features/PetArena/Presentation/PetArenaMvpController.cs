@@ -174,7 +174,14 @@ namespace Aetheria.PetArena.Presentation
         {
             if (playerEvolution == null) return;
             playerEvolution.SetLevel(level);
-            AppendLog("Evolution preview set to Lv " + level + " / " + playerEvolution.CurrentStage);
+            // Wave A: level growth unlocks skills/Artifact eligibility. Optional
+            // cosmetics are not mandatory Lv20/40/60 visual evolution forms, so
+            // the approved base silhouette remains visible at every level.
+            if (playerEvolution.Halo != null) playerEvolution.Halo.gameObject.SetActive(false);
+            if (playerEvolution.Wings != null) playerEvolution.Wings.gameObject.SetActive(false);
+            if (playerEvolution.Aura != null) playerEvolution.Aura.gameObject.SetActive(false);
+            if (playerEvolution.MaxVfx != null) playerEvolution.MaxVfx.gameObject.SetActive(false);
+            AppendLog("Level presentation set to Lv " + level + " / base silhouette preserved; skills and Artifact eligibility updated.");
         }
 
         private void ApplyPresentation()
@@ -216,8 +223,9 @@ namespace Aetheria.PetArena.Presentation
 
         private void BuildBoard()
         {
-            var board = new GameObject("10x10 Arena Board").transform;
+            var board = new GameObject("8x8 Arena Board").transform;
             board.SetParent(transform, false);
+            var center = (ArenaBattle.BoardSize - 1) * .5f;
             for (var row = 0; row < ArenaBattle.BoardSize; row++)
             for (var column = 0; column < ArenaBattle.BoardSize; column++)
             {
@@ -227,7 +235,7 @@ namespace Aetheria.PetArena.Presentation
                 arenaTiles.Add(tile.GetComponent<Renderer>());
             }
             var rim = CreatePart(board, "Arena Rim", PrimitiveType.Cube,
-                new Vector3(4.5f, -.15f, 4.5f), new Vector3(11.2f, .12f, 11.2f),
+                new Vector3(center, -.15f, center), new Vector3(9f, .12f, 9f),
                 new Color(.04f, .06f, .1f));
             Destroy(rim.GetComponent<Collider>());
         }
@@ -236,7 +244,7 @@ namespace Aetheria.PetArena.Presentation
         {
             var root = new GameObject("Icarus Evolution Reference").transform;
             root.SetParent(transform, false);
-            root.localPosition = new Vector3(2.5f, 1.15f, 8.2f);
+            root.localPosition = new Vector3(2.5f, 1.15f, 6.6f);
             playerRoot = root;
 
             var body = CreatePart(root, "Icarus Body", PrimitiveType.Capsule, Vector3.zero,
@@ -283,7 +291,7 @@ namespace Aetheria.PetArena.Presentation
         {
             enemyRoot = new GameObject("Training Opponent").transform;
             enemyRoot.SetParent(transform, false);
-            enemyRoot.localPosition = new Vector3(7.2f, 1.05f, 1.5f);
+            enemyRoot.localPosition = new Vector3(6.2f, 1.05f, 1.5f);
             var body = CreatePart(enemyRoot, "Opponent Core", PrimitiveType.Sphere, Vector3.zero,
                 new Vector3(1.15f, 1.05f, 1f), elementColors[(int)PetElement.Grass]);
             enemyRenderer = body.GetComponent<Renderer>();
@@ -312,8 +320,8 @@ namespace Aetheria.PetArena.Presentation
             var cameraObject = new GameObject("Arena Camera");
             cameraObject.tag = "MainCamera";
             cameraObject.transform.SetParent(transform, false);
-            cameraObject.transform.position = new Vector3(4.5f, 8.8f, -7.5f);
-            cameraObject.transform.LookAt(new Vector3(4.5f, .6f, 4.4f));
+            cameraObject.transform.position = new Vector3(3.5f, 7.6f, -6.2f);
+            cameraObject.transform.LookAt(new Vector3(3.5f, .6f, 3.5f));
             var camera = cameraObject.AddComponent<Camera>();
             camera.fieldOfView = 48f;
             camera.backgroundColor = new Color(.025f, .04f, .08f);

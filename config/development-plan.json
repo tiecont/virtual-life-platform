@@ -11,7 +11,7 @@
     "independentReviewRequired": false,
     "verification": "Exact committed source, actual checks, self-audit honestly labeled, actual CI before merge",
     "qualification": "Hardware, content rights, signing and deployment requirements apply to their own acceptance or release; do not gate unrelated implementation",
-    "priority": "P0 Gate 0: main CI, PR33, PR35 and VL-055; P1 early Blender/Unity art including VL-160 and Limited Icarus; P2 Pet Arena PvE before new Lodge gameplay; mobile conditional",
+    "priority": "M0 scope/catalog reconciliation; M1 playable 8x8 combat, Artifacts and progression; M2 character/environment/audio foundations; M3 integrated vertical slice; M4 full 55-Pet/six-map content; M5 human playtesting and balance; M6 Windows qualification and closed beta. Deferred expansion never blocks M0-M3.",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC; source or CI acceptance never authorizes PUBLISHED content, public registration, purchases, signing or deployment"
   },
   "initiatives": [
@@ -27,16 +27,315 @@
       "taskOwnership": "VL-149 owns six Limited S; VL-160 retains six distinct Standard S. Shared authoring conventions belong to VL-105; never substitute one roster for the other.",
       "milestones": [
         {"id": "gate-0", "priority": 0, "tasks": ["VL-168", "VL-169", "VL-055"], "acceptance": "Fix actual main failures, review and merge PR33, rebase/fix/merge PR35 through green exact-source CI; prove native backup recovery and obtain actual retention/deletion approval before claiming VL-055 closure."},
-        {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-171", "VL-172", "VL-149", "VL-160"], "acceptance": "After Gate 0, produce Icarus editable model, rig, clips, Unity material/VFX and actual preview first; pass asset/provenance validation before replicating the five remaining Limited Pets. Standard S remains a separate deliverable."},
+        {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-171", "VL-149", "VL-160", "VL-180"], "acceptance": "Advance Icarus through the next owner H-gate with modular VRM/accessory status; build reusable humanoid/quadruped/avian/serpent/floating intakes and the Fire/Water arena foundation. The five additional Limited S remain deferred (VL-172) and are not an MVP dependency."},
         {"id": "media-showcase", "priority": 2, "tasks": ["VL-170", "VL-173"], "acceptance": "Private loopback S3 media ingest and preview-only portal; registration remains closed or approval-gated."},
-        {"id": "pet-arena-pve", "priority": 2, "tasks": ["VL-131", "VL-133", "VL-139", "VL-140", "VL-142", "VL-161", "VL-162", "VL-174"], "acceptance": "Authoritative 10x10 PvE board, regular/legendary capture and durable economy with simulation/abuse acceptance before new Lodge gameplay; mobile conditional."}
+        {"id": "pet-arena-pve", "priority": 1, "tasks": ["VL-176", "VL-177", "VL-178", "VL-179", "VL-181"], "acceptance": "Authoritative 8x8 Rust PvE board, Artifact progression, canonical 55/61 roster and an integrated local vertical slice through restart recovery. 10x10, 19 maps, 240 Pets, permanent fusion and social/Maid/Card expansion are deferred."}
       ],
       "productionGate": "PUBLISHED requires separate rights, privacy, moderation, consent, hardware, signing and release authorization; none is granted by this initiative."
     }
   ],
+  "mvpProgram": {
+    "schemaVersion": 1,
+    "wave": "Wave A",
+    "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+    "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
+    "backlog": "config/development-plan.json",
+    "currentWave": {
+      "id": "WAVE-A",
+      "title": "Playable 8x8 core, Artifact progression, 55/61 roster reconciliation",
+      "milestones": [
+        "M0",
+        "M1",
+        "M2",
+        "M3"
+      ],
+      "status": "IN_PROGRESS",
+      "criticalPath": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M5",
+        "M6"
+      ],
+      "target": {
+        "board": "8x8",
+        "cells": 64,
+        "elements": 6,
+        "activePets": 55,
+        "candidatePets": 61,
+        "playableMaps": 6,
+        "artifactSlots": [
+          "Core",
+          "Aegis",
+          "Rune"
+        ],
+        "levelCap": 60,
+        "separateVisualEvolutionForms": false,
+        "flagship": "Icarus"
+      },
+      "scope": [
+        "Versioned Rust 8x8 tactical ruleset; frozen V1/V3 remain untouched.",
+        "Artifact inventory, three equipment slots, deterministic upgrades and PvE acquisition.",
+        "Canonical 55-Pet roster plus six explicitly gated Off-rate candidates.",
+        "Unity 8x8 HUD, collection/Artifact presentation and reduced-motion controls.",
+        "Icarus, six dragons, six birds, Fire/Water arena foundations and reusable audio/VFX."
+      ],
+      "explicitExclusions": [
+        "No mandatory Lv20/40/60 visual evolution forms; preserve identity and base silhouette.",
+        "No five additional Limited S, 19 maps, 240-Pet catalog, permanent fusion, PvP or social-world dependency in MVP.",
+        "No public release, purchases, production deployment or signing."
+      ]
+    },
+    "waveAVerification": {
+      "sourceRevision": "38a3a536b096b2449e77aa04296da74854c9234f",
+      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "fullGates": {
+        "rust": "cargo fmt --all --check, cargo clippy --all-targets -- -D warnings and cargo test PASS",
+        "unit": "580/580 PASS",
+        "integration": "867/867 PASS across 71 real PostgreSQL/HTTP files",
+        "typecheck": "full workspace PASS",
+        "lint": "full lint PASS with one pre-existing warning",
+        "architecture": "156 SQL tables + journal, 533 source files PASS",
+        "migrationCompat": "0056 archived47/48 native and runtime compatibility PASS",
+        "unity": "36 EditMode PASS; PlayMode 6 passed/2 pre-existing skipped at source 38a3a53",
+        "linuxPlayer": "Development player build PASS and Linux player test smoke PASS at source 38a3a53; not physical Windows qualification",
+        "hostedCi": "PENDING"
+      },
+      "workstreams": [
+        {
+          "taskId": "VL-176",
+          "commit": "b7356b9",
+          "state": "RUST_ENGINE_COMPLETE_NOT_API_WIRED",
+          "checks": [
+            "cargo fmt --all --check PASS",
+            "cargo clippy --all-targets -- -D warnings PASS",
+            "cargo test PASS",
+            "aetheria-pet-arena 58 tests PASS (14 arena8 unit + 10 integration)"
+          ],
+          "remaining": "Expose Arena8Engine through the native runtime/API and replace the Wave 1 action preview for the 8x8 loop."
+        },
+        {
+          "taskId": "VL-177",
+          "commit": "67d28a4",
+          "state": "BACKEND_AND_UNITY_SCREEN_LOCAL_PASS",
+          "checks": [
+            "Artifact domain 9/9 PASS",
+            "PostgreSQL/HTTP Artifact 13/13 PASS",
+            "migration 0056 native compat PASS",
+            "migration 0056 runtime compat PASS",
+            "platform-api build/typecheck PASS"
+          ],
+          "remaining": "Hosted CI and a full Unity-to-API live equip/upgrade/claim playthrough."
+        },
+        {
+          "taskId": "VL-178",
+          "commit": "8a2fcc7",
+          "state": "ROSTER_RECONCILED_OWNER_DECISIONS_OPEN",
+          "checks": [
+            "catalog 18/18 PASS",
+            "full unit 580/580 PASS",
+            "eslint/typecheck PASS"
+          ],
+          "remaining": "OD-1 candidate banner gate, OD-4 Solenne rights, OD-7 production authorization and OD-9 family map membership."
+        },
+        {
+          "taskId": "VL-179",
+          "commit": "8db5b66",
+          "state": "UNITY_SURFACES_COMPILED_TESTED_NOT_8X8_API_CONSUMER",
+          "checks": [
+            "Unity EditMode PASS",
+            "Unity PlayMode PASS",
+            "8x8 board test PASS",
+            "Artifact loadout screen compiles in the campaign UI"
+          ],
+          "remaining": "Consume committed Arena8 events/projections; current live API still exposes the frozen Wave 1 action loop."
+        },
+        {
+          "taskId": "VL-180",
+          "commit": "86551d0",
+          "state": "ICARUS_PREFAB_REBUILT_OTHER_M2_OPEN",
+          "checks": [
+            "Reviewed VRM modular prefab rebuilt through the canonical editor path",
+            "Unity EditMode Icarus prefab gate PASS after rebuild"
+          ],
+          "remaining": "Owner H-gate, reusable morphology intakes, two arena scenes and AudioMixer groups."
+        }
+      ],
+      "integratedLoop": {
+        "status": "PARTIAL",
+        "working": [
+          "Frozen Wave 1 local API/Unity loop",
+          "8x8 standalone Rust engine",
+          "Artifact backend + default-off routes + Unity loadout screen",
+          "Canonical 61-candidate roster"
+        ],
+        "missing": [
+          "Live 8x8 authoritative API/native runtime session",
+          "Unity consumption of Arena8 event stream",
+          "Full reward-to-Artifact-to-next-match 8x8 E2E",
+          "Human playtest/balance"
+        ]
+      },
+      "ownerDecisions": [
+        "OD-1 candidate banner/summon",
+        "OD-3 Jaderyx display name",
+        "OD-4 Solenne rights",
+        "OD-5 power-class ladder",
+        "OD-6 31 concept approvals",
+        "OD-7 model/rig/animation production",
+        "OD-9 family map membership"
+      ]
+    },
+    "milestones": [
+      {
+        "id": "M0",
+        "title": "MVP scope, rules and catalog reconciliation",
+        "status": "IN_PROGRESS",
+        "objective": "One authoritative 8x8 ruleset, canonical 55/61 roster and an explicit deferred list.",
+        "exitCriteria": [
+          "8x8 ruleset version and frozen-compatibility boundary documented",
+          "55 canonical Pets and six gated Off-rate candidates reconciled",
+          "M1–M6 dependency graph and active backlog agree"
+        ]
+      },
+      {
+        "id": "M1",
+        "title": "Playable combat and progression",
+        "status": "IN_PROGRESS",
+        "objective": "Executable 8x8 Rust combat plus Artifact progression loop and authoritative settlement.",
+        "exitCriteria": [
+          "Deterministic 8x8 replay and typed events pass tests",
+          "Artifact inventory/equip/upgrade persist with authorization and idempotency",
+          "Reward and loadout snapshots are server-authored"
+        ]
+      },
+      {
+        "id": "M2",
+        "title": "Character, environment, audio and visual foundations",
+        "status": "IN_PROGRESS",
+        "objective": "Icarus game-ready path, reusable morphology intakes, Fire/Water arenas and mixer/VFX foundation.",
+        "exitCriteria": [
+          "Icarus stages advanced to the next owner gate",
+          "Reusable humanoid/quadruped/avian/serpent/floating intakes exist",
+          "Two functioning arena scenes and audio groups exist"
+        ]
+      },
+      {
+        "id": "M3",
+        "title": "Integrated playable vertical slice",
+        "status": "TODO",
+        "objective": "One signed-out local loop from account/Pet selection through a real 8x8 battle, Artifact reward/equip and restart recovery.",
+        "exitCriteria": [
+          "Unity consumes committed gameplay events only",
+          "Artifact stat change is observable in a later match",
+          "Restart, duplicate and unauthorized paths fail closed"
+        ]
+      },
+      {
+        "id": "M4",
+        "title": "Full MVP content production",
+        "status": "TODO",
+        "objective": "Complete the 55 active Pets, six maps and approved art/audio content.",
+        "exitCriteria": [
+          "All active roster assets admitted at the correct state",
+          "Six maps playable",
+          "Five additional Limited S and 19-map/240-Pet expansion remain deferred"
+        ]
+      },
+      {
+        "id": "M5",
+        "title": "Human playtesting, balance and polish",
+        "status": "TODO",
+        "objective": "Measured fun, clarity, accessibility and balance with human players.",
+        "exitCriteria": [
+          "Human playtest evidence and balance decisions",
+          "No unapproved candidate values promoted silently",
+          "Reduced-motion/accessibility acceptance"
+        ]
+      },
+      {
+        "id": "M6",
+        "title": "Windows qualification and closed-beta readiness",
+        "status": "TODO",
+        "objective": "Exact Windows build, graphics/hardware qualification, signing and release gates.",
+        "exitCriteria": [
+          "Physical Windows qualification",
+          "Release/legal/privacy/signing approvals",
+          "OFFLINE_ONLY / NO_GO_PUBLIC can be lifted only by explicit owner release authorization"
+        ]
+      }
+    ],
+    "canonicalScope": {
+      "elements": [
+        "fire",
+        "water",
+        "electric",
+        "ghost",
+        "ground",
+        "light"
+      ],
+      "maps": [
+        "Cinder Terraces",
+        "Tideglass Lagoon",
+        "Stormcoil Fields",
+        "Lantern Necropolis",
+        "Ochre Labyrinth",
+        "Dawn Prism Sanctum"
+      ],
+      "powerClasses": {
+        "dragons": "S",
+        "birds": "A",
+        "note": "Presentation power class is separate from gameplay stats, acquisition source and summon rarity."
+      },
+      "artifactSlots": [
+        "Core",
+        "Aegis",
+        "Rune"
+      ],
+      "artifactRankLevels": {
+        "D": 1,
+        "C": 10,
+        "B": 20,
+        "A": 40,
+        "S": 60
+      }
+    },
+    "deferredScope": {
+      "limitedS": [
+        "Glaciemora",
+        "Voltaris",
+        "Noctalith",
+        "Sylvaris",
+        "Leviara"
+      ],
+      "maps": 19,
+      "catalog": 240,
+      "systems": [
+        "permanent fusion",
+        "PvP ranked",
+        "weekly bosses",
+        "social world",
+        "Maid Café",
+        "Card Lounge",
+        "mobile/macOS"
+      ],
+      "rule": "Deferred features retain design history and task IDs; they are not implementation or qualification dependencies of the MVP."
+    },
+    "governance": {
+      "plan": "config/development-plan.json",
+      "statusCommand": "pnpm plan:status",
+      "waveRule": "Every future wave names its milestone, file-owned workstreams, integration owner and measurable acceptance.",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+    }
+  },
   "tasks": [
     {
       "id": "VL-168",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Gate 0: repair main CI and reconcile PR33/PR35",
       "objective": "Inspect current GitHub results instead of assuming kit snapshots; fix hospitality root causes without weaker assertions, review PR33, then rebase and harden loopback-only PR35.",
@@ -185,6 +484,9 @@
     },
     {
       "id": "VL-169",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Gate 0: native Pet checkpoint/journal backup restoration",
       "objective": "Complete the native backup/restore evidence slice of VL-055 using actual encrypted PostgreSQL archive restoration and restricted Rust process recovery.",
@@ -216,6 +518,9 @@
     },
     {
       "id": "VL-170",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Media",
       "title": "PR-B: private S3 media delivery, metadata and ingest",
       "objective": "Prepare fail-closed private art delivery to Cloudflare R2 and t3.storage.dev using the existing Node stack; retain additive journaled media metadata, RBAC ingest, signed preview access and provenance as follow-up scope.",
@@ -420,6 +725,9 @@
     },
     {
       "id": "VL-171",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "PR-C: Icarus Blender to Unity vertical slice",
       "objective": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster.",
@@ -1237,6 +1545,10 @@
     },
     {
       "id": "VL-172",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Five additional Limited S cinematic characters; MVP keeps Icarus only.",
       "feature": "Avatar-Art",
       "title": "PR-D: remaining five Limited S cinematic assets",
       "objective": "Replicate the accepted Icarus pipeline for Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara with distinct silhouettes, rigs, opcodes, audio and motion.",
@@ -1267,6 +1579,10 @@
     },
     {
       "id": "VL-173",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Web/social expansion outside the Windows MVP slice.",
       "feature": "Web-UX",
       "title": "PR-E: Aetheria SoulBound preview showcase",
       "objective": "Integrate the kit aesthetic and six-Pet showcase into portal-web using existing routes and auth/privacy conventions.",
@@ -1279,6 +1595,9 @@
     },
     {
       "id": "VL-174",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Aetheria integrated offline PvE and media acceptance",
       "objective": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release.",
@@ -1291,6 +1610,9 @@
     },
     {
       "id": "VL-001",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Source HEAD and ledger audit",
       "objective": "Compare live HEAD with archived N/PA/Lodge status, migrations, renderer, open worktrees, active N06 owner.",
@@ -1336,6 +1658,9 @@
     },
     {
       "id": "VL-002",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Approve desktop-first ADR-003 and one-authority architecture",
       "objective": "Owner approves Rust gameplay authority, Unity Windows primary client and Next.js official portal. Resolve N06 in-flight/legacy source ownership before code.",
@@ -1372,6 +1697,9 @@
     },
     {
       "id": "VL-003",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Current DB/identity contracts inventory",
       "objective": "Read real auth/session/CSRF/rooms/PG migrations and find safe Rust integration seam.",
@@ -1417,6 +1745,9 @@
     },
     {
       "id": "VL-004",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Rust workspace and version pin",
       "objective": "Build minimal game runtime executable, cargo workspace, formatter, CI and Docker.",
@@ -1482,6 +1813,10 @@
     },
     {
       "id": "VL-005",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Web/social expansion outside the Windows MVP slice.",
       "feature": "Web-UX",
       "title": "Preserve legacy N06 Web renderer audit and isolate optional teaser",
       "objective": "Read existing Three/Pixi/N06 renderer traces and source ownership; preserve VERIFIED work but remove full web 3D from Windows release critical path.",
@@ -1540,6 +1875,9 @@
     },
     {
       "id": "VL-006",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Aetheria: SoulBound visual brand review",
       "objective": "Convert logo/key-art concept into owner-approved style sheet and source asset checklist.",
@@ -1557,6 +1895,9 @@
     },
     {
       "id": "VL-007",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Lock Windows PC hardware + Web Vitals QA harness",
       "objective": "Define physical Windows device tier matrix, GPU perf routes/driver logging, plus separate official-site Core Web Vitals instrumentation.",
@@ -1579,6 +1920,9 @@
     },
     {
       "id": "VL-008",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Threat model and failure taxonomy",
       "objective": "Threat model tickets, direct WSS, venue state, hidden hand, game reward and teleport.",
@@ -1616,6 +1960,9 @@
     },
     {
       "id": "VL-009",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Existing plan crosswalk decision",
       "objective": "Obtain formal scheduling checkpoint N06\u2192PA\u2192Lodge; route VL tasks without changing other ledgers.",
@@ -1653,6 +2000,9 @@
     },
     {
       "id": "VL-010",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Gameplay",
       "title": "Desktop-first vertical slice and playable floorplan",
       "objective": "Lock one compact Aurora Plaza district, a placeholder avatar, WASD movement, proximity interaction and one activity; Pet Arena PvE content follows the synthetic transport fixture.",
@@ -1696,6 +2046,10 @@
     },
     {
       "id": "VL-011",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Web/social expansion outside the Windows MVP slice.",
       "feature": "Web-UX",
       "title": "Unity URP production renderer spike + optional web teaser cost",
       "objective": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility.",
@@ -1715,6 +2069,9 @@
     },
     {
       "id": "VL-012",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Versioned proto and client binding tooling",
       "objective": "Define public WSS envelope and internal tonic gRPC, TS and C# generation boundaries.",
@@ -1799,6 +2156,9 @@
     },
     {
       "id": "VL-013",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Rust ticket trust and policy generations",
       "objective": "Nest issues short-lived tickets; Rust verifies scope/aud/nonce/policy freshness before writes.",
@@ -1872,6 +2232,9 @@
     },
     {
       "id": "VL-014",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Windows native and Rust performance baseline lock",
       "objective": "Instrument compiled Windows player and Rust session baseline separately; record cold/warm load, shader hitch, p95/p99, VRAM, tick overrun, reconnection.",
@@ -1888,6 +2251,9 @@
     },
     {
       "id": "VL-015",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Pure game reducer and canonical RNG",
       "objective": "Implement deterministic action reducer with versioned content and fixed-point arithmetic.",
@@ -1964,6 +2330,9 @@
     },
     {
       "id": "VL-016",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Game schema, receipts and migration",
       "objective": "Add game schema/state/event/outbox with uniqueness/fencing, single shared DB migration journal.",
@@ -2024,6 +2393,9 @@
     },
     {
       "id": "VL-017",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Game turn orchestration and persistence",
       "objective": "Execute per-match commands, transactional version check+commit then ACK/projection.",
@@ -2102,6 +2474,9 @@
     },
     {
       "id": "VL-018",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Outbox/inbox and platform reward ledger",
       "objective": "Implement game settlement event and dedupe in Nest worker/platform ledger.",
@@ -2160,6 +2535,9 @@
     },
     {
       "id": "VL-019",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "World actor and AOI prototype",
       "objective": "Build Rust per-zone actor/AOI live state prototype independent of any client shader benchmark or web screenshot.",
@@ -2239,6 +2617,9 @@
     },
     {
       "id": "VL-020",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Private projection by actor/viewer",
       "objective": "Ensure one private hand/viewer, public spectator view, zero information in generic logs.",
@@ -2291,6 +2672,9 @@
     },
     {
       "id": "VL-021",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Replay/crash chaos suite",
       "objective": "Kill runtime pre/post commit, replay duplications, validate restore and version fences.",
@@ -2344,6 +2728,9 @@
     },
     {
       "id": "VL-022",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Direct WSS authoritative gateway",
       "objective": "Issue world ticket from Nest then WSS connect Rust; verify ACK/seq/resync and overload.",
@@ -2423,6 +2810,9 @@
     },
     {
       "id": "VL-023",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "G1 signoff: headless game vertical slice",
       "objective": "Review command/transaction/secret/protocol and rollback evidence.",
@@ -2481,6 +2871,9 @@
     },
     {
       "id": "VL-024",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Native Aurora Plaza blockout, scale & navmesh authoring",
       "objective": "Blender/Unity scale/navmesh anchors and walkable blockout for a single compact district plus portals/caf\u00e9 sit anchors.",
@@ -2518,6 +2911,9 @@
     },
     {
       "id": "VL-025",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Pilot anthro rig skeleton, ears and tail",
       "objective": "Create production-candidate original cat/fox parts for one shared body rig.",
@@ -2536,6 +2932,9 @@
     },
     {
       "id": "VL-026",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Facial morph, emote, sit and IK authoring",
       "objective": "Produce 12+ facial expressions and 8\u201312 emotes on approved pilot character.",
@@ -2551,6 +2950,9 @@
     },
     {
       "id": "VL-027",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity Windows Aurora Plaza first rendered district",
       "objective": "Implement compiled Windows Unity URP plaza native scene, asset streaming and LOD budget; Three.js is optional prior-art adapter.",
@@ -2570,6 +2972,9 @@
     },
     {
       "id": "VL-028",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Movement and collision server authority",
       "objective": "Validate speed/nav bounds/proximity, per actor reconciliation and area interest.",
@@ -2781,6 +3186,9 @@
     },
     {
       "id": "VL-029",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity native third-person camera and player control",
       "objective": "WASD, mouse/gamepad, motion sensitivity, M key focus policy, Rust-authorized move with local smoothing and click-to-move override.",
@@ -2798,6 +3206,9 @@
     },
     {
       "id": "VL-030",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity native avatar builder and expression showcase",
       "objective": "Editable, entitlement-scoped anthro avatar looks with face/ear/tail animation preview; shared source rig no character duplication.",
@@ -2818,6 +3229,9 @@
     },
     {
       "id": "VL-031",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Windows native M-map basic HUD and POI preview",
       "objective": "Unity M-map main screen, input focus, original city map art and safe semantic POI preview; no free client coordinate teleport.",
@@ -2834,6 +3248,9 @@
     },
     {
       "id": "VL-032",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Unity city ambience/NPC schedule visuals and distant LOD",
       "objective": "Render client-only trees/wind/ambient crowd; Rust-owned interactive NPC goals; batch/LOD and day/night animation budgets.",
@@ -2851,6 +3268,9 @@
     },
     {
       "id": "VL-033",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Compiled Windows Aurora City visual/perf acceptance",
       "objective": "Test city/camera/avatar/animation on actual Windows PCs with profiles, frame hitches, facial and outfit clipping; no web 3D parity requirement.",
@@ -2873,6 +3293,9 @@
     },
     {
       "id": "VL-034",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "G2 signoff: expressive walkable Unity Windows Aurora City",
       "objective": "Coordinator certifies one district and safe Rust-authoritative movement/interactions using native Windows player.",
@@ -2892,6 +3315,9 @@
     },
     {
       "id": "VL-035",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Place catalog and destination entitlement",
       "objective": "Versioned map POI and scoped access/capacity/private status.",
@@ -2975,6 +3401,9 @@
     },
     {
       "id": "VL-036",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Teleport reservation/commit saga",
       "objective": "Rust owns allowlisted target hold, source release, epoch fencing, safe rollback.",
@@ -2997,6 +3426,9 @@
     },
     {
       "id": "VL-037",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity native M-map teleport preview and confirmation UI",
       "objective": "Full POI map with place images and explicit Navigate vs Teleport; client preloads target only after Rust reservation.",
@@ -3015,6 +3447,10 @@
     },
     {
       "id": "VL-038",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Avatar-Art",
       "title": "Caf\u00e9 interior, doors, tables and seat anchors",
       "objective": "Produce Caf\u00e9 Lumi interior with 4 seat anchors, appropriate camera/sit alignment.",
@@ -3033,6 +3469,10 @@
     },
     {
       "id": "VL-039",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Rust-Game-Core",
       "title": "Venue entry and seat activity FSM",
       "objective": "Implement proximity/enter/reserve/sit/stand/forfeit and exclusive seat lease.",
@@ -3050,6 +3490,10 @@
     },
     {
       "id": "VL-040",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Web-UX",
       "title": "Unity native caf\u00e9 walk-in/seat/standing scene and UI",
       "objective": "Caf\u00e9 scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully.",
@@ -3068,6 +3512,10 @@
     },
     {
       "id": "VL-041",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Gameplay",
       "title": "Board game v1 rules and privacy adapter",
       "objective": "Implement one small ruleset and route original N15 journal compatibility, no secret spectator projection.",
@@ -3084,6 +3532,10 @@
     },
     {
       "id": "VL-042",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Gameplay",
       "title": "Table invitation and game session host",
       "objective": "Invite/ready/decline/timeout, owner seat checks and match-reconnect, spectator policy.",
@@ -3100,6 +3552,9 @@
     },
     {
       "id": "VL-043",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Gameplay",
       "title": "Pet Arena new ruleset content",
       "objective": "Design 8 Pet/6 stage/boss first pass with fixed-point, seeds, status examples.",
@@ -3140,6 +3595,9 @@
     },
     {
       "id": "VL-044",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Pet Arena Rust combat and AI",
       "objective": "Implement board generator/cascades/combo/skill/AI in Rust reducer, replay.",
@@ -3176,6 +3634,9 @@
     },
     {
       "id": "VL-045",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Pet District and training arena visuals",
       "objective": "Small Pet lobby, arena summon pad, 3 hero Pet representations and canonical attack FX; share the v2 animation/provenance contract with VL-121 and the six-hero/boss expansion in VL-123.",
@@ -3192,6 +3653,9 @@
     },
     {
       "id": "VL-046",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity native Pet District roam and battle HUD",
       "objective": "Move into Pet Arena from city then overlay tactical match-3 + Pet animation/VFX in Unity; Rust computes results. Preserve this integrated native scope while VL-122 implements the reusable v2 battle surface independently of full city streaming.",
@@ -3210,6 +3674,9 @@
     },
     {
       "id": "VL-047",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Real reward settlement with platform inbox",
       "objective": "Reward proposal after accepted result, ledger pending/committed read API and account scoping.",
@@ -3316,6 +3783,9 @@
     },
     {
       "id": "VL-048",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Rust + compiled Windows client e2e city/caf\u00e9/card/Pet Arena",
       "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
@@ -3338,6 +3808,9 @@
     },
     {
       "id": "VL-049",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "G3 acceptance playable vertical slice",
       "objective": "Sign complete world+game slice with ticket/actor/DB receipts and real web demo.",
@@ -3353,6 +3826,9 @@
     },
     {
       "id": "VL-050",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Revocation, report/block, age and consent integration",
       "objective": "Runtime enforces current platform safety generation at command and recipient projection.",
@@ -3374,6 +3850,9 @@
     },
     {
       "id": "VL-051",
+      "mvpMilestone": "M5",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Load/stress and memory leak profiling",
       "objective": "Run defined city activities for 30 min across desktop and mobile web tier.",
@@ -3390,6 +3869,9 @@
     },
     {
       "id": "VL-052",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Polish final art and appearance clipping",
       "objective": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and caf\u00e9.",
@@ -3406,6 +3888,9 @@
     },
     {
       "id": "VL-053",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Windows native HUD/input/accessibility/localization pass",
       "objective": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces.",
@@ -3423,6 +3908,9 @@
     },
     {
       "id": "VL-054",
+      "mvpMilestone": "M5",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Usability cohort and game fun audit",
       "objective": "Observe player first-play, map discovery, cafe sitting and Pet Arena, track confusion. Reuse consented Pet progression/upgrade-odds/fairness playtests from VL-125 without treating simulations as human fun acceptance.",
@@ -3439,6 +3927,9 @@
     },
     {
       "id": "VL-055",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "priority": 0,
       "feature": "Persistence-Security",
       "title": "Durable backup, privacy and hidden data recovery",
@@ -3590,6 +4081,9 @@
     },
     {
       "id": "VL-056",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity native shader/animation/transition polish and GPU fallback",
       "objective": "Profile and polish shaders, eyes/hair/fur, scene streaming hitches, indoor lighting, low/medium/ultra visual degradation.",
@@ -3608,6 +4102,9 @@
     },
     {
       "id": "VL-057",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Security penetration and game adversarial suite",
       "objective": "Threat automation: counterfeit tickets, replay, colluding game clients, spam, content mismatch.",
@@ -3624,6 +4121,9 @@
     },
     {
       "id": "VL-058",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "G4 Windows native closed-beta readiness decision",
       "objective": "Sign off Rust authority correctness, Unity compiled performance/safety and signed Windows release flow with official site.",
@@ -3652,6 +4152,10 @@
     },
     {
       "id": "VL-059",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Native",
       "title": "G5 optional macOS/mobile port approval and device/license audit",
       "objective": "After Windows gate, review actual demand, Apple hardware/accounts, Android physical devices and native cross-platform scope.",
@@ -3669,6 +4173,10 @@
     },
     {
       "id": "VL-060",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Native",
       "title": "Unity macOS/mobile conditional cross-platform proof",
       "objective": "Use pinned existing Windows Unity project/rig/proto and renderer tiers for real macOS or mobile build pilots; do not duplicate engine.",
@@ -3686,6 +4194,10 @@
     },
     {
       "id": "VL-061",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Avatar-Art",
       "title": "Cross-platform asset/rig/material parity proof after Windows",
       "objective": "Verify subset of Windows-approved facial/rig, content bundles and quality tier on activated macOS/mobile platform.",
@@ -3702,6 +4214,10 @@
     },
     {
       "id": "VL-062",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Native",
       "title": "Android physical device controls and 30min thermal pilot",
       "objective": "Adapt gameplay input and URP quality for actual Android devices; only after G5 approval.",
@@ -3720,6 +4236,10 @@
     },
     {
       "id": "VL-063",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Native",
       "title": "iOS pilot conditional on Mac/Xcode/Apple devices",
       "objective": "Compile and profile real iPhone iOS Unity build with consent and entitlements; no claim based on emulator.",
@@ -3737,6 +4257,10 @@
     },
     {
       "id": "VL-064",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Coordinator",
       "title": "G5 platform port go/no-go independent of Windows release",
       "objective": "Evaluate activated port quality and business need; Windows launch remains independent.",
@@ -3754,6 +4278,9 @@
     },
     {
       "id": "VL-065",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "CI/CD, game runtime deployment and telemetry",
       "objective": "Use existing Argo/GHCR tooling, readiness, WSS draining and safe migrations.",
@@ -4089,6 +4616,9 @@
     },
     {
       "id": "VL-066",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Production-grade operational security",
       "objective": "Verify mTLS/internal identity, secrets, CSP/WSS ingress, abuse and data deletion path.",
@@ -4105,6 +4635,9 @@
     },
     {
       "id": "VL-067",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Disaster rollback drill and game reconciliation",
       "objective": "Kill workloads, force backup restore and rollback under versions/active games.",
@@ -4121,6 +4654,10 @@
     },
     {
       "id": "VL-068",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Additional social/live gameplay beyond the Pet Arena MVP.",
       "feature": "Gameplay",
       "title": "Live events and transparent progression",
       "objective": "Implement small cafe festival + cosmetic achievement loop with anti-pay-to-win gating. Reuse immutable event catalogs, authoritative schedules and settlement for Pet seasons in VL-119; keep the existing cafe scope and dependencies.",
@@ -4137,6 +4674,9 @@
     },
     {
       "id": "VL-069",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Public Windows official release legal/site/support security signoff",
       "objective": "Confirm brand/trademark/rights, privacy/moderation/support, stable website/download funnel, signed release and legal obligations.",
@@ -4154,6 +4694,9 @@
     },
     {
       "id": "VL-070",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Windows native + Rust official-release canary/monitoring",
       "objective": "Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version.",
@@ -4174,6 +4717,9 @@
     },
     {
       "id": "VL-071",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Rust-Game-Core",
       "title": "Zone lease/epoch model for multiple owners",
       "objective": "Implement fenced instance directory and takeover on observed scale need.",
@@ -4193,6 +4739,9 @@
     },
     {
       "id": "VL-072",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Persistence-Security",
       "title": "Legacy RoomAuthority Rust cutover pilot",
       "objective": "Migrate **one** legacy world with full travel/seat/safety and journal compatible adapter.",
@@ -4211,6 +4760,9 @@
     },
     {
       "id": "VL-073",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Scale capacity tests and autoscaling decision",
       "objective": "Benchmark 2+ owner workloads, AOI fanout, persistence and routing costs.",
@@ -4227,6 +4779,10 @@
     },
     {
       "id": "VL-074",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Gameplay",
       "title": "Expand city districts and activities",
       "objective": "Ship one new district+1 venue+1 game through same content/contract pipeline.",
@@ -4242,6 +4798,9 @@
     },
     {
       "id": "VL-075",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Next species/outfit expansion on approved Unity avatar rig",
       "objective": "Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity.",
@@ -4257,6 +4816,9 @@
     },
     {
       "id": "VL-076",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Creator/community roadmap and tech debt re-evaluation",
       "objective": "Review traction, moderation cost, runtime ops and native decision before opening UGC.",
@@ -4274,6 +4836,9 @@
     },
     {
       "id": "VL-077",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Desktop-first roadmap and old-plan handoff decision",
       "objective": "Owner approves Windows-native as release product, browser portal as public site; map N06/PA/Lodge effects.",
@@ -4311,6 +4876,9 @@
     },
     {
       "id": "VL-078",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Unity Windows hardware/licenses/build capability audit",
       "objective": "Enumerate supported test PCs GPU/driver, Unity seats/CI, build runner and legal signing needs.",
@@ -4353,6 +4921,9 @@
     },
     {
       "id": "VL-079",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Official Aetheria: SoulBound portal IA and hero media direction",
       "objective": "Define website download/account/news/gallery/support structure without open world browser shader requirement.",
@@ -4371,6 +4942,9 @@
     },
     {
       "id": "VL-080",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Pinned Unity URP Windows project scaffolding and CI smoke",
       "objective": "Create Unity LTS project, asmdefs, URP presets and standalone Windows build scripts.",
@@ -4436,6 +5010,9 @@
     },
     {
       "id": "VL-081",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Native Unity ↔ Rust generated C# protocol and login proof",
       "objective": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect.",
@@ -4627,6 +5204,9 @@
     },
     {
       "id": "VL-082",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "URP anime shader/lighting GPU proof on Windows",
       "objective": "Prototype face/hair/eye/toon outlines and one plaza/caf\u00e9 lighting sample with profiles.",
@@ -4645,6 +5225,9 @@
     },
     {
       "id": "VL-083",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Next.js official website shell with accessible hero/download routes",
       "objective": "Build site routes, asset strategy, account integration placeholder and localized structure.",
@@ -4661,6 +5244,9 @@
     },
     {
       "id": "VL-084",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Unity local movement prediction + Rust reconciliation",
       "objective": "Client inputs immediate, smooth corrections and packet-loss/reconnect safety.",
@@ -4678,6 +5264,9 @@
     },
     {
       "id": "VL-085",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Unity city scene streaming, camera framing and visual continuity",
       "objective": "Addressables district cell/chunk prefetch, bake/probes, day-sunset scenario, transitions.",
@@ -4695,6 +5284,9 @@
     },
     {
       "id": "VL-086",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Unity native facial animation, ear/tail and sit IK integration",
       "objective": "Connect Blender rig morphs/emotes to native Blend Tree/Animation Rigging and close/mid/far LOD.",
@@ -4712,6 +5304,9 @@
     },
     {
       "id": "VL-087",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Windows graphics profiles + shader prewarm + GPU telemetry",
       "objective": "Dynamic resolution/LOD/shadows/postFX profiles and shader warmup, persisted safe defaults.",
@@ -4731,6 +5326,9 @@
     },
     {
       "id": "VL-088",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Unity HUD/M-map focus, UI and controls integration",
       "objective": "Desktop gamepad/keyboard chat focus, M map, POI cards and UI render quality.",
@@ -4748,6 +5346,10 @@
     },
     {
       "id": "VL-089",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Native",
       "title": "Unity caf\u00e9 enter/seat/stand animation and runtime session adapter",
       "objective": "Caf\u00e9 interior and IK/chair with Rust seat reservation and content hash gating.",
@@ -4766,6 +5368,10 @@
     },
     {
       "id": "VL-090",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Native",
       "title": "Unity in-world private card table UI with spectator mode",
       "objective": "Render table mini-game in caf\u00e9 and reliable projection-aware hidden hands.",
@@ -4783,6 +5389,9 @@
     },
     {
       "id": "VL-091",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Unity Pet Arena walk-in training PvE and match-3 board",
       "objective": "Native world arena gate + tactical combat board and safe cinematic VFX, Rust rules. VL-113 is the independent Linux development prototype; v2 progression/presentation are VL-118/VL-122/VL-124 and do not confer this complete Windows walk-in acceptance.",
@@ -4816,6 +5425,9 @@
     },
     {
       "id": "VL-092",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Aetheria: SoulBound official promotional pages and character gallery",
       "objective": "High-impact original preview media, clear Windows CTA and launch community funnels.",
@@ -4832,6 +5444,9 @@
     },
     {
       "id": "VL-093",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Windows release manifest, immutable bundle and distribution design",
       "objective": "Define executable manifest signing, content catalog hashing, CDN and release channels.",
@@ -4850,6 +5465,9 @@
     },
     {
       "id": "VL-094",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Signed Windows install/clean machine and crash report pilot",
       "objective": "Package Win player with verified publisher/signature, version metadata, safe crash telemetry.",
@@ -4868,6 +5486,9 @@
     },
     {
       "id": "VL-095",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Native G4 GPU/art/performance certification",
       "objective": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak.",
@@ -4888,6 +5509,9 @@
     },
     {
       "id": "VL-096",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Rust+Unity E2E privacy/reconnect/ownership stress suite",
       "objective": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger.",
@@ -4906,6 +5530,9 @@
     },
     {
       "id": "VL-097",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Windows binary/asset updater and rollback drills",
       "objective": "Test launcher candidate if approved or signed installer-only upgrade; distinguish Unity Addressables.",
@@ -4924,6 +5551,9 @@
     },
     {
       "id": "VL-098",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Official website security/Web Vitals/download funnel acceptance",
       "objective": "Measure real responsive pages, safe auth/deeplink and signed Windows download.",
@@ -4941,6 +5571,9 @@
     },
     {
       "id": "VL-099",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Coordinator",
       "title": "Desktop first Windows closed-beta reviewed G4 gate",
       "objective": "Owner reviews all native client, Rust correctness, website, signing and visual evidence.",
@@ -4960,6 +5593,10 @@
     },
     {
       "id": "VL-100",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "Native",
       "title": "macOS Apple Silicon candidate build and Metal shader check",
       "objective": "Prove macOS Unity app + networking/input + signature/notarization if funded.",
@@ -4978,6 +5615,10 @@
     },
     {
       "id": "VL-101",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "macOS/mobile platform expansion is deferred until Windows closed-beta readiness.",
       "feature": "QA-SRE",
       "title": "Android/iOS candidate economic performance decision",
       "objective": "Compare app size/thermal/art adaptation and market need; Android/iOS separate release gates.",
@@ -4996,6 +5637,9 @@
     },
     {
       "id": "VL-102",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "QA-SRE",
       "title": "Production official portal + signed Windows client release certification",
       "objective": "Prepare staged download, version compatibility, backend canary, status and rollback.",
@@ -5016,6 +5660,9 @@
     },
     {
       "id": "VL-103",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Keyboard/controller accessibility and motion comfort pass",
       "objective": "Remap keys, camera sensitivity, subtitle and no-shake controls in native HUD.",
@@ -5032,6 +5679,9 @@
     },
     {
       "id": "VL-104",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Animate ambient city wind, signs, crowd and safe NPC life",
       "objective": "Create local foliage/banner shader animation, instanced ambient crowds and interactive NPC server schedule split.",
@@ -5048,6 +5698,9 @@
     },
     {
       "id": "VL-105",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "priority": 1,
       "feature": "Avatar-Art",
       "title": "Blender\u2192Unity rig and per-scene shader/material/LOD budgets",
@@ -5136,6 +5789,9 @@
     },
     {
       "id": "VL-106",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Desktop accessibility and localized brand copy cross-check",
       "objective": "Validate client and portal shared language tokens, safety UX, and card/map contrast.",
@@ -5153,6 +5809,10 @@
     },
     {
       "id": "VL-107",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Gameplay",
       "title": "Native photo mode and creator district expansion evaluation",
       "objective": "Only after successful Windows release, test low-risk social/photo/UGC alternatives.",
@@ -5169,6 +5829,10 @@
     },
     {
       "id": "VL-108",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Gameplay",
       "title": "Autonomous NPC behaviors and click-to-move navigation design",
       "objective": "Specify what Rust must validate vs decorative city movement done by Unity.",
@@ -5184,6 +5848,10 @@
     },
     {
       "id": "VL-109",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Maid Café, Card Lounge, city expansion and autonomous social systems are deferred.",
       "feature": "Rust-Game-Core",
       "title": "Rust auto-navigation target and interaction path validation",
       "objective": "Server authorizes POI pathing, cancels on manual control and prevents moving into locked venues.",
@@ -5201,6 +5869,9 @@
     },
     {
       "id": "VL-110",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Actual Windows gameplay capture and launch-media provenance",
       "objective": "Capture launch-ready windows build screenshots and hero video from real app after graphics QA.",
@@ -5217,6 +5888,9 @@
     },
     {
       "id": "VL-111",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Rust-Runtime",
       "title": "Default-off native runtime gameplay composition",
       "objective": "Compose aetheria-gateway, aetheria-security, aetheria-game-core, aetheria-persistence and aetheria-world in apps/game-runtime using a small synthetic ruleset.",
@@ -5283,6 +5957,9 @@
     },
     {
       "id": "VL-112",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Rust-Runtime",
       "title": "Pet Arena PvE native runtime adapter",
       "objective": "Connect the verified Pet Arena reducer to the existing single-writer native WSS host, durable checkpoint/journal and platform settlement boundary.",
@@ -5392,6 +6069,9 @@
     },
     {
       "id": "VL-113",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Native",
       "title": "Linux playable Pet Arena milestone",
       "objective": "Deliver an isolated Linux development player with walk-in Rust-authoritative Pet Arena PvE, recovery, settlement and a repeatable local launcher.",
@@ -5521,6 +6201,9 @@
     },
   {
     "id": "VL-114",
+    "mvpMilestone": "M0",
+    "mvpCriticalPath": true,
+    "mvpScope": "MVP",
     "feature": "Pet-Arena",
     "title": "Pet Arena product specification and roadmap",
     "objective": "Define original 19-element collection RPG, immutable v1/v2 compatibility, maps and an incremental implementation sequence.",
@@ -5563,6 +6246,9 @@
   },
   {
     "id": "VL-115",
+    "mvpMilestone": "M1",
+    "mvpCriticalPath": true,
+    "mvpScope": "MVP",
     "feature": "Pet-Arena",
     "title": "Versioned Pet content schema and contracts",
     "objective": "Add normalized content, element, species, loadout, encounter and asset metadata through the existing Nest migration journal; bind matches to published hashes.",
@@ -5698,6 +6384,9 @@
   },
   {
       "id": "VL-116",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Shared functional combat foundation for versioned Pet Arena v3",
       "objective": "Implement shared deterministic functional-tile formulas and commands for v3; retain v2 specification as historical design, do not build a redundant v2 gameplay release.",
@@ -5723,6 +6412,9 @@
     },
   {
     "id": "VL-117",
+    "mvpMilestone": "M1",
+    "mvpCriticalPath": false,
+    "mvpScope": "MVP",
     "feature": "Pet-Arena",
     "title": "Reusable skills cards and combinations",
     "objective": "Define bounded shared skill/card/combination catalogs with costs, cooldowns, targets, stack caps and authoritative animation events.",
@@ -5747,6 +6439,9 @@
   },
   {
       "id": "VL-118",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Capture inventory progression and risky upgrades",
       "objective": "Persist common receipt-backed owned inventory, XP/materials and upgrade transactions; VL-132 specializes v3 3/5-win map recruitment and VL-134 specializes Lv100/three-star progression.",
@@ -5773,6 +6468,10 @@
     },
   {
       "id": "VL-119",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Social, weekly boss, PvP and seasonal systems are post-MVP expansion.",
       "feature": "Pet-Arena",
       "title": "Friend assistance weekly bosses and seasons",
       "objective": "Implement shared consented assistance, scheduled boss reward and season services; VL-143 adds four-player room coordination and VL-145 ranked/PvP integration.",
@@ -5798,6 +6497,9 @@
     },
   {
     "id": "VL-120",
+    "mvpMilestone": "M2",
+    "mvpCriticalPath": false,
+    "mvpScope": "MVP",
     "feature": "Admin",
     "title": "Operator Pet Studio draft preview and publishing",
     "objective": "Extend existing operator console/API with database-backed Pet draft editing, preview, immutable publication, retirement and rollback.",
@@ -5822,6 +6524,9 @@
   },
   {
     "id": "VL-121",
+    "mvpMilestone": "M2",
+    "mvpCriticalPath": true,
+    "mvpScope": "MVP",
       "limitedBlueprintVerification": {
         "sourceRevision": "14cd992ba9e1c23eafcbd60e04cc8d15ed3cd54a",
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
@@ -6044,6 +6749,9 @@
   },
   {
     "id": "VL-122",
+    "mvpMilestone": "M3",
+    "mvpCriticalPath": false,
+    "mvpScope": "MVP",
     "feature": "Native",
     "title": "Modern Unity battle HUD animation camera and VFX",
     "objective": "Present typed authoritative events with original tile atlas, health/mana/rage/cards, target warnings and reusable Pet animations.",
@@ -6070,6 +6778,9 @@
   },
   {
       "id": "VL-123",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Avatar-Art",
       "title": "Original species seed catalog and rendered hero set",
       "objective": "Retain 114 original IDs and v2 seed foundation; VL-131 owns the single 240-draft v3.1 importer. This task qualifies the existing six-hero plus boss priority art set; do not reseed a second catalog.",
@@ -6098,6 +6809,9 @@
     },
   {
     "id": "VL-124",
+    "mvpMilestone": "M3",
+    "mvpCriticalPath": true,
+    "mvpScope": "MVP",
     "feature": "Native",
     "title": "Linux integrated collection RPG vertical slice",
     "objective": "Integrate walk-in v2 combat, admin-authored content, capture, progression and polished presentation through disposable real services.",
@@ -6126,6 +6840,9 @@
   },
   {
     "id": "VL-125",
+    "mvpMilestone": "M5",
+    "mvpCriticalPath": false,
+    "mvpScope": "MVP",
     "feature": "Pet-Arena",
     "title": "Pet balance security performance and human playtests",
     "objective": "Validate elemental/loadout balance, progression abuse, recovery/privacy and measured battle presentation; observe real consented players.",
@@ -6152,6 +6869,9 @@
   },
   {
     "id": "VL-126",
+    "mvpMilestone": "M6",
+    "mvpCriticalPath": false,
+    "mvpScope": "MVP",
     "feature": "Native",
     "title": "Windows battle visual and production qualification",
     "objective": "Qualify the integrated battle on named physical Windows tiers and complete asset/signing/release-readiness gates without automatic public activation.",
@@ -6184,6 +6904,10 @@
   },
   {
     "id": "VL-127",
+    "mvpMilestone": "M4",
+    "mvpCriticalPath": false,
+    "mvpScope": "DEFERRED_EXPANSION",
+    "deferredExpansion": "Ranked/unranked PvP is post-MVP expansion.",
     "feature": "Pet-Arena",
     "title": "Ranked and unranked PvP foundation",
     "objective": "Extend the validated common engine to explicit PvP matchmaking and simultaneous-player privacy without a separate authority.",
@@ -6209,6 +6933,9 @@
   },
     {
       "id": "VL-128",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Reconcile V3.1 roadmap and canonical draft catalog",
       "objective": "Integrate V3 design and six Standard S drafts against main 80a9186 and PR31; preserve verified task records, v1/v2 source and the original local V3 handoff.",
@@ -6324,6 +7051,10 @@
     },
     {
       "id": "VL-129",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Superseded 10x10 concept; the MVP target is a bounded 8x8 board. Historical design is preserved.",
       "feature": "Pet-Arena",
       "title": "10x10 authoritative board and deterministic migration",
       "objective": "Distinct v3 ruleset, 100-cell board, replay/property tests, performance and viewport calculations.",
@@ -6349,6 +7080,10 @@
     },
     {
       "id": "VL-130",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "19-element bounded matrix and 22-race atlas",
       "objective": "Reuse canonical element IDs, add morphological race data and validate all 361 matchup pairs.",
@@ -6554,6 +7289,10 @@
     },
     {
       "id": "VL-131",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "B/A/S sources and idempotent 240-Pet draft persistence",
       "objective": "Extend existing VL-115 draft storage with additive rank/source/version contracts and one canonical 240-draft import; never alter 0051 or prior v2 metadata.",
@@ -6641,6 +7380,10 @@
     },
     {
       "id": "VL-132",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "19 PvE element maps and 3/5-win recruitment receipts",
       "objective": "No capture ball; 19 gated maps; A/B require 3 wins, map S 5 wins; idempotent unlock.",
@@ -6668,6 +7411,10 @@
     },
     {
       "id": "VL-133",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Deeper content/economy expansion beyond Wave A; not a current MVP dependency.",
       "feature": "Pet-Arena",
       "title": "Combat static-board skill overlays and ultimate impact diffs",
       "objective": "Normal skill does not move/delete/refill board; typed ultimate may clear/refill with no container disappearance.",
@@ -6694,6 +7441,10 @@
     },
     {
       "id": "VL-134",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Per-Pet Lv.100 curve and 3-star evolution",
       "objective": "Nonlinear XP/material costs; three stars MAX; immutable progression receipts.",
@@ -6733,6 +7484,10 @@
     },
     {
       "id": "VL-135",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Deeper content/economy expansion beyond Wave A; not a current MVP dependency.",
       "feature": "Pet-Arena",
       "title": "Six ordinary B/A Pet archetypes and shared presentation",
       "objective": "Preserve Emberpaw/Brooklet/Thornwick/Galehorn/Mireshade/Frostel; quality reusable rigs, modest VFX and usable balanced kits. These are not Standard S.",
@@ -6759,6 +7514,10 @@
     },
     {
       "id": "VL-136",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Six bespoke S-Limited pets and unique card board effects",
       "objective": "Implement six Limited signature cards and bounded shared board effects; bespoke models/timelines owned by VL-149.",
@@ -6786,6 +7545,10 @@
     },
     {
       "id": "VL-137",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Signature-card battle fusion and unlock source",
       "objective": "Regular recipient, Limited donor, 200 Mana +150 Rage, +3 temporary battle level, incompatibility of two signatures.",
@@ -6813,6 +7576,10 @@
     },
     {
       "id": "VL-138",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Separated ordinary Rage 100 and fusion resources",
       "objective": "Mana cap 300, Rage cap 200; 100 ordinary rage ult, 200/150 fusion; private RNG and replay.",
@@ -6839,6 +7606,9 @@
     },
     {
       "id": "VL-139",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Pet Profile, collection, unlock and star UI in Unity",
       "objective": "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
@@ -6866,6 +7636,10 @@
     },
     {
       "id": "VL-140",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Deeper content/economy expansion beyond Wave A; not a current MVP dependency.",
       "feature": "Pet-Arena",
       "title": "Durable gacha pull ledger and transactional delivery",
       "objective": "One Nest-owned ledger for Standard and Limited pulls: persist immutable ordered outcomes, debit once, replay receipts and deliver ownership atomically. VL-159 owns probability/guarantee transitions; VL-161 owns duplicate conversion.",
@@ -6893,6 +7667,10 @@
     },
     {
       "id": "VL-141",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Deeper content/economy expansion beyond Wave A; not a current MVP dependency.",
       "feature": "Pet-Arena",
       "title": "F2P economy disclosure and release qualification",
       "objective": "Earnable tickets and approved exchange items, full rate/curve disclosure, spending and age controls; regional legal and payment enablement remain independent release gates.",
@@ -6921,6 +7699,10 @@
     },
     {
       "id": "VL-142",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Admin",
       "title": "Admin Pet Studio: 19 systems and catalog management",
       "objective": "Extend existing Admin Studio for 240 drafts, four sources and reviewed Standard/Limited pools, weights, full odds curves, dates and audit; one authoring workflow.",
@@ -6948,6 +7730,10 @@
     },
     {
       "id": "VL-143",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Weekly Boss rooms with owner + at most 3 invited players",
       "objective": "Max four participants total; deterministic co-op turns; invitation, leave, ready, reconnect and reward anti-dup.",
@@ -6975,6 +7761,10 @@
     },
     {
       "id": "VL-144",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Boss lobby and friend invitation Unity UX",
       "objective": "Invitations capped to 3 friends, ready state, permissions, privacy and safe timeouts.",
@@ -7001,6 +7791,10 @@
     },
     {
       "id": "VL-145",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Leaderboard, seasons, PvE/PvP balance modes",
       "objective": "Verifiable rankings, no P2W ranked stat advantage, anti-cheat, opt-out settings.",
@@ -7026,6 +7820,10 @@
     },
     {
       "id": "VL-146",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Owned Pet companions across the Aetheria: SoulBound world",
       "objective": "Shared permitted-zone companion controller for map, Limited and Standard species; morphology-specific navigation, LOD, emotes and privacy. Each species qualifies assets independently.",
@@ -7052,6 +7850,9 @@
     },
     {
       "id": "VL-147",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Global player settings / accessibility / keyboard / gamepad",
       "objective": "Reuse global settings for graphics, motion, audio, input, privacy and readable 10x10 UI; integrate accessibility without waiting on unrelated world qualification.",
@@ -7077,6 +7878,9 @@
     },
     {
       "id": "VL-148",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Vietnamese/English locale system and translation QA",
       "objective": "Reuse global locale service for full VI/EN Pet Arena strings, proper English Pet names, font coverage and translated menus; other languages gated on actual translations.",
@@ -7102,6 +7906,9 @@
     },
     {
       "id": "VL-149",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "priority": 1,
       "feature": "Pet-Arena",
       "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
@@ -7159,6 +7966,9 @@
     },
     {
       "id": "VL-150",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Unity URP generic Pet scale-up and rig library",
       "objective": "Shared rigs for 209 B/A and 19 map S pets, morph variety, LOD/VFX quality not placeholders.",
@@ -7186,6 +7996,10 @@
     },
     {
       "id": "VL-151",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Superseded 10x10 concept; the MVP target is a bounded 8x8 board. Historical design is preserved.",
       "feature": "Pet-Arena",
       "title": "Linux playable 10x10 + capture + fusion vertical slice",
       "objective": "Actual rendered Linux Unity + Rust + Nest + Postgres; no mocked pass.",
@@ -7213,6 +8027,9 @@
     },
     {
       "id": "VL-152",
+      "mvpMilestone": "M5",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Pet card/boss/progression QA and economy simulation",
       "objective": "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
@@ -7239,6 +8056,9 @@
     },
     {
       "id": "VL-153",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Windows physical GPU/rendered content qualification",
       "objective": "Only qualify Windows after physical tested build, signed media/provenance, quality and rights.",
@@ -7269,6 +8089,10 @@
     },
     {
       "id": "VL-154",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Permanent Pet fusion expansion (separate optional system)",
       "objective": "Keep distinct from in-battle card fusion; transactional ownership/consumption policy and opt-in rollout.",
@@ -7295,6 +8119,10 @@
     },
     {
       "id": "VL-155",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Authoritative 19-map weekly events and content operations",
       "objective": "Event rotation, 5-win legend availability, boss tables, version snapshot, publish/rollback.",
@@ -7322,6 +8150,10 @@
     },
     {
       "id": "VL-156",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "19-element / 19-map / 240-Pet / fusion / seasonal expansion beyond the six-element, six-map, 55-active-Pet MVP.",
       "feature": "Pet-Arena",
       "title": "Gacha, collection and independent star/awakening Unity UI",
       "objective": "Standard/Limited banner details, rates/full curves, pity/guarantee/history, C0-C6 and independent 0-3 star progression; bind durable owner projections.",
@@ -7349,6 +8181,9 @@
     },
     {
       "id": "VL-157",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Full integrated acceptance and no-go-public release gate",
       "objective": "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
@@ -7380,6 +8215,9 @@
     },
     {
       "id": "VL-158",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Six Standard S designs, lore and catalog contracts",
       "objective": "Author exactly six distinct Standard S candidates with stable identity, shared effects and complete metadata; preserve all original234.",
@@ -7494,6 +8332,9 @@
     },
     {
       "id": "VL-159",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Standard and Featured eligibility, 50/50 and family guarantee",
       "objective": "Implement one server-authoritative probability/eligibility state machine with explicit persistence adapter contract; VL-140 owns durable pull transactions.",
@@ -7531,6 +8372,9 @@
     },
     {
       "id": "VL-160",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "priority": 1,
       "feature": "Pet-Arena",
       "title": "Six Standard S Unity models, rigs, animation and VFX",
@@ -7587,6 +8431,10 @@
     },
     {
       "id": "VL-161",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Deeper content/economy expansion beyond Wave A; not a current MVP dependency.",
       "priority": 2,
       "feature": "Pet-Arena",
       "title": "Shared S awakening, duplicate exchange and admin economy controls",
@@ -7614,6 +8462,9 @@
     },
     {
       "id": "VL-162",
+      "mvpMilestone": "M5",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "priority": 2,
       "feature": "Pet-Arena",
       "title": "Gacha simulation, balance, accessible UX and abuse acceptance",
@@ -7648,6 +8499,9 @@
     },
     {
       "id": "VL-163",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Aetheria-Prelaunch",
       "title": "Aetheria: SoulBound public and operator route separation",
       "objective": "Prepare the renamed NOYUNE-Prelaunch workstream in existing admin-web. Move the existing console to /admin and add a default-off VI/EN public homepage; no new app, database or service.",
@@ -7805,6 +8659,9 @@
     },
     {
       "id": "VL-164",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Aetheria-Prelaunch",
       "title": "Double opt-in with atomic lifetime capacity",
       "objective": "Add isolated prelaunch tables and bounded feature modules to existing Nest/PostgreSQL and shared contracts. Re-read journal at implementation HEAD; current audit ends at 0051. No separate mail service.",
@@ -7821,6 +8678,9 @@
     },
     {
       "id": "VL-165",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Aetheria-Prelaunch",
       "title": "Localized complete product exploration and Pet previews",
       "objective": "Extend the VL-163 shell in admin-web with world, pets/:slug, arena, maid cafe, future original Card Lounge, news, FAQ, preregister/verify, privacy and unsubscribe routes. Present the full product in VI/EN with Pet/skill motion previews and a clearly qualified gacha overview. Signup API integration follows VL-164 and remains disabled until then; editorial pages have no database implementation dependency.",
@@ -7873,6 +8733,9 @@
     },
     {
       "id": "VL-166",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Aetheria-Prelaunch",
       "title": "Prelaunch operator consent and editorial workflows",
       "objective": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth.",
@@ -7891,6 +8754,9 @@
     },
     {
       "id": "VL-167",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
       "feature": "Aetheria-Prelaunch",
       "title": "Independent prelaunch acceptance and release checklist",
       "objective": "Qualify the public prelaunch surface independently of Windows gameplay/signing. Extend site-only measurements without claiming VL-098/106 Windows or full-product completion.",
@@ -7912,6 +8778,9 @@
     },
     {
       "id": "VL-175",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
       "feature": "Pet-Arena",
       "title": "Wave 1 MVP deterministic backend game loop",
       "objective": "Implement a bounded offline/test-only backend contract for the six core combat elements, evolution at20/40/60, six regular-plus-boss maps, and the Icarus Limited banner with six Standard-S off-rate candidates.",
@@ -7930,8 +8799,9 @@
         "source": "crates/aetheria-pet-arena/src/wave1_mvp.rs; apps/platform-api/src/features/pets/modules/wave1",
         "ruleset": "aetheria-pet-arena-wave1-mvp",
         "rulesHash": "769f4b614239d4fb083f4e80194b39275521eefc4ef83f451e87f2642b7ce1c5",
-        "scope": "Six gacha-aligned core elements fire/water/electric/ghost/ground/light; six maps from Cinder Terraces through Dawn Prism Sanctum; regular and boss encounters; staged stats and unlocks at20/40/60; Icarus featured at50percent and six equal-weight Standard-S off-rate identities. Preview APIs are authenticated, no-store and default-off.",
-        "remaining": "Durable ownership/progress/wallet persistence, runtime-authoritative match allocation, Unity presentation and production publication remain outside this offline DTO/rules slice. Hosted CI and merge are pending."
+        "scope": "Six gacha-aligned core elements fire/water/electric/ghost/ground/light; six maps from Cinder Terraces through Dawn Prism Sanctum; regular and boss encounters; level growth and skill/Artifact eligibility at20/40/60, with no mandatory separate visual evolution forms; Icarus featured at50percent and six equal-weight Standard-S off-rate identities. Preview APIs are authenticated, no-store and default-off.",
+        "waveAReconciliation": "PR80 merged as f74f5bdb62fce45c888191ff861d3bf9fe63b41d. The Wave 1 action loop remains a frozen local compatibility slice, not the target 8x8 authority; VL-176 owns the new versioned 8x8 ruleset and VL-177 owns Artifacts. The six Off-rate S concepts are gated candidates, not a silent replacement of the existing Standard-S banner pool.",
+        "remaining": "Wave 1 ownership/wallet persistence and the local Unity loop are merged; the 8x8 authority, Artifact equipment, 55/61 roster and integrated Wave A vertical slice remain VL-176 through VL-181. Hosted CI for the merged PR80 head was green on linux-foundation and the functional gates; the separate hospitality browser shard was still running at merge and is not claimed as a qualification."
       },
       "verification": {
         "sourceRevision": "9adc13311faaf537f3fef8fe96edf015b907ee8b",
@@ -8020,6 +8890,148 @@
           ],
           "remaining": "Hosted CI must pass on the fix head before auto-merge. No production deployment, public release or paid provider work is authorized by this verification."
         }
+      }
+    },
+    {
+      "id": "VL-176",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Wave A: versioned 8x8 tactical combat ruleset",
+      "objective": "Implement the authoritative deterministic 8x8 tactical board and combat loop in Rust without mutating frozen V1/V3.",
+      "priority": 1,
+      "dependsOn": [],
+      "acceptance": [
+        "64 bounded cells, deterministic swaps/matches/cascades/refill and dead-board recovery",
+        "Typed events, telegraph, cooldowns, Signature/Ultimate and Icarus FIRE_ZONE",
+        "Replay/stale/duplicate safety and zero client-authoritative RNG or outcome"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A",
+        "source": "crates/aetheria-pet-arena/src/wave_a"
+      }
+    },
+    {
+      "id": "VL-177",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Wave A: Artifact inventory, equipment and upgrade loop",
+      "objective": "Implement the first complete Artifact progression loop with three slots, deterministic upgrades and authoritative persistence.",
+      "priority": 1,
+      "dependsOn": [],
+      "acceptance": [
+        "Owned instances, inventory, Core/Aegis/Rune equip/unequip/swap and level gates",
+        "Bounded modifiers, deterministic upgrade materials and immutable loadout snapshot",
+        "Ownership, duplicate/invalid/unauthorized paths and restart recovery are enforced"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A"
+      }
+    },
+    {
+      "id": "VL-178",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Wave A: canonical 55/61 roster and CDN reconciliation",
+      "objective": "Reconcile the 43 locked identities, 12 Dragon/Bird families and six gated Off-rate candidates into one versioned roster.",
+      "priority": 1,
+      "dependsOn": [],
+      "acceptance": [
+        "55 active canonical Pets and 61 explicit candidates; no race base counted as a Pet",
+        "Six dragons S and six birds A with stable IDs, elements, sources and asset mappings",
+        "Jadewarden/Jaderyx conflict and Off-rate gating are explicit"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A"
+      }
+    },
+    {
+      "id": "VL-179",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Wave A: Unity 8x8 combat, collection and Artifact UI",
+      "objective": "Extend the existing Pet Arena scene to read the 8x8 board and Artifact loadout without owning combat authority.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-176",
+        "VL-177"
+      ],
+      "acceptance": [
+        "Readable 8x8 board with swap/skill/ultimate/telegraph feedback",
+        "HP/Mana/Rage/cooldown and Artifact inventory/equip/comparison surfaces",
+        "Victory/defeat, reduced motion and reconnect fallback states"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A"
+      }
+    },
+    {
+      "id": "VL-180",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "Wave A: Icarus, morphology and Fire/Water arena foundation",
+      "objective": "Advance Icarus and reusable humanoid/quadruped/avian/serpent/floating intakes, plus two functioning arena scenes and audio groups.",
+      "priority": 2,
+      "dependsOn": [],
+      "acceptance": [
+        "Icarus prepared for the next owner H-gate with modular asset status",
+        "Reusable morphology profiles and two arena scene foundations",
+        "Mixer/VFX/reduced-motion hooks documented and locally usable"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Owner H1–H4 art acceptance remains required before dependent stages"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A"
+      }
+    },
+    {
+      "id": "VL-181",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "QA-SRE",
+      "title": "Wave A: integrated vertical-slice QA and restart recovery",
+      "objective": "Verify the actual integrated loop: session, Pet, 8x8 battle, authoritative reward, Artifact equip, observable stat change, recruitment and restart.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-176",
+        "VL-177",
+        "VL-179"
+      ],
+      "acceptance": [
+        "One real local loop completes with authoritative settlement",
+        "Duplicate rewards and unauthorized equipment are rejected",
+        "Restart recovers progress; frozen V1/V3 replay compatibility remains intact"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave A"
       }
     }
   ]

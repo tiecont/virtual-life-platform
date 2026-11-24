@@ -14,7 +14,7 @@ namespace Aetheria.PetArena.Presentation
     [RequireComponent(typeof(UIDocument))]
     public sealed class Wave1CampaignScreen : MonoBehaviour
     {
-        private enum Screen { Session, Lobby, Maps, Combat, Rewards, Collection, Gacha }
+        private enum Screen { Session, Lobby, Maps, Combat, Rewards, Collection, Gacha, Artifacts }
 
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly List<string> party = new List<string>();
@@ -28,6 +28,7 @@ namespace Aetheria.PetArena.Presentation
         private ScrollView content;
         private Wave1Manifest manifest;
         private Wave1State state;
+        private WaveAArtifactState artifacts;
         private Wave1Map map;
         private Wave1Pet fighter;
         private Wave1Encounter encounter;
@@ -120,6 +121,7 @@ namespace Aetheria.PetArena.Presentation
                 case Screen.Rewards: DrawRewards(); break;
                 case Screen.Collection: DrawCollection(); break;
                 case Screen.Gacha: DrawGacha(); break;
+                case Screen.Artifacts: DrawArtifacts(); break;
             }
             FocusFirst();
         }
@@ -133,7 +135,8 @@ namespace Aetheria.PetArena.Presentation
                 case Screen.Maps: return "Campaign maps";
                 case Screen.Combat: return map.name + (boss ? " · Boss" : "");
                 case Screen.Rewards: return result.result.won ? "Victory" : "Defeat";
-                case Screen.Collection: return "Evolution";
+                case Screen.Collection: return "Pet profile";
+                case Screen.Artifacts: return "Artifact loadout";
                 default: return "Icarus banner";
             }
         }
@@ -231,7 +234,8 @@ namespace Aetheria.PetArena.Presentation
                     Show(Screen.Maps);
                 });
             }, "choose-map", party.Count > 0);
-            Button("Evolution", () => Navigate(Screen.Collection), "open-evolution");
+            Button("Pet profile", () => Navigate(Screen.Collection), "open-evolution");
+            Button("Artifacts", () => Run(LoadArtifacts), "open-artifacts");
             Button("Icarus banner", () => Navigate(Screen.Gacha), "open-gacha");
             Button("Reduced motion · " + (reduced ? "On" : "Off"), () =>
             {
@@ -239,6 +243,118 @@ namespace Aetheria.PetArena.Presentation
                 stage.SetReducedMotion(reduced);
                 effects.SetReducedMotion(reduced);
                 Draw();
+            });
+        }
+
+        private async Task LoadArtifacts()
+        {
+            artifacts = await api.GetArtifactState(lifetime.Token);
+            var pet = artifacts.FindPet(selectedPet);
+            if (pet == null && artifacts.pets != null && artifacts.pets.Length > 0)
+            {
+                selectedPet = artifacts.pets[0].petId;
+                pet = artifacts.pets[0];
+            }
+            if (pet != null) selectedPet = pet.petId;
+            Show(Screen.Artifacts);
+        }
+
+        private void DrawArtifacts()
+        {
+            if (artifacts == null)
+            {
+                content.Add(Label("Artifact inventory is unavailable.", "arena-notice"));
+                Button("Back to party", () => Navigate(Screen.Lobby), "artifacts-back");
+                return;
+            }
+
+            content.Add(Label("Three slots: Core / Aegis / Rune. Equip by Pet level, never by presentation power class.", "arena-meta"));
+            content.Add(Label(artifacts.materials + " materials · " + (artifacts.inventory?.Length ?? 0) + " owned artifacts", "arena-notice"));
+            var pet = artifacts.FindPet(selectedPet);
+            var petName = pet == null ? "No owned Pet" : PetLabel(state?.FindPet(selectedPet));
+            if (pet != null)
+            {
+                content.Add(Label(petName + " · Lv " + pet.level + " · power " + pet.powerClass, "arena-title"));
+                content.Add(Label("Core: " + ArtifactName(pet.slots?.core)));
+                content.Add(Label("Aegis: " + ArtifactName(pet.slots?.aegis)));
+                content.Add(Label("Rune: " + ArtifactName(pet.slots?.rune)));
+                content.Add(Label("Totals · HP +" + pet.totals.hp + " · ATK +" + pet.totals.attack +
+                                  " · DEF +" + pet.totals.defense + " · SPD +" + pet.totals.speed, "arena-meta"));
+            }
+
+            foreach (var item in artifacts.inventory ?? Array.Empty<WaveAArtifactInstance>())
+            {
+                var stateLabel = item.equipped == null ? "unequipped" : "on " + item.equipped.petId;
+                content.Add(Label(item.name + " · " + item.rank + " " + item.slot + " · Lv " + item.upgradeLevel +
+                                  "/" + item.maxUpgradeLevel + " · " + stateLabel, "arena-notice"));
+                if (item.equipped == null)
+                    Button("Equip to " + petName, () => EquipArtifact(item), "equip-" + item.artifactId, pet != null);
+                else if (item.equipped.petId == selectedPet)
+                    Button("Unequip", () => UnequipArtifact(item), "unequip-" + item.artifactId);
+                if (item.upgradeLevel < item.maxUpgradeLevel)
+                    Button("Upgrade · " + item.nextUpgradeCost + " materials", () => UpgradeArtifact(item),
+                        "upgrade-" + item.artifactId, artifacts.materials >= item.nextUpgradeCost);
+            }
+
+            if (artifacts.pve?.available != null && artifacts.pve.available.Length > 0)
+                Button("Claim PvE artifact reward", ClaimArtifactReward, "claim-artifact-reward");
+            Button("Back to party", () => Navigate(Screen.Lobby), "artifacts-back");
+        }
+
+        private string ArtifactName(string artifactId)
+        {
+            if (string.IsNullOrEmpty(artifactId)) return "empty";
+            var item = artifacts?.FindArtifact(artifactId);
+            return item == null ? "empty" : item.name + " · " + item.rank + " Lv" + item.upgradeLevel;
+        }
+
+        private void EquipArtifact(WaveAArtifactInstance item)
+        {
+            if (string.IsNullOrEmpty(selectedPet)) return;
+            Run(async () =>
+            {
+                var response = await api.EquipArtifact(new WaveAArtifactEquipRequest {
+                    requestId = NewRequestId(), petId = selectedPet, artifactId = item.artifactId
+                }, lifetime.Token);
+                artifacts = response.state;
+                notice = "Equipped " + item.name + ". The next battle snapshot will use its modifiers.";
+            });
+        }
+
+        private void UnequipArtifact(WaveAArtifactInstance item)
+        {
+            if (item.equipped == null) return;
+            Run(async () =>
+            {
+                var response = await api.UnequipArtifact(new WaveAArtifactUnequipRequest {
+                    requestId = NewRequestId(), petId = item.equipped.petId, slot = item.equipped.slot
+                }, lifetime.Token);
+                artifacts = response.state;
+                notice = "Unequipped " + item.name + ".";
+            });
+        }
+
+        private void UpgradeArtifact(WaveAArtifactInstance item)
+        {
+            Run(async () =>
+            {
+                var response = await api.UpgradeArtifact(new WaveAArtifactUpgradeRequest {
+                    requestId = NewRequestId(), artifactId = item.artifactId
+                }, lifetime.Token);
+                artifacts = response.state;
+                notice = "Upgraded " + item.name + " with " + response.spent + " materials.";
+            });
+        }
+
+        private void ClaimArtifactReward()
+        {
+            Run(async () =>
+            {
+                var response = await api.ClaimArtifactReward(new WaveAArtifactClaimRequest {
+                    requestId = NewRequestId()
+                }, lifetime.Token);
+                artifacts = response.state;
+                notice = "Claimed an Artifact reward and materials.";
             });
         }
 
@@ -402,10 +518,10 @@ namespace Aetheria.PetArena.Presentation
         private void DrawCollection()
         {
             var current = state.FindPet(selectedPet) ?? state.pets[0];
-            content.Add(Label(PetLabel(current) + " · Stage " + current.stage, "arena-notice"));
+            content.Add(Label(PetLabel(current) + " · Lv " + current.level, "arena-notice"));
             content.Add(Label(current.level == 60 ? "Max level" : current.exp + "/" + current.expToNext + " EXP"));
             var milestones = new[] { 20, 40, 60 };
-            var unlocks = new[] { "Second skill & map 2", "Signature slot & boss assist", "Ultimate & mastery aura" };
+            var unlocks = new[] { "Power skill & Artifact C eligibility", "Signature & Artifact A eligibility", "Ultimate & Artifact S eligibility" };
             for (var index = 0; index < milestones.Length; index++)
                 content.Add(Label("Lv " + milestones[index] + " · " + unlocks[index] +
                     (current.stage > index ? " ✓" : "")));

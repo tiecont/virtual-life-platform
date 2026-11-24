@@ -5,6 +5,12 @@ Release state is `OFFLINE_ONLY / NO_GO_PUBLIC`. Set
 loopback. The default is off. The Wave 1 rules manifest retains its draft
 banner and purchase settings.
 
+> **Wave A supersedes the target gameplay shape.** This Wave 1 action loop remains
+> a frozen local compatibility slice. The MVP target is the versioned **8x8**
+> tactical ruleset in [mvp-wave-a.md](mvp-wave-a.md), with Artifact progression and
+> no mandatory Lv20/40/60 visual evolution forms. Do not reinterpret these Wave 1
+> actions or receipts as 8x8.
+
 ## Campaign and collection
 
 - The 43-Pet roster uses Fire, Water, Electric, Ghost, Ground and Light. Water
