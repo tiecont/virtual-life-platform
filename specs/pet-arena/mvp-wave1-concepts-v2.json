@@ -147,7 +147,9 @@
       "revision": "silhouette_desubstitution",
       "generatedAtUtc": "2026-11-24T12:28:03.163Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 2,
@@ -172,7 +174,9 @@
       "revision": "silhouette_desubstitution",
       "generatedAtUtc": "2026-11-24T12:28:31.521Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 3,
@@ -197,7 +201,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:57:55.639Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 4,
@@ -222,7 +228,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:58:26.017Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 5,
@@ -247,7 +255,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:10:32.260Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 6,
@@ -272,7 +282,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T11:59:24.477Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Standard S"
     },
     {
       "order": 7,
@@ -297,7 +309,9 @@
       "revision": "silhouette_desubstitution",
       "generatedAtUtc": "2026-11-24T12:28:59.383Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 8,
@@ -322,7 +336,9 @@
       "revision": "silhouette_desubstitution",
       "generatedAtUtc": "2026-11-24T12:29:29.942Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 9,
@@ -347,7 +363,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:00:43.446Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 10,
@@ -372,7 +390,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:01:25.850Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 11,
@@ -397,7 +417,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:01:51.624Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 12,
@@ -422,7 +444,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:02:21.970Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Legendary"
     },
     {
       "order": 13,
@@ -450,7 +474,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:04:08.459Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 14,
@@ -478,7 +504,9 @@
       "revision": "faceless_modular_base",
       "generatedAtUtc": "2026-11-24T12:30:13.867Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 15,
@@ -508,7 +536,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:04:43.645Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 16,
@@ -538,7 +568,9 @@
       "revision": "silhouette_distinct_faces_restored",
       "generatedAtUtc": "2026-11-24T12:33:44.113Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 17,
@@ -568,7 +600,9 @@
       "revision": "silhouette_distinct_faces_restored",
       "generatedAtUtc": "2026-11-24T12:34:14.394Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 18,
@@ -598,7 +632,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:09:52.036Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 19,
@@ -626,7 +662,9 @@
       "revision": "silhouette_distinct_faces_restored",
       "generatedAtUtc": "2026-11-24T12:34:40.930Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 20,
@@ -653,7 +691,9 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:06:56.232Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 21,
@@ -681,7 +721,9 @@
       "revision": "silhouette_distinct_faces_restored",
       "generatedAtUtc": "2026-11-24T12:35:06.257Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     },
     {
       "order": 22,
@@ -708,7 +750,19 @@
       "revision": "initial",
       "generatedAtUtc": "2026-11-24T12:07:55.213Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "B",
+      "classLabel": "B · Race base"
     }
-  ]
+  ],
+  "powerClasses": {
+    "counts": {
+      "S": 6,
+      "A": 6,
+      "B": 10
+    },
+    "ladder": "S > A > B",
+    "spec": "specs/pet-arena/power-tiers-mvp-wave1.md",
+    "note": "Presentation ladder only; not summon rarity or stats."
+  }
 }

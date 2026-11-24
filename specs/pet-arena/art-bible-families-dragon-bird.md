@@ -8,6 +8,8 @@ ground and light. There is **no Ice or Dark element**: the water dragon uses tid
 void dragon is Ghost. The concepts are not part of the locked 43-Pet Wave 1 roster, define no stats, acquisition or gameplay authority,
 and are not production or rights approval.
 
+**Power class:** the six dragons are **S**; the six birds are **A** under [power-tiers-mvp-wave1.md](power-tiers-mvp-wave1.md) (presentation only, no stats).
+
 ## 1. Dragon family
 
 Six body plans, six silhouettes. Element sets colour and material; the species sets the body.

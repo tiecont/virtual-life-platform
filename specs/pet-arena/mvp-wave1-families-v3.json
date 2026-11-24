@@ -84,7 +84,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:21:19.147Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 2,
@@ -107,7 +109,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:21:46.953Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 3,
@@ -130,7 +134,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:22:14.857Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 4,
@@ -153,7 +159,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:22:47.731Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 5,
@@ -176,7 +184,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:23:25.944Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 6,
@@ -199,7 +209,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:23:53.860Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "S",
+      "classLabel": "S · Dragon"
     },
     {
       "order": 7,
@@ -222,7 +234,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:24:19.310Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     },
     {
       "order": 8,
@@ -245,7 +259,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:24:47.143Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     },
     {
       "order": 9,
@@ -268,7 +284,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:25:19.691Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     },
     {
       "order": 10,
@@ -291,7 +309,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:25:45.142Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     },
     {
       "order": 11,
@@ -314,7 +334,9 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:26:10.512Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     },
     {
       "order": 12,
@@ -337,7 +359,19 @@
       "regenerations": 0,
       "generatedAtUtc": "2026-11-24T12:26:38.324Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "powerClass": "A",
+      "classLabel": "A · Bird family"
     }
-  ]
+  ],
+  "powerClasses": {
+    "counts": {
+      "S": 6,
+      "A": 6,
+      "B": 0
+    },
+    "ladder": "S > A > B",
+    "spec": "specs/pet-arena/power-tiers-mvp-wave1.md",
+    "note": "Presentation ladder only; not summon rarity or stats."
+  }
 }

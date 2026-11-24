@@ -93,7 +93,16 @@ Modular bodies that carry six element variants and the Lv 20/40/60 accessory set
   Living Artifact amber ribbon edging; Flora/Fungal leaf-green cap edge; Aquatic turquoise fin ribs; Spectral lavender veil edging;
   Serpentine mint segment bands; Mechanical copper panel seams.
 
-## 8. Review and cost rules
+## 8. Power-class presentation
+
+Power class **S / A / B** is a presentation ladder defined in [power-tiers-mvp-wave1.md](power-tiers-mvp-wave1.md); it is not summon
+rarity or a stat block. **S** covers the six map legendaries, the six dragon families and Icarus (Limited S); **A** covers the six
+Standard-S summon units and the six bird family; **B** covers the ten shared race bases. Show class as a badge only — S gold
+`#E9C46A`, A violet `#B9A6F2`, B teal `#7FE0D0`. Class never recolours a creature or changes its element palette, silhouette,
+materials or evolution modules, and the badge must not cover the face, core, board tile or target indicator. The Standard-S units keep
+their S summon rarity while sitting in Power Class A; the catalog rank field is unchanged.
+
+## 9. Review and cost rules
 
 - Deliverable: 22 PNG concepts at 4:3, 1536×1152, single subject, deep neutral charcoal studio backdrop, reviewed in one sitting in `review.html`.
 - Zero-cost only: Tripo Studio Image, model **GPT Image 2.5**, free-image counter visible before every run; no paid fallback; stop when free quota ends.
