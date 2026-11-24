@@ -50,17 +50,23 @@ function option(name,fallback){
 
 const dryRun=process.argv.includes('--dry-run');
 const force=process.argv.includes('--force');
-const allowTargetChange=process.argv.includes('--allow-target-change');
 const oldManifest=await readOldManifest();
 const workspace=path.resolve(option('workspace',process.env.AETHERIA_WORKSPACE||defaultWorkspace));
-const prefix=(option('prefix',oldManifest?.prefix||'aetheria/mvp-wave1/v1')).replace(/^\/+|\/+$/g,'');
-const publicBase=validatePublicBase(option('public-base',oldManifest?.publicBase||''));
+const prefix=(option('prefix',oldManifest?.prefix||'')).replace(/^\/+|\/+$/g,'');
+const endpointValue=option('endpoint',process.env.S3_ENDPOINT||'');
+const bucketValue=option('bucket',process.env.S3_BUCKET||'');
+const regionValue=option('region',process.env.S3_REGION||'auto');
+const accessKeyId=process.env.S3_ACCESS_KEY_ID||'';
+const secretAccessKey=process.env.S3_SECRET_ACCESS_KEY||'';
 
-const required=['S3_ENDPOINT','S3_BUCKET','S3_ACCESS_KEY_ID','S3_SECRET_ACCESS_KEY'];
-const missing=required.filter(name=>!(process.env[name]||'').trim());
+const missing=[];
+if(!endpointValue)missing.push('S3_ENDPOINT/--endpoint');
+if(!bucketValue)missing.push('S3_BUCKET/--bucket');
+if(!accessKeyId)missing.push('S3_ACCESS_KEY_ID');
+if(!secretAccessKey)missing.push('S3_SECRET_ACCESS_KEY');
 if(missing.length>0){
   console.error(`Missing S3 configuration: ${missing.join(', ')}`);
-  console.error('Put these in the existing .env (same keys used by assets:push) or export them before running pnpm cdn:upload.');
+  console.error('Set them in .env or export them before running pnpm cdn:upload.');
   process.exit(2);
 }
 
@@ -69,6 +75,7 @@ function assert(condition,message){
 }
 
 function safePrefix(value){
+  if(value==='')return '';
   const parts=value.split('/');
   assert(parts.length>0&&parts.every(part=>/^[A-Za-z0-9._-]+$/.test(part)),'The CDN prefix must contain only safe path segments');
   assert(!parts.some(part=>part==='.'||part==='..'),'The CDN prefix must not contain . or ..');
@@ -82,44 +89,37 @@ function validateEndpoint(value){
 }
 
 function validatePublicBase(value){
-  assert(typeof value==='string'&&value.length>0,'No public CDN base found. Pass --public-base <https://...> or add publicBase to the existing manifest.');
+  if(!value)return '';
   const url=new URL(value);
   assert(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash,'The public CDN base must be an HTTPS URL without credentials or query');
   return value.replace(/\/+$/,'');
 }
 
 const target={
-  endpoint:validateEndpoint(process.env.S3_ENDPOINT),
-  bucket:process.env.S3_BUCKET,
-  region:process.env.S3_REGION?.trim()||'auto',
-  credentials:{
-    accessKeyId:process.env.S3_ACCESS_KEY_ID,
-    secretAccessKey:process.env.S3_SECRET_ACCESS_KEY,
-  },
+  endpoint:validateEndpoint(endpointValue),
+  bucket:bucketValue,
+  region:regionValue.trim()||'auto',
+  credentials:{accessKeyId,secretAccessKey},
 };
 assert(/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/.test(target.bucket),'S3_BUCKET is invalid');
 assert(/^[a-z0-9-]{1,64}$/.test(target.region),'S3_REGION is invalid');
 assert(/^[A-Za-z0-9_-]{3,128}$/.test(target.credentials.accessKeyId),'S3_ACCESS_KEY_ID is invalid');
 assert(target.credentials.secretAccessKey.length>=16&&target.credentials.secretAccessKey.length<=256&&/^[\x21-\x7e]+$/.test(target.credentials.secretAccessKey),'S3_SECRET_ACCESS_KEY is invalid');
-if(!allowTargetChange&&oldManifest){
-  if(oldManifest.endpoint&&oldManifest.endpoint!==target.endpoint){
-    console.error(`S3_ENDPOINT (${target.endpoint}) does not match the CDN manifest target (${oldManifest.endpoint}).`);
-    console.error('Update .env to the CDN endpoint or pass --allow-target-change when intentionally moving the manifest.');
-    process.exit(2);
-  }
-  if(oldManifest.bucket&&oldManifest.bucket!==target.bucket){
-    console.error(`S3_BUCKET (${target.bucket}) does not match the CDN manifest bucket (${oldManifest.bucket}).`);
-    console.error('Update .env to the CDN bucket or pass --allow-target-change when intentionally moving the manifest.');
-    process.exit(2);
-  }
+
+const explicitPublicBase=option('public-base',null);
+const targetChanged=Boolean(oldManifest&&((oldManifest.endpoint&&oldManifest.endpoint!==target.endpoint)||(oldManifest.bucket&&oldManifest.bucket!==target.bucket)));
+const publicBase=validatePublicBase(explicitPublicBase??(targetChanged?'':oldManifest?.publicBase||''));
+if(targetChanged&&explicitPublicBase===null){
+  console.warn('CDN target changed from the manifest; public URLs are cleared until --public-base is provided.');
 }
 
 safePrefix(prefix);
-validatePublicBase(publicBase);
 
 const sha256=value=>createHash('sha256').update(value).digest('hex');
 const hmac=(key,value)=>createHmac('sha256',key).update(value).digest();
 const encodeSegment=value=>encodeURIComponent(value).replace(/[!'()*]/g,character=>`%${character.charCodeAt(0).toString(16).toUpperCase()}`);
+function keyFor(...parts){return [prefix,...parts].filter(Boolean).join('/');}
+function cdnUrlFor(key){if(!publicBase)return null;const relative=prefix?key.slice(prefix.length+1):key;return `${publicBase}/${relative}`;}
 
 function sign(method,key,{body=Buffer.alloc(0),headers={}}={}){
   const pathname=`/${encodeSegment(target.bucket)}/${key.split('/').map(encodeSegment).join('/')}`;
@@ -204,20 +204,20 @@ async function buildPlan(){
     assert(existsSync(root),`Missing concept directory: ${root}`);
     const names=await readdir(root);
     for(const name of names.sort()){
-      if(name.endsWith('.png'))add(plan,path.join(root,name),`${prefix}/${directory}/${name}`,'image/png','public, max-age=604800');
+      if(name.endsWith('.png'))add(plan,path.join(root,name),keyFor(directory,name),'image/png','public, max-age=604800');
     }
     for(const name of names.sort()){
-      if(name.startsWith('contact-')&&name.endsWith('.jpg'))add(plan,path.join(root,name),`${prefix}/review/contact/${directory}/${name}`,'image/jpeg','public, max-age=604800');
+      if(name.startsWith('contact-')&&name.endsWith('.jpg'))add(plan,path.join(root,name),keyFor('review/contact',directory,name),'image/jpeg','public, max-age=604800');
     }
     for(const name of ['prompts.json','ledger.json']){
-      if(existsSync(path.join(root,name)))add(plan,path.join(root,name),`${prefix}/ledgers/${directory}/${name}`,'application/json','public, max-age=300');
+      if(existsSync(path.join(root,name)))add(plan,path.join(root,name),keyFor('ledgers',directory,name),'application/json','public, max-age=300');
     }
   }
-  add(plan,path.join(workspace,'icarus','icarus-s-limited.png'),`${prefix}/icarus/icarus-s-limited.png`,'image/png','public, max-age=604800');
-  add(plan,path.join(workspace,'review-all.html'),`${prefix}/review-all.html`,'text/html; charset=utf-8','public, max-age=300');
-  add(plan,path.join(workspace,'concepts-v2','review.html'),`${prefix}/concepts-v2/review.html`,'text/html; charset=utf-8','public, max-age=300');
-  add(plan,path.join(workspace,'concepts-v3','review.html'),`${prefix}/concepts-v3/review.html`,'text/html; charset=utf-8','public, max-age=300');
-  for(const name of docs)add(plan,path.join(repoRoot,'specs','pet-arena',name),`${prefix}/docs/${name}`,'text/markdown; charset=utf-8','public, max-age=300');
+  add(plan,path.join(workspace,'icarus','icarus-s-limited.png'),keyFor('icarus','icarus-s-limited.png'),'image/png','public, max-age=604800');
+  add(plan,path.join(workspace,'review-all.html'),keyFor('review-all.html'),'text/html; charset=utf-8','public, max-age=300');
+  add(plan,path.join(workspace,'concepts-v2','review.html'),keyFor('concepts-v2','review.html'),'text/html; charset=utf-8','public, max-age=300');
+  add(plan,path.join(workspace,'concepts-v3','review.html'),keyFor('concepts-v3','review.html'),'text/html; charset=utf-8','public, max-age=300');
+  for(const name of docs)add(plan,path.join(repoRoot,'specs','pet-arena',name),keyFor('docs',name),'text/markdown; charset=utf-8','public, max-age=300');
   return plan;
 }
 
@@ -261,7 +261,7 @@ async function main(){
         const previous=oldFiles.get(entry.key);
         files.push({
           key:entry.key,
-          cdnUrl:`${publicBase}/${entry.key.slice(prefix.length+1)}`,
+          cdnUrl:cdnUrlFor(entry.key),
           bytes:body.length,
           sha256:hash,
           contentType:entry.contentType,
@@ -273,12 +273,12 @@ async function main(){
       }
       if(dryRun){
         uploaded.push(entry.key);
-        files.push({key:entry.key,cdnUrl:`${publicBase}/${entry.key.slice(prefix.length+1)}`,bytes:body.length,sha256:hash,contentType:entry.contentType,status:remote.exists?'size-mismatch':'missing',etag:remote.etag,uploadedAtUtc:oldFiles.get(entry.key)?.uploadedAtUtc||null});
+        files.push({key:entry.key,cdnUrl:cdnUrlFor(entry.key),bytes:body.length,sha256:hash,contentType:entry.contentType,status:remote.exists?'size-mismatch':'missing',etag:remote.etag,uploadedAtUtc:oldFiles.get(entry.key)?.uploadedAtUtc||null});
         continue;
       }
       const result=await put(entry.key,body,entry.contentType,entry.cacheControl);
       uploaded.push(entry.key);
-      files.push({key:entry.key,cdnUrl:`${publicBase}/${entry.key.slice(prefix.length+1)}`,bytes:body.length,sha256:hash,contentType:entry.contentType,status:force?'forced':remote.exists?'size-mismatch':'uploaded',etag:result.etag,uploadedAtUtc:now});
+      files.push({key:entry.key,cdnUrl:cdnUrlFor(entry.key),bytes:body.length,sha256:hash,contentType:entry.contentType,status:force?'forced':remote.exists?'size-mismatch':'uploaded',etag:result.etag,uploadedAtUtc:now});
     }catch(error){
       failures.push({key:entry.key,message:error.message});
     }
@@ -307,12 +307,12 @@ async function main(){
     endpoint:target.endpoint,
     publicBase,
     prefix,
-    manifestCdnUrl:`${publicBase}/ledgers/mvp-wave1-cdn-assets.json`,
+    manifestCdnUrl:publicBase?`${publicBase}/ledgers/mvp-wave1-cdn-assets.json`:null,
     uploadedAtUtc:now,
     access:oldManifest?.access||{mode:'r2.dev public development URL',warning:'Rate-limited and not recommended for production. Connect a custom domain to the bucket for production workloads.',cors:'none set'},
     counts:countsFor(files),
     totalBytes:files.reduce((sum,file)=>sum+file.bytes,0),
-    reviewSheets:{unified:`${publicBase}/review-all.html`,v2:`${publicBase}/concepts-v2/review.html`,v3:`${publicBase}/concepts-v3/review.html`},
+    reviewSheets:publicBase?{unified:`${publicBase}/review-all.html`,v2:`${publicBase}/concepts-v2/review.html`,v3:`${publicBase}/concepts-v3/review.html`}:null,
     unityBuild:oldManifest?.unityBuild||{status:'NOT_UPLOADED',reason:'No production-ready player build exists; ProjectBuild.Linux builds a Development player only.'},
     files:files.sort((left,right)=>left.key.localeCompare(right.key)),
   };

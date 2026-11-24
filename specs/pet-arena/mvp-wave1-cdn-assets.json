@@ -6,7 +6,7 @@
   "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
   "prefix": "aetheria/mvp-wave1/v1",
   "manifestCdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/mvp-wave1-cdn-assets.json",
-  "uploadedAtUtc": "2026-11-24T13:26:24.934Z",
+  "uploadedAtUtc": "2026-11-24T13:29:54.470Z",
   "access": {
     "mode": "r2.dev public development URL",
     "warning": "Rate-limited and not recommended for production. Connect a custom domain to the bucket for production workloads.",
