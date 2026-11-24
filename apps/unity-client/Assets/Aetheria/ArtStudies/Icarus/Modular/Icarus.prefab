@@ -493,6 +493,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -1728013695380148634, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8712771175226947494}
+    - targetCorrespondingSourceObject: {fileID: -1728013695380148634, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1116143599496990617}
   m_SourcePrefab: {fileID: -3956505258223990651, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
 --- !u!4 &2047255072797660015 stripped
 Transform:
@@ -552,6 +555,25 @@ MonoBehaviour:
   line: {fileID: 0}
   width: 0.006
   defaultOff: 1
+--- !u!114 &1116143599496990617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2437135915683827304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d0c61e06dc27644a4f1e26e02af865, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Aetheria.Icarus.Presentation::Aetheria.Icarus.IcarusFireZonePresentation
+  boardRoot: {fileID: 0}
+  cellSize: 1
+  boardOrigin: {x: 0, y: 0, z: 0}
+  decalMaterial: {fileID: 0}
+  decalColor: {r: 1, g: 0.32, b: 0.08, a: 0.48}
+  particleColor: {r: 1, g: 0.48, b: 0.08, a: 1}
+  mode: 1
 --- !u!4 &5206047590746050854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 137700858803990824, guid: 394746fe935221cb7a191fa99d3f0c61, type: 3}
