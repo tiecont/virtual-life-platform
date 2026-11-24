@@ -185,6 +185,19 @@
       "qualificationRequirements": [],
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "freeTierConfigurationFollowup": {
+          "sourceRevision": "398e78c6eac6946d1318d2d74f95035a847ff7a0",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "change": "Added all23 legacy binary manifests from the immutable migration plan, strict source-byte/hash validation, final route-free portal/admin Worker target configs, and an offline readiness gate for aetheria-assets-local, aetheria-assets-prod and Upstash REST. No resource, DNS, route, secret, upload or deployment was created.",
+          "commands": [
+            {"command": "pnpm infra:check", "exitCode": 0, "result": "23/23 legacy sources totaling52386333 bytes match manifests; both asset targets private; workers_dev/preview URLs off; Upstash production requirements valid; no Kubernetes deployment"},
+            {"command": "node --test tests/governance/cloudflare-environment.test.mjs tests/governance/cloudflare-readiness.test.mjs tests/governance/legacy-asset-manifests.test.mjs tests/governance/assets-s3.test.mjs", "exitCode": 0, "result": "Governance, owned-loopback S3 SigV4, cache and readiness tests PASS with zero skipped tests"},
+            {"command": "node scripts/media/assets-pull.mjs --dry-run", "exitCode": 0, "result": "23 manifests,0 cached,23 pending,network=false; no credentials required"},
+            {"command": "pnpm exec eslint scripts/verify-cloudflare-readiness.mjs scripts/verify-legacy-asset-manifests.mjs tests/governance/cloudflare-readiness.test.mjs tests/governance/legacy-asset-manifests.test.mjs", "exitCode": 0},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "liveProbe": "NOT_RUN: Cloudflare MCP tools were not callable in this session; Wrangler is not a project dependency. Static readiness is verified and no live account/provider claim is made."
+        },
         "privateDelivery": {
           "entrypoint": "scripts/private-art-delivery.mjs",
           "specification": "specs/media/private-art-delivery.md",
@@ -3641,6 +3654,24 @@
       ],
       "implementation": {
     "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
+    "ciTurboVerification": {
+      "sourceRevision": "398e78c6eac6946d1318d2d74f95035a847ff7a0",
+      "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+      "change": "Quality now runs static/unit/build and four PostgreSQL integration shards concurrently, reports one aggregate from config/ci-capacity.json with zero pending/todo/failed tests, uses four Vitest workers and four browser matrix slots, caches pnpm, .next, pinned Playwright and Rust, and caps Node/Cargo jobs for a 4-vCPU/16-GB runner. Feature branches are verified by pull_request only, avoiding duplicate push matrices; push remains the post-merge main gate.",
+      "commands": [
+        {"command": "pnpm audit --prod --json", "exitCode": 1, "result": "Before upgrade:7 moderate Next.js advisories affecting16.4.4; the Next build security gate correctly stopped the full check"},
+        {"command": "pnpm install --lockfile-only && pnpm install --frozen-lockfile", "exitCode": 0, "result": "Both Next.js apps upgraded from exact16.4.4 to patched exact16.4.6 and the lockfile updated"},
+        {"command": "pnpm --filter @aetheria/admin-web build && pnpm --filter @aetheria/portal-web build", "exitCode": 0, "result": "Both production builds pass on Next16.4.6 without bypassing the advisory gate"},
+        {"command": "pnpm audit --prod --json (after upgrade)", "exitCode": 0, "result": "0 critical/high/moderate/low production advisories"},
+        {"command": "pnpm ci:check", "exitCode": 0, "result": "Workflow pins, action SHAs, browser coverage, four-shard topology, cache restore contract and artifact aggregate PASS; hosted required-check settings NOT_RUN"},
+        {"command": "node --test tests/governance/ci.test.mjs tests/governance/rust-workflow.test.mjs tests/governance/artifact-release.test.mjs tests/governance/vitest-reports.test.mjs", "exitCode": 0, "result": "All focused governance tests PASS, including missing/failed/skipped/empty shard rejection"},
+        {"command": "node scripts/prepare-ci-browser.mjs (twice)", "exitCode": 0, "result": "First invocation extracted and launched pinned Chromium156.0.8078.80; second reported cached=true and still passed host ldd, render and screenshot preflight"},
+        {"command": "python3 yaml.safe_load(.github/workflows/quality.yml,.github/workflows/rust-runtime.yml)", "exitCode": 0, "result": "Both workflow documents parse; this is syntax evidence, not hosted execution"},
+        {"command": "pnpm exec eslint focused CI scripts and governance tests", "exitCode": 0},
+        {"command": "git diff --check", "exitCode": 0}
+      ],
+      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity is813 and the dependent MVP PR raises the same versioned aggregate to837."
+    },
     "imageNavigationDiagnosticsVerification": {
       "sourceRevision": "deb5c2866aede77c4ee428b9dd54dded0806cd6c",
       "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -4808,6 +4839,40 @@
         "standardAssetSkill": ".agents/skills/aetheria-standard-asset-3d/SKILL.md",
         "scope": "Two canonical 3D skills: Charakuru-to-VRM hero production and direct Tripo/Meshy standard-asset production, with separate owner, poly-budget, provenance, SHA-256 and Unity admission gates. Documentation only; no new model, accepted benchmark or task-wide completion claimed.",
         "remaining": "Validate the process against an actual reference-quality pilot; signed authoring conventions, measured shader/VRAM budgets and production character assets remain open.",
+        "wave1MvpPipeline": {
+          "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
+          "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
+          "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
+          "hostedCi": {
+            "sourceRevision": "5a73f74582136b290a4b02e3f76de6e00d0ed36b",
+            "result": "27/27 SUCCESS",
+            "pullRequestWorkflow": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243132772",
+            "pushWorkflow": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243122064",
+            "linuxFoundation": ["https://github.com/tiecont/virtual-life-platform/actions/runs/45243122188", "https://github.com/tiecont/virtual-life-platform/actions/runs/45243132724"],
+            "workersBuild": "https://dash.cloudflare.com/d3bfda28cf2c59b0220f1f0f69a77ce3/workers/services/view/virtual-life-platform/production/builds/f03259a5-52c7-4725-8346-f6864734d87c",
+            "note": "Includes core, runtime images, Linux foundation, Workers, change plan and all eight browser groups in both trigger contexts. The evidence-only final head requires its own green CI before merge."
+          },
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+          "skills": [".agents/skills/aetheria-hero-character-vrm/SKILL.md", ".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
+          "scripts": ["scripts/art/blender_normalize_r2_batch.py", "scripts/art/validate-mvp-wave1.mjs"],
+          "scope": "Priority-1 free Tripo GPT Image 2.5 lane, Blender 5.3 production workspace, 28K provider-candidate Hero Wings ceiling with final assembled contract retained, robust scale/pivot/triangle normalization, schema-compatible R2 manifests, and dependency-free Wave 1 catalog validation.",
+          "commands": [
+            {"command": "python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-hero-character-vrm && python3 /home/tiecont/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/aetheria-standard-asset-3d", "exitCode": 0, "result": "Both canonical skills PASS."},
+            {"command": "python3 -m unittest discover -s tests/art -p 'test_*.py'", "exitCode": 0, "result": "21 PASS on the current implementation tree."},
+            {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "43 Pets in exact 1/6/6/30 composition; six elements/maps; ten used base meshes; eighteen accessories; six arena kits; canonical source hashes and release state PASS."},
+            {"command": "pnpm exec eslint scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
+            {"command": "python3 -m py_compile scripts/art/blender_normalize_r2_batch.py && node --check scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
+            {"command": "pnpm build:packages && pnpm assets:check", "exitCode": 0, "result": "All 18 package builds PASS; original avatar atlas/provenance and seven scene manifests PASS; draft Pet and Icarus asset checks retain explicit missing bindings, rights PENDING, Unity/render NOT_TESTED and productionReady false."},
+            {"command": "Blender 5.3 headless GLB fixture normalization", "exitCode": 0, "result": "24 triangles; target height 2.0m; bottom-center root at world origin; actual export SHA256 f896ad9fa271eab5f3b287c6ede2b4b749a01b547076fb070354f1f9af76422f; manifest schema PASS."},
+            {"command": "Blender 5.3 headless .blend fixture normalization", "exitCode": 0, "result": "12 triangles; target height 3.0m; actual GLB export and manifest PASS."},
+            {"command": "Blender 5.3 headless over-budget fixture", "exitCode": 1, "result": "Expected fail-closed result: 24-triangle fixture rejected by a 10-triangle LOD0 budget; no manifest produced."},
+            {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance/release consistency and binary hygiene PASS; indexed historical retrieval is not fresh runtime acceptance."},
+            {"command": "git diff --check", "exitCode": 0}
+          ],
+          "limitations": "The evidence-only final head still requires hosted CI; the implementation head passed 27/27 and a real normalized Pet/Prop source remains pending. Blender fixtures validate mechanics, not visual or Unity admission. No paid provider call, owner art approval or task completion is claimed.",
+          "nextAction": "Run exact hosted CI on the finished PR head, then reconcile the next real Tripo Pet batch through the normalizer."
+        },
         "skillVerification": {
           "sourceRevision": "99d7469ef2f87a7f1470dd457e7c3f3777c1e95f",
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
@@ -5635,6 +5700,20 @@
       "wave": "P0/P4",
       "specification": "specs/pet-arena/v2.md; specs/pet-arena/art-direction.md",
       "draftContract": "Strict typed asset/source/import hash references, all eleven animation semantics and six-hero/boss missing-asset preflight. Explicit 19-element art direction and original catalog-aligned model/animation briefs. Draft only; no runtime activation or production publication port.",
+      "wave1MvpBlueprint": {
+        "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
+        "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
+        "hostedCi": {"sourceRevision": "5a73f74582136b290a4b02e3f76de6e00d0ed36b", "result": "27/27 SUCCESS", "runs": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243122064 and https://github.com/tiecont/virtual-life-platform/actions/runs/45243132772"},
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+        "scope": "Canonical 43-Pet Wave 1 lock: Icarus, six Standard S, six map legendary bosses, thirty map regulars over ten shared race bases, eighteen element/stage evolution accessories and six modular arena kits.",
+        "canonicalSources": ["specs/pet-arena/v3.1/data/pets_initial_240.json", "specs/pet-arena/v3.1/data/maps_19.json", "specs/pet-arena/v3.1/data/standard_gacha_pets_6.json", "packages/contracts/src/pet-acquisition-catalog-v3.ts"],
+        "ownerBoundary": "The five remaining Limited S identities remain excluded under VL-172. Concept images are not models, rigs, motion, rights clearance or production approval.",
+        "availableCheck": {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "At implementation source: exact identity, map membership, base grouping, accessory, arena and source-hash invariants PASS."},
+        "limitations": "The implementation head passed 27/27 hosted checks; its evidence-only final head remains pending. Actual portrait/icon/tile atlas, animation bindings, Unity preview, measured performance and owner/rights review remain open.",
+        "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
+      },
       "limitedBindingVerification": {
         "sourceRevision": "9a9e250d7ba59f8e03ed718906ba8709d69a9597",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -7220,7 +7299,7 @@
         "Radial and six-legged locomotion are valid; board stays stationary/visible; animation never decides results",
         "LOD/performance, reduced motion and event dedupe verified in licensed Linux Unity; integrate VL-146 companion adapter and VL-133 combat events when ready"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Original asset provenance/rights and actual Unity motion/render acceptance; physical Windows separately"
       ],
@@ -7231,6 +7310,34 @@
       ],
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
+        "conceptBatch1": {
+          "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
+          "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+          "state": "OWNER_REVIEW_REQUIRED",
+          "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
+          "workspace": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1",
+          "reviewSheet": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/index.html",
+          "reviewNotes": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/review/README.md",
+          "ledger": "/home/tiecont/Projects/Aetheria-Workspace/mvp-wave1/concepts/generation-ledger.json",
+          "assets": 22,
+          "composition": {"standardS": 6, "mapLegendary": 6, "sharedRaceBase": 10},
+          "provider": "Tripo Studio Image",
+          "model": "GPT Image 2.5",
+          "freeQuotaBefore": 0,
+          "freeQuotaAfter": 22,
+          "freeQuotaLimit": 100,
+          "paidCreditsConsumed": 0,
+          "paidBalanceObservedBefore": 1910,
+          "paidBalanceObservedAfter": 1910,
+          "commands": [
+            {"command": "Tripo Studio Image UI, GPT Image 2.5, one 4:3 image per request", "exitCode": 0, "result": "22 unique task IDs; free counter advanced 0→22; visible model checked before each run; paid balance remained 1910; no paid fallback."},
+            {"command": "node artifacts/mvp-wave1-generator/build-review.mjs", "exitCode": 0, "result": "22 valid PNGs; 22 unique SHA-256 values; six Standard, six bosses, ten race bases; review HTML, Markdown, manifest and ledger generated."},
+            {"command": "Chrome local HTML inspection at 1920px desktop and 390px mobile", "exitCode": 0, "result": "All implementations loaded; grouped cards, owner decision controls and 22-item checklist render without horizontal overflow; screenshots retained under review/assets."}
+          ],
+          "transientIssue": "One boss image request ended in ERR_NETWORK_CHANGED after the task completed. Reload recovered the existing task image without a duplicate generation.",
+          "limitations": "PNG concepts are not editable models, rigs, animation or Unity acceptance. Owner approval is missing for all 22. Keep outside Git and PUBLISHED OFF.",
+          "nextAction": "Owner approves or marks revisions for all 22 in one review sitting; then start approved Smart Mesh batches with no paid call without a quote and authorization."
+        },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
       }
     },
@@ -7558,6 +7665,47 @@
         "Explicit owner public release authorization",
         "Brand/legal, media rights, privacy/retention, sender/domain and SPF/DKIM/DMARC approval"
       ]
+    },
+    {
+      "id": "VL-175",
+      "feature": "Pet-Arena",
+      "title": "Wave 1 MVP deterministic backend game loop",
+      "objective": "Implement a bounded offline/test-only backend contract for the six core combat elements, evolution at20/40/60, six regular-plus-boss maps, and the Icarus Limited banner with six Standard-S off-rate candidates.",
+      "priority": 2,
+      "dependsOn": [],
+      "acceptance": [
+        "Separate versioned Rust rules preserve frozen v1 bytes and cover a complete6x6 effectiveness matrix, max-level60 evolution, deterministic campaign progression and gacha pity/guarantee order",
+        "Platform API DTOs are strict and authenticated, expose no client entropy or mutation, and stay unavailable unless a test/local composition explicitly enables them",
+        "Rust unit tests and24 new real PostgreSQL/HTTP integration cases pass with zero skipped or ignored tests; final aggregate is837 after the813-test foundation"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "sourceRevision": "9adc13311faaf537f3fef8fe96edf015b907ee8b",
+        "source": "crates/aetheria-pet-arena/src/wave1_mvp.rs; apps/platform-api/src/features/pets/modules/wave1",
+        "ruleset": "aetheria-pet-arena-wave1-mvp",
+        "rulesHash": "769f4b614239d4fb083f4e80194b39275521eefc4ef83f451e87f2642b7ce1c5",
+        "scope": "Six gacha-aligned core elements fire/water/electric/ghost/ground/light; six maps from Cinder Terraces through Dawn Prism Sanctum; regular and boss encounters; staged stats and unlocks at20/40/60; Icarus featured at50percent and six equal-weight Standard-S off-rate identities. Preview APIs are authenticated, no-store and default-off.",
+        "remaining": "Durable ownership/progress/wallet persistence, runtime-authoritative match allocation, Unity presentation and production publication remain outside this offline DTO/rules slice. Hosted CI and merge are pending."
+      },
+      "verification": {
+        "sourceRevision": "9adc13311faaf537f3fef8fe96edf015b907ee8b",
+        "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
+        "commands": [
+          {"command": "cargo test --locked --package aetheria-pet-arena", "exitCode": 0, "result": "All existing v1/v3 tests plus10 Wave1 unit tests PASS, including full six-map boss campaign, matrix bounds, evolution boundaries and hard pity"},
+          {"command": "cargo clippy --locked --package aetheria-pet-arena --all-targets -- -D warnings", "exitCode": 0},
+          {"command": "cargo fmt --all -- --check", "exitCode": 0},
+          {"command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/pet-arena-wave1.test.ts", "exitCode": 0, "result": "24/24 real PostgreSQL/HTTP tests PASS with zero skipped; owned container/network cleanup completed"},
+          {"command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0},
+          {"command": "pnpm --filter @aetheria/platform-api build", "exitCode": 0},
+          {"command": "pnpm exec eslint apps/platform-api/src/features/pets/modules/wave1 apps/platform-api/src/app.ts tests/integration/pet-arena-wave1.test.ts", "exitCode": 0},
+          {"command": "pnpm architecture:check", "exitCode": 0, "result": "144 SQL tables,522 source files and declared Pet public entry PASS"},
+          {"command": "pnpm check", "exitCode": 0, "result": "Combined infra+backend tree passed 197 governance,541 unit and837 real PostgreSQL integration tests with zero skipped, plus lint/types/all package and application builds on exact pre-metadata source"},
+          {"command": "git diff --check", "exitCode": 0}
+        ],
+        "fullGate": "PASS on the combined infra+backend source at the code tree immediately before this metadata-only record: 197 governance,541 unit,837 integration, all builds; zero skipped."
+      }
     }
   ]
 }

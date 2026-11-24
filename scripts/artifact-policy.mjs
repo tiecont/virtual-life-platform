@@ -28,11 +28,13 @@ export function imageChanges(files) {
 }
 
 export function artifactCiResult(needs) {
-  if (!needs || typeof needs !== 'object' || Array.isArray(needs) || Object.keys(needs).sort().join(',') !== 'browser,core,images,plan') return false;
-  if (!['plan', 'core', 'browser'].every(job => needs[job]?.result === 'success')) return false;
+  if (!needs || typeof needs !== 'object' || Array.isArray(needs) || Object.keys(needs).sort().join(',') !== 'browser,core,images,integration,plan') return false;
+  if (!['plan', 'core', 'integration', 'browser'].every(job => needs[job]?.result === 'success')) return false;
   const images = needs.plan.outputs?.images;
   return images === 'true' ? needs.images?.result === 'success' : images === 'false' && needs.images?.result === 'skipped';
 }
+
+export const integrationJobNames = Array.from({length: 4}, (_, index) => `integration (${index + 1}/4)`);
 
 export function trustedRun(run, jobs, groups, {allowNoImages = false} = {}) {
   assert(run && run.repository?.full_name === repository && run.head_repository?.full_name === repository);
@@ -40,7 +42,7 @@ export function trustedRun(run, jobs, groups, {allowNoImages = false} = {}) {
   assert.equal(run.event, 'push'); assert.equal(run.head_branch, 'main'); assert(shaPattern.test(run.head_sha));
   assert.equal(run.status, 'completed'); assert.equal(run.conclusion, 'success');
   assert(Number.isSafeInteger(run.id) && run.id > 0 && Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0);
-  const names = ['change-plan', 'core-checks', 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')];
+  const names = ['change-plan', 'core-checks', ...integrationJobNames, 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')];
   assert(Array.isArray(jobs));
   for (const name of names) {
     const matches = jobs.filter(job => job.name === name);

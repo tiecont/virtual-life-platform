@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-design-v5-back-native",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-design-v5-back-native/1.0.0/back-native.png",
+  "sha256": "7448ede001e2db1768e4db4fa17fda7b7edc1e4126a0b1b15ffdea3fb12e4e4a",
+  "sizeBytes": 2191962,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-design-v5-back-native/1.0.0/back-native.png"
+}

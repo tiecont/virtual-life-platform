@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-owner-battle-reference",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-icarus-owner-battle-reference/1.0.0/owner-battle-reference.png",
+  "sha256": "af3d8af34268cb01b29fd400e62b71378c0c2176b72991ebfcfd3e722f0eb76c",
+  "sizeBytes": 2841168,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-owner-battle-reference/1.0.0/owner-battle-reference.png"
+}
