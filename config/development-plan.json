@@ -425,6 +425,24 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": ["Art direction and asset provenance/rights review; Windows hardware qualification separately"],
       "implementation": {
+        "unityMainConflictResolution": {
+          "sourceRevision": "0ea02b80775e19e6cfb9c163fadfb8c95d70c9fc",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "change": "Resolved three Unity assembly reference conflicts and the Unity package lock after main aca6d59. Addressables dependencies, Icarus references and all pinned Git packages coexist.",
+          "commands": [
+            {
+              "command": "UNITY_EDITOR=<6000.3.14f1>/Editor/Unity node scripts/unity-validate.mjs tests",
+              "exitCode": 0,
+              "result": "29 EditMode and 6 PlayMode PASS, zero failed or skipped. NativePlayerFixture belongs to the standalone runner."
+            },
+            {
+              "command": "pnpm governance:check; pnpm assets:check",
+              "exitCode": 0,
+              "result": "Both asset hashes match; Wings uses the existing waiver and Bow is within the triangle budget."
+            }
+          ],
+          "remaining": "Hosted verification for the merge result and separate owner H2 review."
+        },
         "phase1IntegrationShard": {
           "sourceRevision": "7edebb128e270077b98c64904e870abcd9dfb331",
           "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -470,7 +488,7 @@
             {
               "command": "pnpm assets:check",
               "exitCode": 0,
-              "result": "Both pinned Wings and Bow waivers applied."
+              "result": "Both pinned accessory hashes matched. Wings used the waiver and Bow was within the triangle budget."
             },
             {
               "command": "pnpm infra:check",
