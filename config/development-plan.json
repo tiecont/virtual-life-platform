@@ -4723,6 +4723,15 @@
           "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
           "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
           "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
+          "hostedCi": {
+            "sourceRevision": "5a73f74582136b290a4b02e3f76de6e00d0ed36b",
+            "result": "27/27 SUCCESS",
+            "pullRequestWorkflow": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243132772",
+            "pushWorkflow": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243122064",
+            "linuxFoundation": ["https://github.com/tiecont/virtual-life-platform/actions/runs/45243122188", "https://github.com/tiecont/virtual-life-platform/actions/runs/45243132724"],
+            "workersBuild": "https://dash.cloudflare.com/d3bfda28cf2c59b0220f1f0f69a77ce3/workers/services/view/virtual-life-platform/production/builds/f03259a5-52c7-4725-8346-f6864734d87c",
+            "note": "Includes core, runtime images, Linux foundation, Workers, change plan and all eight browser groups in both trigger contexts. The evidence-only final head requires its own green CI before merge."
+          },
           "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
           "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
           "skills": [".agents/skills/aetheria-hero-character-vrm/SKILL.md", ".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
@@ -4734,13 +4743,14 @@
             {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "43 Pets in exact 1/6/6/30 composition; six elements/maps; ten used base meshes; eighteen accessories; six arena kits; canonical source hashes and release state PASS."},
             {"command": "pnpm exec eslint scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
             {"command": "python3 -m py_compile scripts/art/blender_normalize_r2_batch.py && node --check scripts/art/validate-mvp-wave1.mjs", "exitCode": 0},
+            {"command": "pnpm build:packages && pnpm assets:check", "exitCode": 0, "result": "All 18 package builds PASS; original avatar atlas/provenance and seven scene manifests PASS; draft Pet and Icarus asset checks retain explicit missing bindings, rights PENDING, Unity/render NOT_TESTED and productionReady false."},
             {"command": "Blender 5.3 headless GLB fixture normalization", "exitCode": 0, "result": "24 triangles; target height 2.0m; bottom-center root at world origin; actual export SHA256 f896ad9fa271eab5f3b287c6ede2b4b749a01b547076fb070354f1f9af76422f; manifest schema PASS."},
             {"command": "Blender 5.3 headless .blend fixture normalization", "exitCode": 0, "result": "12 triangles; target height 3.0m; actual GLB export and manifest PASS."},
             {"command": "Blender 5.3 headless over-budget fixture", "exitCode": 1, "result": "Expected fail-closed result: 24-triangle fixture rejected by a 10-triangle LOD0 budget; no manifest produced."},
             {"command": "pnpm governance:check", "exitCode": 0, "result": "Governance/release consistency and binary hygiene PASS; indexed historical retrieval is not fresh runtime acceptance."},
             {"command": "git diff --check", "exitCode": 0}
           ],
-          "limitations": "Hosted final-head CI and a real normalized Pet/Prop source remain pending. Blender fixtures validate mechanics, not visual or Unity admission. No paid provider call, owner art approval or task completion is claimed.",
+          "limitations": "The evidence-only final head still requires hosted CI; the implementation head passed 27/27 and a real normalized Pet/Prop source remains pending. Blender fixtures validate mechanics, not visual or Unity admission. No paid provider call, owner art approval or task completion is claimed.",
           "nextAction": "Run exact hosted CI on the finished PR head, then reconcile the next real Tripo Pet batch through the normalizer."
         },
         "skillVerification": {
@@ -5574,13 +5584,14 @@
         "sourceRevision": "3a9e03b70cc6fd5ee6847a40633100d0fee0a8c6",
         "baseRevision": "dbed5530c4e1e2e50d2f897b5c7aad9697fe2778",
         "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/71",
+        "hostedCi": {"sourceRevision": "5a73f74582136b290a4b02e3f76de6e00d0ed36b", "result": "27/27 SUCCESS", "runs": "https://github.com/tiecont/virtual-life-platform/actions/runs/45243122064 and https://github.com/tiecont/virtual-life-platform/actions/runs/45243132772"},
         "reviewMode": "SINGLE_AGENT_SELF_REVIEW",
         "specification": "specs/pet-arena/mvp-wave1-43-pets.json",
         "scope": "Canonical 43-Pet Wave 1 lock: Icarus, six Standard S, six map legendary bosses, thirty map regulars over ten shared race bases, eighteen element/stage evolution accessories and six modular arena kits.",
         "canonicalSources": ["specs/pet-arena/v3.1/data/pets_initial_240.json", "specs/pet-arena/v3.1/data/maps_19.json", "specs/pet-arena/v3.1/data/standard_gacha_pets_6.json", "packages/contracts/src/pet-acquisition-catalog-v3.ts"],
         "ownerBoundary": "The five remaining Limited S identities remain excluded under VL-172. Concept images are not models, rigs, motion, rights clearance or production approval.",
         "availableCheck": {"command": "node scripts/art/validate-mvp-wave1.mjs", "exitCode": 0, "result": "At implementation source: exact identity, map membership, base grouping, accessory, arena and source-hash invariants PASS."},
-        "limitations": "Exact final-head hosted CI pending; actual portrait/icon/tile atlas, animation bindings, Unity preview, measured performance and owner/rights review remain open.",
+        "limitations": "The implementation head passed 27/27 hosted checks; its evidence-only final head remains pending. Actual portrait/icon/tile atlas, animation bindings, Unity preview, measured performance and owner/rights review remain open.",
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
       },
       "limitedBindingVerification": {
