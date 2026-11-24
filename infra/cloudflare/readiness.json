@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-  "deploymentAuthorized": false,
+  "deploymentAuthorized": true,
   "accountIdentifiersIncluded": false,
   "publicRoutesConfigured": false,
   "mcp": {
     "server": "cloudflare",
     "transport": "streamable_http",
     "url": "https://mcp.cloudflare.com/mcp",
-    "liveAccountProbe": "NOT_RUN",
+    "liveAccountProbe": "VERIFIED_2026-11-24_PRIVATE_ACCESS_AND_VPC",
     "requiredAssetTargets": [
       "aetheria-assets-local",
       "aetheria-assets-prod"
@@ -45,15 +45,15 @@
       "name": "aetheria-soulbound-portal-web",
       "app": "apps/portal-web",
       "config": "infra/cloudflare/portal-web/wrangler.jsonc",
-      "artifactDirectory": "artifacts/cloudflare/portal-web",
-      "deployAuthorized": false
+      "deployAuthorized": true,
+      "accessPolicy": "Aetheria Production Owner"
     },
     {
       "name": "aetheria-soulbound-admin-web",
       "app": "apps/admin-web",
       "config": "infra/cloudflare/admin-web/wrangler.jsonc",
-      "artifactDirectory": "artifacts/cloudflare/admin-web",
-      "deployAuthorized": false
+      "deployAuthorized": true,
+      "accessPolicy": "Aetheria Production Owner"
     }
   ],
   "redis": {

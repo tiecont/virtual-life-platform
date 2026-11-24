@@ -10,17 +10,19 @@ import { readConfig } from '../../apps/platform-api/src/shared/config/environmen
 import { ReadinessSchema } from '@aetheria/contracts';
 let pool: Pool; let admin: Pool;
 const schema = 'city_test_' + randomUUID().replaceAll('-', '');
+const roleSchema = 'city_role_test_' + randomUUID().replaceAll('-', '');
 beforeAll(async () => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
   if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database');
   admin = new Pool({ connectionString: url.toString(), connectionTimeoutMillis: 3000 });
   await admin.query(`CREATE SCHEMA "${schema}"`);
+  await admin.query(`CREATE SCHEMA "${roleSchema}" AUTHORIZATION pg_database_owner`);
   url.searchParams.set('options', '-c search_path=' + schema);
   pool = new Pool({ connectionString: url.toString(), connectionTimeoutMillis: 3000 });
 });
 afterAll(async () => {
   await pool?.end();
-  if (admin) { await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`); await admin.end(); }
+  if (admin) { await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`); await admin.query(`DROP SCHEMA IF EXISTS "${roleSchema}" CASCADE`); await admin.end(); }
 });
 describe('real PostgreSQL and HTTP vertical slice', () => {
   it('readiness fails on clean DB, then succeeds after idempotent concurrent migrations, including actual TCP', async () => {
@@ -65,5 +67,15 @@ describe('real PostgreSQL and HTTP vertical slice', () => {
   it('enforces singleton metadata and positive schema version in PostgreSQL', async () => {
     await expect(pool.query('INSERT INTO platform_metadata VALUES(false,1,now())')).rejects.toMatchObject({ code: '23514' });
     await expect(pool.query('UPDATE platform_metadata SET schema_version=0')).rejects.toMatchObject({ code: '23514' });
+  });
+  it('runs the complete migration set as an explicitly selected database-owner role',async()=>{
+    const url=new URL(process.env.TEST_DATABASE_URL!);
+    url.searchParams.set('options','-c search_path='+roleSchema);
+    const rolePool=new Pool({connectionString:url.toString()});
+    try{
+      await migrate(rolePool,undefined,undefined,'pg_database_owner');
+      expect((await rolePool.query('SELECT count(*)::int AS count FROM city_schema_migrations')).rows[0].count).toBe((await migrationNames()).length);
+      expect((await rolePool.query("SELECT DISTINCT pg_get_userbyid(c.relowner) AS owner FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relkind='r'",[roleSchema])).rows).toEqual([{owner:'pg_database_owner'}]);
+    }finally{await rolePool.end();}
   });
 });

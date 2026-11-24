@@ -1,9 +1,9 @@
-# Cloudflare deployment scaffold
+# Cloudflare private production
 
-This directory is an intentionally inactive, two-environment scaffold for
-Aetheria: SoulBound. It contains no account identifiers, credentials, tunnel
-identity, public hostname, Worker route, or deployment approval. The repository
-remains `OFFLINE_ONLY / NO_GO_PUBLIC`.
+This directory defines the owner-only production edge for Aetheria: SoulBound.
+The two Workers proxy production hostnames through Cloudflare Access to private
+Northflank origins. There is no public route or public release approval; the
+repository remains `OFFLINE_ONLY / NO_GO_PUBLIC`.
 
 ## Environments
 
@@ -31,32 +31,28 @@ infrastructure and never replaces SQL authority.
 1. Copy `.env.production.example` to ignored `.env.production`.
 2. Fill database, Upstash, R2 and Cloudflare values from the owner's private
    secret store.
-3. Replace the placeholders in the two `wrangler.jsonc` templates after the
-   Next.js apps have a Workers-compatible build output.
-4. Replace the tunnel placeholders in `cloudflared/config.yml` and place its
-   credentials JSON outside the repository.
+3. Keep both Workers behind the hostname-based `Aetheria Production` Access
+   application. Do not enable preview URLs.
+4. Deploy from an authenticated Wrangler session with `pnpm cf:deploy:portal`
+   and `pnpm cf:deploy:admin`.
 
-Cloudflare's documented default for adding a Next.js application to Workers is
-vinext. This repository currently uses its existing Next.js runtime and has not
-performed that migration. The starter Worker files therefore describe the
-target shape only and must not be deployed as-is.
+The Workers are edge relays rather than Workers builds of Next.js. Their
+`FRONTEND` and `API` bindings reach the private Northflank services through
+Workers VPC and the named Cloudflare Tunnel. Next.js stays on Northflank.
 
 ## Files
 
-- `portal-web/wrangler.jsonc`: starter Worker/static-assets configuration for
-  `apps/portal-web`.
-- `admin-web/wrangler.jsonc`: starter Worker/static-assets configuration for
-  `apps/admin-web`.
+- `portal-web/wrangler.jsonc`: owner-protected portal/API edge configuration.
+- `admin-web/wrangler.jsonc`: owner-protected admin edge configuration.
 - `cloudflared/config.yml`: loopback-only origin routing template.
 - `readiness.json`: metadata-only target inventory for the private local and
   production asset buckets, final Worker names, MCP target names and Upstash
   production adapter.
 
-Run `node scripts/verify-cloudflare-readiness.mjs` for the offline readiness
-gate. It validates that both asset targets remain private, neither Worker has a
-route/workers.dev/preview URL, the production Redis path requires Upstash REST
-and no deployment or upload authorization is implied. Live MCP/account access
-is recorded separately as `NOT_RUN`; static readiness is not a provider probe.
+Run `node scripts/verify-cloudflare-readiness.mjs` for the deployment readiness
+gate. It validates both asset targets remain private, preview URLs and custom
+routes stay off, production Worker URLs are enabled, the required VPC bindings
+are present, and the production Redis path requires Upstash REST.
 
 ## Free-tier guardrails
 
@@ -66,8 +62,9 @@ is recorded separately as `NOT_RUN`; static readiness is not a provider probe.
   environment file or secret store.
 - Use Upstash REST over HTTPS and require both `UPSTASH_REDIS_REST_URL` and
   `UPSTASH_REDIS_REST_TOKEN` together.
-- Do not add a Cloudflare route, DNS record, tunnel token, Worker secret, R2
-  custom domain or Upstash database through this scaffold.
+- Keep the two `.workers.dev` production URLs behind the hostname-based Access
+  application. A Worker without a Cloudflare Access identity must return 403.
+- Do not add a DNS custom domain or public route through this scaffold.
 - Do not treat a successful local build or a Workers preview as authorization
   for public release, purchases, registration, signing or production
   deployment.

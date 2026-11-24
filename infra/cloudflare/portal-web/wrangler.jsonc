@@ -1,15 +1,23 @@
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
-  // OFFLINE-ONLY TARGET. A reviewed Workers-compatible build must populate the
-  // artifact directory before any separately authorized deployment.
   "name": "aetheria-soulbound-portal-web",
+  "main": "../../../infra/northflank/worker.mjs",
   "compatibility_date": "2026-11-23",
-  "workers_dev": false,
+  "workers_dev": true,
   "preview_urls": false,
-  "assets": {
-    "directory": "../../../artifacts/cloudflare/portal-web",
-    "binding": "ASSETS"
+  "vars": {
+    "SITE": "portal"
   },
+  "vpc_services": [
+    {
+      "binding": "FRONTEND",
+      "service_id": "01a20bdc-200c-79e3-b198-ba6348a67c94"
+    },
+    {
+      "binding": "API",
+      "service_id": "01a20bdc-39a0-70f1-8c34-c305e31e6554"
+    }
+  ],
   "observability": {
     "enabled": true
   }
