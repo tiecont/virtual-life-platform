@@ -26,10 +26,21 @@ each source and identify exact design details, hidden surfaces, material
 partitions, expected attachment, gameplay orientation, target platform, and
 delivery format.
 
-If reference art does not exist, use **Meshy MCP image generation with
-`nano-banana-pro` only**; never use a Lite model. State the exact model, credit
-cost, and budget before spending, obtain explicit confirmation, retain task
-metadata, and poll/reconcile existing jobs instead of duplicating charges.
+If reference art does not exist, priority 1 is the authenticated English **Tripo
+Studio Image** tab with the exact model **`GPT Image 2.5`** and its free image
+quota. Before every run, visibly verify `GPT Image 2.5`, zero paid credit cost,
+and the remaining free counter. Use one submitted prompt per generated file;
+stop at quota exhaustion and never fall back to credits without a new explicit
+model, quote, and total-budget approval. Record the prompt, free counter, task ID
+when exposed, output SHA-256, and review state.
+
+Meshy MCP with **`nano-banana-pro` only** remains an optional authorized
+high-fidelity image route when free Tripo generation is unavailable or the owner
+explicitly requires it. Never use a Lite model. For any paid call, state the
+exact model, credit cost, and total budget before spending, obtain explicit
+confirmation, retain task metadata, and poll/reconcile existing jobs instead of
+duplicating charges. A generated image is a concept proposal, not an
+owner-authorized production reference or rights approval.
 
 Before geometry generation, record:
 
@@ -40,6 +51,11 @@ Before geometry generation, record:
 - world/object scale in meters, forward/up axes, and canonical pivot;
 - socket, collision, collision-proxy, and runtime-animation requirements;
 - target Unity path and current per-asset contract.
+
+Keep new concept PNGs, provider downloads, editable sources, normalized binaries,
+and review packages under `/home/tiecont/Projects/Aetheria-Workspace/`. The
+repository carries source, schema, scripts and small JSON manifests; do not add
+new binaries larger than 500 KiB to Git.
 
 ## 2. Produce with Tripo Studio as the default
 
@@ -95,7 +111,8 @@ Raw or brute-force reduced AI meshes are forbidden in Unity `Assets/`.
 | Asset class | Triangle budget |
 | --- | ---: |
 | Props and Weapons | 3K-12K tris |
-| Wings and Standard Pets | 10K-25K tris |
+| Standard Wings and Standard Pets | 10K-25K tris |
+| Hero / Limited S modular wing candidate | <=28K tris at LOD0 |
 
 Apply the same prop range to each environment object unless an existing
 per-asset contract defines a tighter target. Record the LOD0/LOD1/LOD2 budget
@@ -103,6 +120,11 @@ before generation. A 200K-700K-vertex source or an unsegmented decimated mesh
 must be retopologized, segmented, or rebuilt; reducing a slider until the count
 passes is not acceptable. Optimize silhouettes, clean topology, UVs, and normal
 baking without collapsing detail or material separation.
+
+The 28K hero-wing figure is an upstream candidate ceiling, not an assembled
+character allowance. Retopology, baking and final integration must still satisfy
+the current per-character LOD contract; for Icarus that is 26,000-29,500
+triangles for the complete LOD0 assembly including approved modular accessories.
 
 ## 5. Hard Unity admission gate
 
@@ -121,6 +143,13 @@ pass:
 Record the exact source, exported, and Unity-staged hashes. Stage only the
 approved normalized asset, not provider scratch data, high-poly candidates, or
 broken decimation attempts.
+
+Use `scripts/art/blender_normalize_r2_batch.py` for batch normalization when it
+is present on the checked-out revision. It must measure the actual exported
+triangle count, normalize scale/pivot, generate the exported file SHA-256 and
+write schema-compatible `assets/manifests/<asset-id>.manifest.json` entries. A
+manifest is transport metadata, not visual, rights, Unity or publication
+approval.
 
 For character and Standard Pet work, preserve the repository's H1-H4 owner
 review sequencing: design/face where applicable, modular turnaround, rig and
