@@ -46,6 +46,34 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
+        "nov24ChromiumPreflight": {
+          "sourceRevision": "a640c2e99a463d9c17f06a6b3c80e51c54907cfb",
+          "reviewMode": "SINGLE_AGENT_AUDIT",
+          "finding": "At main 87a6151, the initial Quality 45312790041 snapshot was still running and reported no failed jobs. PR66 Quality pull_request job 137938281843 failed in Chromium Page.captureScreenshot after fonts loaded, before runtime-image tests. The runner-level cause of the intermittent protocol error is unconfirmed.",
+          "change": "Retry the exact screenshot protocol error once with a fresh browser. Persistent capture failures and unrelated errors still fail the preflight. Record the single-check CI policy in AGENTS.md.",
+          "commands": [
+            {
+              "command": "node scripts/prepare-ci-browser.mjs",
+              "exitCode": 0,
+              "result": "Pinned browser, font and screenshot preflight PASS."
+            },
+            {
+              "command": "Local Chromium fault-injection harness under ignored artifacts/stabilization",
+              "exitCode": 0,
+              "result": "3 PASS: transient error recovers on launch 2, persistent error fails after launch 2, unrelated error fails after launch 1."
+            },
+            {
+              "command": "node --test tests/governance/{ci,task-plan,image-browser-navigation}.test.mjs",
+              "exitCode": 0,
+              "result": "20 PASS"
+            },
+            {
+              "command": "pnpm ci:check; pnpm governance:check; node --check scripts/prepare-ci-browser.mjs; pnpm exec eslint scripts/prepare-ci-browser.mjs",
+              "exitCode": 0
+            }
+          ],
+          "remaining": "Final hosted checks and merge remain pending."
+        },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "observedMain": "b2b1a079662556c45ab7f9e135d38d72d107237c",
         "observedMainQuality": "Quality43995038750 SUCCESS; Rust43995038683 SUCCESS at observedMain; inspected hosted evidence, not a fresh local run.",
