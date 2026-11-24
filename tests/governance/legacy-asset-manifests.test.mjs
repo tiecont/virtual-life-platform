@@ -12,11 +12,11 @@ const manifests=await loadManifests('.');
 
 test('every queued legacy binary has exactly one valid immutable manifest',async()=>{
   const result=validateLegacyAssetManifests(plan,manifests);
-  assert.equal(result.files,23);
-  assert.equal(result.matched.length,23);
-  assert.equal(new Set(result.matched).size,23);
+  assert.equal(result.files,plan.files.length);
+  assert.equal(result.matched.length,plan.files.length);
+  assert.equal(new Set(result.matched).size,plan.files.length);
   const verified=await verifyLegacyAssetManifests();
-  assert.equal(verified.files,23);
+  assert.equal(verified.files,plan.files.length);
   assert.equal(verified.network,false);
   assert(verified.sourceBytes>0);
 });

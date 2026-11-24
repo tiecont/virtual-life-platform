@@ -11,6 +11,7 @@ const contentTypes={
   '.mp4':'video/mp4',
   '.png':'image/png',
   '.tar':'application/x-tar',
+  '.vrm':'model/gltf-binary',
 };
 
 export function validateLegacyAssetManifests(plan,entries){

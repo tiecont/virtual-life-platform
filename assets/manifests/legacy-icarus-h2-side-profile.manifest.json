@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-h2-side-profile",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-h2-side-profile/1.0.0/04-side-profile.png",
+  "sha256": "c0fca8439f608ccdddb0f5cc038f2a9033d1c59501caa76beb428818fe8e86d6",
+  "sizeBytes": 277683,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-h2-side-profile/1.0.0/04-side-profile.png"
+}

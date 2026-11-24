@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-vrm",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-vrm/1.0.0/Icarus.vrm",
+  "sha256": "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a",
+  "sizeBytes": 16892316,
+  "contentType": "model/gltf-binary",
+  "localCachePath": ".cache/assets/legacy-icarus-vrm/1.0.0/Icarus.vrm"
+}
