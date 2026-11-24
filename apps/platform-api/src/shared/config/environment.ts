@@ -12,6 +12,7 @@ const Env = z.object({
     return ['postgres:', 'postgresql:'].includes(url.protocol);
   }),
   WEB_ORIGIN: z.string().url().default('http://127.0.0.1:3300'),
+  DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(50).default(10),
   OPERATOR_AUTH_KEY:z.string().regex(/^[a-f0-9]{64}$/).optional(),
   ADMIN_ORIGIN:z.string().url().optional(),
   TRUSTED_PROXY_IP:z.ipv4().refine(value=>!['0.0.0.0','255.255.255.255'].includes(value)).optional(),

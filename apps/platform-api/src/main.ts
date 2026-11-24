@@ -4,7 +4,7 @@ import { createApp } from './app';
 import { RuntimeLifecycle } from './features/operations/modules/lifecycle/application/runtime-lifecycle';
 async function main() {
   const config = readConfig();
-  const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
+  const pool = new Pool({ connectionString: config.DATABASE_URL, max: config.DATABASE_POOL_MAX, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
   const { app, beginDrain,identity,privacyRequests,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
   await app.listen(config.PORT, config.HOST);
