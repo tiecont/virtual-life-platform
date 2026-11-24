@@ -40,6 +40,20 @@ The Workers are edge relays rather than Workers builds of Next.js. Their
 `FRONTEND` and `API` bindings reach the private Northflank services through
 Workers VPC and the named Cloudflare Tunnel. Next.js stays on Northflank.
 
+### Main-only automatic builds
+
+The production portal and admin Workers use main-only Workers Builds triggers
+`89f7b0cb-3bb5-435c-8750-d0e84f67e377` and
+`93fa5720-4a7e-4dd0-b776-a25d66479fce`. Their build command installs the frozen
+lockfile and their deploy commands remain `pnpm cf:deploy:portal` and
+`pnpm cf:deploy:admin`. Keep preview branches disabled so feature pushes cannot
+create preview URLs or unrelated required-status checks.
+
+The obsolete `virtual-life-platform` prototype retains only a main-only no-op
+trigger; its production and preview builds must remain disabled. Northflank
+independently builds the frontend and backend services from `main`. There is no
+staging environment in this deployment path.
+
 ## Files
 
 - `portal-web/wrangler.jsonc`: owner-protected portal/API edge configuration.
@@ -66,8 +80,9 @@ are present, and the production Redis path requires Upstash REST.
   application. A Worker without a Cloudflare Access identity must return 403.
 - Do not add a DNS custom domain or public route through this scaffold.
 - Do not treat a successful local build or a Workers preview as authorization
-  for public release, purchases, registration, signing or production
-  deployment.
+  for public release, purchases, registration, signing or deployment beyond
+  the owner-authorized private target.
 
-Owner review is required before any Cloudflare resource is created, connected,
-or deployed.
+The owner has authorized this private, owner-only production deployment. Public
+release, purchases, registration, signing and public routing still require their
+separate review and release gates.
