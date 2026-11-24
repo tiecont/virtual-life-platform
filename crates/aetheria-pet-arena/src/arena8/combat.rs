@@ -5,7 +5,8 @@ use aetheria_game_core::{
 use super::board::{self, Generation};
 use super::events::CombatEvent;
 use super::model::{
-    Ability, Action, ENCOUNTERS, EnemyIntent, ICARUS, PETS, Phase, RecoveryReason, State,
+    Ability, Action, ENCOUNTERS, EncounterCombat, EnemyIntent, PETS, PetCombat, Phase,
+    RecoveryReason, SignatureKind, State,
 };
 use super::{
     ASSAULT_POWER, BOARD_DAMAGE_DIVISOR, CELLS, COOLDOWN_TURNS, ENEMY_SHIELD_CAP, ENRAGE_BONUS,
@@ -16,8 +17,8 @@ use super::{
     pinned_rules_hash,
 };
 
-/// New versioned reducer. It is intentionally separate from `combat::Combat`
-/// (V1) and from `wave1_mvp` (frozen action replay).
+/// New versioned reducer. It is intentionally separate from \`combat::Combat\`
+/// (V1) and from \`wave1_mvp\` (frozen action replay).
 pub struct Arena8;
 
 impl Reducer for Arena8 {
@@ -46,101 +47,123 @@ impl Reducer for Arena8 {
         rng: &mut aetheria_game_core::TurnRng,
     ) -> Result<Decision<State>, CoreError> {
         self.validate(state)?;
-        let mut next = state.clone();
-        let mut events = Vec::new();
-        if let Action::Start = action {
-            if state.phase != Phase::Ready {
-                return Err(CoreError::InvalidAction);
-            }
-            let generation = board::generate_board(rng)?;
-            next.board = generation.board;
-            next.phase = Phase::Playing;
-            events.push(CombatEvent::BoardInitialized {
-                cells: next.board.cells().to_vec(),
-                attempts: generation.attempts,
-                fallback: generation.fallback,
-            });
-            let intent = EnemyIntent::announce(&ENCOUNTERS[usize::from(next.encounter)], 0, rng)?;
-            next.intent = Some(intent.clone());
-            events.push(CombatEvent::EnemyIntentAnnounced { intent });
-            return Ok(decision(next, events));
-        }
-        if state.phase != Phase::Playing {
+        let pet = PETS[usize::from(state.pet)].combat();
+        let encounter = ENCOUNTERS[usize::from(state.encounter)].combat();
+        reduce_with(state, action, rng, &pet, &encounter)
+    }
+}
+
+/// The single combat implementation. The frozen v1 reducer and the data-bound
+/// reducer both call this; only the resolved \`PetCombat\`/\`EncounterCombat\`
+/// values differ. It never reads a client-supplied result.
+pub(super) fn reduce_with(
+    state: &State,
+    action: &Action,
+    rng: &mut impl super::Random,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
+) -> Result<Decision<State>, CoreError> {
+    let mut next = state.clone();
+    let mut events = Vec::new();
+    if let Action::Start = action {
+        if state.phase != Phase::Ready {
             return Err(CoreError::InvalidAction);
         }
-        next.turn = state.turn.checked_add(1).ok_or(CoreError::InvalidState)?;
-        next.cooldown = state.cooldown.saturating_sub(1);
-        let mut cleared = [false; CELLS];
-        let mut guarding = false;
-        match action {
-            Action::Start => unreachable!("handled above"),
-            Action::Swap { first, second } => {
-                next.board = state
-                    .board
-                    .try_swap(*first, *second)
-                    .ok_or(CoreError::InvalidAction)?;
-                events.push(CombatEvent::Swap {
-                    first: *first,
-                    second: *second,
-                });
-                cleared = resolve_board(&mut next, rng, &mut events)?;
-            }
-            Action::Skill => {
-                use_ability(&mut next, Ability::SharedSkill, &mut events)?;
-            }
-            Action::Signature => {
-                use_ability(&mut next, Ability::Signature, &mut events)?;
-            }
-            Action::FireZone => {
-                use_ability(&mut next, Ability::FireZone, &mut events)?;
-            }
-            Action::Ultimate => {
-                use_ability(&mut next, Ability::Ultimate, &mut events)?;
-            }
-            Action::Guard => {
-                guarding = true;
-                use_ability(&mut next, Ability::Guard, &mut events)?;
-            }
-        }
-        if next.enemy_health > 0 {
-            let intent = next.intent.clone().ok_or(CoreError::InvalidState)?;
-            intent.validate(&ENCOUNTERS[usize::from(next.encounter)], state.turn)?;
-            resolve_enemy(&mut next, &intent, &cleared, guarding, &mut events)?;
-        }
-        if state.fire_zone_turns > 0 && next.enemy_health > 0 {
-            tick_fire_zone(&mut next, &mut events)?;
-        }
-        if let Action::FireZone = action {
-            next.fire_zone_turns = if next.enemy_health > 0 {
-                FIRE_ZONE_TICKS
-            } else {
-                0
-            };
-        }
-        next.phase = if next.health == 0 {
-            Phase::Lost
-        } else if next.enemy_health == 0 {
-            Phase::Won
-        } else if next.turn == MAX_TURNS {
-            Phase::Lost
-        } else {
-            Phase::Playing
-        };
-        events.push(CombatEvent::TurnEnded { turn: next.turn });
-        if next.phase == Phase::Playing {
-            let intent =
-                EnemyIntent::announce(&ENCOUNTERS[usize::from(next.encounter)], next.turn, rng)?;
-            next.intent = Some(intent.clone());
-            events.push(CombatEvent::EnemyIntentAnnounced { intent });
-        } else {
-            next.intent = None;
-            events.push(CombatEvent::MatchEnded {
-                phase: next.phase,
-                turn: next.turn,
-            });
-        }
-        Ok(decision(next, events))
+        let generation = board::generate_board(rng)?;
+        next.board = generation.board;
+        next.phase = Phase::Playing;
+        events.push(CombatEvent::BoardInitialized {
+            cells: next.board.cells().to_vec(),
+            attempts: generation.attempts,
+            fallback: generation.fallback,
+        });
+        let intent = EnemyIntent::announce(encounter.boss, 0, rng)?;
+        next.intent = Some(intent.clone());
+        events.push(CombatEvent::EnemyIntentAnnounced { intent });
+        return Ok(decision(next, events));
     }
+    if state.phase != Phase::Playing {
+        return Err(CoreError::InvalidAction);
+    }
+    next.turn = state.turn.checked_add(1).ok_or(CoreError::InvalidState)?;
+    next.cooldown = state.cooldown.saturating_sub(1);
+    let mut cleared = [false; CELLS];
+    let mut guarding = false;
+    match action {
+        Action::Start => unreachable!("handled above"),
+        Action::Swap { first, second } => {
+            next.board = state
+                .board
+                .try_swap(*first, *second)
+                .ok_or(CoreError::InvalidAction)?;
+            events.push(CombatEvent::Swap {
+                first: *first,
+                second: *second,
+            });
+            cleared = resolve_board_with(&mut next, pet, encounter, rng, &mut events)?;
+        }
+        Action::Skill => {
+            use_ability_with(&mut next, Ability::SharedSkill, pet, encounter, &mut events)?;
+        }
+        Action::Signature => {
+            use_ability_with(&mut next, Ability::Signature, pet, encounter, &mut events)?;
+        }
+        Action::FireZone => {
+            use_ability_with(&mut next, Ability::FireZone, pet, encounter, &mut events)?;
+        }
+        Action::Ultimate => {
+            use_ability_with(&mut next, Ability::Ultimate, pet, encounter, &mut events)?;
+        }
+        Action::Guard => {
+            guarding = true;
+            use_ability_with(&mut next, Ability::Guard, pet, encounter, &mut events)?;
+        }
+    }
+    if next.enemy_health > 0 {
+        let intent = next.intent.clone().ok_or(CoreError::InvalidState)?;
+        intent.validate(encounter.boss, state.turn)?;
+        resolve_enemy_with(
+            &mut next,
+            &intent,
+            &cleared,
+            guarding,
+            pet,
+            encounter,
+            &mut events,
+        )?;
+    }
+    if state.fire_zone_turns > 0 && next.enemy_health > 0 {
+        tick_fire_zone_with(&mut next, pet, encounter, &mut events)?;
+    }
+    if let Action::FireZone = action {
+        next.fire_zone_turns = if next.enemy_health > 0 {
+            FIRE_ZONE_TICKS
+        } else {
+            0
+        };
+    }
+    next.phase = if next.health == 0 {
+        Phase::Lost
+    } else if next.enemy_health == 0 {
+        Phase::Won
+    } else if next.turn == MAX_TURNS {
+        Phase::Lost
+    } else {
+        Phase::Playing
+    };
+    events.push(CombatEvent::TurnEnded { turn: next.turn });
+    if next.phase == Phase::Playing {
+        let intent = EnemyIntent::announce(encounter.boss, next.turn, rng)?;
+        next.intent = Some(intent.clone());
+        events.push(CombatEvent::EnemyIntentAnnounced { intent });
+    } else {
+        next.intent = None;
+        events.push(CombatEvent::MatchEnded {
+            phase: next.phase,
+            turn: next.turn,
+        });
+    }
+    Ok(decision(next, events))
 }
 
 fn decision(state: State, events: Vec<CombatEvent>) -> Decision<State> {
@@ -152,15 +175,26 @@ fn decision(state: State, events: Vec<CombatEvent>) -> Decision<State> {
     }
 }
 
+/// Frozen v1 validation: the pet and encounter come from the authored tables.
 pub(super) fn validate_state(state: &State) -> Result<(), CoreError> {
     let pet = PETS
         .get(usize::from(state.pet))
-        .ok_or(CoreError::InvalidState)?;
+        .ok_or(CoreError::InvalidState)?
+        .combat();
     let encounter = ENCOUNTERS
         .get(usize::from(state.encounter))
-        .ok_or(CoreError::InvalidState)?;
+        .ok_or(CoreError::InvalidState)?
+        .combat();
+    validate_state_with(state, &pet, &encounter)
+}
+
+pub(super) fn validate_state_with(
+    state: &State,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
+) -> Result<(), CoreError> {
     if state.phase == Phase::Ready {
-        return if *state == State::new(state.pet, state.encounter)? {
+        return if *state == State::allocate(state.pet, state.encounter, pet.health)? {
             Ok(())
         } else {
             Err(CoreError::InvalidState)
@@ -188,7 +222,7 @@ pub(super) fn validate_state(state: &State) -> Result<(), CoreError> {
                 .intent
                 .as_ref()
                 .ok_or(CoreError::InvalidState)?
-                .validate(encounter, state.turn)?;
+                .validate(encounter.boss, state.turn)?;
         }
         Phase::Won => {
             if state.health == 0 || state.enemy_health != 0 || state.intent.is_some() {
@@ -255,15 +289,28 @@ pub(super) fn board_damage(
     u32::try_from(damage).unwrap_or(u32::MAX)
 }
 
-/// Resolves all matches created by a swap, including gravity/refill cascades.
-/// Returns the union of cleared cells for enemy lane mitigation.
+/// Frozen v1 entrypoint used by the v1 tests; the bound reducer calls the
+/// explicit-profile variant below.
+#[cfg(test)]
 pub(super) fn resolve_board(
     state: &mut State,
     rng: &mut impl super::Random,
     events: &mut Vec<CombatEvent>,
 ) -> Result<[bool; CELLS], CoreError> {
-    let pet = PETS[usize::from(state.pet)];
-    let encounter = ENCOUNTERS[usize::from(state.encounter)];
+    let pet = PETS[usize::from(state.pet)].combat();
+    let encounter = ENCOUNTERS[usize::from(state.encounter)].combat();
+    resolve_board_with(state, &pet, &encounter, rng, events)
+}
+
+/// Resolves all matches created by a swap, including gravity/refill cascades.
+/// Returns the union of cleared cells for enemy lane mitigation.
+pub(super) fn resolve_board_with(
+    state: &mut State,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
+    rng: &mut impl super::Random,
+    events: &mut Vec<CombatEvent>,
+) -> Result<[bool; CELLS], CoreError> {
     let multiplier = pet.element.multiplier_against(encounter.element);
     let mut cleared = [false; CELLS];
     for pass in 1..=MAX_CASCADES {
@@ -324,13 +371,24 @@ pub(super) fn resolve_board(
     Ok(cleared)
 }
 
+#[cfg(test)]
 pub(super) fn use_ability(
     state: &mut State,
     ability: Ability,
     events: &mut Vec<CombatEvent>,
 ) -> Result<(), CoreError> {
-    let pet = PETS[usize::from(state.pet)];
-    let encounter = ENCOUNTERS[usize::from(state.encounter)];
+    let pet = PETS[usize::from(state.pet)].combat();
+    let encounter = ENCOUNTERS[usize::from(state.encounter)].combat();
+    use_ability_with(state, ability, &pet, &encounter, events)
+}
+
+pub(super) fn use_ability_with(
+    state: &mut State,
+    ability: Ability,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
+    events: &mut Vec<CombatEvent>,
+) -> Result<(), CoreError> {
     if ability == Ability::Guard {
         let rage_gained = gain_rage(state, RAGE_PER_GUARD);
         events.push(CombatEvent::AbilityUsed {
@@ -350,7 +408,7 @@ pub(super) fn use_ability(
         Ability::SharedSkill => (SKILL_MANA, 0, SKILL_POWER),
         Ability::Signature => (SIGNATURE_MANA, SIGNATURE_RAGE, SIGNATURE_POWER),
         Ability::FireZone => {
-            if usize::from(state.pet) != ICARUS {
+            if pet.signature != SignatureKind::FireZone {
                 return Err(CoreError::InvalidAction);
             }
             (SIGNATURE_MANA, SIGNATURE_RAGE, FIRE_ZONE_POWER)
@@ -382,15 +440,15 @@ pub(super) fn use_ability(
     Ok(())
 }
 
-pub(super) fn resolve_enemy(
+pub(super) fn resolve_enemy_with(
     state: &mut State,
     intent: &EnemyIntent,
     cleared: &[bool; CELLS],
     guarding: bool,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
     events: &mut Vec<CombatEvent>,
 ) -> Result<(), CoreError> {
-    let encounter = ENCOUNTERS[usize::from(state.encounter)];
-    let pet = PETS[usize::from(state.pet)];
     let enraged = encounter.boss && state.enemy_health.saturating_mul(2) < encounter.health;
     let base_power = match intent.kind {
         super::EnemyIntentKind::Assault => ASSAULT_POWER,
@@ -448,12 +506,22 @@ pub(super) fn resolve_enemy(
     Ok(())
 }
 
+#[cfg(test)]
 pub(super) fn tick_fire_zone(
     state: &mut State,
     events: &mut Vec<CombatEvent>,
 ) -> Result<(), CoreError> {
-    let pet = PETS[usize::from(state.pet)];
-    let encounter = ENCOUNTERS[usize::from(state.encounter)];
+    let pet = PETS[usize::from(state.pet)].combat();
+    let encounter = ENCOUNTERS[usize::from(state.encounter)].combat();
+    tick_fire_zone_with(state, &pet, &encounter, events)
+}
+
+pub(super) fn tick_fire_zone_with(
+    state: &mut State,
+    pet: &PetCombat,
+    encounter: &EncounterCombat,
+    events: &mut Vec<CombatEvent>,
+) -> Result<(), CoreError> {
     let damage = scaled_damage(
         pet.attack,
         FIRE_ZONE_TICK_POWER,

@@ -100,3 +100,72 @@ Liveness remains distinct from readiness: `/health/live` reports the process;
 `/health/ready` checks the zone, owner lease, checkpoint and stored journal integrity.
 `/metrics` contains aggregate receipt/rejection counters only; successful receipt
 replays count as receipts. The checked-in OCI image keeps gameplay disabled.
+
+## `arena8-pve`: data-bound 8x8 Arena8 ruleset
+
+`arena8-pve` is a new versioned native ruleset. It reuses the same
+`aetheria-persistence::Host` single-writer command/checkpoint/journal/admission
+path and the same gateway as `pet-arena-pve`; only the domain reducer, the strict
+intent parser and the authored projection differ. The frozen `pet-arena-pve`
+V1 adapter and its receipts are untouched.
+
+The match is allocated from an immutable snapshot built by the versioned Arena8
+content binding (`crates/aetheria-pet-arena/src/arena8/binding.rs`,
+`aetheria-pet-arena-arena8-binding` v1, pinned digest
+`dc6522b16f3f9cbee8ba29046bb575e197053180cb442cca63dd58740de2a977`). The
+snapshot binds the canonical roster identity, account, owned Pet id, level,
+base/grown/effective stats, equipped Artifact definitions and levels, bounded
+modifiers, available skills, the encounter and its revision, and the binding and
+rules digests. A later loadout change never alters an allocated match; a new
+match is required. Restoring a rewritten snapshot fails closed.
+
+The allocation is server-authored private configuration. It is not an intent
+field and no client can send it:
+
+```json
+{
+  "ruleset": "arena8-pve",
+  "arena8": {
+    "petId": "fire-coalwhisk",
+    "ownedPetId": "<owned pet UUID>",
+    "level": 20,
+    "encounterId": "cinder-terraces-regular",
+    "bindingVersion": 1,
+    "artifacts": [
+      {"definitionId": "core-emberglass", "upgradeLevel": 1},
+      {"definitionId": "aegis-bastionplate", "upgradeLevel": 5}
+    ]
+  }
+}
+```
+
+The rest of the file keeps the existing required fields (`player`, `match_id`,
+keys, CA, role, origin, engine hash, and so on). `pet`/`stage` are rejected for
+`arena8-pve`, and an `arena8` object is rejected for every other ruleset.
+
+Obtain the adapter content hash for the allocator, ticket scope and reward
+policy with:
+
+```sh
+artifacts/rust/target/debug/aetheria-game-runtime --ruleset-content-hash arena8-pve
+```
+
+Send `GameIntent.kind = arena8.intent.v1` with UTF-8 JSON
+`{"epoch":1,"action":{"kind":"start"}}`. Actions are `start`,
+`{"kind":"swap","first":0,"second":1}`, `skill`, `signature`, `fireZone`,
+`ultimate` and `guard`. Every payload rejects unknown fields; there is no seed,
+damage, target, outcome, reward or loadout field. `arena8.view.v1` with an empty
+payload reads the caller's projection. Both rulesets reuse the existing
+`pet-arena` proximity interaction id.
+
+The projection exposes the bound pet identity and level, base/grown/effective
+stats, each equipped Artifact and its modifiers, the available skills, the
+encounter revision, the 64-cell board, resources, committed telegraph and the
+snapshot digest. It never contains the account, seed, checkpoint or RNG state.
+`modifiers.speed` is projected with `"active": false` and an explicit reason:
+Arena8 has no initiative or turn-order model, so speed is recorded but has no
+combat effect. `hp`, `attack` and `defense` are active and bounded.
+
+Both a win and a loss commit a terminal checkpoint and the existing
+`pet-arena.completed.v1` completion proposal, so settlement reuses the existing
+nonmonetary reward worker path.

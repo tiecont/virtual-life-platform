@@ -66,8 +66,12 @@ fn playing_state(pet: u8, encounter: u8) -> State {
     let mut state = State::new(pet, encounter).unwrap();
     state.phase = Phase::Playing;
     state.intent = Some(
-        EnemyIntent::announce(&ENCOUNTERS[usize::from(encounter)], 0, &mut TestRng::new(3))
-            .unwrap(),
+        EnemyIntent::announce(
+            ENCOUNTERS[usize::from(encounter)].boss,
+            0,
+            &mut TestRng::new(3),
+        )
+        .unwrap(),
     );
     state
 }
@@ -291,19 +295,19 @@ fn fire_zone_ticks_two_following_turns_and_caps_resources() {
 #[test]
 fn enemy_intents_are_scheduled_bounded_and_validate_without_entropy() {
     let mut rng = TestRng::new(7);
-    let intent = EnemyIntent::announce(&ENCOUNTERS[0], 0, &mut rng).unwrap();
+    let intent = EnemyIntent::announce(ENCOUNTERS[0].boss, 0, &mut rng).unwrap();
     assert_eq!(rng.draws, 2);
     assert_eq!(intent.kind, EnemyIntentKind::Assault);
     assert_eq!(intent.cells.len(), SIDE);
-    intent.validate(&ENCOUNTERS[0], 0).unwrap();
+    intent.validate(ENCOUNTERS[0].boss, 0).unwrap();
     let mut tampered = intent.clone();
     tampered.target = (tampered.target + 1) % SIDE as u8;
-    assert!(tampered.validate(&ENCOUNTERS[0], 0).is_err());
+    assert!(tampered.validate(ENCOUNTERS[0].boss, 0).is_err());
     let mut draws = rng.draws;
-    assert!(EnemyIntent::announce(&ENCOUNTERS[0], MAX_TURNS, &mut rng).is_err());
+    assert!(EnemyIntent::announce(ENCOUNTERS[0].boss, MAX_TURNS, &mut rng).is_err());
     assert_eq!(rng.draws, draws);
     draws = rng.draws;
-    let boss_intent = EnemyIntent::announce(&ENCOUNTERS[1], 1, &mut rng).unwrap();
+    let boss_intent = EnemyIntent::announce(ENCOUNTERS[1].boss, 1, &mut rng).unwrap();
     assert_eq!(boss_intent.kind, EnemyIntentKind::Heavy);
     assert_eq!(rng.draws, draws + 2);
     assert!(matches!(BOSS_SCHEDULE[1], EnemyIntentKind::Heavy));
@@ -335,7 +339,7 @@ fn state_validation_rejects_tampered_resources_boards_and_terminal_states() {
 
 #[test]
 fn events_roundtrip_through_canonical_values_and_json() {
-    let intent = EnemyIntent::announce(&ENCOUNTERS[0], 0, &mut TestRng::new(2)).unwrap();
+    let intent = EnemyIntent::announce(ENCOUNTERS[0].boss, 0, &mut TestRng::new(2)).unwrap();
     let events = vec![
         CombatEvent::BoardInitialized {
             cells: vec![Element::Fire; CELLS],

@@ -20,6 +20,52 @@ pub struct Pet {
     pub signature: SignatureKind,
 }
 
+/// The exact pet numbers a reducer turn consumes. The frozen v1 reducer derives
+/// them from `PETS`; the bound reducer derives them from an immutable
+/// `MatchSnapshot`. Sharing this struct keeps one combat implementation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct PetCombat {
+    pub element: Element,
+    pub signature: SignatureKind,
+    /// Maximum health for validation; the live value stays in `State`.
+    pub health: u32,
+    pub attack: u32,
+    pub defense: u32,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct EncounterCombat {
+    pub element: Element,
+    pub health: u32,
+    pub attack: u32,
+    pub defense: u32,
+    pub boss: bool,
+}
+
+impl Pet {
+    pub const fn combat(&self) -> PetCombat {
+        PetCombat {
+            element: self.element,
+            signature: self.signature,
+            health: self.health,
+            attack: self.attack,
+            defense: self.defense,
+        }
+    }
+}
+
+impl Encounter {
+    pub const fn combat(&self) -> EncounterCombat {
+        EncounterCombat {
+            element: self.element,
+            health: self.health,
+            attack: self.attack,
+            defense: self.defense,
+            boss: self.boss,
+        }
+    }
+}
+
 pub const ICARUS: usize = 0;
 
 // Original developer balance data. Identifiers grant no art or media rights.
@@ -197,8 +243,8 @@ pub const BOSS_SCHEDULE: [EnemyIntentKind; 4] = [
     EnemyIntentKind::Guard,
 ];
 
-pub const fn scheduled_kind(encounter: &Encounter, announced_turn: u8) -> EnemyIntentKind {
-    let schedule = if encounter.boss {
+pub const fn scheduled_kind(boss: bool, announced_turn: u8) -> EnemyIntentKind {
+    let schedule = if boss {
         BOSS_SCHEDULE
     } else {
         REGULAR_SCHEDULE
@@ -230,14 +276,14 @@ impl EnemyIntent {
     /// Draws exactly one bounded axis choice and one bounded lane choice. The
     /// kind comes from the authored schedule, not from the RNG.
     pub(crate) fn announce(
-        encounter: &Encounter,
+        boss: bool,
         announced_turn: u8,
         rng: &mut impl Random,
     ) -> Result<Self, CoreError> {
         if announced_turn >= MAX_TURNS {
             return Err(CoreError::InvalidState);
         }
-        let kind = scheduled_kind(encounter, announced_turn);
+        let kind = scheduled_kind(boss, announced_turn);
         let axis = if rng.below(2)? == 0 {
             Axis::Row
         } else {
@@ -256,12 +302,12 @@ impl EnemyIntent {
 
     /// Structural and schedule validation without entropy. The target itself
     /// was committed by the previous signed transition, never by a client.
-    pub fn validate(&self, encounter: &Encounter, announced_turn: u8) -> Result<(), CoreError> {
+    pub fn validate(&self, boss: bool, announced_turn: u8) -> Result<(), CoreError> {
         if announced_turn >= MAX_TURNS
             || self.announced_turn != announced_turn
             || self.resolves_turn != announced_turn + 1
             || usize::from(self.target) >= SIDE
-            || self.kind != scheduled_kind(encounter, announced_turn)
+            || self.kind != scheduled_kind(boss, announced_turn)
             || self.cells != lane_cells(self.axis, self.target)
         {
             return Err(CoreError::InvalidState);
@@ -333,18 +379,29 @@ pub struct State {
 }
 
 impl State {
+    /// Frozen v1 allocation: the pet index selects its authored `PETS` row.
     pub fn new(pet: u8, encounter: u8) -> Result<Self, CoreError> {
         let pet_definition = PETS.get(usize::from(pet)).ok_or(CoreError::InvalidState)?;
+        Self::allocate(pet, encounter, pet_definition.health)
+    }
+
+    /// Allocation with an externally bound maximum health. The bound reducer
+    /// supplies the snapshot's effective health; the frozen v1 table above keeps
+    /// using its own authored value through `new`.
+    pub fn allocate(pet: u8, encounter: u8, health: u32) -> Result<Self, CoreError> {
         let encounter_definition = ENCOUNTERS
             .get(usize::from(encounter))
             .ok_or(CoreError::InvalidState)?;
+        if health == 0 {
+            return Err(CoreError::InvalidState);
+        }
         Ok(Self {
             pet,
             encounter,
             phase: Phase::Ready,
             turn: 0,
             board: Board::fallback(),
-            health: pet_definition.health,
+            health,
             enemy_health: encounter_definition.health,
             enemy_shield: 0,
             mana: 0,

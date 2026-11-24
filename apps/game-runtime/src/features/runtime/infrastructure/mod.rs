@@ -1,10 +1,12 @@
 use super::application::{Commands, NativeGame};
 use crate::features::{
+    pet_arena::arena8::domain as bound,
     pet_arena::domain as pet,
     synthetic::domain::{Rules, State},
 };
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
+use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -24,6 +26,26 @@ use tokio::{sync::Mutex, task::JoinHandle};
 use tokio_postgres::{Client, Config};
 use uuid::Uuid;
 
+/// Server-authored Arena8 allocation. A client never sends these fields.
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Arena8Settings {
+    pet_id: String,
+    owned_pet_id: Uuid,
+    level: u8,
+    encounter_id: String,
+    binding_version: u32,
+    #[serde(default)]
+    artifacts: Vec<Arena8Artifact>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Arena8Artifact {
+    definition_id: String,
+    upgrade_level: u8,
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Settings {
@@ -33,6 +55,8 @@ struct Settings {
     ruleset: String,
     pet: Option<u8>,
     stage: Option<u8>,
+    #[serde(default)]
+    arena8: Option<Arena8Settings>,
     world: String,
     boot: Uuid,
     match_id: Uuid,
@@ -92,12 +116,48 @@ impl NativeRuntime {
                 Self::compose(settings, database, game, initial).await
             }
             "pet-arena-pve" => {
+                if settings.arena8.is_some() {
+                    return Err("Arena8 allocation is not valid for pet-arena-pve");
+                }
                 let game = pet::Rules {
                     player: settings.player.to_string(),
                     pet: settings.pet.ok_or("Server-selected pet required")?,
                     stage: settings.stage.ok_or("Server-selected stage required")?,
                 };
                 let initial = game.initial().map_err(|_| "Invalid Pet Arena allocation")?;
+                Self::compose(settings, database, game, initial).await
+            }
+            "arena8-pve" => {
+                if settings.pet.is_some() || settings.stage.is_some() {
+                    return Err("Arena8 requires an explicit snapshot allocation");
+                }
+                let (game, initial) = {
+                    let allocation = settings
+                        .arena8
+                        .as_ref()
+                        .ok_or("Server-selected Arena8 allocation required")?;
+                    if allocation.binding_version != binding::BINDING_VERSION {
+                        return Err("Unsupported Arena8 binding version");
+                    }
+                    let game = bound::Rules::allocate(Allocation {
+                        account: settings.player.to_string(),
+                        owned_pet_id: allocation.owned_pet_id.to_string(),
+                        pet_id: allocation.pet_id.clone(),
+                        level: allocation.level,
+                        encounter_id: allocation.encounter_id.clone(),
+                        artifacts: allocation
+                            .artifacts
+                            .iter()
+                            .map(|artifact| ArtifactSelection {
+                                definition_id: artifact.definition_id.clone(),
+                                upgrade_level: artifact.upgrade_level,
+                            })
+                            .collect(),
+                    })
+                    .map_err(|_| "Invalid Arena8 allocation")?;
+                    let initial = game.initial().map_err(|_| "Invalid Arena8 allocation")?;
+                    (game, initial)
+                };
                 Self::compose(settings, database, game, initial).await
             }
             _ => Err("Unknown or incomplete native ruleset"),
