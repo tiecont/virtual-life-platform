@@ -280,6 +280,7 @@ namespace Aetheria.PetArena.Presentation
                 content.Add(Label("Rune: " + ArtifactName(pet.slots?.rune)));
                 content.Add(Label("Totals · HP +" + pet.totals.hp + " · ATK +" + pet.totals.attack +
                                   " · DEF +" + pet.totals.defense + " · SPD +" + pet.totals.speed, "arena-meta"));
+                content.Add(Label("Stats become live only in a new Arena8 match binding; SPD is inactive in the Wave 1 compatibility fight.", "arena-meta"));
             }
 
             foreach (var item in artifacts.inventory ?? Array.Empty<WaveAArtifactInstance>())

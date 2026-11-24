@@ -219,6 +219,15 @@ export const ARTIFACT_RULES=Object.freeze({
   pveRewards:PVE_ARTIFACT_REWARDS,
   gating:'pet-level-only' as const,
   combat:'snapshot-only' as const,
+  // Modifiers are persisted in the loadout snapshot. They are not silently
+  // treated as live combat stats until the authoritative Arena8 binding reads
+  // them; speed has no Wave 1 effect at all and is explicitly inactive.
+  statSemantics:Object.freeze({
+    hp:'SNAPSHOT_ONLY_PENDING_ARENA8_BINDING' as const,
+    attack:'SNAPSHOT_ONLY_PENDING_ARENA8_BINDING' as const,
+    defense:'SNAPSHOT_ONLY_PENDING_ARENA8_BINDING' as const,
+    speed:'INACTIVE' as const,
+  }),
 });
 export const ArtifactRulesSchema=z.strictObject({
   schemaVersion:z.literal(1),ruleset:z.literal(ARTIFACT_RULESET),rulesetVersion:z.literal(1),
@@ -232,6 +241,10 @@ export const ArtifactRulesSchema=z.strictObject({
   definitions:z.array(ArtifactDefinitionSchema).min(1),
   pveRewards:z.array(z.strictObject({mapId:IdSchema,definitionId:IdSchema,materials:z.number().int().min(1)})).length(6),
   gating:z.literal('pet-level-only'),combat:z.literal('snapshot-only'),
+  statSemantics:z.strictObject({
+    hp:z.literal('SNAPSHOT_ONLY_PENDING_ARENA8_BINDING'),attack:z.literal('SNAPSHOT_ONLY_PENDING_ARENA8_BINDING'),
+    defense:z.literal('SNAPSHOT_ONLY_PENDING_ARENA8_BINDING'),speed:z.literal('INACTIVE'),
+  }),
 });
 export const PARSED_ARTIFACT_RULES=ArtifactRulesSchema.parse(ARTIFACT_RULES);
 
