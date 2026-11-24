@@ -6,7 +6,9 @@ async function main() {
   const config = readConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL, max: config.DATABASE_POOL_MAX, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, beginDrain,identity,privacyRequests,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
+  const { app, beginDrain,identity,privacyRequests,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true, {
+    petArenaWave1:{enabled:config.LOCAL_PET_ARENA_WAVE1==='1'},
+  });
   await app.listen(config.PORT, config.HOST);
   const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {beginDrain(); process.removeListener('SIGHUP', reloadWorlds);}, closeApp: () => app.close(), closePool: () => pool.end()});

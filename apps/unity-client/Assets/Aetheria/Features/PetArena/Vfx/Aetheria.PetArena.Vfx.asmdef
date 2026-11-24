@@ -1,0 +1,14 @@
+{
+  "name": "Aetheria.PetArena.Vfx",
+  "rootNamespace": "Aetheria.PetArena.Vfx",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -14,18 +14,45 @@ to the native synthetic match. Windows player qualification remains separate.
 
 ## Playable Pet Arena MVP
 
-Open `Assets/Aetheria/Scenes/PetArenaPve.unity` and enter Play mode. The scene
-is an explicitly offline training fixture, not a second combat authority. It
-contains a 10x10 arena, six-element opponent selection, HP/Rage bars, Intro,
-Normal, Rage and Signature/FIRE_ZONE actions, win/lose state, and an Icarus
-evolution reference at Lv20/Lv40/Lv60. Keyboard controls are `1` Intro, `N`
-Normal, `R` Rage, `F` FIRE_ZONE, `Tab` next opponent, `L` next evolution stage,
-and `X` reset. Reduced motion is enabled by default.
+From the repository root, start local PostgreSQL, apply the migrations and run
+the platform API on loopback:
 
-Rebuild the scene and generated profile/settings assets through
-`Aetheria > Pet Arena > Build playable MVP scene`. The builder does not stage a
-production Icarus prefab; the regression scene uses temporary primitives while
-PR #66 remains behind the owner H2 gate.
+```sh
+pnpm setup:local
+pnpm db:up
+pnpm db:migrate
+pnpm build:packages
+LOCAL_PET_ARENA_WAVE1=1 node --env-file=.env --import tsx apps/platform-api/src/main.ts
+```
+
+From a shell with `AETHERIA_WAVE1_API=http://127.0.0.1:4300`, open the Unity
+project and play `Assets/Aetheria/Scenes/PetArenaPve.unity`. The Linux or Windows
+development player also opens that scene automatically when launched with
+this variable. Set `AETHERIA_WAVE1_WEB_ORIGIN` if the API's `WEB_ORIGIN`
+differs from `http://127.0.0.1:3300`. The session screen offers guest access
+and sign-in for an existing local account. Use Tab and Enter to navigate,
+and select an active Pet from the saved party before entering a map.
+
+The campaign uses the PostgreSQL-backed Wave 1 API for combat previews and
+settlement, wallet, collection, evolution and gacha. The stage uses developer
+primitives, reduced-motion elemental marks and procedural audio. See the
+[Wave 1 rules and API](../../specs/pet-arena/mvp-phase2.md).
+
+Opening PetArenaPve without the client environment variable runs the original
+offline training scene. Its keyboard controls are `1` Intro, `N` Normal,
+`R` Rage, `F` FIRE_ZONE, `Tab` next opponent, `L` next evolution stage and
+`X` reset. Rebuild its scene and profile/settings assets through
+`Aetheria > Pet Arena > Build playable MVP scene`.
+
+To verify the entire local loop and restart recovery on Linux,
+set `UNITY_EDITOR` to the licensed Unity 6000.3.14f1 executable and run from
+the repository root:
+
+```sh
+pnpm build:packages
+node scripts/unity-native-prepare.mjs
+node scripts/with-test-db.mjs node --import tsx scripts/wave1-unity-smoke.mjs
+```
 
 Future Pets and Arena Maps are loaded through Addressables groups delivered
 from the private R2 asset pipeline. `R2RemoteContentSettings.asset` is disabled

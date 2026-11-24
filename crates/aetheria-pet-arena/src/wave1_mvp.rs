@@ -341,11 +341,15 @@ pub const MAPS: [MapEncounter; 6] = [
 ];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "kebab-case")]
 pub enum ArenaAction {
     Strike,
     Guard,
     Skill,
+    PowerSkill,
+    Signature,
+    Ultimate,
+    FireZone,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -411,15 +415,8 @@ impl Campaign {
         if index > 0 && self.cleared_mask & (1 << (index - 1)) == 0 {
             return Err(MvpError::LockedMap);
         }
-        let view = evolution(element, level)?;
-        let regular = simulate(view.stats, element, map.regular, actions)?;
-        let boss = if regular.won {
-            Some(simulate(view.stats, element, map.boss, actions)?)
-        } else {
-            None
-        };
-        let won = regular.won && boss.as_ref().is_some_and(|value| value.won);
-        let next = if won {
+        let result = replay_map(map, element, level, actions, actions)?;
+        let next = if result.won {
             Self {
                 cleared_mask: self.cleared_mask | (1 << index),
                 revision: self.revision.checked_add(1).ok_or(MvpError::Arithmetic)?,
@@ -427,15 +424,7 @@ impl Campaign {
         } else {
             self.clone()
         };
-        Ok((
-            next,
-            MapResult {
-                map: map.id,
-                regular,
-                boss,
-                won,
-            },
-        ))
+        Ok((next, result))
     }
 }
 
@@ -443,6 +432,37 @@ impl Default for Campaign {
     fn default() -> Self {
         Self::new()
     }
+}
+
+// Pure replay mirrored by the local/test HTTP adapter and shared parity vectors.
+// It intentionally has no clear, lock, receipt or persistence state.
+pub fn replay_map(
+    map: &'static MapEncounter,
+    element: CoreElement,
+    level: u8,
+    actions: &[ArenaAction],
+    boss_actions: &[ArenaAction],
+) -> Result<MapResult, MvpError> {
+    let view = evolution(element, level)?;
+    let regular = simulate(view.stats, view.stage, element, map.regular, actions)?;
+    let boss = if regular.won {
+        Some(simulate(
+            view.stats,
+            view.stage,
+            element,
+            map.boss,
+            boss_actions,
+        )?)
+    } else {
+        None
+    };
+    let won = regular.won && boss.as_ref().is_some_and(|value| value.won);
+    Ok(MapResult {
+        map: map.id,
+        regular,
+        boss,
+        won,
+    })
 }
 
 fn damage(attack: u32, power: u16, multiplier: u16, defense: u32) -> Result<u32, MvpError> {
@@ -462,6 +482,7 @@ fn damage(attack: u32, power: u16, multiplier: u16, defense: u32) -> Result<u32,
 
 fn simulate(
     player: Stats,
+    stage: u8,
     element: CoreElement,
     enemy: Encounter,
     actions: &[ArenaAction],
@@ -473,6 +494,8 @@ fn simulate(
     let mut enemy_health = enemy.hp;
     let mut cooldown = 0_u8;
     let mut turns = 0_u8;
+    let mut rage = 0_u8;
+    let mut fire_zone_turns = 0_u8;
     for action in actions.iter().take(12) {
         turns += 1;
         cooldown = cooldown.saturating_sub(1);
@@ -481,10 +504,44 @@ fn simulate(
             ArenaAction::Guard => (0, true),
             ArenaAction::Skill if cooldown == 0 => {
                 cooldown = 3;
+                rage = 0;
                 (1800, false)
             }
             ArenaAction::Skill => (1000, false),
+            ArenaAction::PowerSkill => {
+                if stage < 1 || cooldown != 0 {
+                    return Err(MvpError::InvalidActions);
+                }
+                rage = 0;
+                cooldown = 3;
+                (2050, false)
+            }
+            ArenaAction::Signature | ArenaAction::Ultimate | ArenaAction::FireZone => {
+                let unlock = if *action == ArenaAction::Ultimate {
+                    3
+                } else {
+                    2
+                };
+                if stage < unlock
+                    || rage < 100
+                    || cooldown != 0
+                    || (*action == ArenaAction::FireZone && element != CoreElement::Fire)
+                {
+                    return Err(MvpError::InvalidActions);
+                }
+                let power = match action {
+                    ArenaAction::Ultimate => 2800,
+                    ArenaAction::FireZone => 2100,
+                    _ => 2300,
+                };
+                rage = 0;
+                cooldown = 3;
+                (power, false)
+            }
         };
+        if power <= 1000 {
+            rage = (rage + 34).min(100);
+        }
         if power > 0 {
             let hit = damage(
                 player.attack,
@@ -493,6 +550,18 @@ fn simulate(
                 enemy.defense,
             )?;
             enemy_health = enemy_health.saturating_sub(hit);
+        }
+        if fire_zone_turns > 0 {
+            enemy_health = enemy_health.saturating_sub(damage(
+                player.attack,
+                350,
+                element.multiplier_against(enemy.element),
+                enemy.defense,
+            )?);
+            fire_zone_turns -= 1;
+        }
+        if *action == ArenaAction::FireZone {
+            fire_zone_turns = 2;
         }
         if enemy_health == 0 {
             return Ok(EncounterResult {
@@ -875,5 +944,100 @@ mod tests {
                 .chars()
                 .any(|value| !value.is_ascii_hexdigit())
         );
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ReplayVectorFile {
+        vectors: Vec<ReplayVector>,
+    }
+
+    #[derive(serde::Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct ReplayVector {
+        name: String,
+        map_id: String,
+        element: CoreElement,
+        level: u8,
+        actions: Vec<ArenaAction>,
+        boss_actions: Vec<ArenaAction>,
+        expected: ExpectedReplay,
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ExpectedReplay {
+        won: bool,
+        regular: ExpectedEncounter,
+        boss: Option<ExpectedEncounter>,
+    }
+
+    #[derive(serde::Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct ExpectedEncounter {
+        won: bool,
+        turns: u8,
+        remaining_hp: u32,
+        enemy_hp: u32,
+    }
+
+    #[test]
+    fn shared_replay_vectors_match_typescript_expectations() {
+        let file: ReplayVectorFile = serde_json::from_str(include_str!(
+            "../../../tests/fixtures/pet-arena-wave1-replay-vectors.json"
+        ))
+        .unwrap();
+        assert_eq!(file.vectors.len(), 10);
+        for vector in file.vectors {
+            let map = MAPS
+                .iter()
+                .find(|map| map.id == vector.map_id.as_str())
+                .unwrap_or_else(|| panic!("unknown fixture map: {}", vector.name));
+            let result = replay_map(
+                map,
+                vector.element,
+                vector.level,
+                &vector.actions,
+                &vector.boss_actions,
+            )
+            .unwrap();
+            assert_eq!(result.won, vector.expected.won, "{}", vector.name);
+            assert_eq!(
+                result.regular.won, vector.expected.regular.won,
+                "{} regular won",
+                vector.name
+            );
+            assert_eq!(
+                result.regular.turns, vector.expected.regular.turns,
+                "{} regular turns",
+                vector.name
+            );
+            assert_eq!(
+                result.regular.remaining_hp, vector.expected.regular.remaining_hp,
+                "{} regular hp",
+                vector.name
+            );
+            assert_eq!(
+                result.regular.enemy_hp, vector.expected.regular.enemy_hp,
+                "{} regular enemy hp",
+                vector.name
+            );
+            match (result.boss, vector.expected.boss) {
+                (None, None) => {}
+                (Some(actual), Some(expected)) => {
+                    assert_eq!(actual.won, expected.won, "{} boss won", vector.name);
+                    assert_eq!(actual.turns, expected.turns, "{} boss turns", vector.name);
+                    assert_eq!(
+                        actual.remaining_hp, expected.remaining_hp,
+                        "{} boss hp",
+                        vector.name
+                    );
+                    assert_eq!(
+                        actual.enemy_hp, expected.enemy_hp,
+                        "{} boss enemy hp",
+                        vector.name
+                    );
+                }
+                _ => panic!("boss result mismatch: {}", vector.name),
+            }
+        }
     }
 }

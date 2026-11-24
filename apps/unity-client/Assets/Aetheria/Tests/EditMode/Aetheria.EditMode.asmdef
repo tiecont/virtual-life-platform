@@ -1,6 +1,6 @@
 {
   "name": "Aetheria.EditMode",
-  "references": ["Aetheria.Blockout", "Aetheria.Editor", "Aetheria.Icarus.Presentation", "Aetheria.Native", "Aetheria.PetArena.Domain", "Aetheria.PetArena.Presentation", "Aetheria.Pets", "Aetheria.RemoteContent", "Unity.Addressables", "Unity.ResourceManager"],
+  "references": ["Aetheria.Blockout", "Aetheria.Editor", "Aetheria.Icarus.Presentation", "Aetheria.Native", "Aetheria.PetArena.Domain", "Aetheria.PetArena.Presentation", "Aetheria.PetArena.Vfx", "Aetheria.Pets", "Aetheria.RemoteContent", "Unity.Addressables", "Unity.ResourceManager"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

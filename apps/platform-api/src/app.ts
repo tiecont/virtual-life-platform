@@ -101,6 +101,8 @@ import type {GameInitialFactory} from './features/games/modules/persistence/infr
 import {GameRulesEngine} from '@aetheria/boardgame-core';
 import { registerStudy } from './features/library/modules/study/presentation/http';
 import {registerWave1Mvp} from './features/pets/modules/wave1/presentation/http';
+import {Wave1Service, type Wave1Entropy} from './features/pets/modules/wave1/application/service';
+import {Wave1Store} from './features/pets/modules/wave1/infrastructure/store';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -115,7 +117,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy} } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
@@ -282,7 +284,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerStudy(http,config,identity,study,options.now);
-  registerWave1Mvp(http,config,identity,options.petArenaWave1?.enabled??false,options.now);
+  const wave1=new Wave1Service(new Wave1Store(db),options.petArenaWave1?.entropy);
+  registerWave1Mvp(http,config,identity,wave1,options.petArenaWave1?.enabled??false,options.now);
+  identity.registerExportOwner('petArenaWave1',(account,transaction)=>wave1.exportAccount(transaction,account));
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
   rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));
   registerProgression(http, config, identity, progression, appearance, options.now,avatarParts);

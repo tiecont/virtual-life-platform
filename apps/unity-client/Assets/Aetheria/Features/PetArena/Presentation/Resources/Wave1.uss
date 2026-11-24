@@ -1,0 +1,58 @@
+.arena-panel {
+    width: 400px;
+    max-width: 98%;
+    max-height: 96%;
+    margin: 16px;
+    padding: 18px;
+    background-color: rgba(13, 21, 34, 0.96);
+    color: rgb(232, 238, 247);
+    border-left-width: 2px;
+    border-left-color: rgb(229, 178, 101);
+}
+.arena-panel Label {
+    color: rgb(232, 238, 247);
+    white-space: normal;
+}
+.arena-panel .arena-eyebrow {
+    color: rgb(229, 178, 101);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+.arena-panel .arena-title {
+    font-size: 25px;
+    -unity-font-style: bold;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+.arena-panel .arena-meta {
+    color: rgb(172, 193, 215);
+    margin-bottom: 6px;
+}
+.arena-panel .arena-notice {
+    color: rgb(252, 215, 156);
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+.arena-panel Button {
+    min-height: 30px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: rgb(37, 54, 77);
+    color: rgb(232, 238, 247);
+    border-color: rgb(66, 89, 115);
+    -unity-text-align: middle-left;
+    padding-left: 10px;
+}
+.arena-panel Button:focus {
+    border-color: rgb(255, 201, 118);
+}
+.arena-panel Button:hover {
+    background-color: rgb(59, 76, 102);
+}
+.arena-panel Button:disabled {
+    opacity: 0.55;
+}
+.arena-meter {
+    height: 22px;
+    margin-bottom: 6px;
+}

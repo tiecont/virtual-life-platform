@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "spec": "aetheria-pet-arena-wave1-mvp-replay-vectors",
+  "note": "Shared deterministic vectors consumed by the Rust wave1_mvp unit test and the TypeScript catalog unit test. The server replays regular actions then boss actions with the Wave 1 formulas.",
+  "vectors": [
+    {
+      "name": "cinder-level-1-policy",
+      "mapId": "cinder-terraces",
+      "element": "fire",
+      "level": 1,
+      "actions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "bossActions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 5, "remainingHp": 82, "enemyHp": 0}, "boss": {"won": true, "turns": 9, "remainingHp": 44, "enemyHp": 0}}
+    },
+    {
+      "name": "cinder-level-1-strikes",
+      "mapId": "cinder-terraces",
+      "element": "fire",
+      "level": 1,
+      "actions": ["strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike"],
+      "bossActions": ["strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 4, "remainingHp": 85, "enemyHp": 0}, "boss": {"won": true, "turns": 9, "remainingHp": 36, "enemyHp": 0}}
+    },
+    {
+      "name": "cinder-level-20-separate-boss-list",
+      "mapId": "cinder-terraces",
+      "element": "fire",
+      "level": 20,
+      "actions": ["skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike"],
+      "bossActions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 2, "remainingHp": 177, "enemyHp": 0}, "boss": {"won": true, "turns": 5, "remainingHp": 154, "enemyHp": 0}}
+    },
+    {
+      "name": "stormcoil-level-20-boss-loss",
+      "mapId": "stormcoil-fields",
+      "element": "electric",
+      "level": 20,
+      "actions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "bossActions": ["strike", "strike", "skill"],
+      "expected": {"won": false, "regular": {"won": true, "turns": 4, "remainingHp": 153, "enemyHp": 0}, "boss": {"won": false, "turns": 3, "remainingHp": 143, "enemyHp": 109}}
+    },
+    {
+      "name": "stormcoil-level-60-separate-boss-list",
+      "mapId": "stormcoil-fields",
+      "element": "electric",
+      "level": 60,
+      "actions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "bossActions": ["skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike", "skill", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 1, "remainingHp": 436, "enemyHp": 0}, "boss": {"won": true, "turns": 3, "remainingHp": 420, "enemyHp": 0}}
+    },
+    {
+      "name": "ochre-level-60-electric-immunity",
+      "mapId": "ochre-labyrinth",
+      "element": "electric",
+      "level": 60,
+      "actions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "bossActions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "expected": {"won": false, "regular": {"won": false, "turns": 12, "remainingHp": 298, "enemyHp": 150}, "boss": null}
+    },
+    {
+      "name": "dawn-level-60-light",
+      "mapId": "dawn-prism-sanctum",
+      "element": "light",
+      "level": 60,
+      "actions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "bossActions": ["skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike", "skill", "strike", "guard", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 2, "remainingHp": 497, "enemyHp": 0}, "boss": {"won": true, "turns": 5, "remainingHp": 470, "enemyHp": 0}}
+    },
+    {
+      "name": "lantern-level-40-skill-cooldown-fallback",
+      "mapId": "lantern-necropolis",
+      "element": "ghost",
+      "level": 40,
+      "actions": ["skill", "skill", "skill", "skill", "strike"],
+      "bossActions": ["guard", "strike", "strike"],
+      "expected": {"won": false, "regular": {"won": true, "turns": 1, "remainingHp": 310, "enemyHp": 0}, "boss": {"won": false, "turns": 3, "remainingHp": 270, "enemyHp": 128}}
+    },
+    {
+      "name": "cinder-level-1-guard-loss",
+      "mapId": "cinder-terraces",
+      "element": "fire",
+      "level": 1,
+      "actions": ["guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard"],
+      "bossActions": ["guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard", "guard"],
+      "expected": {"won": false, "regular": {"won": false, "turns": 12, "remainingHp": 64, "enemyHp": 70}, "boss": null}
+    },
+    {
+      "name": "cinder-level-40-icarus-fire-zone",
+      "mapId": "cinder-terraces",
+      "element": "fire",
+      "level": 40,
+      "actions": ["guard", "guard", "guard", "fire-zone"],
+      "bossActions": ["guard", "guard", "guard", "fire-zone", "guard", "guard", "strike"],
+      "expected": {"won": true, "regular": {"won": true, "turns": 4, "remainingHp": 289, "enemyHp": 0}, "boss": {"won": true, "turns": 7, "remainingHp": 268, "enemyHp": 0}}
+    }
+  ]
+}
