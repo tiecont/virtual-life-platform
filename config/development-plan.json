@@ -3819,7 +3819,7 @@
         {"command":"node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/foundation.test.ts","exitCode":0,"result":"4 PASS including complete migration execution under an explicit database-owner role."},
         {"command":"pnpm check","exitCode":143,"result":"Interrupted during the governance test launch on the local host after earlier check stages passed; not recorded as a full local pass. Hosted CI remains required."}
       ],
-      "remaining": "Merge only after exact-head hosted Quality and Rust pass. After merge, switch both Northflank services to main, enable Workers Builds for main if the owner approves Cloudflare GitHub App repository access, and verify resulting main revisions. No public release is authorized."
+      "remaining": "Merge only after exact-head hosted Quality and Rust pass. The capacity contract is 838 integration tests after adding the explicit database-owner migration case. Both Northflank services already target main and both Workers Builds triggers are main-only; verify their automatic deployments at the merged revision. No public release is authorized."
     },
     "scope": "Partial CI reliability: actual Stage PostgreSQL blocker synchronization; explicit Ubuntu 24.04; checksum-addressed official Playwright 1.64.1 browser/fonts with host render preflight; bounded image-navigation diagnostics retain all application assertions and merge gates",
     "ciTurboVerification": {
@@ -3838,7 +3838,7 @@
         {"command": "pnpm exec eslint focused CI scripts and governance tests", "exitCode": 0},
         {"command": "git diff --check", "exitCode": 0}
       ],
-      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity is813 and the dependent MVP PR raises the same versioned aggregate to837."
+      "limitations": "No hosted duration improvement is claimed until the final PR run completes. The foundation capacity was 813; dependent work raised the versioned aggregate to 837, and the private-production database-owner migration case raises the exact aggregate to 838."
     },
     "imageNavigationDiagnosticsVerification": {
       "sourceRevision": "deb5c2866aede77c4ee428b9dd54dded0806cd6c",
