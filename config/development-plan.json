@@ -9108,6 +9108,137 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
       }
+    },
+    {
+      "id": "VL-185",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Rust-Runtime",
+      "title": "Wave B: authoritative Arena8 runtime and native allocation",
+      "objective": "Bind the versioned Arena8 engine to canonical Pet/level/Artifact snapshots and the existing native gameplay transport, admission, journal and settlement path.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-176"
+      ],
+      "acceptance": [
+        "Arena8 allocation uses server-owned content/entropy and the canonical 55 active identities",
+        "Accepted commands/receipts survive restart and reconnect; stale/duplicate/lost-ACK behavior is bounded",
+        "Completion settlement is idempotent and cannot be granted twice by a parallel legacy route"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-186",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Wave B: Unity consumes committed Arena8 projections and events",
+      "objective": "Replace the default development board with committed Arena8 projections, event-driven presentation and authoritative skill/cooldown/telegraph state.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-179",
+        "VL-185"
+      ],
+      "acceptance": [
+        "Unity sends intents only and never chooses outcomes, damage, entropy or rewards",
+        "Committed events animate once, including reconnect and lost-ACK recovery",
+        "Board/skills/Ultimate/telegraph/reward screens use authoritative projections"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-187",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Media",
+      "title": "Wave B: AudioMixer, ambience and event-driven VFX foundation",
+      "objective": "Deliver Master/Music/Ambient/SFX/Voice/UI mixer groups, persisted volume/mute controls, combat/reward hooks and pooled six-element VFX.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Mixer groups and persisted independent volume/mute behavior work in Unity",
+        "Hub/Fire/Water/combat/Artifact/reward cues are wired to event hooks",
+        "VFX pools respect reduced motion/flash and do not own gameplay outcomes"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Licensed media approval remains OD-10"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-188",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "Wave B: Central Plaza, Cinder Terraces and Tideglass Lagoon",
+      "objective": "Create functioning Unity hub/Fire/Water environments with walkable collision, camera framing, portals, ambient movement and return-to-hub flow.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Central Plaza and two distinct arena scenes/compositions load and render",
+        "Modular kits, collision, spawn points, portal and return flow work locally",
+        "Developer-intermediate art is labelled; no six-empty-scenes claim"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Owner environment acceptance remains separate"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-189",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "QA-SRE",
+      "title": "Wave B: integrated Arena8, Artifact and world acceptance",
+      "objective": "Exercise the coherent local flow from hub through an authoritative 8x8 battle, rewards/Artifact equip, a second match stat check, Water arena and restart recovery.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-177",
+        "VL-185",
+        "VL-186",
+        "VL-187",
+        "VL-188"
+      ],
+      "acceptance": [
+        "The full local flow completes without duplicate settlement, unauthorized ownership or cross-account access",
+        "An active match cannot be mutated by an Artifact change; the next match uses the new snapshot",
+        "Restart recovers inventory/progression and frozen replay compatibility remains intact"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Physical Windows and human playtesting remain M6/M5"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
     }
   ]
 }
