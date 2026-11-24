@@ -86,7 +86,9 @@ Pets retain their identity, silhouette and base model from Lv1 to Lv60.
 
 ## Canonical roster
 
-The locked Wave 1 runtime roster contains 43 Pet identities. Wave A adds:
+The versioned reconciliation is [wave-a-canonical-roster-v1.json](wave-a-canonical-roster-v1.json);
+its OD-1…OD-9 list records unresolved owner decisions. The locked Wave 1 runtime
+roster contains 43 Pet identities. Wave A adds:
 
 - **Dragons (presentation Power Class S):** Ignivar (Fire), Tidecoil (Water),
   Voltrazik (Electric), Hollowmaw (Ghost), Terradrake (Ground), Auroryx (Light).
@@ -104,8 +106,13 @@ Rules:
 - Presentation Power Class, gameplay stats, acquisition source and summon rarity
   are separate fields. Do not infer one from another.
 - The ten shared race bases are presentation bases, not ten collectible Pets.
-- One stable ID per identity. The Jadewarden/Jaderyx naming conflict is resolved
-  with one canonical identity plus aliases, never duplicate ownership.
+- One stable ID per identity. The Jadewarden/Jaderyx conflict resolves to
+  `pet-s-ground-jaderyx`, display **Jaderyx**, with Jadewarden as a lookup-only
+  alias; `pet-s-ground-jadewarden` is never minted. Confirm the display name in OD-3.
+- Solenne is owner-provided replacement art with rights **PENDING_REVIEW** (OD-4);
+  do not treat it as a cleared production asset.
+- Thirty map-regular Pets have only a shared race-base concept, not individual
+  concept art. Concept-ready is not model-ready.
 - Runtime-ready, concept-ready, model-ready, rig-ready, Unity-ready and
   production-approved are separate states. Concept art is not an accepted model.
 - Reuse data-driven mechanics and shared rig archetypes. Dragons do not share an
