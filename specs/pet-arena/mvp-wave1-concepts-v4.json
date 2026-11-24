@@ -29,7 +29,7 @@
     "paidBalanceBefore": 1910,
     "paidBalanceAfter": 1910,
     "paidCreditsConsumed": 0,
-    "note": "6 first pass + 6 after the repeated three-ring regalia was rejected + 3 after the large/small split and elephant replacement."
+    "note": "6 first pass + 6 after the repeated three-ring regalia was rejected + 3 after the large/small split and elephant replacement. Solenne's image was replaced with owner-provided art at zero cost."
   },
   "scaleSplit": {
     "large": [
@@ -221,19 +221,25 @@
       "scale": "small",
       "powerClass": "S",
       "classLabel": "S · Off-rate",
-      "taskId": "a63a3353-0ce1-46cc-bd5e-ab368dde92c3",
+      "taskId": null,
       "freeCounterBefore": 86,
       "freeCounterAfter": 87,
       "paidCreditsConsumed": 0,
       "width": 1536,
       "height": 1152,
-      "bytes": 2616877,
-      "sha256": "80645fffb4908ac7461e1c278e667602ab516ba58224f911eb2d005806e61c4a",
-      "promptSha256": "e1a902c64854e3dbf72cb52db361d996c656e23306203904ad6e31f3e266a583",
+      "bytes": 2346191,
+      "sha256": "3d0f994cc491e3757cee46fdb06de5e8b1ba47a416c5557c3c30e9151a2bce92",
+      "promptSha256": "6d2b1406fed5557eaa1414eb836259dcdad5d1c89926fa020c8266a2f8a2dcda",
       "regenerations": 1,
-      "generatedAtUtc": "2026-11-24T12:56:23.774Z",
+      "generatedAtUtc": "2026-11-24T13:04:03.980Z",
       "ownerDecision": null,
-      "ownerNote": null
+      "ownerNote": null,
+      "sourceFile": "/home/tiecont/Downloads/cao-chin-duoi.webp",
+      "replacement": true,
+      "generatedInBatch": false,
+      "originalTaskId": "a63a3353-0ce1-46cc-bd5e-ab368dde92c3",
+      "rights": "PENDING_REVIEW",
+      "note": "Owner-provided replacement art: nine-tailed crystal fox from Downloads/cao-chin-duoi.webp. Not generated in this batch; rights remain pending review."
     }
   ]
 }
