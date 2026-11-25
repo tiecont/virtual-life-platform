@@ -74,8 +74,10 @@
       }
     },
     "currentWave": {
-      "id": "WAVE-B",
-      "title": "Authoritative 8x8, progression and living world",
+      "id": "WAVE-C2",
+      "title": "Authoritative Arena8 integration and independent progression",
+      "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
+      "c2Status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
       "waveBVerification": {
       "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
       "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
