@@ -108,6 +108,11 @@ namespace Aetheria.PetArena.Infrastructure
             Request<Arena8Settlement>(Arena8Prefix + "/matches/" + Uri.EscapeDataString(matchId) + "/settle",
                 body, cancellation);
 
+        public Task<Arena8Settlement> SettleArena8Native(string matchId, Arena8SettleRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8Settlement>(Arena8Prefix + "/native/matches/" + Uri.EscapeDataString(matchId) + "/settle",
+                body, cancellation);
+
         public Task<WaveAArtifactState> GetArtifactState(CancellationToken cancellation) =>
             Request<WaveAArtifactState>(ArtifactPrefix + "/state", null, cancellation);
 

@@ -44,7 +44,7 @@ async function fixture(enabled=true){
   const allocate=vi.fn(async()=>VIEW);
   const provisioner={allocate} as unknown as NativeArena8Provisioner;
   await http.register(cookie,{secret:config.SESSION_SECRET});
-  registerNativeArena8(http,config,identity as unknown as IdentityService,provisioner,enabled);
+  registerNativeArena8(http,config,identity as unknown as IdentityService,provisioner,{} as never,enabled);
   await http.ready();
   const headers={
     origin:'http://127.0.0.1:3300',
@@ -108,6 +108,6 @@ describe('native Arena8 allocation route',()=>{
     }finally{await f.http.close();}
     const config=readConfig({NODE_ENV:'test',DATABASE_URL:'postgresql://fixture@127.0.0.1/aetheria_soulbound_test',SESSION_SECRET:'native-arena8-route-test-only-secret-000001'});
     expect(()=>registerNativeArena8({} as FastifyInstance,{...config,NODE_ENV:'production'},
-      {} as IdentityService,{} as NativeArena8Provisioner,true)).toThrow(/local\/test only/);
+      {} as IdentityService,{} as NativeArena8Provisioner,{} as never,true)).toThrow(/local\/test only/);
   });
 });

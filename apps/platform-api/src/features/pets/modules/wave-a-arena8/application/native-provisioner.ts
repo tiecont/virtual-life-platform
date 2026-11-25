@@ -336,6 +336,21 @@ export class NativeArena8Provisioner {
     });
   }
 
+  // Called only after the authoritative native settlement receipt is durable.
+  // It stops the per-match runtime, closes the bridge, retires admission and
+  // releases the journal's active slot so the next match can be provisioned.
+  async complete(accountId:string,matchId:string){
+    const active=this.active.get(matchId);
+    if(!active||active.record.accountId!==accountId)return;
+    active.stopped=true;
+    this.active.delete(matchId);
+    active.lease.stop();
+    await active.lease.work().catch(()=>{});
+    await active.handle.stop().catch(()=>{});
+    await this.options.matches.close(matchId).catch(()=>{});
+    await this.options.admission.configure(active.scope,active.generation,false,0).catch(()=>{});
+  }
+
   async close(){
     if(this.closing)return;
     this.closing=true;

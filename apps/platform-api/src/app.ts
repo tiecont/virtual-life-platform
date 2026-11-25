@@ -337,7 +337,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
       }),
       httpsOrigin:native.httpsOrigin,
     });
-    registerNativeArena8(http,config,identity,provisioner,true,options.now);
+    registerNativeArena8(http,config,identity,provisioner,
+      new Arena8Service(db,'http://127.0.0.1:1','native-settlement-only'.padEnd(32,'x')),
+      true,options.now);
     http.addHook('preClose',async()=>{await provisioner.close();});
   }
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);

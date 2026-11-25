@@ -3,20 +3,23 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Aetheria.Networking;
+using Aetheria.PetArena.Infrastructure;
 using UnityEngine;
 
 namespace Aetheria.PetArena.Presentation
 {
-    // In-player native acceptance driver. The flag is explicit, and every match
-    // operation still goes through the authenticated allocation route, native
-    // admission and committed WSS receipt. No outcome or reward is synthesized.
+    // In-player native acceptance driver. Every match operation still goes
+    // through authenticated allocation, native admission and committed WSS
+    // receipts. It never synthesizes an outcome, board or reward.
     public sealed partial class Arena8CampaignScreen
     {
         [Serializable]
         private sealed class NativeFacts
         {
-            public string status, matchId, phase, error, boardDigest;
-            public int version, boardTiles, skills;
+            public string status, matchId, phase, error, boardDigest, settlement;
+            public string regularSettlement, bossSettlement, artifactId;
+            public int version, boardTiles, skills, coins;
+            public bool artifactEquipped, waterAllocated;
             public string[] skillIds;
         }
 
@@ -45,29 +48,62 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
-                await AllocateNative("cinder-terraces", "cinder-terraces-regular");
+
+                Arena8Settlement regular = null;
+                for (var attempt = 0; attempt < 6 && regular?.won != true; attempt++)
+                {
+                    regular = await RunNativeMatch("cinder-terraces", "cinder-terraces-regular",
+                        "native-regular-" + attempt);
+                    nativeFacts.regularSettlement = DescribeNative(regular);
+                }
+                if (regular?.won != true)
+                    throw new InvalidOperationException("Native Fire regular did not clear in six attempts");
+
+                artifacts = await api.GetArtifactState(lifetime.Token);
+                var reward = artifacts.inventory?.FirstOrDefault(item => item.acquiredMapId == "cinder-terraces")
+                    ?? artifacts.inventory?.FirstOrDefault(item => item.equipped == null);
+                if (reward != null)
+                {
+                    await api.EquipArtifact(new WaveAArtifactEquipRequest
+                    {
+                        requestId = NewRequestId(), petId = selectedPet, artifactId = reward.artifactId,
+                    }, lifetime.Token);
+                    artifacts = await api.GetArtifactState(lifetime.Token);
+                    nativeFacts.artifactId = reward.artifactId;
+                    var equipped = artifacts.FindPet(selectedPet);
+                    nativeFacts.artifactEquipped = equipped?.slots != null &&
+                        (equipped.slots.core == reward.artifactId || equipped.slots.aegis == reward.artifactId ||
+                         equipped.slots.rune == reward.artifactId);
+                    Draw();
+                    await CaptureNative("native-05-artifact.png");
+                }
+
+                Arena8Settlement boss = null;
+                for (var attempt = 0; attempt < 6 && boss?.won != true; attempt++)
+                {
+                    boss = await RunNativeMatch("cinder-terraces", "cinder-terraces-boss",
+                        "native-boss-" + attempt);
+                    nativeFacts.bossSettlement = DescribeNative(boss);
+                }
+                if (boss?.won != true)
+                    throw new InvalidOperationException("Native Fire boss did not clear in six attempts");
+
+                state = await api.GetWave1State(lifetime.Token);
+                await AllocateNative("tideglass-lagoon", "tideglass-lagoon-regular");
+                nativeFacts.waterAllocated = nativeView != null && nativeView.Phase != null;
                 Draw();
-                await CaptureNative("native-01-allocated.png");
-                await Native((session, token) => session.StartAsync(token));
-                Draw();
-                await CaptureNative("native-02-started.png");
-                if (nativeView == null || nativeView.Phase != "playing")
-                    throw new InvalidOperationException("Native Start did not enter playing");
-                var swap = FindNativeSwap(nativeView.Board);
-                await Native((session, token) => session.SwapAsync(swap.first, swap.second, token));
-                Draw();
-                await CaptureNative("native-03-swap.png");
-                if (nativeView == null || nativeView.Board.Count != 64)
-                    throw new InvalidOperationException("Native Swap did not return 64 cells");
+                await CaptureNative("native-07-water.png");
+
                 nativeFacts.status = "ok";
                 nativeFacts.matchId = matchId;
-                nativeFacts.phase = nativeView.Phase;
-                nativeFacts.version = checked((int)nativeView.Version);
-                nativeFacts.boardTiles = nativeView.Board.Count;
-                nativeFacts.skills = nativeView.Skills.Count;
-                nativeFacts.skillIds = nativeView.Skills.ToArray();
-                nativeFacts.boardDigest = nativeView.SnapshotDigest;
-                Draw();
+                nativeFacts.phase = nativeView?.Phase ?? "";
+                nativeFacts.version = nativeView == null ? 0 : checked((int)nativeView.Version);
+                nativeFacts.boardTiles = nativeView?.Board.Count ?? 0;
+                nativeFacts.skills = nativeView?.Skills.Count ?? 0;
+                nativeFacts.skillIds = nativeView?.Skills.ToArray() ?? Array.Empty<string>();
+                nativeFacts.boardDigest = nativeView?.SnapshotDigest ?? "";
+                nativeFacts.settlement = DescribeNative(regular) + " | " + DescribeNative(boss);
+                nativeFacts.coins = state.wallet.coins;
             }
             catch (Exception exception)
             {
@@ -83,6 +119,56 @@ namespace Aetheria.PetArena.Presentation
             }
         }
 
+        private async Task<Arena8Settlement> RunNativeMatch(string map, string encounter, string prefix)
+        {
+            await AllocateNative(map, encounter);
+            Draw();
+            await CaptureNative(prefix + "-allocated.png");
+            await Native((session, token) => session.StartAsync(token));
+            Draw();
+            await CaptureNative(prefix + "-started.png");
+            for (var turn = 0; turn < 60 && nativeView != null && !nativeView.Terminal; turn++)
+                await NativeTurn();
+            Draw();
+            await CaptureNative(prefix + "-terminal.png");
+            if (nativeView == null || !nativeView.Terminal)
+                throw new InvalidOperationException("Native match did not terminate");
+            var settlement = await api.SettleArena8Native(matchId, new Arena8SettleRequest
+            {
+                requestId = NewRequestId(),
+            }, lifetime.Token);
+            state = await api.GetWave1State(lifetime.Token);
+            artifacts = await api.GetArtifactState(lifetime.Token);
+            DisposeNative();
+            Draw();
+            await CaptureNative(prefix + "-settled.png");
+            return settlement;
+        }
+
+        private async Task NativeTurn()
+        {
+            if (nativeView.Affords(Arena8NativeView.Ultimate) &&
+                await TryNative((session, token) => session.UltimateAsync(token))) return;
+            if (nativeView.Affords(Arena8NativeView.Signature) &&
+                await TryNative((session, token) => session.SignatureAsync(token))) return;
+            if (nativeView.Affords(Arena8NativeView.SharedSkill) &&
+                await TryNative((session, token) => session.SkillAsync(token))) return;
+            foreach (var swap in FindNativeSwaps(nativeView.Board))
+                if (await TryNative((session, token) => session.SwapAsync(swap.first, swap.second, token))) return;
+            if (await TryNative((session, token) => session.GuardAsync(token))) return;
+            throw new InvalidOperationException("Native match has no accepted action");
+        }
+
+        private static string DescribeNative(Arena8Settlement settlement) =>
+            (settlement.won ? "victory" : "defeat") + " +" + settlement.coins + "c +" +
+            settlement.exp + "xp mat=" + settlement.materials;
+
+        private async Task<bool> TryNative(Func<Arena8NativePlaySession, System.Threading.CancellationToken, Task<PlayState>> command)
+        {
+            try { await Native(command); return true; }
+            catch (InvalidOperationException) { return false; }
+        }
+
         private async Task CaptureNative(string name)
         {
             await Task.Yield();
@@ -90,18 +176,20 @@ namespace Aetheria.PetArena.Presentation
             await Task.Delay(250);
         }
 
-        private static (int first, int second) FindNativeSwap(System.Collections.Generic.IReadOnlyList<int> board)
+        private static System.Collections.Generic.List<(int first, int second)> FindNativeSwaps(
+            System.Collections.Generic.IReadOnlyList<int> board)
         {
+            var result = new System.Collections.Generic.List<(int first, int second)>();
             for (var index = 0; index < 64; index++)
             {
                 var row = index / 8;
                 var column = index % 8;
                 if (column < 7 && NativeSwapMatches(board, index, index + 1))
-                    return (index, index + 1);
+                    result.Add((index, index + 1));
                 if (row < 7 && NativeSwapMatches(board, index, index + 8))
-                    return (index, index + 8);
+                    result.Add((index, index + 8));
             }
-            throw new InvalidOperationException("No legal native swap");
+            return result;
         }
 
         private static bool NativeSwapMatches(System.Collections.Generic.IReadOnlyList<int> board, int first, int second)

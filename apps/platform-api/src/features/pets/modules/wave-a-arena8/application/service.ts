@@ -103,10 +103,14 @@ export class Arena8Service {
     return this.call<MatchView>('/matches/'+encodeURIComponent(matchId),'GET');
   }
 
-  async settle(accountId:string,requestId:string,matchId:string){
+  async settle(accountId:string,requestId:string,matchId:string,supplied?:MatchView){
     assertUuid(accountId,'account');assertUuid(requestId,'requestId');assertUuid(matchId,'matchId');
-    await this.assertOwner(accountId,matchId);
-    const match=await this.call<MatchView>('/matches/'+encodeURIComponent(matchId),'GET');
+    let match:MatchView;
+    if(supplied)match=supplied;
+    else{
+      await this.assertOwner(accountId,matchId);
+      match=await this.call<MatchView>('/matches/'+encodeURIComponent(matchId),'GET');
+    }
     const projection=match.view;
     if(!match.terminal&&!projection.terminal)throw conflict('Match is not terminal');
     if(projection.phase!=='won'&&projection.phase!=='lost')throw runtime('Match terminal phase is invalid');
@@ -234,6 +238,36 @@ export class Arena8Service {
       return settlement;
     }catch(error){await client.query('ROLLBACK');throw error;}
     finally{client.release();}
+  }
+
+  // Native terminal settlement reads the canonical outbox proposal, never a
+  // client-submitted outcome. It then reuses the same durable campaign
+  // transaction as the isolated HTTP bridge.
+  async settleNative(accountId:string,requestId:string,matchId:string){
+    assertUuid(accountId,'account');assertUuid(requestId,'requestId');assertUuid(matchId,'matchId');
+    const row=(await this.db.query<{
+      account_id:string;pet_id:string;encounter_id:string;map_id:string;
+      proposal:Record<string,unknown>;
+    }>(
+      `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,s.proposal
+         FROM platform_native_arena8_matches m
+         JOIN game_native_settlements s ON s.match_id=m.match_id
+        WHERE m.match_id=$1`,
+      [matchId],
+    )).rows[0];
+    if(!row)throw conflict('Native match is not terminal');
+    if(row.account_id!==accountId)throw forbidden('Match belongs to another account');
+    const proposal=row.proposal;
+    if(proposal?.ruleset!=='arena8-pve'||(proposal.outcome!=='won'&&proposal.outcome!=='lost'))
+      throw runtime('Native completion proposal is invalid');
+    const encounterId=row.encounter_id;
+    const projection={
+      matchId,version:0,terminal:true,phase:proposal.outcome,
+      encounter:{id:encounterId,boss:encounterId.endsWith('-boss')},
+      pet:{id:row.pet_id,level:0},
+      stats:{effective:{health:0,attack:0,defense:0}},
+    } as unknown as MatchProjection;
+    return this.settle(accountId,requestId,matchId,{matchId,version:0,view:projection,terminal:true});
   }
 
   private async assertOwner(accountId:string,matchId:string){
