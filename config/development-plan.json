@@ -207,10 +207,23 @@
           "Unity Central Plaza/Fire/Water portal entry and cooperative presentation",
           "Native lifecycle/restart and cooperative settlement remain open"
         ],
+        "cooperativeFoundation": {
+          "status": "RUST_MODEL_ONLY_NOT_NATIVE_INTEGRATED",
+          "module": "crates/aetheria-pet-arena/src/arena8/coop.rs",
+          "rulesetId": "aetheria-pet-arena-arena8-coop",
+          "tests": [
+            "four_seats_rotate_turns_and_rounds",
+            "multiplier_schedule_is_versioned",
+            "boss_phase_transition_is_exact_once_and_discards_excess",
+            "ground_has_high_hp_low_crit_and_high_crit_damage",
+            "deterministic_replay_matches"
+          ],
+          "limits": "No native Host, WSS intent/view, Nest room, achievement ledger, cooperative settlement or Unity cooperative UI is wired to this model."
+        },
         "gates": {
-          "cooperativeCombatFoundation": "NOT_ACCEPTED",
-          "bossPhaseTransition": "NOT_ACCEPTED",
-          "multiplierTiles": "NOT_ACCEPTED",
+          "cooperativeCombatFoundation": "RUST_MODEL_TESTS_PASS_NOT_INTEGRATED",
+          "bossPhaseTransition": "RUST_MODEL_TEST_PASS_NOT_NATIVE",
+          "multiplierTiles": "RUST_MODEL_TEST_PASS_NOT_NATIVE",
           "fourSeatAdmission": "NOT_ACCEPTED",
           "cooperativeSettlement": "NOT_ACCEPTED",
           "packagedFourSeatPlayer": "NOT_ACCEPTED"
