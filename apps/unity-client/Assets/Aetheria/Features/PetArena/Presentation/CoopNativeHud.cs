@@ -50,6 +50,30 @@ namespace Aetheria.PetArena.Presentation
             if (target == null) return;
             target.Clear();
             target.Add(CoopNativePresentation.Build(view, Select, Cast));
+            if (session != null && session.NeedsRefresh)
+            {
+                var reconnect = new Button(() => _ = ReconnectAsync()) { text = "Reconnect", name = "coop-reconnect" };
+                target.Add(reconnect);
+            }
+            if (session != null && session.HasPendingCommand)
+            {
+                var retry = new Button(() => _ = RetryAsync()) { text = "Retry pending command", name = "coop-retry" };
+                target.Add(retry);
+            }
+        }
+
+        private async System.Threading.Tasks.Task ReconnectAsync()
+        {
+            try { if (session != null) await session.ReconnectAsync(); }
+            catch (NativeFailure failure) { Debug.LogWarning("Coop reconnect failed: " + failure.Reason); }
+            finally { Refresh(); }
+        }
+
+        private async System.Threading.Tasks.Task RetryAsync()
+        {
+            try { if (session != null) await session.RetryAsync(); }
+            catch (NativeFailure failure) { Debug.LogWarning("Coop retry failed: " + failure.Reason); }
+            finally { Refresh(); }
         }
 
         private void Select(int cell)
