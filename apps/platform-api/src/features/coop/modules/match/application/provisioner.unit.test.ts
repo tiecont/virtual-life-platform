@@ -143,12 +143,12 @@ describe('cooperative match provisioner',()=>{
   expect(store.rows.get(match)!.status).toBe('ACTIVE');
   await expect(provisioner.admission(ROOM,'cred-'+ACCOUNTS[0])).rejects.toMatchObject({status:503});
  });
- it('closes a match once and disables its admission world',async()=>{
+ it('stops the runtime but leaves the allocation active for recovery',async()=>{
   const {provisioner,runtime,admission,store}=fixture();
   const started=await provisioner.start(startInput);
   await provisioner.close();
   expect(runtime.stops).toHaveBeenCalledOnce();
   expect(admission.configured.at(-1)).toMatchObject({enabled:false,capacity:0});
-  expect(store.rows.get(started.matchId)).toMatchObject({status:'CLOSED'});
+  expect(store.rows.get(started.matchId)).toMatchObject({status:'ACTIVE'});
  });
 });

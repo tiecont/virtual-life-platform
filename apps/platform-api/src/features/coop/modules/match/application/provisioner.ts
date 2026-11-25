@@ -245,8 +245,11 @@ export class CoopMatchProvisioner{
   await Promise.all(matches.map(async active=>{
    active.lease.stop();
    await active.handle.stop().catch(()=>{});
-   await this.options.admission.configure(active.scope,active.generation,false,0).catch(()=>{});
-   await this.options.store.close(active.record.matchId).catch(()=>{});
+   const disabled=await this.options.admission.configure(active.scope,active.generation,false,0).catch(()=>0);
+   if(disabled>0)await this.options.store.recovered(active.record.matchId,disabled).catch(()=>{});
+   // A graceful API shutdown stops the runtime but leaves the allocation ACTIVE:
+   // the next process revalidates and re-provisions it. Room close is a separate
+   // explicit operation and still closes the match.
   }));
  }
 }

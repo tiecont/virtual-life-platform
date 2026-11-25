@@ -97,13 +97,17 @@ try{
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
- const tickets=[];
- for(const member of members){
-  const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
-  assert.equal(response.statusCode,200,JSON.stringify(response.json()));
-  tickets.push(response.json().ticket);
+ async function freshTickets(){
+  const issued=[];
+  for(const member of members){
+   const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
+   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
+   issued.push(response.json().ticket);
+  }
+  assert.equal(new Set(issued).size,4);
+  return issued;
  }
- assert.equal(new Set(tickets).size,4);
+ let tickets=await freshTickets();
  facts.scenarios.push('four-subject-scoped-tickets-issued-by-the-real-issuer');
  const caPem=await readFile(tls.caFile,'utf8');
  const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
@@ -116,6 +120,19 @@ try{
   const opened=new Promise((resolve,reject)=>{ws.once('open',resolve);ws.once('error',error=>reject(new Error('native socket failed: '+String(error?.message??error))));});
   return {ws,seat,ticket,opened,next,sequence:1};
  }
+ async function openConnections(issued){
+  const list=[];
+  for(const seat of members.keys()){
+   const connection=client(issued[seat],seat);
+   await connection.opened;
+   const id=randomBytes(16);
+   connection.ws.send(envelope(10,helloMessage(issued[seat],contentBytes),id,connection.sequence++));
+   const hello=await connection.next(5000);
+   assert.equal(hello.body.case,'hello');
+   list.push(connection);
+  }
+  return list;
+ }
  async function intent(connection,expectedVersion,action,kind='arena8-coop.intent.v1'){
   const id=randomBytes(16);
   connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
@@ -125,17 +142,9 @@ try{
    if(env.body.case==='receipt'||env.body.case==='rejection')return env;
   }
  }
- const connections=[];
+ let connections=[];
  try{
-  for(const seat of members.keys()){
-   const connection=client(tickets[seat],seat);
-   await connection.opened;
-   const id=randomBytes(16);
-   connection.ws.send(envelope(10,helloMessage(tickets[seat],contentBytes),id,connection.sequence++));
-   const hello=await connection.next(5000);
-   assert.equal(hello.body.case,'hello');
-   connections.push(connection);
-  }
+  connections=await openConnections(tickets);
   facts.scenarios.push('four-authenticated-sockets-completed-hello-with-their-own-ticket');
   const initial=await intent(connections[0],0,'','arena8-coop.view.v1');
   assert.equal(initial.body.case,'receipt');
@@ -166,6 +175,22 @@ try{
    assert.equal(view.state.board.length,64);
    state=view.state;
   }
+  for(const connection of connections)try{connection.ws.close();}catch{/* Already closed. */}
+  connections=[];
+  await app.app.close();
+  app=await createApp(config,pool,false,{});
+  const recovered=(await pool.query('SELECT status,generation FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
+  assert.equal(recovered.status,'ACTIVE');
+  tickets=await freshTickets();
+  connections=await openConnections(tickets);
+  const resumed=await intent(connections[0],0,'','arena8-coop.view.v1');
+  assert.equal(resumed.body.case,'receipt');
+  version=Number(resumed.canonicalVersion);
+  assert.equal(version,5);
+  state=JSON.parse(Buffer.from(resumed.body.value.authorizedProjection).toString('utf8')).state;
+  assert.equal(state.phase,'playing');
+  assert.equal(state.participants.length,4);
+  facts.scenarios.push('api-and-runtime-restart-recovered-the-active-allocation-and-resumed-version-5');
   let turns=4;
   while(!['won','lost'].includes(state.phase)&&turns<60){
    const seat=state.activeSeat;
