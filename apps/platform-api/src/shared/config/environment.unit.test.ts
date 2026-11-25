@@ -11,6 +11,8 @@ const native={
   LOCAL_ARENA8_NATIVE_CA_FILE:'/run/aetheria/pg-ca.pem',
   LOCAL_ARENA8_NATIVE_STORAGE_KEY:'cd'.repeat(32),
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:'https://127.0.0.1:4443',
+  LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:'/run/aetheria/tls/server.pem',
+  LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:'/run/aetheria/tls/server.key',
 };
 
 describe('native Arena8 environment',()=>{
