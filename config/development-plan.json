@@ -77,7 +77,7 @@
       "id": "WAVE-C2",
       "title": "Authoritative Arena8 integration and independent progression",
       "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
-      "c2Status": "LOCAL_VERTICAL_SLICE_PASS_M3_REMAINING",
+      "c2Status": "NATIVE_FIRST_TURN_PASS_M3_REMAINING",
       "waveC2Verification": {
         "status": "LOCAL_PLAYER_SLICE_PASS_FULL_M3_REMAINING",
         "ownerSkillDecision": "All active Pets expose complete authored skills from Lv1; Pet level never gates access. Non-Icarus Pets cannot use FIRE_ZONE. Mana/Rage/cooldown/phase/ownership remain authoritative.",
@@ -104,10 +104,33 @@
           "player": "apps/unity-client/Builds/Linux/Aetheria",
           "summary": "regular/boss victory; artifactEquipped=true; same-level effective 180/18/10 -> 205/22/11 after equip; Water allocation 218/23/12 after level growth; coins=8400; boardTiles=64"
         },
+        "nativeVerification": {
+          "status": "NATIVE_FIRST_TURN_PASS_PROGRESSION_OPEN",
+          "sourceRevision": "2457cc76",
+          "allocation": "Nest NativeArena8Provisioner configured a restricted runtime world, issued a scoped Ed25519 ticket and returned only wss/https/content/boot/match identity",
+          "transport": "local TLS/WSS bridge terminated the native runtime; scoped ticket, ownership, world lease and admission were exercised",
+          "packagedPlayer": "built Linux player authenticated, allocated, connected over WSS, started and submitted a legal swap",
+          "evidence": {
+            "facts": "artifacts/m3-native-turn/native-facts.json",
+            "screenshot": "artifacts/m3-native-turn/native-turn-03-swap.png",
+            "matchId": "39d2b411-2945-43e9-ad8a-d7fafbece03d",
+            "version": 2,
+            "boardTiles": 64,
+            "skills": ["shared-skill", "signature", "ultimate", "guard"]
+          },
+          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; an earlier packaged native terminal loss persisted a defeat receipt",
+          "remaining": [
+            "Stable native win path for Fire regular and boss has not completed in the packaged player",
+            "Water allocation after native boss progression is not yet demonstrated",
+            "Consecutive native matches and native reconnect/restart lifecycle remain flaky after teardown",
+            "Central Plaza portal entry and native world movement are not wired",
+            "Full native M3 Gates 1-8 are not met"
+          ]
+        },
         "notMet": [
-          "Native Host/journal/admission/ticket path is not used; the supervisor is an isolated authenticated local bridge",
           "The player enters PetArenaPve directly instead of the Central Plaza/Cinder Terraces portal with a native ticket",
           "Human-input UI, audio/VFX dedupe and full reconnect UX are not acceptance-tested",
+          "Native Fire win -> boss win -> Water -> consecutive-match lifecycle is not proven",
           "Combat verification remains 0 of 55 for full battle simulation; only the slice path is proven",
           "Skill Level upgrade economy and persisted skill effects remain default Lv1"
         ]
