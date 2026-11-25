@@ -9770,8 +9770,22 @@
         "Disconnect, client retry, outbox retry, restart and concurrent settlement never duplicate progression",
         "An authorized completed match settles even when the client disconnects before requesting rewards"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "58aec4425c7cde82d3910989cb48e858101ba75d",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it with the existing consumers.",
+        "commands": [
+          { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
+          { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-persistence --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Contribution-based eligibility, reconnect-before-request acceptance, Admin reward editors, worker-policy startup for a coop-only installation and Unity reward presentation remain."
+      }
     },
     {
       "id": "VL-196",
