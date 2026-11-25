@@ -184,6 +184,7 @@ impl PetProfile {
         })
     }
 
+    /// Every ability this identity can ever unlock, independent of level.
     pub fn skills(&self) -> Vec<SkillId> {
         if self.signature == SignatureKind::FireZone {
             vec![
@@ -201,6 +202,15 @@ impl PetProfile {
                 SkillId::Guard,
             ]
         }
+    }
+
+    /// Abilities actually usable at `level`. This is the only level-based
+    /// eligibility the bound reducer enforces; UI gating alone is not enough.
+    pub fn skills_at(&self, level: u8) -> Vec<SkillId> {
+        self.skills()
+            .into_iter()
+            .filter(|skill| level >= skill.unlock_level())
+            .collect()
     }
 }
 
@@ -238,6 +248,18 @@ impl SkillId {
             Self::FireZone => 2,
             Self::Ultimate => 3,
             Self::Guard => 4,
+        }
+    }
+
+    /// Pet level that unlocks the ability, in the maintained Wave 1 progression.
+    /// Lv20 is reserved for a power-skill/basic-skill enhancement that this
+    /// ruleset version does not define (OD: product decision), so no ability is
+    /// silently invented to fill that milestone.
+    pub const fn unlock_level(self) -> u8 {
+        match self {
+            Self::SharedSkill | Self::Guard => 1,
+            Self::Signature | Self::FireZone => 40,
+            Self::Ultimate => 60,
         }
     }
 }
@@ -1980,7 +2002,7 @@ impl MatchSnapshot {
         if self.effective != effective_stats(self.grown, modifiers)? {
             return Err(BindingError::InvalidSnapshot);
         }
-        if self.skills != profile.skills() {
+        if self.skills != profile.skills_at(self.level) {
             return Err(BindingError::InvalidSnapshot);
         }
         let encounter = encounter_at(self.encounter.index).ok_or(BindingError::UnknownEncounter)?;
@@ -2210,7 +2232,7 @@ impl Allocation {
             artifacts,
             modifiers,
             effective,
-            skills: profile.skills(),
+            skills: profile.skills_at(self.level),
             encounter: EncounterRef::from_binding(encounter),
             binding_id: BINDING_ID.into(),
             binding_version: BINDING_VERSION,

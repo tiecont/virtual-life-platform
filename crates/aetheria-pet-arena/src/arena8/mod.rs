@@ -26,7 +26,7 @@ use aetheria_game_core::{Error as CoreError, TurnRng, Value, canonical, canonica
 use serde::{Deserialize, Serialize};
 
 pub use board::{Board, Swap};
-pub use bound::{Arena8Bound, BoundState};
+pub use bound::{Arena8Bound, BoundState, action_allowed};
 pub use combat::Arena8;
 pub use engine::{Arena8Engine, Arena8Error, Replay, ReplayEntry};
 pub use events::CombatEvent;

@@ -2,7 +2,7 @@ use aetheria_game_core::{Command, LogicalClock, Reducer, SecretSeed, apply, begi
 use aetheria_pet_arena::arena8::binding::{
     self, ACTIVE_IDENTITY_COUNT, Allocation, ArtifactModifiers, ArtifactSelection, ArtifactStat,
     BINDING_DIGEST, BINDING_ID, BINDING_VERSION, BindingError, CANDIDATE_IDENTITY_COUNT,
-    IDENTITIES, MAX_LEVEL, MIN_LEVEL, MatchSnapshot, PetIdentity, Readiness, RosterState,
+    IDENTITIES, MAX_LEVEL, MIN_LEVEL, MatchSnapshot, PetIdentity, Readiness, RosterState, SkillId,
     StatEffect,
 };
 use aetheria_pet_arena::arena8::{
@@ -49,18 +49,24 @@ struct Outcome {
     damage: Vec<u32>,
 }
 
-fn choose(state: &aetheria_pet_arena::arena8::State) -> Action {
+fn choose(state: &aetheria_pet_arena::arena8::State, skills: &[SkillId]) -> Action {
     if state.phase() == Phase::Ready {
         return Action::Start;
     }
     if state.cooldown() == 0 {
-        if state.mana() >= ULTIMATE_MANA && state.rage() >= ULTIMATE_RAGE {
+        if skills.contains(&SkillId::Ultimate)
+            && state.mana() >= ULTIMATE_MANA
+            && state.rage() >= ULTIMATE_RAGE
+        {
             return Action::Ultimate;
         }
-        if state.mana() >= SIGNATURE_MANA && state.rage() >= SIGNATURE_RAGE {
+        if skills.contains(&SkillId::Signature)
+            && state.mana() >= SIGNATURE_MANA
+            && state.rage() >= SIGNATURE_RAGE
+        {
             return Action::Signature;
         }
-        if state.mana() >= SKILL_MANA {
+        if skills.contains(&SkillId::SharedSkill) && state.mana() >= SKILL_MANA {
             return Action::Skill;
         }
     }
@@ -74,6 +80,7 @@ fn choose(state: &aetheria_pet_arena::arena8::State) -> Action {
 fn play(snapshot: MatchSnapshot, seed_byte: u8) -> Outcome {
     let seed = SecretSeed::from_host_entropy([seed_byte; 32]);
     let rules = Arena8Bound;
+    let skills = snapshot.skills().to_vec();
     let mut checkpoint = begin(
         &rules,
         MATCH,
@@ -87,7 +94,7 @@ fn play(snapshot: MatchSnapshot, seed_byte: u8) -> Outcome {
         if checkpoint.state.core().phase().terminal() {
             break;
         }
-        let action = choose(checkpoint.state.core());
+        let action = choose(checkpoint.state.core(), &skills);
         let version = checkpoint.version;
         let transition = apply(
             &rules,
@@ -511,4 +518,169 @@ fn binding_content_is_versioned_bounded_and_pinned() {
     assert_eq!(rules.id, "aetheria-pet-arena-arena8-pve");
     assert_eq!(rules.version, 1);
     assert_eq!(rules.content_hash, BINDING_DIGEST);
+}
+
+#[test]
+fn progression_gates_derive_skills_from_pet_level() {
+    assert_eq!(SkillId::SharedSkill.unlock_level(), 1);
+    assert_eq!(SkillId::Guard.unlock_level(), 1);
+    assert_eq!(SkillId::Signature.unlock_level(), 40);
+    assert_eq!(SkillId::FireZone.unlock_level(), 40);
+    assert_eq!(SkillId::Ultimate.unlock_level(), 60);
+
+    let level_1 = snapshot("fire-coalwhisk", 1, "cinder-terraces-regular", &[]);
+    assert_eq!(
+        level_1.skills(),
+        &[SkillId::SharedSkill, SkillId::Guard],
+        "Lv1 keeps only the basic skill and guard"
+    );
+    assert!(aetheria_pet_arena::arena8::action_allowed(
+        level_1.skills(),
+        &Action::Skill
+    ));
+    assert!(!aetheria_pet_arena::arena8::action_allowed(
+        level_1.skills(),
+        &Action::Signature
+    ));
+    assert!(!aetheria_pet_arena::arena8::action_allowed(
+        level_1.skills(),
+        &Action::Ultimate
+    ));
+
+    // Lv20 only unlocks the reserved power-skill milestone, so the ability set
+    // is still the Lv1 set in this ruleset version.
+    let level_20 = snapshot("fire-coalwhisk", 20, "cinder-terraces-regular", &[]);
+    assert_eq!(level_20.skills(), level_1.skills());
+
+    let level_40 = snapshot("fire-coalwhisk", 40, "cinder-terraces-regular", &[]);
+    assert_eq!(
+        level_40.skills(),
+        &[SkillId::SharedSkill, SkillId::Signature, SkillId::Guard]
+    );
+    assert!(aetheria_pet_arena::arena8::action_allowed(
+        level_40.skills(),
+        &Action::Signature
+    ));
+    assert!(!aetheria_pet_arena::arena8::action_allowed(
+        level_40.skills(),
+        &Action::Ultimate
+    ));
+
+    let level_60 = snapshot("fire-coalwhisk", 60, "cinder-terraces-regular", &[]);
+    assert_eq!(
+        level_60.skills(),
+        &[
+            SkillId::SharedSkill,
+            SkillId::Signature,
+            SkillId::Ultimate,
+            SkillId::Guard,
+        ]
+    );
+    assert!(aetheria_pet_arena::arena8::action_allowed(
+        level_60.skills(),
+        &Action::Ultimate
+    ));
+
+    // Icarus's FIRE_ZONE is a signature-tier ability, so it follows the Lv40 gate.
+    let icarus_20 = snapshot("pet-v3-fire-icarus", 20, "cinder-terraces-boss", &[]);
+    assert!(!icarus_20.skills().contains(&SkillId::FireZone));
+    let icarus_40 = snapshot("pet-v3-fire-icarus", 40, "cinder-terraces-boss", &[]);
+    assert!(icarus_40.skills().contains(&SkillId::FireZone));
+
+    // Swaps and Start never require an unlocked ability.
+    assert!(aetheria_pet_arena::arena8::action_allowed(
+        level_1.skills(),
+        &Action::Start
+    ));
+    assert!(aetheria_pet_arena::arena8::action_allowed(
+        level_1.skills(),
+        &Action::Swap {
+            first: 0,
+            second: 1
+        }
+    ));
+}
+
+#[test]
+fn a_level_locked_signature_is_refused_by_the_authoritative_reducer() {
+    let snapshot = snapshot("fire-coalwhisk", 1, "cinder-terraces-regular", &[]);
+    let seed = SecretSeed::from_host_entropy([3; 32]);
+    let rules = Arena8Bound;
+    let mut checkpoint = begin(
+        &rules,
+        MATCH,
+        BoundState::allocate(snapshot).unwrap(),
+        &seed,
+        clock(0),
+    )
+    .unwrap();
+    let version = checkpoint.version;
+    let started = apply(
+        &rules,
+        &checkpoint,
+        &Command {
+            id: [1; 16],
+            match_id: MATCH,
+            expected_version: version,
+            ruleset: rules.ruleset(),
+            action: Action::Start,
+        },
+        &seed,
+        clock(version + 1),
+    )
+    .unwrap();
+    checkpoint = started.next;
+
+    // Bank Mana/Rage only through legal swaps. The Signature gate must not be
+    // confused with a resource shortfall, so wait until both costs are met.
+    let mut affordable = false;
+    while checkpoint.state.core().phase() == Phase::Playing {
+        let core = checkpoint.state.core();
+        if core.mana() >= SIGNATURE_MANA && core.rage() >= SIGNATURE_RAGE {
+            affordable = true;
+            break;
+        }
+        let legal = core.board().legal_move().expect("settled board");
+        let version = checkpoint.version;
+        let transition = apply(
+            &rules,
+            &checkpoint,
+            &Command {
+                id: [u8::try_from(version + 1).unwrap(); 16],
+                match_id: MATCH,
+                expected_version: version,
+                ruleset: rules.ruleset(),
+                action: Action::Swap {
+                    first: legal.first,
+                    second: legal.second,
+                },
+            },
+            &seed,
+            clock(version + 1),
+        )
+        .unwrap();
+        checkpoint = transition.next;
+    }
+    assert!(
+        affordable,
+        "the deterministic drive must reach Signature resources before the match ends"
+    );
+    let version = checkpoint.version;
+    let refused = apply(
+        &rules,
+        &checkpoint,
+        &Command {
+            id: [9; 16],
+            match_id: MATCH,
+            expected_version: version,
+            ruleset: rules.ruleset(),
+            action: Action::Signature,
+        },
+        &seed,
+        clock(version + 1),
+    );
+    assert!(
+        matches!(refused, Err(aetheria_game_core::Error::InvalidAction)),
+        "a Lv1 snapshot must reject Signature even with full resources"
+    );
 }
