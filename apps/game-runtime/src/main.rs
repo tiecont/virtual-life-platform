@@ -13,8 +13,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args == ["--ruleset-content-hash", "pet-arena-pve"] {
-        let hash = aetheria_game_runtime::features::pet_arena::domain::content_hash();
+    if let [flag, ruleset] = args.as_slice()
+        && flag == "--ruleset-content-hash"
+    {
+        let hash = match ruleset.as_str() {
+            "pet-arena-pve" => aetheria_game_runtime::features::pet_arena::domain::content_hash(),
+            "arena8-pve" => {
+                aetheria_game_runtime::features::pet_arena::arena8::domain::content_hash()
+            }
+            _ => return Err("Unknown native ruleset".into()),
+        };
         println!(
             "{}",
             hash.iter()

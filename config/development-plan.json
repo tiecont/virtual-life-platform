@@ -36,14 +36,93 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave A",
+    "wave": "Wave B",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
     "currentWave": {
-      "id": "WAVE-A",
-      "title": "Playable 8x8 core, Artifact progression, 55/61 roster reconciliation",
-      "milestones": [
+      "id": "WAVE-B",
+      "title": "Authoritative 8x8, progression and living world",
+      "waveBVerification": {
+      "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
+      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "runtime": {
+        "commit": "f765b51/c6c488f",
+        "checks": [
+          "cargo test 87 PASS",
+          "arena8 binding 10 PASS",
+          "frozen compatibility 2 PASS",
+          "arena8-pve content hash 12660784..."
+        ],
+        "binding": {
+          "active": 55,
+          "playable": 6,
+          "bound": 49,
+          "gatedCandidates": 6,
+          "uniqueStatlines": 55
+        },
+        "proof": "Same Pet/seed: no loadout Lost turn10; equipped Won turn10 with changed stats/damage/state hash",
+        "remaining": "Nest allocator/platform_native_worlds seeding, ticket minting and Unity intent/view wiring are not implemented."
+      },
+      "world": {
+        "commit": "a9cb704",
+        "scenes": [
+          "CentralPlaza.unity",
+          "CinderTerraces.unity",
+          "TideglassLagoon.unity"
+        ],
+        "checks": [
+          "Unity 55 EditMode PASS",
+          "PlayMode 14 passed/2 skipped",
+          "Linux development player build PASS",
+          "Linux player smoke PASS"
+        ],
+        "remaining": "Owner art acceptance; four remaining map kits are not production-finished."
+      },
+      "audio": {
+        "commit": "9948d5e",
+        "assets": [
+          "AetheriaArenaMixer.mixer",
+          "ArenaAudioLibrary.asset",
+          "Resources/ArenaPresentation.prefab"
+        ],
+        "checks": [
+          "ArenaAudio/ArenaVfx EditMode PASS",
+          "PlayMode audio tests PASS"
+        ],
+        "remaining": "Licensed music/VO media remains OD-10; procedural fallback is temporary."
+      },
+      "unity": {
+        "checks": [
+          "55 EditMode PASS",
+          "PlayMode 14 passed/2 skipped",
+          "Linux build/player PASS"
+        ],
+        "remaining": "Default Arena8 path still needs the committed arena8.view.v1 consumer; current campaign remains a Wave1 compatibility flow."
+      },
+      "integratedLoop": {
+        "status": "PARTIAL",
+        "working": [
+          "Central Plaza/Fire/Water scenes load",
+          "AudioMixer/volume/VFX foundation",
+          "Artifact inventory/equip/upgrade/PvE claim",
+          "Standalone arena8-pve Rust authority"
+        ],
+        "missing": [
+          "Nest allocation + ticket + Unity Arena8 intent/view client",
+          "Full hub->8x8->reward->Artifact->next-match E2E",
+          "Repeatable material drip beyond six first-clear claims"
+        ]
+      },
+      "gaps": [
+        "PR81 exact-source CI/merge prerequisite remains in flight",
+        "No production allocator for arena8-pve",
+        "Unity does not consume arena8.view.v1 yet",
+        "Windows qualification and human playtests separate"
+      ]
+    },
+    "milestones": [
         "M0",
         "M1",
         "M2",
@@ -1602,7 +1681,12 @@
       "title": "Aetheria integrated offline PvE and media acceptance",
       "objective": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release.",
       "priority": 2,
-      "dependsOn": ["VL-133", "VL-139", "VL-161", "VL-162", "VL-172", "VL-173"],
+      "dependsOn": [
+        "VL-176",
+        "VL-177",
+        "VL-179",
+        "VL-181"
+      ],
       "acceptance": ["Actual replay/reconnect/duplicate-receipt, economy and abuse tests pass across Nest/Rust/PostgreSQL/Unity", "Final asset hashes, source SHA, actual CI and remaining human/hardware acceptance are recorded", "NO_GO_PUBLIC remains enforced; Pet Arena PvE precedes new Lodge gameplay and mobile remains conditional"],
       "status": "TODO",
       "qualificationRequirements": ["Consented human playtests, retention/deletion decisions and separate release qualification"],
@@ -2046,15 +2130,13 @@
     },
     {
       "id": "VL-011",
-      "mvpMilestone": "M4",
+      "mvpMilestone": "M2",
       "mvpCriticalPath": false,
-      "mvpScope": "DEFERRED_EXPANSION",
-      "deferredExpansion": "Web/social expansion outside the Windows MVP slice.",
+      "mvpScope": "MVP",
       "feature": "Web-UX",
       "title": "Unity URP production renderer spike + optional web teaser cost",
       "objective": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility.",
       "dependsOn": [
-        "VL-005",
         "VL-007",
         "VL-006",
         "VL-080",
@@ -3791,13 +3873,9 @@
       "objective": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards.",
       "dependsOn": [
         "VL-037",
-        "VL-040",
-        "VL-042",
         "VL-046",
         "VL-047",
-        "VL-090",
-        "VL-091",
-        "VL-109"
+        "VL-091"
       ],
       "acceptance": [
         "all user paths pass incl account block/revoke",
@@ -3895,7 +3973,6 @@
       "title": "Windows native HUD/input/accessibility/localization pass",
       "objective": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces.",
       "dependsOn": [
-        "VL-040",
         "VL-046",
         "VL-088"
       ],
@@ -4696,7 +4773,8 @@
       "id": "VL-070",
       "mvpMilestone": "M6",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Release canary/monitoring follows the deferred live-events roadmap, not the closed-beta MVP.",
       "feature": "QA-SRE",
       "title": "Windows native + Rust official-release canary/monitoring",
       "objective": "Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version.",
@@ -4798,9 +4876,10 @@
     },
     {
       "id": "VL-075",
-      "mvpMilestone": "M2",
+      "mvpMilestone": "M4",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Additional species/outfit expansion is post-MVP content.",
       "feature": "Avatar-Art",
       "title": "Next species/outfit expansion on approved Unity avatar rig",
       "objective": "Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity.",
@@ -4816,9 +4895,10 @@
     },
     {
       "id": "VL-076",
-      "mvpMilestone": "M0",
+      "mvpMilestone": "M4",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Community/creator roadmap and tech-debt expansion follow MVP delivery.",
       "feature": "Coordinator",
       "title": "Creator/community roadmap and tech debt re-evaluation",
       "objective": "Review traction, moderation cost, runtime ops and native decision before opening UGC.",
@@ -5494,7 +5574,6 @@
       "objective": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak.",
       "dependsOn": [
         "VL-087",
-        "VL-089",
         "VL-091",
         "VL-104"
       ],
@@ -5517,7 +5596,6 @@
       "objective": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger.",
       "dependsOn": [
         "VL-048",
-        "VL-090",
         "VL-091",
         "VL-081"
       ],
@@ -7614,8 +7692,7 @@
       "objective": "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
       "dependsOn": [
         "VL-122",
-        "VL-131",
-        "VL-134"
+        "VL-179"
       ],
       "acceptance": [
         "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD.",
@@ -8034,8 +8111,9 @@
       "title": "Pet card/boss/progression QA and economy simulation",
       "objective": "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
       "dependsOn": [
-        "VL-143",
-        "VL-151"
+        "VL-176",
+        "VL-177",
+        "VL-181"
       ],
       "acceptance": [
         "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162.",
@@ -8189,9 +8267,8 @@
       "objective": "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
       "dependsOn": [
         "VL-152",
-        "VL-155",
-        "VL-156",
-        "VL-162"
+        "VL-162",
+        "VL-181"
       ],
       "acceptance": [
         "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
@@ -8339,7 +8416,7 @@
       "title": "Standard and Featured eligibility, 50/50 and family guarantee",
       "objective": "Implement one server-authoritative probability/eligibility state machine with explicit persistence adapter contract; VL-140 owns durable pull transactions.",
       "dependsOn": [
-        "VL-131"
+        "VL-178"
       ],
       "acceptance": [
         "Failed featured50/50 always selects one of six Standard S with validated weights, never lower rank/map S",
@@ -8470,10 +8547,9 @@
       "title": "Gacha simulation, balance, accessible UX and abuse acceptance",
       "objective": "Qualify integrated Standard/Limited distribution, persistent pulls, fair endgame kits and player-facing disclosure.",
       "dependsOn": [
-        "VL-140",
-        "VL-161",
-        "VL-142",
-        "VL-156"
+        "VL-176",
+        "VL-177",
+        "VL-181"
       ],
       "acceptance": [
         "Analytical and fixed-seed Monte Carlo rates/pity/weights with declared confidence and thresholds; no fabricated balance approval",
@@ -8912,7 +8988,7 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A",
-        "source": "crates/aetheria-pet-arena/src/wave_a"
+        "source": "crates/aetheria-pet-arena/src/arena8"
       }
     },
     {
@@ -9032,6 +9108,215 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A"
+      }
+    },
+    {
+      "id": "VL-182",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "M4: 55-Pet models, rigs, animation and VFX production",
+      "objective": "Produce and admit the complete active-Pet content set using reusable morphology profiles and owner-gated asset production.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "All 55 active identities have an explicit model/rig/animation/VFX readiness state",
+        "Reusable humanoid/quadruped/avian/serpent/floating intakes are admitted through the asset gate",
+        "The six Off-rate candidates remain content-gated until OD-1"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner H1-H4 art review and paid-provider authorization per OD-7"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
+    },
+    {
+      "id": "VL-183",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "M4: six-map modular environment production",
+      "objective": "Extend the Central Plaza/Fire/Water foundation into the six approved MVP arena identities with reusable kits and qualification.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "All six map identities have reusable modular kits and functional arena compositions",
+        "Fire/Water are rendered and playable first; the other four reuse the same kit conventions",
+        "No seamless open-world or social-world expansion is implied"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner environment H-gate acceptance"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
+    },
+    {
+      "id": "VL-184",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Media",
+      "title": "M4: licensed audio, ambience and combat music production",
+      "objective": "Replace procedural fallbacks with approved licensed/produced audio while preserving the mixer/event contract and volume/mute behavior.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Hub, Fire/Water ambience, regular/boss music and required combat/reward cues have cleared media",
+        "No unlicensed media is committed or represented as production",
+        "Mixer groups, persisted volumes and event hooks remain intact"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner media licence approval per OD-10"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B/M4"
+      }
+    },
+    {
+      "id": "VL-185",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Rust-Runtime",
+      "title": "Wave B: authoritative Arena8 runtime and native allocation",
+      "objective": "Bind the versioned Arena8 engine to canonical Pet/level/Artifact snapshots and the existing native gameplay transport, admission, journal and settlement path.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-176"
+      ],
+      "acceptance": [
+        "Arena8 allocation uses server-owned content/entropy and the canonical 55 active identities",
+        "Accepted commands/receipts survive restart and reconnect; stale/duplicate/lost-ACK behavior is bounded",
+        "Completion settlement is idempotent and cannot be granted twice by a parallel legacy route"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-186",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Wave B: Unity consumes committed Arena8 projections and events",
+      "objective": "Replace the default development board with committed Arena8 projections, event-driven presentation and authoritative skill/cooldown/telegraph state.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-179",
+        "VL-185"
+      ],
+      "acceptance": [
+        "Unity sends intents only and never chooses outcomes, damage, entropy or rewards",
+        "Committed events animate once, including reconnect and lost-ACK recovery",
+        "Board/skills/Ultimate/telegraph/reward screens use authoritative projections"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-187",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Media",
+      "title": "Wave B: AudioMixer, ambience and event-driven VFX foundation",
+      "objective": "Deliver Master/Music/Ambient/SFX/Voice/UI mixer groups, persisted volume/mute controls, combat/reward hooks and pooled six-element VFX.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Mixer groups and persisted independent volume/mute behavior work in Unity",
+        "Hub/Fire/Water/combat/Artifact/reward cues are wired to event hooks",
+        "VFX pools respect reduced motion/flash and do not own gameplay outcomes"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Licensed media approval remains OD-10"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-188",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Avatar-Art",
+      "title": "Wave B: Central Plaza, Cinder Terraces and Tideglass Lagoon",
+      "objective": "Create functioning Unity hub/Fire/Water environments with walkable collision, camera framing, portals, ambient movement and return-to-hub flow.",
+      "priority": 2,
+      "dependsOn": [
+        "VL-180"
+      ],
+      "acceptance": [
+        "Central Plaza and two distinct arena scenes/compositions load and render",
+        "Modular kits, collision, spawn points, portal and return flow work locally",
+        "Developer-intermediate art is labelled; no six-empty-scenes claim"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Owner environment acceptance remains separate"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
+      }
+    },
+    {
+      "id": "VL-189",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "QA-SRE",
+      "title": "Wave B: integrated Arena8, Artifact and world acceptance",
+      "objective": "Exercise the coherent local flow from hub through an authoritative 8x8 battle, rewards/Artifact equip, a second match stat check, Water arena and restart recovery.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-177",
+        "VL-185",
+        "VL-186",
+        "VL-187",
+        "VL-188"
+      ],
+      "acceptance": [
+        "The full local flow completes without duplicate settlement, unauthorized ownership or cross-account access",
+        "An active match cannot be mutated by an Artifact change; the next match uses the new snapshot",
+        "Restart recovers inventory/progression and frozen replay compatibility remains intact"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Physical Windows and human playtesting remain M6/M5"
+      ],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "wave": "Wave B"
       }
     }
   ]

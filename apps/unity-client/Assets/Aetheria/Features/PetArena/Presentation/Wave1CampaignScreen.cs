@@ -280,6 +280,7 @@ namespace Aetheria.PetArena.Presentation
                 content.Add(Label("Rune: " + ArtifactName(pet.slots?.rune)));
                 content.Add(Label("Totals · HP +" + pet.totals.hp + " · ATK +" + pet.totals.attack +
                                   " · DEF +" + pet.totals.defense + " · SPD +" + pet.totals.speed, "arena-meta"));
+                content.Add(Label("Stats become live only in a new Arena8 match binding; SPD is inactive in the Wave 1 compatibility fight.", "arena-meta"));
             }
 
             foreach (var item in artifacts.inventory ?? Array.Empty<WaveAArtifactInstance>())
@@ -317,7 +318,7 @@ namespace Aetheria.PetArena.Presentation
                     requestId = NewRequestId(), petId = selectedPet, artifactId = item.artifactId
                 }, lifetime.Token);
                 artifacts = response.state;
-                notice = "Equipped " + item.name + ". The next battle snapshot will use its modifiers.";
+                notice = "Loadout saved. A new Arena8 match allocation will snapshot it; an active match cannot be changed.";
             });
         }
 
@@ -520,11 +521,11 @@ namespace Aetheria.PetArena.Presentation
             var current = state.FindPet(selectedPet) ?? state.pets[0];
             content.Add(Label(PetLabel(current) + " · Lv " + current.level, "arena-notice"));
             content.Add(Label(current.level == 60 ? "Max level" : current.exp + "/" + current.expToNext + " EXP"));
-            var milestones = new[] { 20, 40, 60 };
-            var unlocks = new[] { "Power skill & Artifact C eligibility", "Signature & Artifact A eligibility", "Ultimate & Artifact S eligibility" };
+            var milestones = new[] { 10, 20, 40, 60 };
+            var unlocks = new[] { "Artifact C eligibility", "Power skill & Artifact B eligibility", "Signature & Artifact A eligibility", "Ultimate & Artifact S eligibility" };
             for (var index = 0; index < milestones.Length; index++)
                 content.Add(Label("Lv " + milestones[index] + " · " + unlocks[index] +
-                    (current.stage > index ? " ✓" : "")));
+                    (current.level >= milestones[index] ? " ✓" : "")));
             foreach (var pet in state.pets)
                 Button(PetLabel(pet), () =>
                 {

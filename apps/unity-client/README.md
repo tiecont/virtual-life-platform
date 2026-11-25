@@ -69,6 +69,51 @@ uploaded together under an immutable content version; changing remote entries
 does not require a new client binary. No production R2 endpoint, content or
 credentials are committed here.
 
+## Central Plaza and developer arenas
+
+Wave B adds a playable **Central Plaza** hub and two developer arena
+compositions: **Cinder Terraces** (Fire) and **Tideglass Lagoon** (Water). The
+three committed scenes are built from one reusable modular kit:
+
+- `Assets/Aetheria/Scenes/CentralPlaza.unity`
+- `Assets/Aetheria/Scenes/CinderTerraces.unity`
+- `Assets/Aetheria/Scenes/TideglassLagoon.unity`
+
+Open a scene and enter Play mode. WASD walks the local `CharacterController`
+inside authored bounds; **E** uses a portal or return gate; **M** toggles
+ambient movement (reduced motion is on by default). The hub has a spawn pad,
+walkable collision, a framed camera, modular props, two active arena portals and
+four **foundation-only** map bindings (Stormcoil Fields, Lantern Necropolis,
+Ochre Labyrinth, Dawn Prism Sanctum). Those four reuse the same kit and palette
+data but have no scene, no build entry and no claim of completion.
+
+Each arena composes an 8x8 developer board with 64 contrasting tiles, a raised
+plinth, a Pet and enemy presentation, a rendered return gate back to the matching
+hub spawn anchor, authored fog/lighting and bounded ambient movement. Geometry
+and materials are **intermediate developer primitives**, not production art and
+not a finished map. This work adds no combat, reward or movement authority; the
+Rust ruleset and existing Pet Arena PvE scene are unchanged.
+
+Rebuild the scenes and their URP materials after changing layout data:
+
+```sh
+UNITY_EDITOR=/absolute/path/to/6000.3.14f1/Editor/Unity
+"$UNITY_EDITOR" -batchmode -nographics -projectPath apps/unity-client \
+  -executeMethod Aetheria.Editor.WorldSceneBuilder.BuildAll -quit
+```
+
+Validate and capture rendered evidence from a Linux development player:
+
+```sh
+node scripts/unity-validate.mjs tests
+node scripts/unity-validate.mjs world
+```
+
+`world` builds the Linux development player, loads the hub and both arenas,
+walks the real portal/return flow, renders 1280x720 screenshots and writes
+`facts.json` under the ignored `artifacts/unity/` run directory. It requires a
+real Linux graphics device and does not qualify Windows.
+
 ## Native protocol adapter
 
 Run `node scripts/unity-native-prepare.mjs` before opening the project. This

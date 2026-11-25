@@ -11,6 +11,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Aetheria/Scenes/PetArenaPve.unity
     guid: 0d02477e56a01b0bda7f55d744c79452
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/CentralPlaza.unity
+    guid: a65743b3dd4a239ebba26afe9cc98e7a
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/CinderTerraces.unity
+    guid: 9beb9c6968372f8d7aadfa03b148352b
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/TideglassLagoon.unity
+    guid: 2027559f3288beb8eadd4e5053889142
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: f7ba367b49b1d206f9ef013446e74364, type: 2}
   m_UseUCBPForAssetBundles: 0

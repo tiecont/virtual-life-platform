@@ -1,5 +1,20 @@
 {
   "name": "Aetheria.Editor",
-  "references": ["Aetheria.Blockout", "Aetheria.Icarus.Presentation", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "VRM10", "Aetheria.PetArena.Domain", "Aetheria.PetArena.Presentation", "Aetheria.Pets", "Aetheria.RemoteContent", "Unity.Addressables", "Unity.Addressables.Editor"],
+  "references": [
+    "Aetheria.Blockout",
+    "Aetheria.Icarus.Presentation",
+    "Unity.RenderPipelines.Universal.Runtime",
+    "Unity.RenderPipelines.Core.Runtime",
+    "VRM10",
+    "Aetheria.PetArena.Domain",
+    "Aetheria.PetArena.Presentation",
+    "Aetheria.PetArena.Vfx",
+    "Aetheria.Pets",
+    "Aetheria.RemoteContent",
+    "Unity.Addressables",
+    "Unity.Addressables.Editor",
+    "Aetheria.World.Domain",
+    "Aetheria.World.Presentation"
+  ],
   "includePlatforms": ["Editor"]
 }

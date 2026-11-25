@@ -49,6 +49,7 @@ export function validateTaskPlan(plan){
  for(const task of tasks.values()){
   visit(task.id);
   for(const id of task.qualificationDependencies??[])assert(tasks.has(id)&&id!==task.id,'Unknown qualification dependency '+id);
+  if(task.mvpScope==='MVP')for(const id of task.dependsOn)assert(tasks.get(id)?.mvpScope==='MVP','MVP task '+task.id+' has a deferred implementation dependency '+id);
   if(task.status==='VERIFIED')assert(task.dependsOn.every(id=>tasks.get(id).status==='VERIFIED'),'Verified task has incomplete implementation dependency');
  }
  return tasks;

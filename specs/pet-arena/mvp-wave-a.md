@@ -20,7 +20,7 @@ acceptance does not close an art, hardware, rights or release gate.
 ## Authority and compatibility
 
 The target gameplay authority is Rust. Wave A adds a **new versioned ruleset**
-(`aetheria-pet-arena-wave-a`, version 1) with an **8x8** board.
+(`aetheria-pet-arena-arena8`, version 1) with an **8x8** board.
 
 The existing native V1 6x6 reducer and its fixtures are frozen. The existing
 action-based Wave 1 campaign API is also a frozen local compatibility slice; it

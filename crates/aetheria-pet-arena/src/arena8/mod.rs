@@ -10,7 +10,11 @@
 //! never contain a seed, damage, target, outcome or reward. Dice, cascade refills,
 //! enemy telegraph targets and every damage number are resolved here.
 
+/// Bounded, versioned content binding between canonical roster identities and
+/// combat profiles, Artifact combat semantics and immutable match snapshots.
+pub mod binding;
 mod board;
+mod bound;
 mod combat;
 mod engine;
 mod events;
@@ -22,15 +26,19 @@ use aetheria_game_core::{Error as CoreError, TurnRng, Value, canonical, canonica
 use serde::{Deserialize, Serialize};
 
 pub use board::{Board, Swap};
+pub use bound::{Arena8Bound, BoundState};
 pub use combat::Arena8;
 pub use engine::{Arena8Engine, Arena8Error, Replay, ReplayEntry};
 pub use events::CombatEvent;
 pub use model::{
-    Ability, Action, Axis, BOSS_SCHEDULE, ENCOUNTERS, Encounter, EnemyIntent, EnemyIntentKind,
-    ICARUS, PETS, Pet, Phase, REGULAR_SCHEDULE, RecoveryReason, SignatureKind, State,
+    Ability, Action, Axis, BOSS_SCHEDULE, ENCOUNTERS, Encounter, EncounterCombat, EnemyIntent,
+    EnemyIntentKind, ICARUS, PETS, Pet, PetCombat, Phase, REGULAR_SCHEDULE, RecoveryReason,
+    SignatureKind, State,
 };
 
-/// Stable identifier of the new ruleset. The V1 id and V3 ids remain untouched.
+/// Stable identifier of the frozen six-Pet v1 ruleset. The V1 id and V3 ids
+/// remain untouched. Data-bound matches use
+/// `binding::BOUND_RULESET_ID` instead.
 pub const RULESET_ID: &str = "aetheria-pet-arena-arena8";
 pub const RULESET_VERSION: u32 = 1;
 
