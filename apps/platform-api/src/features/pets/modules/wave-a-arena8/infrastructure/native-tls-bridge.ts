@@ -1,6 +1,6 @@
 import {createServer as createHttpsServer,type Server} from 'node:https';
 import {request as httpRequest} from 'node:http';
-import {connect} from 'node:net';
+import {connect,type Socket} from 'node:net';
 import {readFile} from 'node:fs/promises';
 
 export type NativeTlsBridge=Readonly<{
@@ -11,7 +11,9 @@ export type NativeTlsBridge=Readonly<{
 const LOOPBACK=new Set(['127.0.0.1','[::1]']);
 const MAX_CERT_BYTES=16_384;
 
-function closedServer(server:Server):Promise<void>{
+function closedServer(server:Server,sockets:Set<Socket>):Promise<void>{
+  for(const socket of sockets)socket.destroy();
+  sockets.clear();
   return new Promise(resolve=>server.close(()=>resolve()));
 }
 
@@ -40,6 +42,7 @@ export async function startNativeTlsBridge(options:Readonly<{
     cert=certBytes.toString('utf8');key=keyBytes.toString('utf8');
   }catch{throw new Error('Native TLS bridge credentials are unavailable');}
 
+  const sockets=new Set<Socket>();
   const server=createHttpsServer({cert,key,minVersion:'TLSv1.2'},(request,response)=>{
     const upstream=httpRequest({
       host:'127.0.0.1',port:options.targetPort,method:request.method,path:request.url,
@@ -54,8 +57,14 @@ export async function startNativeTlsBridge(options:Readonly<{
     });
     request.pipe(upstream);
   });
+  server.on('connection',socket=>{
+    sockets.add(socket);
+    socket.once('close',()=>sockets.delete(socket));
+  });
   server.on('upgrade',(request,socket,head)=>{
     const target=connect(options.targetPort,'127.0.0.1');
+    sockets.add(target);
+    target.once('close',()=>sockets.delete(target));
     const destroy=()=>{socket.destroy();target.destroy();};
     socket.on('error',destroy);target.on('error',destroy);
     target.once('connect',()=>{
@@ -74,5 +83,5 @@ export async function startNativeTlsBridge(options:Readonly<{
       server.removeListener('error',failed);resolve();
     });
   });
-  return Object.freeze({origin:options.origin,close:()=>closedServer(server)});
+  return Object.freeze({origin:options.origin,close:()=>closedServer(server,sockets)});
 }

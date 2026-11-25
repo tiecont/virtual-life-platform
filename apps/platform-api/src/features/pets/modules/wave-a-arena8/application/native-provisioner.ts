@@ -262,13 +262,27 @@ export class NativeArena8Provisioner {
         leaseFailed=true;
         if(active)this.abandon(active);
       });
-      handle=await this.options.runtime.start(Object.freeze({
-        accountId:record.accountId,matchId:record.matchId,bootId:record.bootId,
-        worldId:record.worldId,contentHash:record.contentHash,
-        ownedPetId:ownedPetUuid(record.accountId,record.petId),
-        petId:record.petId,level:record.level,encounterId:record.encounterId,
-        artifacts:record.artifacts,origin:this.httpsOrigin,
-      }));
+      // A prior runtime's TLS bridge/role connections can take a moment to
+      // release after settlement. Retry the bounded local start rather than
+      // requiring a manual process restart between ordinary matches.
+      let startError:unknown;
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          handle=await this.options.runtime.start(Object.freeze({
+            accountId:record.accountId,matchId:record.matchId,bootId:record.bootId,
+            worldId:record.worldId,contentHash:record.contentHash,
+            ownedPetId:ownedPetUuid(record.accountId,record.petId),
+            petId:record.petId,level:record.level,encounterId:record.encounterId,
+            artifacts:record.artifacts,origin:this.httpsOrigin,
+          }));
+          startError=undefined;
+          break;
+        }catch(error){
+          startError=error;
+          if(attempt<2)await new Promise(resolve=>setTimeout(resolve,1000+attempt*1000));
+        }
+      }
+      if(!handle)throw startError;
       await lease.work();
       if(leaseFailed)throw new Error('Arena8 lease failed during startup');
       await this.options.matches.activate(record.matchId,generation);

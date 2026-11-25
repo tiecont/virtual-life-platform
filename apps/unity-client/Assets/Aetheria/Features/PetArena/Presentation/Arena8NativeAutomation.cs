@@ -78,8 +78,18 @@ namespace Aetheria.PetArena.Presentation
                     await CaptureNative("native-05-artifact.png");
                 }
 
+                // Bounded legitimate regular progression raises the Pet level
+                // before the boss attempt; no stats or rewards are seeded.
+                for (var extra = 0; extra < 7 &&
+                    (state.FindPet(selectedPet)?.level ?? 60) < 16; extra++)
+                {
+                    var win = await RunNativeMatch("cinder-terraces", "cinder-terraces-regular",
+                        "native-regular-extra-" + extra);
+                    nativeFacts.regularSettlement = DescribeNative(win);
+                }
+
                 Arena8Settlement boss = null;
-                for (var attempt = 0; attempt < 6 && boss?.won != true; attempt++)
+                for (var attempt = 0; attempt < 8 && boss?.won != true; attempt++)
                 {
                     boss = await RunNativeMatch("cinder-terraces", "cinder-terraces-boss",
                         "native-boss-" + attempt);
@@ -140,6 +150,9 @@ namespace Aetheria.PetArena.Presentation
             state = await api.GetWave1State(lifetime.Token);
             artifacts = await api.GetArtifactState(lifetime.Token);
             DisposeNative();
+            // The native runtime and its TLS bridge close asynchronously after
+            // settlement; wait for the bounded teardown before a new allocation.
+            await Task.Delay(5000);
             Draw();
             await CaptureNative(prefix + "-settled.png");
             return settlement;
@@ -147,6 +160,8 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task NativeTurn()
         {
+            if (nativeView.Health <= 80 &&
+                await TryNative((session, token) => session.GuardAsync(token))) return;
             if (nativeView.Affords(Arena8NativeView.Ultimate) &&
                 await TryNative((session, token) => session.UltimateAsync(token))) return;
             if (nativeView.Affords(Arena8NativeView.Signature) &&
