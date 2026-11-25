@@ -9838,17 +9838,18 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "f349198df6620e3adc9e579beda0222c8a0dc2e6",
+        "sourceRevision": "62bc8a1578c7294c3c1d491dc98d5542327262b1",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The cooperative reducer has a deterministic public-information simulation harness with random, basic, tactical and coordinated policies. The runtime CLI --simulate-coop <bundle> <policy> <seeds> prints bounded metrics, and the existing Admin gameplay workspace can run it on any draft or published version through an authorized, CSRF-protected operator action bounded to 1-200 seeds. The candidate seed reports 0 wins / 12 losses over 12 seeds under tactical and coordinated policies, so the candidate balance is loss-heavy and needs owner review.",
+        "change": "The cooperative reducer has a deterministic public-information simulation harness with random, basic, tactical and coordinated policies. The runtime CLI --simulate-coop <bundle> <policy> <seeds> prints bounded metrics, and the existing Admin gameplay workspace can run it on any draft or published version through an authorized, CSRF-protected operator action bounded to 1-200 seeds. The same workspace now compares the edited bundle with the active version and lists exact differing field paths. The candidate seed reports 0 wins / 12 losses over 12 seeds under tactical and coordinated policies, so the candidate balance is loss-heavy and needs owner review.",
         "commands": [
           { "command": "cargo test -p aetheria-pet-arena --test arena8_coop_sim", "exitCode": 0 },
           { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-runtime --all-targets -- -D warnings", "exitCode": 0 },
           { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-simulator.unit.test.ts", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 }
         ],
-        "remaining": "Simulation has no cancellation; multiplier-occurrence and contribution-distribution metrics are not reported; draft-versus-published side-by-side comparison and Admin balance charts are absent. No browser-level operator acceptance has run."
+        "remaining": "Simulation has no cancellation; multiplier-occurrence and contribution-distribution metrics are not reported; Admin balance charts are absent. No browser-level operator acceptance has run."
       }
     },
     {
