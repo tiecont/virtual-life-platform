@@ -5,7 +5,7 @@ import {
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
  GameplaySimulationReportSchema,type GameplayBundle,
 } from '@aetheria/contracts';
-import {bundleDifferences} from '../domain/bundle-diff';
+import {bundleDifferences} from './bundle-diff';
 
 type Overview=ReturnType<typeof GameplayConfigOverviewSchema.parse>;
 type Version=ReturnType<typeof GameplayConfigVersionViewSchema.parse>;
