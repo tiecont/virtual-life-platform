@@ -9811,13 +9811,13 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "f13aa48c097b891cd062707c1b595bf2cd9cc7c3",
+        "sourceRevision": "147d98c3e3bc567f26276cdbb2aa85cbb6d9744f",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. The UI Toolkit HUD builds the turn/boss labels, four seat panels with HP/mana/rage/shield/contribution, the 64-cell element/multiplier board and gated guard/skill/signature/ultimate actions. Seven EditMode tests decode ready/terminal projections, reject unknown fields and invalid seats/board sizes, assert exact payloads, presenter gates and HUD labels/enabled state.",
+        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. The UI Toolkit HUD builds the turn/boss labels, four seat panels with HP/mana/rage/shield/contribution, the 64-cell element/multiplier board and gated guard/skill/signature/ultimate actions. Unity also parses the room-scoped admission response strictly (bootId, accountId, match, seat, WSS/HTTPS scope, content hash and <=31s ticket window) and can construct the native connection. Eight EditMode tests cover projections, exact payloads, presenter/HUD gates and admission acceptance/rejection.",
         "commands": [
           { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopNativeTests", "exitCode": 0 }
         ],
-        "remaining": "The HUD is not mounted in a scene; lobby/portal flow, reconnect/replay presentation, Fire Zone capability rendering and packaged-player acceptance remain."
+        "remaining": "The HUD and admission parser are not mounted in a scene; lobby/portal flow, reconnect/replay presentation, Fire Zone capability rendering and packaged-player acceptance remain."
       }
     },
     {
