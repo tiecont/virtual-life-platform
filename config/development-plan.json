@@ -9708,9 +9708,9 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "e33295bd197470bfd45c5e454eb235b7f8627c46",
+        "sourceRevision": "87c4871518441b74f063191cee131bf6555894f7",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The adapter authorizes commands only from the owner of the committed active seat. The real-process script now drives four authenticated sockets over the real transport through hello, start and one turn per seat on the shared board, recording five durable receipts and the engine content hash on one match.",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The adapter authorizes commands only from the owner of the committed active seat. The real-process script drives four authenticated sockets over the real transport through hello, start, a full round-limit loss and terminal settlement: 24 committed turns, four loss rewards paid once, allocation SETTLED, match FINISHED and outbox delivered. Terminal persistence now accepts a non-null reducer settlement only when the domain exposes a bounded Completion::Proposal.",
         "commands": [
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
@@ -9719,7 +9719,7 @@
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
         ],
-        "remaining": "The real four-client run stops before a terminal match, settlement outbox and reconnect; no packaged-player or four-human evidence exists. STARTING allocations require explicit reconciliation; Unity presentation remains."
+        "remaining": "Reconnect/resume after a real process restart, STARTING-allocation reconciliation and packaged-player/four-human evidence remain. Unity renders the committed projection but has no scene UI yet."
       }
     },
     {
@@ -9774,18 +9774,19 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "58aec4425c7cde82d3910989cb48e858101ba75d",
+        "sourceRevision": "87c4871518441b74f063191cee131bf6555894f7",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it as an explicit opt-in consumer (COOP_SETTLEMENT_ENABLED=1), so restricted reward workers never open cooperative tables.",
+        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it as an explicit opt-in consumer (COOP_SETTLEMENT_ENABLED=1), so restricted reward workers never open cooperative tables. The real-process script now reaches a terminal loss through four WebSocket seats and drains this consumer, verifying four loss payouts, SETTLED, FINISHED and delivered outbox.",
         "commands": [
           { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-persistence --all-targets -- -D warnings", "exitCode": 0 },
           { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
           { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 }
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
         ],
-        "remaining": "Contribution-based eligibility, reconnect-before-request acceptance, Admin reward editors, worker-policy startup for a coop-only installation and Unity reward presentation remain."
+        "remaining": "Reconnect-before-request and concurrent-worker acceptance, contribution-based eligibility policy, coop-only worker boot policy and Unity reward presentation remain."
       }
     },
     {
