@@ -48,13 +48,9 @@ namespace Aetheria.Editor
                 AssetDatabase.CreateAsset(new Material(Shader.Find("Universal Render Pipeline/Lit")), resources + "/BlockoutLit.mat");
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;
-            EditorBuildSettings.scenes = new[] {
-                new EditorBuildSettingsScene(Scene, true),
-                new EditorBuildSettingsScene(new GUID(AssetDatabase.AssetPathToGUID(PetArenaScene)), true),
-            };
-            // Hub and the two developer arenas are committed scene assets and
-            // are appended without disturbing the existing blockout entries.
-            WorldSceneBuilder.EnsureBuildEntries();
+            // One canonical registry feeds both the Editor build list and the
+            // player build below; never keep two scene lists in sync by hand.
+            ProjectScenes.ApplyEditorBuildSettings();
             AssetDatabase.SaveAssets();
             BlockoutCollisionExport.Write();
         }
@@ -76,7 +72,7 @@ namespace Aetheria.Editor
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, target))
                 throw new InvalidOperationException("Required platform build module is unavailable");
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = new[] {Scene, PetArenaScene}, locationPathName = output, target = target,
+                scenes = ProjectScenes.PlayerScenes, locationPathName = output, target = target,
                 options = BuildOptions.Development
             });
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Blockout build failed");

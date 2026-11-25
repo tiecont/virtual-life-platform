@@ -206,6 +206,25 @@ namespace Aetheria.Tests.EditMode
         }
 
         [Test]
+        public void OneCanonicalRegistryFeedsEditorAndPlayerBuilds()
+        {
+            var registry = ProjectScenes.PlayerScenes;
+            Assert.That(registry.Distinct(StringComparer.Ordinal).Count(), Is.EqualTo(registry.Length),
+                "Duplicate scene paths in the player scene registry");
+            Assert.That(registry, Does.Contain("Assets/Aetheria/Scenes/AuroraBlockout.unity"));
+            Assert.That(registry, Does.Contain("Assets/Aetheria/Scenes/PetArenaPve.unity"));
+            foreach (var path in WorldSceneBuilder.ScenePaths)
+            {
+                Assert.That(registry, Does.Contain(path));
+                Assert.That(AssetDatabase.LoadAssetAtPath<SceneAsset>(path), Is.Not.Null, "Missing scene asset: " + path);
+            }
+            var editorPaths = new List<string>();
+            foreach (var scene in EditorBuildSettings.scenes) editorPaths.Add(scene.path);
+            Assert.That(editorPaths, Is.EqualTo(new List<string>(registry)),
+                "Editor build settings must be exactly the canonical player scene registry");
+        }
+
+        [Test]
         public void SavedScenesContainTheActualComposedEnvironment()
         {
             foreach (var path in WorldSceneBuilder.ScenePaths)

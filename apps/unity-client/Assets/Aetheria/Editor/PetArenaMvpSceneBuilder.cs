@@ -103,15 +103,13 @@ namespace Aetheria.Editor
             return material;
         }
 
+        // The canonical registry owns the player build list; keep this call site
+        // so rebuilding the arena scene still refreshes build settings.
         private static void EnsureBuildEntry(string scenePath)
         {
-            var scenes = EditorBuildSettings.scenes
-                .Where(entry => entry.path != scenePath)
-                .ToList();
-            var sceneEntry = new EditorBuildSettingsScene(scenePath, true);
-            sceneEntry.guid = new GUID(AssetDatabase.AssetPathToGUID(scenePath));
-            scenes.Add(sceneEntry);
-            EditorBuildSettings.scenes = scenes.ToArray();
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
+                throw new InvalidOperationException("Arena scene asset is missing: " + scenePath);
+            ProjectScenes.ApplyEditorBuildSettings();
             AssetDatabase.SaveAssets();
         }
 
