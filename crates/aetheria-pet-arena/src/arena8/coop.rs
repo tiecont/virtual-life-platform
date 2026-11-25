@@ -187,15 +187,26 @@ impl CoopState {
     }
 
     fn fill_board(&mut self) {
-        for index in 0..CELLS {
-            let tile = self.tile(true);
-            self.board[index] = tile;
-        }
-        if !self.has_legal_swap() {
+        for _ in 0..128 {
             for index in 0..CELLS {
                 let tile = self.tile(true);
                 self.board[index] = tile;
             }
+            if !matched_cells(&self.board).iter().any(|matched| *matched) && self.has_legal_swap() {
+                return;
+            }
+        }
+        // A deterministic fallback that cannot loop forever: alternate elements
+        // in a pattern with no initial run; the caller retains a bounded state.
+        for index in 0..CELLS {
+            self.board[index] = Tile {
+                element: if (index / SIDE + index % SIDE).is_multiple_of(2) {
+                    Element::Fire
+                } else {
+                    Element::Water
+                },
+                multiplier: 1,
+            };
         }
     }
 
@@ -216,7 +227,7 @@ impl CoopState {
     fn swap_matches(&self, first: usize, second: usize) -> bool {
         let mut next = self.board;
         next.swap(first, second);
-        !matched_cells(&next).is_empty()
+        matched_cells(&next).iter().any(|matched| *matched)
     }
 
     fn has_legal_swap(&self) -> bool {
@@ -249,12 +260,19 @@ impl CoopState {
                 let mut next = self.board;
                 next.swap(first, second);
                 let matched = matched_cells(&next);
-                if matched.is_empty() {
+                if !matched.iter().any(|matched| *matched) {
                     return Err(CoopError::NoMatch);
                 }
                 self.board = next;
                 self.cascade_index = 0;
                 self.resolve_matches(&matched);
+                while self.cascade_index < 16 {
+                    let cascade = matched_cells(&self.board);
+                    if !cascade.iter().any(|matched| *matched) {
+                        break;
+                    }
+                    self.resolve_matches(&cascade);
+                }
                 self.turn_index += 1;
                 self.advance_seat();
                 Ok(())
@@ -328,17 +346,20 @@ impl CoopState {
     fn refill(&mut self) {
         let mut next = self.board;
         for column in 0..SIDE {
-            let mut write = SIDE - 1;
+            let mut survivors = Vec::with_capacity(SIDE);
             for row in (0..SIDE).rev() {
-                let index = row * SIDE + column;
-                if self.board[index].multiplier != 0 {
-                    next[write * SIDE + column] = self.board[index];
-                    write = write.saturating_sub(1);
+                let tile = self.board[row * SIDE + column];
+                if tile.multiplier != 0 {
+                    survivors.push(tile);
                 }
             }
-            for row in 0..=write {
+            let empty = SIDE - survivors.len();
+            for row in 0..empty {
                 let tile = self.tile(false);
                 next[row * SIDE + column] = tile;
+            }
+            for (offset, tile) in survivors.iter().enumerate() {
+                next[(SIDE - 1 - offset) * SIDE + column] = *tile;
             }
         }
         self.board = next;
@@ -441,12 +462,18 @@ fn matched_cells(board: &[Tile; CELLS]) -> Vec<bool> {
         for column in 0..SIDE {
             let index = row * SIDE + column;
             let tile = board[index];
-            if column + 2 < SIDE && board[index + 1] == tile && board[index + 2] == tile {
+            if column + 2 < SIDE
+                && board[index + 1].element == tile.element
+                && board[index + 2].element == tile.element
+            {
                 matched[index] = true;
                 matched[index + 1] = true;
                 matched[index + 2] = true;
             }
-            if row + 2 < SIDE && board[index + SIDE] == tile && board[index + 2 * SIDE] == tile {
+            if row + 2 < SIDE
+                && board[index + SIDE].element == tile.element
+                && board[index + 2 * SIDE].element == tile.element
+            {
                 matched[index] = true;
                 matched[index + SIDE] = true;
                 matched[index + 2 * SIDE] = true;
@@ -527,6 +554,84 @@ mod tests {
         assert!(ground.defense > fire.defense);
         assert!(ground.crit_rate_bp < fire.crit_rate_bp);
         assert!(ground.crit_damage_bp > fire.crit_damage_bp);
+    }
+
+    #[test]
+    fn no_match_swap_is_rejected_without_mutation() {
+        let mut state = CoopState::new(13, party(), 10_000);
+        state.apply(CoopAction::Start).unwrap();
+        let mut pair = None;
+        for first in 0..CELLS {
+            let row = first / SIDE;
+            let column = first % SIDE;
+            if column + 1 < SIDE && !state.swap_matches(first, first + 1) {
+                pair = Some((first, first + 1));
+                break;
+            }
+            if row + 1 < SIDE && !state.swap_matches(first, first + SIDE) {
+                pair = Some((first, first + SIDE));
+                break;
+            }
+        }
+        let (first, second) = pair.expect("a non-matching pair");
+        let before = state.clone();
+        assert_eq!(
+            state.apply(CoopAction::Swap {
+                first: u8::try_from(first).unwrap(),
+                second: u8::try_from(second).unwrap(),
+            }),
+            Err(CoopError::NoMatch)
+        );
+        assert_eq!(state, before);
+    }
+
+    #[test]
+    fn mixed_multiplier_same_element_matches() {
+        let mut state = CoopState::new(17, party(), 10_000);
+        state.board[0] = Tile {
+            element: Element::Fire,
+            multiplier: 1,
+        };
+        state.board[1] = Tile {
+            element: Element::Fire,
+            multiplier: 2,
+        };
+        state.board[2] = Tile {
+            element: Element::Fire,
+            multiplier: 3,
+        };
+        let matched = matched_cells(&state.board);
+        assert!(matched[0] && matched[1] && matched[2]);
+    }
+
+    #[test]
+    fn full_columns_are_not_overwritten_by_refill() {
+        let mut state = CoopState::new(19, party(), 10_000);
+        for row in 0..3 {
+            state.board[row * SIDE] = Tile {
+                element: Element::Fire,
+                multiplier: 0,
+            };
+        }
+        let before = state.board;
+        let survivors = [
+            before[3 * SIDE],
+            before[4 * SIDE],
+            before[5 * SIDE],
+            before[6 * SIDE],
+            before[7 * SIDE],
+        ];
+        state.refill();
+        for (offset, tile) in survivors.iter().enumerate() {
+            assert_eq!(state.board[(3 + offset) * SIDE], *tile);
+        }
+    }
+
+    #[test]
+    fn initial_board_has_no_unresolved_match_and_has_a_legal_move() {
+        let state = CoopState::new(23, party(), 10_000);
+        assert!(!matched_cells(&state.board).iter().any(|matched| *matched));
+        assert!(state.legal_swap().is_some());
     }
 
     #[test]

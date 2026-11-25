@@ -34,6 +34,16 @@ Keep authentication, authorization, privacy, consent, moderation and release gat
 Source implementation and green CI do not authorize production deployment,
 purchases, signing, media licensing, destructive migrations or public dating.
 
+## Gameplay Configuration Authority
+
+PostgreSQL is the single source of truth for supported gameplay configuration
+and progression. Admin owns validation, draft/published versions, publication,
+rollback and audit; Nest owns authorization/allocation/progression; Rust executes
+the validated immutable configuration; Unity presents committed results. Rust
+must not carry production gameplay balance defaults. Missing or invalid required
+configuration fails closed. New gameplay mechanisms require an implemented typed
+engine capability, never arbitrary Admin scripts.
+
 Keep the checkout focused on source, tests, assets, build/runtime configuration,
 and the maintained backlog. Do not add session diaries, review transcripts,
 generated evidence or archived plan packs. Put fresh logs under ignored artifacts/.
