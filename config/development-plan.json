@@ -9493,6 +9493,79 @@
       ],
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
+      "verification": {
+        "sourceRevision": "6e3bf103eea29b0b00b2a30f498f412f131312a7",
+        "reviewMode": "INDEPENDENT",
+        "commands": [
+          {
+            "command": "pnpm test:harness",
+            "exitCode": 0
+          },
+          {
+            "command": "python3 scripts/engineering-harness/codex-config-check.py",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec eslint scripts/engineering-harness/*.mjs tests/harness/*.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm ci:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm architecture:check",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/workflow.mjs run local-review",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/workflow.mjs run migration-compat '{\"mode\":\"runtime\",\"allowLocalExecution\":true}'",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/workflow.mjs run rust-tests '{\"allowLocalExecution\":true}'",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/workflow.mjs run native-acceptance '{\"scenario\":\"runtime-gameplay\",\"allowLocalExecution\":true}'",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/benchmark.mjs 3",
+            "exitCode": 0
+          }
+        ],
+        "results": {
+          "harnessTestsPassed": 13,
+          "migrationIntegrationTestsPassed": 14,
+          "nativeProcessScenariosPassed": 20,
+          "benchmarkTrialsPerScenario": 3,
+          "hostedCI": "NOT_RUN"
+        },
+        "nativeCodexSmoke": {
+          "sourceRevision": "2aa528d4deb598d142b1f65767191d4ccb165e46",
+          "status": "PASS",
+          "roles": [
+            "architect",
+            "qa"
+          ],
+          "backend": "V2",
+          "programmaticExecObserved": true,
+          "managedWorkerDelegationDisabledVerified": true
+        },
+        "remaining": [
+          "Hosted CI is required before merge.",
+          "Archived-runtime qualification still pins 56 migrations and failed against the current 58.",
+          "Licensed Unity player and hardware qualification remain separate."
+        ]
+      },
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "runbook": "specs/engineering/harness.md"
