@@ -1,0 +1,29 @@
+# PTC-enabled engineering profile.
+#
+# The model sees only `run_code` plus a generated SDK; every tool is reached from
+# inside a TypeScript program. Intermediate tool values stay execution-local, so a
+# large result never has to enter conversation history whole.
+#
+# Requires a composed `@deepseek-ai/dsh-ptc-runtime-node` (present in dsh-base). A
+# preset selecting PTC without that runtime refuses to mount rather than failing at
+# the first request.
+#
+#   dsh --profile bench --patch config/harness/profiles/ptc-engineering.patch.yml "<task>"
+#   DSH_TOOLS_MODE=ptc dsh --profile bench "<task>"
+#
+# For the interactive desktop, the equivalent switch is the agent preset
+# `selectedDefault: ptc` in ~/.dsh/profiles/desktop/cordis.patch.yml (app restart).
+
+- id: tools
+  config:
+    mode: ptc
+    # Overlapping sub-calls inside one program. Conservative on this machine; raise
+    # only after measuring provider rate limits.
+    maxParallelSubCalls: 8
+- id: ptc-runtime
+  config:
+    timeoutMs: 180000
+    maxTimeoutMs: 600000
+    # Not a process-tree limit: descendant processes are outside this cap.
+    maxOldGenerationSizeMb: 512
+    maxOutputBytes: 67108864

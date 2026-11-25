@@ -1,0 +1,28 @@
+# PTC hardened overlay — CORRECTED after measurement.
+#
+# History: the first version set only `permission.defaultPreset: workspace-write`.
+# A measured positive/negative probe (config/harness/deepseek/hardened-sandbox-probe.mjs)
+# showed that changed nothing: filesystem escape, credential read, child process and
+# network all still succeeded. The deployment file-effect policy is owned by
+# `@deepseek-ai/dsh-sandbox-policy` (`mode`), not by the user-facing permission
+# preset selector.
+#
+# This overlay now sets the authoritative knob. Whether it is ENFORCED depends on the
+# host sandbox backend, which must be verified by the probe, not assumed — see
+# config/harness/deepseek/README.md for the measured result on this machine.
+
+- id: sandbox-policy
+  config:
+    mode: workspace-write
+- id: tools
+  config:
+    mode: ptc
+    maxParallelSubCalls: 4
+- id: ptc-runtime
+  config:
+    timeoutMs: 120000
+    maxTimeoutMs: 300000
+    maxOldGenerationSizeMb: 512
+- id: permission
+  config:
+    defaultPreset: workspace-write
