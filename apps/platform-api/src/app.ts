@@ -10,6 +10,10 @@ import {OperatorGameplayConfig} from './features/gameplay/modules/config/applica
 import {registerGameplayConfig} from './features/gameplay/modules/config/presentation/operator-http';
 import {CoopRoomService} from './features/coop/modules/rooms/application/service';
 import {registerCoopRooms} from './features/coop/modules/rooms/presentation/http';
+import {CoopMatchProvisioner} from './features/coop/modules/match/application/provisioner';
+import {CoopMatchStore} from './features/coop/modules/match/infrastructure/match-store';
+import {CoopRoomStore} from './features/coop/modules/rooms/infrastructure/store';
+import {LocalNativeCoopRuntime} from './features/coop/modules/match/infrastructure/local-runtime';
 import {OperatorEventCalendar} from './features/events/modules/calendar/application/operator-calendar';
 import {registerOperatorEvents} from './features/events/modules/calendar/presentation/operator-http';
 import {registerPrivacyRequests} from './features/identity/modules/privacy/presentation/privacy-http';
@@ -135,7 +139,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string};gameplayConfig?:{validator?:GameplayBundleValidator} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string};gameplayConfig?:{validator?:GameplayBundleValidator};coopProvisioner?:CoopMatchProvisioner } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
   if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
@@ -320,8 +324,37 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
   }
   if(config.LOCAL_COOP_ROOMS==='1'){
-    const coopRooms=new CoopRoomService(db);
+    let provisioner:CoopMatchProvisioner|undefined=options.coopProvisioner,ownedProvisioner=false;
+    if(!provisioner&&config.LOCAL_COOP_NATIVE==='1'){
+      const binary=config.LOCAL_ARENA8_NATIVE_BINARY,databaseUrl=config.LOCAL_ARENA8_NATIVE_DATABASE_URL;
+      const role=config.LOCAL_ARENA8_NATIVE_DB_ROLE,caFile=config.LOCAL_ARENA8_NATIVE_CA_FILE;
+      const storageKey=config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId=config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID;
+      const httpsOrigin=config.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN;
+      const certFile=config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile=config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE;
+      if(!binary||!databaseUrl||!role||!caFile||!storageKey||!httpsOrigin||!certFile||!keyFile)
+        throw Error('Cooperative native runtime configuration is required');
+      if(!gameplayValidator)
+        throw Error('Cooperative native matches require the gameplay configuration validator');
+      const admission=new RuntimeAdmissionStore(db,identity),keys=generateKeyPairSync('ed25519');
+      const keyId='coop-native-v1';
+      provisioner=new CoopMatchProvisioner({
+        store:new CoopMatchStore(db),admission,
+        issuer:new RuntimeTicketIssuer(identity,keyId,keys.privateKey,admission.admission),
+        runtime:new LocalNativeCoopRuntime({
+          binary,databaseUrl,role,caFile,storageKey,storageKeyId,
+          publicKey:keys.publicKey.export({format:'jwk'}).x!,keyId,origin:httpsOrigin,
+          certFile,keyFile,
+        }),
+        validator:gameplayValidator,httpsOrigin,
+      });
+      ownedProvisioner=true;
+    }
+    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),provisioner);
     registerCoopRooms(http,config,identity,coopRooms,options.now);
+    if(ownedProvisioner&&provisioner){
+      const owned=provisioner;
+      http.addHook('preClose',async()=>{await owned.close();});
+    }
   }
   if(options.petArena8?.enabled){
     registerArena8(http,config,identity,new Arena8Service(

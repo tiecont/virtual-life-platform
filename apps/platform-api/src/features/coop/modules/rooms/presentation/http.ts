@@ -1,7 +1,7 @@
 import type {FastifyInstance,FastifyRequest} from 'fastify';
 import {z} from 'zod';
 import {
- CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,
+ CoopAdmissionCommandSchema,CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {Config} from '../../../../../shared/config/environment';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
@@ -69,6 +69,12 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    const {roomId}=CoopRoomParamsSchema.parse(req.params);
    const body=CoopReadySchema.parse(req.body);
    return rooms.ready(account(req),body.requestId,roomId,body);
+  });
+  api.post('/coop/rooms/:roomId/admission',req=>{
+   write(req);
+   const {roomId}=CoopRoomParamsSchema.parse(req.params);
+   CoopAdmissionCommandSchema.parse(req.body??{});
+   return rooms.admission(account(req),token(req),roomId);
   });
   api.post('/coop/rooms/:roomId/start',req=>{
    write(req);

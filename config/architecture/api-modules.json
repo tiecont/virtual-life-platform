@@ -26,6 +26,7 @@
       "features/pets/modules/wave-a-arena8/application/native-provisioner",
       "features/pets/modules/wave-a-arena8/infrastructure/native-match-store",
       "features/pets/modules/wave-a-arena8/infrastructure/native-runtime",
+      "features/pets/modules/wave-a-arena8/infrastructure/native-tls-bridge",
       "features/pets/modules/wave-a-arena8/presentation/http",
       "features/pets/modules/wave-a-arena8/presentation/native-http"
       ],
@@ -49,7 +50,10 @@
       "currentPublicEntryFiles": [
         "features/coop/modules/rooms/application/service",
         "features/coop/modules/rooms/infrastructure/store",
-        "features/coop/modules/rooms/presentation/http"
+        "features/coop/modules/rooms/presentation/http",
+        "features/coop/modules/match/application/provisioner",
+        "features/coop/modules/match/infrastructure/match-store",
+        "features/coop/modules/match/infrastructure/local-runtime"
       ],
       "targetBoundary": "Rust owns cooperative combat; Nest owns authorization, eligibility, allocation and settlement"
     },

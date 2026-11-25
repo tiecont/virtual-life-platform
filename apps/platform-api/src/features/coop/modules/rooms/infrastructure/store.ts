@@ -48,6 +48,10 @@ export class CoopRoomStore{
   const row=result.rows[0];
   return row?Object.freeze({level:numeric(row.level)}):undefined;
  }
+ async pinnedBundle(tx:Queryable,version:number,digest:string):Promise<Record<string,unknown>|undefined>{
+  const result=await tx.query<{bundle:Record<string,unknown>}>("SELECT bundle FROM gameplay_config_versions WHERE ruleset='arena8-coop-pve' AND version=$1 AND content_digest=$2 AND published_at IS NOT NULL",[version,digest]);
+  return result.rows[0]?.bundle;
+ }
  async createRoom(tx:Queryable,input:Readonly<{id:string;bossId:string;hostAccountId:string;configVersion:number;configDigest:string;requiredPoints:number}>):Promise<CoopRoomRow>{
   const result=await tx.query<Record<string,unknown>>(`INSERT INTO coop_rooms(id,ruleset,boss_id,host_account_id,config_version,config_digest,required_points,status,revision) VALUES($1,'arena8-coop-pve',$2,$3,$4,$5,$6,'OPEN',1) RETURNING ${ROOM_COLUMNS}`,
    [input.id,input.bossId,input.hostAccountId,input.configVersion,input.configDigest,input.requiredPoints]);

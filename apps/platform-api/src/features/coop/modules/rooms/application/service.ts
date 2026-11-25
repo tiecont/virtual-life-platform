@@ -1,11 +1,12 @@
 import {createHash,randomUUID} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {
- CoopEligibilitySchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
+ CoopAdmissionViewSchema,CoopEligibilitySchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore,type CoopRoomRow,type CoopSeatRow} from '../infrastructure/store';
+import type {CoopMatchProvisioner,CoopSeat} from '../../match/application/provisioner';
 
 type Queryable=Pick<PoolClient,'query'>;
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
@@ -18,7 +19,11 @@ const ROOM_LIMIT=4;
 // creation only; they are never spent. The room pins the published gameplay
 // version that authored its Boss and threshold, exactly like a match pin.
 export class CoopRoomService{
- constructor(private readonly db:Pick<Pool,'query'|'connect'>,private readonly store=new CoopRoomStore()){}
+ constructor(
+  private readonly db:Pick<Pool,'query'|'connect'>,
+  private readonly store=new CoopRoomStore(),
+  private readonly provisioner?:CoopMatchProvisioner,
+ ){}
 
  private async transaction<T>(accountId:string,requestId:string,work:(tx:PoolClient)=>Promise<T>):Promise<T>{
   const client=await this.db.connect();
@@ -216,12 +221,22 @@ export class CoopRoomService{
 
  async start(accountId:string,requestId:string,roomId:string){
   const fingerprint=this.fingerprint('start',requestId,{roomId});
-  return this.transaction(accountId,requestId,async tx=>{
+  // Phase one freezes the roster (OPEN -> LOCKED). A retry with the same request
+  // either replays a recorded result or resumes a locked room.
+  const frozen=await this.transaction(accountId,requestId,async tx=>{
    const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
-   if(prior)return prior;
+   if(prior)return {done:true as const,view:prior};
    const room=await this.store.room(tx,roomId,true);
    if(!room)throw missing();
    if(room.hostAccountId!==accountId)throw forbidden('Only the host can start the room');
+   if(room.status==='STARTED'||room.status==='LOCKED'){
+    const view=await this.view(tx,room,accountId);
+    if(room.status==='STARTED'){
+     await this.store.saveRequest(tx,{accountId,requestId,fingerprint,response:view});
+     return {done:true as const,view};
+    }
+    return {done:false as const,view};
+   }
    if(room.status!=='OPEN')throw conflict('Room is not open');
    const seats=await this.store.seats(tx,roomId);
    if(seats.length!==ROOM_LIMIT)throw conflict('Four participants are required');
@@ -229,10 +244,60 @@ export class CoopRoomService{
    const locked=await this.store.setStatus(tx,{roomId,status:'LOCKED',expectedRevision:room.revision});
    if(!locked)throw conflict('Room changed; refresh before retrying');
    await this.store.event(tx,{roomId,accountId,action:'start',fromState:'OPEN',toState:'LOCKED'});
-   const view=await this.view(tx,locked,accountId);
+   return {done:false as const,view:await this.view(tx,locked,accountId)};
+  });
+  if(frozen.done)return frozen.view;
+  if(this.provisioner){
+   const room=await this.store.room(this.db,roomId);
+   if(!room||room.status!=='LOCKED')throw conflict('Room changed; refresh before retrying');
+   const seats=await this.store.seats(this.db,roomId);
+   if(seats.length!==ROOM_LIMIT||!seats.every(seat=>seat.petId!==null&&seat.petLevel!==null))throw conflict('Four prepared participants are required');
+   const bundle=await this.store.pinnedBundle(this.db,room.configVersion,room.configDigest);
+   if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
+   try{
+    await this.provisioner.start({
+     roomId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
+     seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm})) as readonly CoopSeat[],
+    });
+   }catch(error){
+    if(error instanceof DomainError)throw error;
+    throw unavailable('Cooperative native runtime is unavailable');
+   }
+  }
+  return this.transaction(accountId,requestId,async tx=>{
+   const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
+   if(prior)return prior;
+   const room=await this.store.room(tx,roomId,true);
+   if(!room)throw missing();
+   if(room.status==='STARTED'){
+    const view=await this.view(tx,room,accountId);
+    await this.store.saveRequest(tx,{accountId,requestId,fingerprint,response:view});
+    return view;
+   }
+   if(room.status!=='LOCKED')throw conflict('Room changed; refresh before retrying');
+   const started=this.provisioner?await this.store.setStatus(tx,{roomId,status:'STARTED',expectedRevision:room.revision}):undefined;
+   if(this.provisioner&&!started)throw conflict('Room changed; refresh before retrying');
+   if(started)await this.store.event(tx,{roomId,accountId,action:'start',fromState:'LOCKED',toState:'STARTED'});
+   const view=await this.view(tx,started??room,accountId);
    await this.store.saveRequest(tx,{accountId,requestId,fingerprint,response:view});
    return view;
   });
+ }
+
+ async admission(accountId:string,credential:string,roomId:string){
+  if(!this.provisioner)throw unavailable('Cooperative native matches are not enabled');
+  const client=await this.db.connect();
+  try{
+   await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='3000ms'");
+   const room=await this.store.room(client,roomId);
+   if(!room)throw missing();
+   const seat=await this.store.seatFor(client,roomId,accountId);
+   if(!seat)throw forbidden('Only a seated participant can join this match');
+   if(room.status!=='STARTED')throw conflict('Cooperative match is not active');
+   await client.query('COMMIT');
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+  const view=await this.provisioner.admission(roomId,credential);
+  return CoopAdmissionViewSchema.parse(view);
  }
 
  async close(accountId:string,requestId:string,roomId:string){

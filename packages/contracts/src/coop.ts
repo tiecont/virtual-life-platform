@@ -26,3 +26,11 @@ export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema
 export const CoopReadySchema=z.strictObject({requestId,ready:z.boolean()});
 export const CoopRoomCommandSchema=z.strictObject({requestId});
 export const CoopRoomParamsSchema=z.strictObject({roomId:z.uuid()});
+export const CoopAdmissionCommandSchema=z.strictObject({});
+export const CoopAdmissionViewSchema=z.strictObject({
+ roomId:z.uuid(),matchId:z.uuid(),seat:seatNumber,
+ wssUrl:z.string().min(10).max(512),httpsOrigin:z.string().url(),
+ ticket:z.string().min(20).max(8192),expiresAt:z.iso.datetime(),
+ contentHash:z.string().regex(/^[a-f0-9]{64}$/),
+});
+export type CoopAdmissionView=z.infer<typeof CoopAdmissionViewSchema>;

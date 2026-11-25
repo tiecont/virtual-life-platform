@@ -4,7 +4,7 @@
   "mode": "expand-compatible",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "7bc65ff872c258455b19f8b78017decda8b3e09380879829896f346f0e2642f2",
+  "runtimeManifestSha256": "be5cd45ebe42258da8d4e28d848a289caba0d6ee74f7de0305df3fd0599e47e3",
   "minimumDatabaseMigrations": 48,
   "maximumDatabaseMigrations": 60,
   "reviewRef": "evidence:wave-d2-coop-rooms-0060",
@@ -247,7 +247,7 @@
     },
     {
       "name": "0060_coop_rooms_achievements.sql",
-      "checksum": "10d23901da85c5119263384cf9e6b7cc735a38b91b66aa961eaa6df66fef2a4c"
+      "checksum": "d72b39f6be41bf226d4f027d13e25a89432252a5c53f8bb79976ee6dea7146ea"
     }
   ]
 }

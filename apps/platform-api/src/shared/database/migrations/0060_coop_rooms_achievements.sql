@@ -59,15 +59,20 @@ CREATE TABLE coop_room_events (
  created_at timestamptz NOT NULL DEFAULT clock_timestamp()
 );
 CREATE INDEX coop_room_events_room ON coop_room_events(room_id, sequence DESC);
+-- The match row itself is created by the native Rust host on its first commit;
+-- this allocation journal is the server-owned identity before that commit.
 CREATE TABLE coop_allocations (
- match_id uuid PRIMARY KEY REFERENCES game_native_matches(id) DEFERRABLE INITIALLY DEFERRED,
+ match_id uuid PRIMARY KEY,
  room_id uuid NOT NULL UNIQUE REFERENCES coop_rooms(id) ON DELETE CASCADE,
  ruleset text NOT NULL CHECK (ruleset = 'arena8-coop-pve'),
  config_version bigint NOT NULL,
  config_digest text NOT NULL CHECK (config_digest ~ '^[a-f0-9]{64}$'),
  content_hash text NOT NULL CHECK (content_hash ~ '^[a-f0-9]{64}$'),
+ world_id text NOT NULL UNIQUE CHECK (world_id ~ '^native:[a-z0-9][a-z0-9._-]{0,63}$'),
+ boot_id uuid NOT NULL,
+ generation integer NOT NULL DEFAULT 0 CHECK (generation BETWEEN 0 AND 2147483647),
  seats jsonb NOT NULL CHECK (jsonb_typeof(seats) = 'array' AND jsonb_array_length(seats) = 4 AND octet_length(seats::text) <= 16384),
- status text NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','PROVISIONED','ACTIVE','SETTLED','FAILED')),
+ status text NOT NULL DEFAULT 'STARTING' CHECK (status IN ('STARTING','ACTIVE','SETTLED','FAILED','CLOSED')),
  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  FOREIGN KEY (ruleset, config_version) REFERENCES gameplay_config_versions(ruleset, version)
