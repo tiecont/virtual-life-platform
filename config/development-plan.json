@@ -9825,8 +9825,20 @@
         "Random, basic, tactical and coordinated policies use identical seeds and never inspect hidden tiles",
         "Simulation is authorized, bounded, cancellable and cannot mutate live state"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "0fa94f2d9cdc3218a1f7daf0936d211c4b9527a7",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The cooperative reducer gains a deterministic public-information simulation harness with random, basic, tactical and coordinated policies. The runtime CLI --simulate-coop <bundle> <policy> <seeds> prints bounded JSON metrics (wins, losses, unresolved, phase-two reach, actions, average rounds/actions) and is reproducible. The candidate seed reports 0 wins/12 losses over 12 seeds under tactical and coordinated policies, so the candidate balance is loss-heavy and needs owner review.",
+        "commands": [
+          { "command": "cargo test -p aetheria-pet-arena --test arena8_coop_sim", "exitCode": 0 },
+          { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-runtime --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "cargo fmt --all -- --check", "exitCode": 0 }
+        ],
+        "remaining": "No Admin endpoint or UI runs the simulation, there is no cancellation or authorization integration, multiplier-occurrence and contribution-distribution metrics are not reported, and draft-versus-published comparison is absent."
+      }
     },
     {
       "id": "VL-198",
