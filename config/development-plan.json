@@ -9708,17 +9708,18 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "f552649c66e59616f5da86fe9716b67dd63375f9",
+        "sourceRevision": "50a351978e9162a74d6d19d2c5dfc3fa0ec5a78a",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the runtime with the private bundle file, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart without rewriting them.",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The real-process script now proves the restricted role, TLS, published bundle, four-seat boot, engine content hash and four subject tickets.",
         "commands": [
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
           { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
           { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 }
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
         ],
-        "remaining": "No real binary/TLS four-client run or packaged-player evidence exists. STARTING allocations require explicit reconciliation; settlement/outbox, Unity presentation and four-human acceptance remain."
+        "remaining": "No WebSocket command was sent by four clients and no packaged-player or four-human evidence exists. STARTING allocations require explicit reconciliation; Unity presentation remains."
       }
     },
     {
