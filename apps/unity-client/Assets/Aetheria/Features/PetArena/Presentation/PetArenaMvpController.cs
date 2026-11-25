@@ -55,7 +55,8 @@ namespace Aetheria.PetArena.Presentation
         private static void OpenCampaignInPlayer()
         {
             if (!Application.isEditor && SceneManager.GetActiveScene().name == "AuroraBlockout" &&
-                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API")))
+                (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API")) ||
+                 !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API"))))
                 SceneManager.LoadSceneAsync("PetArenaPve");
         }
 
@@ -72,13 +73,21 @@ namespace Aetheria.PetArena.Presentation
                 playerEvolution.Bind(evolutionProfile);
             initialized = true;
             ApplyPresentation();
-            var origin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API");
-            if (!string.IsNullOrWhiteSpace(origin))
+            var arena8Origin = Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API");
+            var wave1Origin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API");
+            if (!string.IsNullOrWhiteSpace(arena8Origin))
             {
                 campaignMode = true;
                 campaignPlayerColor = Color.white;
                 campaignEnemyColor = Color.white;
-                gameObject.AddComponent<Wave1CampaignScreen>().Initialize(this, origin);
+                gameObject.AddComponent<Arena8CampaignScreen>().Initialize(this, arena8Origin);
+            }
+            else if (!string.IsNullOrWhiteSpace(wave1Origin))
+            {
+                campaignMode = true;
+                campaignPlayerColor = Color.white;
+                campaignEnemyColor = Color.white;
+                gameObject.AddComponent<Wave1CampaignScreen>().Initialize(this, wave1Origin);
             }
         }
 

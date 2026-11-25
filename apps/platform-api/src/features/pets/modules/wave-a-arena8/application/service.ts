@@ -84,7 +84,17 @@ export class Arena8Service {
       'SELECT map_id FROM pet_wave_one_map_clears WHERE account_id=$1',
       [accountId],
     )).rows.map(row=>row.map_id);
-    if(mapIndex>0&&!clears.includes(MAPS[mapIndex-1].id))throw forbidden('Map is locked');
+    if(mapIndex>0){
+      const previous=MAPS[mapIndex-1].id;
+      const completed=(await this.db.query<{encounter_id:string}>(
+        `SELECT encounter_id FROM pet_wave_one_encounters
+          WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($3,$4)`,
+        [accountId,previous,previous+'-regular',previous+'-boss'],
+      )).rows.length;
+      // Legacy Wave 1 map clears represent the full regular+boss pair. Arena8
+      // itself requires both explicit encounter completions.
+      if(!clears.includes(previous)&&completed<2)throw forbidden('Map is locked');
+    }
     const artifacts=(await this.db.query<ArtifactRow>(
       `SELECT owned.definition_id,owned.upgrade_level
          FROM pet_artifact_loadouts loadout
@@ -161,8 +171,13 @@ export class Arena8Service {
         'SELECT 1 FROM pet_wave_one_map_clears WHERE account_id=$1 AND map_id=$2',
         [accountId,mapId],
       )).rowCount===1;
+      const encounterId=projection.encounter.id;
+      const encounterCompleted=(await client.query(
+        'SELECT 1 FROM pet_wave_one_encounters WHERE account_id=$1 AND map_id=$2 AND encounter_id=$3',
+        [accountId,mapId,encounterId],
+      )).rowCount===1;
       const won=projection.phase==='won';
-      const firstClear=won&&!alreadyCleared;
+      const firstClear=won&&!encounterCompleted;
       let exp=0;let coins=0;let recruitedPetId:string|null=null;
       let artifactId:string|null=null;let materials=0;
       let petLevel=owned.level;let petExp=owned.exp;
@@ -180,9 +195,16 @@ export class Arena8Service {
         );
         if(firstClear){
           await client.query(
-            'INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2) ON CONFLICT(account_id,map_id) DO NOTHING',
-            [accountId,mapId],
+            `INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id)
+             VALUES($1,$2,$3) ON CONFLICT(account_id,map_id,encounter_id) DO NOTHING`,
+            [accountId,mapId,encounterId],
           );
+          if(encounterId.endsWith('-boss')){
+            await client.query(
+              'INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2) ON CONFLICT(account_id,map_id) DO NOTHING',
+              [accountId,mapId],
+            );
+          }
           const ownedIds=new Set((await client.query<{pet_id:string}>(
             'SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1',[accountId],
           )).rows.map(row=>row.pet_id));

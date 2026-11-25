@@ -77,9 +77,9 @@
       "id": "WAVE-C2",
       "title": "Authoritative Arena8 integration and independent progression",
       "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
-      "c2Status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
+      "c2Status": "LOCAL_VERTICAL_SLICE_PASS_M3_REMAINING",
       "waveC2Verification": {
-        "status": "INCOMPLETE_M3",
+        "status": "LOCAL_PLAYER_SLICE_PASS_FULL_M3_REMAINING",
         "ownerSkillDecision": "All active Pets expose complete authored skills from Lv1; Pet level never gates access. Non-Icarus Pets cannot use FIRE_ZONE. Mana/Rage/cooldown/phase/ownership remain authoritative.",
         "binding": {
           "version": 2,
@@ -90,15 +90,25 @@
         "completedLocal": [
           "Lv1 complete-skill reducer behavior with Sig/Ultimate/FIRE_ZONE tests and non-Icarus FIRE_ZONE denial",
           "binding and bound ruleset version bump without reusing the old digest",
-          "loopback Arena8 supervisor allocates a 64-cell match, applies Start/Guard, persists state, replays duplicate command receipts and recovers after process restart",
-          "wave-c2 contract and readiness split (bindingVerified 55 / combatVerified 0) recorded"
+          "authenticated Nest allocate/command/view/settle over owned Pets, current Artifact loadout, map encounters, CSRF and no-store",
+          "loopback supervisor internal token, ownership, allocation/command idempotency, fingerprints and canonical event envelopes",
+          "real PostgreSQL settlement receipt for EXP/level, coins, encounter/map clear, recruitment, Artifact reward and materials",
+          "built Linux player authenticated, rendered 64 tiles, won regular and boss, equipped the Artifact and allocated Water with changed effective stats",
+          "API/client restart recovered coins=8400, Cinder clear, roster and level; duplicate settlement returned the original receipt",
+          "cross-account view/settle denied 403; changed duplicate command denied 409"
         ],
+        "localEvidence": {
+          "facts": "artifacts/m3-arena8/facts.json",
+          "resumeFacts": "artifacts/m3-arena8-resume/resume-facts.json",
+          "player": "apps/unity-client/Builds/Linux/Aetheria",
+          "summary": "regular/boss victory; artifactEquipped=true; waterAllocated=true; before=180/18/10 after=218/23/12; coins=8400; boardTiles=64"
+        },
         "notMet": [
-          "Nest authenticated allocator/proxy and canonical settlement are not implemented",
-          "Supervisor is not yet wired to Nest or Unity admission tickets",
-          "Unity still has no arena8.intent.v1/arena8.view.v1 client; no authoritative board or next-match flow",
-          "Skill Level persistence/upgrade economy and Artifact settlement are not connected",
-          "No packaged-player M3 scenario has executed"
+          "Native Host/journal/admission/ticket path is not used; the supervisor is an isolated authenticated local bridge",
+          "The player enters PetArenaPve directly instead of the Central Plaza/Cinder Terraces portal with a native ticket",
+          "Human-input UI, audio/VFX dedupe and full reconnect UX are not acceptance-tested",
+          "Combat verification remains 0 of 55 for full battle simulation; only the slice path is proven",
+          "Skill Level upgrade economy and persisted skill effects remain default Lv1"
         ]
       },
       "waveBVerification": {
@@ -9292,7 +9302,7 @@
         "A single player can run consecutive arena8-pve matches with a changed Artifact loadout without editing private settings or restarting infrastructure",
         "Allocation validates the authenticated account, owned Pet identity/species, encounter eligibility, map progression, level and equipment, then captures an immutable loadout pinned to the content/ruleset digests",
         "Accepted commands/receipts survive restart and reconnect; stale/duplicate/lost-ACK behavior is bounded",
-        "Level-based skill eligibility is enforced by the authoritative reducer, not only by the UI",
+        "Every Pet has its complete authored skill set from Lv1; Pet level never gates Signature, Ultimate or FIRE_ZONE, and non-Icarus FIRE_ZONE is rejected by the reducer",
         "Completion settlement is idempotent and cannot be granted twice by a parallel legacy route"
       ],
       "status": "IN_PROGRESS",

@@ -14,6 +14,7 @@ namespace Aetheria.PetArena.Infrastructure
     {
         public const string Prefix = "/v1/pets/wave1";
         public const string ArtifactPrefix = "/v1/pets/artifacts";
+        public const string Arena8Prefix = "/v1/pets/wave-a/arena8";
         private const string CookieName = "city_session=";
         private readonly HttpClient http;
         private readonly string webOrigin;
@@ -68,6 +69,37 @@ namespace Aetheria.PetArena.Infrastructure
 
         public Task<T> Post<T>(string route, object body, CancellationToken cancellation) where T : class =>
             Request<T>(Prefix + route, body, cancellation);
+
+        public Task<Wave1State> GetWave1State(CancellationToken cancellation) =>
+            Request<Wave1State>(Prefix + "/state", null, cancellation);
+
+        public Task<Arena8AllocateResponse> AllocateArena8(Arena8AllocateRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8AllocateResponse>(Arena8Prefix + "/allocate", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8StartCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8GuardCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8SwapCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8SkillCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8MatchResponse> GetArena8Match(string matchId, CancellationToken cancellation) =>
+            Request<Arena8MatchResponse>(Arena8Prefix + "/matches/" + Uri.EscapeDataString(matchId), null, cancellation);
+
+        public Task<Arena8Settlement> SettleArena8(string matchId, Arena8SettleRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8Settlement>(Arena8Prefix + "/matches/" + Uri.EscapeDataString(matchId) + "/settle",
+                body, cancellation);
 
         public Task<WaveAArtifactState> GetArtifactState(CancellationToken cancellation) =>
             Request<WaveAArtifactState>(ArtifactPrefix + "/state", null, cancellation);
