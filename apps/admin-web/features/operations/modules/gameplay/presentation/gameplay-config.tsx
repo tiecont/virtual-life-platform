@@ -5,6 +5,7 @@ import {
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
  GameplaySimulationReportSchema,type GameplayBundle,
 } from '@aetheria/contracts';
+import {bundleDifferences} from '../domain/bundle-diff';
 
 type Overview=ReturnType<typeof GameplayConfigOverviewSchema.parse>;
 type Version=ReturnType<typeof GameplayConfigVersionViewSchema.parse>;
@@ -30,19 +31,6 @@ function write(source:GameplayBundle,path:readonly string[],value:unknown):Gamep
  }
  current[path[path.length-1]!]=value;
  return copy;
-}
-function differences(left:unknown,right:unknown,path:readonly string[]=[]):string[]{
- if(typeof left!==typeof right||Array.isArray(left)!==Array.isArray(right))return [path.join('.')||'(root)'];
- if(left&&typeof left==='object'&&!Array.isArray(left)){
-  const a=left as Record<string,unknown>,b=right as Record<string,unknown>;
-  const keys=new Set([...Object.keys(a),...Object.keys(b)]);
-  return [...keys].flatMap(key=>differences(a[key],b[key],[...path,key]));
- }
- if(Array.isArray(left)&&Array.isArray(right)){
-  if(left.length!==right.length)return [path.join('.')+'.length'];
-  return left.flatMap((value,index)=>differences(value,right[index],[...path,String(index)]));
- }
- return Object.is(left,right)?[]:[path.join('.')];
 }
 function Num({label,value,onChange,step=1}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number}){
  const number=typeof value==='number'?value:0;
@@ -122,7 +110,7 @@ export default function GameplayConfig({request}:{request:Request}){
   if(!overview?.active||!bundle)return;
   await work(async()=>{
    const active=GameplayConfigVersionViewSchema.parse(await request('gameplay-config-version?ruleset='+RULESET+'&version='+overview.active!.version));
-   const paths=differences(active.bundle,bundle);
+   const paths=bundleDifferences(active.bundle,bundle);
    setComparison(paths);
    setMessage(paths.length?paths.length+' field'+(paths.length===1?'':'s')+' differ from active version '+active.version+'.':'No field differs from active version '+active.version+'.');
   });
