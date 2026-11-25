@@ -16,6 +16,9 @@ namespace Aetheria.PetArena.Presentation
         private int selected = -1;
         private ulong renderedVersion = ulong.MaxValue;
 
+        // Scene bootstrap may create the component before assigning the document.
+        public void Attach(UIDocument target) { document = target; }
+
         public void Bind(CoopNativePlaySession admitted)
         {
             session = admitted;
