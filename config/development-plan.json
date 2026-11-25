@@ -186,6 +186,36 @@
           "Skill Level upgrade economy and persisted skill effects remain default Lv1"
         ]
       },
+      "waveD1Verification": {
+        "status": "IMPLEMENTATION_STARTED_NO_ACCEPTANCE",
+        "ownerDirection": "Production Boss combat is strategic four-player cooperative PvE. Solo Boss win rate is diagnostic, not the production balance target.",
+        "ruleset": "arena8-coop-pve (separate versioned capability; frozen solo arena8-pve remains compatible)",
+        "candidateParameters": {
+          "partySeats": 4,
+          "bossPhaseThresholdBp": 2500,
+          "bossPhase2MaxHpGrowthBp": 7500,
+          "bossPhase2CurrentHpBp": 8000,
+          "multiplierClockUnit": "completed team rounds",
+          "multiplierSchedule": "1-11 x1; 12-16 x1-x2; 17-21 x1-x3; 22-26 x1-x4; 27-31 x1-x5; 32+ x1-x6",
+          "achievementThresholdExample": 5000,
+          "elementalProfiles": "Fire burst; Water sustain; Electric crit tempo; Ghost debuff; Ground HP/DEF with low crit and high crit damage; Light shields/buffs",
+          "note": "All values are local/test candidates pending owner balance review."
+        },
+        "workstreams": [
+          "Rust cooperative combat model: four seats, shared board, turn/round separation, Boss phases, multiplier tiles, critical profiles",
+          "Nest Achievement Points ledger and four-seat cooperative room lifecycle",
+          "Unity Central Plaza/Fire/Water portal entry and cooperative presentation",
+          "Native lifecycle/restart and cooperative settlement remain open"
+        ],
+        "gates": {
+          "cooperativeCombatFoundation": "NOT_ACCEPTED",
+          "bossPhaseTransition": "NOT_ACCEPTED",
+          "multiplierTiles": "NOT_ACCEPTED",
+          "fourSeatAdmission": "NOT_ACCEPTED",
+          "cooperativeSettlement": "NOT_ACCEPTED",
+          "packagedFourSeatPlayer": "NOT_ACCEPTED"
+        }
+      },
       "waveBVerification": {
       "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
       "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
