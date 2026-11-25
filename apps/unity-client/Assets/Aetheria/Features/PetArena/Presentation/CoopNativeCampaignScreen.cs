@@ -22,6 +22,9 @@ namespace Aetheria.PetArena.Presentation
         private TextField joinField;
         private string notice = "";
 
+        // Scene bootstrap may create the component before assigning the document.
+        public void Attach(UIDocument target) { document = target; }
+
         public void Enter(PlatformSession authenticated, string ownedPetId)
         {
             platform = authenticated ?? throw new ArgumentNullException(nameof(authenticated));
