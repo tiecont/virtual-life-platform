@@ -159,6 +159,12 @@
             "note": "Native Water battle started through the server-owned Water allocation; actual Tideglass Lagoon portal entry is still pending"
           },
           "migrationCompatibility": {
+            "status": "PASS",
+            "command": "pnpm game:migration:compat",
+            "artifacts": [
+              "artifacts/desktop-first/vl016/compat-5ccffd08",
+              "artifacts/desktop-first/vl013/migration-3b535ca7"
+            ],
             "policies": [
               "config/schema-compatibility-0058-native-expand.json",
               "config/schema-compatibility-0058-admission-expand.json"
