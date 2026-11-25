@@ -105,8 +105,8 @@
           "summary": "regular/boss victory; artifactEquipped=true; same-level effective 180/18/10 -> 205/22/11 after equip; Water allocation 218/23/12 after level growth; coins=8400; boardTiles=64"
         },
         "nativeVerification": {
-          "status": "NATIVE_FIRST_TURN_PASS_PROGRESSION_OPEN",
-          "sourceRevision": "4c406b2f",
+          "status": "NATIVE_FIRE_PROGRESSION_VICTORY_PASS_WATER_ENTRY_OPEN",
+          "sourceRevision": "2aee3155",
           "allocation": "Nest NativeArena8Provisioner configured a restricted runtime world, issued a scoped Ed25519 ticket and returned only wss/https/content/boot/match identity",
           "transport": "local TLS/WSS bridge terminated the native runtime; scoped ticket, ownership, world lease and admission were exercised",
           "packagedPlayer": "built Linux player authenticated, allocated, connected over WSS, started and submitted a legal swap",
@@ -118,7 +118,7 @@
             "boardTiles": 64,
             "skills": ["shared-skill", "signature", "ultimate", "guard"]
           },
-          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; the packaged one-match mode now reliably reaches terminal state and persists a defeat receipt",
+          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; packaged one-match defeat and full Fire regular/boss victory receipts are persisted",
           "oneMatchEvidence": {
             "facts": "artifacts/m3-native-one/native-facts.json",
             "matchId": "65385f2b-404f-48fc-8358-93242c2fbe9e",
@@ -126,11 +126,35 @@
             "settlement": "defeat +0 coins +0 XP materials 0",
             "boardTiles": 64
           },
+          "victoryEvidence": {
+            "facts": "artifacts/m3-native-policy/native-facts.json",
+            "matchId": "16807995-1af7-43f1-b892-489adf35af98",
+            "regularSettlement": "victory; first clear plus replay rewards persisted",
+            "bossSettlement": "victory +200 coins +500 XP materials 60",
+            "artifactEquipped": true,
+            "waterAllocated": true,
+            "coins": 9160,
+            "boardTiles": 64,
+            "policy": "public board/telegraph/resources only; scored runs; offensive skills before Guard; Guard only for a resolving heavy telegraph and never consecutively"
+          },
+          "combatPolicySimulation": {
+            "source": "crates/aetheria-pet-arena/examples/arena8_policy_sim.rs",
+            "seedsPerScenario": 100,
+            "results": {
+              "fire-coalwhisk_regular_L1": "68 wins / 32 losses, avg turns 12.24",
+              "water-dewskip_regular_L1": "100 wins / 0 losses, avg turns 8.23",
+              "ground-clodkin_regular_L1": "100 wins / 0 losses, avg turns 8.05",
+              "fire-coalwhisk_boss_L16": "5 wins / 95 losses, avg turns 11.20",
+              "fire-coalwhisk_water_regular_L16": "17 wins / 83 losses, avg turns 10.07"
+            },
+            "finding": "Fire boss and Water regular are materially underpowered at attainable progression; no balance or entropy change was made. Owner balance review is required."
+          },
           "remaining": [
-            "Stable native Fire victory and boss victory have not completed in the packaged player; full-progression attempts remain RNG/policy-flaky",
-            "Water allocation after native boss progression is not demonstrated",
-            "Consecutive native matches and native reconnect/restart lifecycle remain incomplete",
+            "Water battle is allocated but not started/played through the actual Water world portal",
             "Central Plaza portal entry and native world movement are not wired",
+            "Active-match resume after API/runtime restart is not proven",
+            "Consecutive native matches and full reconnect lifecycle remain incomplete",
+            "Migration compatibility for 0057/0058 remains red in CI",
             "Full native M3 Gates 1-8 are not met"
           ]
         },
