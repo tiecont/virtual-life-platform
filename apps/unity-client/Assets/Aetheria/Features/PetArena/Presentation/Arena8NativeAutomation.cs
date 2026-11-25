@@ -19,7 +19,7 @@ namespace Aetheria.PetArena.Presentation
             public string status, matchId, phase, error, boardDigest, settlement;
             public string regularSettlement, bossSettlement, artifactId;
             public int version, boardTiles, skills, coins;
-            public bool artifactEquipped, waterAllocated;
+            public bool artifactEquipped, waterAllocated, waterStarted;
             public string[] skillIds;
         }
 
@@ -84,6 +84,30 @@ namespace Aetheria.PetArena.Presentation
                     nativeFacts.boardTiles = 64;
                     nativeFacts.settlement = DescribeNative(one);
                     nativeFacts.coins = state.wallet.coins;
+                    return;
+                }
+                if (NativeArgument("-aetheria-arena8-native-water"))
+                {
+                    await AllocateNative("tideglass-lagoon", "tideglass-lagoon-regular");
+                    Draw();
+                    await CaptureNative("native-water-01-allocated.png");
+                    await Native((session, token) => session.StartAsync(token));
+                    Draw();
+                    await CaptureNative("native-water-02-started.png");
+                    var swaps = FindNativeSwaps(nativeView.Board);
+                    if (swaps.Count > 0)
+                        await Native((session, token) => session.SwapAsync(swaps[0].first, swaps[0].second, token));
+                    Draw();
+                    await CaptureNative("native-water-03-swap.png");
+                    nativeFacts.status = "ok";
+                    nativeFacts.matchId = matchId;
+                    nativeFacts.phase = nativeView.Phase;
+                    nativeFacts.version = checked((int)nativeView.Version);
+                    nativeFacts.boardTiles = nativeView.Board.Count;
+                    nativeFacts.skills = nativeView.Skills.Count;
+                    nativeFacts.skillIds = nativeView.Skills.ToArray();
+                    nativeFacts.boardDigest = nativeView.SnapshotDigest;
+                    nativeFacts.waterStarted = true;
                     return;
                 }
 
