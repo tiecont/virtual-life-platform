@@ -205,7 +205,7 @@
       "completed": {
         "governance": "VL-182 and M4 acceptance no longer treat a readiness field or manifest entry as production; mvpProgram.contentReadiness records the separate per-stage counts",
         "sceneRegistry": "one canonical ProjectScenes registry feeds EditorBuildSettings and BuildPlayerOptions.scenes so a built player cannot omit a required scene",
-        "combatProgression": "level-based skill eligibility is enforced in the Arena8Bound reducer: Lv1 basic/guard, Lv40 Signature/FIRE_ZONE, Lv60 Ultimate; Lv20 reserved pending OD",
+        "combatProgression": "FINAL OWNER DECISION supersedes PR83 level locks: every active Pet has its complete authored skill set from Lv1; a non-Icarus Pet cannot use FIRE_ZONE; Mana/Rage/cooldown/phase/ownership remain authoritative. Skill Level is bounded effectiveness, not an unlock gate.",
         "worldHarness": "fixed the Wave B world-capture player path so the built player is spawned from the actual Linux build output"
       },
       "worldEvidence": {

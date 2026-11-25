@@ -15,8 +15,9 @@ to the native synthetic match. Windows player qualification remains separate.
 ## Playable Pet Arena MVP
 
 Wave A targets the **8x8** tactical board. The developer training scene now builds
-an 8x8 board and keeps Icarus on the approved base silhouette at every level;
-Lv20/40/60 unlock skills and Artifact eligibility, not mandatory new visual forms.
+an 8x8 board and keeps Icarus on the approved base silhouette at every level.
+Every authored skill is usable from Pet Lv1; Pet level grows stats, raises the
+Skill-Level upgrade cap and gates Artifacts (D1/C10/B20/A40/S60), not skill access.
 The action-based Wave 1 campaign remains a frozen local compatibility slice. See
 [the Wave A specification](../../specs/pet-arena/mvp-wave-a.md).
 
