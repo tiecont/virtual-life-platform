@@ -52,6 +52,9 @@ const Env = z.object({
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
   LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  // Absolute path to the Rust runtime binary used as the authoritative
+  // gameplay-configuration validator. Absence disables publication (fail closed).
+  GAMEPLAY_CONFIG_VALIDATOR_BINARY:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -151,6 +154,7 @@ const Env = z.object({
   if (env.NODE_ENV === 'production' && env.LOCAL_RESTAURANT_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_RESTAURANT_WORLD'], message: 'Local restaurant activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DATING_PROTOTYPE==='1')ctx.addIssue({code:'custom',path:['LOCAL_DATING_PROTOTYPE'],message:'Local dating prototype cannot run in production'});
+  if(env.GAMEPLAY_CONFIG_VALIDATOR_BINARY&&!env.GAMEPLAY_CONFIG_VALIDATOR_BINARY.startsWith('/'))ctx.addIssue({code:'custom',path:['GAMEPLAY_CONFIG_VALIDATOR_BINARY'],message:'Absolute validator binary path required'});
   if(env.DATING_TEST_PROOFS==='1'){const url=new URL(env.DATABASE_URL);if(env.NODE_ENV!=='test'||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))ctx.addIssue({code:'custom',path:['DATING_TEST_PROOFS'],message:'Synthetic proofs require disposable local test runtime'});}
 });
 export type Config = z.infer<typeof Env>;

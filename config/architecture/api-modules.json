@@ -31,6 +31,18 @@
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
     },
+    "gameplay": {
+      "owner": "platform.gameplay-config",
+      "responsibility": "Operator-authored, engine-validated gameplay configuration versions: drafts, atomic publication, rollback and immutable audit",
+      "currentPublicEntryFiles": [
+        "features/gameplay/modules/config/infrastructure/version-store",
+        "features/gameplay/modules/config/infrastructure/engine-validator",
+        "features/gameplay/modules/config/application/operator-gameplay-config",
+        "features/gameplay/modules/config/application/seed-gameplay-config",
+        "features/gameplay/modules/config/presentation/operator-http"
+      ],
+      "targetBoundary": "Rust owns the bundle schema, digest and rule execution; Nest stores and publishes only engine-validated bundles"
+    },
     "runtime-gateway": {
       "owner": "platform.identity",
       "responsibility": "Explicit opt-in fixed-scope ticket HTTP adapter; no membership allocator or game authority",
@@ -311,6 +323,7 @@
   ],
   "tableOwnerModules": {
     "platform.pet-content": "pets",
+    "platform.gameplay-config": "gameplay",
     "native.game-storage": "db",
     "platform.operations": "operations",
     "platform.foundation": "db",

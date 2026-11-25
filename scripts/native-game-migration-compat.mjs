@@ -11,7 +11,7 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 const execute=promisify(execFile),root=process.cwd(),revision='5386a8cd3cf3e4360fd55f8f06bc84d159ff540b';
 const directory=resolve('artifacts/desktop-first/vl016/compat-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=v=>createHash('sha256').update(v).digest('hex');
-const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json'],policyRef='config/schema-compatibility-0058-native-expand.json';
+const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json'],policyRef='config/schema-compatibility-0059-native-expand.json';
 const facts={taskId:'VL-013',scope:'Actual archived47 Nest API and migrator on additive56 disposable PG; no production, Rust orchestration, deployment or GPU qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
@@ -44,7 +44,7 @@ try{
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
  const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest(root+'/apps/platform-api/dist/shared/database/migrations');
- assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,58);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
+ assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,59);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
  const policy=JSON.parse(await readFile(policyRef));facts.policySha256=sha(await readFile(policyRef));
  const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));admin=new Pool({connectionString:address.toString()});
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});
@@ -66,7 +66,7 @@ try{
   'receipts',(SELECT jsonb_agg(to_jsonb(r) ORDER BY match_id,account_id,request_id) FROM engine_game_receipts r WHERE match_id=$1)
  ) AS data`,[legacyId])).rows[0].data;
  stage='expand56';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameUser(cookie,account);
- facts.scenarios.push('Two current migrators expand47->58 under existing lock; actual archived47 API remains ready and preserves same browser identity');
+ facts.scenarios.push('Two current migrators expand47->59 under existing lock; actual archived47 API remains ready and preserves same browser identity');
  const match=randomUUID(),key=randomBytes(32),nonce=randomBytes(12),aad=Buffer.from('VL016-fixture:'+match+':v0');
  const secret=Buffer.from(JSON.stringify({seed:randomBytes(32).toString('hex'),hidden:'synthetic-private-only'}));
  const cipher=createCipheriv('aes-256-gcm',key,nonce);cipher.setAAD(aad);const ciphertext=Buffer.concat([cipher.update(secret),cipher.final()]),tag=cipher.getAuthTag();
@@ -76,7 +76,7 @@ try{
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();
  stage='old-runtime-rollback';for(const previousPolicyRef of previousPolicyRefs){await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();}
  await start(old,true);await ready(200);await sameUser(cookie,account);await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy);assert.deepEqual(await readNative(),frozen);
- facts.scenarios.push('Strict archived47 and frozen50/53/54/55 expansion policies refuse undeclared58; explicit exact-prefix58 policy allows old runtime rollback without down migration or touching native ciphertext');
+ facts.scenarios.push('Strict archived47 and frozen50/53/54/55 expansion policies refuse undeclared59; explicit exact-prefix59 policy allows old runtime rollback without down migration or touching native ciphertext');
  stage='checksum-negatives';
  for(const name of [Object.keys(before)[0],'0048_native_game_storage.sql',Object.keys(after).at(-1)]){
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1',[name,'0'.repeat(64)]);await ready(503);
@@ -92,8 +92,8 @@ try{
  ) AS data`,[legacyId])).rows[0].data,legacy);
  const stored=await readNative(),decipher=createDecipheriv('aes-256-gcm',key,stored.snapshot_nonce);decipher.setAAD(aad);decipher.setAuthTag(stored.snapshot_tag);assert.deepEqual(Buffer.concat([decipher.update(stored.sealed_snapshot),decipher.final()]),secret);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
- facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current58 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
- facts.migrations={previous:47,current:58,oldPrefixUnchanged:true,frozenNegativeMigrations:55,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
+ facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current59 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
+ facts.migrations={previous:47,current:59,oldPrefixUnchanged:true,frozenNegativeMigrations:55,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{
  try{await api?.app.close();await pool?.end();if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin?.end();facts.cleanupComplete=true;}

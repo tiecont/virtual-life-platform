@@ -4,6 +4,10 @@ import {registerAdmissionQueue} from './features/admission/modules/allocation/pr
 import {RuntimePolicyStore} from './features/operations/modules/controls/infrastructure/runtime-policy-store';
 import {OperatorRuntimeControls} from './features/operations/modules/controls/application/operator-runtime';
 import {registerRuntimeControls} from './features/operations/modules/controls/presentation/operator-http';
+import {GameplayConfigStore} from './features/gameplay/modules/config/infrastructure/version-store';
+import {EngineGameplayBundleValidator,type GameplayBundleValidator} from './features/gameplay/modules/config/infrastructure/engine-validator';
+import {OperatorGameplayConfig} from './features/gameplay/modules/config/application/operator-gameplay-config';
+import {registerGameplayConfig} from './features/gameplay/modules/config/presentation/operator-http';
 import {OperatorEventCalendar} from './features/events/modules/calendar/application/operator-calendar';
 import {registerOperatorEvents} from './features/events/modules/calendar/presentation/operator-http';
 import {registerPrivacyRequests} from './features/identity/modules/privacy/presentation/privacy-http';
@@ -129,7 +133,7 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string};gameplayConfig?:{validator?:GameplayBundleValidator} } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
   if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
@@ -195,6 +199,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const worlds = await createWorldRuntime(config, identity, { ...options.worlds, runtimeControls:runtimeStore,safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
   const runtimeControls=new OperatorRuntimeControls(runtimeStore,operator,worlds.releasePolicy?.controls);
   registerRuntimeControls(http,config,runtimeControls,options.now);
+  const gameplayValidator=options.gameplayConfig?.validator??(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY?new EngineGameplayBundleValidator(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY):undefined);
+  const gameplayConfig=new OperatorGameplayConfig(new GameplayConfigStore(),operator,gameplayValidator);
+  registerGameplayConfig(http,config,gameplayConfig,options.now);
   const roomAuthority = new RoomAuthority(db);
   // No allocator timer, room hook or production activation in this UI slice.
   const admission=config.NODE_ENV!=='production'&&config.LOCAL_ADMISSION_UX==='1'?new AdmissionStore(db,identity,{epoch:randomUUID(),assert:()=>roomAuthority.assert()}):undefined;
