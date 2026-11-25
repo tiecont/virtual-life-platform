@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Aetheria.Networking;
+using Aetheria.PetArena.Infrastructure;
 using Aetheria.PetArena.Presentation;
 using NUnit.Framework;
 using UnityEngine.UIElements;
@@ -69,6 +70,39 @@ namespace Aetheria.Tests
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.GuardAction(0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 64));
+        }
+
+        [Test]
+        public void AdmissionDecodesTheRoomScopedNativeScope()
+        {
+            var admission = CoopNativeAdmission.Decode(Admission());
+            Assert.That(admission.Seat, Is.EqualTo(2));
+            Assert.That(admission.RoomId, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(admission.MatchId, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(admission.BootId, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(admission.AccountId, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(admission.ContentHash.Length, Is.EqualTo(32));
+            Assert.That(admission.WssOrigin.AbsolutePath, Is.EqualTo("/rt/v1"));
+            var connection = admission.CreateConnection();
+            Assert.That(connection, Is.Not.Null);
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(origin: "http://127.0.0.1:4443")));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(path: "/other")));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(seat: 4)));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(expires: DateTimeOffset.UtcNow.AddSeconds(-1))));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(hash: "zz")));
+        }
+
+        private static string Admission(string origin = "https://127.0.0.1:4443", string path = "/rt/v1",
+            int seat = 2, DateTimeOffset? expires = null, string hash = Hash)
+        {
+            var expiry = (expires ?? DateTimeOffset.UtcNow.AddSeconds(10)).ToUniversalTime().ToString("O");
+            return "{\"roomId\":\"11111111-1111-4111-8111-111111111111\"," +
+                "\"matchId\":\"22222222-2222-4222-8222-222222222222\"," +
+                "\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
+                "\"accountId\":\"44444444-4444-4444-8444-444444444444\"," +
+                "\"seat\":" + seat + ",\"wssUrl\":\"wss://127.0.0.1:4443" + path + "\"," +
+                "\"httpsOrigin\":\"" + origin + "\",\"ticket\":\"ticket.payload.signature\"," +
+                "\"expiresAt\":\"" + expiry + "\",\"contentHash\":\"" + hash + "\"}";
         }
 
         [Test]
