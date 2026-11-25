@@ -17,6 +17,7 @@ namespace Aetheria.PetArena.Presentation
         public const string HttpBridgeVariable = "AETHERIA_ARENA8_HTTP_BRIDGE";
         private Arena8NativePlaySession nativeSession;
         private Arena8NativeView nativeView;
+        private Arena8NativeTrust nativeTrust;
         private bool nativeMode, nativeUnavailable;
 
         // Selection is explicit: AETHERIA_ARENA8_NATIVE selects native transport,
@@ -64,6 +65,7 @@ namespace Aetheria.PetArena.Presentation
             };
             var admission = await Arena8NativeAdmission.OpenAsync(
                 token => api.AllocateArena8Native(request, token), lifetime.Token);
+            nativeTrust ??= Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
             var platform = new PlatformSession(admission.HttpsOrigin);
             NativeConnection connection;
             try
@@ -153,6 +155,8 @@ namespace Aetheria.PetArena.Presentation
             nativeSession = null;
             nativeView = null;
             if (session != null) session.Dispose();
+            nativeTrust?.Dispose();
+            nativeTrust = null;
         }
 
         private void DrawNativeCombat()

@@ -53,6 +53,11 @@ namespace Aetheria.PetArena.Presentation
                 }
             }
             Draw();
+            if (NativeCaptureDirectory() != null)
+            {
+                _ = AutomatedNativeAcceptance();
+                return;
+            }
             if (CaptureDirectory() != null)
             {
                 _ = ResumeRequested() ? AutomatedResume() : AutomatedAcceptance();

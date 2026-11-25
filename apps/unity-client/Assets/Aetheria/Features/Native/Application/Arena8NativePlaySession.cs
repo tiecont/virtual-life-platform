@@ -23,7 +23,12 @@ namespace Aetheria.Networking
                 var view = Arena8NativeView.Decode(version, bytes);
                 return new PlayState(version, view.Epoch, view.Turn, 0, view.Reward, null, view);
             }
-            catch (FormatException) { throw new NativeFailure(Failure.Protocol); }
+            catch (FormatException error)
+            {
+                System.Console.Error.WriteLine("Arena8 native projection rejected: " + error.Message + " · " +
+                    System.Text.Encoding.UTF8.GetString(bytes, 0, Math.Min(bytes.Length, 1200)));
+                throw new NativeFailure(Failure.Protocol);
+            }
         }
 
         // Admission for an allocated match is complete once the allocation ticket

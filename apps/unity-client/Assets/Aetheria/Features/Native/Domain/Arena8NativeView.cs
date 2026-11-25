@@ -338,7 +338,7 @@ namespace Aetheria.Networking
         private static string Text(XElement field)
         {
             var value = ProjectionJson.Scalar(field, "string");
-            if (value.Length > 128) throw new FormatException("Invalid Arena8 string");
+            if (value.Length > 256) throw new FormatException("Invalid Arena8 string");
             return value;
         }
 

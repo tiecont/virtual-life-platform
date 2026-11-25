@@ -56,7 +56,8 @@ namespace Aetheria.PetArena.Presentation
         {
             if (!Application.isEditor && SceneManager.GetActiveScene().name == "AuroraBlockout" &&
                 (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API")) ||
-                 !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API"))))
+                 !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API")) ||
+                 !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AETHERIA_ARENA8_NATIVE"))))
                 SceneManager.LoadSceneAsync("PetArenaPve");
         }
 
