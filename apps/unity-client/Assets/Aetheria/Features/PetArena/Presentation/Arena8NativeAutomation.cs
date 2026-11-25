@@ -35,6 +35,8 @@ namespace Aetheria.PetArena.Presentation
             return null;
         }
 
+        private static bool NativeArgument(string name) => Environment.GetCommandLineArgs().Contains(name);
+
         private async Task AutomatedNativeAcceptance()
         {
             nativeCaptureDirectory = NativeCaptureDirectory();
@@ -48,6 +50,41 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
+                if (NativeArgument("-aetheria-arena8-native-turn"))
+                {
+                    await AllocateNative("cinder-terraces", "cinder-terraces-regular");
+                    Draw();
+                    await CaptureNative("native-turn-01-allocated.png");
+                    await Native((session, token) => session.StartAsync(token));
+                    Draw();
+                    await CaptureNative("native-turn-02-started.png");
+                    var swaps = FindNativeSwaps(nativeView.Board);
+                    if (swaps.Count == 0) throw new InvalidOperationException("No legal native swap");
+                    await Native((session, token) => session.SwapAsync(swaps[0].first, swaps[0].second, token));
+                    Draw();
+                    await CaptureNative("native-turn-03-swap.png");
+                    nativeFacts.status = "ok";
+                    nativeFacts.matchId = matchId;
+                    nativeFacts.phase = nativeView.Phase;
+                    nativeFacts.version = checked((int)nativeView.Version);
+                    nativeFacts.boardTiles = nativeView.Board.Count;
+                    nativeFacts.skills = nativeView.Skills.Count;
+                    nativeFacts.skillIds = nativeView.Skills.ToArray();
+                    nativeFacts.boardDigest = nativeView.SnapshotDigest;
+                    return;
+                }
+                if (NativeArgument("-aetheria-arena8-native-one"))
+                {
+                    var one = await RunNativeMatch("cinder-terraces", "cinder-terraces-regular", "native-one");
+                    nativeFacts.status = "ok";
+                    nativeFacts.matchId = matchId;
+                    nativeFacts.phase = one.won ? "won" : "lost";
+                    nativeFacts.version = 0;
+                    nativeFacts.boardTiles = 64;
+                    nativeFacts.settlement = DescribeNative(one);
+                    nativeFacts.coins = state.wallet.coins;
+                    return;
+                }
 
                 Arena8Settlement regular = null;
                 for (var attempt = 0; attempt < 6 && regular?.won != true; attempt++)
