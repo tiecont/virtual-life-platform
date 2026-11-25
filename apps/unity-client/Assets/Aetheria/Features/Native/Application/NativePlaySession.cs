@@ -17,10 +17,11 @@ namespace Aetheria.Networking
         public string Reward { get; }
         public PetArenaView Arena { get; }
         public Arena8NativeView Arena8 { get; }
+        public CoopNativeView Coop { get; }
         public string ReceiptId { get; internal set; }
         internal PlayState(ulong version, long epoch, int turns, int roll, string reward,
-            PetArenaView arena = null, Arena8NativeView arena8 = null)
-        { Version = version; Epoch = epoch; Turns = turns; OwnRoll = roll; Reward = reward; Arena = arena; Arena8 = arena8; }
+            PetArenaView arena = null, Arena8NativeView arena8 = null, CoopNativeView coop = null)
+        { Version = version; Epoch = epoch; Turns = turns; OwnRoll = roll; Reward = reward; Arena = arena; Arena8 = arena8; Coop = coop; }
     }
 
     /// <summary>Scene use cases over the existing adapter. Only server receipts update state.</summary>
