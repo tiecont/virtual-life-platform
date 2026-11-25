@@ -1,5 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
-import type {Pool,PoolClient} from 'pg';
+import type {Pool} from 'pg';
 import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
@@ -39,6 +39,11 @@ const fingerprint=(value:string)=>createHash('sha256').update(value).digest('hex
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAP_IDS:ReadonlySet<string>=new Set(MAPS.map(map=>map.id));
+
+export function encounterPairComplete(encounterIds:readonly string[],mapId:string){
+  const present=new Set(encounterIds);
+  return present.has(mapId+'-regular')&&present.has(mapId+'-boss');
+}
 
 function assertUuid(value:string,label:string){
   if(!UUID.test(value))throw invalid(label+' must be a UUID');
@@ -90,10 +95,11 @@ export class Arena8Service {
         `SELECT encounter_id FROM pet_wave_one_encounters
           WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($3,$4)`,
         [accountId,previous,previous+'-regular',previous+'-boss'],
-      )).rows.length;
+      )).rows.map(row=>row.encounter_id);
       // Legacy Wave 1 map clears represent the full regular+boss pair. Arena8
       // itself requires both explicit encounter completions.
-      if(!clears.includes(previous)&&completed<2)throw forbidden('Map is locked');
+      if(!clears.includes(previous)&&!encounterPairComplete(completed,previous))
+        throw forbidden('Map is locked');
     }
     const artifacts=(await this.db.query<ArtifactRow>(
       `SELECT owned.definition_id,owned.upgrade_level
@@ -167,10 +173,6 @@ export class Arena8Service {
         [accountId,projection.pet.id],
       )).rows[0];
       if(!owned)throw forbidden('Pet is no longer owned');
-      const alreadyCleared=(await client.query(
-        'SELECT 1 FROM pet_wave_one_map_clears WHERE account_id=$1 AND map_id=$2',
-        [accountId,mapId],
-      )).rowCount===1;
       const encounterId=projection.encounter.id;
       const encounterCompleted=(await client.query(
         'SELECT 1 FROM pet_wave_one_encounters WHERE account_id=$1 AND map_id=$2 AND encounter_id=$3',
@@ -199,7 +201,15 @@ export class Arena8Service {
              VALUES($1,$2,$3) ON CONFLICT(account_id,map_id,encounter_id) DO NOTHING`,
             [accountId,mapId,encounterId],
           );
-          if(encounterId.endsWith('-boss')){
+          // A map clears only after both authored encounters are present,
+          // independent of order. A boss-only victory must not unlock the next
+          // map. Legacy Wave 1 clears remain a separate compatibility signal.
+          const completed=await client.query<{encounter_id:string}>(
+            `SELECT encounter_id FROM pet_wave_one_encounters
+              WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($3,$4)`,
+            [accountId,mapId,mapId+'-regular',mapId+'-boss'],
+          );
+          if(encounterPairComplete(completed.rows.map(row=>row.encounter_id),mapId)){
             await client.query(
               'INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2) ON CONFLICT(account_id,map_id) DO NOTHING',
               [accountId,mapId],

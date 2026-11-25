@@ -20,7 +20,9 @@
       "features/pets/modules/wave1/presentation/http",
       "features/pets/modules/wave-a-artifacts/application/service",
       "features/pets/modules/wave-a-artifacts/infrastructure/store",
-      "features/pets/modules/wave-a-artifacts/presentation/http"
+      "features/pets/modules/wave-a-artifacts/presentation/http",
+      "features/pets/modules/wave-a-arena8/application/service",
+      "features/pets/modules/wave-a-arena8/presentation/http"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
     },
