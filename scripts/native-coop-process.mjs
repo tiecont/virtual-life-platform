@@ -121,7 +121,7 @@ try{
  }
  const connections=[];
  try{
-  for(const [seat,member] of members.entries()){
+  for(const seat of members.keys()){
    const connection=client(tickets[seat],seat);
    await connection.opened;
    const id=randomBytes(16);
@@ -164,7 +164,7 @@ try{
   assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,5);
   facts.scenarios.push('journal-recorded-five-durable-receipts-on-the-same-match');
  }finally{
-  for(const connection of connections)try{connection.ws.close();}catch{}
+  for(const connection of connections)try{connection.ws.close();}catch{/* The socket is already closed after a rejection. */}
  }
  const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches")).rows[0];
  assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.status,'ACTIVE');assert.equal(match.content_hash,allocation.content_hash);
@@ -175,8 +175,8 @@ try{
  facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);
  process.exitCode=1;
 }finally{
- try{await app?.app.close();}catch{}
- try{await pool?.end();}catch{}
+ try{await app?.app.close();}catch{/* Best-effort teardown after a failed assertion. */}
+ try{await pool?.end();}catch{/* The pool may already be closing. */}
  if(roleCreated)await admin.query('DROP OWNED BY '+identifier(role)).catch(()=>{});
  if(roleCreated)await admin.query('DROP ROLE '+identifier(role)).catch(()=>{});
  await admin.query('DROP SCHEMA IF EXISTS '+identifier(schema)+' CASCADE').catch(()=>{});
