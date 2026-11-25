@@ -117,8 +117,8 @@ namespace Aetheria.PetArena.Presentation
 
                 // Bounded legitimate regular progression raises the Pet level
                 // before the boss attempt; no stats or rewards are seeded.
-                for (var extra = 0; extra < 7 &&
-                    (state.FindPet(selectedPet)?.level ?? 60) < 16; extra++)
+                for (var extra = 0; extra < 20 &&
+                    (state.FindPet(selectedPet)?.level ?? 60) < 30; extra++)
                 {
                     var win = await RunNativeMatch("cinder-terraces", "cinder-terraces-regular",
                         "native-regular-extra-" + extra);
@@ -197,6 +197,13 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task NativeTurn()
         {
+            // A transport/lost-ACK failure leaves the immutable command pending.
+            // Replay that exact command; never replace it with a new decision.
+            if (nativeSession != null && nativeSession.HasPendingCommand)
+            {
+                await RetryNative();
+                return;
+            }
             if (nativeView.Health <= 80 &&
                 await TryNative((session, token) => session.GuardAsync(token))) return;
             if (nativeView.Affords(Arena8NativeView.Ultimate) &&
@@ -218,7 +225,12 @@ namespace Aetheria.PetArena.Presentation
         private async Task<bool> TryNative(Func<Arena8NativePlaySession, System.Threading.CancellationToken, Task<PlayState>> command)
         {
             try { await Native(command); return true; }
-            catch (InvalidOperationException) { return false; }
+            catch (InvalidOperationException error)
+            {
+                Console.Error.WriteLine("Native action rejected: " + error.Message + " · " +
+                    (error.InnerException?.Message ?? "no-inner"));
+                return false;
+            }
         }
 
         private async Task CaptureNative(string name)
