@@ -67,7 +67,7 @@ function toReasoningEffort(effort) {
 
 // The functional tool set a specialist needs. Mirrors the shipped `standard` preset
 // (dsh-web-app 0.2.0-rc.2) rather than inventing a new composition.
-function basePlugins(personaInstructions) {
+function basePlugins(personaInstructions, { delegating = false } = {}) {
   return [
     {
       id: 'persona',
@@ -119,8 +119,12 @@ function basePlugins(personaInstructions) {
         // Specialists do not delegate: bounded depth one, lead-only fan-out.
         { id: 'tool-subagent', name: '@deepseek-ai/dsh-tool-subagent', disabled: true },
         { id: 'tool-subagent-fork', name: '@deepseek-ai/dsh-tool-subagent', disabled: true },
-        { id: 'workflow-ptc', name: '@deepseek-ai/dsh-workflow-ptc', config: { provider: 'spawn' } },
-        { id: 'tool-workflow', name: '@deepseek-ai/dsh-tool-workflow' },
+        // Fan-out engine. Disabling tool-subagent_fork alone does NOT remove the
+        // delegation CAPABILITY: tool-workflow runs a JavaScript workflow that can call
+        // agent(prompt). Found by independent security review; both must be off or the
+        // lead-only delegation control bounds nothing.
+        { id: 'workflow-ptc', name: '@deepseek-ai/dsh-workflow-ptc', config: { provider: 'spawn' }, disabled: !delegating },
+        { id: 'tool-workflow', name: '@deepseek-ai/dsh-tool-workflow', disabled: !delegating },
       ],
     },
     { id: 'tool-ask-user', name: '@deepseek-ai/dsh-tool-ask-user', disabled: true },
@@ -157,7 +161,7 @@ function build() {
   presets.push({
     id: `preset-${CTO_PRESET_ID}`,
     name: '@deepseek-ai/dsh-agent-preset',
-    config: { id: CTO_PRESET_ID, order: 5, plugins: basePlugins(CTO_INSTRUCTIONS) },
+    config: { id: CTO_PRESET_ID, order: 5, plugins: basePlugins(CTO_INSTRUCTIONS, { delegating: true }) },
   });
   roles.push({ preset: CTO_PRESET_ID, source: '(built in)', effort: 'high', delegating: true });
 

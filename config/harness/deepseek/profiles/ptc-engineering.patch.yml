@@ -8,7 +8,7 @@
 # preset selecting PTC without that runtime refuses to mount rather than failing at
 # the first request.
 #
-#   dsh --profile bench --patch config/harness/profiles/ptc-engineering.patch.yml "<task>"
+#   dsh --profile bench --patch config/harness/deepseek/profiles/ptc-engineering.patch.yml "<task>"
 #   DSH_TOOLS_MODE=ptc dsh --profile bench "<task>"
 #
 # For the interactive desktop, the equivalent switch is the agent preset

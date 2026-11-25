@@ -315,3 +315,42 @@ before one answer, or deterministic multi-step validation in code).
 - **L10 — untracked status.** Nothing described here is committed at `15bb972f`;
   `git status` shows `?? config/harness/`. Review the directory, do not assume it is
   protected by version control.
+
+## Credential exposure and rotation (human-controlled gate)
+
+A Meshy credential was exposed in a transcript during Wave 1. Treat it as compromised.
+
+- **Rotation is a human action.** No agent in this adapter rotates, revokes or prints a
+  credential. Stop and ask the owner.
+- Procedure: revoke the exposed key at the provider, issue a new one, write it to
+  ~/.dsh/mcp-secrets.json (mode 600) under meshyApiKey, re-run the secret scan, and
+  confirm a clean result before any further Meshy use.
+- Until rotation completes, **do not invoke Meshy**. No Meshy call is made by this
+  adapter; the shared catalog's meshy-task is an offline read-only projection.
+- Scan rule: report file paths and rule names only, never a matched value. Two known
+  false positives: a code-span identifier in COMPARISON.md and the literal
+  SYNTHETIC-NOT-A-REAL-KEY fixture in hardened-sandbox-probe.mjs.
+
+## Corrections after independent QA and security review
+
+These supersede the stale lines above and the earlier L1/L8/L10 claims.
+
+- **Delegation control (was HIGH/FAIL).** Disabling tool-subagent alone did NOT remove
+  the delegation capability: tool-workflow runs JavaScript whose agent(prompt) helper
+  starts subagents, and workflow-ptc calls subagents.start. The generator now also
+  disables workflow-ptc and tool-workflow for all 11 specialists (5 disables each,
+  verified), while the CTO preset keeps them (3 disables). Fan-out is lead-only now.
+- **roles.patch.yml now installs.** Emitted under insert:; verified that
+  --patch roles.patch.yml --dump-config composes all 12 preset rows with zero errors.
+  L1 closed.
+- **Hardened profile measured (was unverified).** Under ptc-hardened with
+  sandbox-policy.mode: workspace-write, the probe still ALLOWED reads outside the
+  workspace, child-process creation and outbound network; writes outside the workspace
+  were redirected into an isolated temporary view (absent from the host). Verdict:
+  read/network/process confinement NOT enforced, write confinement PARTIAL. Do not
+  describe this profile as a sandbox. L8 closed with a FAIL.
+- **Probe no longer reads the real credential store.** It previously opened
+  ~/.dsh/.credentials.yaml to test denial, loading a real secret into memory in the very
+  profile where denial fails. Removed; synthetic fixtures only; it now also removes its
+  own workspace artefacts.
+- **Adapter is committed** on branch harness/deepseek-adapter. L10 closed.

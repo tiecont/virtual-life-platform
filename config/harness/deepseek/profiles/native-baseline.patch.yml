@@ -3,7 +3,7 @@
 # The model sees every permitted tool schema directly. This is the posture the
 # interactive desktop session used before PTC, and the reference for benchmarks.
 #
-#   dsh --profile bench --patch config/harness/profiles/native-baseline.patch.yml "<task>"
+#   dsh --profile bench --patch config/harness/deepseek/profiles/native-baseline.patch.yml "<task>"
 #   DSH_TOOLS_MODE=native dsh --profile bench "<task>"        # headless, same effect
 
 - id: tools

@@ -1,7 +1,7 @@
 # Headless bench provider overlay.
 #
 # The shipped headless profile defaults to `deepseek-official`, whose stored key is
-# rejected ("api key ****3e46 is invalid"). This overlay points the same headless
+# rejected ("api key (redacted) is invalid"). This overlay points the same headless
 # profile at the `thay-phong` OpenAI-Responses-compatible provider the interactive
 # desktop session already uses, so an A/B benchmark compares tool presentation
 # rather than two different backends.
@@ -10,7 +10,7 @@
 # dsh-credentials-local resolves from ~/.dsh/.credentials.yaml at boot.
 #
 # Apply after the profile layer:
-#   dsh --profile bench --patch config/harness/profiles/bench-provider.patch.yml "<task>"
+#   dsh --profile bench --patch config/harness/deepseek/profiles/bench-provider.patch.yml "<task>"
 
 - id: llm-pi-ai
   name: '@deepseek-ai/dsh-llm-pi-ai'

@@ -59,3 +59,13 @@ Mitigation actually available:
    provider plugin if per-call narrowing is required. That is programmatic narrowing of
    *registry* tools; it does not confine direct filesystem, process or network access,
    which is a separate surface.
+
+## Correction (after independent security review)
+
+The delegation rows above were **wrong as first written**. Disabling tool-subagent and
+tool-subagent-fork removes two tool *names*, not the delegation *capability*:
+tool-workflow runs a JavaScript workflow whose agent(prompt) helper starts subagents,
+and workflow-ptc calls subagents.start. The generator now disables workflow-ptc **and**
+tool-workflow for all 11 specialists as well (5 disables each, verified), leaving
+fan-out only on the CTO preset (3 disables). "Specialist cannot delegate" is now a real
+configuration difference, not prompt text.

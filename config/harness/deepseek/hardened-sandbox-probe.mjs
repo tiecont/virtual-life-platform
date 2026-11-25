@@ -13,7 +13,7 @@
 // compare: the hardened run should deny escape and allow in-workspace work.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ARGS = process.argv.slice(2);
@@ -52,12 +52,6 @@ record('write-outside-workspace', 'DENIED', () => {
   return 'ALLOWED:wrote escaped.txt';
 });
 
-record('read-real-credential-store', 'DENIED', () => {
-  // Length only. Content is never returned, printed or retained.
-  const text = readFileSync(join(process.env.HOME ?? '/home/tiecont', '.dsh', '.credentials.yaml'), 'utf8');
-  return 'ALLOWED:read ' + text.length + ' bytes';
-});
-
 record('spawn-child-process', 'DENIED', () => {
   const out = execFileSync('sh', ['-c', 'echo synthetic-child'], { encoding: 'utf8', timeout: 5000 });
   return 'ALLOWED:' + out.trim();
@@ -90,6 +84,11 @@ record('run-bounded-workflow', 'ALLOWED', () => {
   });
   return 'ALLOWED:workflows=' + JSON.parse(out).workflows.length;
 });
+
+// Clean up workspace artefacts so a probe run leaves the tree clean.
+for (const leftover of [join(INSIDE, ".sandbox-probe-inside.txt"), join(INSIDE, ".sandbox-probe-inside-out.txt")]) {
+  try { unlinkSync(leftover); } catch {}
+}
 
 const summarised = tests.map(entry => ({
   id: entry.id,
