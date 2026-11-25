@@ -10,7 +10,7 @@ async function main() {
     petArenaWave1:{enabled:config.LOCAL_PET_ARENA_WAVE1==='1'},
     petArtifacts:{enabled:config.LOCAL_PET_ARTIFACTS==='1'},
     ...(config.LOCAL_ARENA8==='1'?{petArena8:{enabled:true,supervisorUrl:config.LOCAL_ARENA8_SUPERVISOR_URL!,supervisorToken:config.LOCAL_ARENA8_SUPERVISOR_TOKEN!}}:{}),
-    ...(config.LOCAL_ARENA8_NATIVE==='1'?{petArena8Native:{enabled:true,binary:config.LOCAL_ARENA8_NATIVE_BINARY!,databaseUrl:config.LOCAL_ARENA8_NATIVE_DATABASE_URL!,role:config.LOCAL_ARENA8_NATIVE_DB_ROLE!,caFile:config.LOCAL_ARENA8_NATIVE_CA_FILE!,storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY!,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,httpsOrigin:config.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN!}}:{}),
+    ...(config.LOCAL_ARENA8_NATIVE==='1'?{petArena8Native:{enabled:true,binary:config.LOCAL_ARENA8_NATIVE_BINARY!,databaseUrl:config.LOCAL_ARENA8_NATIVE_DATABASE_URL!,role:config.LOCAL_ARENA8_NATIVE_DB_ROLE!,caFile:config.LOCAL_ARENA8_NATIVE_CA_FILE!,storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY!,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,httpsOrigin:config.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN!,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE!,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE!}}:{}),
   });
   await app.listen(config.PORT, config.HOST);
   const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };

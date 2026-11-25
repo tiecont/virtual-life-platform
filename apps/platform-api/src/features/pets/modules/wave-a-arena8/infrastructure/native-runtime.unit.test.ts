@@ -86,6 +86,7 @@ describe('local native Arena8 runtime adapter',()=>{
     binary,databaseUrl:'postgresql://arena8_runtime:'+'ef'.repeat(24)+'@127.0.0.1/aetheria_soulbound',
     role:'arena8_runtime',caFile:'/run/aetheria/pg-ca.pem',publicKey:PUBLIC_KEY,
     keyId:'arena8-native-v1',origin:ORIGIN,storageKey:ENGINE,storageKeyId:'local-v1',
+    certFile:'/run/aetheria/tls/server.pem',keyFile:'/run/aetheria/tls/server.key',
     ...overrides,
   });
 

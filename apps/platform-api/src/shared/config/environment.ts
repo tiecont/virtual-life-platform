@@ -50,6 +50,8 @@ const Env = z.object({
   LOCAL_ARENA8_NATIVE_STORAGE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/).default('local-v1'),
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -89,6 +91,8 @@ const Env = z.object({
       ['LOCAL_ARENA8_NATIVE_CA_FILE',env.LOCAL_ARENA8_NATIVE_CA_FILE],
       ['LOCAL_ARENA8_NATIVE_STORAGE_KEY',env.LOCAL_ARENA8_NATIVE_STORAGE_KEY],
       ['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN',env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN],
+      ['LOCAL_ARENA8_NATIVE_TLS_CERT_FILE',env.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE],
+      ['LOCAL_ARENA8_NATIVE_TLS_KEY_FILE',env.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE],
     ];
     for(const [field,value] of requiredNative)
       if(!value)ctx.addIssue({code:'custom',path:[field],message:'Native Arena8 runtime configuration is required'});

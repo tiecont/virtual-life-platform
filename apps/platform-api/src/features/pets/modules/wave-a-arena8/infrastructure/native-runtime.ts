@@ -8,6 +8,7 @@ import {promisify} from 'node:util';
 import type {
   NativeArena8RuntimeHandle,NativeArena8RuntimePort,NativeArena8RuntimeRequest,
 } from '../application/native-provisioner';
+import {startNativeTlsBridge} from './native-tls-bridge';
 
 const execute=promisify(execFile);
 const LABEL=/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/;
@@ -78,7 +79,7 @@ export function nativeArena8Settings(
 export type LocalNativeArena8RuntimeOptions=Readonly<{
   binary:string;databaseUrl:string;role:string;caFile:string;
   publicKey:string;keyId:string;origin:string;
-  storageKey:string;storageKeyId:string;
+  storageKey:string;storageKeyId:string;certFile:string;keyFile:string;
 }>;
 
 function delay(ms:number){return new Promise<void>(resolve=>{setTimeout(resolve,ms);});}
@@ -211,6 +212,20 @@ export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
       throw new Error('Arena8 native runtime unavailable');
     }
     await rm(file,{force:true});
+    let bridge;
+    try{
+      bridge=await startNativeTlsBridge({
+        origin:this.options.origin,targetPort:port,
+        certFile:this.options.certFile,keyFile:this.options.keyFile,
+      });
+    }catch(error){
+      child.kill('SIGKILL');
+      await new Promise<void>(resolve=>{
+        if(child.exitCode!==null)resolve();else child.once('exit',()=>resolve());
+      });
+      await rm(directory,{recursive:true,force:true});
+      throw error;
+    }
     let exited=false,stop:Promise<void>|undefined;
     const listeners=new Set<()=>void>();
     child.once('exit',()=>{
@@ -240,6 +255,7 @@ export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
               await closed;
             }
           }
+          await bridge.close().catch(()=>{});
           await rm(directory,{recursive:true,force:true});
         })();
         return stop;
