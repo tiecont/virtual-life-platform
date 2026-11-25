@@ -42,7 +42,9 @@ async function runPlayer(executable, args, timeoutMs) {
 async function runWorldEvidence() {
   if (process.platform !== 'linux') throw Error('World render evidence requires a Linux workstation');
   await run(['-executeMethod', 'Aetheria.Editor.ProjectBuild.Linux', '-quit'], 'Linux');
-  const player = resolve('Builds/Linux/Aetheria');
+  // Unity's process working directory is the project path, so ProjectBuild.Linux
+  // writes the player under apps/unity-client, not the repository root.
+  const player = resolve('apps/unity-client/Builds/Linux/Aetheria');
   const renders = resolve(directory, 'world-renders');
   const playerLog = resolve(directory, 'WorldPlayer.log');
   const playerArgs = ['-aetheria-world-capture', renders, '-screen-width', '1280', '-screen-height', '720',
