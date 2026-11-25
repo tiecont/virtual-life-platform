@@ -39,6 +39,7 @@
       "currentPublicEntryFiles": [
         "features/gameplay/modules/config/infrastructure/version-store",
         "features/gameplay/modules/config/infrastructure/engine-validator",
+        "features/gameplay/modules/config/infrastructure/engine-simulator",
         "features/gameplay/modules/config/application/operator-gameplay-config",
         "features/gameplay/modules/config/application/seed-gameplay-config",
         "features/gameplay/modules/config/presentation/operator-http"

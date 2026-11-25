@@ -7,6 +7,7 @@ import {readConfig} from '../../apps/platform-api/src/shared/config/environment'
 import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 import {InvalidGameplayBundleError,type GameplayBundleValidator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator';
+import type {GameplaySimulator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-simulator';
 import {installGameplayConfig} from '../../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config';
 
 const origin='http://127.0.0.1:3400',ruleset='arena8-coop-pve',password='synthetic-gameplay-operator-password',factor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
@@ -17,6 +18,7 @@ const engine:GameplayBundleValidator={async validate(_ruleset,input){
  if((input as {reject?:boolean}).reject)throw new InvalidGameplayBundleError();
  return {digest:createHash('sha256').update(JSON.stringify(input)).digest('hex'),engineCapability:'arena8-coop-v1',contentHash:createHash('sha256').update('content:'+JSON.stringify(input)).digest('hex')};
 }};
+const simulator:GameplaySimulator={async simulate(_bundle,policy,seeds){return {wins:seeds-1,losses:1,unresolved:0,phaseTwoReached:seeds,totalActions:100,averageRoundsMilli:5_000,averageActionsMilli:2_500};}};
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,key:string,config:ReturnType<typeof readConfig>;
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{
@@ -28,7 +30,7 @@ beforeEach(async()=>{
  now=Date.now();key=randomBytes(32).toString('hex');
  await new OperatorService(pool,key,()=>now-60000).bootstrap({password,totpSecret:factor,code:totp(factor,now-60000)});
  config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'synthetic-gameplay-player-secret-'.repeat(2),ADMIN_ORIGIN:origin,OPERATOR_AUTH_KEY:key});
- server=await createApp(config,pool,false,{now:()=>now,gameplayConfig:{validator:engine}});
+ server=await createApp(config,pool,false,{now:()=>now,gameplayConfig:{validator:engine,simulator}});
 });
 afterEach(async()=>{await server?.app.close();await pool?.end();await admin.query(`DROP SCHEMA "${schema}" CASCADE`);});afterAll(async()=>{await admin.end();});
 async function login(){const response=await server.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin},payload:{password,code:totp(factor,now)}});expect(response.statusCode).toBe(200);return {cookie:String(response.headers['set-cookie']).split(';')[0],csrf:response.json().csrfToken as string};}
@@ -138,6 +140,18 @@ describe('gameplay configuration authority',()=>{
   expect((await post(op,'gameplay-config-draft',{requestId:randomUUID(),ruleset,parentVersion:null,bundle:bundle(),sql:'SELECT 1'})).statusCode).toBe(422);
   const guest=await server.identity.guest({requestId:randomUUID(),displayName:'Gameplay visitor',avatarKey:'mint'});
   expect((await server.http.inject({url:'/v1/operator/gameplay-config',headers:{cookie:'city_operator='+guest.token}})).statusCode).toBe(401);
+ });
+ it('runs a bounded engine simulation on a draft and published version',async()=>{
+  const op=await login(),created=await draft(op);
+  const simulated=await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:created.version,policy:'tactical',seeds:10});
+  expect(simulated.statusCode).toBe(200);
+  expect(simulated.json()).toMatchObject({ruleset,version:created.version,policy:'tactical',seeds:10,wins:9,losses:1,totalActions:100});
+  expect((await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:created.version,policy:'tactical',seeds:201})).statusCode).toBe(422);
+  expect((await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:created.version,policy:'shell',seeds:4})).statusCode).toBe(422);
+  const released=await published(op);
+  const again=await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:released.version,policy:'coordinated',seeds:3});
+  expect(again.statusCode).toBe(200);
+  expect(again.json()).toMatchObject({policy:'coordinated',seeds:3,wins:2,losses:1});
  });
  it('installs the reviewed seed bundle idempotently',async()=>{
   const first=await installGameplayConfig(pool,ruleset,bundle(),engine,'system:test-installation');

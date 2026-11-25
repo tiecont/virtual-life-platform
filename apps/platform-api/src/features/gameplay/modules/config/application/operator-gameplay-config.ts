@@ -2,18 +2,20 @@ import {
  GameplayConfigAuditSchema,GameplayConfigCreateSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigPublishSchema,GameplayConfigRollbackResultSchema,
  GameplayConfigRollbackSchema,GameplayConfigUpdateSchema,GameplayConfigValidateSchema,GameplayConfigValidationSchema,
- GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,type GameplayBundle,type GameplayRuleset,
+ GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,type GameplayBundle,type GameplayRuleset,
 } from '@aetheria/contracts';
 import type {PoolClient} from 'pg';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {GameplayConfigStore,type GameplayVersion,type GameplayVersionSummary} from '../infrastructure/version-store';
 import {GameplayValidatorUnavailableError,InvalidGameplayBundleError,type GameplayBundleValidator} from '../infrastructure/engine-validator';
+import {GameplaySimulationError,GameplaySimulatorUnavailableError,type GameplaySimulator} from '../infrastructure/engine-simulator';
 
 const missing=()=>new DomainError('NOT_FOUND',404,'Gameplay configuration version not found');
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
 const invalid=()=>new DomainError('INVALID_REQUEST',422,'The engine rejected this gameplay configuration');
 const unavailable=()=>new DomainError('NOT_AVAILABLE',503,'Gameplay configuration validation is unavailable');
+const simulationUnavailable=()=>new DomainError('NOT_AVAILABLE',503,'Gameplay simulation is unavailable');
 const iso=(value:Date|null)=>value?value.toISOString():null;
 const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
@@ -25,7 +27,12 @@ const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,
 // atomic publication, rollback and audit all commit in one operator transaction.
 export class OperatorGameplayConfig{
- constructor(private readonly store:GameplayConfigStore,private readonly operator:OperatorService|undefined,private readonly validator:GameplayBundleValidator|undefined){}
+ constructor(
+  private readonly store:GameplayConfigStore,
+  private readonly operator:OperatorService|undefined,
+  private readonly validator:GameplayBundleValidator|undefined,
+  private readonly simulator?:GameplaySimulator,
+ ){}
  private assertSupported(){if(!this.operator)throw missing();}
 
  async overview(token:string,ruleset:GameplayRuleset){
@@ -162,6 +169,24 @@ export class OperatorGameplayConfig{
    const result=GameplayConfigRollbackResultSchema.parse({ruleset:value.ruleset,version:target.version,contentDigest:target.contentDigest,publishedAt:target.publishedAt.toISOString(),activeRevision});
    await this.store.appendEvent(tx,{ruleset:value.ruleset,version:target.version,action:'rollback',actor,fingerprint,fromState:null,toState:target.state,detail:{result,replacedVersion:active.version},seal});
    return result;
+  });
+ }
+ async simulate(token:string,csrf:unknown,input:unknown){
+  this.assertSupported();
+  const value=GameplaySimulationRequestSchema.parse(input);
+  if(!this.simulator)throw simulationUnavailable();
+  const row=await this.operator!.controlWrite(token,csrf,async tx=>this.store.read(tx,value.ruleset,value.version));
+  if(!row)throw missing();
+  if(!['DRAFT','VALIDATED','PUBLISHED','SUPERSEDED'].includes(row.state))throw conflict('Retired gameplay configuration cannot be simulated');
+  let metrics;
+  try{metrics=await this.simulator.simulate(row.bundle,value.policy,value.seeds);}
+  catch(error){
+   if(error instanceof GameplaySimulationError)throw new DomainError('INVALID_REQUEST',422,'The engine rejected this gameplay configuration');
+   if(error instanceof GameplaySimulatorUnavailableError)throw simulationUnavailable();
+   throw simulationUnavailable();
+  }
+  return GameplaySimulationReportSchema.parse({
+   ruleset:value.ruleset,version:value.version,policy:value.policy,seeds:value.seeds,...metrics,
   });
  }
  private async replay(tx:PoolClient,fingerprint:string,_action:string):Promise<Record<string,unknown>|undefined>{

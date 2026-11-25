@@ -6,7 +6,7 @@ export const GameplayRulesetSchema=z.enum(['arena8-coop-pve']);
 export type GameplayRuleset=z.infer<typeof GameplayRulesetSchema>;
 export const GameplayConfigStateSchema=z.enum(['DRAFT','VALIDATED','PUBLISHED','SUPERSEDED','RETIRED']);
 export type GameplayConfigState=z.infer<typeof GameplayConfigStateSchema>;
-const hash=z.string().regex(/^[a-f0-9]{64}$/),version=z.number().int().positive().max(9007199254740991),revision=z.number().int().positive().max(9007199254740991),requestId=z.uuid().transform(value=>value.toLowerCase()),capability=z.string().regex(/^[a-z0-9][a-z0-9-]{2,63}$/),actor=z.string().min(1).max(256);
+const hash=z.string().regex(/^[a-f0-9]{64}$/),version=z.number().int().positive().max(9007199254740991),revision=z.number().int().positive().max(9007199254740991),requestId=z.uuid().transform(value=>value.toLowerCase()),capability=z.string().regex(/^[a-z0-9][a-z0-9-]{2,63}$/),actor=z.string().min(1).max(256),count=z.number().int().min(0).max(1_000_000);
 const BUNDLE_LIMIT=1048576;
 export const GameplayBundleSchema=z.record(z.string(),z.unknown()).superRefine((value,ctx)=>{
  const bytes=new TextEncoder().encode(JSON.stringify(value)).length;
@@ -35,6 +35,15 @@ export const GameplayConfigValidationSchema=z.strictObject({ruleset:GameplayRule
 export const GameplayConfigPublishResultSchema=z.strictObject({ruleset:GameplayRulesetSchema,version,contentDigest:hash,engineCapability:capability,publishedAt:z.iso.datetime(),activeRevision:revision});
 export const GameplayConfigRollbackResultSchema=z.strictObject({ruleset:GameplayRulesetSchema,version,contentDigest:hash,publishedAt:z.iso.datetime(),activeRevision:revision});
 export const GameplayConfigMutationSchema=z.strictObject({ruleset:GameplayRulesetSchema,version,revision});
+export const GameplaySimulationPolicySchema=z.enum(['random','basic','tactical','coordinated']);
+export const GameplaySimulationRequestSchema=z.strictObject({
+ requestId,ruleset:GameplayRulesetSchema,version,policy:GameplaySimulationPolicySchema,seeds:z.number().int().min(1).max(200),
+});
+export const GameplaySimulationReportSchema=z.strictObject({
+ ruleset:GameplayRulesetSchema,version,policy:GameplaySimulationPolicySchema,seeds:z.number().int().min(1).max(200),
+ wins:count,losses:count,unresolved:count,phaseTwoReached:count,totalActions:z.number().int().min(0).max(1_000_000_000),
+ averageRoundsMilli:z.number().int().min(0).max(1_000_000_000),averageActionsMilli:z.number().int().min(0).max(1_000_000_000),
+});
 export const GameplayConfigAuditSchema=z.strictObject({events:z.array(z.strictObject({
  sequence:z.string().regex(/^[0-9]+$/),ruleset:GameplayRulesetSchema,version,action:z.enum(['create','update','validate','publish','rollback','retire','seed']),
  actor,fromState:GameplayConfigStateSchema.nullable(),toState:GameplayConfigStateSchema.nullable(),occurredAt:z.iso.datetime(),previousHash:hash,eventHash:hash,
