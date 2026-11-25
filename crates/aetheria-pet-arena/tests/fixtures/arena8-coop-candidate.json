@@ -1,0 +1,964 @@
+{
+  "schemaVersion": 1,
+  "engineCapability": "arena8-coop-v1",
+  "configId": "arena8-coop-candidate-v1",
+  "contentRevision": 1,
+  "board": {
+    "spawnWeights": [
+      {
+        "element": "fire",
+        "weight": 100
+      },
+      {
+        "element": "water",
+        "weight": 100
+      },
+      {
+        "element": "electric",
+        "weight": 100
+      },
+      {
+        "element": "ghost",
+        "weight": 100
+      },
+      {
+        "element": "ground",
+        "weight": 100
+      },
+      {
+        "element": "light",
+        "weight": 100
+      }
+    ],
+    "deadBoardPolicy": "regenerate",
+    "generationAttempts": 64
+  },
+  "party": {
+    "seats": 4,
+    "maxRounds": 40,
+    "maxCascades": 8,
+    "turnTimeoutMs": 30000
+  },
+  "resources": {
+    "manaCap": 300,
+    "rageCap": 200,
+    "manaPerTile": 24,
+    "manaOwnBonus": 8,
+    "ragePerTile": 10,
+    "ragePerGuard": 20,
+    "ragePerDamageTaken": 6
+  },
+  "damage": {
+    "attackScalePm": 1000,
+    "contributionScalePm": 60,
+    "ownTileWeightPm": 2000,
+    "defenseDivisor": 8,
+    "critRollBasis": 10000,
+    "artifactScalePm": 1000
+  },
+  "elements": [
+    {
+      "maxHp": 900,
+      "attack": 125,
+      "defense": 85,
+      "critRateBp": 1500,
+      "critDamageBp": 17500,
+      "hpGrowth": 38,
+      "attackGrowth": 11,
+      "defenseGrowth": 6,
+      "element": "fire",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 800
+        },
+        {
+          "element": "water",
+          "permille": 800
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "maxHp": 1100,
+      "attack": 85,
+      "defense": 100,
+      "critRateBp": 1000,
+      "critDamageBp": 15000,
+      "hpGrowth": 48,
+      "attackGrowth": 7,
+      "defenseGrowth": 8,
+      "element": "water",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1250
+        },
+        {
+          "element": "water",
+          "permille": 800
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 1250
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "maxHp": 850,
+      "attack": 110,
+      "defense": 80,
+      "critRateBp": 2500,
+      "critDamageBp": 16500,
+      "hpGrowth": 34,
+      "attackGrowth": 10,
+      "defenseGrowth": 5,
+      "element": "electric",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1250
+        },
+        {
+          "element": "electric",
+          "permille": 800
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 0
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "maxHp": 900,
+      "attack": 105,
+      "defense": 90,
+      "critRateBp": 1800,
+      "critDamageBp": 18500,
+      "hpGrowth": 36,
+      "attackGrowth": 9,
+      "defenseGrowth": 7,
+      "element": "ghost",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1250
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 800
+        }
+      ]
+    },
+    {
+      "maxHp": 1400,
+      "attack": 95,
+      "defense": 135,
+      "critRateBp": 800,
+      "critDamageBp": 25000,
+      "hpGrowth": 62,
+      "attackGrowth": 8,
+      "defenseGrowth": 12,
+      "element": "ground",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1250
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1250
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "maxHp": 1050,
+      "attack": 95,
+      "defense": 105,
+      "critRateBp": 1200,
+      "critDamageBp": 16000,
+      "hpGrowth": 44,
+      "attackGrowth": 8,
+      "defenseGrowth": 9,
+      "element": "light",
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1250
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 800
+        }
+      ]
+    }
+  ],
+  "multiplier": {
+    "clockUnit": "turn",
+    "schedule": [
+      {
+        "from": 0,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          }
+        ]
+      },
+      {
+        "from": 12,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 100,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          }
+        ]
+      },
+      {
+        "from": 17,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 100,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          }
+        ]
+      },
+      {
+        "from": 22,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 100,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 100,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          }
+        ]
+      },
+      {
+        "from": 27,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 100,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 100,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 100,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          }
+        ]
+      },
+      {
+        "from": 32,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 100,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 100,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 100,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 100,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          },
+          {
+            "multiplier": 6,
+            "weight": 100,
+            "damageWeightPm": 6000,
+            "resourceWeightPm": 3500
+          }
+        ]
+      }
+    ]
+  },
+  "boss": {
+    "id": "cinder-terraces-boss",
+    "name": "Embercoil Warden",
+    "element": "fire",
+    "maxHp": 120000,
+    "attack": 320,
+    "defense": 260,
+    "critRateBp": 1200,
+    "critDamageBp": 16000,
+    "phase": {
+      "thresholdBp": 2500,
+      "maxGrowthBp": 7500,
+      "currentBp": 8000,
+      "phase2AttackPm": 1250,
+      "excessDamage": "discard",
+      "attackTargets": 2
+    },
+    "attackModel": {
+      "baseDamage": 320,
+      "perRoundDamage": 45,
+      "defenseDivisor": 4,
+      "minimumDamage": 40
+    },
+    "telegraphTurns": 2
+  },
+  "skills": [
+    {
+      "id": "fire-lance",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1200,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 260,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-cinder-brand",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 900,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage-over-time",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-solar-flare",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 4,
+      "powerPm": 1600,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 420,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-ember-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "self-actor",
+        "value": 120,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-icarus-fire-zone",
+      "kind": "fire-zone",
+      "manaCost": 200,
+      "rageCost": 0,
+      "cooldownTurns": 3,
+      "powerPm": 700,
+      "critEligible": false,
+      "effect": {
+        "kind": "damage-over-time",
+        "target": "boss",
+        "value": 70,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-tide-mend",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 180,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-wellspring",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 1100,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-deep-bulwark",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 4,
+      "powerPm": 1300,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 260,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-flow-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "self-actor",
+        "value": 110,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-arc",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1150,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 230,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-storm-surge",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 1400,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 380,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-thunderfall",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 4,
+      "powerPm": 1800,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 520,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-charge-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 180,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-hollow-wail",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 900,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 220,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-soul-rend",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 1250,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 330,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-nightfall",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 4,
+      "powerPm": 1500,
+      "critEligible": true,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 400,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-veil-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "self-actor",
+        "value": 100,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-tremor",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 210,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-bastion",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 1200,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 240,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-quake-core",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 4,
+      "powerPm": 2100,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 600,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-iron-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "allies",
+        "value": 200,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-lumen-bolt",
+      "kind": "skill",
+      "manaCost": 100,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 200,
+        "durationTurns": 1,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-hallowed-aegis",
+      "kind": "signature",
+      "manaCost": 200,
+      "rageCost": 150,
+      "cooldownTurns": 3,
+      "powerPm": 1200,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "lowest-ally",
+        "value": 220,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-radiance",
+      "kind": "ultimate",
+      "manaCost": 300,
+      "rageCost": 200,
+      "cooldownTurns": 6,
+      "powerPm": 1300,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "allies",
+        "value": 260,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-guiding-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "self-actor",
+        "value": 120,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    }
+  ],
+  "pets": [
+    {
+      "id": "icarus",
+      "element": "fire",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 900,
+      "attack": 125,
+      "defense": 85,
+      "critRateBp": 1500,
+      "critDamageBp": 17500,
+      "skill": "fire-lance",
+      "signature": "fire-cinder-brand",
+      "ultimate": "fire-solar-flare",
+      "guard": "fire-ember-guard",
+      "fireZone": "fire-icarus-fire-zone"
+    },
+    {
+      "id": "marivell",
+      "element": "water",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 1100,
+      "attack": 85,
+      "defense": 100,
+      "critRateBp": 1000,
+      "critDamageBp": 15000,
+      "skill": "water-tide-mend",
+      "signature": "water-wellspring",
+      "ultimate": "water-deep-bulwark",
+      "guard": "water-flow-guard"
+    },
+    {
+      "id": "quorion",
+      "element": "electric",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 850,
+      "attack": 110,
+      "defense": 80,
+      "critRateBp": 2500,
+      "critDamageBp": 16500,
+      "skill": "electric-arc",
+      "signature": "electric-storm-surge",
+      "ultimate": "electric-thunderfall",
+      "guard": "electric-charge-guard"
+    },
+    {
+      "id": "vesperyn",
+      "element": "ghost",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 900,
+      "attack": 105,
+      "defense": 90,
+      "critRateBp": 1800,
+      "critDamageBp": 18500,
+      "skill": "ghost-hollow-wail",
+      "signature": "ghost-soul-rend",
+      "ultimate": "ghost-nightfall",
+      "guard": "ghost-veil-guard"
+    },
+    {
+      "id": "gravorn",
+      "element": "ground",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 1400,
+      "attack": 95,
+      "defense": 135,
+      "critRateBp": 800,
+      "critDamageBp": 25000,
+      "skill": "ground-tremor",
+      "signature": "ground-bastion",
+      "ultimate": "ground-quake-core",
+      "guard": "ground-iron-guard"
+    },
+    {
+      "id": "aurelune",
+      "element": "light",
+      "rarity": "standard",
+      "powerClass": "balanced",
+      "maxHp": 1050,
+      "attack": 95,
+      "defense": 105,
+      "critRateBp": 1200,
+      "critDamageBp": 16000,
+      "skill": "light-lumen-bolt",
+      "signature": "light-hallowed-aegis",
+      "ultimate": "light-radiance",
+      "guard": "light-guiding-guard"
+    }
+  ]
+}

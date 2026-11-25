@@ -1,0 +1,806 @@
+{
+  "schemaVersion": 1,
+  "engineCapability": "arena8-coop-v1",
+  "configId": "arena8-coop-v1",
+  "contentRevision": 1,
+  "board": {
+    "spawnWeights": [
+      {
+        "element": "fire",
+        "weight": 1700
+      },
+      {
+        "element": "water",
+        "weight": 1700
+      },
+      {
+        "element": "electric",
+        "weight": 1700
+      },
+      {
+        "element": "ghost",
+        "weight": 1700
+      },
+      {
+        "element": "ground",
+        "weight": 1600
+      },
+      {
+        "element": "light",
+        "weight": 1600
+      }
+    ],
+    "deadBoardPolicy": "regenerate",
+    "generationAttempts": 64
+  },
+  "party": {
+    "seats": 4,
+    "maxRounds": 40,
+    "maxCascades": 8,
+    "turnTimeoutMs": 60000
+  },
+  "resources": {
+    "manaCap": 100,
+    "rageCap": 100,
+    "manaPerTile": 4,
+    "manaOwnBonus": 2,
+    "ragePerTile": 3,
+    "ragePerGuard": 10,
+    "ragePerDamageTaken": 5
+  },
+  "damage": {
+    "attackScalePm": 1000,
+    "contributionScalePm": 60,
+    "ownTileWeightPm": 1500,
+    "defenseDivisor": 8,
+    "critRollBasis": 10000,
+    "artifactScalePm": 20
+  },
+  "elements": [
+    {
+      "element": "fire",
+      "maxHp": 300,
+      "attack": 30,
+      "defense": 12,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "hpGrowth": 20,
+      "attackGrowth": 3,
+      "defenseGrowth": 2,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 0
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 500
+        },
+        {
+          "element": "light",
+          "permille": 1500
+        }
+      ]
+    },
+    {
+      "element": "water",
+      "maxHp": 340,
+      "attack": 24,
+      "defense": 16,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "hpGrowth": 24,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1500
+        },
+        {
+          "element": "water",
+          "permille": 0
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 1500
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "element": "electric",
+      "maxHp": 260,
+      "attack": 34,
+      "defense": 10,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "hpGrowth": 18,
+      "attackGrowth": 4,
+      "defenseGrowth": 1,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1500
+        },
+        {
+          "element": "electric",
+          "permille": 0
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 0
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "element": "ghost",
+      "maxHp": 280,
+      "attack": 28,
+      "defense": 12,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "hpGrowth": 19,
+      "attackGrowth": 3,
+      "defenseGrowth": 2,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 0
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 500
+        }
+      ]
+    },
+    {
+      "element": "ground",
+      "maxHp": 420,
+      "attack": 22,
+      "defense": 24,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "hpGrowth": 30,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1500
+        },
+        {
+          "element": "water",
+          "permille": 500
+        },
+        {
+          "element": "electric",
+          "permille": 1500
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 0
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "element": "light",
+      "maxHp": 320,
+      "attack": 26,
+      "defense": 18,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "hpGrowth": 22,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1500
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 0
+        }
+      ]
+    }
+  ],
+  "multiplier": {
+    "clockUnit": "turn",
+    "schedule": [
+      {
+        "from": 0,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 1000,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          }
+        ]
+      },
+      {
+        "from": 12,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 800,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 200,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          }
+        ]
+      },
+      {
+        "from": 17,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 650,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          }
+        ]
+      },
+      {
+        "from": 22,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 550,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 150,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 50,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          }
+        ]
+      },
+      {
+        "from": 27,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 450,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 180,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 90,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 30,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          }
+        ]
+      },
+      {
+        "from": 32,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 350,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 200,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 120,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 60,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          },
+          {
+            "multiplier": 6,
+            "weight": 20,
+            "damageWeightPm": 6000,
+            "resourceWeightPm": 3500
+          }
+        ]
+      }
+    ]
+  },
+  "boss": {
+    "id": "cinder-terraces-warden",
+    "name": "Cinder Terraces Warden",
+    "element": "fire",
+    "maxHp": 12000,
+    "attack": 120,
+    "defense": 60,
+    "critRateBp": 1200,
+    "critDamageBp": 18000,
+    "phase": {
+      "thresholdBp": 2500,
+      "maxGrowthBp": 7500,
+      "currentBp": 8000,
+      "phase2AttackPm": 1250,
+      "excessDamage": "discard",
+      "attackTargets": 2
+    },
+    "attackModel": {
+      "baseDamage": 180,
+      "perRoundDamage": 12,
+      "defenseDivisor": 8,
+      "minimumDamage": 5
+    },
+    "telegraphTurns": 2
+  },
+  "skills": [
+    {
+      "id": "icarus-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "icarus-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 3,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 160,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "icarus-phoenix-ascendant",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 320,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "icarus-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "icarus-fire-zone",
+      "kind": "fire-zone",
+      "manaCost": 30,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "damage-over-time",
+        "target": "boss",
+        "value": 60,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "coralline-mending-tide",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 120,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "coralline-tidal-bulwark",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "coralline-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 260,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "coralline-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "volt-static-jab",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 100,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "volt-thunder-chain",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 3,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 180,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "volt-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "terran-stone-breaker",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 95,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "terran-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 3,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "terran-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 330,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "terran-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    }
+  ],
+  "pets": [
+    {
+      "id": "icarus",
+      "element": "fire",
+      "rarity": "limited-s",
+      "powerClass": "s",
+      "maxHp": 420,
+      "attack": 44,
+      "defense": 14,
+      "critRateBp": 2600,
+      "critDamageBp": 21000,
+      "skill": "icarus-ember-lance",
+      "signature": "icarus-solar-flare",
+      "ultimate": "icarus-phoenix-ascendant",
+      "guard": "icarus-guard",
+      "fireZone": "icarus-fire-zone"
+    },
+    {
+      "id": "coralline",
+      "element": "water",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 460,
+      "attack": 38,
+      "defense": 20,
+      "critRateBp": 1400,
+      "critDamageBp": 18000,
+      "skill": "coralline-mending-tide",
+      "signature": "coralline-tidal-bulwark",
+      "ultimate": "coralline-deep-current",
+      "guard": "coralline-guard"
+    },
+    {
+      "id": "volt",
+      "element": "electric",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 400,
+      "attack": 46,
+      "defense": 12,
+      "critRateBp": 3200,
+      "critDamageBp": 20000,
+      "skill": "volt-static-jab",
+      "signature": "volt-thunder-chain",
+      "ultimate": "volt-storm-crown",
+      "guard": "volt-guard"
+    },
+    {
+      "id": "terran",
+      "element": "ground",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 560,
+      "attack": 36,
+      "defense": 26,
+      "critRateBp": 900,
+      "critDamageBp": 24000,
+      "skill": "terran-stone-breaker",
+      "signature": "terran-fault-line",
+      "ultimate": "terran-continental-slam",
+      "guard": "terran-guard"
+    }
+  ]
+}

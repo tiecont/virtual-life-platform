@@ -13,6 +13,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
     let args: Vec<_> = std::env::args().skip(1).collect();
+    // Authoritative bundle validation for Admin publication. The Nest control
+    // plane never re-implements the schema or the digest: it asks the engine.
+    if let [flag, path] = args.as_slice()
+        && flag == "--check-gameplay-config"
+    {
+        let bytes = std::fs::read(path)?;
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+            .map_err(|_| "Invalid cooperative gameplay configuration")?;
+        let digest = rules.digest();
+        println!(
+            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\"}}",
+            digest
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        );
+        return Ok(());
+    }
     if let [flag, ruleset] = args.as_slice()
         && flag == "--ruleset-content-hash"
     {

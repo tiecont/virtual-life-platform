@@ -117,3 +117,55 @@ mutated by later Artifact/Skill changes; a new allocation captures them.
 `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `INVALID_REQUEST`,
 `MAP_LOCKED`, `NOT_OWNED`, `MATCH_COMPLETE`, `STALE_COMMAND`,
 `DUPLICATE_COMMAND`, `SETTLEMENT_CONFLICT`, `RUNTIME_UNAVAILABLE`.
+
+## Wave D2 — cooperative ruleset configuration contract
+
+`arena8-coop-pve` is a separate, versioned four-seat ruleset. Unlike the frozen
+solo `arena8-pve` binding tables, it carries **no authored gameplay number in
+Rust**: every HP, ATK, DEF, critical, resource, multiplier, skill, phase and
+schedule value is read from a typed JSON bundle that PostgreSQL owns and Admin
+publishes.
+
+- Canonical seed/candidate bundle:
+  `config/gameplay/arena8-coop-v1.seed.json` (explicit seed data, not a live
+  authority). Its canonical digest is pinned in
+  `config/gameplay/arena8-coop-v1.digest`.
+- Engine capability: `arena8-coop-v1`; bundle schema version `1`; content digest
+  domain `aetheria.arena8-coop.config.v1`; native adapter content hash domain
+  `aetheria.arena8-coop-native.v1`.
+- Structural engine bounds stay in Rust: 8x8 board, 64 cells, four seats, the
+  six MVP elements, the 4096-turn and cascade-depth safety ceilings. Authored
+  encounter values never do.
+- Deserialization is strict (`deny_unknown_fields`) and validation rejects
+  duplicated identities, dangling skill/Pet references, unsupported effect
+  kinds, out-of-range effectiveness, incomplete matrices, invalid multiplier
+  schedules, invalid Boss phase ranges, growth cycles and empty distributions.
+- Fail closed: an absent, malformed or incompatible bundle is an error. There is
+  no fallback table and no hidden default.
+- Authoritative validation for publication:
+  `aetheria-game-runtime --check-gameplay-config <bundle>`. It prints
+  `{"engineCapability":"arena8-coop-v1","digest":"<sha256>"}` and exits
+  non-zero on any defect, so the control plane never re-implements the schema.
+- An active match retains its original configuration digest and immutable
+  bundle for the whole match, including restart. A later publication applies
+  only to new allocations.
+
+### Implemented in this increment
+
+- Configuration-driven cooperative engine (`crates/aetheria-pet-arena/src/arena8/coop/`),
+  canonical state/board/engine digests, deterministic server-entropy RNG reuse,
+  bounded cascades, gravity/refill, dead-board recovery, mixed-multiplier
+  element matching, one-time Boss phase transition, typed effects, and
+  contribution settlement payload.
+- Rust conformance tests (`crates/aetheria-pet-arena/tests/arena8_coop.rs`,
+  `arena8/coop/tests.rs`) and the authoritative publication validator.
+
+### Not yet implemented (explicit boundary)
+
+- PostgreSQL configuration tables, draft/validate/publish/rollback lifecycle,
+  optimistic concurrency and audit trail.
+- Admin API and Next.js editors, simulation runner, and the four-seat native
+  runtime, admission, rooms, Achievement Point ledger, settlement persistence and
+  Unity cooperative presentation.
+- These are tracked as Wave D2 backlog tasks; nothing here is a public release
+  or production balance approval.
