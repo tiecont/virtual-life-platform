@@ -153,6 +153,14 @@ describe('gameplay configuration authority',()=>{
   expect(again.statusCode).toBe(200);
   expect(again.json()).toMatchObject({policy:'coordinated',seeds:3,wins:2,losses:1});
  });
+ it('accepts a realistic bundle above the global body bound and rejects oversized bodies',async()=>{
+  const op=await login();
+  const realistic={...bundle(),padding:'x'.repeat(20_000)};
+  const accepted=await post(op,'gameplay-config-draft',{requestId:randomUUID(),ruleset,parentVersion:null,bundle:realistic});
+  expect(accepted.statusCode).toBe(200);
+  const oversized={...bundle(),padding:'x'.repeat(1_300_000)};
+  expect((await post(op,'gameplay-config-draft',{requestId:randomUUID(),ruleset,parentVersion:null,bundle:oversized})).statusCode).toBe(413);
+ });
  it('installs the reviewed seed bundle idempotently',async()=>{
   const first=await installGameplayConfig(pool,ruleset,bundle(),engine,'system:test-installation');
   expect(first.created).toBe(true);expect(first.version).toBe(1);
