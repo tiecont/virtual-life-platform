@@ -11,4 +11,7 @@ failure, blocked and unrun classifications.
 
 Run `pnpm test:harness` for changes here. For Codex configuration changes, run
 `python3 scripts/engineering-harness/codex-config-check.py` when the installed
-CLI is available. Document changes to command contracts in the harness runbook.
+CLI is available; the restricted and worker profiles additionally need a
+system-installed Codex binary. Run `python3 scripts/engineering-harness/source-scan.py`
+to check changed source for credential shapes before staging. Document changes to
+command contracts in the harness runbook.

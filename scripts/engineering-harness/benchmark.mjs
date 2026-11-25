@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
-import { copyFileSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { delimiter, join, relative } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
@@ -166,7 +166,7 @@ function benchmarkRecovery(directory, revision) {
   const sourceDirectory = join('scripts', 'engineering-harness');
   const checkpointDirectory = join(directory, 'checkpoint-fixture', sourceDirectory);
   mkdirSync(checkpointDirectory, { recursive: true, mode: 0o700 });
-  for (const name of ['state.mjs', 'state-contract.mjs', 'state-store.mjs']) {
+  for (const name of readdirSync(join(root, sourceDirectory)).filter(name => /^state(?:-[a-z-]+)?[.]mjs$/.test(name))) {
     copyFileSync(join(root, sourceDirectory, name), join(checkpointDirectory, name));
   }
   const state = join(checkpointDirectory, 'state.mjs');
@@ -223,6 +223,22 @@ console.log(JSON.stringify(snapshot));`;
   return { id: 'D', description: 'Interrupted-task recovery from a separate process', baseline, upgraded };
 }
 
+function benchmarkDiscovery() {
+  const taskPlan = 'scripts/task-plan.mjs';
+  const baseline = () => {
+    const call = node([taskPlan]);
+    const { total, remaining, ready } = json(call);
+    return { measured: observation([call], 1), acceptance: { total, remaining, ready: ready.length },
+      inputSha256: hash(readFileSync(join(root, 'config/development-plan.json'))) };
+  };
+  const upgraded = () => {
+    const run = runWorkflow('repo-inspect', {});
+    const { total, remaining, ready } = run.result.findings['development-plan'];
+    return { measured: run.measured, acceptance: { total, remaining, ready }, run: run.result };
+  };
+  return { id: 'E', description: 'Filter the complete backlog to counts for a single local readiness query', baseline, upgraded };
+}
+
 function projectCheckpoint({ baseRevision, objective, task, ready }) {
   const { id, owner, dependsOn, writePaths, acceptance, status, remainingActions } = task;
   return { baseRevision, objective, ready, task: { id, owner, dependsOn, writePaths, acceptance, status, remainingActions } };
@@ -234,10 +250,10 @@ function time(run) {
   return { ...outcome, measured: { ...outcome.measured, durationMs: Math.round(performance.now() - start) } };
 }
 
-function summarize(rows, key) {
+function summarize(rows, key, ranges = false) {
   return Object.fromEntries(Object.keys(rows[0][key]).map(metric => {
     const sorted = rows.map(row => row[key][metric]).sort((a, b) => a - b);
-    return [metric, sorted[Math.floor(sorted.length / 2)]];
+    return [metric, ranges ? { min: sorted[0], max: sorted.at(-1) } : sorted[Math.floor(sorted.length / 2)]];
   }));
 }
 
@@ -283,6 +299,8 @@ function measureScenario(scenario, trials) {
     quality: 'PASS',
     baselineMedian: summarize(rows, 'baseline'),
     upgradedMedian: summarize(rows, 'upgraded'),
+    baselineRange: summarize(rows, 'baseline', true),
+    upgradedRange: summarize(rows, 'upgraded', true),
     trials: rows,
   };
 }
@@ -302,7 +320,7 @@ function main() {
   const directory = privateOutput();
   const revision = decode(execute('git', ['rev-parse', 'HEAD']));
   const checkouts = execute('git', ['status', '--porcelain=v1', '-z', '--untracked-files=normal']);
-  const scenarios = [benchmarkPr(directory), benchmarkMigration(revision), benchmarkComposition(), benchmarkRecovery(directory, revision)];
+  const scenarios = [benchmarkPr(directory), benchmarkMigration(revision), benchmarkComposition(), benchmarkRecovery(directory, revision), benchmarkDiscovery()];
   const results = scenarios.map(scenario => measureScenario(scenario, Number(count)));
   const report = {
     schemaVersion: 1,
@@ -321,7 +339,12 @@ function main() {
     },
     modelMetrics: Object.fromEntries([
       'inputTokens', 'outputTokens', 'cachedTokens', 'modelOrchestrationTurns', 'contextCompactions', 'apiCost',
+      'fixedContextBytes', 'nativeToolSchemaBytes',
     ].map(key => [key, 'NOT_MEASURED'])),
+    nativeScenarios: {
+      independentMultiAgent: { repeatedProviderComparison: 'NOT_MEASURED', reason: 'No repeated provider comparison has been recorded on this revision' },
+      nativeCrossProviderHandoff: { status: 'NOT_RUN', reason: 'Requires receipts from both provider owners on this revision' },
+    },
     results,
   };
   const path = join(directory, 'report.json');
@@ -333,7 +356,8 @@ function main() {
     revision,
     worktreeDirty: report.worktreeDirty,
     trialCount: report.trialCount,
-    scenarios: results.map(({ id, quality, baselineMedian, upgradedMedian }) => ({ id, quality, baselineMedian, upgradedMedian })),
+    scenarios: results.map(({ trials, ...summary }) => summary),
+    nativeScenarios: report.nativeScenarios,
     modelMetrics: report.modelMetrics,
     evidence: { path: relative(root, path), bytes: bytes.length, sha256: hash(bytes) },
   }, null, 2));

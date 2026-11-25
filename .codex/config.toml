@@ -65,6 +65,28 @@ extends = "aetheria-local"
 [permissions.aetheria-review.filesystem.":workspace_roots"]
 "." = "read"
 
+# Installed system tools plus the checkout are readable. Use the system Codex
+# binary for this profile so the sandbox helper is inside the system paths.
+[permissions.aetheria-restricted]
+description = "Read-only local review with checkout and system runtime reads"
+extends = "aetheria-review"
+
+[permissions.aetheria-restricted.filesystem]
+":root" = "deny"
+":minimal" = "read"
+":tmpdir" = "deny"
+":slash_tmp" = "deny"
+
+[permissions.aetheria-worker]
+description = "Isolated implementation inside a dedicated worktree"
+extends = "aetheria-restricted"
+
+[permissions.aetheria-worker.filesystem.":workspace_roots"]
+"." = "write"
+".git" = "read"
+".codex" = "read"
+".agents" = "read"
+
 # These inherited integrations start disabled here. Global registrations are preserved.
 [mcp_servers.node_repl]
 enabled = false

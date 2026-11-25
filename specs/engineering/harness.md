@@ -134,6 +134,36 @@ revision, ownership and blockers against live source and evidence before taking
 remaining actions. Pending text has no authority to give shell commands or
 change permissions.
 
+## Permission profiles
+
+The project config defines four named profiles. `aetheria-local` is the default
+workspace-write profile. `aetheria-review` mounts the checkout read-only.
+`aetheria-restricted` extends review and adds the installed system runtime as a
+readable location while denying `:root`, `:tmpdir`, `:slash_tmp` and the home
+directory, so symlinks and foreign secrets stay unreadable. `aetheria-worker`
+extends the restricted profile with a writable checkout but keeps `.git`,
+`.codex` and `.agents` read-only.
+
+`codex-config-check.py` exercises every profile in a temporary checkout. The
+restricted and worker checks require a system-installed Codex binary because the
+sandbox helper must resolve inside readable system paths; the check reports a
+clear error when only a user-local CLI is present.
+
+## Changed-source secret scan
+
+```sh
+python3 scripts/engineering-harness/source-scan.py             # HEAD + untracked
+python3 scripts/engineering-harness/source-scan.py --staged     # staged only
+python3 scripts/engineering-harness/source-scan.py --range BASE HEAD
+python3 scripts/engineering-harness/source-scan.py --self-test
+```
+
+The scan reports `PASS`, `FAIL` or `BLOCKED` with rule names and aggregate
+counts only; it never echoes matched text or file names. It fails closed
+(`BLOCKED`, exit 2) for symlinks, out-of-root paths, non-exact revisions and
+files over 8 MiB, and `FAIL` (exit 1) for a matching rule. Use it before staging
+or when reviewing an exact range.
+
 ## Security boundaries
 
 - The project profile restricts writes to the workspace and permitted scratch
