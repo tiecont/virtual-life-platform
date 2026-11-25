@@ -206,6 +206,23 @@ fn invalid_phase_configuration_rejected() {
 }
 
 #[test]
+fn room_threshold_is_authored_and_bounded() {
+    assert_eq!(rules().config().boss.required_room_points, 5000);
+    let mut value = fixture_json();
+    value["boss"]
+        .as_object_mut()
+        .unwrap()
+        .remove("requiredRoomPoints");
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    let mut value = fixture_json();
+    value["boss"]["requiredRoomPoints"] = serde_json::json!(1_000_001);
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    let mut value = fixture_json();
+    value["boss"]["requiredRoomPoints"] = serde_json::json!(0);
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_ok());
+}
+
+#[test]
 fn multiplier_weights_may_not_change_between_stages() {
     // A tile spawned early survives into later stages; changing its meaning
     // mid-match would make contribution depend on spawn time.

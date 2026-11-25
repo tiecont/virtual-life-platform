@@ -170,6 +170,10 @@ pub struct BossConfig {
     pub phase: PhaseConfig,
     pub attack_model: BossAttackModel,
     pub telegraph_turns: u8,
+    /// Achievement Points an account must hold to create a room for this Boss.
+    /// Authored and published; the engine carries it into the content digest but
+    /// does not spend it during combat.
+    pub required_room_points: u32,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -880,6 +884,7 @@ impl BossConfig {
             || self.crit_damage_bp < 10_000
             || self.telegraph_turns == 0
             || self.telegraph_turns > 8
+            || self.required_room_points > 1_000_000
             || elements[element.index()].element != self.element
         {
             return Err(ConfigError::Boss);
@@ -930,6 +935,7 @@ impl BossConfig {
             self.phase.to_value(),
             self.attack_model.to_value(),
             Value::Uint(u64::from(self.telegraph_turns)),
+            Value::Uint(u64::from(self.required_room_points)),
         ])
     }
 }

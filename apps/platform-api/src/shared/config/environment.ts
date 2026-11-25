@@ -52,6 +52,7 @@ const Env = z.object({
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
   LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_COOP_ROOMS:z.enum(['0','1']).default('0'),
   // Absolute path to the Rust runtime binary used as the authoritative
   // gameplay-configuration validator. Absence disables publication (fail closed).
   GAMEPLAY_CONFIG_VALIDATOR_BINARY:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
@@ -144,6 +145,7 @@ const Env = z.object({
   }
   if (env.NODE_ENV === 'production' && env.LOCAL_TRAVEL_FIXTURES === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_TRAVEL_FIXTURES'], message: 'Local travel fixtures cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_ADMISSION_UX==='1')ctx.addIssue({code:'custom',path:['LOCAL_ADMISSION_UX'],message:'Queue preview cannot run in production'});
+  if(env.NODE_ENV==='production'&&env.LOCAL_COOP_ROOMS==='1')ctx.addIssue({code:'custom',path:['LOCAL_COOP_ROOMS'],message:'Cooperative rooms are local/test only'});
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_PARK_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_PARK_WORLD'], message: 'Local park activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DEADLINE_WORLD==='1')ctx.addIssue({code:'custom',path:['LOCAL_DEADLINE_WORLD'],message:'Local Deadline activation cannot run in production'});

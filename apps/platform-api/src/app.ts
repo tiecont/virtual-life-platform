@@ -8,6 +8,8 @@ import {GameplayConfigStore} from './features/gameplay/modules/config/infrastruc
 import {EngineGameplayBundleValidator,type GameplayBundleValidator} from './features/gameplay/modules/config/infrastructure/engine-validator';
 import {OperatorGameplayConfig} from './features/gameplay/modules/config/application/operator-gameplay-config';
 import {registerGameplayConfig} from './features/gameplay/modules/config/presentation/operator-http';
+import {CoopRoomService} from './features/coop/modules/rooms/application/service';
+import {registerCoopRooms} from './features/coop/modules/rooms/presentation/http';
 import {OperatorEventCalendar} from './features/events/modules/calendar/application/operator-calendar';
 import {registerOperatorEvents} from './features/events/modules/calendar/presentation/operator-http';
 import {registerPrivacyRequests} from './features/identity/modules/privacy/presentation/privacy-http';
@@ -316,6 +318,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   if(artifactsEnabled){
     registerArtifacts(http,config,identity,artifacts,true,options.now);
     identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
+  }
+  if(config.LOCAL_COOP_ROOMS==='1'){
+    const coopRooms=new CoopRoomService(db);
+    registerCoopRooms(http,config,identity,coopRooms,options.now);
   }
   if(options.petArena8?.enabled){
     registerArena8(http,config,identity,new Arena8Service(

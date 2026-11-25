@@ -43,6 +43,16 @@
       ],
       "targetBoundary": "Rust owns the bundle schema, digest and rule execution; Nest stores and publishes only engine-validated bundles"
     },
+    "coop": {
+      "owner": "platform.coop",
+      "responsibility": "Durable cooperative rooms, Achievement Point eligibility and match allocation identity; no combat authority",
+      "currentPublicEntryFiles": [
+        "features/coop/modules/rooms/application/service",
+        "features/coop/modules/rooms/infrastructure/store",
+        "features/coop/modules/rooms/presentation/http"
+      ],
+      "targetBoundary": "Rust owns cooperative combat; Nest owns authorization, eligibility, allocation and settlement"
+    },
     "runtime-gateway": {
       "owner": "platform.identity",
       "responsibility": "Explicit opt-in fixed-scope ticket HTTP adapter; no membership allocator or game authority",
@@ -324,6 +334,7 @@
   "tableOwnerModules": {
     "platform.pet-content": "pets",
     "platform.gameplay-config": "gameplay",
+    "platform.coop": "coop",
     "native.game-storage": "db",
     "platform.operations": "operations",
     "platform.foundation": "db",

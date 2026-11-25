@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-candidate-v1",
-  "contentRevision": 1,
+  "contentRevision": 2,
   "board": {
     "spawnWeights": [
       {
@@ -464,7 +464,8 @@
       "defenseDivisor": 4,
       "minimumDamage": 40
     },
-    "telegraphTurns": 2
+    "telegraphTurns": 2,
+    "requiredRoomPoints": 5000
   },
   "skills": [
     {
