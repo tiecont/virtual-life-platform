@@ -48,9 +48,12 @@ Preserve owner changes and untracked files. Do not commit secrets or local IDE d
 ## Token-Saving CI Rule
 
 Never poll or loop on `gh pr checks` or GitHub Actions, including watch modes.
-After pushing and opening or updating the PR, check once that CI triggered and
-end the session. Before merging in a later session, confirm green CI for the
-current source revision.
+After a final delivery push, check once that CI triggered. A push, open PR or
+triggered CI run is not a completion boundary: continue all unblocked
+implementation and local verification while CI runs. Check CI again only after
+another final delivery push; before merging in a later session, confirm green CI
+for the current source revision. Never skip or weaken security, compatibility,
+branch-protection or release gates to make CI pass.
 
 Session report: task IDs, changed areas, actual checks, commit/PR, remaining risks,
 and next exact action. Do not imply background progress after ending a session.
