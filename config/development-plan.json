@@ -9708,9 +9708,9 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "87c4871518441b74f063191cee131bf6555894f7",
+        "sourceRevision": "1775335ca84822e9f69857f3e3183d13bf4e4f57",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The adapter authorizes commands only from the owner of the committed active seat. The real-process script drives four authenticated sockets over the real transport through hello, start, a full round-limit loss and terminal settlement: 24 committed turns, four loss rewards paid once, allocation SETTLED, match FINISHED and outbox delivered. Terminal persistence now accepts a non-null reducer settlement only when the domain exposes a bounded Completion::Proposal.",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The adapter authorizes commands only from the owner of the committed active seat. The real-process script drives four authenticated sockets over the real transport through hello, start, a graceful API/runtime restart, recovery of the same ACTIVE allocation, four fresh tickets resumed at version 5, a full round-limit loss and terminal settlement: 24 committed turns, four loss rewards paid once, allocation SETTLED, match FINISHED and outbox delivered. Terminal persistence now accepts a non-null reducer settlement only when the domain exposes a bounded Completion::Proposal.",
         "commands": [
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
@@ -9719,7 +9719,7 @@
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
         ],
-        "remaining": "Reconnect/resume after a real process restart, STARTING-allocation reconciliation and packaged-player/four-human evidence remain. Unity renders the committed projection but has no scene UI yet."
+        "remaining": "STARTING-allocation reconciliation and packaged-player/four-human evidence remain; Unity renders the committed projection but has no cooperative scene UI yet."
       }
     },
     {
