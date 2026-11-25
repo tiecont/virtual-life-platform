@@ -15,6 +15,7 @@ class MemoryStore implements CoopMatchStorePort{
  readonly rows=new Map<string,CoopAllocationRecord>();
  async findByRoom(roomId:string){return [...this.rows.values()].find(row=>row.roomId===roomId);}
  async listRecoverable(){return [...this.rows.values()].filter(row=>row.status==='ACTIVE');}
+ async listStarting(){return [...this.rows.values()].filter(row=>row.status==='STARTING');}
  async recovered(matchId:string,generation:number){
   const row=this.rows.get(matchId);if(!row||row.status!=='ACTIVE')throw new Error('recovery conflict');
   this.rows.set(matchId,{...row,generation});
@@ -142,6 +143,14 @@ describe('cooperative match provisioner',()=>{
   await expect(provisioner.recover()).resolves.toEqual({recovered:0,failed:1});
   expect(store.rows.get(match)!.status).toBe('ACTIVE');
   await expect(provisioner.admission(ROOM,'cred-'+ACCOUNTS[0])).rejects.toMatchObject({status:503});
+ });
+ it('reconciles a STARTING allocation as failed on startup',async()=>{
+  const store=new MemoryStore();
+  const match='77777777-7777-4777-8777-777777777777';
+  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'STARTING',generation:0});
+  const {provisioner}=fixture({store});
+  await expect(provisioner.recover()).resolves.toEqual({recovered:0,failed:1});
+  expect(store.rows.get(match)!.status).toBe('FAILED');
  });
  it('stops the runtime but leaves the allocation active for recovery',async()=>{
   const {provisioner,runtime,admission,store}=fixture();

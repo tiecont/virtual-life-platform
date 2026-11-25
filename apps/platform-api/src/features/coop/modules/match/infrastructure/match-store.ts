@@ -41,6 +41,10 @@ export class CoopMatchStore implements CoopMatchStorePort{
   const rows=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE status='ACTIVE' ORDER BY created_at`)).rows;
   return Object.freeze(rows.map(map));
  }
+ async listStarting(){
+  const rows=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE status='STARTING' ORDER BY created_at`)).rows;
+  return Object.freeze(rows.map(map));
+ }
  async recovered(matchId:string,generation:number){
   const result=await this.db.query("UPDATE coop_allocations SET generation=$2,updated_at=clock_timestamp() WHERE match_id=$1 AND status='ACTIVE'",[matchId,generation]);
   if(result.rowCount!==1)throw new Error('Cooperative allocation recovery conflict');

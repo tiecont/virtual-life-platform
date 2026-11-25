@@ -18,6 +18,7 @@ export type CoopAllocationRecord=Readonly<{
 export type CoopMatchStorePort=Readonly<{
  findByRoom(roomId:string):Promise<CoopAllocationRecord|undefined>;
  listRecoverable():Promise<readonly CoopAllocationRecord[]>;
+ listStarting():Promise<readonly CoopAllocationRecord[]>;
  create(record:CoopAllocationRecord):Promise<void>;
  activate(matchId:string,generation:number):Promise<void>;
  recovered(matchId:string,generation:number):Promise<void>;
@@ -234,6 +235,14 @@ export class CoopMatchProvisioner{
     // Never mark a durable ACTIVE allocation FAILED merely because recovery
     // could not reacquire it; admission stays closed until an operator resolves it.
    }
+  }
+  const starting=await this.options.store.listStarting().catch(()=>[] as readonly CoopAllocationRecord[]);
+  for(const record of starting){
+   // A STARTING allocation never activated, so no ticket or command could have
+   // reached the runtime. Startup reconciliation marks it FAILED instead of
+   // leaving it ambiguous forever.
+   await this.options.store.fail(record.matchId).catch(()=>{});
+   failed+=1;
   }
   return Object.freeze({recovered,failed});
  }
