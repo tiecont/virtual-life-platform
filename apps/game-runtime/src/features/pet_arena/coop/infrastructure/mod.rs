@@ -56,11 +56,42 @@ fn hex(bytes: &[u8]) -> String {
 impl Game for Rules {
     fn completion(&self, state: &CoopState) -> aetheria_persistence::Result<Completion> {
         self.verify(state).map_err(|_| Error::Integrity)?;
-        if state.phase.terminal() {
-            Ok(Completion::Game)
-        } else {
-            Err(Error::Invalid)
+        if !state.phase.terminal() {
+            return Err(Error::Invalid);
         }
+        let ruleset = self.engine().ruleset();
+        let outcome = match state.phase {
+            CoopPhase::Won => "won",
+            CoopPhase::Lost => "lost",
+            CoopPhase::Ready | CoopPhase::Playing => return Err(Error::Invalid),
+        };
+        let participants = state
+            .participants
+            .iter()
+            .map(|participant| {
+                serde_json::json!({
+                    "account": participant.account,
+                    "alive": participant.alive,
+                    "damage": participant.contribution_damage,
+                    "healing": participant.contribution_healing,
+                    "petId": participant.pet_id,
+                    "shielding": participant.contribution_shielding,
+                })
+            })
+            .collect::<Vec<_>>();
+        // Proposal keys serialize in sorted (BTreeMap) order; the platform
+        // recomputes this canonical string for its hash check.
+        Ok(Completion::Proposal(serde_json::json!({
+            "configDigest": hex(&state.config_digest),
+            "contentHash": hex(&ruleset.content_hash),
+            "kind": "coop.completed.v1",
+            "outcome": outcome,
+            "participants": participants,
+            "round": state.round_index,
+            "ruleset": ruleset.id,
+            "rulesetVersion": ruleset.version,
+            "turn": state.turn_index,
+        })))
     }
 
     fn encode(&self, state: &CoopState) -> aetheria_persistence::Result<Vec<u8>> {

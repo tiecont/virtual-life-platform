@@ -12,6 +12,8 @@
     "coop_room_requests": "platform.coop",
     "coop_room_events": "platform.coop",
     "coop_allocations": "platform.coop",
+    "coop_settlement_inbox": "platform.coop",
+    "coop_settlement_rewards": "platform.coop",
     "pet_content_versions": "platform.pet-content",
     "pet_content_selection": "platform.pet-content",
     "pet_content_transitions": "platform.pet-content",

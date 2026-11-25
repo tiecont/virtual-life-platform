@@ -223,6 +223,19 @@ fn room_threshold_is_authored_and_bounded() {
 }
 
 #[test]
+fn reward_configuration_is_authored_and_bounded() {
+    let rules = rules();
+    assert_eq!(rules.config().rewards.clear_achievement_points, 250);
+    assert_eq!(rules.config().rewards.clear_coins, 120);
+    let mut value = fixture_json();
+    value["rewards"]["clearExp"] = serde_json::json!(1_000_001);
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    let mut value = fixture_json();
+    value.as_object_mut().unwrap().remove("rewards");
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+}
+
+#[test]
 fn multiplier_weights_may_not_change_between_stages() {
     // A tile spawned early survives into later stages; changing its meaning
     // mid-match would make contribution depend on spawn time.

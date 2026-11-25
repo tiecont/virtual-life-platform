@@ -41,6 +41,50 @@ pub struct CoopConfig {
     pub boss: BossConfig,
     pub skills: Vec<SkillConfig>,
     pub pets: Vec<PetConfig>,
+    pub rewards: RewardsConfig,
+}
+
+/// Settlement rewards authored per clear and per loss. The engine validates and
+/// binds these values; Nest pays them idempotently from the committed proposal.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RewardsConfig {
+    pub clear_achievement_points: u32,
+    pub clear_coins: u32,
+    pub clear_exp: u32,
+    pub loss_achievement_points: u32,
+    pub loss_coins: u32,
+    pub loss_exp: u32,
+}
+
+impl RewardsConfig {
+    fn validate(&self) -> Result<(), ConfigError> {
+        if [
+            self.clear_achievement_points,
+            self.clear_coins,
+            self.clear_exp,
+            self.loss_achievement_points,
+            self.loss_coins,
+            self.loss_exp,
+        ]
+        .iter()
+        .any(|value| *value > 1_000_000)
+        {
+            return Err(ConfigError::Rewards);
+        }
+        Ok(())
+    }
+
+    fn to_value(&self) -> Value {
+        list([
+            Value::Uint(u64::from(self.clear_achievement_points)),
+            Value::Uint(u64::from(self.clear_coins)),
+            Value::Uint(u64::from(self.clear_exp)),
+            Value::Uint(u64::from(self.loss_achievement_points)),
+            Value::Uint(u64::from(self.loss_coins)),
+            Value::Uint(u64::from(self.loss_exp)),
+        ])
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -305,6 +349,7 @@ pub enum ConfigError {
     PetBudget,
     MissingReference,
     Arithmetic,
+    Rewards,
 }
 
 impl ConfigError {
@@ -331,6 +376,7 @@ impl ConfigError {
             Self::PetBudget => "gameplay Pet stats exceed the elemental budget",
             Self::MissingReference => "gameplay configuration references a missing skill",
             Self::Arithmetic => "gameplay configuration numeric bounds are unsafe",
+            Self::Rewards => "gameplay reward configuration is outside the supported range",
         }
     }
 }
@@ -379,6 +425,7 @@ impl CoopConfig {
         self.boss.validate(elements)?;
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
+        self.rewards.validate()?;
         Ok(())
     }
 
@@ -403,6 +450,7 @@ impl CoopConfig {
             self.boss.to_value(),
             Value::List(self.skills.iter().map(SkillConfig::to_value).collect()),
             Value::List(self.pets.iter().map(PetConfig::to_value).collect()),
+            self.rewards.to_value(),
         ])
     }
 

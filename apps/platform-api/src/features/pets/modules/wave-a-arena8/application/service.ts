@@ -4,6 +4,7 @@ import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
+import {levelIncrement} from '../../wave1/domain/progression';
 import {
   assertUuid,conflict,encounterPairComplete,forbidden,
   readOwnedArena8Allocation,type AllocateInput,
@@ -37,17 +38,6 @@ type Settlement={
 const notFound=(message:string)=>new DomainError('NOT_FOUND',404,message);
 const runtime=(message:string)=>new DomainError('WORLD_UNAVAILABLE',503,message);
 const fingerprint=(value:string)=>createHash('sha256').update(value).digest('hex');
-
-function levelIncrement(level:number,exp:number){
-  let nextLevel=level;let nextExp=exp;
-  while(nextLevel<60){
-    const threshold=25+nextLevel*5;
-    if(nextExp<threshold)break;
-    nextExp-=threshold;nextLevel+=1;
-  }
-  if(nextLevel===60)nextExp=0;
-  return {level:nextLevel,exp:nextExp};
-}
 
 // Authenticated local Arena8 allocation/settlement coordinator. It is default-off
 // and only talks to the loopback supervisor with its private bearer token.

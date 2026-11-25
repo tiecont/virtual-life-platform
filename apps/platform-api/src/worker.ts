@@ -13,6 +13,7 @@ import {ProgressionLedger} from './features/progression/modules/rewards/applicat
 import {IncidentPolicy} from './features/safety/modules/incidents/application/incidents';
 import {SanctionPolicy} from './features/safety/modules/sanctions/application/sanctions';
 import {RuntimeLifecycle} from './features/operations/modules/lifecycle/application/runtime-lifecycle';
+import {CoopSettlement} from './features/coop/modules/settlement/application/service';
 
 // Independent composition root. No HTTP/socket, session secret or RoomAuthority.
 export async function runDurableWorker(env = process.env, args = process.argv.slice(2)) {
@@ -28,6 +29,7 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   const sinks = policy?.enabled ? [new ProgressionLedger(eligible, policy).hospitalitySink()] : [];
   const native = nativeRewardPolicy ? new NativeSettlements(pool, nativeRewardPolicy, eligible) : undefined;
   const outbox = new HospitalityOutbox(pool, {lockAccounts}, sinks, Date.now, config.WORKER_RETRY_LIMIT);
+  const coop = new CoopSettlement(pool);
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {}, closeApp: () => outbox.close(), closePool: () => pool.end()});
   let failed = false, signalled = false, resolveStop!: () => void;
   const stopped = new Promise<void>(resolve => {resolveStop = resolve;});
@@ -47,7 +49,7 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   const unavailable = () => {failed = true; console.error('Durable worker batch unavailable');};
   const batch = async () => {
     await assertSchema();
-    const results = await Promise.allSettled([outbox.drain(), native?.drain()]);
+    const results = await Promise.allSettled([outbox.drain(), native?.drain(), coop.drain()]);
     if (results.some(result => result.status === 'rejected')) throw Error('Durable worker consumer unavailable');
     console.log(JSON.stringify({event: 'durable-worker.batch-complete', sampledAt: new Date().toISOString()}));
   };

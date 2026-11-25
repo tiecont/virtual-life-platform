@@ -166,5 +166,14 @@ fn only_a_terminal_state_completes_the_match() {
     assert!(matches!(rules.completion(&state), Err(Error::Invalid)));
     let mut won = state.clone();
     won.phase = CoopPhase::Won;
-    assert!(matches!(rules.completion(&won), Ok(Completion::Game)));
+    match rules.completion(&won) {
+        Ok(Completion::Proposal(value)) => {
+            assert_eq!(value["kind"], "coop.completed.v1");
+            assert_eq!(value["outcome"], "won");
+            assert_eq!(value["ruleset"], "arena8-coop-pve");
+            assert_eq!(value["participants"].as_array().map(Vec::len), Some(4));
+            assert_eq!(value["participants"][0]["account"], "account-icarus");
+        }
+        _ => panic!("unexpected completion"),
+    }
 }

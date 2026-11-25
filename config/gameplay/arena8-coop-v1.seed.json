@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 2,
+  "contentRevision": 3,
   "board": {
     "spawnWeights": [
       {
@@ -803,5 +803,13 @@
       "ultimate": "terran-continental-slam",
       "guard": "terran-guard"
     }
-  ]
+  ],
+  "rewards": {
+    "clearAchievementPoints": 250,
+    "clearCoins": 120,
+    "clearExp": 90,
+    "lossAchievementPoints": 25,
+    "lossCoins": 0,
+    "lossExp": 0
+  }
 }
