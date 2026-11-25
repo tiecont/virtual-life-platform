@@ -170,3 +170,40 @@ combat effect. `hp`, `attack` and `defense` are active and bounded.
 Both a win and a loss commit a terminal checkpoint and the existing
 `pet-arena.completed.v1` completion proposal, so settlement reuses the existing
 nonmonetary reward worker path.
+
+## `arena8-coop-pve`: configuration-bound four-seat cooperative ruleset
+
+`arena8-coop-pve` runs the cooperative reducer from an engine-validated bundle.
+Publication is authorized by `aetheria-game-runtime --check-gameplay-config
+<bundle>`, which prints the canonical configuration digest and the adapter
+content hash. The runtime never carries fallback balance values: a missing,
+malformed or incompatible bundle refuses to start. The allocator writes the
+published bundle to a private file and starts the runtime with
+`AETHERIA_GAMEPLAY_BUNDLE=<absolute file>` in addition to the existing
+`AETHERIA_GAMEPLAY_CONFIG`, `AETHERIA_GAME_DATABASE_URL` and TLS settings.
+
+The allocation is a server-authored four-seat roster inside the settings file:
+
+```json
+{
+  "ruleset": "arena8-coop-pve",
+  "coop": {
+    "seats": [
+      {"account": "<account UUID>", "petId": "icarus", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "coralline", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "volt", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "terran", "level": 1, "artifactPowerPm": 1000}
+    ]
+  }
+}
+```
+
+Every seat must be distinct and authorized by the allocator; `pet`, `stage` and
+`arena8` are rejected for this ruleset. Each of the four authenticated sessions
+is projected its own `you` seat and the shared committed state. Intents use
+`GameIntent.kind = arena8-coop.intent.v1` with
+`{"epoch":1,"action":{"kind":"start"}}`, `swap` (`first`, `second`), `guard`,
+`skill`, `signature`, `ultimate` or `fireZone`; unknown fields are rejected.
+`arena8-coop.view.v1` with an empty payload reads the caller's projection.
+Durable restore revalidates the configuration digest, the four seat identities
+and the committed state; a later published bundle never resumes an old match.

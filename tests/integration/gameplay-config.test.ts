@@ -15,7 +15,7 @@ const bundle=(overrides:Record<string,unknown>={})=>({schemaVersion:1,engineCapa
 // digest, capability) belongs to the engine; the lifecycle is what is tested.
 const engine:GameplayBundleValidator={async validate(_ruleset,input){
  if((input as {reject?:boolean}).reject)throw new InvalidGameplayBundleError();
- return {digest:createHash('sha256').update(JSON.stringify(input)).digest('hex'),engineCapability:'arena8-coop-v1'};
+ return {digest:createHash('sha256').update(JSON.stringify(input)).digest('hex'),engineCapability:'arena8-coop-v1',contentHash:createHash('sha256').update('content:'+JSON.stringify(input)).digest('hex')};
 }};
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,key:string,config:ReturnType<typeof readConfig>;
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});

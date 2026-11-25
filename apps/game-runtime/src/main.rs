@@ -22,12 +22,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let digest = rules.digest();
-        println!(
-            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\"}}",
-            digest
+        let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
+        let hex = |bytes: &[u8]| {
+            bytes
                 .iter()
                 .map(|byte| format!("{byte:02x}"))
                 .collect::<String>()
+        };
+        println!(
+            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\",\"contentHash\":\"{}\"}}",
+            hex(&digest),
+            hex(&content)
         );
         return Ok(());
     }
@@ -64,9 +69,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map_err(|_| "Native gameplay configuration required")?;
         let database = std::env::var("AETHERIA_GAME_DATABASE_URL")
             .map_err(|_| "Native game database configuration required")?;
+        let bundle = std::env::var("AETHERIA_GAMEPLAY_BUNDLE")
+            .ok()
+            .map(std::fs::read)
+            .transpose()?;
         let runtime =
             aetheria_game_runtime::features::runtime::infrastructure::NativeRuntime::start(
-                &file, &database,
+                &file, &database, bundle,
             )
             .await?;
         let listener = tokio::net::TcpListener::bind(config.bind).await?;
