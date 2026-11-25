@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+// GitHub CLI replay fixture. This program has no network or credential access.
+const expected = ['pr', 'view', '--repo', 'tiecont/virtual-life-platform', '42', '--json', 'number,headRefOid,state,statusCheckRollup'];
+if (JSON.stringify(process.argv.slice(2)) !== JSON.stringify(expected)) {
+  console.error('Unexpected GitHub fixture arguments');
+  process.exit(64);
+}
+
+const jobs = [
+  ...['core', 'images', 'quality', 'rust/runtime', 'lint', 'types'].map(name => ['Quality', name]),
+  ...Array.from({ length: 4 }, (_, index) => ['Quality', `integration (${index + 1})`]),
+  ...['identity', 'safety', 'arena', 'places'].map(name => ['Quality', `browser (${name})`]),
+];
+const statusCheckRollup = jobs.map(([workflowName, name], index) => ({
+  __typename: 'CheckRun',
+  name,
+  status: name === 'images' ? 'QUEUED' : 'COMPLETED',
+  conclusion: name === 'images' ? '' : name === 'quality' ? 'FAILURE' : 'SUCCESS',
+  workflowName,
+  startedAt: '2026-11-24T08:00:00Z',
+  completedAt: name === 'images' ? '0001-01-01T00:00:00Z' : '2026-11-24T08:04:00Z',
+  detailsUrl: `https://github.com/tiecont/virtual-life-platform/actions/runs/1234567/job/${300001 + index}`,
+}));
+console.log(JSON.stringify({ number: 42, headRefOid: 'a'.repeat(40), state: 'OPEN', statusCheckRollup }));

@@ -32,6 +32,12 @@ launcher prints the path to a private local login file. Closing the player
 removes those services and the disposable match. See the Unity README for build
 prerequisites and controls.
 
+## Engineering Harness
+
+Use the [engineering harness runbook](specs/engineering/harness.md) to start a
+Codex session, run scoped verification workflows, or recover a task after a
+restart. The workflow and recovery CLIs also run directly under other harnesses.
+
 ## Local UI Preview
 
 Run the existing server runtimes together on an isolated local database:
