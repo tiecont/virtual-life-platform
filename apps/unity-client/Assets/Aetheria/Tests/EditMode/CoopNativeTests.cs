@@ -69,8 +69,32 @@ namespace Aetheria.Tests
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 64));
         }
 
+        [Test]
+        public void PresenterOffersActionsOnlyToTheActiveSeat()
+        {
+            var active = Coop(version: 3, phase: "playing", activeSeat: 0, you: 0);
+            Assert.That(CoopNativePresenter.CanAct(active), Is.True);
+            CollectionAssert.AreEqual(new[] { "guard", "skill", "signature", "ultimate" },
+                CoopNativePresenter.AvailableActions(active));
+            var waiting = Coop(version: 3, phase: "playing", activeSeat: 1, you: 0);
+            Assert.That(CoopNativePresenter.CanAct(waiting), Is.False);
+            Assert.That(CoopNativePresenter.AvailableActions(waiting), Is.Empty);
+        }
+
+        [Test]
+        public void PresenterHonoursCommittedCooldownsAndLabels()
+        {
+            var view = Coop(version: 3, phase: "playing", activeSeat: 0, you: 0, cooldowns: new[] { 0, 1, 0, 0, 0 });
+            CollectionAssert.AreEqual(new[] { "guard", "signature", "ultimate" },
+                CoopNativePresenter.AvailableActions(view));
+            StringAssert.Contains("phase 1", CoopNativePresenter.BossLabel(view));
+            StringAssert.Contains("Round 1", CoopNativePresenter.TurnLabel(view));
+            StringAssert.Contains("icarus", CoopNativePresenter.SeatLabel(view, 0));
+        }
+
         private static CoopNativeView Coop(ulong version = 0, string phase = "ready", string reward = "null",
-            int bossHealth = 5000, int you = 0, int seats = 4, int board = 64, string extra = "")
+            int bossHealth = 5000, int you = 0, int seats = 4, int board = 64, string extra = "",
+            int activeSeat = -1, int[] cooldowns = null)
         {
             var boardJson = new StringBuilder();
             for (var index = 0; index < board; index += 1)
@@ -79,6 +103,7 @@ namespace Aetheria.Tests
                 boardJson.Append(index == 0 ? "{\"element\":\"fire\",\"multiplier\":2}" : index == 1 ? "{\"element\":\"water\",\"multiplier\":1}" : "null");
             }
             var seatsJson = new StringBuilder();
+            var cooldownJson = cooldowns == null ? "[0,0,0,0,0]" : "[" + string.Join(",", cooldowns) + "]";
             var pets = new[] { "icarus", "coralline", "volt", "terran" };
             for (var index = 0; index < seats; index += 1)
             {
@@ -87,13 +112,13 @@ namespace Aetheria.Tests
                     .Append(",\"petId\":\"").Append(pets[index]).Append("\"")
                     .Append(",\"level\":1,\"hp\":400,\"maxHp\":400,\"attack\":40,\"defense\":4")
                     .Append(",\"critRateBp\":500,\"critDamageBp\":15000,\"mana\":0,\"rage\":0")
-                    .Append(",\"shield\":0,\"shieldTurns\":0,\"cooldowns\":[0,0,0,0,0]")
+                    .Append(",\"shield\":0,\"shieldTurns\":0,\"cooldowns\":").Append(cooldownJson)
                     .Append(",\"statuses\":[],\"contribution\":{\"damage\":0,\"healing\":0,\"shielding\":0}")
                     .Append(",\"alive\":true}");
             }
             var json = "{\"state\":{" + extra + "\"schemaVersion\":1,"
                 + "\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":1,\"contentHash\":\"" + Hash + "\",\"configDigest\":\"" + Digest + "\"},"
-                + "\"you\":" + you + ",\"phase\":\"" + phase + "\",\"activeSeat\":" + you + ","
+                + "\"you\":" + you + ",\"phase\":\"" + phase + "\",\"activeSeat\":" + (activeSeat < 0 ? you : activeSeat) + ","
                 + "\"turn\":0,\"round\":1,"
                 + "\"boss\":{\"hp\":" + bossHealth + ",\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false},"
                 + "\"board\":[" + boardJson + "],"
