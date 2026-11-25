@@ -115,7 +115,9 @@ jobs:
           --health-interval 2s --health-timeout 3s --health-retries 30
     env:
       TEST_DATABASE_URL: postgresql://aetheria_soulbound_test:ci_ephemeral_only@127.0.0.1:5432/aetheria_soulbound_test
-      VITEST_MAX_WORKERS: '4'
+      # Shard 4 exhausted PostgreSQL's lock table ("out of shared memory") with
+      # four workers. Two keeps the same tests below that infrastructure limit.
+      VITEST_MAX_WORKERS: '2'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
