@@ -98,10 +98,11 @@
           "cross-account view/settle denied 403; changed duplicate command denied 409"
         ],
         "localEvidence": {
+          "sourceRevision": "9dfddb6",
           "facts": "artifacts/m3-arena8/facts.json",
           "resumeFacts": "artifacts/m3-arena8-resume/resume-facts.json",
           "player": "apps/unity-client/Builds/Linux/Aetheria",
-          "summary": "regular/boss victory; artifactEquipped=true; waterAllocated=true; before=180/18/10 after=218/23/12; coins=8400; boardTiles=64"
+          "summary": "regular/boss victory; artifactEquipped=true; same-level effective 180/18/10 -> 205/22/11 after equip; Water allocation 218/23/12 after level growth; coins=8400; boardTiles=64"
         },
         "notMet": [
           "Native Host/journal/admission/ticket path is not used; the supervisor is an isolated authenticated local bridge",
