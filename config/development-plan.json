@@ -9622,7 +9622,7 @@
             "exitCode": 0
           }
         ],
-        "remaining": "PostgreSQL publication, native four-seat runtime, Admin editors, rooms, achievement ledger, settlement, Unity presentation."
+        "remaining": "Rooms, achievement ledger, cooperative settlement and Unity presentation remain; PostgreSQL publication and the native four-seat ruleset now exist behind their own tasks."
       }
     },
     {
@@ -9642,8 +9642,20 @@
         "Published versions are immutable, rollback selects a compatible published version without rewriting history, and versions referenced by persisted matches cannot be deleted",
         "Publication validates the bundle with the engine validator and binds the engine digest into the snapshot; missing or invalid configuration fails closed"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "5e9de28cca2e6d607e5ff1868b0ad9e45459370a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Migration 0059 adds immutable-identity gameplay configuration versions, atomic active selection, an immutable audit journal and match pins. The gameplay/config module adds an engine-validated draft lifecycle, optimistic revisions, idempotent replay, atomic publication, rollback and the reviewed seed installation path. The Admin console exposes the operator HTTP routes.",
+        "commands": [
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.unit.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Allocation does not yet pin the published version, no dependency check blocks retiring a referenced version operationally, and Pet, progression, economy and campaign configuration domains are not modeled yet."
+      }
     },
     {
       "id": "VL-192",
@@ -9662,8 +9674,18 @@
         "A newly allocated native match uses the published values without rebuilding Rust or Unity, while an already active match keeps its original configuration",
         "Administrative operations stay behind the existing operator authentication and authorization"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "5e9de28cca2e6d607e5ff1868b0ad9e45459370a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The existing operator console gains a Gameplay configuration workspace with typed party/board, Boss phase, elemental profile, multiplier schedule and skill editors, raw-bundle editing, engine validation, publication, rollback and audit views.",
+        "commands": [
+          { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 },
+          { "command": "pnpm exec vitest run apps/admin-web/server/proxy.unit.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Draft comparison against the published version, the Pet/progression/reward/campaign editors and Admin simulation (VL-197) are not implemented. No browser-level operator acceptance has run."
+      }
     },
     {
       "id": "VL-193",
@@ -9683,8 +9705,19 @@
         "Out-of-turn, cross-account and unauthorized-Ability commands are rejected without state change",
         "Restart restores the match, participants, board, phase, configuration digest and RNG cursor, and does not mark recoverable matches FAILED"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "5e9de28cca2e6d607e5ff1868b0ad9e45459370a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The runtime now serves arena8-coop-pve from a published bundle: four server-authored seats, per-seat membership and projection, strict intents, durable restore that revalidates the configuration digest and allocation, and a content hash in --check-gameplay-config.",
+        "commands": [
+          { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "cargo fmt --all -- --check", "exitCode": 0 }
+        ],
+        "remaining": "Nest does not allocate or provision a cooperative match, issue four scoped tickets or write the bundle to the runtime; no packaged four-account proof and no recovery drill have run."
+      }
     },
     {
       "id": "VL-194",
