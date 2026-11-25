@@ -168,7 +168,8 @@ export class CoopMatchProvisioner{
    if(generation>0)await this.options.admission.configure(scope,generation,false,0).catch(()=>{});
    await this.options.store.fail(matchId).catch(()=>{});
    if(error instanceof DomainError)throw error;
-   throw unavailable();
+   const detail=process.env.NODE_ENV!=='production'&&process.env.AETHERIA_COOP_RUNTIME_DIAGNOSTICS==='1'&&error instanceof Error?' ['+error.message.replace(/\\s+/g,' ').slice(-800)+']':'';
+   throw new DomainError('NOT_AVAILABLE',503,'Cooperative native runtime is unavailable'+detail);
   }
  }
 

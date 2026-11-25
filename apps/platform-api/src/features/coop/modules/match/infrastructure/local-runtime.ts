@@ -77,14 +77,15 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
   await access(this.options.binary,constants.X_OK).catch(()=>{throw new Error('Cooperative native runtime binary unavailable');});
   await access(this.options.caFile,constants.R_OK).catch(()=>{throw new Error('Cooperative native runtime CA unavailable');});
   const engineHash=createHash('sha256').update(await readFile(this.options.binary)).digest('hex');
+  const hexBytes=(value:string)=>Array.from(Buffer.from(value,'hex'));
   const settings={
    schemaVersion:1,ruleset:'arena8-coop-pve',movement:false,
    world:request.worldId,boot:request.bootId,matchId:request.matchId,player:request.seats[0]!.account,
    publicKeys:{[this.options.keyId]:this.options.publicKey},
    caFile:this.options.caFile,role:this.options.role,origin:this.options.origin,
    activeStorageKey:this.options.storageKeyId,
-   storageKeys:{[this.options.storageKeyId]:this.options.storageKey},
-   engineHash,
+   storageKeys:{[this.options.storageKeyId]:hexBytes(this.options.storageKey)},
+   engineHash:hexBytes(engineHash),
    coop:{seats:nativeSeats(request.seats)},
   };
   const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-native-'));
@@ -102,7 +103,8 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    },
    stdio:['ignore','pipe','pipe'],
   });
-  child.stderr?.on('data',()=>{});
+  let diagnostics='';
+  child.stderr?.on('data',chunk=>{diagnostics=(diagnostics+String(chunk)).slice(-4096);});
   let port:number;
   try{
    port=await waitForListen(child,LISTEN_TIMEOUT_MS);
@@ -111,7 +113,8 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    child.kill('SIGKILL');
    await Promise.race([new Promise<void>(resolve=>child.once('exit',()=>resolve())),delay(1000)]);
    await rm(directory,{recursive:true,force:true});
-   throw new Error('Cooperative native runtime unavailable');
+   const detail=process.env.NODE_ENV!=='production'&&process.env.AETHERIA_COOP_RUNTIME_DIAGNOSTICS==='1'?' ['+diagnostics.replace(/\\s+/g,' ').slice(-800)+']':'';
+   throw new Error('Cooperative native runtime unavailable'+detail);
   }
   // The committed runtime keeps the validated configuration in memory; the
   // private candidate files are only needed for this startup.
