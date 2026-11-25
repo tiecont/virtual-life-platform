@@ -12,6 +12,7 @@ const {createApp}=require('../apps/platform-api/src/app.ts');
 const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
 const {installGameplayConfig}=require('../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config.ts');
 const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
+const {CoopSettlement}=require('../apps/platform-api/src/features/coop/modules/settlement/application/service.ts');
 const {decodeServer}=require('../packages/native-protocol/dist/index.js');
 const socketRequire=createRequire(require.resolve('socket.io-client/package.json'));
 const WebSocket=createRequire(socketRequire.resolve('engine.io-client/package.json'))('ws');
@@ -49,6 +50,11 @@ try{
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
  const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-v1.seed.json','utf8'));
+ bundle.contentRevision=4;
+ bundle.boss.attackModel.baseDamage=1;
+ bundle.boss.attackModel.perRoundDamage=0;
+ bundle.boss.attackModel.minimumDamage=1;
+ bundle.party.maxRounds=6;
  await installGameplayConfig(pool,'arena8-coop-pve',bundle,new EngineGameplayBundleValidator(binary),'system:process-test');
  const config=readConfig({
   NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('base64url'),
@@ -149,6 +155,7 @@ try{
   version=Number(first.canonicalVersion);
   const firstView=JSON.parse(Buffer.from(first.body.value.authorizedProjection).toString('utf8'));
   assert.equal(firstView.state.activeSeat,1);
+  let state=firstView.state;
   for(const seat of [1,2,3]){
    const receipt=await intent(connections[seat],version,'{"epoch":1,"action":{"kind":"guard"}}');
    assert.equal(receipt.body.case,'receipt');
@@ -157,18 +164,43 @@ try{
    assert.equal(view.state.you,seat);
    assert.equal(view.state.participants.length,4);
    assert.equal(view.state.board.length,64);
+   state=view.state;
   }
-  assert.equal(version,5);
-  facts.scenarios.push('four-seats-committed-five-shared-board-turns-on-one-boss');
-  assert.equal((await pool.query('SELECT state_version FROM game_native_matches')).rows[0].state_version,'5');
-  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,5);
-  facts.scenarios.push('journal-recorded-five-durable-receipts-on-the-same-match');
+  let turns=4;
+  while(!['won','lost'].includes(state.phase)&&turns<60){
+   const seat=state.activeSeat;
+   const receipt=await intent(connections[seat],version,JSON.stringify({epoch:1,action:{kind:'guard'}}));
+   assert.equal(receipt.body.case,'receipt');
+   version=Number(receipt.canonicalVersion);
+   state=JSON.parse(Buffer.from(receipt.body.value.authorizedProjection).toString('utf8')).state;
+   turns+=1;
+  }
+  facts.terminal=state.phase;
+  assert.ok(['won','lost'].includes(state.phase),'match did not reach a terminal phase');
+  assert.equal(version,turns+1);
+  facts.scenarios.push('four-seats-committed-'+turns+'-shared-board-turns-to-terminal-'+state.phase);
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches')).rows[0].state_version,String(version));
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,version);
+  facts.scenarios.push('journal-recorded-one-durable-receipt-per-committed-turn');
  }finally{
   for(const connection of connections)try{connection.ws.close();}catch{/* The socket is already closed after a rejection. */}
  }
  const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches")).rows[0];
- assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.status,'ACTIVE');assert.equal(match.content_hash,allocation.content_hash);
- facts.scenarios.push('runtime-created-the-match-with-the-engine-content-hash-before-any-client-command');
+ assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.content_hash,allocation.content_hash);
+ assert.equal(match.status,'SETTLING');
+ await new CoopSettlement(pool).drain();
+ const inbox=(await pool.query('SELECT outcome FROM coop_settlement_inbox WHERE match_id=$1',[allocation.match_id])).rows[0];
+ assert.equal(inbox.outcome,'lost');
+ const rewards=(await pool.query('SELECT achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id IN (SELECT settlement_id FROM coop_settlement_inbox WHERE match_id=$1)',[allocation.match_id])).rows;
+ assert.equal(rewards.length,4);
+ for(const row of rewards){assert.equal(row.achievement_points,25);assert.equal(row.coins,0);assert.equal(row.exp,0);}
+ const settled=(await pool.query('SELECT status FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
+ assert.equal(settled.status,'SETTLED');
+ const finished=(await pool.query('SELECT status FROM game_native_matches WHERE id=$1',[allocation.match_id])).rows[0];
+ assert.equal(finished.status,'FINISHED');
+ const delivered=(await pool.query('SELECT count(*)::int AS n FROM game_native_outbox WHERE match_id=$1 AND delivered_at IS NOT NULL',[allocation.match_id])).rows[0];
+ assert.equal(delivered.n,1);
+ facts.scenarios.push('worker-settlement-paid-all-four-seats-once-and-finished-the-match');
  facts.result='PASS';facts.matchId=allocation.match_id;facts.worldId=allocation.world_id;
 }catch(error){
  facts.failure={name:error.name,message:String(error.message).slice(0,500)};

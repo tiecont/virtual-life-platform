@@ -641,12 +641,18 @@ where
         );
         let transition = transition?;
         let version = i64::try_from(transition.next.version).map_err(|_| Error::Invalid)?;
-        // Only an explicit completion sentinel is supported. Economy effects and
-        // arbitrary/private reducer settlement payloads require a separate adapter.
+        // Economy effects are not inferred from reducer payloads. A non-null
+        // settlement is accepted only when the domain also exposes its bounded
+        // completion proposal, as cooperative terminal turns do; PvE and
+        // synthetic games leave the sentinel null.
         if transition
             .settlement
             .as_ref()
             .is_some_and(|s| s != &Value::Null)
+            && !matches!(
+                self.game.completion(&transition.next.state)?,
+                Completion::Proposal(_)
+            )
         {
             return Err(Error::Invalid);
         }
