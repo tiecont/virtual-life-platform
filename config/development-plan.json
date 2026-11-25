@@ -9708,15 +9708,17 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "5e9de28cca2e6d607e5ff1868b0ad9e45459370a",
+        "sourceRevision": "29856667f623f33098a85117c827c32b6461b1a6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The runtime now serves arena8-coop-pve from a published bundle: four server-authored seats, per-seat membership and projection, strict intents, durable restore that revalidates the configuration digest and allocation, and a content hash in --check-gameplay-config.",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest now freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the runtime with the private bundle file, and issues one scoped ticket per session-authenticated seat.",
         "commands": [
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
-          { "command": "cargo fmt --all -- --check", "exitCode": 0 }
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Nest does not allocate or provision a cooperative match, issue four scoped tickets or write the bundle to the runtime; no packaged four-account proof and no recovery drill have run."
+        "remaining": "No real binary/TLS four-client run or packaged-player evidence exists. API-restart recovery explicitly fails closed, settlement/outbox, Unity presentation and four-human acceptance remain."
       }
     },
     {
@@ -9747,7 +9749,7 @@
           { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Start freezes the roster but does not yet allocate or provision the native match; there is no room discovery or return-to-hub flow, no settlement award into the ledger, and no reward/achievement configuration beyond the room threshold."
+        "remaining": "Start provisions the native match when the native composition is enabled, but there is no room discovery/list, return-to-hub flow, settlement award into the ledger, or reward/achievement configuration beyond the room threshold."
       }
     },
     {
