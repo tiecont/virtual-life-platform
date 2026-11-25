@@ -37,6 +37,14 @@ export class CoopMatchStore implements CoopMatchStorePort{
   const row=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE room_id=$1`,[roomId])).rows[0];
   return row?map(row):undefined;
  }
+ async listRecoverable(){
+  const rows=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE status='ACTIVE' ORDER BY created_at`)).rows;
+  return Object.freeze(rows.map(map));
+ }
+ async recovered(matchId:string,generation:number){
+  const result=await this.db.query("UPDATE coop_allocations SET generation=$2,updated_at=clock_timestamp() WHERE match_id=$1 AND status='ACTIVE'",[matchId,generation]);
+  if(result.rowCount!==1)throw new Error('Cooperative allocation recovery conflict');
+ }
  async create(record:CoopAllocationRecord){
   await this.db.query(
    "INSERT INTO coop_allocations(match_id,room_id,ruleset,config_version,config_digest,content_hash,world_id,boot_id,generation,seats,status) VALUES($1,$2,'arena8-coop-pve',$3,$4,$5,$6,$7,$8,$9::jsonb,$10)",

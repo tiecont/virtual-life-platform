@@ -17,8 +17,10 @@ export type CoopAllocationRecord=Readonly<{
 }>;
 export type CoopMatchStorePort=Readonly<{
  findByRoom(roomId:string):Promise<CoopAllocationRecord|undefined>;
+ listRecoverable():Promise<readonly CoopAllocationRecord[]>;
  create(record:CoopAllocationRecord):Promise<void>;
  activate(matchId:string,generation:number):Promise<void>;
+ recovered(matchId:string,generation:number):Promise<void>;
  fail(matchId:string):Promise<void>;
  close(matchId:string):Promise<void>;
 }>;
@@ -37,6 +39,7 @@ export type CoopRuntimePort=Readonly<{start(request:CoopRuntimeRequest):Promise<
 export type CoopProvisionerOptions=Readonly<{
  store:CoopMatchStorePort;admission:CoopAdmissionPort;issuer:CoopIssuerPort;
  runtime:CoopRuntimePort;validator:GameplayBundleValidator;httpsOrigin:string;
+ loadBundle:(record:Pick<CoopAllocationRecord,'configVersion'|'configDigest'>)=>Promise<Record<string,unknown>|undefined>;
  id?:()=>string;
 }>;
 export type CoopStartInput=Readonly<{
@@ -190,6 +193,49 @@ export class CoopMatchProvisioner{
    httpsOrigin:this.origin,ticket:issued.ticket,expiresAt:issued.expiresAt,
    contentHash:record.contentHash,
   });
+ }
+
+ async recover():Promise<Readonly<{recovered:number;failed:number}>>{
+  if(this.closing)return Object.freeze({recovered:0,failed:0});
+  const records=await this.options.store.listRecoverable();
+  let recovered=0,failed=0;
+  for(const record of records){
+   if(this.active.has(record.matchId)){recovered+=1;continue;}
+   let generation=0;
+   try{
+    const bundle=await this.options.loadBundle(record);
+    if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
+    const verdict=await this.options.validator.validate('arena8-coop-pve',bundle);
+    if(verdict.digest!==record.configDigest||verdict.contentHash!==record.contentHash)
+     throw unavailable('Pinned cooperative configuration no longer matches the allocation');
+    const scope=scopeFor(record);
+    generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
+    let handle:CoopRuntimeHandle|undefined;
+    try{handle=await this.options.runtime.start({
+     matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
+     configDigest:record.configDigest,bundle,seats:record.seats,
+    });}catch{handle=undefined;}
+    if(!handle)throw unavailable();
+    const lease=this.lease(scope,generation,()=>{
+     const current=this.active.get(record.matchId);
+     if(current)void this.abandon(current.record,current.generation);
+    });
+    await this.options.store.recovered(record.matchId,generation);
+    const restored:CoopAllocationRecord=Object.freeze({...record,status:'ACTIVE',generation});
+    handle.onExit(()=>{
+     const current=this.active.get(record.matchId);
+     if(current)current.exited=true;
+    });
+    this.active.set(record.matchId,{record:restored,scope,generation,handle,lease,stopped:false,exited:false});
+    recovered+=1;
+   }catch{
+    failed+=1;
+    if(generation>0)await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>{});
+    // Never mark a durable ACTIVE allocation FAILED merely because recovery
+    // could not reacquire it; admission stays closed until an operator resolves it.
+   }
+  }
+  return Object.freeze({recovered,failed});
  }
 
  async close(){

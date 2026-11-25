@@ -50,6 +50,7 @@ beforeAll(async()=>{
   runtime:runtime as never,
   validator:engine,
   httpsOrigin:HTTPS,
+  loadBundle:async()=>bundle,
  });
  const config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'coop-native-test-secret-'.repeat(2),LOCAL_COOP_ROOMS:'1'});
  server=await createApp(config,pool,false,{coopProvisioner:provisioner});

@@ -14,6 +14,11 @@ const bundle={schemaVersion:1,boss:{id:'cinder-terraces-warden',requiredRoomPoin
 class MemoryStore implements CoopMatchStorePort{
  readonly rows=new Map<string,CoopAllocationRecord>();
  async findByRoom(roomId:string){return [...this.rows.values()].find(row=>row.roomId===roomId);}
+ async listRecoverable(){return [...this.rows.values()].filter(row=>row.status==='ACTIVE');}
+ async recovered(matchId:string,generation:number){
+  const row=this.rows.get(matchId);if(!row||row.status!=='ACTIVE')throw new Error('recovery conflict');
+  this.rows.set(matchId,{...row,generation});
+ }
  async create(record:CoopAllocationRecord){
   if([...this.rows.values()].some(row=>row.roomId===record.roomId))throw Object.assign(new Error('duplicate'),{code:'23505'});
   this.rows.set(record.matchId,record);
@@ -54,11 +59,12 @@ class FakeRuntime implements CoopRuntimePort{
 }
 const validator={validate:vi.fn(async(_ruleset:'arena8-coop-pve',_bundle:Record<string,unknown>)=>({digest:DIGEST,engineCapability:'arena8-coop-v1',contentHash:CONTENT}))};
 
-function fixture(overrides:{store?:MemoryStore;admission?:FakeAdmission;runtime?:FakeRuntime}={}){
+function fixture(overrides:{store?:MemoryStore;admission?:FakeAdmission;runtime?:FakeRuntime;loadBundle?:(record:{configVersion:number;configDigest:string})=>Promise<Record<string,unknown>|undefined>}={}){
  const store=overrides.store??new MemoryStore(),admission=overrides.admission??new FakeAdmission();
  const runtime=overrides.runtime??new FakeRuntime(),issuer=new FakeIssuer();
  const provisioner=new CoopMatchProvisioner({
   store,admission,runtime,issuer,validator,httpsOrigin:ORIGIN,
+  loadBundle:overrides.loadBundle??(async()=>bundle),
   id:(()=>{let value=0;return()=>'33333333-3333-4333-8333-'+String(++value).padStart(12,'0');})(),
  });
  return {provisioner,store,admission,runtime,issuer};
@@ -114,6 +120,28 @@ describe('cooperative match provisioner',()=>{
   const restarted=fixture({store,admission:new FakeAdmission()});
   await expect(restarted.provisioner.admission(ROOM,'cred-'+ACCOUNTS[0])).rejects.toMatchObject({status:503});
   await expect(restarted.provisioner.start(startInput)).rejects.toMatchObject({status:503});
+ });
+ it('recovers an active allocation with the same match, world, boot and configuration',async()=>{
+  const store=new MemoryStore();
+  const match='66666666-6666-4666-8666-666666666666',boot='77777777-7777-4777-8777-777777777777';
+  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:boot,configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
+  const {provisioner,admission,runtime}=fixture({store});
+  await expect(provisioner.recover()).resolves.toEqual({recovered:1,failed:0});
+  expect(runtime.requests).toHaveLength(1);
+  expect(runtime.requests[0]).toMatchObject({matchId:match,worldId:'native:coop-'+match,bootId:boot,configDigest:DIGEST});
+  expect(admission.configured[0]).toMatchObject({expected:1,enabled:true,capacity:4});
+  expect(store.rows.get(match)!.generation).toBe(2);
+  const view=await provisioner.admission(ROOM,'cred-'+ACCOUNTS[1]);
+  expect(view).toMatchObject({matchId:match,seat:1,contentHash:CONTENT});
+ });
+ it('leaves an unresolvable allocation active but closed to admission',async()=>{
+  const store=new MemoryStore();
+  const match='88888888-8888-4888-8888-888888888888';
+  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
+  const {provisioner}=fixture({store,loadBundle:async()=>undefined});
+  await expect(provisioner.recover()).resolves.toEqual({recovered:0,failed:1});
+  expect(store.rows.get(match)!.status).toBe('ACTIVE');
+  await expect(provisioner.admission(ROOM,'cred-'+ACCOUNTS[0])).rejects.toMatchObject({status:503});
  });
  it('closes a match once and disables its admission world',async()=>{
   const {provisioner,runtime,admission,store}=fixture();

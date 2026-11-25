@@ -346,9 +346,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
           certFile,keyFile,
         }),
         validator:gameplayValidator,httpsOrigin,
+        loadBundle:async record=>new CoopRoomStore().pinnedBundle(db,record.configVersion,record.configDigest),
       });
       ownedProvisioner=true;
     }
+    if(provisioner)await provisioner.recover();
     const coopRooms=new CoopRoomService(db,new CoopRoomStore(),provisioner);
     registerCoopRooms(http,config,identity,coopRooms,options.now);
     if(ownedProvisioner&&provisioner){
