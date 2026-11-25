@@ -9708,17 +9708,17 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "29856667f623f33098a85117c827c32b6461b1a6",
+        "sourceRevision": "f552649c66e59616f5da86fe9716b67dd63375f9",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest now freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the runtime with the private bundle file, and issues one scoped ticket per session-authenticated seat.",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the runtime with the private bundle file, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart without rewriting them.",
         "commands": [
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
           { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
           { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
           { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts", "exitCode": 0 }
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 }
         ],
-        "remaining": "No real binary/TLS four-client run or packaged-player evidence exists. API-restart recovery explicitly fails closed, settlement/outbox, Unity presentation and four-human acceptance remain."
+        "remaining": "No real binary/TLS four-client run or packaged-player evidence exists. STARTING allocations require explicit reconciliation; settlement/outbox, Unity presentation and four-human acceptance remain."
       }
     },
     {
