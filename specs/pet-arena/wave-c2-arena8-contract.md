@@ -21,22 +21,23 @@ Pet level never gates access to an authored skill. Skill Level (candidate max
 
 ## Internal Rust supervisor (loopback, Nest-only)
 
-The supervisor may be a new small Rust binary using `Arena8Bound` and a durable
-JSON checkpoint directory. It must not be exposed publicly. It must generate
-its own match seed and persist enough state to recover after restart.
+The supervisor is an explicitly isolated local bridge using `Arena8Bound` and a
+durable JSON checkpoint directory. It is not the native Host/journal/admission
+authority. It binds loopback only, requires `x-arena8-token` on every request,
+and must generate its own match seed. Nest is its only caller.
 
 `POST /allocate`
 
 ```json
 {
+  "requestId": "<uuid>",
   "allocation": {
     "account": "<uuid>",
     "ownedPetId": "<owned-pet-uuid>",
     "petId": "fire-coalwhisk",
     "level": 1,
     "encounterId": "cinder-terraces-regular",
-    "artifacts": [{"definitionId":"core-emberglass","upgradeLevel":1}],
-    "skillLevels": [{"skillId":"shared-skill","level":1}]
+    "artifacts": [{"definitionId":"core-emberglass","upgradeLevel":1}]
   }
 }
 ```
@@ -50,8 +51,8 @@ Response:
 `POST /command`
 
 ```json
-{"matchId":"<uuid>","commandId":"<uuid-or-hex>","expectedVersion":0,
- "action":{"kind":"start"}}
+{"account":"<uuid>","matchId":"<uuid>","commandId":"<uuid>",
+ "expectedVersion":0,"action":{"kind":"start"}}
 ```
 
 Actions: `start`, `swap` + `first`/`second`, `guard`, `skill`,
@@ -65,8 +66,10 @@ Response:
 ```
 
 `GET /matches/:matchId` returns `{matchId,version,view,terminal}`.
-Duplicate `commandId` returns the original receipt. Stale
-`expectedVersion` is rejected. The supervisor is the only writer.
+`GET /matches/:matchId/owner` is the Nest-only ownership check.
+Duplicate `commandId` returns the original receipt; reusing it with changed
+content is rejected. Stale `expectedVersion` and foreign accounts are rejected.
+Allocation `requestId` is idempotent; reusing it with changed content is rejected.
 
 ## Nest API (authenticated Unity endpoint)
 
@@ -94,12 +97,12 @@ returns the original `{settlement,state}`.
 
 ## View
 
-Reuse `arena8.view.v1` fields (ruleset/pet/stats/artifacts/modifiers/skills/
-encounter/phase/turn/board/health/enemyHealth/enemyShield/mana/rage/cooldown/
-fireZoneTurns/telegraph/snapshotDigest) and add `matchId` and `version`.
-`skills` is the complete authored list, not a level-filtered list. Each skill
-may include `{id,name,level,maxLevel,mana,rage,cooldown,available,reason}`.
-Speed modifiers are present but explicitly inactive.
+The view contains ruleset/pet/stats/artifacts/modifiers/skills/encounter/phase/
+turn/board/health/enemyHealth/enemyShield/mana/rage/cooldown/fireZoneTurns/
+telegraph/terminal plus `matchId` and `version`. `skills` is the complete
+authored list, not a level-filtered list. Each skill contains
+`{id,unlocked,skillLevel,maxSkillLevel,canCast,reason}`; `canCast` is computed
+from the authoritative phase/resources/cooldown. Speed is present but inactive.
 
 ## Settlement
 

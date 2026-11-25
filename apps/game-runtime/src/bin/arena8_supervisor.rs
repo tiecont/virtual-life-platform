@@ -1,17 +1,18 @@
-//! Local-only Arena8 supervisor.
+//! Local-only Arena8 supervisor (Wave C2B).
 //!
-//! This binary is the bounded local match authority for Wave C2. It is bound to
-//! loopback and is called only by the Nest allocator/proxy; it is never a public
-//! client endpoint. It owns entropy and durable match state, and accepts only
-//! the same bounded intents as the native arena8-pve adapter.
+//! This is an explicitly isolated loopback match service. It owns the committed
+//! bound reducer state and durable command receipts. Nest is the only caller:
+//! every request requires the private internal token. It is not the native
+//! admission/journal authority and is not a public API.
 
 use aetheria_game_core::{Checkpoint, Command, LogicalClock, Reducer, SecretSeed, apply, begin};
-use aetheria_pet_arena::arena8::binding::{Allocation, ArtifactSelection, MatchSnapshot};
+use aetheria_pet_arena::arena8::binding::{Allocation, ArtifactSelection, MatchSnapshot, SkillId};
 use aetheria_pet_arena::arena8::{Action, Arena8Bound, BoundState, CombatEvent, Phase};
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Request, State},
     http::StatusCode,
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post},
 };
@@ -20,6 +21,7 @@ use serde_json::{Value, json};
 use std::{
     collections::HashMap,
     fs,
+    io::Write,
     path::{Path as FsPath, PathBuf},
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
@@ -30,6 +32,7 @@ use uuid::Uuid;
 #[derive(Clone)]
 struct App {
     directory: Arc<PathBuf>,
+    token: Arc<String>,
     lock: Arc<Mutex<()>>,
 }
 
@@ -41,22 +44,24 @@ impl IntoResponse for ApiError {
     }
 }
 type Result<T> = std::result::Result<T, ApiError>;
-
 fn bad(message: &str) -> ApiError {
     ApiError(StatusCode::BAD_REQUEST, message.into())
+}
+fn conflict(message: &str) -> ApiError {
+    ApiError(StatusCode::CONFLICT, message.into())
 }
 fn unavailable(message: &str) -> ApiError {
     ApiError(StatusCode::SERVICE_UNAVAILABLE, message.into())
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ArtifactInput {
     definition_id: String,
     upgrade_level: u8,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct AllocateInput {
     account: String,
@@ -70,14 +75,22 @@ struct AllocateInput {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct AllocateEnvelope {
+    allocation: AllocateInput,
+    request_id: String,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct CommandInput {
+    account: String,
     match_id: String,
     command_id: String,
     expected_version: u64,
     action: ActionInput,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 enum ActionInput {
     Start {},
@@ -106,6 +119,7 @@ impl ActionInput {
 struct Receipt {
     version: u64,
     receipt_id: String,
+    fingerprint: String,
     view: Value,
     events: Vec<Value>,
     terminal: bool,
@@ -114,6 +128,7 @@ struct Receipt {
 #[derive(Clone, Serialize, Deserialize)]
 struct MatchRecord {
     match_id: String,
+    account: String,
     version: u64,
     rng_cursor: u64,
     seed_commitment: [u8; 32],
@@ -122,6 +137,16 @@ struct MatchRecord {
     state_hex: String,
     snapshot: MatchSnapshot,
     receipts: HashMap<String, Receipt>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct AllocationIndexEntry {
+    match_id: String,
+    fingerprint: String,
+}
+#[derive(Default, Serialize, Deserialize)]
+struct AllocationIndex {
+    requests: HashMap<String, AllocationIndexEntry>,
 }
 
 #[derive(Serialize)]
@@ -145,6 +170,15 @@ struct CommandResponse {
     terminal: bool,
 }
 
+#[derive(Serialize)]
+struct MatchView {
+    #[serde(rename = "matchId")]
+    match_id: String,
+    version: u64,
+    view: Value,
+    terminal: bool,
+}
+
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
@@ -161,19 +195,43 @@ fn path_for(directory: &FsPath, id: &str) -> Result<PathBuf> {
     let parsed = Uuid::parse_str(id).map_err(|_| bad("invalid match id"))?;
     Ok(directory.join(format!("{parsed}.json")))
 }
+fn write_bytes(path: &FsPath, bytes: &[u8]) -> Result<()> {
+    let temporary = path.with_extension("tmp");
+    let mut file = fs::File::create(&temporary).map_err(|_| unavailable("cannot write state"))?;
+    file.write_all(bytes)
+        .and_then(|_| file.sync_all())
+        .map_err(|_| unavailable("cannot persist state"))?;
+    fs::rename(&temporary, path).map_err(|_| unavailable("cannot commit state"))?;
+    Ok(())
+}
 fn write_record(directory: &FsPath, record: &MatchRecord) -> Result<()> {
     let path = path_for(directory, &record.match_id)?;
-    let temporary = path.with_extension("tmp");
     let bytes = serde_json::to_vec(record).map_err(|_| unavailable("cannot encode match"))?;
-    fs::write(&temporary, bytes).map_err(|_| unavailable("cannot persist match"))?;
-    fs::rename(&temporary, &path).map_err(|_| unavailable("cannot commit match"))?;
-    Ok(())
+    write_bytes(&path, &bytes)
 }
 fn read_record(directory: &FsPath, id: &str) -> Result<MatchRecord> {
     let path = path_for(directory, id)?;
     let bytes =
         fs::read(path).map_err(|_| ApiError(StatusCode::NOT_FOUND, "match not found".into()))?;
     serde_json::from_slice(&bytes).map_err(|_| unavailable("match state is invalid"))
+}
+fn index_path(directory: &FsPath) -> PathBuf {
+    directory.join("allocations.json")
+}
+fn read_index(directory: &FsPath) -> Result<AllocationIndex> {
+    match fs::read(index_path(directory)) {
+        Ok(bytes) => {
+            serde_json::from_slice(&bytes).map_err(|_| unavailable("allocation index invalid"))
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            Ok(AllocationIndex::default())
+        }
+        Err(_) => Err(unavailable("allocation index unavailable")),
+    }
+}
+fn write_index(directory: &FsPath, index: &AllocationIndex) -> Result<()> {
+    let bytes = serde_json::to_vec(index).map_err(|_| unavailable("cannot encode index"))?;
+    write_bytes(&index_path(directory), &bytes)
 }
 
 fn seed_bytes() -> [u8; 32] {
@@ -205,6 +263,56 @@ fn stats(value: aetheria_pet_arena::arena8::binding::CombatStats) -> Value {
 fn modifier(active: bool, value: u16, effect: &str) -> Value {
     json!({"value": value, "active": active, "effect": effect})
 }
+fn can_cast(core: &aetheria_pet_arena::arena8::State, skill: SkillId) -> (bool, &'static str) {
+    if core.phase() != Phase::Playing {
+        return (false, "combat phase does not allow casting");
+    }
+    match skill {
+        SkillId::Guard => (true, ""),
+        SkillId::SharedSkill => {
+            if core.cooldown() > 0 {
+                (false, "cooldown")
+            } else if core.mana() < 100 {
+                (false, "mana")
+            } else {
+                (true, "")
+            }
+        }
+        SkillId::Signature => {
+            if core.cooldown() > 0 {
+                (false, "cooldown")
+            } else if core.mana() < 200 {
+                (false, "mana")
+            } else if core.rage() < 150 {
+                (false, "rage")
+            } else {
+                (true, "")
+            }
+        }
+        SkillId::FireZone => {
+            if core.cooldown() > 0 {
+                (false, "cooldown")
+            } else if core.mana() < 200 {
+                (false, "mana")
+            } else if core.rage() < 150 {
+                (false, "rage")
+            } else {
+                (true, "")
+            }
+        }
+        SkillId::Ultimate => {
+            if core.cooldown() > 0 {
+                (false, "cooldown")
+            } else if core.mana() < 300 {
+                (false, "mana")
+            } else if core.rage() < 200 {
+                (false, "rage")
+            } else {
+                (true, "")
+            }
+        }
+    }
+}
 fn view(record: &MatchRecord) -> Result<Value> {
     let state =
         BoundState::decode(&unhex(&record.state_hex)?).map_err(|_| unavailable("invalid state"))?;
@@ -213,7 +321,17 @@ fn view(record: &MatchRecord) -> Result<Value> {
     let skills: Vec<Value> = snapshot
         .skills()
         .iter()
-        .map(|skill| json!({"id": skill, "level": 1, "maxLevel": 10, "available": true, "reason": null}))
+        .map(|skill| {
+            let (castable, reason) = can_cast(core, *skill);
+            json!({
+                "id": skill,
+                "unlocked": true,
+                "skillLevel": 1,
+                "maxSkillLevel": 10,
+                "canCast": castable,
+                "reason": if reason.is_empty() { Value::Null } else { Value::String(reason.into()) },
+            })
+        })
         .collect();
     let artifacts: Vec<Value> = snapshot
         .artifacts()
@@ -229,7 +347,7 @@ fn view(record: &MatchRecord) -> Result<Value> {
                     "attack": artifact.modifiers.attack,
                     "defense": artifact.modifiers.defense,
                     "speed": artifact.modifiers.speed,
-                }
+                },
             })
         })
         .collect();
@@ -288,13 +406,42 @@ fn view(record: &MatchRecord) -> Result<Value> {
     }))
 }
 
+async fn require_token(State(app): State<App>, request: Request, next: Next) -> Response {
+    let supplied = request
+        .headers()
+        .get("x-arena8-token")
+        .and_then(|value| value.to_str().ok());
+    if supplied != Some(app.token.as_str()) {
+        return (StatusCode::UNAUTHORIZED, "unauthorized").into_response();
+    }
+    next.run(request).await
+}
+
 async fn allocate(
     State(app): State<App>,
-    Json(input): Json<AllocateInput>,
+    Json(envelope): Json<AllocateEnvelope>,
 ) -> Result<Json<AllocateResponse>> {
     let _guard = app.lock.lock().await;
+    Uuid::parse_str(&envelope.request_id).map_err(|_| bad("invalid request id"))?;
+    let fingerprint =
+        serde_json::to_string(&envelope.allocation).map_err(|_| bad("invalid allocation"))?;
+    let mut index = read_index(&app.directory)?;
+    if let Some(existing) = index.requests.get(&envelope.request_id) {
+        if existing.fingerprint != fingerprint {
+            return Err(conflict("allocation id reused with different content"));
+        }
+        let record = read_record(&app.directory, &existing.match_id)?;
+        let projection = view(&record)?;
+        return Ok(Json(AllocateResponse {
+            match_id: record.match_id,
+            version: record.version,
+            view: projection,
+            events: vec![],
+        }));
+    }
+    let input = envelope.allocation;
     let allocation = Allocation {
-        account: input.account,
+        account: input.account.clone(),
         owned_pet_id: input.owned_pet_id,
         pet_id: input.pet_id,
         level: input.level,
@@ -326,6 +473,7 @@ async fn allocate(
     .map_err(|_| bad("cannot begin match"))?;
     let record = MatchRecord {
         match_id: match_id.to_string(),
+        account: input.account,
         version: checkpoint.version,
         rng_cursor: checkpoint.rng_cursor,
         seed_commitment: checkpoint.seed_commitment,
@@ -340,6 +488,14 @@ async fn allocate(
     };
     let projection = view(&record)?;
     write_record(&app.directory, &record)?;
+    index.requests.insert(
+        envelope.request_id,
+        AllocationIndexEntry {
+            match_id: record.match_id.clone(),
+            fingerprint,
+        },
+    );
+    write_index(&app.directory, &index)?;
     Ok(Json(AllocateResponse {
         match_id: record.match_id,
         version: record.version,
@@ -354,7 +510,18 @@ async fn command(
 ) -> Result<Json<CommandResponse>> {
     let _guard = app.lock.lock().await;
     let mut record = read_record(&app.directory, &input.match_id)?;
+    if record.account != input.account {
+        return Err(ApiError(
+            StatusCode::FORBIDDEN,
+            "match ownership denied".into(),
+        ));
+    }
+    let fingerprint = serde_json::to_string(&(&input.expected_version, &input.action))
+        .map_err(|_| bad("invalid command"))?;
     if let Some(receipt) = record.receipts.get(&input.command_id) {
+        if receipt.fingerprint != fingerprint {
+            return Err(conflict("command id reused with different content"));
+        }
         return Ok(Json(CommandResponse {
             match_id: record.match_id,
             version: receipt.version,
@@ -365,7 +532,7 @@ async fn command(
         }));
     }
     if record.version != input.expected_version {
-        return Err(ApiError(StatusCode::CONFLICT, "stale version".into()));
+        return Err(conflict("stale version"));
     }
     let match_id = Uuid::parse_str(&record.match_id).map_err(|_| bad("invalid match id"))?;
     let command_id = Uuid::parse_str(&input.command_id).map_err(|_| bad("invalid command id"))?;
@@ -404,17 +571,13 @@ async fn command(
             logical_time_ms: (version + 1) * 1000,
         },
     )
-    .map_err(|error| ApiError(StatusCode::CONFLICT, format!("command rejected: {error:?}")))?;
-    let events: Vec<Value> = transition
-        .events
-        .iter()
-        .map(|event| {
-            serde_json::to_value(
-                CombatEvent::from_canonical(event).unwrap_or(CombatEvent::TurnEnded { turn: 0 }),
-            )
-            .unwrap_or(Value::Null)
-        })
-        .collect();
+    .map_err(|error| conflict(&format!("command rejected: {error:?}")))?;
+    let mut events = Vec::with_capacity(transition.events.len());
+    for (sequence, event) in transition.events.iter().enumerate() {
+        let decoded = CombatEvent::from_canonical(event)
+            .map_err(|_| unavailable("committed event could not be decoded"))?;
+        events.push(json!({"sequence": sequence, "event": decoded}));
+    }
     record.version = transition.next.version;
     record.rng_cursor = transition.next.rng_cursor;
     record.audit_hash = transition.next.audit_hash;
@@ -428,6 +591,7 @@ async fn command(
     let receipt = Receipt {
         version: record.version,
         receipt_id: command_id.to_string(),
+        fingerprint,
         view: projection.clone(),
         events: events.clone(),
         terminal,
@@ -444,15 +608,37 @@ async fn command(
     }))
 }
 
-async fn read(State(app): State<App>, Path(id): Path<String>) -> Result<Json<Value>> {
+async fn read(State(app): State<App>, Path(id): Path<String>) -> Result<Json<MatchView>> {
     let _guard = app.lock.lock().await;
     let record = read_record(&app.directory, &id)?;
-    Ok(Json(view(&record)?))
+    let projection = view(&record)?;
+    let terminal = projection["terminal"].as_bool().unwrap_or(false);
+    Ok(Json(MatchView {
+        match_id: record.match_id,
+        version: record.version,
+        view: projection,
+        terminal,
+    }))
+}
+
+async fn owner(State(app): State<App>, Path(id): Path<String>) -> Result<Json<Value>> {
+    let _guard = app.lock.lock().await;
+    let record = read_record(&app.directory, &id)?;
+    Ok(Json(json!({
+        "matchId": record.match_id,
+        "account": record.account,
+        "ownedPetId": record.snapshot.owned_pet_id(),
+        "petId": record.snapshot.pet_id(),
+    })))
 }
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let directory = PathBuf::from(std::env::var("ARENA8_SUPERVISOR_DIR")?);
+    let token = std::env::var("ARENA8_SUPERVISOR_TOKEN")?;
+    if token.len() < 32 {
+        return Err("Arena8 supervisor token must be at least 32 characters".into());
+    }
     fs::create_dir_all(&directory)?;
     let bind = std::env::var("ARENA8_SUPERVISOR_BIND").unwrap_or_else(|_| "127.0.0.1:0".into());
     if !bind.starts_with("127.0.0.1:") && !bind.starts_with("[::1]:") {
@@ -460,12 +646,15 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     }
     let app = App {
         directory: Arc::new(directory),
+        token: Arc::new(token),
         lock: Arc::new(Mutex::new(())),
     };
     let router = Router::new()
         .route("/allocate", post(allocate))
         .route("/command", post(command))
         .route("/matches/{matchId}", get(read))
+        .route("/matches/{matchId}/owner", get(owner))
+        .layer(middleware::from_fn_with_state(app.clone(), require_token))
         .with_state(app);
     let listener = tokio::net::TcpListener::bind(&bind).await?;
     println!("ARENA8_SUPERVISOR_LISTEN {}", listener.local_addr()?);
