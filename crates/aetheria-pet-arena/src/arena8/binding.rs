@@ -28,9 +28,9 @@ use super::Element;
 use super::model::{ENCOUNTERS, SignatureKind};
 
 pub const BINDING_ID: &str = "aetheria-pet-arena-arena8-binding";
-pub const BINDING_VERSION: u32 = 1;
+pub const BINDING_VERSION: u32 = 2;
 pub const BOUND_RULESET_ID: &str = "aetheria-pet-arena-arena8-pve";
-pub const BOUND_RULESET_VERSION: u32 = 1;
+pub const BOUND_RULESET_VERSION: u32 = 2;
 pub const ROSTER_ID: &str = "aetheria-wave-a-canonical-roster";
 pub const ROSTER_VERSION: &str = "wave-a-v1";
 pub const SNAPSHOT_SCHEMA_VERSION: u16 = 1;
@@ -204,13 +204,14 @@ impl PetProfile {
         }
     }
 
-    /// Abilities actually usable at `level`. This is the only level-based
-    /// eligibility the bound reducer enforces; UI gating alone is not enough.
+    /// Complete authored ability set. Owner decision: Pet level never gates
+    /// access to an authored skill; Mana, Rage, cooldown, phase and ownership
+    /// remain the authoritative combat checks.
     pub fn skills_at(&self, level: u8) -> Vec<SkillId> {
+        if !(MIN_LEVEL..=MAX_LEVEL).contains(&level) {
+            return Vec::new();
+        }
         self.skills()
-            .into_iter()
-            .filter(|skill| level >= skill.unlock_level())
-            .collect()
     }
 }
 
@@ -251,16 +252,10 @@ impl SkillId {
         }
     }
 
-    /// Pet level that unlocks the ability, in the maintained Wave 1 progression.
-    /// Lv20 is reserved for a power-skill/basic-skill enhancement that this
-    /// ruleset version does not define (OD: product decision), so no ability is
-    /// silently invented to fill that milestone.
+    /// Historical compatibility helper. Owner decision: every authored skill
+    /// is available from Pet Lv1, so no ability has a level unlock gate.
     pub const fn unlock_level(self) -> u8 {
-        match self {
-            Self::SharedSkill | Self::Guard => 1,
-            Self::Signature | Self::FireZone => 40,
-            Self::Ultimate => 60,
-        }
+        1
     }
 }
 
@@ -2554,8 +2549,8 @@ pub fn computed_digest() -> [u8; 32] {
 /// Pinned binding digest. Any content, bound or semantic change requires a new
 /// binding version and digest.
 pub const BINDING_DIGEST: [u8; 32] = [
-    0xdc, 0x65, 0x22, 0xb1, 0x6f, 0x3f, 0x9c, 0xbe, 0xe8, 0xba, 0x29, 0x04, 0x6b, 0xb5, 0x75, 0xe1,
-    0x97, 0x05, 0x31, 0x80, 0xcb, 0x44, 0x2c, 0xca, 0x63, 0xdd, 0x58, 0x74, 0x0d, 0xe2, 0xa9, 0x77,
+    0x19, 0x83, 0x51, 0xcc, 0x3b, 0x4f, 0x8c, 0x2e, 0x49, 0x3e, 0x5f, 0x60, 0x60, 0x2f, 0xdd, 0xf2,
+    0xc3, 0x68, 0xc6, 0x05, 0x2f, 0x17, 0x6d, 0x90, 0x40, 0x60, 0xd5, 0x08, 0xff, 0xa5, 0xb5, 0xae,
 ];
 
 pub fn digest() -> Result<[u8; 32], CoreError> {

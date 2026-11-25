@@ -111,13 +111,14 @@ V1 adapter and its receipts are untouched.
 
 The match is allocated from an immutable snapshot built by the versioned Arena8
 content binding (`crates/aetheria-pet-arena/src/arena8/binding.rs`,
-`aetheria-pet-arena-arena8-binding` v1, pinned digest
-`dc6522b16f3f9cbee8ba29046bb575e197053180cb442cca63dd58740de2a977`). The
+`aetheria-pet-arena-arena8-binding` v2, pinned digest
+`198351cc3b4f8c2e493e5f60602fddf2c368c6052f176d904060d508ffa5b5ae`). The
 snapshot binds the canonical roster identity, account, owned Pet id, level,
 base/grown/effective stats, equipped Artifact definitions and levels, bounded
-modifiers, available skills, the encounter and its revision, and the binding and
-rules digests. A later loadout change never alters an allocated match; a new
-match is required. Restoring a rewritten snapshot fails closed.
+modifiers, complete authored skills available from Pet Lv1, the encounter and
+its revision, and the binding and rules digests. A later loadout change never
+alters an allocated match; a new match is required. Restoring a rewritten
+snapshot fails closed. Pet level gates Artifact ranks, never skill access.
 
 The allocation is server-authored private configuration. It is not an intent
 field and no client can send it:
@@ -130,7 +131,7 @@ field and no client can send it:
     "ownedPetId": "<owned pet UUID>",
     "level": 20,
     "encounterId": "cinder-terraces-regular",
-    "bindingVersion": 1,
+    "bindingVersion": 2,
     "artifacts": [
       {"definitionId": "core-emberglass", "upgradeLevel": 1},
       {"definitionId": "aegis-bastionplate", "upgradeLevel": 5}

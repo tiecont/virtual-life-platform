@@ -6,7 +6,7 @@ rust-version.workspace = true
 publish.workspace = true
 
 [dependencies]
-axum.workspace = true
+axum = { workspace = true, features = ["json"] }
 tokio.workspace = true
 aetheria-gateway = { path = "../../crates/aetheria-gateway" }
 aetheria-security = { path = "../../crates/aetheria-security" }

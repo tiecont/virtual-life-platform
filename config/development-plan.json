@@ -78,6 +78,29 @@
       "title": "Authoritative Arena8 integration and independent progression",
       "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
       "c2Status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
+      "waveC2Verification": {
+        "status": "INCOMPLETE_M3",
+        "ownerSkillDecision": "All active Pets expose complete authored skills from Lv1; Pet level never gates access. Non-Icarus Pets cannot use FIRE_ZONE. Mana/Rage/cooldown/phase/ownership remain authoritative.",
+        "binding": {
+          "version": 2,
+          "digest": "198351cc3b4f8c2e493e5f60602fddf2c368c6052f176d904060d508ffa5b5ae",
+          "rulesetVersion": 2,
+          "adapterContentHash": "713cca3d4fe38567de4c8ed372833171fe98450beb54b2b15a3b07f9e31b054f"
+        },
+        "completedLocal": [
+          "Lv1 complete-skill reducer behavior with Sig/Ultimate/FIRE_ZONE tests and non-Icarus FIRE_ZONE denial",
+          "binding and bound ruleset version bump without reusing the old digest",
+          "loopback Arena8 supervisor allocates a 64-cell match, applies Start/Guard, persists state, replays duplicate command receipts and recovers after process restart",
+          "wave-c2 contract and readiness split (bindingVerified 55 / combatVerified 0) recorded"
+        ],
+        "notMet": [
+          "Nest authenticated allocator/proxy and canonical settlement are not implemented",
+          "Supervisor is not yet wired to Nest or Unity admission tickets",
+          "Unity still has no arena8.intent.v1/arena8.view.v1 client; no authoritative board or next-match flow",
+          "Skill Level persistence/upgrade economy and Artifact settlement are not connected",
+          "No packaged-player M3 scenario has executed"
+        ]
+      },
       "waveBVerification": {
       "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
       "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
