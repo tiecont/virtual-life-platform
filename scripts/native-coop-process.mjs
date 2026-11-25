@@ -13,6 +13,8 @@ const {readConfig}=require('../apps/platform-api/src/shared/config/environment.t
 const {installGameplayConfig}=require('../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config.ts');
 const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
 const {CoopSettlement}=require('../apps/platform-api/src/features/coop/modules/settlement/application/service.ts');
+const {OperatorService}=require('../apps/platform-api/src/features/identity/modules/operators/application/operator-service.ts');
+const {totp}=require('../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto.ts');
 const {decodeServer}=require('../packages/native-protocol/dist/index.js');
 const socketRequire=createRequire(require.resolve('socket.io-client/package.json'));
 const WebSocket=createRequire(socketRequire.resolve('engine.io-client/package.json'))('ws');
@@ -26,7 +28,7 @@ function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintF
 function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,'coop-process-v1'),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
-const origin='http://127.0.0.1:3300',binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
+const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
 const facts={result:'FAIL',scenarios:[]};
 const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-process-'));
 const schema='coop_process_'+randomUUID().replaceAll('-',''),role='coop_runtime_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
@@ -49,15 +51,22 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-v1.seed.json','utf8'));
+ const seed=JSON.parse(await readFile('config/gameplay/arena8-coop-v1.seed.json','utf8'));
+ const validator=new EngineGameplayBundleValidator(binary);
+ await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
+ const bundle=JSON.parse(JSON.stringify(seed));
  bundle.contentRevision=4;
  bundle.boss.attackModel.baseDamage=1;
  bundle.boss.attackModel.perRoundDamage=0;
  bundle.boss.attackModel.minimumDamage=1;
  bundle.party.maxRounds=6;
- await installGameplayConfig(pool,'arena8-coop-pve',bundle,new EngineGameplayBundleValidator(binary),'system:process-test');
+ const verdict=await validator.validate('arena8-coop-pve',bundle);
+ const operatorPassword='process-operator-password',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
+ const operatorNow=Date.now();
+ await new OperatorService(pool,operatorKey,()=>operatorNow-60000).bootstrap({password:operatorPassword,totpSecret:operatorSecret,code:totp(operatorSecret,operatorNow-60000)});
  const config=readConfig({
   NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('base64url'),
+  ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:operatorKey,
   LOCAL_COOP_ROOMS:'1',LOCAL_COOP_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
   LOCAL_ARENA8_NATIVE_BINARY:binary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,
@@ -67,6 +76,21 @@ try{
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
  });
  app=await createApp(config,pool,false,{});
+ const loginResponse=await app.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(operatorSecret,operatorNow)}});
+ assert.equal(loginResponse.statusCode,200,JSON.stringify(loginResponse.json()));
+ const operator={cookie:String(loginResponse.headers['set-cookie']).split(';')[0],csrf:loginResponse.json().csrfToken};
+ const operatorPost=(action,payload)=>app.http.inject({method:'POST',url:'/v1/operator/'+action,headers:{origin:adminOrigin,cookie:operator.cookie,'x-csrf-token':operator.csrf},payload});
+ const draftResponse=await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:null,bundle});
+ const created=draftResponse.json();
+ assert.ok(created.version>1,JSON.stringify(created));
+ const validation=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:created.revision});
+ assert.equal(validation.statusCode,200,JSON.stringify(validation.json()));
+ assert.equal(validation.json().contentDigest,verdict.digest);
+ const release=await operatorPost('gameplay-config-publish',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:validation.json().revision,expectedActiveRevision:1});
+ assert.equal(release.statusCode,200,JSON.stringify(release.json()));
+ facts.adminPublishedVersion=created.version;
+ facts.adminDigest=verdict.digest;
+ facts.scenarios.push('admin-published-the-test-bundle-through-the-validated-operator-path');
  let addressIndex=1;
  async function guest(name,petId){
   const response=await app.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.214.1.'+addressIndex++,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
@@ -92,8 +116,13 @@ try{
  assert.equal(started.statusCode,200,JSON.stringify(started.json()));
  assert.equal(started.json().status,'STARTED');
  facts.scenarios.push('actual-runtime-process-started-from-published-bundle-and-four-seats');
- const allocation=(await pool.query('SELECT match_id,world_id,status,generation,content_hash,jsonb_array_length(seats) AS seats FROM coop_allocations')).rows[0];
+ const allocation=(await pool.query('SELECT match_id,world_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations')).rows[0];
+ const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
  assert.equal(allocation.status,'ACTIVE');assert.equal(allocation.seats,4);
+ assert.equal(Number(allocation.config_version),created.version);
+ assert.equal(allocation.config_digest,verdict.digest);
+ assert.equal(hex(allocation.content_hash),verdict.contentHash);
+ facts.scenarios.push('new-allocation-pinned-the-admin-published-digest-and-content-hash');
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');

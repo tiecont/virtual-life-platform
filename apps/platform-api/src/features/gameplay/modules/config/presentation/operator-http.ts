@@ -28,8 +28,8 @@ export function registerGameplayConfig(http:FastifyInstance,config:Config,contro
    return controls.version(token(req),query.ruleset,query.version);
   });
   api.get('/gameplay-config-audit',req=>controls.audit(token(req),GameplayConfigOverviewQuerySchema.parse(req.query).ruleset));
-  api.post('/gameplay-config-draft',req=>controls.createDraft(token(req),req.headers['x-csrf-token'],req.body));
-  api.post('/gameplay-config-update',req=>controls.updateDraft(token(req),req.headers['x-csrf-token'],req.body));
+  api.post('/gameplay-config-draft',{bodyLimit:1_258_291},req=>controls.createDraft(token(req),req.headers['x-csrf-token'],req.body));
+  api.post('/gameplay-config-update',{bodyLimit:1_258_291},req=>controls.updateDraft(token(req),req.headers['x-csrf-token'],req.body));
   api.post('/gameplay-config-validate',req=>controls.validate(token(req),req.headers['x-csrf-token'],req.body));
   api.post('/gameplay-config-publish',req=>controls.publish(token(req),req.headers['x-csrf-token'],req.body));
   api.post('/gameplay-config-rollback',req=>controls.rollback(token(req),req.headers['x-csrf-token'],req.body));
