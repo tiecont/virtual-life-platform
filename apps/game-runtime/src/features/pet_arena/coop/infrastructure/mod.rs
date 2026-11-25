@@ -113,7 +113,13 @@ impl Game for Rules {
     }
 
     fn authorize(&self, state: &CoopState, account: &str, _: &Self::Action) -> bool {
-        Rules::member(self, state, account)
+        // Only the authenticated owner of the active seat may command. The
+        // reducer itself has no actor identity, so this is the seat boundary.
+        self.member(state, account)
+            && state
+                .participants
+                .get(state.active_seat)
+                .is_some_and(|seat| seat.account == account)
     }
 
     fn project(&self, state: &CoopState, account: &str) -> aetheria_persistence::Result<Vec<u8>> {

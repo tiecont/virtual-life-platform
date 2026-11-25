@@ -12,9 +12,20 @@ const {createApp}=require('../apps/platform-api/src/app.ts');
 const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
 const {installGameplayConfig}=require('../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config.ts');
 const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
+const {decodeServer}=require('../packages/native-protocol/dist/index.js');
+const socketRequire=createRequire(require.resolve('socket.io-client/package.json'));
+const WebSocket=createRequire(socketRequire.resolve('engine.io-client/package.json'))('ws');
+const varint=value=>{let n=BigInt(value);const out=[];do{let byte=Number(n&0x7fn);n>>=7n;if(n)byte|=0x80;out.push(byte);}while(n);return Buffer.from(out);};
+const tag=(field,wire)=>varint((field<<3)|wire);
+const uintField=(field,value)=>Buffer.concat([tag(field,0),varint(value)]);
+const bytesField=(field,bytes)=>Buffer.concat([tag(field,2),varint(bytes.length),Buffer.from(bytes)]);
+const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
+const messageField=(field,bytes)=>bytesField(field,bytes);
+function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
+function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,'coop-process-v1'),bytesField(3,contentHash)]);}
+function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
 const origin='http://127.0.0.1:3300',binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
-process.env.AETHERIA_COOP_RUNTIME_DIAGNOSTICS='1';
 const facts={result:'FAIL',scenarios:[]};
 const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-process-'));
 const schema='coop_process_'+randomUUID().replaceAll('-',''),role='coop_runtime_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
@@ -88,6 +99,73 @@ try{
  }
  assert.equal(new Set(tickets).size,4);
  facts.scenarios.push('four-subject-scoped-tickets-issued-by-the-real-issuer');
+ const caPem=await readFile(tls.caFile,'utf8');
+ const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
+ function client(ticket,seat){
+  const ws=new WebSocket('wss://127.0.0.1:4443/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:'https://127.0.0.1:4443'}});
+  const queue=[],waiters=[];
+  const flush=()=>{while(waiters.length&&queue.length){const waiter=waiters.shift();waiter(queue.shift());}};
+  ws.on('message',data=>{let env;try{env=decodeServer(new Uint8Array(data));}catch{return;}queue.push(env);flush();});
+  const next=timeout=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('native message timeout')),timeout);const done=env=>{clearTimeout(timer);resolve(env);};if(queue.length)done(queue.shift());else waiters.push(done);});
+  const opened=new Promise((resolve,reject)=>{ws.once('open',resolve);ws.once('error',error=>reject(new Error('native socket failed: '+String(error?.message??error))));});
+  return {ws,seat,ticket,opened,next,sequence:1};
+ }
+ async function intent(connection,expectedVersion,action,kind='arena8-coop.intent.v1'){
+  const id=randomBytes(16);
+  connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
+  for(;;){
+   const env=await connection.next(5000);
+   if(Buffer.compare(Buffer.from(env.commandId),id)!==0)continue;
+   if(env.body.case==='receipt'||env.body.case==='rejection')return env;
+  }
+ }
+ const connections=[];
+ try{
+  for(const [seat,member] of members.entries()){
+   const connection=client(tickets[seat],seat);
+   await connection.opened;
+   const id=randomBytes(16);
+   connection.ws.send(envelope(10,helloMessage(tickets[seat],contentBytes),id,connection.sequence++));
+   const hello=await connection.next(5000);
+   assert.equal(hello.body.case,'hello');
+   connections.push(connection);
+  }
+  facts.scenarios.push('four-authenticated-sockets-completed-hello-with-their-own-ticket');
+  const initial=await intent(connections[0],0,'','arena8-coop.view.v1');
+  assert.equal(initial.body.case,'receipt');
+  const initialVersion=Number(initial.canonicalVersion);
+  const start=await intent(connections[0],initialVersion,'{"epoch":1,"action":{"kind":"start"}}');
+  assert.equal(start.body.case,'receipt');
+  assert.equal(start.body.value.committed,true);
+  const startView=JSON.parse(Buffer.from(start.body.value.authorizedProjection).toString('utf8'));
+  assert.equal(startView.state.ruleset.id,'arena8-coop-pve');
+  assert.equal(startView.state.participants.length,4);
+  assert.equal(startView.state.board.length,64);
+  assert.equal(startView.state.you,0);
+  assert.equal(startView.state.phase,'playing');
+  let version=Number(start.canonicalVersion);
+  const first=await intent(connections[0],version,'{"epoch":1,"action":{"kind":"guard"}}');
+  assert.equal(first.body.case,'receipt');
+  version=Number(first.canonicalVersion);
+  const firstView=JSON.parse(Buffer.from(first.body.value.authorizedProjection).toString('utf8'));
+  assert.equal(firstView.state.activeSeat,1);
+  for(const seat of [1,2,3]){
+   const receipt=await intent(connections[seat],version,'{"epoch":1,"action":{"kind":"guard"}}');
+   assert.equal(receipt.body.case,'receipt');
+   version=Number(receipt.canonicalVersion);
+   const view=JSON.parse(Buffer.from(receipt.body.value.authorizedProjection).toString('utf8'));
+   assert.equal(view.state.you,seat);
+   assert.equal(view.state.participants.length,4);
+   assert.equal(view.state.board.length,64);
+  }
+  assert.equal(version,5);
+  facts.scenarios.push('four-seats-committed-five-shared-board-turns-on-one-boss');
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches')).rows[0].state_version,'5');
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,5);
+  facts.scenarios.push('journal-recorded-five-durable-receipts-on-the-same-match');
+ }finally{
+  for(const connection of connections)try{connection.ws.close();}catch{}
+ }
  const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches")).rows[0];
  assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.status,'ACTIVE');assert.equal(match.content_hash,allocation.content_hash);
  facts.scenarios.push('runtime-created-the-match-with-the-engine-content-hash-before-any-client-command');

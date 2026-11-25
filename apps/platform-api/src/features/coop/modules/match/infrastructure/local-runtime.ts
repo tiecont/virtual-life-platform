@@ -103,8 +103,7 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    },
    stdio:['ignore','pipe','pipe'],
   });
-  let diagnostics='';
-  child.stderr?.on('data',chunk=>{diagnostics=(diagnostics+String(chunk)).slice(-4096);});
+  child.stderr?.on('data',()=>{});
   let port:number;
   try{
    port=await waitForListen(child,LISTEN_TIMEOUT_MS);
@@ -113,8 +112,7 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    child.kill('SIGKILL');
    await Promise.race([new Promise<void>(resolve=>child.once('exit',()=>resolve())),delay(1000)]);
    await rm(directory,{recursive:true,force:true});
-   const detail=process.env.NODE_ENV!=='production'&&process.env.AETHERIA_COOP_RUNTIME_DIAGNOSTICS==='1'?' ['+diagnostics.replace(/\\s+/g,' ').slice(-800)+']':'';
-   throw new Error('Cooperative native runtime unavailable'+detail);
+   throw new Error('Cooperative native runtime unavailable');
   }
   // The committed runtime keeps the validated configuration in memory; the
   // private candidate files are only needed for this startup.

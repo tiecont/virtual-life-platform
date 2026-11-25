@@ -143,6 +143,15 @@ fn intents_are_strict_and_never_carry_authority() {
 }
 
 #[test]
+fn only_the_owner_of_the_active_seat_may_command() {
+    let rules = rules();
+    let state = rules.initial().expect("allocation");
+    assert!(rules.authorize(&state, "account-icarus", &CoopAction::Start));
+    assert!(!rules.authorize(&state, "account-coralline", &CoopAction::Start));
+    assert!(!rules.authorize(&state, "account-outsider", &CoopAction::Guard));
+}
+
+#[test]
 fn invalid_bundles_and_allocations_fail_closed() {
     assert!(Rules::load(b"", seats()).is_err());
     let mut duplicate = seats();
