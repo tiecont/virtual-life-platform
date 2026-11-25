@@ -111,8 +111,9 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task AdmitAsync()
         {
-            var admission = await lobby.AdmissionAsync(Guid.Parse(room.roomId), Guid.NewGuid());
-            var connection = admission.CreateConnection();
+            var roomId = Guid.Parse(room.roomId);
+            var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid());
+            var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
             var admitted = new CoopNativePlaySession(platform, connection, admission.MatchId);
             try
             {

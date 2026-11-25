@@ -71,10 +71,24 @@ namespace Aetheria.PetArena.Infrastructure
             return admission;
         }
 
-        public NativeConnection CreateConnection() =>
-            new NativeConnection(WssOrigin, HttpsOrigin, ContentHash, BootId,
-                _ => System.Threading.Tasks.Task.FromResult(
-                    new AdmissionTicket(Ticket, AccountId.ToString(), ExpiresAt)));
+        public NativeConnection CreateConnection(
+            Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<CoopNativeAdmission>> renew = null)
+        {
+            var used = 0;
+            return new NativeConnection(WssOrigin, HttpsOrigin, ContentHash, BootId, async cancellation =>
+            {
+                if (System.Threading.Interlocked.Exchange(ref used, 1) == 0)
+                    return new AdmissionTicket(Ticket, AccountId.ToString(), ExpiresAt);
+                if (renew == null) throw new NativeFailure(Failure.Authentication);
+                var next = await renew(cancellation).ConfigureAwait(false);
+                if (next.MatchId != MatchId || next.BootId != BootId || next.AccountId != AccountId ||
+                    next.Seat != Seat || next.ContentHash.Length != ContentHash.Length)
+                    throw new NativeFailure(Failure.Scope);
+                for (var index = 0; index < ContentHash.Length; index += 1)
+                    if (next.ContentHash[index] != ContentHash[index]) throw new NativeFailure(Failure.Scope);
+                return new AdmissionTicket(next.Ticket, next.AccountId.ToString(), next.ExpiresAt);
+            });
+        }
 
         private static byte[] Hex(string value)
         {
