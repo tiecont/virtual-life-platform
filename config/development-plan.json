@@ -9805,8 +9805,17 @@
         "Guest login, Pet selection, portal interaction, native combat, settlement and return to hub work without direct PetArenaPve entry",
         "Reconnect and receipt replay never duplicate committed presentation events"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "d042df4373edd7493264840fd1830cc0e400e0ea",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. Six EditMode tests decode ready/terminal projections, reject unknown fields and invalid seats/board sizes, and assert exact payloads and presenter gates.",
+        "commands": [
+          { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopNativeTests", "exitCode": 0 }
+        ],
+        "remaining": "No cooperative scene UI, four-seat HUD, portal flow, reconnect/replay presentation or packaged player exists; the presenter is not yet mounted in a scene and contribution/fire-zone capability rendering remains."
+      }
     },
     {
       "id": "VL-197",
