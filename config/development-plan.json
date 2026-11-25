@@ -9775,7 +9775,7 @@
       "implementation": {
         "sourceRevision": "58aec4425c7cde82d3910989cb48e858101ba75d",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it with the existing consumers.",
+        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it as an explicit opt-in consumer (COOP_SETTLEMENT_ENABLED=1), so restricted reward workers never open cooperative tables.",
         "commands": [
           { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
           { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
