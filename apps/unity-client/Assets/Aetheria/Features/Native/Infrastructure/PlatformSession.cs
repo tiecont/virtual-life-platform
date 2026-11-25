@@ -77,6 +77,35 @@ namespace Aetheria.Networking
             }, cancellation, waitForOperation: true);
         }
 
+        // Room-scoped cooperative commands. The path is closed, the body bounded,
+        // and the existing session cookie/CSRF authorize the call.
+        public Task<string> CoopPostAsync(string path, string body, Guid requestId, CancellationToken cancellation = default)
+        {
+            if (path == null || !Regex.IsMatch(path, "^/v1/coop/rooms(?:/[0-9a-f-]{36}(?:/(?:join|pet|ready|start|admission))?)?$") ||
+                body == null || body.Length > 4096 || requestId == Guid.Empty)
+                throw new ArgumentException("Invalid cooperative command");
+            return Exclusive(async token =>
+            {
+                if (csrf == null) throw new NativeFailure(Failure.Authentication);
+                using (var request = new HttpRequestMessage(HttpMethod.Post, new Uri(origin, path)))
+                {
+                    request.Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+                    request.Headers.Add("Origin", origin.GetLeftPart(UriPartial.Authority));
+                    request.Headers.Add("X-CSRF-Token", csrf);
+                    request.Headers.Add("Idempotency-Key", requestId.ToString());
+                    using (var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false))
+                    {
+                        if (!response.IsSuccessStatusCode) throw new NativeFailure(Failure.Authentication);
+                        if (response.Content.Headers.ContentType?.MediaType != "application/json" ||
+                            response.Content.Headers.ContentLength > 16384) throw new NativeFailure(Failure.Protocol);
+                        var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        if (text == null || text.Length == 0 || text.Length > 16384) throw new NativeFailure(Failure.Protocol);
+                        return text;
+                    }
+                }
+            }, cancellation);
+        }
+
         private async Task<TResponse> Send<TRequest, TResponse>(string path, TRequest body, CancellationToken token, Guid? requestId = null)
         {
             using (var data = new MemoryStream())
