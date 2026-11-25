@@ -183,26 +183,48 @@ async function failedJobLog(ctx, input) {
   return commandsOutcome(log);
 }
 
+const runtimeMigrationSuites = [
+  'tests/integration/native-game-schema.test.ts',
+  'tests/integration/runtime-admission.test.ts',
+  'tests/integration/schema-compatibility.test.ts',
+];
+
+export function projectRuntimeMigrationReport(stdout, root) {
+  const report = checkedJson(stdout.trim().split('\n').at(-1),
+    value => value?.success === true && Array.isArray(value.testResults) &&
+      value.numFailedTests === 0 && value.numPendingTests === 0 && value.numTodoTests === 0 &&
+      Number.isSafeInteger(value.numTotalTests) && value.numTotalTests > 0 &&
+      value.numPassedTests === value.numTotalTests);
+  const files = new Set(runtimeMigrationSuites);
+  let assertions = 0;
+  for (const suite of report.testResults) {
+    if (typeof suite?.name !== 'string' || suite.status !== 'passed' ||
+      !Array.isArray(suite.assertionResults) || !suite.assertionResults.length ||
+      !suite.assertionResults.every(assertion => assertion?.status === 'passed')) {
+      throw new WorkflowError('FAIL', 'INCOMPLETE_MIGRATION_TEST_SUITE');
+    }
+    if (!files.delete(relative(root, suite.name).split(sep).join('/'))) {
+      throw new WorkflowError('FAIL', 'UNEXPECTED_MIGRATION_TEST_SUITE');
+    }
+    assertions += suite.assertionResults.length;
+  }
+  if (files.size || assertions !== report.numTotalTests) {
+    throw new WorkflowError('FAIL', 'INCOMPLETE_MIGRATION_TEST_SUITE');
+  }
+  return {testFiles: runtimeMigrationSuites.length, total: assertions, passed: report.numPassedTests};
+}
+
 async function migrationCompat(ctx, input) {
   if (input.mode === 'runtime') {
-    return localExecution(ctx, input, true, () => ctx.command('migration-runtime', 'pnpm', ['game:migration:compat'],
-      {timeoutMs: buildTimeout, maxBytes: 4 * 1024 * 1024, project: async stdout => {
-        const summaries = stdout.split('\n').filter(line => line.startsWith('{"result":') && line.includes('"artifactDirectory":'));
-        if (summaries.length !== 2) throw new WorkflowError('FAIL', 'EXPECTED_COMPATIBILITY_REPORTS');
-        const reports = [];
-        for (const summary of summaries) {
-          const value = checkedJson(summary, item => item?.result === 'PASS' && typeof item.artifactDirectory === 'string');
-          const evidencePath = join(value.artifactDirectory, 'facts.json');
-          const {evidence} = await artifactReference(ctx.root, evidencePath,
-            /^artifacts\/desktop-first\/(?:vl016\/compat|vl013\/migration)-[a-f0-9]{8}\/facts[.]json$/,
-            row => row?.result === 'PASS' && row.cleanupComplete === true);
-          reports.push(evidence);
-        }
-        if (new Set(reports.map(report => report.path)).size !== 2) {
-          throw new WorkflowError('FAIL', 'EXPECTED_DISTINCT_COMPATIBILITY_REPORTS');
-        }
-        return {compatibilityReports: reports};
-      }}));
+    return localExecution(ctx, input, true, async () => {
+      const api = await nestBuild(ctx);
+      if (api.status !== 'PASS') return api;
+      return ctx.command('migration-runtime', node,
+        ['scripts/with-test-db.mjs', 'pnpm', 'exec', 'vitest', 'run', '--project', 'integration',
+          ...runtimeMigrationSuites, '--reporter=json'],
+        {timeoutMs: buildTimeout, maxBytes: 4 * 1024 * 1024,
+          project: stdout => projectRuntimeMigrationReport(stdout, ctx.root)});
+    });
   }
   const result = await ctx.command('frozen-migrations', node, ['scripts/engineering-harness/workflow-migrations.mjs', ctx.revision],
     {timeoutMs: 30000, project: stdout => {
@@ -409,9 +431,9 @@ export const workflows = {
     object(prInputs, ['pr']), prCi, ['Supply a read-only AETHERIA_HARNESS_GITHUB_TOKEN or authorize the configured gh identity.']),
   'failed-job-log': describe('Extract bounded diagnostic categories and line offsets from one failed GitHub job', ['github', 'ci', 'logs'],
     object({job: idInput, expectedRevision: sourceInput, allowNetwork: networkOptIn}, ['job']), failedJobLog),
-  'migration-compat': describe('Compare frozen migration bytes or exercise compatibility on owned disposable PostgreSQL', ['database', 'migration'],
+  'migration-compat': describe('Compare frozen migration bytes or run the native schema/compatibility integration suites', ['database', 'migration'],
     object({mode: choice('static', 'runtime'), allowLocalExecution: localOptIn}), migrationCompat,
-    ['Runtime mode needs local Docker with the pinned test image cached and frozen dependencies installed. Static mode needs the checked-in migration history.']),
+    ['Runtime mode needs local Docker with the pinned image cached and frozen dependencies installed. It runs CI’s three current-schema suites. The separate archived-runtime proof is pnpm game:migration:compat. Static mode needs the checked-in migration history.']),
   'rust-tests': describe('Run the pinned Rust workspace tests from the offline toolchain/dependency cache', ['rust', 'tests', 'runtime'],
     object({allowLocalExecution: localOptIn}), (ctx, input) => localExecution(ctx, input, false,
       () => ctx.command('rust-workspace-tests', 'cargo', ['test', '--workspace', '--locked', '--offline', '-j', '2'],

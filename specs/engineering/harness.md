@@ -24,6 +24,7 @@ committed base.
 
 ```sh
 codex exec -C . --worktree --json -c 'approval_policy="never"' \
+  -c 'agents.enabled=false' -c 'features.multi_agent_v2=false' \
   'INPUT: Implement the assigned task. Work only in the assigned paths.
 EXPECTED OUTPUT: Changes, exact checks, and a structured handoff.'
 ```
@@ -48,18 +49,22 @@ Previously the CLI used a user-level Sol/high default and user MCP settings.
 Repository checks were invoked individually, with the complete development plan
 and command output available to read. The project config now uses Astra/high for
 the lead and Sol/medium by default for specialists, with role-specific effort,
-four spawned threads and delegation depth one in the tested CLI. The plan still
-owns implementation dependencies and acceptance. The harness keeps the scope
-and status of an active run and reuses the repository's command entrypoints.
+a four-thread budget. The configured depth of one applies to the V1 backend.
+The installed model selected V2 during the smoke test. V2 has no hard depth
+setting in the local schema. Keep native delegation lead-only by policy. The
+managed-worker command disables delegation for isolated workers. The plan still
+owns implementation dependencies and acceptance. The harness keeps active task
+scope and status and reuses the repository's existing verification commands.
 
-Codex exposes native agent and skill discovery. The installed CLI lists native
-code mode as under development and inactive for the tested settings. The OpenAI
-API's programmatic calling and tool search guides describe separate API features.
-The shared CLI composes fixed commands and processes their results outside the
-model context. It needs no gateway, API key, provider shim, or new service. Other
-harnesses can call these Node entrypoints directly and consume the same JSON.
+Codex exposes native agent and skill discovery. The installed model used its
+native programmatic `exec` tool in the smoke test despite the experimental
+`code_mode` feature flag being off. The tested calls composed local commands.
+The OpenAI API's calling and search guides describe separate API features. The
+shared CLI composes fixed commands and projects their results outside the model
+context. Other harnesses can call these Node entrypoints directly and consume
+the same JSON. No gateway or new service is required.
 [Anthropic research](https://www.anthropic.com/research/code-execution-with-mcp),
-[Codex source](https://github.com/openai/codex),
+[Codex configuration schema](https://github.com/openai/codex/blob/main/codex-rs/core/config.schema.json),
 [Codex subagents](https://developers.openai.com/codex/subagents),
 [configuration reference](https://developers.openai.com/codex/config-reference),
 [programmatic tool calling](https://developers.openai.com/api/docs/guides/tools-programmatic-tool-calling),
@@ -90,6 +95,11 @@ detects mismatched bytes and does not establish who produced them.
 | Client and gameplay acceptance | `unity-build`, `native-acceptance` |
 | Local assets and artifact retrieval | `pet-assets`, `pet-glb`, `meshy-task`, `minio-verify` |
 | Release evidence and owner gates | `release-source`, `release-readiness` |
+
+Runtime migration mode runs the current-source schema, native storage and
+admission integration suites against disposable PostgreSQL. The separate
+`pnpm game:migration:compat` command retains its pinned archived-runtime
+qualification and its reviewed migration-prefix policy.
 
 GitHub workflows require explicit read access and respect the repository's CI
 snapshot policy. Use `describe` before setting network or build options. Run a

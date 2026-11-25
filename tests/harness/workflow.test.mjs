@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import {delimiter, join} from 'node:path';
 import {test} from 'node:test';
 import {fileURLToPath} from 'node:url';
+import {projectRuntimeMigrationReport} from '../../scripts/engineering-harness/workflow-catalog.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const cli = 'scripts/engineering-harness/workflow.mjs';
@@ -98,6 +99,22 @@ test('composes local repository, frozen migration, and release policy checks', a
   assert(report.findings['release-manifest-policy'].ownerPromotionRequired);
   await verifyEvidence(report);
   assert.equal(invoke(['evidence', report.runId, '0'.repeat(64)]).report.code, 'EVIDENCE_DIGEST_MISMATCH');
+});
+
+test('validates every required runtime migration suite and projects counts only', () => {
+  const testResults = ['native-game-schema', 'runtime-admission', 'schema-compatibility'].map(name => ({
+    name: join(root, 'tests/integration', name + '.test.ts'), status: 'passed',
+    assertionResults: [{status: 'passed', title: secret}],
+  }));
+  const report = {success: true, numFailedTests: 0, numPendingTests: 0, numTodoTests: 0,
+    numTotalTests: 3, numPassedTests: 3, testResults};
+  assert.deepEqual(projectRuntimeMigrationReport(JSON.stringify(report), root), {testFiles: 3, total: 3, passed: 3});
+  assert.throws(() => projectRuntimeMigrationReport(JSON.stringify({...report, testResults: testResults.slice(0, 2)}), root),
+    {code: 'INCOMPLETE_MIGRATION_TEST_SUITE'});
+  assert.throws(() => projectRuntimeMigrationReport(JSON.stringify({...report, numPendingTests: 1}), root),
+    {code: 'INVALID_TOOL_OUTPUT'});
+  assert.throws(() => projectRuntimeMigrationReport(JSON.stringify({...report, success: false}), root),
+    {code: 'INVALID_TOOL_OUTPUT'});
 });
 
 test('gates external tools and reports missing approval distinctly', () => {
