@@ -5,7 +5,8 @@ Read README.md and config/development-plan.json before changing code. Run
 
 One agent executes by default. For explicitly requested multi-agent work, the
 lead assigns independent file scopes in isolated worktrees and alone integrates
-changes and edits the backlog. Use model aliases only when available.
+changes and edits the backlog. Use model aliases only when available. For an explicit
+harness task or run recovery, load `$aetheria-engineering-harness`.
 Character production requires explicit owner review at each H1-H4 gate before
 the next dependent art stage. Other ready work needs no reservation. Work on any
 ready task; keep actual code/contract dependencies. Hardware, media rights,

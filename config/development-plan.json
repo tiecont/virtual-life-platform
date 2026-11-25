@@ -9477,6 +9477,26 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
       }
+    },
+    {
+      "id": "VL-190",
+      "feature": "Developer-Infrastructure",
+      "title": "Project engineering harness and independent verification",
+      "objective": "Add project-scoped Codex orchestration and provider-neutral workflow, checkpoint and benchmark interfaces without changing game or release contracts.",
+      "priority": 2,
+      "dependsOn": [],
+      "acceptance": [
+        "Installed Codex validates project configuration, model routing, roles and permission boundaries",
+        "Native subagents complete an evidence-backed parallel handoff and the CLI completes a multi-tool workflow",
+        "Provider-neutral recovery, input validation, evidence integrity and bounded execution pass automated checks",
+        "Measured before-and-after local scenarios and independent review are recorded with unavailable metrics and qualification limits"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "runbook": "specs/engineering/harness.md"
+      }
     }
   ]
 }
