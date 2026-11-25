@@ -2,6 +2,7 @@
   "name": "Aetheria.PetArena.Presentation",
   "rootNamespace": "Aetheria.PetArena.Presentation",
   "references": [
+    "Aetheria.Native",
     "Aetheria.PetArena.Domain",
     "Aetheria.PetArena.Infrastructure",
     "Aetheria.PetArena.Vfx",

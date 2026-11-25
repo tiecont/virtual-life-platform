@@ -77,6 +77,13 @@ namespace Aetheria.PetArena.Infrastructure
             CancellationToken cancellation) =>
             Request<Arena8AllocateResponse>(Arena8Prefix + "/allocate", body, cancellation);
 
+        // Native transport allocation. The reply carries a match-scoped admission
+        // ticket plus the WSS scope; every later command uses the native session,
+        // never this HTTP compatibility bridge.
+        public Task<Arena8NativeAllocation> AllocateArena8Native(Arena8AllocateRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8NativeAllocation>(Arena8Prefix + "/native/allocate", body, cancellation);
+
         public Task<Arena8CommandResponse> CommandArena8(Arena8StartCommandRequest body,
             CancellationToken cancellation) =>
             Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);

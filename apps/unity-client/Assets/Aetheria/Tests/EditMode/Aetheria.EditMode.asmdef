@@ -6,6 +6,7 @@
     "Aetheria.Icarus.Presentation",
     "Aetheria.Native",
     "Aetheria.PetArena.Domain",
+    "Aetheria.PetArena.Infrastructure",
     "Aetheria.PetArena.Presentation",
     "Aetheria.PetArena.Vfx",
     "Aetheria.Pets",

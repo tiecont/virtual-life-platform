@@ -38,14 +38,19 @@ namespace Aetheria.PetArena.Presentation
             webOrigin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_WEB_ORIGIN") ?? "http://127.0.0.1:3300";
             ArenaPresentationKit.Ensure(gameObject).PlayBgm(ArenaBgm.Lobby);
             BuildDocument();
-            try
+            ConfigureTransport();
+            if (nativeUnavailable) notice = UnconfiguredTransportNotice();
+            else
             {
-                api = new Wave1LocalApi(origin, webOrigin, Application.persistentDataPath);
-                loadedSession = api.LoadSession();
-            }
-            catch (Exception exception)
-            {
-                notice = "Check the local API and session directory: " + exception.Message;
+                try
+                {
+                    api = new Wave1LocalApi(TransportOrigin(origin), webOrigin, Application.persistentDataPath);
+                    loadedSession = api.LoadSession();
+                }
+                catch (Exception exception)
+                {
+                    notice = "Check the local API and session directory: " + exception.Message;
+                }
             }
             Draw();
             if (CaptureDirectory() != null)
@@ -59,6 +64,7 @@ namespace Aetheria.PetArena.Presentation
         private void OnDestroy()
         {
             lifetime.Cancel();
+            DisposeNative();
             api?.Dispose();
             lifetime.Dispose();
             if (panel != null) Destroy(panel);
@@ -110,8 +116,9 @@ namespace Aetheria.PetArena.Presentation
             root.Add(panelElement);
             panelElement.Add(Label("AETHERIA / SOULBOUND", "arena-eyebrow"));
             panelElement.Add(Label("Arena8 · authoritative 8×8", "arena-title"));
-            var meta = state == null ? "Local authoritative campaign" :
-                state.wallet.coins + " coins · " + (waterUnlocked ? "Water unlocked" : "Fire chapter");
+            var transport = nativeMode ? "native arena8.view.v1" : "HTTP compatibility bridge";
+            var meta = state == null ? "Local authoritative campaign · " + transport :
+                state.wallet.coins + " coins · " + (waterUnlocked ? "Water unlocked" : "Fire chapter") + " · " + transport;
             panelElement.Add(Label(meta, "arena-meta"));
             if (!string.IsNullOrEmpty(notice)) panelElement.Add(Label(notice, "arena-notice"));
 
@@ -123,6 +130,11 @@ namespace Aetheria.PetArena.Presentation
                 content.Add(Label("Contacting the local authoritative API…"));
                 return;
             }
+            if (nativeUnavailable)
+            {
+                content.Add(Label(notice));
+                return;
+            }
             if (api == null)
             {
                 content.Add(Label("The loopback API is unavailable."));
@@ -130,8 +142,10 @@ namespace Aetheria.PetArena.Presentation
             }
             if (!loadedSession) DrawSession();
             else if (state == null) content.Add(Label("Loading the persisted roster and campaign…"));
-            else if (view != null && !view.terminal) DrawCombat();
-            else if (view != null) DrawTerminal();
+            else if (nativeMode && nativeView != null && !nativeView.Terminal) DrawNativeCombat();
+            else if (nativeMode && nativeView != null) DrawNativeTerminal();
+            else if (!nativeMode && view != null && !view.terminal) DrawCombat();
+            else if (!nativeMode && view != null) DrawTerminal();
             else DrawLobby();
             FocusFirst();
         }
@@ -154,6 +168,7 @@ namespace Aetheria.PetArena.Presentation
         {
             state = await api.GetWave1State(lifetime.Token);
             artifacts = await api.GetArtifactState(lifetime.Token);
+            DisposeNative();
             view = null;
             matchId = null;
             waterUnlocked = state.campaign.clearedMaps.Contains("cinder-terraces");
@@ -202,7 +217,7 @@ namespace Aetheria.PetArena.Presentation
 
             var map = selectedMap;
             var encounter = map + (boss ? "-boss" : "-regular");
-            Button("Enter authoritative match", () => Run(() => Allocate(map, encounter), "Allocating match"));
+            Button("Enter authoritative match", () => Run(() => AllocateMatch(map, encounter), "Allocating match"));
             if (!string.IsNullOrEmpty(notice)) content.Add(Label(notice));
         }
 

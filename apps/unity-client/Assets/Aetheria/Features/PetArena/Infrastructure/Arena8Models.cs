@@ -15,6 +15,14 @@ namespace Aetheria.PetArena.Infrastructure
         public Arena8Allocation allocation;
     }
 
+    // Native transport scope. The Nest allocation route is the only source of the
+    // WSS endpoint, content hash, boot and match ids; expiresAt/principal are
+    // optional ticket-scope hints and never client-selected authority.
+    [Serializable] public sealed class Arena8NativeAllocation
+    {
+        public string ticket, wssUrl, httpsOrigin, contentHash, bootId, matchId, expiresAt, principal;
+    }
+
     [Serializable] public sealed class Arena8Allocation
     {
         public string petId, mapId, encounterId;

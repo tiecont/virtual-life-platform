@@ -10,14 +10,18 @@ namespace Aetheria.Networking
 {
     internal static class ProjectionJson
     {
-        internal static XElement Parse(byte[] bytes)
+        // `depth` bounds nested objects, arrays and array items. The Arena8
+        // projection nests artifacts -> item -> modifiers, so it passes a larger
+        // bound than the shallow Pet Arena view while staying explicitly bounded.
+        internal static XElement Parse(byte[] bytes, int depth = 8)
         {
-            if (bytes == null || bytes.Length == 0 || bytes.Length > 16384) throw new FormatException("Invalid projection");
+            if (bytes == null || bytes.Length == 0 || bytes.Length > 16384 || depth < 1 || depth > 32)
+                throw new FormatException("Invalid projection");
             try {
                 // Check the complete UTF-8 document, then preserve duplicate keys in the XML infoset.
-                new Google.Protobuf.JsonParser(new Google.Protobuf.JsonParser.Settings(8))
+                new Google.Protobuf.JsonParser(new Google.Protobuf.JsonParser.Settings(depth))
                     .Parse<Google.Protobuf.WellKnownTypes.Struct>(new UTF8Encoding(false, true).GetString(bytes));
-                var quotas = new XmlDictionaryReaderQuotas { MaxDepth = 8, MaxStringContentLength = 16384, MaxArrayLength = 64 };
+                var quotas = new XmlDictionaryReaderQuotas { MaxDepth = depth, MaxStringContentLength = 16384, MaxArrayLength = 64 };
                 using var reader = JsonReaderWriterFactory.CreateJsonReader(bytes, quotas);
                 return XDocument.Load(reader).Root;
             } catch (Exception error) when (error is XmlException || error is DecoderFallbackException ||
@@ -42,6 +46,13 @@ namespace Aetheria.Networking
         {
             if (Type(field) != type || field.HasElements) throw new FormatException("Invalid projection scalar");
             return field.Value;
+        }
+        internal static bool Boolean(XElement field)
+        {
+            if (Type(field) != "boolean" || field.HasElements) throw new FormatException("Invalid projection boolean");
+            if (field.Value == "true") return true;
+            if (field.Value == "false") return false;
+            throw new FormatException("Invalid projection boolean");
         }
         internal static long Integer(XElement field)
         {

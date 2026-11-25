@@ -73,7 +73,12 @@ namespace Aetheria.PetArena.Presentation
                 playerEvolution.Bind(evolutionProfile);
             initialized = true;
             ApplyPresentation();
-            var arena8Origin = Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API");
+            // Native transport is selected by its own HTTPS origin; the frozen HTTP
+            // compatibility bridge stays an explicit, default-off opt-in.
+            var nativeOrigin = Environment.GetEnvironmentVariable(Arena8CampaignScreen.NativeOriginVariable);
+            var arena8Origin = !string.IsNullOrWhiteSpace(nativeOrigin)
+                ? nativeOrigin
+                : Environment.GetEnvironmentVariable("AETHERIA_ARENA8_API");
             var wave1Origin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API");
             if (!string.IsNullOrWhiteSpace(arena8Origin))
             {
