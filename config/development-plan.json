@@ -9810,13 +9810,13 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "implementation": {
-        "sourceRevision": "d042df4373edd7493264840fd1830cc0e400e0ea",
+        "sourceRevision": "f13aa48c097b891cd062707c1b595bf2cd9cc7c3",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. Six EditMode tests decode ready/terminal projections, reject unknown fields and invalid seats/board sizes, and assert exact payloads and presenter gates.",
+        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. The UI Toolkit HUD builds the turn/boss labels, four seat panels with HP/mana/rage/shield/contribution, the 64-cell element/multiplier board and gated guard/skill/signature/ultimate actions. Seven EditMode tests decode ready/terminal projections, reject unknown fields and invalid seats/board sizes, assert exact payloads, presenter gates and HUD labels/enabled state.",
         "commands": [
           { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopNativeTests", "exitCode": 0 }
         ],
-        "remaining": "No cooperative scene UI, four-seat HUD, portal flow, reconnect/replay presentation or packaged player exists; the presenter is not yet mounted in a scene and contribution/fire-zone capability rendering remains."
+        "remaining": "The HUD is not mounted in a scene; lobby/portal flow, reconnect/replay presentation, Fire Zone capability rendering and packaged-player acceptance remain."
       }
     },
     {
