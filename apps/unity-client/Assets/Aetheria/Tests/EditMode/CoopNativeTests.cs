@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Text;
 using Aetheria.Networking;
+using Aetheria.PetArena.Presentation;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 
 namespace Aetheria.Tests
 {
@@ -67,6 +69,30 @@ namespace Aetheria.Tests
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.GuardAction(0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 64));
+        }
+
+        [Test]
+        public void PresentationRendersTheCommittedBoardAndGatesActions()
+        {
+            var view = Coop(version: 2, phase: "playing", activeSeat: 0, you: 0);
+            var selected = -1;
+            var root = CoopNativePresentation.Build(view, index => selected = index, _ => { });
+            StringAssert.Contains("phase 1", root.Q<Label>("coop-boss").text);
+            Assert.That(root.Q<Button>("coop-cell-0").text, Is.EqualTo("Fire ×2"));
+            Assert.That(root.Q<Button>("coop-cell-2").text, Is.EqualTo("·"));
+            Assert.That(root.Q<Button>("coop-action-guard").enabledSelf, Is.True);
+            Assert.That(root.Q<Button>("coop-action-skill").enabledSelf, Is.True);
+            Assert.That(root.Q<VisualElement>("coop-seat-3").Q<Label>("coop-seat-label-3").text, Does.Contain("terran"));
+
+            var waiting = Coop(version: 2, phase: "playing", activeSeat: 1, you: 0);
+            var blocked = CoopNativePresentation.Build(waiting, index => selected = index, _ => { });
+            Assert.That(blocked.Q<Button>("coop-action-guard").enabledSelf, Is.False);
+            Assert.That(blocked.Q<Button>("coop-cell-0").enabledSelf, Is.False);
+
+            var terminal = Coop(version: 2, phase: "lost", reward: "\"GRANTED\"");
+            var over = CoopNativePresentation.Build(terminal, index => selected = index, _ => { });
+            Assert.That(over.Q<Button>("coop-action-guard").enabledSelf, Is.False);
+            StringAssert.Contains("lost", over.Q<Label>("coop-turn").text);
         }
 
         [Test]
