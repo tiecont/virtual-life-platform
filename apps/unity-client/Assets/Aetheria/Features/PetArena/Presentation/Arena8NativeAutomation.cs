@@ -25,6 +25,7 @@ namespace Aetheria.PetArena.Presentation
 
         private string nativeCaptureDirectory;
         private NativeFacts nativeFacts;
+        private int lastGuardTurn = -1;
 
         private static string NativeCaptureDirectory()
         {
@@ -168,6 +169,7 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task<Arena8Settlement> RunNativeMatch(string map, string encounter, string prefix)
         {
+            lastGuardTurn = -1;
             await AllocateNative(map, encounter);
             Draw();
             await CaptureNative(prefix + "-allocated.png");
@@ -204,18 +206,99 @@ namespace Aetheria.PetArena.Presentation
                 await RetryNative();
                 return;
             }
-            if (nativeView.Health <= 80 &&
-                await TryNative((session, token) => session.GuardAsync(token))) return;
-            if (nativeView.Affords(Arena8NativeView.Ultimate) &&
-                await TryNative((session, token) => session.UltimateAsync(token))) return;
-            if (nativeView.Affords(Arena8NativeView.Signature) &&
-                await TryNative((session, token) => session.SignatureAsync(token))) return;
-            if (nativeView.Affords(Arena8NativeView.SharedSkill) &&
-                await TryNative((session, token) => session.SkillAsync(token))) return;
-            foreach (var swap in FindNativeSwaps(nativeView.Board))
-                if (await TryNative((session, token) => session.SwapAsync(swap.first, swap.second, token))) return;
-            if (await TryNative((session, token) => session.GuardAsync(token))) return;
+            var view = nativeView;
+            // Telegraph is public. Guard once when a heavy lane is about to
+            // resolve and health is genuinely threatened; never guard twice in
+            // a row and never let Guard replace available offense.
+            if (view.TelegraphKind == "heavy" && view.Health <= 80 &&
+                view.TelegraphResolvesTurn == view.Turn + 1 && lastGuardTurn != view.Turn &&
+                await TryNative((session, token) => session.GuardAsync(token)))
+            {
+                lastGuardTurn = view.Turn;
+                return;
+            }
+            if (view.Affords(Arena8NativeView.Ultimate) &&
+                await TryNative((session, token) => session.UltimateAsync(token))) { lastGuardTurn = -1; return; }
+            if (view.Affords(Arena8NativeView.Signature) &&
+                await TryNative((session, token) => session.SignatureAsync(token))) { lastGuardTurn = -1; return; }
+            if (view.Affords(Arena8NativeView.SharedSkill) &&
+                await TryNative((session, token) => session.SkillAsync(token))) { lastGuardTurn = -1; return; }
+            var best = BestNativeSwap(view);
+            if (best != null && await TryNative((session, token) =>
+                session.SwapAsync(best.Value.first, best.Value.second, token))) { lastGuardTurn = -1; return; }
+            if (lastGuardTurn != view.Turn &&
+                await TryNative((session, token) => session.GuardAsync(token)))
+            {
+                lastGuardTurn = view.Turn;
+                return;
+            }
             throw new InvalidOperationException("Native match has no accepted action");
+        }
+
+        private static (int first, int second)? BestNativeSwap(Arena8NativeView view)
+        {
+            var own = ElementId(view.PetElement);
+            (int first, int second)? best = null;
+            var bestScore = -1;
+            foreach (var swap in FindNativeSwaps(view.Board))
+            {
+                var score = NativeSwapScore(view.Board, swap.first, swap.second, own);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = swap;
+                }
+            }
+            return best;
+        }
+
+        // Scores only committed public tiles: longer runs and own-element runs
+        // are better. It never predicts refills, damage or hidden entropy.
+        private static int NativeSwapScore(System.Collections.Generic.IReadOnlyList<int> board,
+            int first, int second, int own)
+        {
+            var next = board.ToArray();
+            (next[first], next[second]) = (next[second], next[first]);
+            var score = 0;
+            for (var at = 0; at < 64; at++)
+            {
+                var x = at % 8;
+                var y = at / 8;
+                if (x <= 5)
+                {
+                    var length = RunLength(next, at, 1);
+                    if (length >= 3) score += length * 10 + (next[at] == own ? length * 6 : 0);
+                }
+                if (y <= 5)
+                {
+                    var length = RunLength(next, at, 8);
+                    if (length >= 3) score += length * 10 + (next[at] == own ? length * 6 : 0);
+                }
+            }
+            return score;
+        }
+
+        private static int RunLength(int[] board, int start, int step)
+        {
+            var value = board[start];
+            var length = 1;
+            for (var at = start + step; at < 64 && at / 8 == (at - step) / 8 + (step == 8 ? 1 : 0) &&
+                board[at] == value; at += step) length++;
+            return length;
+        }
+
+        private static int ElementId(string element)
+        {
+            switch (element)
+            {
+                case "fire": return 0;
+                case "water": return 1;
+                case "electric": return 2;
+                case "ghost": return 3;
+                case "ground": return 4;
+                case "light": return 5;
+                default: return -1;
+            }
         }
 
         private static string DescribeNative(Arena8Settlement settlement) =>
