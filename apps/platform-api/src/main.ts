@@ -9,6 +9,7 @@ async function main() {
   const { app, beginDrain,identity,privacyRequests,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true, {
     petArenaWave1:{enabled:config.LOCAL_PET_ARENA_WAVE1==='1'},
     petArtifacts:{enabled:config.LOCAL_PET_ARTIFACTS==='1'},
+    ...(config.LOCAL_ARENA8==='1'?{petArena8:{enabled:true,supervisorUrl:config.LOCAL_ARENA8_SUPERVISOR_URL!,supervisorToken:config.LOCAL_ARENA8_SUPERVISOR_TOKEN!}}:{}),
   });
   await app.listen(config.PORT, config.HOST);
   const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };

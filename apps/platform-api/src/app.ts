@@ -106,6 +106,8 @@ import {Wave1Store} from './features/pets/modules/wave1/infrastructure/store';
 import {registerArtifacts} from './features/pets/modules/wave-a-artifacts/presentation/http';
 import {ArtifactService} from './features/pets/modules/wave-a-artifacts/application/service';
 import {ArtifactStore} from './features/pets/modules/wave-a-artifacts/infrastructure/store';
+import {registerArena8} from './features/pets/modules/wave-a-arena8/presentation/http';
+import {Arena8Service} from './features/pets/modules/wave-a-arena8/application/service';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -120,9 +122,10 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string} } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
+  if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
   if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
@@ -298,6 +301,11 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   if(artifactsEnabled){
     registerArtifacts(http,config,identity,artifacts,true,options.now);
     identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
+  }
+  if(options.petArena8?.enabled){
+    registerArena8(http,config,identity,new Arena8Service(
+      db,options.petArena8.supervisorUrl,options.petArena8.supervisorToken,
+    ),true,options.now);
   }
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
   rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));

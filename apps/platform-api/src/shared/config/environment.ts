@@ -39,6 +39,9 @@ const Env = z.object({
   LOCAL_GAME_JOURNAL:z.enum(['0','1']).default('0'),
   LOCAL_PET_ARENA_WAVE1:z.enum(['0','1']).default('0'),
   LOCAL_PET_ARTIFACTS:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8_SUPERVISOR_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_SUPERVISOR_TOKEN:z.preprocess(value=>value===''?undefined:value,z.string().min(32).max(256).optional()),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -56,6 +59,17 @@ const Env = z.object({
   }
   if(env.LOCAL_PET_ARTIFACTS==='1'&&(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)){
     ctx.addIssue({code:'custom',path:['LOCAL_PET_ARTIFACTS'],message:'Wave A artifacts require a local/test loopback listener'});
+  }
+  if(env.LOCAL_ARENA8==='1'){
+    if(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8'],message:'Arena8 requires a local/test loopback listener'});
+    if(!env.LOCAL_ARENA8_SUPERVISOR_URL||!env.LOCAL_ARENA8_SUPERVISOR_TOKEN)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8'],message:'Arena8 supervisor URL and token are required'});
+    if(env.LOCAL_ARENA8_SUPERVISOR_URL){
+      const supervisor=new URL(env.LOCAL_ARENA8_SUPERVISOR_URL);
+      if(supervisor.protocol!=='http:'||!['127.0.0.1','[::1]'].includes(supervisor.hostname)||supervisor.username||supervisor.password||supervisor.search||supervisor.hash)
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_SUPERVISOR_URL'],message:'Expected an exact loopback HTTP supervisor URL'});
+    }
   }
   if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
   if(env.LOCAL_GAME_JOURNAL==='1'&&(env.LOCAL_GAME_LOBBY!=='1'||!env.GAME_STATE_KEY||env.NODE_ENV==='production'))ctx.addIssue({code:'custom',path:['LOCAL_GAME_JOURNAL'],message:'Local lobby and separate journal encryption key required'});
