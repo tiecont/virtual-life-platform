@@ -106,7 +106,7 @@
         },
         "nativeVerification": {
           "status": "NATIVE_FIRST_TURN_PASS_PROGRESSION_OPEN",
-          "sourceRevision": "2457cc76",
+          "sourceRevision": "4c406b2f",
           "allocation": "Nest NativeArena8Provisioner configured a restricted runtime world, issued a scoped Ed25519 ticket and returned only wss/https/content/boot/match identity",
           "transport": "local TLS/WSS bridge terminated the native runtime; scoped ticket, ownership, world lease and admission were exercised",
           "packagedPlayer": "built Linux player authenticated, allocated, connected over WSS, started and submitted a legal swap",
@@ -118,11 +118,18 @@
             "boardTiles": 64,
             "skills": ["shared-skill", "signature", "ultimate", "guard"]
           },
-          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; an earlier packaged native terminal loss persisted a defeat receipt",
+          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; the packaged one-match mode now reliably reaches terminal state and persists a defeat receipt",
+          "oneMatchEvidence": {
+            "facts": "artifacts/m3-native-one/native-facts.json",
+            "matchId": "65385f2b-404f-48fc-8358-93242c2fbe9e",
+            "phase": "lost",
+            "settlement": "defeat +0 coins +0 XP materials 0",
+            "boardTiles": 64
+          },
           "remaining": [
-            "Stable native win path for Fire regular and boss has not completed in the packaged player",
-            "Water allocation after native boss progression is not yet demonstrated",
-            "Consecutive native matches and native reconnect/restart lifecycle remain flaky after teardown",
+            "Stable native Fire victory and boss victory have not completed in the packaged player; full-progression attempts remain RNG/policy-flaky",
+            "Water allocation after native boss progression is not demonstrated",
+            "Consecutive native matches and native reconnect/restart lifecycle remain incomplete",
             "Central Plaza portal entry and native world movement are not wired",
             "Full native M3 Gates 1-8 are not met"
           ]
