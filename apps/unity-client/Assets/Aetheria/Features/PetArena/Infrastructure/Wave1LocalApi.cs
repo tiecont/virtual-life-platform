@@ -123,7 +123,7 @@ namespace Aetheria.PetArena.Infrastructure
         public void Dispose() => http.Dispose();
 
         private async Task<T> Request<T>(string route, object body, CancellationToken cancellation,
-            bool rememberSession = false) where T : class
+            bool rememberSession = false, int retry = 0) where T : class
         {
             using var request = new HttpRequestMessage(body == null ? HttpMethod.Get : HttpMethod.Post, route);
             if (cookie != null) request.Headers.TryAddWithoutValidation("Cookie", cookie);
@@ -139,6 +139,11 @@ namespace Aetheria.PetArena.Infrastructure
             if (!response.IsSuccessStatusCode)
             {
                 var status = (int)response.StatusCode;
+                if (status == 429 && retry < 2)
+                {
+                    await Task.Delay(65_000, cancellation);
+                    return await Request<T>(route, body, cancellation, rememberSession, retry + 1);
+                }
                 var message = "HTTP " + status;
                 if (response.Content.Headers.ContentType?.MediaType == "application/json")
                 {

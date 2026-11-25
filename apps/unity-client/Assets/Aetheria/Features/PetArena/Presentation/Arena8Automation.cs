@@ -116,9 +116,19 @@ namespace Aetheria.PetArena.Presentation
                         (equippedPet.slots.core == reward.artifactId ||
                          equippedPet.slots.aegis == reward.artifactId ||
                          equippedPet.slots.rune == reward.artifactId);
-                    automatedFacts.afterArtifactEffective = automatedFacts.beforeArtifactEffective;
                     Draw();
                     await Capture("05-artifact-equipped.png");
+                    var check = await api.AllocateArena8(new Arena8AllocateRequest
+                    {
+                        requestId = NewRequestId(), petId = selectedPet, mapId = "cinder-terraces",
+                        encounterId = "cinder-terraces-regular",
+                    }, lifetime.Token);
+                    matchId = check.matchId;
+                    view = check.view;
+                    automatedFacts.afterArtifactEffective = view.stats?.effective?.health + "/" +
+                        view.stats?.effective?.attack + "/" + view.stats?.effective?.defense;
+                    Draw();
+                    await Capture("05b-post-artifact-allocation.png");
                 }
                 else
                 {
