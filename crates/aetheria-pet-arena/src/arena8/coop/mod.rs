@@ -14,6 +14,7 @@
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
 pub mod config;
+pub mod simulation;
 
 use crate::arena8::Element;
 use aetheria_game_core::{

@@ -54,6 +54,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         return Ok(());
     }
+    if let [flag, path, policy, seeds] = args.as_slice()
+        && flag == "--simulate-coop"
+    {
+        let policy = aetheria_pet_arena::arena8::coop::simulation::Policy::parse(policy)
+            .ok_or("Unknown cooperative simulation policy")?;
+        let seeds: u32 = seeds
+            .parse()
+            .map_err(|_| "Invalid cooperative simulation seed count")?;
+        let bytes = std::fs::read(path)?;
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+            .map_err(|_| "Invalid cooperative gameplay configuration")?;
+        let report = aetheria_pet_arena::arena8::coop::simulation::simulate(&rules, policy, seeds)
+            .map_err(|_| "Cooperative simulation rejected")?;
+        println!("{}", serde_json::to_string(&report)?);
+        return Ok(());
+    }
     if args == ["--healthcheck"] {
         probe(config.bind).await?;
         return Ok(());
