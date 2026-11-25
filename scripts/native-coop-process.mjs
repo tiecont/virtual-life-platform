@@ -116,7 +116,7 @@ try{
  assert.equal(started.statusCode,200,JSON.stringify(started.json()));
  assert.equal(started.json().status,'STARTED');
  facts.scenarios.push('actual-runtime-process-started-from-published-bundle-and-four-seats');
- const allocation=(await pool.query('SELECT match_id,world_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations')).rows[0];
+ const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations')).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
  assert.equal(allocation.status,'ACTIVE');assert.equal(allocation.seats,4);
  assert.equal(Number(allocation.config_version),created.version);
@@ -128,10 +128,15 @@ try{
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
  async function freshTickets(){
   const issued=[];
-  for(const member of members){
+  for(const [seat,member] of members.entries()){
    const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
    assert.equal(response.statusCode,200,JSON.stringify(response.json()));
-   issued.push(response.json().ticket);
+   const view=response.json();
+   assert.equal(view.bootId,allocation.boot_id);
+   assert.equal(view.accountId,member.accountId);
+   assert.equal(view.seat,seat);
+   assert.equal(view.contentHash,allocation.content_hash);
+   issued.push(view.ticket);
   }
   assert.equal(new Set(issued).size,4);
   return issued;
