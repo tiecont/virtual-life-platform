@@ -9736,8 +9736,19 @@
         "Changing the published threshold changes eligibility without rebuilding the application",
         "Create, join, leave, select owned Pet, ready, start, freeze roster and return to hub are durable and idempotent"
       ],
-      "status": "TODO",
-      "qualificationRequirements": []
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "77ae39aea238aa41ec17823a3c7fdef9b7a222eb",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Migration 0060 adds an idempotent Achievement Point ledger, pinned cooperative rooms, a frozen roster and allocation identity. The coop/rooms module implements create, join, leave, owned-Pet selection, ready, start (roster lock) and close with session+CSRF authorization, request fingerprints, journaled transitions and immutable room identity. The published Boss threshold drives eligibility; 4999 is refused and 5000 accepted.",
+        "commands": [
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Start freezes the roster but does not yet allocate or provision the native match; there is no room discovery or return-to-hub flow, no settlement award into the ledger, and no reward/achievement configuration beyond the room threshold."
+      }
     },
     {
       "id": "VL-195",
