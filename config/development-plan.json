@@ -36,7 +36,7 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave C",
+    "wave": "Wave D2",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
@@ -209,21 +209,23 @@
         ],
         "cooperativeFoundation": {
           "status": "RUST_MODEL_CORRECTNESS_TESTS_PASS_NOT_NATIVE_INTEGRATED",
-          "module": "crates/aetheria-pet-arena/src/arena8/coop.rs",
+          "module": "crates/aetheria-pet-arena/src/arena8/coop/",
           "rulesetId": "aetheria-pet-arena-arena8-coop",
           "tests": [
-            "four_seats_rotate_turns_and_rounds",
-            "multiplier_schedule_is_versioned",
-            "boss_phase_transition_is_exact_once_and_discards_excess",
-            "ground_has_high_hp_low_crit_and_high_crit_damage",
-            "deterministic_replay_matches",
-            "no_match_swap_is_rejected_without_mutation",
-            "mixed_multiplier_same_element_matches",
-            "full_columns_are_not_overwritten_by_refill",
-            "initial_board_has_no_unresolved_match_and_has_a_legal_move"
+            "seed_bundle_is_accepted_and_separates_digests",
+            "configuration_fails_closed_when_missing_or_invalid",
+            "initial_board_is_matchless_and_playable",
+            "no_match_swap_is_rejected_without_any_mutation",
+            "mixed_multiplier_same_element_tiles_form_one_match",
+            "scoring_counts_each_tile_once_and_uses_multipliers",
+            "gravity_preserves_order_and_refills_only_empty_cells",
+            "rng_is_deterministic_and_seed_bound",
+            "boss_phase_transition_happens_exactly_once",
+            "skill_costs_cooldowns_and_level_independence",
+            "ground_identity_is_configuration_not_a_copy_of_fire"
           ],
-          "limits": "No native Host, WSS intent/view, Nest room, achievement ledger, cooperative settlement, database configuration or Unity cooperative UI is wired to this model.",
-          "configurationAuthority": "NOT_IMPLEMENTED: production gameplay parameters remain in Rust candidate constants; PostgreSQL draft/published gameplay configuration and Admin control are still open."
+          "limits": "The engine and its configuration bundle exist; no native Host, WSS intent/view, Nest room, achievement ledger, cooperative settlement, PostgreSQL configuration lifecycle or Unity cooperative UI is wired to it.",
+          "configurationAuthority": "ENGINE_LEVEL_ONLY: the cooperative ruleset now reads every authored value from a strict versioned bundle and fails closed (config/gameplay/arena8-coop-v1.seed.json, digest c641ee51...); PostgreSQL draft/published configuration, Admin editors, publication and snapshot binding remain open (VL-191, VL-192)."
         },
         "gates": {
           "cooperativeCombatFoundation": "RUST_MODEL_TESTS_PASS_NOT_INTEGRATED",
@@ -233,6 +235,41 @@
           "cooperativeSettlement": "NOT_ACCEPTED",
           "packagedFourSeatPlayer": "NOT_ACCEPTED"
         }
+      },
+      "waveD2Verification": {
+        "status": "CONFIGURATION_DRIVEN_ENGINE_PASS_PLATFORM_OPEN",
+        "sourceRevision": "d6f68ca6a99bc6fabb03c75033344eacbcecb8d8",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "engine": {
+          "ruleset": "arena8-coop-pve",
+          "engineCapability": "arena8-coop-v1",
+          "configBundle": "config/gameplay/arena8-coop-v1.seed.json",
+          "configDigest": "c641ee510328bb5c27719783e3a80e63298644cf815435f12cb46b2daaa5b059",
+          "hardcodedBalance": "none in the cooperative ruleset; structural bounds only (64 cells, 4 seats, 6 elements, turn/cascade ceilings)",
+          "validator": "aetheria-game-runtime --check-gameplay-config <bundle> prints the canonical digest and exits non-zero on any defect"
+        },
+        "correctness": [
+          "a no-match swap is rejected before any state or RNG change",
+          "matches use element identity with mixed multipliers and no double counting at intersections",
+          "gravity preserves survivor order, refills only empty cells and never overwrites full columns",
+          "cascades are bounded by the authored cap and a dead board is regenerated to a matchless board with a legal move",
+          "server entropy comes from the native SecretSeed/TurnRng stream, not a standalone generator",
+          "the Boss phase transition happens exactly once from authored thresholds and cannot skip phase two"
+        ],
+        "checks": [
+          {"command": "cargo test -p aetheria-pet-arena", "exitCode": 0, "result": "38 lib + 30 arena8_coop conformance + 27 existing integration tests PASS"},
+          {"command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-core -p aetheria-game-runtime --all-targets", "exitCode": 0, "result": "0 warnings"},
+          {"command": "cargo check --workspace --all-targets --locked", "exitCode": 0},
+          {"command": "artifacts/rust/target/debug/aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v1.seed.json", "exitCode": 0, "result": "{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"c641ee51...\"}"}
+        ],
+        "open": [
+          "PostgreSQL configuration authority, publication lifecycle, rollback and audit (VL-191)",
+          "Admin control panel and simulation tooling (VL-192, VL-197)",
+          "native four-seat runtime, admission, rooms, Achievement Points, settlement (VL-193, VL-194, VL-195)",
+          "Unity cooperative presentation and portal world flow (VL-196)",
+          "four-account packaged acceptance and M4 content production (VL-198, VL-199)"
+        ],
+        "notClaimed": "No production balance approval, no native cooperative acceptance, no four-human playtest and no public release."
       },
       "waveBVerification": {
       "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
@@ -9545,6 +9582,238 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
       }
+    },
+    {
+      "id": "VL-190",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "GAMEPLAY-CONFIG",
+      "title": "Wave D2: configuration-driven cooperative ruleset and engine correctness",
+      "objective": "Turn the four-seat cooperative Boss foundation into a validated, configuration-driven ruleset with no authored balance value in Rust, and fix the match/refill/multiplier/RNG/phase correctness defects.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-189"
+      ],
+      "acceptance": [
+        "arena8-coop-pve loads every authored value from a strict typed bundle and fails closed when it is missing, malformed or incompatible",
+        "No-match swaps, mixed-multiplier same-element matches, gravity/refill, bounded cascades, dead-board recovery, server-entropy RNG, canonical state encoding and one-time Boss phase transitions are covered by committed tests",
+        "aetheria-game-runtime --check-gameplay-config validates a bundle and prints its canonical digest"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Owner review of the candidate balance bundle before any production balance claim"
+      ],
+      "implementation": {
+        "sourceRevision": "d6f68ca6a99bc6fabb03c75033344eacbcecb8d8",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Configuration module, engine refactor, seed bundle and digest, authoritative validation CLI, cooldown/duration ticking at the start of the affected participant's turn, matrix immunity rule applied across the graph.",
+        "commands": [
+          {
+            "command": "cargo test -p aetheria-pet-arena",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-core -p aetheria-game-runtime --all-targets -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "artifacts/rust/target/debug/aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v1.seed.json",
+            "exitCode": 0
+          }
+        ],
+        "remaining": "PostgreSQL publication, native four-seat runtime, Admin editors, rooms, achievement ledger, settlement, Unity presentation."
+      }
+    },
+    {
+      "id": "VL-191",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "GAMEPLAY-CONFIG",
+      "title": "Wave D2: PostgreSQL gameplay configuration authority and publication lifecycle",
+      "objective": "Persist typed gameplay configuration versions in PostgreSQL with draft, validation, atomic publication, optimistic concurrency, rollback, audit and immutable active selection.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-190"
+      ],
+      "acceptance": [
+        "A draft can be created, validated and published atomically; partial publication is impossible",
+        "Published versions are immutable, rollback selects a compatible published version without rewriting history, and versions referenced by persisted matches cannot be deleted",
+        "Publication validates the bundle with the engine validator and binds the engine digest into the snapshot; missing or invalid configuration fails closed"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-192",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "ADMIN",
+      "title": "Wave D2: Admin gameplay configuration control panel",
+      "objective": "Extend the existing Next.js Admin application with working editors for elements, Pets, Bosses, board/multiplier rules, skills, progression and rewards, plus draft comparison, validation, publication, rollback and audit history.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-191"
+      ],
+      "acceptance": [
+        "An operator can edit a Boss phase, a Pet or element stat and a multiplier probability, validate the draft and publish it from the existing Admin UI",
+        "A newly allocated native match uses the published values without rebuilding Rust or Unity, while an already active match keeps its original configuration",
+        "Administrative operations stay behind the existing operator authentication and authorization"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-193",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "NATIVE",
+      "title": "Wave D2: cooperative native runtime, four-seat admission and recovery",
+      "objective": "Run arena8-coop-pve through the existing native Gateway, Persistence Host, admission and journal with four separately authenticated participants, seat ownership and restart recovery under the original configuration.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-190",
+        "VL-191"
+      ],
+      "acceptance": [
+        "Four separately authenticated accounts receive scoped tickets and execute only their own seat's legal actions against one shared board and Boss",
+        "Out-of-turn, cross-account and unauthorized-Ability commands are rejected without state change",
+        "Restart restores the match, participants, board, phase, configuration digest and RNG cursor, and does not mark recoverable matches FAILED"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-194",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "ROOMS",
+      "title": "Wave D2: cooperative rooms, Achievement Points and eligibility",
+      "objective": "Implement the durable Achievement Point ledger and the room lifecycle with per-Boss room-creation thresholds published from configuration.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-191"
+      ],
+      "acceptance": [
+        "With a published threshold of 5000, an account at 4999 cannot create the room and an account at 5000 can",
+        "Changing the published threshold changes eligibility without rebuilding the application",
+        "Create, join, leave, select owned Pet, ready, start, freeze roster and return to hub are durable and idempotent"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-195",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "SETTLEMENT",
+      "title": "Wave D2: cooperative settlement and per-participant progression",
+      "objective": "Settle one authoritative team completion into durable per-participant rewards driven by published reward rules, including contribution-based eligibility.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-193",
+        "VL-194"
+      ],
+      "acceptance": [
+        "Every eligible participant receives Achievement Points, Pet EXP, coins and authored rewards exactly once",
+        "Disconnect, client retry, outbox retry, restart and concurrent settlement never duplicate progression",
+        "An authorized completed match settles even when the client disconnects before requesting rewards"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-196",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "UNITY",
+      "title": "Wave D2: cooperative presentation and real world portal flow",
+      "objective": "Present the committed four-seat cooperative match in the existing Unity Arena8 infrastructure and complete the real portal flow from Central Plaza through Cinder Terraces to Tideglass Lagoon.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-193"
+      ],
+      "acceptance": [
+        "Unity renders four combatants, the active seat, individual resources and skills, team status, the shared 8x8 board with multiplier labels, Boss HP/phase/telegraph, turn/round and contribution without hardcoding costs or caps",
+        "Guest login, Pet selection, portal interaction, native combat, settlement and return to hub work without direct PetArenaPve entry",
+        "Reconnect and receipt replay never duplicate committed presentation events"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-197",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "BALANCE",
+      "title": "Wave D2: Admin simulation and cooperative balance measurement",
+      "objective": "Run bounded simulations of draft or published configuration through the same Rust rules, with fixed documented seeds and comparable public-information policies, without touching live progression.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-192",
+        "VL-193"
+      ],
+      "acceptance": [
+        "Simulation results report team win rate, duration, actions, rounds, phase transitions, multiplier occurrence and contribution distribution for comparable seed sets",
+        "Random, basic, tactical and coordinated policies use identical seeds and never inspect hidden tiles",
+        "Simulation is authorized, bounded, cancellable and cannot mutate live state"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": []
+    },
+    {
+      "id": "VL-198",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "CONTENT",
+      "title": "Wave D2: M4 content production on the MVP critical path",
+      "objective": "Produce the owner-approved M4 character and asset set through the existing H1-H4 gates without paid generation, visual evolution or rights assumptions.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-189"
+      ],
+      "acceptance": [
+        "Required M4 characters and assets pass their H1-H4 owner review gates with recorded decisions",
+        "55 active Pet identities, six gated Off-rate candidates, six Dragons, six Birds and all approved identities remain intact",
+        "No paid generation, unauthorized media or production claim is made"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner H1-H4 asset acceptance"
+      ]
+    },
+    {
+      "id": "VL-199",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "QA-SRE",
+      "title": "Wave D2: four-account packaged-player cooperative acceptance",
+      "objective": "Accept cooperative gameplay on a built Linux Unity player against the real Nest API, canonical Rust runtime and PostgreSQL with four separately authenticated integration clients.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-195",
+        "VL-196",
+        "VL-198"
+      ],
+      "acceptance": [
+        "A human player with clearly labelled local test clients completes the cooperative flow end to end",
+        "Four separately authenticated clients provide the native authorization evidence",
+        "Four-human acceptance is claimed only if four actual humans participate"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Linux player build",
+        "Local PostgreSQL and native runtime"
+      ]
     }
   ]
 }
