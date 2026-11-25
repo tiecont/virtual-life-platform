@@ -10,7 +10,7 @@ use aetheria_game_core::{
     canonical, canonical::list,
 };
 
-use super::binding::{self, MatchSnapshot};
+use super::binding::{self, MatchSnapshot, SkillId};
 use super::model::{Action, Phase, State};
 use super::{Board, ELEMENTS, combat};
 use serde::{Deserialize, Serialize};
@@ -155,6 +155,27 @@ impl Canonical for BoundState {
 /// New versioned ruleset id for data-bound Arena8 matches.
 pub struct Arena8Bound;
 
+/// True when the level-derived ability set of a snapshot permits the intent.
+/// Board swaps and `Start` are always allowed.
+pub fn action_allowed(skills: &[SkillId], action: &Action) -> bool {
+    match required_skill(action) {
+        Some(required) => skills.contains(&required),
+        None => true,
+    }
+}
+
+/// Maps an intent to the ability it requires. Board/start intents need none.
+const fn required_skill(action: &Action) -> Option<SkillId> {
+    match action {
+        Action::Start | Action::Swap { .. } => None,
+        Action::Skill => Some(SkillId::SharedSkill),
+        Action::Signature => Some(SkillId::Signature),
+        Action::FireZone => Some(SkillId::FireZone),
+        Action::Ultimate => Some(SkillId::Ultimate),
+        Action::Guard => Some(SkillId::Guard),
+    }
+}
+
 impl Reducer for Arena8Bound {
     type State = BoundState;
     type Action = Action;
@@ -180,6 +201,12 @@ impl Reducer for Arena8Bound {
         rng: &mut aetheria_game_core::TurnRng,
     ) -> Result<Decision<BoundState>, CoreError> {
         self.validate(state)?;
+        // Progression gate: the reducer, not the UI, decides whether an ability
+        // is unlocked at the snapshot's level. Mana/Rage/cooldown alone are not
+        // eligibility. A locked ability is an invalid action, not a no-op.
+        if !action_allowed(state.snapshot.skills(), action) {
+            return Err(CoreError::InvalidAction);
+        }
         let decision = combat::reduce_with(
             &state.core,
             action,

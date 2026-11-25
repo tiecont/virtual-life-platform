@@ -36,10 +36,42 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave B",
+    "wave": "Wave C",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
+    "contentReadiness": {
+      "schemaVersion": 1,
+      "rule": "Per-stage production ledger. A readiness flag, roster entry, manifest entry, concept file or developer substitute is never a produced, admitted or accepted asset. Counts are production-qualified only; owner acceptance and rights clearance are separate gates.",
+      "canonicalIdentities": 61,
+      "activeIdentities": 55,
+      "gatedCandidates": 6,
+      "stages": {
+        "combatBound": 55,
+        "combatVerified": 55,
+        "conceptApproved": 0,
+        "modelProduced": 0,
+        "rigValidated": 0,
+        "animationBound": 0,
+        "unityAdmitted": 0,
+        "renderReviewed": 0,
+        "rightsCleared": 0
+      },
+      "missingAssets": "0 of 55 active identities have an owner-accepted production model, rig, animation, Unity prefab or rights-cleared asset. Every PetVisualAsset right is still PENDING_REVIEW; Icarus has a developer-substitute study only.",
+      "developerSubstitutes": [
+        {
+          "id": "pet-v3-fire-icarus",
+          "assets": ["icarus-study.fbx", "Icarus.vrm", "Icarus_Bow.glb", "Icarus_Wings.glb", "IcarusStudy.controller"],
+          "status": "DEVELOPER_SUBSTITUTE_NOT_OWNER_ACCEPTED"
+        }
+      ],
+      "basis": {
+        "canonicalIdentities": "crates/aetheria-pet-arena binding IDENTITY_COUNT = 55 ACTIVE + 6 CANDIDATE",
+        "combatBound": "every active identity binds; arena8_binding.rs every_active_identity_binds_and_every_candidate_stays_gated",
+        "combatVerified": "all 55 active identities exercised at Lv1/30/60 by automated authoritative tests; owner playtesting remains M5",
+        "artStages": "no owner-accepted production model/rig/animation/render exists; all PetVisualAsset rights remain PENDING_REVIEW; Icarus assets are developer substitutes"
+      }
+    },
     "currentWave": {
       "id": "WAVE-B",
       "title": "Authoritative 8x8, progression and living world",
@@ -164,6 +196,32 @@
         "No mandatory Lv20/40/60 visual evolution forms; preserve identity and base silhouette.",
         "No five additional Limited S, 19 maps, 240-Pet catalog, permanent fusion, PvP or social-world dependency in MVP.",
         "No public release, purchases, production deployment or signing."
+      ]
+    },
+    "waveCVerification": {
+      "status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "codeRevision": "b35fa8a41bd930e5281c2d73daac65c41bdeb08e",
+      "completed": {
+        "governance": "VL-182 and M4 acceptance no longer treat a readiness field or manifest entry as production; mvpProgram.contentReadiness records the separate per-stage counts",
+        "sceneRegistry": "one canonical ProjectScenes registry feeds EditorBuildSettings and BuildPlayerOptions.scenes so a built player cannot omit a required scene",
+        "combatProgression": "level-based skill eligibility is enforced in the Arena8Bound reducer: Lv1 basic/guard, Lv40 Signature/FIRE_ZONE, Lv60 Ultimate; Lv20 reserved pending OD",
+        "worldHarness": "fixed the Wave B world-capture player path so the built player is spawned from the actual Linux build output"
+      },
+      "worldEvidence": {
+        "command": "UNITY_EDITOR=<pinned 6000.3.14f1> node scripts/unity-validate.mjs world",
+        "result": "PASS",
+        "player": "apps/unity-client/Builds/Linux/Aetheria (Linux development player, OpenGLCore, AMD Renoir)",
+        "scenes": ["CentralPlaza", "CinderTerraces", "TideglassLagoon"],
+        "boards": "64 visible tiles rendered in CinderTerraces and TideglassLagoon",
+        "transitions": "CentralPlaza -> CinderTerraces | CinderTerraces -> CentralPlaza | CentralPlaza -> TideglassLagoon",
+        "screenshots": 5
+      },
+      "notMet": [
+        "No authenticated arena8-pve allocator in the Nest control plane and no multi-match lifecycle",
+        "Arena8 campaign EXP/coin/recruitment/map-clear/Artifact settlement is not connected",
+        "Unity still defaults to the frozen Wave 1 compatibility campaign; no committed arena8.intent.v1/arena8.view.v1 client",
+        "The mandatory M3 integrated player loop has not executed"
       ]
     },
     "waveAVerification": {
@@ -318,7 +376,8 @@
         "status": "TODO",
         "objective": "Complete the 55 active Pets, six maps and approved art/audio content.",
         "exitCriteria": [
-          "All active roster assets admitted at the correct state",
+          "Every active identity records an explicit per-stage production state; a missing asset remains an explicit missing/not-produced status and is never implied by a readiness flag, manifest entry or developer substitute",
+          "Every mvpProgram.contentReadiness stage is met by an actual owner-accepted, rights-cleared production asset, reported as a count per stage rather than a boolean readiness field",
           "Six maps playable",
           "Five additional Limited S and 19-map/240-Pet expansion remain deferred"
         ]
@@ -9123,7 +9182,9 @@
         "VL-180"
       ],
       "acceptance": [
-        "All 55 active identities have an explicit model/rig/animation/VFX readiness state",
+        "Each of the 61 canonical identities (55 active + 6 gated candidates) carries an explicit per-stage state for concept, model, rig, animation, Unity admission, render review and rights; an unproduced stage is recorded as an explicit missing/not-produced status, never as an implied pass",
+        "A model, rig, animation or Unity prefab counts toward this task only when the actual owner-accepted asset is admitted and its rights are cleared; a readiness field, manifest entry, concept file or developer substitute never satisfies acceptance",
+        "Production counts are reported per stage (canonical identities, combat bound, combat verified, concept approved, model produced, rig validated, animation bound, Unity admitted, render reviewed, rights cleared) and match mvpProgram.contentReadiness",
         "Reusable humanoid/quadruped/avian/serpent/floating intakes are admitted through the asset gate",
         "The six Off-rate candidates remain content-gated until OD-1"
       ],
@@ -9202,7 +9263,10 @@
       ],
       "acceptance": [
         "Arena8 allocation uses server-owned content/entropy and the canonical 55 active identities",
+        "A single player can run consecutive arena8-pve matches with a changed Artifact loadout without editing private settings or restarting infrastructure",
+        "Allocation validates the authenticated account, owned Pet identity/species, encounter eligibility, map progression, level and equipment, then captures an immutable loadout pinned to the content/ruleset digests",
         "Accepted commands/receipts survive restart and reconnect; stale/duplicate/lost-ACK behavior is bounded",
+        "Level-based skill eligibility is enforced by the authoritative reducer, not only by the UI",
         "Completion settlement is idempotent and cannot be granted twice by a parallel legacy route"
       ],
       "status": "IN_PROGRESS",
@@ -9307,6 +9371,10 @@
       ],
       "acceptance": [
         "The full local flow completes without duplicate settlement, unauthorized ownership or cross-account access",
+        "A built Linux development player authenticates a local guest, loads Central Plaza, selects an owned Pet, enters Cinder Terraces by portal, allocates arena8-pve, connects with a ticket, plays the authoritative 8x8 board, receives the terminal receipt and persists EXP/coins/Artifact progression",
+        "An earned Artifact is equipped in Unity and the next authorized match starts with changed authoritative effective stats, without manual infrastructure changes",
+        "Fire map progression unlocks Tideglass Lagoon through the real game flow; client/API/runtime restart recovers Pets, equipment, wallet and progression with no duplicate rewards",
+        "The built executable includes and loads Central Plaza, Cinder Terraces, Tideglass Lagoon and the required MVP scenes outside the Unity Editor",
         "An active match cannot be mutated by an Artifact change; the next match uses the new snapshot",
         "Restart recovers inventory/progression and frozen replay compatibility remains intact"
       ],

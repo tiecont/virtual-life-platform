@@ -41,21 +41,14 @@ namespace Aetheria.Editor
                       "Four remaining maps stay foundation-only previews.");
         }
 
-        // Idempotently keeps the three world scenes in build settings without
-        // deleting or reordering the pre-existing blockout/scene entries.
+        // The world scenes are part of the one canonical player-build registry;
+        // keep this entry point so existing build menus and callers stay valid.
         public static void EnsureBuildEntries()
         {
-            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
             foreach (var path in ScenePaths)
-            {
                 if (AssetDatabase.LoadAssetAtPath<SceneAsset>(path) == null)
                     throw new InvalidOperationException("World scene asset is missing: " + path);
-                var present = false;
-                foreach (var entry in scenes)
-                    if (string.Equals(entry.path, path, StringComparison.Ordinal)) present = true;
-                if (!present) scenes.Add(new EditorBuildSettingsScene(path, true));
-            }
-            EditorBuildSettings.scenes = scenes.ToArray();
+            ProjectScenes.ApplyEditorBuildSettings();
         }
 
         private static void BuildScene(

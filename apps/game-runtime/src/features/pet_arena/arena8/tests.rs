@@ -42,18 +42,24 @@ fn rules(pet: &str, level: u8, encounter: &str, artifacts: &[(&str, u8)]) -> Rul
     .unwrap()
 }
 
-fn choose(state: &aetheria_pet_arena::arena8::State) -> Action {
+fn choose(state: &aetheria_pet_arena::arena8::State, skills: &[binding::SkillId]) -> Action {
     if state.phase() == Phase::Ready {
         return Action::Start;
     }
     if state.cooldown() == 0 {
-        if state.mana() >= ULTIMATE_MANA && state.rage() >= ULTIMATE_RAGE {
+        if skills.contains(&binding::SkillId::Ultimate)
+            && state.mana() >= ULTIMATE_MANA
+            && state.rage() >= ULTIMATE_RAGE
+        {
             return Action::Ultimate;
         }
-        if state.mana() >= SIGNATURE_MANA && state.rage() >= SIGNATURE_RAGE {
+        if skills.contains(&binding::SkillId::Signature)
+            && state.mana() >= SIGNATURE_MANA
+            && state.rage() >= SIGNATURE_RAGE
+        {
             return Action::Signature;
         }
-        if state.mana() >= SKILL_MANA {
+        if skills.contains(&binding::SkillId::SharedSkill) && state.mana() >= SKILL_MANA {
             return Action::Skill;
         }
     }
@@ -74,6 +80,7 @@ struct Run {
 
 fn drive(rules: &Rules, seed_byte: u8) -> Run {
     let seed = SecretSeed::from_host_entropy([seed_byte; 32]);
+    let skills = rules.snapshot().skills().to_vec();
     let mut checkpoint = begin(rules, MATCH, rules.initial().unwrap(), &seed, clock(0)).unwrap();
     let mut state_hashes = Vec::new();
     let mut events = Vec::new();
@@ -92,7 +99,7 @@ fn drive(rules: &Rules, seed_byte: u8) -> Run {
                 match_id: MATCH,
                 expected_version: version,
                 ruleset: rules.ruleset(),
-                action: choose(checkpoint.state.bound.core()),
+                action: choose(checkpoint.state.bound.core(), &skills),
             },
             &seed,
             clock(version + 1),
@@ -210,9 +217,11 @@ fn projection_is_authored_and_excludes_secrets_and_the_account() {
         binding::stat_semantics(ArtifactStat::Speed).effect,
         StatEffect::Inactive
     );
+    // Lv20 in this ruleset version unlocks only the reserved power-skill
+    // milestone; Signature (Lv40) and Ultimate (Lv60) stay locked.
     assert_eq!(
         projection["skills"],
-        serde_json::json!(["shared-skill", "signature", "ultimate", "guard"])
+        serde_json::json!(["shared-skill", "guard"])
     );
 }
 
