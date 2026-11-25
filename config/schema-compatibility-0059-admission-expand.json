@@ -4,7 +4,7 @@
   "mode": "expand-compatible",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "ebaaf860242c666ddb74111a3a8e87f83e9c7a44f1d7d197c20fae25e261af7b",
+  "runtimeManifestSha256": "ee85fe18b3b9d81516d2ed58ae3ff430957f0564bbeb8114970651a1bf8349e7",
   "minimumDatabaseMigrations": 48,
   "maximumDatabaseMigrations": 59,
   "reviewRef": "evidence:wave-d2-gameplay-config-0059",

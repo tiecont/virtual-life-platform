@@ -4,7 +4,7 @@
   "mode": "expand-compatible",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "679a2c33e767fd6909d1509fcc7f3b2795a7f56aa4da6a5fae5b2756182b47f5",
+  "runtimeManifestSha256": "175475c551f951e63b75f91dccddfe07bd478d67cce54e398217f63e8c3f9ee4",
   "minimumDatabaseMigrations": 47,
   "maximumDatabaseMigrations": 61,
   "reviewRef": "evidence:wave-d2-coop-settlement-0061",

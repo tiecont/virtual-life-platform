@@ -4,7 +4,7 @@
   "mode": "expand-compatible",
   "journal": "city_schema_migrations",
   "metadataVersion": 1,
-  "runtimeManifestSha256": "be5cd45ebe42258da8d4e28d848a289caba0d6ee74f7de0305df3fd0599e47e3",
+  "runtimeManifestSha256": "175475c551f951e63b75f91dccddfe07bd478d67cce54e398217f63e8c3f9ee4",
   "minimumDatabaseMigrations": 47,
   "maximumDatabaseMigrations": 60,
   "reviewRef": "evidence:wave-d2-coop-rooms-0060",
