@@ -42,6 +42,14 @@ const Env = z.object({
   LOCAL_ARENA8:z.enum(['0','1']).default('0'),
   LOCAL_ARENA8_SUPERVISOR_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
   LOCAL_ARENA8_SUPERVISOR_TOKEN:z.preprocess(value=>value===''?undefined:value,z.string().min(32).max(256).optional()),
+  LOCAL_ARENA8_NATIVE:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8_NATIVE_BINARY:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_DATABASE_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_NATIVE_DB_ROLE:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-z_][a-z0-9_]{0,62}$/).optional()),
+  LOCAL_ARENA8_NATIVE_CA_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/).default('local-v1'),
+  LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -70,6 +78,39 @@ const Env = z.object({
       if(supervisor.protocol!=='http:'||!['127.0.0.1','[::1]'].includes(supervisor.hostname)||supervisor.username||supervisor.password||supervisor.search||supervisor.hash)
         ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_SUPERVISOR_URL'],message:'Expected an exact loopback HTTP supervisor URL'});
     }
+  }
+  if(env.LOCAL_ARENA8_NATIVE==='1'){
+    if(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE'],message:'Native Arena8 requires a local/test loopback listener'});
+    const requiredNative:readonly [string,string|undefined][]=[
+      ['LOCAL_ARENA8_NATIVE_BINARY',env.LOCAL_ARENA8_NATIVE_BINARY],
+      ['LOCAL_ARENA8_NATIVE_DATABASE_URL',env.LOCAL_ARENA8_NATIVE_DATABASE_URL],
+      ['LOCAL_ARENA8_NATIVE_DB_ROLE',env.LOCAL_ARENA8_NATIVE_DB_ROLE],
+      ['LOCAL_ARENA8_NATIVE_CA_FILE',env.LOCAL_ARENA8_NATIVE_CA_FILE],
+      ['LOCAL_ARENA8_NATIVE_STORAGE_KEY',env.LOCAL_ARENA8_NATIVE_STORAGE_KEY],
+      ['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN',env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN],
+    ];
+    for(const [field,value] of requiredNative)
+      if(!value)ctx.addIssue({code:'custom',path:[field],message:'Native Arena8 runtime configuration is required'});
+    if(env.LOCAL_ARENA8_NATIVE_DATABASE_URL){
+      let runtime:URL|undefined;
+      try{runtime=new URL(env.LOCAL_ARENA8_NATIVE_DATABASE_URL);}catch{ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DATABASE_URL'],message:'Expected a loopback PostgreSQL URL'});}
+      if(runtime&&(!['postgres:','postgresql:'].includes(runtime.protocol)||!['127.0.0.1','localhost','[::1]'].includes(runtime.hostname)||runtime.search||runtime.hash||!runtime.username||!runtime.password||runtime.password.length<16||!/^[a-z][a-z0-9_]{2,63}$/.test(runtime.pathname.slice(1))))
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DATABASE_URL'],message:'Expected an exact loopback PostgreSQL URL with restricted credentials'});
+      let runtimeUser:string|undefined;
+      try{runtimeUser=runtime&&env.LOCAL_ARENA8_NATIVE_DB_ROLE?decodeURIComponent(runtime.username):undefined;}
+      catch{runtimeUser=undefined;}
+      if(runtime&&env.LOCAL_ARENA8_NATIVE_DB_ROLE&&runtimeUser!==env.LOCAL_ARENA8_NATIVE_DB_ROLE)
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DB_ROLE'],message:'Restricted role must match the database URL user'});
+    }
+    if(env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN){
+      let origin:URL|undefined;
+      try{origin=new URL(env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN);}catch{ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN'],message:'Expected an exact loopback HTTPS origin'});}
+      if(origin&&(origin.protocol!=='https:'||origin.origin!==env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN||!['127.0.0.1','[::1]'].includes(origin.hostname)))
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN'],message:'Expected an exact loopback HTTPS origin'});
+    }
+    if(env.LOCAL_ARENA8_NATIVE_STORAGE_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY,env.GAME_STATE_KEY].some(value=>value?.toLowerCase()===env.LOCAL_ARENA8_NATIVE_STORAGE_KEY?.toLowerCase()))
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_STORAGE_KEY'],message:'Separate native storage key required'});
   }
   if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
   if(env.LOCAL_GAME_JOURNAL==='1'&&(env.LOCAL_GAME_LOBBY!=='1'||!env.GAME_STATE_KEY||env.NODE_ENV==='production'))ctx.addIssue({code:'custom',path:['LOCAL_GAME_JOURNAL'],message:'Local lobby and separate journal encryption key required'});

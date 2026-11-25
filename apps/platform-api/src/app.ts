@@ -12,7 +12,7 @@ import 'reflect-metadata';
 import { DeadlineIdentityLinks } from './features/identity/modules/legacy/application/service';
 import { DeadlineHttpIdentityPort,type DeadlineIdentityPort } from './features/identity/modules/legacy/application/deadline-port';
 import { registerDeadlineIdentity } from './features/identity/modules/legacy/presentation/http';
-import { randomUUID } from 'node:crypto';
+import { generateKeyPairSync,randomUUID } from 'node:crypto';
 import { Module, Catch, HttpException, type ExceptionFilter, type ArgumentsHost } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -108,6 +108,13 @@ import {ArtifactService} from './features/pets/modules/wave-a-artifacts/applicat
 import {ArtifactStore} from './features/pets/modules/wave-a-artifacts/infrastructure/store';
 import {registerArena8} from './features/pets/modules/wave-a-arena8/presentation/http';
 import {Arena8Service} from './features/pets/modules/wave-a-arena8/application/service';
+import {readOwnedArena8Allocation} from './features/pets/modules/wave-a-arena8/application/allocation';
+import {ARENA8_NATIVE_TICKET_KEY_ID,NativeArena8Provisioner} from './features/pets/modules/wave-a-arena8/application/native-provisioner';
+import {NativeArena8MatchStore} from './features/pets/modules/wave-a-arena8/infrastructure/native-match-store';
+import {LocalNativeArena8Runtime} from './features/pets/modules/wave-a-arena8/infrastructure/native-runtime';
+import {registerNativeArena8} from './features/pets/modules/wave-a-arena8/presentation/native-http';
+import {RuntimeAdmissionStore} from './features/identity/modules/runtime-access/application/runtime-admission';
+import {RuntimeTicketIssuer} from './features/identity/modules/runtime-access/application/runtime-tickets';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -122,10 +129,11 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string} } = {}) {
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string} } = {}) {
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
   if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
+  if(options.petArena8Native?.enabled&&config.NODE_ENV==='production')throw Error('Native Arena8 allocation is local/test only');
   if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
@@ -306,6 +314,30 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     registerArena8(http,config,identity,new Arena8Service(
       db,options.petArena8.supervisorUrl,options.petArena8.supervisorToken,
     ),true,options.now);
+  }
+  // Native allocation is a separate default-off composition. It reuses the
+  // existing admission/ticket authority and restricted runtime database path.
+  if(options.petArena8Native?.enabled){
+    const native=options.petArena8Native;
+    const admission=new RuntimeAdmissionStore(db,identity);
+    const keys=generateKeyPairSync('ed25519');
+    const provisioner=new NativeArena8Provisioner({
+      ownership:(account,input)=>readOwnedArena8Allocation(db,account,input),
+      matches:new NativeArena8MatchStore(db),
+      admission,
+      issuer:new RuntimeTicketIssuer(
+        identity,ARENA8_NATIVE_TICKET_KEY_ID,keys.privateKey,admission.admission,
+      ),
+      runtime:new LocalNativeArena8Runtime({
+        binary:native.binary,databaseUrl:native.databaseUrl,role:native.role,
+        caFile:native.caFile,publicKey:keys.publicKey.export({format:'jwk'}).x!,
+        keyId:ARENA8_NATIVE_TICKET_KEY_ID,origin:native.httpsOrigin,
+        storageKey:native.storageKey,storageKeyId:native.storageKeyId,
+      }),
+      httpsOrigin:native.httpsOrigin,
+    });
+    registerNativeArena8(http,config,identity,provisioner,true,options.now);
+    http.addHook('preClose',async()=>{await provisioner.close();});
   }
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
   rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));

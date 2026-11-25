@@ -4,14 +4,18 @@ import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
+import {
+  assertUuid,conflict,encounterPairComplete,forbidden,
+  readOwnedArena8Allocation,type AllocateInput,
+} from './allocation';
 
-export type AllocateInput=Readonly<{petId:string;mapId:string;encounterId:string}>;
+export type {AllocateInput};
+export {encounterPairComplete};
 export type ActionInput=Readonly<{
   kind:'start'|'swap'|'guard'|'skill'|'signature'|'fireZone'|'ultimate';
   first?:number;second?:number;
 }>;
 export type CommandInput=Readonly<{matchId:string;expectedVersion:number;action:ActionInput}>;
-type ArtifactRow={definition_id:string;upgrade_level:number};
 type OwnedRow={level:number;exp:number};
 type SupervisorAllocation={
   account:string;ownedPetId:string;petId:string;level:number;
@@ -30,24 +34,10 @@ type Settlement={
   petLevel:number;petExp:number;clearedMaps:readonly string[];requestId:string;
 };
 
-const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
-const invalid=(message:string)=>new DomainError('INVALID_REQUEST',400,message);
 const notFound=(message:string)=>new DomainError('NOT_FOUND',404,message);
-const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
 const runtime=(message:string)=>new DomainError('WORLD_UNAVAILABLE',503,message);
 const fingerprint=(value:string)=>createHash('sha256').update(value).digest('hex');
 
-const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const MAP_IDS:ReadonlySet<string>=new Set(MAPS.map(map=>map.id));
-
-export function encounterPairComplete(encounterIds:readonly string[],mapId:string){
-  const present=new Set(encounterIds);
-  return present.has(mapId+'-regular')&&present.has(mapId+'-boss');
-}
-
-function assertUuid(value:string,label:string){
-  if(!UUID.test(value))throw invalid(label+' must be a UUID');
-}
 function levelIncrement(level:number,exp:number){
   let nextLevel=level;let nextExp=exp;
   while(nextLevel<60){
@@ -75,48 +65,16 @@ export class Arena8Service {
 
   async allocate(accountId:string,requestId:string,input:AllocateInput){
     assertUuid(accountId,'account');assertUuid(requestId,'requestId');
-    if(!MAP_IDS.has(input.mapId))throw invalid('Unknown map');
-    const mapIndex=MAPS.findIndex(map=>map.id===input.mapId);
-    const encounterSuffix=input.encounterId===input.mapId+'-regular'?'regular'
-      :input.encounterId===input.mapId+'-boss'?'boss':null;
-    if(!encounterSuffix)throw invalid('Encounter does not belong to the map');
-    const owned=(await this.db.query<OwnedRow>(
-      'SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',
-      [accountId,input.petId],
-    )).rows[0];
-    if(!owned)throw forbidden('Pet is not owned');
-    const clears=(await this.db.query<{map_id:string}>(
-      'SELECT map_id FROM pet_wave_one_map_clears WHERE account_id=$1',
-      [accountId],
-    )).rows.map(row=>row.map_id);
-    if(mapIndex>0){
-      const previous=MAPS[mapIndex-1].id;
-      const completed=(await this.db.query<{encounter_id:string}>(
-        `SELECT encounter_id FROM pet_wave_one_encounters
-          WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($3,$4)`,
-        [accountId,previous,previous+'-regular',previous+'-boss'],
-      )).rows.map(row=>row.encounter_id);
-      // Legacy Wave 1 map clears represent the full regular+boss pair. Arena8
-      // itself requires both explicit encounter completions.
-      if(!clears.includes(previous)&&!encounterPairComplete(completed,previous))
-        throw forbidden('Map is locked');
-    }
-    const artifacts=(await this.db.query<ArtifactRow>(
-      `SELECT owned.definition_id,owned.upgrade_level
-         FROM pet_artifact_loadouts loadout
-         JOIN pet_artifact_owned owned
-           ON owned.account_id=loadout.account_id AND owned.artifact_id=loadout.artifact_id
-        WHERE loadout.account_id=$1 AND loadout.pet_id=$2
-        ORDER BY loadout.slot`,
-      [accountId,input.petId],
-    )).rows;
+    const owned=await readOwnedArena8Allocation(this.db,accountId,input);
     const allocation:SupervisorAllocation={
       account:accountId,
       ownedPetId:input.petId,
       petId:input.petId,
       level:owned.level,
       encounterId:input.encounterId,
-      artifacts:artifacts.map(row=>({definitionId:row.definition_id,upgradeLevel:row.upgrade_level})),
+      artifacts:owned.artifacts.map(artifact=>({
+        definitionId:artifact.definitionId,upgradeLevel:artifact.upgradeLevel,
+      })),
     };
     const response=await this.call<Record<string,unknown>>('/allocate','POST',{
       requestId,allocation,
