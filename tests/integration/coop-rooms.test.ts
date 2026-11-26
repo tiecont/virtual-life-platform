@@ -2,6 +2,7 @@ import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {readFileSync} from 'node:fs';
+import {CoopEncounterCatalogSchema} from '@aetheria/contracts';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -54,6 +55,8 @@ async function grantPoints(auth:Auth,points:number){
 }
 const post=(auth:Auth,url:string,body:Record<string,unknown>,csrf=auth.csrf)=>server.http.inject({method:'POST',url,remoteAddress:'127.210.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':csrf},payload:body});
 const get=(auth:Auth,url:string)=>server.http.inject({url,remoteAddress:'127.210.2.1',headers:{origin,cookie:auth.cookie}});
+const readJson=(path:string)=>JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8'));
+type TestBoss={mapId:string;id:string;name:string;requiredMapClear?:string};
 async function eligibleHost(points=5_000){
  const auth=await guest('Coop host'),pet='icarus';
  await grantPet(auth,pet);await grantPoints(auth,points);
@@ -83,7 +86,8 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const auth=await guest('Coop eligibility');
   const before=await get(auth,'/v1/coop/eligibility');
   expect(before.statusCode).toBe(200);
-  expect(before.json()).toMatchObject({ruleset:'arena8-coop-pve',bossId:'cinder-terraces-warden',points:0,requiredPoints:5_000,eligible:false});
+  expect(before.json()).toEqual({ruleset,bossId:'cinder-terraces-warden',points:0,requiredPoints:5_000,eligible:false});
+  expect((await get(auth,'/v1/coop/encounters')).json()).toEqual({ruleset,configVersion:1,points:0,encounters:[]});
   expect((await get(auth,'/v1/coop/eligibility?bossId=cinder-terraces-warden')).json()).toEqual(before.json());
   expect((await get(auth,'/v1/coop/eligibility?unknown=1')).statusCode).toBe(422);
   await grantPoints(auth,4_999);
@@ -163,8 +167,7 @@ describe('cooperative rooms and achievement eligibility',()=>{
   expect((await post(member,'/v1/coop/rooms/'+room.roomId+'/join',{requestId:randomUUID()})).statusCode).toBe(409);
  });
  it('requires the published campaign clear to host and preserves an existing room after publication',async()=>{
-  const readJson=(path:string)=>JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8'));
-  const candidate=readJson('../../config/gameplay/arena8-coop-v2.seed.json') as {bosses:{mapId:string;id:string;requiredMapClear?:string}[]};
+  const candidate=readJson('../../config/gameplay/arena8-coop-v2.seed.json') as {bosses:TestBoss[]};
   const {mapId,requiredMapClear}=readJson('../../crates/aetheria-pet-arena/tests/fixtures/arena8-coop-map-prerequisite.json') as {mapId:string;requiredMapClear:string};
   const boss=candidate.bosses.find(entry=>entry.mapId===mapId)!;
   boss.requiredMapClear=requiredMapClear;
@@ -174,9 +177,11 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const request={requestId:randomUUID(),mapId,petId:host.pet};
   const create=(body=request)=>post(host.auth,'/v1/coop/rooms',body);
   expect((await get(host.auth,'/v1/coop/eligibility?mapId='+requiredMapClear)).json()).toMatchObject({eligible:true});
-  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:false});
+  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:false,prerequisite:{mapId:requiredMapClear,mapName:'Cinder Terraces',cleared:false}});
   expect((await get(host.auth,'/v1/coop/eligibility?bossId='+boss.id)).json()).toMatchObject({eligible:false});
-  expect((await create()).statusCode).toBe(403);
+  const denied=await create();
+  expect(denied.statusCode).toBe(403);
+  expect(denied.json().error.message).toBe('Clear Cinder Terraces to create this room');
   expect((await create({...request,bossId:boss.id})).statusCode).toBe(403);
 
   await pool.query('INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2)',[other.auth.accountId,requiredMapClear]);
@@ -191,7 +196,7 @@ describe('cooperative rooms and achievement eligibility',()=>{
   await complete('boss');
   expect((await create()).statusCode).toBe(403);
   await complete('regular');
-  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:true});
+  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:true,prerequisite:{mapId:requiredMapClear,mapName:'Cinder Terraces',cleared:true}});
   const accepted=await create();
   expect(accepted.statusCode).toBe(200);
   expect(accepted.json()).toMatchObject({mapId,bossId:boss.id,configVersion:version});
@@ -206,5 +211,46 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const joined=await post(member,'/v1/coop/rooms/'+roomId+'/join',{requestId:randomUUID(),mapId});
   expect(joined.statusCode).toBe(200);
   expect(joined.json()).toMatchObject({mapId,configVersion:version,you:{seat:1,isHost:false}});
+ });
+ it('lists the six published campaign encounters and advances hosting availability from settled clears',async()=>{
+  const url='/v1/coop/encounters';
+  expect((await server.http.inject({url})).statusCode).toBe(401);
+  const candidate=readJson('../../config/gameplay/arena8-coop-v2.seed.json') as {bosses:TestBoss[]};
+  const prerequisites=readJson('../fixtures/coop-campaign-prerequisites.json') as Record<string,string|null>;
+  const {maps}=readJson('../../specs/pet-arena/mvp-wave1-43-pets.json') as {
+   maps:{id:string;name:string;regularPetIds:string[];legendaryPetId:string}[];
+  };
+  expect(Object.keys(prerequisites)).toEqual(maps.map(map=>map.id));
+  for(const boss of candidate.bosses){
+   const prerequisite=prerequisites[boss.mapId];
+   if(prerequisite)boss.requiredMapClear=prerequisite;
+  }
+  const version=await publish(candidate);
+  const host=await eligibleHost(),guestWithoutProgress=await eligibleHost();
+  const readCatalog=async(auth:Auth)=>{
+   const response=await get(auth,url);
+   expect(response.statusCode).toBe(200);
+   expect(response.headers['cache-control']).toBe('private, no-store');
+   return CoopEncounterCatalogSchema.parse(response.json());
+  };
+  const initial=await readCatalog(host.auth);
+  expect(initial).toMatchObject({ruleset,configVersion:version,points:5_000});
+  expect(initial.encounters).toHaveLength(maps.length);
+  for(const [index,map] of maps.entries()){
+   const boss=candidate.bosses[index]!;
+   const previous=maps[index-1];
+   expect(initial.encounters[index]).toEqual({
+    mapId:map.id,mapName:map.name,bossId:boss.id,bossName:boss.name,
+    regularEncounterId:map.id+'-regular',bossEncounterId:map.id+'-boss',
+    recruitment:{regularPetIds:map.regularPetIds,legendaryPetId:map.legendaryPetId},
+    requiredPoints:5_000,eligible:index===0,
+    prerequisite:previous?{mapId:previous.id,mapName:previous.name,cleared:false}:null,
+   });
+   await pool.query('INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id) VALUES($1,$2,$3),($1,$2,$4)',
+    [host.auth.accountId,map.id,map.id+'-regular',map.id+'-boss']);
+   const updated=await readCatalog(host.auth);
+   expect(updated.encounters.map(encounter=>encounter.eligible)).toEqual(maps.map((_,position)=>position<=index+1));
+  }
+  expect((await readCatalog(guestWithoutProgress.auth)).encounters.map(encounter=>encounter.eligible)).toEqual([true,false,false,false,false,false]);
  });
 });

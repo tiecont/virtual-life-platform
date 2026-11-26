@@ -52,14 +52,17 @@ export class CoopRoomStore{
   const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
   return numeric(result.rows[0]?.points??0);
  }
- async hasMapClear(tx:Queryable,accountId:string,mapId:string):Promise<boolean>{
+ async clearedMaps(tx:Queryable,accountId:string,mapIds:readonly string[]):Promise<ReadonlySet<string>>{
+  if(mapIds.length===0)return new Set();
   // Legacy campaign clears and a full pair of settled Arena8 encounters both count.
-  const result=await tx.query<{cleared:boolean}>(`
-   SELECT EXISTS(SELECT 1 FROM pet_wave_one_map_clears WHERE account_id=$1 AND map_id=$2)
-       OR (SELECT count(*)=2 FROM pet_wave_one_encounters
-           WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($2 || '-regular',$2 || '-boss')) AS cleared`,
-   [accountId,mapId]);
-  return result.rows[0]?.cleared===true;
+  const result=await tx.query<{map_id:string}>(`
+   SELECT required.map_id FROM unnest($2::text[]) AS required(map_id)
+   WHERE EXISTS(SELECT 1 FROM pet_wave_one_map_clears AS clear WHERE clear.account_id=$1 AND clear.map_id=required.map_id)
+      OR (SELECT count(*)=2 FROM pet_wave_one_encounters AS encounter
+          WHERE encounter.account_id=$1 AND encounter.map_id=required.map_id
+          AND encounter.encounter_id IN (required.map_id || '-regular',required.map_id || '-boss'))`,
+   [accountId,mapIds]);
+  return new Set(result.rows.map(row=>row.map_id));
  }
  async rewardFor(tx:Queryable,roomId:string,accountId:string){
   const result=await tx.query(`

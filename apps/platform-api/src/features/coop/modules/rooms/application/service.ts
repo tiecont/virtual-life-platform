@@ -1,7 +1,7 @@
 import {createHash,randomUUID} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {
- CoopRewardReceiptSchema,CoopAdmissionViewSchema,CoopEligibilitySchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
+ CoopRewardReceiptSchema,CoopAdmissionViewSchema,CoopEligibilitySchema,CoopEncounterCatalogSchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
@@ -9,14 +9,35 @@ import {CoopRoomStore,type CoopRoomRow,type CoopSeatRow} from '../infrastructure
 import type {CoopMatchProvisioner} from '../../match/application/provisioner';
 import {bindArtifactLoadout} from '../../match/domain/loadout';
 import {readOwnedArtifactLoadouts} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
+import {arena8CampaignMap} from '../../../../pets/modules/wave-a-arena8/application/allocation';
 import type {CoopSkillService} from '../../skills/application/service';
 
 type Queryable=Pick<PoolClient,'query'>;
+type ActiveConfiguration=Awaited<ReturnType<CoopRoomStore['activeConfiguration']>>;
+type BossConfiguration=ReturnType<typeof bossConfiguration>;
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
 const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
 const unavailable=(message='Published cooperative configuration is unavailable')=>new DomainError('NOT_AVAILABLE',503,message);
 const ROOM_LIMIT=4;
+
+function bossConfiguration(boss:unknown){
+ if(!boss||typeof boss!=='object'||Array.isArray(boss))throw unavailable();
+ const value=boss as Record<string,unknown>,bossId=value.id,requiredPoints=value.requiredRoomPoints;
+ const requiredMapClear=value.requiredMapClear??undefined;
+ if(typeof bossId!=='string'||!/^[a-z][a-z0-9-]{2,63}$/.test(bossId))throw unavailable();
+ if(typeof requiredPoints!=='number'||!Number.isInteger(requiredPoints)||requiredPoints<0||requiredPoints>1_000_000)throw unavailable();
+ if(requiredMapClear!==undefined&&typeof requiredMapClear!=='string')throw unavailable();
+ return {bossId,requiredPoints,requiredMapClear,mapId:value.mapId,bossName:value.name};
+}
+function mapLabel(mapId:string){
+ return arena8CampaignMap(mapId)?.mapName??mapId.split('-').map(word=>word.charAt(0).toUpperCase()+word.slice(1)).join(' ');
+}
+function hostingEligibility(config:BossConfiguration,points:number,clears:ReadonlySet<string>){
+ const {bossId,requiredPoints,requiredMapClear}=config;
+ const prerequisite=requiredMapClear===undefined?null:{mapId:requiredMapClear,mapName:mapLabel(requiredMapClear),cleared:clears.has(requiredMapClear)};
+ return {bossId,requiredPoints,prerequisite,eligible:points>=requiredPoints&&(prerequisite?.cleared??true)};
+}
 
 // Authoritative cooperative room lifecycle. Achievement Points and published
 // prerequisites gate hosting. The room pins the version that authored its Boss.
@@ -49,26 +70,27 @@ export class CoopRoomService{
   if(prior.fingerprint!==fingerprint)throw conflict('Request key was used with different input');
   return parse(prior.response);
  }
- private async configuration(tx:Queryable,requestedBossId?:string,requestedMapId?:string){
-  const active=await this.store.activeConfiguration(tx);
+ private configuration(active:ActiveConfiguration,requestedBossId?:string,requestedMapId?:string){
   const catalog=active.bundle.bosses;
   const boss=Array.isArray(catalog)
    ?catalog.find(entry=>entry&&(requestedBossId===undefined||entry.id===requestedBossId)&&(requestedMapId===undefined||entry.mapId===requestedMapId)&&(requestedBossId!==undefined||requestedMapId!==undefined))
    :active.bundle.boss;
   if(!boss&&(requestedBossId!==undefined||Array.isArray(catalog)))
    throw new DomainError('NOT_AVAILABLE',404,'Choose a Boss from the published cooperative catalog');
-  if(!boss||typeof boss!=='object'||Array.isArray(boss))throw unavailable();
-  const value=boss as Record<string,unknown>,bossId=value.id,required=value.requiredRoomPoints;
-  if(requestedMapId!==undefined&&requestedMapId!==value.mapId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative map is unavailable');
-  if(requestedBossId!==undefined&&requestedBossId!==bossId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative Boss is unavailable');
-  if(typeof bossId!=='string'||!/^[a-z][a-z0-9-]{2,63}$/.test(bossId))throw unavailable();
-  if(typeof required!=='number'||!Number.isInteger(required)||required<0||required>1_000_000)throw unavailable();
-  const requiredMapClear=value.requiredMapClear??undefined;
-  if(requiredMapClear!==undefined&&typeof requiredMapClear!=='string')throw unavailable();
-  return Object.freeze({version:active.version,digest:active.digest,bossId,requiredPoints:required,requiredMapClear});
+  const config=bossConfiguration(boss);
+  if(requestedMapId!==undefined&&requestedMapId!==config.mapId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative map is unavailable');
+  if(requestedBossId!==undefined&&requestedBossId!==config.bossId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative Boss is unavailable');
+  return config;
  }
- private async hasPrerequisiteClear(tx:Queryable,accountId:string,requiredMapClear?:string){
-  return requiredMapClear===undefined||this.store.hasMapClear(tx,accountId,requiredMapClear);
+ private async readAvailability<T>(work:(tx:PoolClient,active:ActiveConfiguration)=>Promise<T>):Promise<T>{
+  const client=await this.db.connect();
+  try{
+   await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+   await client.query("SET LOCAL statement_timeout='3000ms'");
+   const result=await work(client,await this.store.activeConfiguration(client));
+   await client.query('COMMIT');
+   return result;
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
  }
  private async view(tx:Queryable,room:CoopRoomRow,accountId:string,allowForeign=false){
   const seats=await this.store.seats(tx,room.id);
@@ -97,14 +119,29 @@ export class CoopRoomService{
  }
 
  async eligibility(accountId:string,bossId?:string,mapId?:string){
-  const client=await this.db.connect();
-  try{
-   await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='3000ms'");
-   const config=await this.configuration(client,bossId,mapId),points=await this.store.achievementPoints(client,accountId);
-   const eligible=points>=config.requiredPoints&&await this.hasPrerequisiteClear(client,accountId,config.requiredMapClear);
-   await client.query('COMMIT');
-   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',bossId:config.bossId,points,requiredPoints:config.requiredPoints,eligible});
-  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+  return this.readAvailability(async(tx,active)=>{
+   const config=this.configuration(active,bossId,mapId);
+   const points=await this.store.achievementPoints(tx,accountId);
+   const clears=await this.store.clearedMaps(tx,accountId,config.requiredMapClear===undefined?[]:[config.requiredMapClear]);
+   const {prerequisite,...hosting}=hostingEligibility(config,points,clears);
+   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',points,...hosting,...(prerequisite?{prerequisite}:{})});
+  });
+ }
+
+ async encounters(accountId:string){
+  return this.readAvailability(async(tx,active)=>{
+   const bosses=Array.isArray(active.bundle.bosses)?active.bundle.bosses.map(bossConfiguration):[];
+   const points=await this.store.achievementPoints(tx,accountId);
+   const clears=await this.store.clearedMaps(tx,accountId,bosses.flatMap(({requiredMapClear})=>requiredMapClear===undefined?[]:[requiredMapClear]));
+   const encounters=bosses.map(config=>{
+    const {mapId,bossName}=config;
+    if(typeof mapId!=='string'||typeof bossName!=='string')throw unavailable();
+    const map=arena8CampaignMap(mapId);
+    return {mapId,bossName,mapName:map?.mapName??mapLabel(mapId),regularEncounterId:map?.regularEncounterId??null,bossEncounterId:map?.bossEncounterId??null,
+     recruitment:map?.recruitment??null,...hostingEligibility(config,points,clears)};
+   });
+   return CoopEncounterCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,points,encounters});
+  });
  }
 
  async create(accountId:string,requestId:string,input:z.infer<typeof CoopCreateRoomSchema>){
@@ -112,9 +149,13 @@ export class CoopRoomService{
   return this.transaction(accountId,requestId,async tx=>{
    const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
    if(prior)return prior;
-   const config=await this.configuration(tx,input.bossId,input.mapId),points=await this.store.achievementPoints(tx,accountId);
+   const active=await this.store.activeConfiguration(tx);
+   const config=this.configuration(active,input.bossId,input.mapId),points=await this.store.achievementPoints(tx,accountId);
    if(points<config.requiredPoints)throw forbidden('Achievement Points required to create this room');
-   if(!await this.hasPrerequisiteClear(tx,accountId,config.requiredMapClear))throw forbidden('Clear the prerequisite map to create this room');
+   if(config.requiredMapClear!==undefined){
+    const clears=await this.store.clearedMaps(tx,accountId,[config.requiredMapClear]);
+    if(!clears.has(config.requiredMapClear))throw forbidden(`Clear ${mapLabel(config.requiredMapClear)} to create this room`);
+   }
    let petLevel:number|null=null,ownedPetInstanceId:string|null=null;
    if(input.ownedPetInstanceId&&!input.petId)throw conflict('Pet species is required with an instance ID');
    if(input.petId){
@@ -123,7 +164,7 @@ export class CoopRoomService{
     petLevel=owned.level;
     ownedPetInstanceId=owned.instanceId;
    }
-   const room=await this.store.createRoom(tx,{id:randomUUID(),bossId:config.bossId,hostAccountId:accountId,configVersion:config.version,configDigest:config.digest,requiredPoints:config.requiredPoints});
+   const room=await this.store.createRoom(tx,{id:randomUUID(),bossId:config.bossId,hostAccountId:accountId,configVersion:active.version,configDigest:active.digest,requiredPoints:config.requiredPoints});
    await this.store.addSeat(tx,{roomId:room.id,seat:0,accountId,petId:input.petId??null,petLevel,ownedPetInstanceId});
    await this.store.event(tx,{roomId:room.id,accountId,action:'create',fromState:null,toState:'OPEN'});
    const view=await this.view(tx,room,accountId);

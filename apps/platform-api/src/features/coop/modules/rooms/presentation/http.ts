@@ -50,6 +50,7 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    const {bossId,mapId}=z.strictObject({bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional()}).parse(req.query);
    return rooms.eligibility(account(req),bossId,mapId);
   });
+  api.get('/coop/encounters',req=>rooms.encounters(account(req)));
   api.post('/coop/rooms',req=>{
    write(req);
    const body=CoopCreateRoomSchema.parse(req.body);
