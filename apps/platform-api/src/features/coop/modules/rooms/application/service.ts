@@ -18,9 +18,8 @@ const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
 const unavailable=(message='Published cooperative configuration is unavailable')=>new DomainError('NOT_AVAILABLE',503,message);
 const ROOM_LIMIT=4;
 
-// Authoritative cooperative room lifecycle. Achievement Points gate room
-// creation only; they are never spent. The room pins the published gameplay
-// version that authored its Boss and threshold, exactly like a match pin.
+// Authoritative cooperative room lifecycle. Achievement Points and published
+// prerequisites gate hosting. The room pins the version that authored its Boss.
 export class CoopRoomService{
  constructor(
   private readonly db:Pick<Pool,'query'|'connect'>,
@@ -64,7 +63,12 @@ export class CoopRoomService{
   if(requestedBossId!==undefined&&requestedBossId!==bossId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative Boss is unavailable');
   if(typeof bossId!=='string'||!/^[a-z][a-z0-9-]{2,63}$/.test(bossId))throw unavailable();
   if(typeof required!=='number'||!Number.isInteger(required)||required<0||required>1_000_000)throw unavailable();
-  return Object.freeze({version:active.version,digest:active.digest,bossId,requiredPoints:required});
+  const requiredMapClear=value.requiredMapClear??undefined;
+  if(requiredMapClear!==undefined&&typeof requiredMapClear!=='string')throw unavailable();
+  return Object.freeze({version:active.version,digest:active.digest,bossId,requiredPoints:required,requiredMapClear});
+ }
+ private async hasPrerequisiteClear(tx:Queryable,accountId:string,requiredMapClear?:string){
+  return requiredMapClear===undefined||this.store.hasMapClear(tx,accountId,requiredMapClear);
  }
  private async view(tx:Queryable,room:CoopRoomRow,accountId:string,allowForeign=false){
   const seats=await this.store.seats(tx,room.id);
@@ -97,8 +101,9 @@ export class CoopRoomService{
   try{
    await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='3000ms'");
    const config=await this.configuration(client,bossId,mapId),points=await this.store.achievementPoints(client,accountId);
+   const eligible=points>=config.requiredPoints&&await this.hasPrerequisiteClear(client,accountId,config.requiredMapClear);
    await client.query('COMMIT');
-   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',bossId:config.bossId,points,requiredPoints:config.requiredPoints,eligible:points>=config.requiredPoints});
+   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',bossId:config.bossId,points,requiredPoints:config.requiredPoints,eligible});
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
  }
 
@@ -109,6 +114,7 @@ export class CoopRoomService{
    if(prior)return prior;
    const config=await this.configuration(tx,input.bossId,input.mapId),points=await this.store.achievementPoints(tx,accountId);
    if(points<config.requiredPoints)throw forbidden('Achievement Points required to create this room');
+   if(!await this.hasPrerequisiteClear(tx,accountId,config.requiredMapClear))throw forbidden('Clear the prerequisite map to create this room');
    let petLevel:number|null=null,ownedPetInstanceId:string|null=null;
    if(input.ownedPetInstanceId&&!input.petId)throw conflict('Pet species is required with an instance ID');
    if(input.petId){

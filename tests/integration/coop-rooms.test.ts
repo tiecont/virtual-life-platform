@@ -1,6 +1,7 @@
 import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -18,6 +19,7 @@ const operatorPassword='coop-fixture-operator-password',operatorFactor='GEZDGNBV
 const operatorNow=Date.now();
 type Auth={cookie:string;csrf:string;accountId:string};
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,address=1;
+let operatorHeaders:Record<string,string>;
 beforeAll(async()=>{
  const url=new URL(process.env.TEST_DATABASE_URL??'');
  if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test database required');
@@ -32,6 +34,9 @@ beforeAll(async()=>{
  await new OperatorService(pool,authKey,()=>operatorNow-60_000).bootstrap({password:operatorPassword,totpSecret:operatorFactor,code:totp(operatorFactor,operatorNow-60_000)});
  const config=readConfig({ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:authKey,NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'coop-rooms-test-secret-'.repeat(2),LOCAL_COOP_ROOMS:'1'});
  server=await createApp(config,pool,false,{now:()=>operatorNow,gameplayConfig:{validator:engine}});
+ const login=await server.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(operatorFactor,operatorNow)}});
+ expect(login.statusCode).toBe(200);
+ operatorHeaders={origin:adminOrigin,cookie:String(login.headers['set-cookie']).split(';')[0]!,'x-csrf-token':login.json().csrfToken};
 });
 afterAll(async()=>{await server?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin.end();}});
 async function guest(name:string):Promise<Auth>{
@@ -57,6 +62,20 @@ async function eligibleHost(points=5_000){
 async function createRoom(auth:Auth,petId='icarus',requestId=randomUUID()){
  const response=await post(auth,'/v1/coop/rooms',{requestId,petId});
  return {response,requestId};
+}
+async function publish(bundle:Record<string,unknown>){
+ const overview=await server.http.inject({url:'/v1/operator/gameplay-config?ruleset='+ruleset,headers:operatorHeaders});
+ expect(overview.statusCode).toBe(200);
+ const {active}=overview.json() as {active:{version:number;revision:number}};
+ const operatorPost=async(action:string,payload:Record<string,unknown>)=>{
+  const response=await server.http.inject({method:'POST',url:'/v1/operator/gameplay-config-'+action,headers:operatorHeaders,payload:{...payload,requestId:randomUUID(),ruleset}});
+  expect(response.statusCode).toBe(200);
+  return response.json();
+ };
+ const draft=await operatorPost('draft',{parentVersion:active.version,bundle});
+ const checked=await operatorPost('validate',{version:draft.version,expectedRevision:draft.revision});
+ await operatorPost('publish',{version:checked.version,expectedRevision:checked.revision,expectedActiveRevision:active.revision});
+ return checked.version as number;
 }
 
 describe('cooperative rooms and achievement eligibility',()=>{
@@ -126,17 +145,7 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const changedBundle=bundle(6_000);
   await expect(installGameplayConfig(pool,ruleset,changedBundle,engine,'system:test-installation'))
    .resolves.toMatchObject({created:false,version:1});
-  const login=await server.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(operatorFactor,operatorNow)}});
-  expect(login.statusCode).toBe(200);
-  const headers={origin:adminOrigin,cookie:String(login.headers['set-cookie']).split(';')[0],'x-csrf-token':login.json().csrfToken};
-  const operatorPost=async(action:string,payload:Record<string,unknown>)=>{
-   const response=await server.http.inject({method:'POST',url:'/v1/operator/gameplay-config-'+action,headers,payload:{...payload,requestId:randomUUID(),ruleset}});
-   expect(response.statusCode).toBe(200);
-   return response.json();
-  };
-  const draft=await operatorPost('draft',{parentVersion:1,bundle:changedBundle});
-  const checked=await operatorPost('validate',{version:draft.version,expectedRevision:draft.revision});
-  await operatorPost('publish',{version:checked.version,expectedRevision:checked.revision,expectedActiveRevision:1});
+  await publish(changedBundle);
   expect((await get(host.auth,'/v1/coop/eligibility')).json()).toMatchObject({requiredPoints:6_000,points:5_000,eligible:false});
   expect((await post(host.auth,'/v1/coop/rooms',{requestId:randomUUID(),petId:'icarus'})).statusCode).toBe(403);
   const pinned=await get(host.auth,'/v1/coop/rooms/'+room.roomId);
@@ -152,5 +161,50 @@ describe('cooperative rooms and achievement eligibility',()=>{
   expect((await post(host.auth,'/v1/coop/rooms/'+room.roomId+'/close',{requestId:randomUUID()})).statusCode).toBe(200);
   expect((await get(member,'/v1/coop/rooms/'+room.roomId)).statusCode).toBe(404);
   expect((await post(member,'/v1/coop/rooms/'+room.roomId+'/join',{requestId:randomUUID()})).statusCode).toBe(409);
+ });
+ it('requires the published campaign clear to host and preserves an existing room after publication',async()=>{
+  const readJson=(path:string)=>JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8'));
+  const candidate=readJson('../../config/gameplay/arena8-coop-v2.seed.json') as {bosses:{mapId:string;id:string;requiredMapClear?:string}[]};
+  const {mapId,requiredMapClear}=readJson('../../crates/aetheria-pet-arena/tests/fixtures/arena8-coop-map-prerequisite.json') as {mapId:string;requiredMapClear:string};
+  const boss=candidate.bosses.find(entry=>entry.mapId===mapId)!;
+  boss.requiredMapClear=requiredMapClear;
+  const version=await publish(candidate);
+  const host=await eligibleHost(),other=await eligibleHost(4_999),member=await guest('Campaign guest');
+  const eligibility='/v1/coop/eligibility?mapId='+mapId;
+  const request={requestId:randomUUID(),mapId,petId:host.pet};
+  const create=(body=request)=>post(host.auth,'/v1/coop/rooms',body);
+  expect((await get(host.auth,'/v1/coop/eligibility?mapId='+requiredMapClear)).json()).toMatchObject({eligible:true});
+  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:false});
+  expect((await get(host.auth,'/v1/coop/eligibility?bossId='+boss.id)).json()).toMatchObject({eligible:false});
+  expect((await create()).statusCode).toBe(403);
+  expect((await create({...request,bossId:boss.id})).statusCode).toBe(403);
+
+  await pool.query('INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2)',[other.auth.accountId,requiredMapClear]);
+  expect((await get(other.auth,eligibility)).json()).toMatchObject({eligible:false});
+  expect((await post(other.auth,'/v1/coop/rooms',{requestId:randomUUID(),mapId,petId:other.pet})).statusCode).toBe(403);
+  await grantPoints(other.auth,1);
+  expect((await get(other.auth,eligibility)).json()).toMatchObject({eligible:true});
+  const complete=(kind:'regular'|'boss')=>pool.query(
+   'INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id) VALUES($1,$2,$3)',
+   [host.auth.accountId,requiredMapClear,requiredMapClear+'-'+kind],
+  );
+  await complete('boss');
+  expect((await create()).statusCode).toBe(403);
+  await complete('regular');
+  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:true});
+  const accepted=await create();
+  expect(accepted.statusCode).toBe(200);
+  expect(accepted.json()).toMatchObject({mapId,bossId:boss.id,configVersion:version});
+  const roomId=accepted.json().roomId as string;
+  expect((await get(member,'/v1/coop/rooms/'+roomId)).json()).toMatchObject({canJoin:true,configVersion:version});
+
+  boss.requiredMapClear='stormcoil-fields';
+  await publish(candidate);
+  expect((await get(host.auth,eligibility)).json()).toMatchObject({eligible:false});
+  expect((await create({...request,requestId:randomUUID()})).statusCode).toBe(403);
+  expect((await create()).json()).toEqual(accepted.json());
+  const joined=await post(member,'/v1/coop/rooms/'+roomId+'/join',{requestId:randomUUID(),mapId});
+  expect(joined.statusCode).toBe(200);
+  expect(joined.json()).toMatchObject({mapId,configVersion:version,you:{seat:1,isHost:false}});
  });
 });

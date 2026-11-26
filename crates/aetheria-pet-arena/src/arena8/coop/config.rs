@@ -260,6 +260,9 @@ pub struct EncounterRewards {
 pub struct BossConfig {
     pub id: String,
     pub map_id: Option<String>,
+    /// Published campaign clear required to host a room for this Boss.
+    /// Nest enforces it before room creation.
+    pub required_map_clear: Option<String>,
     pub name: String,
     pub element: String,
     pub max_hp: u32,
@@ -574,6 +577,7 @@ impl CoopConfig {
         };
         let mut boss_ids = BTreeSet::new();
         let mut map_ids = BTreeSet::new();
+        let mut prerequisites = BTreeMap::new();
         for boss in bosses {
             match (self.schema_version, boss.map_id.as_deref()) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
@@ -588,7 +592,21 @@ impl CoopConfig {
             {
                 return Err(ConfigError::Boss);
             }
+            if let Some(required) = boss.required_map_clear.as_deref() {
+                let map = boss.map_id.as_deref().ok_or(ConfigError::Boss)?;
+                prerequisites.insert(map, required);
+            }
             boss.validate(elements)?;
+        }
+        for &map in prerequisites.keys() {
+            let mut visited = BTreeSet::new();
+            let mut current = map;
+            while let Some(&required) = prerequisites.get(current) {
+                if !map_ids.contains(required) || !visited.insert(current) {
+                    return Err(ConfigError::Boss);
+                }
+                current = required;
+            }
         }
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
@@ -1257,6 +1275,10 @@ impl BossConfig {
                 p.repeat_clear.to_value(),
                 p.defeat.to_value(),
             ]));
+        }
+        if let Some(required) = &self.required_map_clear {
+            // Append only when authored to preserve existing published digests.
+            fields.push(Value::Text(required.clone()));
         }
         Value::List(fields)
     }

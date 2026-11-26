@@ -52,6 +52,15 @@ export class CoopRoomStore{
   const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
   return numeric(result.rows[0]?.points??0);
  }
+ async hasMapClear(tx:Queryable,accountId:string,mapId:string):Promise<boolean>{
+  // Legacy campaign clears and a full pair of settled Arena8 encounters both count.
+  const result=await tx.query<{cleared:boolean}>(`
+   SELECT EXISTS(SELECT 1 FROM pet_wave_one_map_clears WHERE account_id=$1 AND map_id=$2)
+       OR (SELECT count(*)=2 FROM pet_wave_one_encounters
+           WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($2 || '-regular',$2 || '-boss')) AS cleared`,
+   [accountId,mapId]);
+  return result.rows[0]?.cleared===true;
+ }
  async rewardFor(tx:Queryable,roomId:string,accountId:string){
   const result=await tx.query(`
    SELECT i.room_id AS "roomId",i.match_id AS "matchId",r.outcome,r.pet_id AS "petId",

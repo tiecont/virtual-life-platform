@@ -651,6 +651,52 @@ fn rejects_invalid_authored_skill_level_cost_and_power() {
 }
 
 #[test]
+fn published_map_clear_prerequisites_are_validated_and_digest_bound() {
+    use serde_json::json;
+
+    let source: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    let parse = |value: &serde_json::Value| CoopConfig::parse(&serde_json::to_vec(value).unwrap());
+    let original = parse(&source).unwrap();
+    let mut candidate = source.clone();
+    assert_eq!(candidate["bosses"][0]["mapId"], "cinder-terraces");
+    assert_eq!(candidate["bosses"][1]["mapId"], "tideglass-lagoon");
+    assert_eq!(candidate["bosses"][2]["mapId"], "stormcoil-fields");
+    let fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tests/fixtures/arena8-coop-map-prerequisite.json"
+    ))
+    .unwrap();
+    assert_eq!(candidate["bosses"][1]["mapId"], fixture["mapId"]);
+    assert!(original.bosses()[1].required_map_clear.is_none());
+    candidate["bosses"][1]["requiredMapClear"] = serde_json::Value::Null;
+    assert_eq!(original.digest(), parse(&candidate).unwrap().digest());
+
+    candidate["bosses"][1]["requiredMapClear"] = fixture["requiredMapClear"].clone();
+    candidate["bosses"][2]["requiredMapClear"] = json!("tideglass-lagoon");
+    let validated = parse(&candidate).unwrap();
+    assert_eq!(
+        validated.bosses()[1].required_map_clear.as_deref(),
+        Some("cinder-terraces")
+    );
+    assert_ne!(validated.digest(), original.digest());
+
+    for required in ["unlisted-map", "tideglass-lagoon", "stormcoil-fields"] {
+        candidate["bosses"][1]["requiredMapClear"] = json!(required);
+        assert!(matches!(parse(&candidate), Err(ConfigError::Boss)));
+    }
+
+    candidate["bosses"][1]["requiredMapClear"] = json!("cinder-terraces");
+    candidate["bosses"][0]["requiredMapClear"] = json!("stormcoil-fields");
+    assert!(matches!(parse(&candidate), Err(ConfigError::Boss)));
+
+    let mut historical: serde_json::Value = serde_json::from_slice(include_bytes!(
+        "../../../../../config/gameplay/arena8-coop-v1.seed.json"
+    ))
+    .unwrap();
+    historical["boss"]["requiredMapClear"] = fixture["requiredMapClear"].clone();
+    assert!(matches!(parse(&historical), Err(ConfigError::Boss)));
+}
+
+#[test]
 fn revision_nine_retains_its_content_digest_and_replay() {
     let rules = CoopRules::load(
         include_bytes!("../../../tests/fixtures/arena8-coop-r9.json"),
