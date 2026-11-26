@@ -94,6 +94,9 @@ try{
   boss.requiredRoomPoints=5_000;
  }
  // A test-only publication makes the Fire match winnable with legal swaps.
+ // Engine Option fields accept both missing and explicit null in published JSON.
+ fire.rewardPolicy.minimumActions=null;
+ bundle.bosses.find(boss=>boss.mapId==='stormcoil-fields').rewardPolicy=null;
  fire.rewardPolicy.repeatClear.coins=17;
  // All four seats perform a combat action in Water. A recovered player earns
  // the pinned defeat payout regardless of their final connection or damage.

@@ -20,8 +20,13 @@ const RewardsSchema=z.strictObject({
 });
 
 const PayoutSchema=z.strictObject({achievementPoints:count,coins:count,exp:count,materials:count});
+const minimumActions=z.int().min(0).max(4096);
 const EncounterSchema=z.object({
- id:pet,mapId:pet,rewardPolicy:z.strictObject({minimumActions:z.strictObject({victory:z.int().min(0).max(4096),defeat:z.int().min(0).max(4096)}).optional(),firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema}).optional(),
+ id:pet,mapId:pet,
+ rewardPolicy:z.strictObject({
+  minimumActions:z.strictObject({victory:minimumActions,defeat:minimumActions}).nullish(),
+  firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema,
+ }).nullish(),
 });
 
 function encounterFor(bundle:Record<string,unknown>,bossId:string){
