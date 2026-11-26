@@ -288,6 +288,13 @@ pub struct EffectConfig {
     pub duration_turns: u8,
     /// Multiplier applied per matching source stack (1000 = no stacking).
     pub stacking_pm: u16,
+    pub contribution: Option<SupportContribution>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum SupportContribution {
+    Caster,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -318,6 +325,7 @@ pub struct PetConfig {
     pub rarity: String,
     pub power_class: String,
     pub catalog: Option<PetCatalog>,
+    pub growth: Option<PetGrowth>,
     pub max_hp: u32,
     pub attack: u32,
     pub defense: u32,
@@ -336,6 +344,24 @@ pub struct PetConfig {
 pub struct PetCatalog {
     pub name: String,
     pub map_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PetGrowth {
+    pub curve: String,
+    pub health_bp: u16,
+    pub attack_bp: u16,
+    pub defense_bp: u16,
+    pub bias_pm: i16,
+}
+
+impl PetGrowth {
+    pub fn stat(&self, base: u32, rate: u16, steps: u32) -> Result<u32, ConfigError> {
+        let factor = u64::try_from(1000 + i32::from(self.bias_pm)).map_err(|_| ConfigError::Pet)?;
+        let increase = u64::from(base) * u64::from(rate) * u64::from(steps) * factor / 10_000_000;
+        u32::try_from(u64::from(base) + increase).map_err(|_| ConfigError::Arithmetic)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -548,6 +574,11 @@ impl CoopConfig {
             if skill.id.is_empty() || skill.id.len() > 64 {
                 return Err(ConfigError::Skill);
             }
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && skill.effect.contribution.is_some()
+            {
+                return Err(ConfigError::Skill);
+            }
             skill.validate()?;
             if skills.insert(skill.id.as_str(), skill).is_some() {
                 return Err(ConfigError::DuplicateSkill);
@@ -565,7 +596,26 @@ impl CoopConfig {
             return Err(ConfigError::MissingPet);
         }
         let mut seen = BTreeSet::new();
+        let individual_growth = self.pets.iter().any(|pet| pet.growth.is_some());
         for pet in &self.pets {
+            if individual_growth {
+                let growth = pet.growth.as_ref().ok_or(ConfigError::Pet)?;
+                if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                    || !matches!(
+                        growth.curve.as_str(),
+                        "steady" | "focused" | "bulwark" | "dragon" | "agile"
+                    )
+                    || growth.bias_pm.unsigned_abs() > 100
+                    || [growth.health_bp, growth.attack_bp, growth.defense_bp]
+                        .iter()
+                        .any(|&rate| rate > 250)
+                {
+                    return Err(ConfigError::Pet);
+                }
+                growth.stat(pet.max_hp, growth.health_bp, 99)?;
+                growth.stat(pet.attack, growth.attack_bp, 99)?;
+                growth.stat(pet.defense, growth.defense_bp, 99)?;
+            }
             if pet.id.is_empty() || pet.id.len() > 64 || pet.max_hp == 0 || pet.attack == 0 {
                 return Err(ConfigError::Pet);
             }
@@ -1143,7 +1193,7 @@ impl SkillConfig {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(skill_kind_name(self.kind).into()),
             Value::Uint(u64::from(self.mana_cost)),
@@ -1158,12 +1208,22 @@ impl SkillConfig {
                 Value::Uint(u64::from(self.effect.duration_turns)),
                 Value::Uint(u64::from(self.effect.stacking_pm)),
             ]),
-        ])
+        ];
+        if self.effect.contribution.is_some() {
+            fields.push(Value::Text("caster".into()));
+        }
+        Value::List(fields)
     }
 }
 
 impl EffectConfig {
     fn validate(&self) -> Result<(), ConfigError> {
+        if self.contribution.is_some()
+            && (!matches!(self.kind, EffectKind::Heal | EffectKind::Shield)
+                || matches!(self.target, EffectTarget::Boss))
+        {
+            return Err(ConfigError::Skill);
+        }
         match self.kind {
             EffectKind::Buff | EffectKind::Debuff => {
                 if self.duration_turns == 0 || self.value == 0 {
@@ -1217,6 +1277,15 @@ impl PetConfig {
                     .map_id
                     .as_ref()
                     .map_or(Value::Null, |id| Value::Text(id.clone())),
+            ]));
+        }
+        if let Some(growth) = &self.growth {
+            fields.push(list([
+                Value::Text(growth.curve.clone()),
+                Value::Uint(u64::from(growth.health_bp)),
+                Value::Uint(u64::from(growth.attack_bp)),
+                Value::Uint(u64::from(growth.defense_bp)),
+                Value::Int(i64::from(growth.bias_pm)),
             ]));
         }
         Value::List(fields)

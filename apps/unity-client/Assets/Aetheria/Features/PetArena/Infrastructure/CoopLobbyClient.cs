@@ -34,6 +34,19 @@ namespace Aetheria.PetArena.Infrastructure
             public Seat[] seats;
         }
 
+        [Serializable] public sealed class Reward { public string roomId, matchId, outcome, petId; public int achievementPoints, coins, exp; }
+
+        public async System.Threading.Tasks.Task<Reward> RewardAsync(Guid roomId, Guid matchId)
+        {
+            if (local == null) throw new InvalidOperationException("Room session required.");
+            var json = await local.CoopRequest(RoomPath(roomId, "reward"), null, default);
+            var reward = JsonUtility.FromJson<Reward>(json);
+            if (reward == null || !Guid.TryParse(reward.matchId, out var match) || match != matchId ||
+                !Guid.TryParse(reward.roomId, out var room) || room != roomId)
+                throw new FormatException("Reward receipt does not match this battle.");
+            return reward;
+        }
+
         [Serializable] public sealed class Eligibility { public string bossId; public int points, requiredPoints; public bool eligible; }
         [Serializable] private class CreateRequest { public string requestId, petId, ownedPetInstanceId, mapId; }
         [Serializable] private sealed class SelectedBossRequest : CreateRequest { public string bossId; }

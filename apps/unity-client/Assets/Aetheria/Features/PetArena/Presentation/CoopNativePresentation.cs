@@ -16,21 +16,25 @@ namespace Aetheria.PetArena.Presentation
         public const string CellPrefix = "coop-cell-";
         public const string ActionPrefix = "coop-action-";
 
-        public static VisualElement Build(CoopNativeView view, Action<int> select, Action<string> cast)
+        public static VisualElement Build(CoopNativeView view, Action<int> select, Action<string> cast, int selected = -1)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             if (select == null) throw new ArgumentNullException(nameof(select));
             if (cast == null) throw new ArgumentNullException(nameof(cast));
             var root = new VisualElement { name = "coop-hud" };
+            root.AddToClassList("coop-panel");
             root.Add(Label(TurnName, CoopNativePresenter.TurnLabel(view)));
             root.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
 
+            if (view.PendingAttack != null)
+                root.Add(Label("coop-telegraph", "Incoming attack · " + view.PendingAttack.Targets + " targets · " + view.PendingAttack.Remaining + " turns"));
             var seats = new VisualElement { name = "coop-seats" };
             seats.style.flexDirection = FlexDirection.Row;
             for (var seat = 0; seat < view.Participants.Count; seat += 1)
             {
                 var panel = new VisualElement { name = SeatPrefix + seat };
-                panel.style.marginRight = 12;
+                panel.AddToClassList("coop-member");
+                if (seat == view.ActiveSeat) panel.AddToClassList("coop-active-member");
                 panel.Add(Label("coop-seat-label-" + seat, CoopNativePresenter.SeatLabel(view, seat)));
                 var own = view.Participants[seat];
                 panel.Add(Label("coop-seat-resources-" + seat,
@@ -39,6 +43,8 @@ namespace Aetheria.PetArena.Presentation
                 panel.Add(Label("coop-seat-contribution-" + seat,
                     "dmg " + own.Contribution.Damage + " · heal " + own.Contribution.Healing +
                     " · shield " + own.Contribution.Shielding));
+                foreach (var status in own.Statuses)
+                    panel.Add(Label("coop-effect-" + seat, status.Kind + " · " + status.Turns + " turns"));
                 seats.Add(panel);
             }
             root.Add(seats);
@@ -53,6 +59,8 @@ namespace Aetheria.PetArena.Presentation
                 var tile = view.Board[cell];
                 var button = new Button(() => select(cell)) { text = CellText(tile) };
                 button.name = CellPrefix + cell;
+                if (tile != null) button.AddToClassList("tile-" + tile.Element);
+                if (cell == selected) button.AddToClassList("coop-selected");
                 button.style.width = 58;
                 button.style.height = 48;
                 button.style.marginRight = 2;

@@ -397,6 +397,55 @@ fn boss_phase_transition_happens_exactly_once() {
 }
 
 #[test]
+fn allocation_uses_the_published_pet_growth_curve() {
+    let base = rules();
+    let first = base.allocate(seats()).unwrap();
+    let mut bundle: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    let growth = &mut bundle["pets"][0]["growth"];
+    assert_eq!(growth["curve"], "focused");
+    growth["healthBp"] = 200.into();
+    let changed = CoopRules::load(
+        &serde_json::to_vec(&bundle).unwrap(),
+        base.selected_boss().id.clone(),
+    )
+    .unwrap();
+    let second = changed.allocate(seats()).unwrap();
+    assert_eq!(first.participants[0].max_hp, 225);
+    assert_eq!(second.participants[0].max_hp, 247);
+    assert_eq!(first.participants[1].max_hp, second.participants[1].max_hp);
+    assert_ne!(first.config_digest, second.config_digest);
+    bundle["pets"][0].as_object_mut().unwrap().remove("growth");
+    assert!(matches!(
+        CoopRules::load(
+            &serde_json::to_vec(&bundle).unwrap(),
+            base.selected_boss().id.clone()
+        ),
+        Err(ConfigError::Pet)
+    ));
+}
+
+#[test]
+fn water_signature_credits_its_caster_only_for_health_restored() {
+    let (rules, mut state, mut stream) = started();
+    state.active_seat = 1;
+    state.participants[1].rage = rules.config.resources.rage_cap;
+    state.participants[0].hp -= 12;
+    state.participants[2].hp -= 5;
+    let next = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap()
+        .state;
+    assert_eq!(next.participants[1].contribution_healing, 17);
+    for target in [0, 2] {
+        assert_eq!(
+            next.participants[target].hp,
+            next.participants[target].max_hp
+        );
+        assert_eq!(next.participants[target].contribution_healing, 0);
+    }
+}
+
+#[test]
 fn skill_costs_cooldowns_and_level_independence() {
     let (rules, mut state, mut stream) = started();
     state.active_seat = 0;

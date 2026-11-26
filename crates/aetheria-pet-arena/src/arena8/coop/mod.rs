@@ -393,18 +393,32 @@ impl CoopRules {
             u32::try_from(u64::from(value) * u64::from(scale) / 1_000)
                 .map_err(|_| CoopError::Arithmetic)
         };
-        let max_hp = scale(
-            pet.max_hp
-                .saturating_add(profile.hp_growth.saturating_mul(steps)),
-        )?;
-        let attack = scale(
-            pet.attack
-                .saturating_add(profile.attack_growth.saturating_mul(steps)),
-        )?;
-        let defense = scale(
-            pet.defense
-                .saturating_add(profile.defense_growth.saturating_mul(steps)),
-        )?;
+        let (hp, atk, def) = if let Some(growth) = &pet.growth {
+            (
+                growth
+                    .stat(pet.max_hp, growth.health_bp, steps)
+                    .map_err(CoopError::Config)?,
+                growth
+                    .stat(pet.attack, growth.attack_bp, steps)
+                    .map_err(CoopError::Config)?,
+                growth
+                    .stat(pet.defense, growth.defense_bp, steps)
+                    .map_err(CoopError::Config)?,
+            )
+        } else {
+            // Historical bundles author additive growth on the element profile.
+            (
+                pet.max_hp
+                    .saturating_add(profile.hp_growth.saturating_mul(steps)),
+                pet.attack
+                    .saturating_add(profile.attack_growth.saturating_mul(steps)),
+                pet.defense
+                    .saturating_add(profile.defense_growth.saturating_mul(steps)),
+            )
+        };
+        let max_hp = scale(hp)?;
+        let attack = scale(atk)?;
+        let defense = scale(def)?;
         Ok(Participant {
             account: seat.account,
             pet_id: seat.pet_id,
@@ -680,8 +694,13 @@ impl CoopRules {
                     let before = seat.hp;
                     seat.hp = seat.hp.saturating_add(amount).min(seat.max_hp);
                     let healed = seat.hp - before;
-                    seat.contribution_healing =
-                        seat.contribution_healing.saturating_add(u64::from(healed));
+                    let source = if effect.contribution.is_some() {
+                        actor
+                    } else {
+                        target
+                    };
+                    let credit = &mut state.participants[source].contribution_healing;
+                    *credit = credit.saturating_add(u64::from(healed));
                     events.push(event("heal", Some(target as u8), u64::from(healed)));
                 }
             }
@@ -693,11 +712,16 @@ impl CoopRules {
                     if !seat.alive {
                         continue;
                     }
+                    let before = seat.shield;
                     seat.shield = seat.shield.saturating_add(amount);
                     seat.shield_turns = seat.shield_turns.max(effect.duration_turns.max(1));
-                    seat.contribution_shielding = seat
-                        .contribution_shielding
-                        .saturating_add(u64::from(amount));
+                    let (source, granted) = if effect.contribution.is_some() {
+                        (actor, seat.shield - before)
+                    } else {
+                        (target, amount)
+                    };
+                    let credit = &mut state.participants[source].contribution_shielding;
+                    *credit = credit.saturating_add(u64::from(granted));
                     events.push(event("shield", Some(target as u8), u64::from(amount)));
                 }
             }

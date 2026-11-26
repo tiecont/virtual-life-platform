@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 6,
+  "contentRevision": 7,
   "board": {
     "spawnWeights": [
       {
@@ -551,11 +551,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "pet-v31-fire-cindrelis-ember-phoenix-ascendant",
+      "id": "pet-v31-fire-cindrelis-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -603,7 +604,7 @@
       }
     },
     {
-      "id": "pet-v31-water-marivell-tide-tidal-bulwark",
+      "id": "pet-v31-water-marivell-tidal-mending",
       "kind": "signature",
       "manaCost": 0,
       "rageCost": 40,
@@ -611,11 +612,12 @@
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
+        "kind": "heal",
         "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000
+        "value": 48,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -679,7 +681,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -743,7 +746,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -871,7 +875,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -935,11 +940,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-pyrecrown-ember-phoenix-ascendant",
+      "id": "fire-pyrecrown-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -999,7 +1005,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1063,7 +1070,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1191,7 +1199,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1255,7 +1264,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1319,11 +1329,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-coalwhisk-ember-phoenix-ascendant",
+      "id": "fire-coalwhisk-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -1383,11 +1394,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-emberloom-ember-phoenix-ascendant",
+      "id": "fire-emberloom-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -1447,11 +1459,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-kilnback-ember-phoenix-ascendant",
+      "id": "fire-kilnback-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -1511,11 +1524,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-flarequill-ember-phoenix-ascendant",
+      "id": "fire-flarequill-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -1575,11 +1589,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "fire-scorchveil-ember-phoenix-ascendant",
+      "id": "fire-scorchveil-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -1627,7 +1642,7 @@
       }
     },
     {
-      "id": "water-dewskip-tide-tidal-bulwark",
+      "id": "water-dewskip-springwell",
       "kind": "signature",
       "manaCost": 0,
       "rageCost": 40,
@@ -1635,11 +1650,12 @@
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 80,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1703,7 +1719,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1755,7 +1772,7 @@
       }
     },
     {
-      "id": "water-foamcurl-tide-tidal-bulwark",
+      "id": "water-foamcurl-foam-salve",
       "kind": "signature",
       "manaCost": 0,
       "rageCost": 40,
@@ -1763,11 +1780,12 @@
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 115,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1819,7 +1837,7 @@
       }
     },
     {
-      "id": "water-tideweft-tide-tidal-bulwark",
+      "id": "water-tideweft-woven-current",
       "kind": "signature",
       "manaCost": 0,
       "rageCost": 40,
@@ -1827,11 +1845,12 @@
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
+        "kind": "heal",
         "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000
+        "value": 38,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1895,7 +1914,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -1959,7 +1979,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2023,7 +2044,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2087,7 +2109,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2151,7 +2174,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2215,7 +2239,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2599,7 +2624,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2663,7 +2689,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2727,7 +2754,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2791,7 +2819,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2855,7 +2884,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2919,7 +2949,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -2983,7 +3014,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3047,7 +3079,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3111,7 +3144,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3175,7 +3209,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3239,11 +3274,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "dragon-fire-ignivar-ember-phoenix-ascendant",
+      "id": "dragon-fire-ignivar-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -3303,7 +3339,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3367,7 +3404,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3431,7 +3469,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3559,7 +3598,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3623,11 +3663,12 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
-      "id": "bird-fire-cinderquill-ember-phoenix-ascendant",
+      "id": "bird-fire-cinderquill-blazing-descent",
       "kind": "ultimate",
       "manaCost": 0,
       "rageCost": 100,
@@ -3675,7 +3716,7 @@
       }
     },
     {
-      "id": "bird-water-tidewren-tide-tidal-bulwark",
+      "id": "bird-water-tidewren-rain-song",
       "kind": "signature",
       "manaCost": 0,
       "rageCost": 40,
@@ -3683,11 +3724,12 @@
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
+        "kind": "heal",
         "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000
+        "value": 45,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3751,7 +3793,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3815,7 +3858,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3943,7 +3987,8 @@
         "target": "allies",
         "value": 150,
         "durationTurns": 2,
-        "stackingPm": 1000
+        "stackingPm": 1000,
+        "contribution": "caster"
       }
     },
     {
@@ -3998,6 +4043,13 @@
       "catalog": {
         "name": "Icarus",
         "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 0
       }
     },
     {
@@ -4012,11 +4064,18 @@
       "critDamageBp": 18000,
       "skill": "pet-v31-fire-cindrelis-ember-lance",
       "signature": "pet-v31-fire-cindrelis-ember-solar-flare",
-      "ultimate": "pet-v31-fire-cindrelis-ember-phoenix-ascendant",
+      "ultimate": "pet-v31-fire-cindrelis-blazing-descent",
       "guard": "pet-v31-fire-cindrelis-guard",
       "catalog": {
         "name": "Cindrelis",
         "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 30
       }
     },
     {
@@ -4030,12 +4089,19 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "pet-v31-water-marivell-tide-lance",
-      "signature": "pet-v31-water-marivell-tide-tidal-bulwark",
+      "signature": "pet-v31-water-marivell-tidal-mending",
       "ultimate": "pet-v31-water-marivell-tide-deep-current",
       "guard": "pet-v31-water-marivell-guard",
       "catalog": {
         "name": "Marivell",
         "mapId": null
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 0
       }
     },
     {
@@ -4055,6 +4121,13 @@
       "catalog": {
         "name": "Quorion",
         "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 20
       }
     },
     {
@@ -4074,6 +4147,13 @@
       "catalog": {
         "name": "Vesperyn",
         "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": -15
       }
     },
     {
@@ -4093,6 +4173,13 @@
       "catalog": {
         "name": "Gravorn",
         "mapId": null
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -10
       }
     },
     {
@@ -4112,6 +4199,13 @@
       "catalog": {
         "name": "Aurelune",
         "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 25
       }
     },
     {
@@ -4126,11 +4220,18 @@
       "critDamageBp": 18000,
       "skill": "fire-pyrecrown-ember-lance",
       "signature": "fire-pyrecrown-ember-solar-flare",
-      "ultimate": "fire-pyrecrown-ember-phoenix-ascendant",
+      "ultimate": "fire-pyrecrown-blazing-descent",
       "guard": "fire-pyrecrown-guard",
       "catalog": {
         "name": "Pyrecrown",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 20
       }
     },
     {
@@ -4150,6 +4251,13 @@
       "catalog": {
         "name": "Lagoonarch",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 0
       }
     },
     {
@@ -4169,6 +4277,13 @@
       "catalog": {
         "name": "Stormdiadem",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -15
       }
     },
     {
@@ -4188,6 +4303,13 @@
       "catalog": {
         "name": "Faultwarden",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 35
       }
     },
     {
@@ -4207,6 +4329,13 @@
       "catalog": {
         "name": "Lanternwake",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 10
       }
     },
     {
@@ -4226,6 +4355,13 @@
       "catalog": {
         "name": "Dawnarchon",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": -20
       }
     },
     {
@@ -4240,11 +4376,18 @@
       "critDamageBp": 18000,
       "skill": "fire-coalwhisk-ember-lance",
       "signature": "fire-coalwhisk-ember-solar-flare",
-      "ultimate": "fire-coalwhisk-ember-phoenix-ascendant",
+      "ultimate": "fire-coalwhisk-blazing-descent",
       "guard": "fire-coalwhisk-guard",
       "catalog": {
         "name": "Coalwhisk",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4259,11 +4402,18 @@
       "critDamageBp": 18000,
       "skill": "fire-emberloom-ember-lance",
       "signature": "fire-emberloom-ember-solar-flare",
-      "ultimate": "fire-emberloom-ember-phoenix-ascendant",
+      "ultimate": "fire-emberloom-blazing-descent",
       "guard": "fire-emberloom-guard",
       "catalog": {
         "name": "Emberloom",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4278,11 +4428,18 @@
       "critDamageBp": 18000,
       "skill": "fire-kilnback-ember-lance",
       "signature": "fire-kilnback-ember-solar-flare",
-      "ultimate": "fire-kilnback-ember-phoenix-ascendant",
+      "ultimate": "fire-kilnback-blazing-descent",
       "guard": "fire-kilnback-guard",
       "catalog": {
         "name": "Kilnback",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4297,11 +4454,18 @@
       "critDamageBp": 18000,
       "skill": "fire-flarequill-ember-lance",
       "signature": "fire-flarequill-ember-solar-flare",
-      "ultimate": "fire-flarequill-ember-phoenix-ascendant",
+      "ultimate": "fire-flarequill-blazing-descent",
       "guard": "fire-flarequill-guard",
       "catalog": {
         "name": "Flarequill",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4316,11 +4480,18 @@
       "critDamageBp": 18000,
       "skill": "fire-scorchveil-ember-lance",
       "signature": "fire-scorchveil-ember-solar-flare",
-      "ultimate": "fire-scorchveil-ember-phoenix-ascendant",
+      "ultimate": "fire-scorchveil-blazing-descent",
       "guard": "fire-scorchveil-guard",
       "catalog": {
         "name": "Scorchveil",
         "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4334,12 +4505,19 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-dewskip-tide-lance",
-      "signature": "water-dewskip-tide-tidal-bulwark",
+      "signature": "water-dewskip-springwell",
       "ultimate": "water-dewskip-tide-deep-current",
       "guard": "water-dewskip-guard",
       "catalog": {
         "name": "Dewskip",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4359,6 +4537,13 @@
       "catalog": {
         "name": "Ripplefin",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4372,12 +4557,19 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-foamcurl-tide-lance",
-      "signature": "water-foamcurl-tide-tidal-bulwark",
+      "signature": "water-foamcurl-foam-salve",
       "ultimate": "water-foamcurl-tide-deep-current",
       "guard": "water-foamcurl-guard",
       "catalog": {
         "name": "Foamcurl",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4391,12 +4583,19 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-tideweft-tide-lance",
-      "signature": "water-tideweft-tide-tidal-bulwark",
+      "signature": "water-tideweft-woven-current",
       "ultimate": "water-tideweft-tide-deep-current",
       "guard": "water-tideweft-guard",
       "catalog": {
         "name": "Tideweft",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4416,6 +4615,13 @@
       "catalog": {
         "name": "Abyssail",
         "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4435,6 +4641,13 @@
       "catalog": {
         "name": "Zipspool",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4454,6 +4667,13 @@
       "catalog": {
         "name": "Copperkip",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4473,6 +4693,13 @@
       "catalog": {
         "name": "Arcshell",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4492,6 +4719,13 @@
       "catalog": {
         "name": "Pulsecrest",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4511,6 +4745,13 @@
       "catalog": {
         "name": "Thundrel",
         "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4530,6 +4771,13 @@
       "catalog": {
         "name": "Clodkin",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4549,6 +4797,13 @@
       "catalog": {
         "name": "Burrowick",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4568,6 +4823,13 @@
       "catalog": {
         "name": "Dunebraid",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4587,6 +4849,13 @@
       "catalog": {
         "name": "Siltmaw",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4606,6 +4875,13 @@
       "catalog": {
         "name": "Terracrest",
         "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4625,6 +4901,13 @@
       "catalog": {
         "name": "Wickrift",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4644,6 +4927,13 @@
       "catalog": {
         "name": "Shroudlet",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4663,6 +4953,13 @@
       "catalog": {
         "name": "Bellshade",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4682,6 +4979,13 @@
       "catalog": {
         "name": "Echowisp",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4701,6 +5005,13 @@
       "catalog": {
         "name": "Veilrelic",
         "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4720,6 +5031,13 @@
       "catalog": {
         "name": "Gleamlet",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
       }
     },
     {
@@ -4739,6 +5057,13 @@
       "catalog": {
         "name": "Dawnpurl",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
       }
     },
     {
@@ -4758,6 +5083,13 @@
       "catalog": {
         "name": "Raymantle",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
       }
     },
     {
@@ -4777,6 +5109,13 @@
       "catalog": {
         "name": "Solweft",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
       }
     },
     {
@@ -4796,6 +5135,13 @@
       "catalog": {
         "name": "Prismhalo",
         "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
       }
     },
     {
@@ -4810,11 +5156,18 @@
       "critDamageBp": 18000,
       "skill": "dragon-fire-ignivar-ember-lance",
       "signature": "dragon-fire-ignivar-ember-solar-flare",
-      "ultimate": "dragon-fire-ignivar-ember-phoenix-ascendant",
+      "ultimate": "dragon-fire-ignivar-blazing-descent",
       "guard": "dragon-fire-ignivar-guard",
       "catalog": {
         "name": "Ignivar",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 0
       }
     },
     {
@@ -4834,6 +5187,13 @@
       "catalog": {
         "name": "Tidecoil",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": -15
       }
     },
     {
@@ -4853,6 +5213,13 @@
       "catalog": {
         "name": "Voltrazik",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 20
       }
     },
     {
@@ -4872,6 +5239,13 @@
       "catalog": {
         "name": "Hollowmaw",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 35
       }
     },
     {
@@ -4891,6 +5265,13 @@
       "catalog": {
         "name": "Terradrake",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": -25
       }
     },
     {
@@ -4910,6 +5291,13 @@
       "catalog": {
         "name": "Auroryx",
         "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 10
       }
     },
     {
@@ -4924,11 +5312,18 @@
       "critDamageBp": 18000,
       "skill": "bird-fire-cinderquill-ember-lance",
       "signature": "bird-fire-cinderquill-ember-solar-flare",
-      "ultimate": "bird-fire-cinderquill-ember-phoenix-ascendant",
+      "ultimate": "bird-fire-cinderquill-blazing-descent",
       "guard": "bird-fire-cinderquill-guard",
       "catalog": {
         "name": "Cinderquill",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 0
       }
     },
     {
@@ -4942,12 +5337,19 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "bird-water-tidewren-tide-lance",
-      "signature": "bird-water-tidewren-tide-tidal-bulwark",
+      "signature": "bird-water-tidewren-rain-song",
       "ultimate": "bird-water-tidewren-tide-deep-current",
       "guard": "bird-water-tidewren-guard",
       "catalog": {
         "name": "Tidewren",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 15
       }
     },
     {
@@ -4967,6 +5369,13 @@
       "catalog": {
         "name": "Arcswift",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": -20
       }
     },
     {
@@ -4986,6 +5395,13 @@
       "catalog": {
         "name": "Pallidrone",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 30
       }
     },
     {
@@ -5005,6 +5421,13 @@
       "catalog": {
         "name": "Dustrunner",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": -10
       }
     },
     {
@@ -5024,6 +5447,13 @@
       "catalog": {
         "name": "Prismkite",
         "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 20
       }
     }
   ],

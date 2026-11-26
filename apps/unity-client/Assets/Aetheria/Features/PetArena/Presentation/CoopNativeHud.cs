@@ -1,5 +1,7 @@
 using System;
 using Aetheria.Networking;
+using Aetheria.PetArena.Infrastructure;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,7 +18,12 @@ namespace Aetheria.PetArena.Presentation
         private int selected = -1;
         private Action returnToHub;
         private float nextRefresh;
-        private bool reading;
+        private bool reading, renderedReconnect, loadingReward;
+        private Func<Task<CoopLobbyClient.Reward>> loadReward;
+        private CoopLobbyClient.Reward reward;
+        private string rewardNotice;
+        public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) { loadReward = loader; Refresh(); }
+
         private ulong renderedVersion = ulong.MaxValue;
 
         // Scene bootstrap may create the component before assigning the document.
@@ -24,6 +31,7 @@ namespace Aetheria.PetArena.Presentation
 
         public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
         {
+            reward = null; rewardNotice = null; loadReward = null;
             session = admitted;
             returnToHub = returnAction;
             selected = -1;
@@ -35,8 +43,8 @@ namespace Aetheria.PetArena.Presentation
         {
             var view = session?.State?.Coop;
             if (view == null) return;
-            if (view.Version != renderedVersion) Refresh();
-            if (view.Terminal || reading || session.NeedsRefresh || session.HasPendingCommand ||
+            if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect) Refresh();
+            if (view.Terminal || reading || session.RequiresReconnect || session.HasPendingCommand ||
                 view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
             nextRefresh = Time.unscaledTime + 1f;
             _ = ReadSharedBoardAsync();
@@ -59,6 +67,7 @@ namespace Aetheria.PetArena.Presentation
         {
             var view = session?.State?.Coop;
             if (view == null) return;
+            renderedReconnect = session.RequiresReconnect;
             renderedVersion = view.Version;
             Render(view);
         }
@@ -69,12 +78,20 @@ namespace Aetheria.PetArena.Presentation
             var target = document != null ? document.rootVisualElement : null;
             if (target == null) return;
             target.Clear();
-            target.Add(CoopNativePresentation.Build(view, Select, Cast));
+            target.Add(CoopNativePresentation.Build(view, Select, Cast, selected));
+            if (view.Terminal && loadReward != null)
+            {
+                if (reward != null)
+                    target.Add(new Label("Rewards received · " + reward.coins + " coins · " + reward.exp + " Pet EXP · " + reward.achievementPoints + " Achievement Points"));
+                else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
+                else if (rewardNotice != null)
+                    target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
+            }
             if (session != null && view.Phase == "ready" && view.ActiveSeat == view.You)
                 target.Add(new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" });
             if (returnToHub != null)
                 target.Add(new Button(returnToHub) { name = "coop-return", text = "Return to Central Plaza" });
-            if (session != null && session.NeedsRefresh)
+            if (session != null && session.RequiresReconnect && !session.HasPendingCommand)
             {
                 var reconnect = new Button(() => _ = ReconnectAsync()) { text = "Reconnect", name = "coop-reconnect" };
                 target.Add(reconnect);
@@ -84,6 +101,15 @@ namespace Aetheria.PetArena.Presentation
                 var retry = new Button(() => _ = RetryAsync()) { text = "Retry pending command", name = "coop-retry" };
                 target.Add(retry);
             }
+        }
+
+        private async Task ReadRewardAsync()
+        {
+            if (loadingReward || loadReward == null) return;
+            loadingReward = true;
+            try { reward = await loadReward(); }
+            catch (Exception) { rewardNotice = "Check settlement receipt"; }
+            finally { loadingReward = false; if (this != null) Refresh(); }
         }
 
         private async System.Threading.Tasks.Task ReconnectAsync()

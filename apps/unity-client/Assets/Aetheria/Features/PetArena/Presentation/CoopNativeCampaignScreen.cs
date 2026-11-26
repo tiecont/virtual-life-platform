@@ -211,6 +211,7 @@ namespace Aetheria.PetArena.Presentation
             if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
             hud.Attach(document);
             hud.Bind(session, returnToHub);
+            if (lobby.CanRefreshRoom) hud.SetRewardLoader(() => lobby.RewardAsync(roomId, admission.MatchId));
         }
 
         private async Task RunAsync(Func<Task> action)

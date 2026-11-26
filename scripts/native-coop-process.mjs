@@ -348,6 +348,16 @@ try{
  assert.equal(inbox.outcome,expectedOutcome);
  const rewards=(await pool.query('SELECT achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id IN (SELECT settlement_id FROM coop_settlement_inbox WHERE match_id=$1)',[allocation.match_id])).rows;
  assert.equal(rewards.length,4);
+ for(const member of members){
+  const receipt=await app.http.inject({url:'/v1/coop/rooms/'+room.roomId+'/reward',headers:{cookie:member.cookie}});
+  assert.equal(receipt.statusCode,200);
+  assert.equal(receipt.json().matchId,allocation.match_id);
+  assert.equal(receipt.json().petId,member.petId);
+  assert.equal(receipt.json().outcome,expectedOutcome);
+ }
+ const outsider=await guest('Receipt outsider','ground-clodkin');
+ const denied=await app.http.inject({url:'/v1/coop/rooms/'+room.roomId+'/reward',headers:{cookie:outsider.cookie}});
+ assert.equal(denied.statusCode,404);
  const rewardPrefix=boss===fire?'clear':'loss';
  for(const row of rewards){
   assert.equal(row.achievement_points,bundle.rewards[rewardPrefix+'AchievementPoints']);

@@ -45,6 +45,10 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    const body=CoopCreateRoomSchema.parse(req.body);
    return rooms.create(account(req),body.requestId,body);
   });
+  api.get('/coop/rooms/:roomId/reward',req=>{
+   const {roomId}=CoopRoomParamsSchema.parse(req.params);
+   return rooms.reward(account(req),roomId);
+  });
   api.get('/coop/rooms/:roomId',req=>{
    const {roomId}=CoopRoomParamsSchema.parse(req.params);
    return rooms.room(account(req),roomId);

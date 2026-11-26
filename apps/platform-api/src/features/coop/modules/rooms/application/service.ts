@@ -1,7 +1,7 @@
 import {createHash,randomUUID} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {
- CoopAdmissionViewSchema,CoopEligibilitySchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
+ CoopRewardReceiptSchema,CoopAdmissionViewSchema,CoopEligibilitySchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
@@ -80,6 +80,12 @@ export class CoopRoomService{
   const seat=await this.store.seatFor(tx,roomId,accountId);
   if(!seat)throw forbidden('Only a seated participant can do that');
   return seat;
+ }
+
+ async reward(accountId:string,roomId:string){
+  const receipt=await this.store.rewardFor(this.db,roomId,accountId);
+  if(!receipt)throw missing();
+  return CoopRewardReceiptSchema.parse(receipt);
  }
 
  async eligibility(accountId:string,bossId?:string,mapId?:string){

@@ -39,6 +39,7 @@ namespace Aetheria.Networking
         public bool HasPendingCommand => pending != null;
         public Aetheria.Native.Public.V1.WorldSnapshot MovementState => connection.Snapshot?.Clone();
         public bool NeedsRefresh => connection.NeedsRefresh;
+        public bool RequiresReconnect => connection.NeedsRefresh || connection.State == ConnectionState.Faulted;
         public async Task<Aetheria.Native.Public.V1.WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
         {
             if (disposed) throw new ObjectDisposedException(nameof(NativePlaySession));

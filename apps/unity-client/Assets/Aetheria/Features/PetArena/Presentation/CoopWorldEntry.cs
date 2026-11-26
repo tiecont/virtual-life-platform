@@ -39,6 +39,9 @@ namespace Aetheria.PetArena.Presentation
             panel = ScriptableObject.CreateInstance<PanelSettings>();
             panel.themeStyleSheet = Resources.Load<ThemeStyleSheet>("Wave1Theme");
             document.panelSettings = panel;
+            var sheet = Resources.Load<StyleSheet>("Wave1");
+            if (sheet != null) document.rootVisualElement.styleSheets.Add(sheet);
+            document.rootVisualElement.AddToClassList("coop-world");
             SceneManager.sceneLoaded += SceneLoaded;
             if (SceneManager.GetActiveScene().name == WorldMapCatalog.CentralPlazaSceneName)
                 SceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);

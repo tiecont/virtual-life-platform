@@ -27,6 +27,10 @@ export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema
 export const CoopReadySchema=z.strictObject({requestId,ready:z.boolean()});
 export const CoopRoomCommandSchema=z.strictObject({requestId});
 export const CoopRoomParamsSchema=z.strictObject({roomId:z.uuid()});
+export const CoopRewardReceiptSchema=z.strictObject({
+ roomId:z.uuid(),matchId:z.uuid(),outcome:z.enum(['won','lost']),petId:CoopPetIdSchema,
+ achievementPoints:points,coins:points,exp:points,
+});
 export const CoopAdmissionCommandSchema=z.strictObject({});
 export const CoopAdmissionViewSchema=z.strictObject({
  roomId:z.uuid(),bossId:CoopBossIdSchema,matchId:z.uuid(),bootId:z.uuid(),accountId:z.uuid(),seat:seatNumber,

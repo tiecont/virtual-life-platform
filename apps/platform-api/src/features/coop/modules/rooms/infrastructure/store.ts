@@ -44,6 +44,14 @@ export class CoopRoomStore{
   const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
   return numeric(result.rows[0]?.points??0);
  }
+ async rewardFor(tx:Queryable,roomId:string,accountId:string){
+  const result=await tx.query(`
+   SELECT i.room_id AS "roomId",i.match_id AS "matchId",r.outcome,r.pet_id AS "petId",
+          r.achievement_points AS "achievementPoints",r.coins,r.exp
+   FROM coop_settlement_inbox i JOIN coop_settlement_rewards r USING(settlement_id)
+   WHERE i.room_id=$1 AND r.account_id=$2`,[roomId,accountId]);
+  return result.rows[0];
+ }
  async ownedPet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId?:string):Promise<Readonly<{level:number;instanceId:string}>|undefined>{
   const result=await tx.query<{level:unknown;instance_id:string}>('SELECT level,owned_pet_instance_id AS instance_id FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND ($3::uuid IS NULL OR owned_pet_instance_id=$3)',[accountId,petId,ownedPetInstanceId??null]);
   const row=result.rows[0];
