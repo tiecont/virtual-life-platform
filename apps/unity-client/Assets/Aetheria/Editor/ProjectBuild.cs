@@ -54,6 +54,7 @@ namespace Aetheria.Editor
             // player build below; never keep two scene lists in sync by hand.
             ProjectScenes.ApplyEditorBuildSettings();
             AssetDatabase.SaveAssets();
+            IcarusPrefabSetupEditor.RecoverReviewImports();
             BlockoutCollisionExport.Write();
         }
 

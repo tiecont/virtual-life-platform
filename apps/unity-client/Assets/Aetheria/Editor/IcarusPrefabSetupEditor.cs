@@ -15,6 +15,9 @@ namespace Aetheria.Editor
         private const string AccessoriesFolder = ModularFolder + "/Accessories";
         private const float BowStringHalfLength = .55f;
         public const string PrefabPath = CharacterFolder + "/Modular/Icarus.prefab";
+        private static readonly string[] ReviewSources = {
+            ReviewVrmPath, $"{AccessoriesFolder}/Icarus_Wings.glb", $"{AccessoriesFolder}/Icarus_Bow.glb"
+        };
 
         [MenuItem("Aetheria/Icarus/Build or update modular prefab")]
         public static void BuildSelected() => Build(Selection.activeObject as GameObject, PrefabPath);
@@ -22,16 +25,34 @@ namespace Aetheria.Editor
         [MenuItem("Aetheria/Icarus/Build offline VRM review prefab")]
         public static void BuildVrmReview()
         {
-            AssetDatabase.ImportAsset(ReviewVrmPath,
-                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset($"{AccessoriesFolder}/Icarus_Wings.glb",
-                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset($"{AccessoriesFolder}/Icarus_Bow.glb",
-                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            foreach (string path in ReviewSources)
+                Reimport(path);
             var selected = AssetDatabase.LoadAssetAtPath<GameObject>(
                 AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null ? PrefabPath : ReviewVrmPath);
             Build(selected, PrefabPath);
         }
+
+        internal static void RecoverReviewImports()
+        {
+            // UniVRM can miss URP shaders during the first refresh of a fresh Library
+            // (UniVRM #2720). Project preparation runs after that refresh.
+            bool recovered = false;
+            foreach (string path in ReviewSources)
+            {
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(path) != null ||
+                    AssetDatabase.AssetPathToGUID(path, AssetPathToGUIDOptions.OnlyExistingAssets).Length == 0)
+                    continue;
+
+                Reimport(path);
+                recovered |= AssetDatabase.LoadAssetAtPath<GameObject>(path) != null;
+            }
+
+            if (recovered && AssetDatabase.AssetPathToGUID(PrefabPath, AssetPathToGUIDOptions.OnlyExistingAssets).Length != 0)
+                Reimport(PrefabPath);
+        }
+
+        private static void Reimport(string path) =>
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
 
         private static void Build(GameObject selected, string output)
         {
