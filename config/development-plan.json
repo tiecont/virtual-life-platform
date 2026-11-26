@@ -11016,6 +11016,13 @@
       ],
       "remaining": "Confirm hosted checks on the integrated source.",
       "implementation": {
+        "integratedAcceptance": {
+          "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:4489",
+          "exitCode": 0,
+          "result": "Four WSS seats recovered version five. Fire won in six turns; Water lost in 24. Committed guards qualified for Water rewards; Start and rejected turns gave no participation credit. Earned equipment and an independent skill upgrade applied to the subsequent allocation.",
+          "evidence": "artifacts/integrated-d3/participation-final.log"
+        },
         "localAcceptance": {
           "sourceRevision": "49de4dcc7a44a606c47b37a9aac2fb1b430a8996",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
@@ -11126,6 +11133,13 @@
         "VL-184"
       ],
       "implementation": {
+        "integratedAcceptance": {
+          "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts tests/integration/coop-settlement.test.ts --maxWorkers=1",
+          "exitCode": 0,
+          "result": "10 passed, 0 failed or skipped. Published six-map availability resolved achievement thresholds, prerequisites, encounter IDs and recruitment. Existing rooms retained pins.",
+          "evidence": "artifacts/integrated-d3/rooms-settlement-5977.json"
+        },
         "integrationCheckpoint": {
           "sourceRevision": "097b750230ce8743ec4cf6274139b9126f2b39e0",
           "pullRequest": 86,
@@ -11220,6 +11234,13 @@
       ],
       "remaining": "Fire and Water portal navigation, guest collection, Fire host and return were exercised on ef6cdb8d (VL-199). Verify packaged guest joining a room, threshold messaging after publication and final integrated build.",
       "implementation": {
+        "integratedAcceptance": {
+          "sourceRevision": "67087f6db73c50e55b632ecddac4f9eecfde41ef",
+          "command": "Unity 6000.3.14f1 -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.CoopCampaignScreenTests",
+          "exitCode": 0,
+          "result": "9 passed, 0 failed or skipped on the campaign screen. Missing availability disables hosting, host requirements are shown separately, and a configured map without a local scene stays inaccessible.",
+          "evidence": "artifacts/integrated-d3/campaign-67087.xml"
+        },
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
