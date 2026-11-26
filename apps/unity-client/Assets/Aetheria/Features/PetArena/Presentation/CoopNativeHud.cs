@@ -57,7 +57,12 @@ namespace Aetheria.PetArena.Presentation
         private void Update()
         {
             var view = session?.State?.Coop;
-            if (view == null) return;
+            if (view == null || recovering || leaving) return;
+            if (!view.Terminal && session.NeedsRefresh && !session.HasPendingCommand && !reading)
+            {
+                _ = RecoverAsync(renewal: true);
+                return;
+            }
             if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect) Refresh();
             if (view.Terminal || reading || !CanSubmit ||
                 view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
@@ -84,6 +89,7 @@ namespace Aetheria.PetArena.Presentation
             if (view == null) return;
             if (previous != null && view.Version > previous.Version)
             {
+                selected = -1;
                 feedback = null;
                 if (view.Terminal)
                 {
@@ -192,14 +198,17 @@ namespace Aetheria.PetArena.Presentation
             finally { loadingReward = false; if (this != null) Refresh(); }
         }
 
-        private async Task RecoverAsync()
+        private async Task RecoverAsync(bool renewal = false)
         {
             var current = session;
             var retry = current?.HasPendingCommand == true;
             if (current == null || recovering || leaving || (!retry && !current.RequiresReconnect)) return;
             recovering = true;
-            selected = -1;
-            Refresh();
+            if (!renewal)
+            {
+                selected = -1;
+                Refresh();
+            }
 
             try
             {
@@ -216,7 +225,8 @@ namespace Aetheria.PetArena.Presentation
                 if (this != null && session == current)
                 {
                     recovering = false;
-                    Refresh();
+                    if (!renewal || current.RequiresReconnect || current.State?.Coop?.Version != renderedVersion)
+                        Refresh();
                 }
             }
         }
