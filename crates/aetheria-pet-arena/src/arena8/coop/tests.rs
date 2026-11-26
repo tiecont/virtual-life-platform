@@ -370,7 +370,7 @@ fn boss_phase_transition_happens_exactly_once() {
     let boss_config = rules.selected_boss();
     let threshold_bp = boss_config.phase.threshold_bp;
     assert_eq!(threshold_bp, 2_500);
-    let threshold_hp = u32::from(boss_config.max_hp) * u32::from(threshold_bp) / 10_000;
+    let threshold_hp = boss_config.max_hp * u32::from(threshold_bp) / 10_000;
     state.boss.hp = threshold_hp + 10;
     // A single huge phase-1 hit may not skip phase 2.
     let huge = 10_000_000;

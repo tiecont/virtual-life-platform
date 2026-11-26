@@ -111,6 +111,7 @@ jobs:
           set -euo pipefail
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss
+          node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs
       - name: Check standalone Unity protocol adapter and real C# to Rust interoperability
         shell: bash
         run: |
