@@ -111,6 +111,8 @@ jobs:
           POSTGRES_USER: aetheria_soulbound_test
           POSTGRES_PASSWORD: ci_ephemeral_only
           POSTGRES_DB: aetheria_soulbound_test
+          # Concurrent isolated schema migrations hold locks on their relation indexes.
+          POSTGRES_INITDB_ARGS: "--set=max_locks_per_transaction=256"
         ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U aetheria_soulbound_test -d aetheria_soulbound_test"
