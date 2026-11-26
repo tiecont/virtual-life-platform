@@ -1,6 +1,6 @@
 use aetheria_game_runtime::{Config, probe, router};
 use aetheria_pet_arena::arena8::coop::simulation::{
-    COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, simulate,
+    COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
 };
 use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules};
 
@@ -16,7 +16,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             enabled.as_deref()
         },
     )?;
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
     // Authoritative bundle validation for Admin publication. The Nest control
     // plane never re-implements the schema or the digest: it asks the engine.
     if let [flag, path] = args.as_slice()
@@ -65,6 +65,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         return Ok(());
     }
+    let mut party: Option<[SimulationSeat; 4]> = None;
+    if args
+        .first()
+        .is_some_and(|flag| matches!(flag.as_str(), "--simulate-coop" | "--compare-coop"))
+        && args.len() >= 4
+        && args[args.len() - 2] == "--party"
+    {
+        let path = args.pop().unwrap();
+        args.pop();
+        party = Some(serde_json::from_slice(&std::fs::read(path)?)?);
+    }
     if let [flag, path, policy, seeds, boss @ ..] = args.as_slice()
         && flag == "--simulate-coop"
         && boss.len() <= 1
@@ -84,7 +95,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .clone()
         };
         let rules = simulation_rules(&bytes, boss_id)?;
-        let report = simulate(&rules, policy, seeds).map_err(|error| error.message())?;
+        let report = simulate_party(&rules, policy, seeds, party.as_ref())
+            .map_err(|error| error.message())?;
         println!("{}", serde_json::to_string(&report)?);
         return Ok(());
     }
@@ -106,7 +118,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         for boss in bosses {
             let rules = simulation_rules(&bytes, boss.clone())?;
             for policy in POLICIES {
-                reports.push(simulate(&rules, policy, seeds).map_err(|error| error.message())?);
+                reports.push(
+                    simulate_party(&rules, policy, seeds, party.as_ref())
+                        .map_err(|error| error.message())?,
+                );
             }
         }
         println!("{}", serde_json::to_string(&reports)?);

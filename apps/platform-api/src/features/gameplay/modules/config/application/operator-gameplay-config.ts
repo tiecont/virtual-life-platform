@@ -181,10 +181,10 @@ export class OperatorGameplayConfig{
   const metadata={ruleset:value.ruleset,version:value.version};
   try{
    if('bossIds' in value){
-    const reports=await this.simulator.compare(row.bundle,value.bossIds,value.seeds,signal);
+    const reports=await this.simulator.compare(row.bundle,value.bossIds,value.seeds,signal,...(value.party?[value.party]:[]));
     return GameplaySimulationComparisonSchema.parse({...metadata,seeds:value.seeds,reports});
    }
-   const report=await this.simulator.simulate(row.bundle,value.policy,value.seeds,value.bossId,signal);
+   const report=await this.simulator.simulate(row.bundle,value.policy,value.seeds,value.bossId,signal,...(value.party?[value.party]:[]));
    return GameplaySimulationReportSchema.parse({...metadata,...report});
   }catch(error){
    if(error instanceof GameplaySimulationError)throw new DomainError('INVALID_REQUEST',422,'The engine rejected the gameplay configuration or encounter');

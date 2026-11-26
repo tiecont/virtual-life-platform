@@ -5,14 +5,14 @@ import {join} from 'node:path';
 import {promisify} from 'node:util';
 import {
  EngineGameplaySimulationReportSchema,GameplayComparisonSeedsSchema,GameplaySimulationPolicySchema,GameplaySimulationSeedsSchema,
- type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,
+ type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
 } from '@aetheria/contracts';
 
 const execute=promisify(execFile);
 const LIMIT=1048576,TIMEOUT_MS=30000,OUTPUT_LIMIT=65536;
 export interface GameplaySimulator{
- simulate(bundle:GameplayBundle,policy:GameplaySimulationPolicy,seeds:number,bossId?:string,signal?:AbortSignal):Promise<EngineGameplaySimulationReport>;
- compare(bundle:GameplayBundle,bossIds:readonly string[],seeds:number,signal?:AbortSignal):Promise<EngineGameplaySimulationReport[]>;
+ simulate(bundle:GameplayBundle,policy:GameplaySimulationPolicy,seeds:number,bossId?:string,signal?:AbortSignal,party?:GameplaySimulationParty):Promise<EngineGameplaySimulationReport>;
+ compare(bundle:GameplayBundle,bossIds:readonly string[],seeds:number,signal?:AbortSignal,party?:GameplaySimulationParty):Promise<EngineGameplaySimulationReport[]>;
 }
 /** The engine rejected the bundle or the bounded simulation request. */
 export class GameplaySimulationError extends Error{constructor(message='Gameplay simulation rejected'){super(message);this.name='GameplaySimulationError';}}
@@ -36,16 +36,16 @@ export class EngineGameplaySimulator implements GameplaySimulator{
  constructor(private readonly binary:string){
   if(typeof binary!=='string'||!binary.startsWith('/')||binary.length>4096)throw new Error('Gameplay simulator binary must be an absolute path');
  }
- async simulate(bundle:GameplayBundle,policy:GameplaySimulationPolicy,seeds:number,bossId?:string,signal?:AbortSignal){
+ async simulate(bundle:GameplayBundle,policy:GameplaySimulationPolicy,seeds:number,bossId?:string,signal?:AbortSignal,party?:GameplaySimulationParty){
   if(!GameplaySimulationSeedsSchema.safeParse(seeds).success)throw new GameplaySimulationError('Gameplay simulation seed count is outside the bound');
   const args=[policy,String(seeds)];
   if(bossId!==undefined)args.push(bossId);
-  return readReport(await this.run(bundle,'--simulate-coop',args,signal),policy,seeds,bossId);
+  return readReport(await this.run(bundle,'--simulate-coop',args,signal,party),policy,seeds,bossId);
  }
- async compare(bundle:GameplayBundle,bossIds:readonly string[],seeds:number,signal?:AbortSignal){
+ async compare(bundle:GameplayBundle,bossIds:readonly string[],seeds:number,signal?:AbortSignal,party?:GameplaySimulationParty){
   if(!GameplayComparisonSeedsSchema.safeParse(seeds).success)throw new GameplaySimulationError('Gameplay comparison seed count is outside the bound');
   if(bossIds.length<1||bossIds.length>2||new Set(bossIds).size!==bossIds.length)throw new GameplaySimulationError('Gameplay comparison requires one or two distinct encounters');
-  const output=await this.run(bundle,'--compare-coop',[String(seeds),...bossIds],signal);
+  const output=await this.run(bundle,'--compare-coop',[String(seeds),...bossIds],signal,party);
   const policies=GameplaySimulationPolicySchema.options;
   if(!Array.isArray(output)||output.length!==bossIds.length*policies.length)
    throw new GameplaySimulatorUnavailableError('Engine simulator returned an incomplete comparison');
@@ -55,13 +55,18 @@ export class EngineGameplaySimulator implements GameplaySimulator{
    throw new GameplaySimulatorUnavailableError('Engine simulator returned inconsistent bundle digests');
   return reports;
  }
- private async run(bundle:GameplayBundle,command:string,args:string[],signal?:AbortSignal):Promise<unknown>{
+ private async run(bundle:GameplayBundle,command:string,args:string[],signal?:AbortSignal,party?:GameplaySimulationParty):Promise<unknown>{
   const bytes=JSON.stringify(bundle);
   if(Buffer.byteLength(bytes)<2||Buffer.byteLength(bytes)>LIMIT)throw new GameplaySimulationError('Gameplay bundle size is outside the supported bound');
   const directory=await mkdtemp(join(tmpdir(),'aetheria-gameplay-sim-'));
   try{
    const file=join(directory,'bundle.json');
    await writeFile(file,bytes,{mode:0o600});
+   if(party){
+    const partyFile=join(directory,'party.json');
+    await writeFile(partyFile,JSON.stringify(party),{mode:0o600});
+    args.push('--party',partyFile);
+   }
    let stdout:string;
    try{
     signal?.throwIfAborted();

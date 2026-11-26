@@ -3,8 +3,9 @@
 //! The policy sees only committed public state. It proposes actions in priority
 //! order and lets the reducer reject illegal, unaffordable or out-of-turn ones,
 //! so no cost, cooldown or balance rule is duplicated here.
+use super::{ArtifactLoadout, EquippedArtifact, SkillLevelBinding};
 use aetheria_game_core::{Command, LogicalClock, SecretSeed, apply, begin};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::config::EffectKind;
 use super::{CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput};
@@ -262,17 +263,68 @@ pub fn simulate(
     policy: Policy,
     seeds: u32,
 ) -> Result<SimulationReport, CoopError> {
+    simulate_party(rules, policy, seeds, None)
+}
+
+/// Hypothetical loadouts use the same binding and eligibility checks as a match.
+/// Account and instance identities are local to each simulation seat.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SimulationSeat {
+    pub pet_id: String,
+    pub level: u8,
+    pub artifacts: Vec<EquippedArtifact>,
+    pub skill_levels: Vec<SkillLevelBinding>,
+}
+
+pub fn simulate_party(
+    rules: &CoopRules,
+    policy: Policy,
+    seeds: u32,
+    party: Option<&[SimulationSeat; SEATS]>,
+) -> Result<SimulationReport, CoopError> {
     if seeds == 0 || seeds > 1_000 {
         return Err(CoopError::InvalidSeat);
     }
     let pets = &rules.config().pets;
-    let initial = rules.allocate(std::array::from_fn(|index| SeatInput {
+    let seats = std::array::from_fn(|index| SeatInput {
         account: format!("simulation-seat-{index}"),
-        pet_id: pets[index % pets.len()].id.clone(),
+        pet_id: party.map_or_else(
+            || pets[index % pets.len()].id.clone(),
+            |p| p[index].pet_id.clone(),
+        ),
         owned_pet_instance_id: format!("simulation-instance-{index}"),
-        level: 1,
+        level: party.map_or(1, |p| p[index].level),
         artifact_power_pm: 0,
-    }))?;
+    });
+    let mut initial =
+        if let Some(party) = party.filter(|p| p.iter().any(|s| !s.artifacts.is_empty())) {
+            let mut instances = std::collections::BTreeSet::new();
+            if !party
+                .iter()
+                .flat_map(|seat| &seat.artifacts)
+                .all(|item| instances.insert(&item.artifact_id))
+            {
+                return Err(CoopError::InvalidSeat);
+            }
+            let loadouts = std::array::from_fn(|index| {
+                let mut entries = party[index].artifacts.clone();
+                entries.sort_by_key(|item| item.slot.code());
+                ArtifactLoadout {
+                    digest: ArtifactLoadout::digest(rules.digest(), &seats[index], &entries),
+                    entries,
+                }
+            });
+            rules.allocate_with_loadouts(seats, &loadouts)?
+        } else {
+            rules.allocate(seats)?
+        };
+    if let Some(party) = party {
+        rules.bind_skill_levels(
+            &mut initial,
+            &party.each_ref().map(|seat| seat.skill_levels.clone()),
+        )?;
+    }
     let mut report = SimulationReport {
         boss_id: rules.selected_boss().id.clone(),
         content_digest: rules

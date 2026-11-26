@@ -42,9 +42,15 @@ const bossIds=z.array(bossId).min(1).max(2).refine(ids=>new Set(ids).size===ids.
 const simulationVersion={ruleset:GameplayRulesetSchema,version};
 export const GameplaySimulationSeedsSchema=z.number().int().min(1).max(200);
 export const GameplayComparisonSeedsSchema=z.number().int().min(1).max(25);
+export const GameplaySimulationPartySchema=z.array(z.strictObject({
+ petId:bossId,level:z.int().min(1).max(100),
+ artifacts:z.array(z.strictObject({slot:z.enum(['core','aegis','rune']),artifactId:z.uuid(),definitionId:bossId,upgradeLevel:z.int().min(1).max(5)})).max(3),
+ skillLevels:z.array(z.strictObject({skillId:bossId,level:z.int().min(1).max(255)})).max(5),
+})).length(4);
+export type GameplaySimulationParty=z.infer<typeof GameplaySimulationPartySchema>;
 export const GameplaySimulationRequestSchema=z.union([
- z.strictObject({requestId,...simulationVersion,policy:GameplaySimulationPolicySchema,seeds:GameplaySimulationSeedsSchema,bossId:bossId.optional()}),
- z.strictObject({requestId,...simulationVersion,seeds:GameplayComparisonSeedsSchema,bossIds}),
+ z.strictObject({requestId,...simulationVersion,policy:GameplaySimulationPolicySchema,seeds:GameplaySimulationSeedsSchema,bossId:bossId.optional(),party:GameplaySimulationPartySchema.optional()}),
+ z.strictObject({requestId,...simulationVersion,seeds:GameplayComparisonSeedsSchema,bossIds,party:GameplaySimulationPartySchema.optional()}),
 ]);
 const simulationMetric=z.number().int().min(0).max(1_000_000_000);
 const contribution=z.strictObject({

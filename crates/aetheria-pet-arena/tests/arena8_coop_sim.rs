@@ -44,3 +44,42 @@ fn simulation_rejects_an_unbounded_seed_count() {
     assert!(simulate(&rules, Policy::Tactical, 0).is_err());
     assert!(simulate(&rules, Policy::Tactical, 1_001).is_err());
 }
+
+#[test]
+fn customized_party_preserves_distinct_instances_and_checks_gear_and_skill_bindings() {
+    use aetheria_pet_arena::arena8::coop::simulation::{SimulationSeat, simulate_party};
+    let bundle = include_bytes!("../../../config/gameplay/arena8-coop-v2.seed.json");
+    let rules = CoopRules::load(bundle, "cinder-terraces-warden".into()).unwrap();
+    let mut party: [SimulationSeat; 4] = std::array::from_fn(|_| SimulationSeat {
+        pet_id: "fire-coalwhisk".into(),
+        level: 10,
+        artifacts: Vec::new(),
+        skill_levels: Vec::new(),
+    });
+    let plain = simulate_party(&rules, Policy::Basic, 3, Some(&party)).unwrap();
+    let item = serde_json::from_value(serde_json::json!({
+        "slot":"core","artifactId":"cc111111-0000-4000-8000-111111111111",
+        "definitionId":"core-emberglass","upgradeLevel":2
+    }))
+    .unwrap();
+    party[0].artifacts.push(item);
+    party[0].skill_levels.push(
+        serde_json::from_value(serde_json::json!({
+            "skillId":"fire-coalwhisk-ember-lance","level":2
+        }))
+        .unwrap(),
+    );
+    let equipped = simulate_party(&rules, Policy::Basic, 3, Some(&party)).unwrap();
+    assert_ne!(plain.contributions, equipped.contributions);
+    assert!(
+        equipped
+            .contributions
+            .iter()
+            .all(|seat| seat.pet_id == "fire-coalwhisk")
+    );
+    party[1].artifacts = party[0].artifacts.clone();
+    assert!(simulate_party(&rules, Policy::Basic, 3, Some(&party)).is_err());
+    party[1].artifacts.clear();
+    party[0].skill_levels[0].level = 99;
+    assert!(simulate_party(&rules, Policy::Basic, 3, Some(&party)).is_err());
+}
