@@ -44,7 +44,7 @@ try{
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
  const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest(root+'/apps/platform-api/dist/shared/database/migrations');
- assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,63);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
+ assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,64);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
  const policy=JSON.parse(await readFile(policyRef));facts.policySha256=sha(await readFile(policyRef));
  const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));admin=new Pool({connectionString:address.toString()});
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});
@@ -66,7 +66,7 @@ try{
   'receipts',(SELECT jsonb_agg(to_jsonb(r) ORDER BY match_id,account_id,request_id) FROM engine_game_receipts r WHERE match_id=$1)
  ) AS data`,[legacyId])).rows[0].data;
  stage='expand63';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameUser(cookie,account);
- facts.scenarios.push('Two current migrators expand47->63 under existing lock; actual archived47 API remains ready and preserves same browser identity');
+ facts.scenarios.push('Two current migrators expand47->64 under existing lock; actual archived47 API remains ready and preserves same browser identity');
  const match=randomUUID(),key=randomBytes(32),nonce=randomBytes(12),aad=Buffer.from('VL016-fixture:'+match+':v0');
  const secret=Buffer.from(JSON.stringify({seed:randomBytes(32).toString('hex'),hidden:'synthetic-private-only'}));
  const cipher=createCipheriv('aes-256-gcm',key,nonce);cipher.setAAD(aad);const ciphertext=Buffer.concat([cipher.update(secret),cipher.final()]),tag=cipher.getAuthTag();
@@ -93,7 +93,7 @@ try{
  const stored=await readNative(),decipher=createDecipheriv('aes-256-gcm',key,stored.snapshot_nonce);decipher.setAAD(aad);decipher.setAuthTag(stored.snapshot_tag);assert.deepEqual(Buffer.concat([decipher.update(stored.sealed_snapshot),decipher.final()]),secret);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
  facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current63 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
- facts.migrations={previous:47,current:63,oldPrefixUnchanged:true,frozenNegativeMigrations:62,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
+ facts.migrations={previous:47,current:64,oldPrefixUnchanged:true,frozenNegativeMigrations:63,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{
  try{await api?.app.close();await pool?.end();if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin?.end();facts.cleanupComplete=true;}

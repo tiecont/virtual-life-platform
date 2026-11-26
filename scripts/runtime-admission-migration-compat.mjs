@@ -44,7 +44,7 @@ try{
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
  const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest();
- assert.equal(Object.keys(before).length,48);assert.equal(Object.keys(after).length,63);
+ assert.equal(Object.keys(before).length,48);assert.equal(Object.keys(after).length,64);
  for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
  const policy=JSON.parse(await readFile(policyRef));facts.policySha256=sha(await readFile(policyRef));
  const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));admin=new Pool({connectionString:address.toString()});
@@ -65,7 +65,7 @@ try{
  const native=(await pool.query("SELECT jsonb_agg(to_jsonb(m) ORDER BY id) AS data FROM game_native_matches m")).rows[0].data;
  stage='expand63';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameIdentity(cookie,account);
  assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_worlds WHERE enabled')).rows[0].n,0);
- facts.scenarios.push('Two current migrators expand48->63 under existing lock; archived48 API stays ready with same identity; no enabled native world');
+ facts.scenarios.push('Two current migrators expand48->64 under existing lock; archived48 API stays ready with same identity; no enabled native world');
  const world='native:compat-'+randomUUID();await pool.query("INSERT INTO platform_native_worlds(world_id,boot_id,content_hash,lease_until) VALUES($1,$2,$3,clock_timestamp())",[world,randomUUID(),'ab'.repeat(32)]);
  const frozen=(await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data;
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();
@@ -85,7 +85,7 @@ try{
  assert.deepEqual((await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data,frozen);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
  facts.scenarios.push('Prefix/tail checksum and unknown future migration fail closed; current63 roll-forward preserves identity, old game rows and closed-world bytes');
- facts.migrations={previous:48,current:63,oldPrefixUnchanged:true,frozenNegativeMigrations:62,concurrentMigrators:2};facts.result='PASS';
+ facts.migrations={previous:48,current:64,oldPrefixUnchanged:true,frozenNegativeMigrations:63,concurrentMigrators:2};facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{
  try{await api?.app.close();await pool?.end();if(created)await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin?.end();facts.cleanupComplete=true;}
