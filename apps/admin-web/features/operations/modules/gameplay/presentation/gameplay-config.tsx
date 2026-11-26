@@ -64,6 +64,12 @@ function SimulationResults({result}:{result:SimulationResult}){
     <td>{row.swapsUsingVisibleMultiplier??"—"}</td><td>{row.playerCriticals??"—"}</td><td>{row.abilityCasts??"—"}</td><td>{row.manaSpent??"—"}</td><td>{row.rageSpent??"—"}</td><td>{(row.averageRoundsMilli/1000).toFixed(2)}</td><td>{(row.averageActionsMilli/1000).toFixed(2)}</td><td>{(row.averageLogicalDurationMs/1000).toFixed(2)} s</td>
    </tr>)}</tbody>
   </table></div>
+  {reports.some(row=>row.castsBySkill)&&<details><summary>Committed casts by skill</summary><div className="audit"><table>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Skill</th><th>Casts</th></tr></thead>
+   <tbody>{reports.flatMap(row=>Object.entries(row.castsBySkill??{}).map(([id,casts])=><tr key={row.bossId+':'+row.policy+':'+id}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{id}</td><td>{casts}</td>
+   </tr>))}</tbody>
+  </table></div></details>}
   <details><summary>Contribution totals by seat</summary><div className="audit"><table>
    <thead><tr><th>Encounter</th><th>Policy</th><th>Seat</th><th>Pet</th><th>Damage</th><th>Healing</th><th>Shielding</th></tr></thead>
    <tbody>{reports.flatMap(row=>row.contributions.map((seat,index)=><tr key={row.bossId+':'+row.policy+':'+index}>

@@ -6,6 +6,7 @@
 use super::{ArtifactLoadout, EquippedArtifact, SkillLevelBinding};
 use aetheria_game_core::{Command, LogicalClock, SecretSeed, apply, begin};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 use super::config::EffectKind;
 use super::{CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput};
@@ -60,6 +61,7 @@ pub struct SimulationReport {
     pub swaps_using_visible_multiplier: u64,
     pub player_criticals: u64,
     pub ability_casts: u64,
+    pub casts_by_skill: BTreeMap<String, u64>,
     pub mana_spent: u64,
     pub rage_spent: u64,
     pub contributions: [SeatContribution; SEATS],
@@ -80,7 +82,7 @@ struct Sample {
     multiplier_seen: bool,
     swaps_using_visible_multiplier: u64,
     player_criticals: u64,
-    ability_casts: u64,
+    casts_by_skill: BTreeMap<String, u64>,
     mana_spent: u64,
     rage_spent: u64,
 }
@@ -272,7 +274,7 @@ fn play(
     let mut multiplier_seen = false;
     let mut swaps_using_visible_multiplier = 0;
     let mut player_criticals = 0;
-    let mut ability_casts = 0;
+    let mut casts_by_skill = BTreeMap::new();
     let mut mana_spent = 0;
     let mut rage_spent = 0;
     for step in 0..=super::MAX_TURNS {
@@ -319,7 +321,7 @@ fn play(
                         |(matched, tile)| matched && tile.is_some_and(|tile| tile.multiplier > 1),
                     ));
             } else if let Ok(cast) = rules.prepare_ability(&checkpoint.state, action) {
-                ability_casts += 1;
+                *casts_by_skill.entry(cast.skill.id.clone()).or_default() += 1;
                 mana_spent += u64::from(cast.skill.mana_cost);
                 rage_spent += u64::from(cast.skill.rage_cost);
             }
@@ -340,7 +342,7 @@ fn play(
         multiplier_seen,
         swaps_using_visible_multiplier,
         player_criticals,
-        ability_casts,
+        casts_by_skill,
         mana_spent,
         rage_spent,
     })
@@ -443,6 +445,7 @@ pub fn simulate_party(
         swaps_using_visible_multiplier: 0,
         player_criticals: 0,
         ability_casts: 0,
+        casts_by_skill: BTreeMap::new(),
         mana_spent: 0,
         rage_spent: 0,
         contributions: initial
@@ -464,7 +467,10 @@ pub fn simulate_party(
         report.matches_with_multiplier += u32::from(sample.multiplier_seen);
         report.swaps_using_visible_multiplier += sample.swaps_using_visible_multiplier;
         report.player_criticals += sample.player_criticals;
-        report.ability_casts += sample.ability_casts;
+        for (skill_id, casts) in sample.casts_by_skill {
+            report.ability_casts += casts;
+            *report.casts_by_skill.entry(skill_id).or_default() += casts;
+        }
         report.mana_spent += sample.mana_spent;
         report.rage_spent += sample.rage_spent;
         match sample.state.phase {
