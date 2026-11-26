@@ -369,3 +369,43 @@ fn artifact_catalog_validation_fails_closed() {
         "a typed allocation requires an authored catalog"
     );
 }
+
+#[test]
+fn durable_skill_level_must_match_the_original_allocation() {
+    use aetheria_pet_arena::arena8::coop::SkillLevelBinding;
+
+    let base = rules();
+    let upgraded = Rules::load_with_skill_levels(
+        &bundle(),
+        seats(),
+        "cinder-terraces-warden".into(),
+        Some(&bindings(&bundle(), &seats())),
+        &[
+            vec![SkillLevelBinding {
+                skill_id: "pet-v3-fire-icarus-ember-lance".into(),
+                level: 2,
+            }],
+            vec![],
+            vec![],
+            vec![],
+        ],
+    )
+    .unwrap();
+    let original_state = base.initial();
+    let upgraded_state = upgraded.initial();
+    let old_bytes = base.encode(&original_state).unwrap();
+    let new_bytes = upgraded.encode(&upgraded_state).unwrap();
+    assert_eq!(base.decode(&old_bytes).unwrap(), original_state);
+    assert_eq!(upgraded.decode(&new_bytes).unwrap(), upgraded_state);
+    assert!(matches!(base.decode(&new_bytes), Err(Error::Integrity)));
+    assert!(matches!(upgraded.decode(&old_bytes), Err(Error::Integrity)));
+    let projected = upgraded
+        .project(&upgraded_state, "account-pet-v3-fire-icarus")
+        .unwrap();
+    let view: serde_json::Value = serde_json::from_slice(&projected).unwrap();
+    assert_eq!(
+        view["participants"][0]["skillLevels"],
+        serde_json::json!([1, 2, 1, 1, 1])
+    );
+    assert!(view["participants"][1].get("skillLevels").is_none());
+}

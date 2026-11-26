@@ -8,7 +8,7 @@ use crate::features::{
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
-use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput};
+use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput, SkillLevelBinding};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -61,6 +61,8 @@ struct CoopSeat {
     level: u8,
     artifact_power_pm: Option<u16>,
     loadout: Option<ArtifactLoadout>,
+    #[serde(default)]
+    skill_levels: Vec<SkillLevelBinding>,
 }
 
 #[derive(Deserialize)]
@@ -231,9 +233,16 @@ impl NativeRuntime {
                 });
                 let bundle = bundle.ok_or("Published gameplay configuration required")?;
                 let boss_id = allocation.boss_id.clone();
-                let game =
-                    coordinated::domain::Rules::load(&bundle, seats, boss_id, loadouts.as_ref())
-                        .map_err(|_| "Invalid cooperative gameplay configuration or allocation")?;
+                let skill_levels =
+                    [first, second, third, fourth].map(|seat| seat.skill_levels.clone());
+                let game = coordinated::domain::Rules::load_with_skill_levels(
+                    &bundle,
+                    seats,
+                    boss_id,
+                    loadouts.as_ref(),
+                    &skill_levels,
+                )
+                .map_err(|_| "Invalid cooperative gameplay configuration")?;
                 let initial = game.initial();
                 Self::compose(settings, database, game, initial).await
             }

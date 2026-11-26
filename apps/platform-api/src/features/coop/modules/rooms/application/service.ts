@@ -9,6 +9,7 @@ import {CoopRoomStore,type CoopRoomRow,type CoopSeatRow} from '../infrastructure
 import type {CoopMatchProvisioner} from '../../match/application/provisioner';
 import {bindArtifactLoadout} from '../../match/domain/loadout';
 import {readOwnedArtifactLoadouts} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
+import type {CoopSkillService} from '../../skills/application/service';
 
 type Queryable=Pick<PoolClient,'query'>;
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
@@ -23,7 +24,8 @@ const ROOM_LIMIT=4;
 export class CoopRoomService{
  constructor(
   private readonly db:Pick<Pool,'query'|'connect'>,
-  private readonly store=new CoopRoomStore(),
+  private readonly store:CoopRoomStore,
+  private readonly skills:CoopSkillService,
   private readonly provisioner?:CoopMatchProvisioner,
  ){}
 
@@ -275,20 +277,25 @@ export class CoopRoomService{
     await this.provisioner.start({
      roomId,bossId:room.bossId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
      readSeats:async()=>{
-      const seats=await this.store.seats(this.db,roomId);
-      if(seats.length!==ROOM_LIMIT||seats.some(seat=>seat.petId===null||seat.ownedPetInstanceId===null))
-       throw conflict('Four prepared participants are required');
-      const roster=await readOwnedArtifactLoadouts(this.db,seats.map(seat=>({
-       account:seat.accountId,petId:seat.petId!,ownedPetInstanceId:seat.ownedPetInstanceId!,
-      })));
-      if(roster.length!==ROOM_LIMIT)throw conflict('A selected Pet is no longer owned');
-      if(Array.isArray(bundle.artifacts))
-       return roster.map(({entries,...seat})=>({...seat,loadout:bindArtifactLoadout(room.configDigest,seat,entries)}));
-      if(roster.some(seat=>seat.entries.length>0))
-       throw conflict('Equipped Artifacts require a room with a published Artifact catalog');
-      return roster.map(({account,petId,ownedPetInstanceId,petLevel},index)=>({
-       account,petId,ownedPetInstanceId,petLevel,artifactPowerPm:seats[index]!.artifactPowerPm,
-      }));
+      const tx=await this.db.connect();
+      try{
+       await tx.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+       const seats=await this.store.seats(tx,roomId);
+       if(seats.length!==ROOM_LIMIT||seats.some(seat=>!seat.petId||!seat.ownedPetInstanceId))
+        throw conflict('Four prepared participants are required');
+       const roster=await readOwnedArtifactLoadouts(tx,seats.map(seat=>({
+        account:seat.accountId,petId:seat.petId!,ownedPetInstanceId:seat.ownedPetInstanceId!,
+       })));
+       if(roster.length!==ROOM_LIMIT)throw conflict('A selected Pet is no longer owned');
+       const levels=await this.skills.allocationLevels(bundle,roster.map(seat=>({instanceId:seat.ownedPetInstanceId,petId:seat.petId})),tx);
+       if(!Array.isArray(bundle.artifacts)&&roster.some(seat=>seat.entries.length))
+        throw conflict('Equipped Artifacts require a room with a published Artifact catalog');
+       const bound=roster.map(({entries,...seat},index)=>({
+        ...seat,...(levels[index]!.length?{skillLevels:levels[index]!}:{}),
+        ...(Array.isArray(bundle.artifacts)?{loadout:bindArtifactLoadout(room.configDigest,seat,entries)}:{artifactPowerPm:seats[index]!.artifactPowerPm}),
+       }));
+       await tx.query('COMMIT');return bound;
+      }catch(error){await tx.query('ROLLBACK');throw error;}finally{tx.release();}
      },
     });
    }catch(error){

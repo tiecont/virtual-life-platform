@@ -39,3 +39,28 @@ export const CoopAdmissionViewSchema=z.strictObject({
  contentHash:z.string().regex(/^[a-f0-9]{64}$/),
 });
 export type CoopAdmissionView=z.infer<typeof CoopAdmissionViewSchema>;
+
+export const CoopSkillLevelSchema=z.number().int().min(1).max(10);
+export const CoopSkillIdSchema=z.string().min(1).max(64);
+export const CoopSkillLevelBindingSchema=z.strictObject({skillId:CoopSkillIdSchema,level:CoopSkillLevelSchema.min(2)});
+export const CoopSkillPetParamsSchema=z.strictObject({ownedPetInstanceId:z.uuid().transform(value=>value.toLowerCase())});
+const skillConfigVersion=z.number().int().positive();
+const skillConfigDigest=z.string().regex(/^[a-f0-9]{64}$/);
+const skillMaterials=z.number().int().min(0).max(2_147_483_647);
+export const CoopSkillUpgradeSchema=z.strictObject({
+ requestId,skillId:CoopSkillIdSchema,expectedLevel:CoopSkillLevelSchema,expectedConfigVersion:skillConfigVersion,
+});
+export const CoopSkillProgressionSchema=z.strictObject({
+ ownedPetInstanceId:z.uuid(),petId:CoopPetIdSchema,configVersion:skillConfigVersion,configDigest:skillConfigDigest,
+ materials:skillMaterials,skills:z.array(z.strictObject({
+  skillId:CoopSkillIdSchema,level:CoopSkillLevelSchema,effectiveLevel:CoopSkillLevelSchema,maxLevel:CoopSkillLevelSchema,
+  nextMaterialCost:skillMaterials.nullable(),
+ })).max(5),
+});
+export const CoopSkillUpgradeReceiptSchema=z.strictObject({
+ ownedPetInstanceId:z.uuid(),skillId:CoopSkillIdSchema,level:CoopSkillLevelSchema,
+ maxLevel:CoopSkillLevelSchema,spentMaterials:skillMaterials,remainingMaterials:skillMaterials,
+ configVersion:skillConfigVersion,configDigest:skillConfigDigest,
+});
+export type CoopSkillLevelBinding=z.infer<typeof CoopSkillLevelBindingSchema>;
+export type CoopSkillUpgrade=z.infer<typeof CoopSkillUpgradeSchema>;

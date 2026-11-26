@@ -49,6 +49,11 @@ function legalSwap(board){
 
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
 const facts={result:'FAIL',scenarios:[]};
+const runtimeOrigin=new URL(process.argv[2]??'https://127.0.0.1:4443');
+assert.equal(runtimeOrigin.origin,runtimeOrigin.href.slice(0,-1));
+assert.equal(runtimeOrigin.protocol,'https:');
+assert.equal(runtimeOrigin.hostname,'127.0.0.1');
+assert.ok(runtimeOrigin.port);
 const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-process-'));
 const schema='coop_process_'+randomUUID().replaceAll('-',''),role='coop_runtime_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
 const address=new URL(process.env.TEST_DATABASE_URL??'');
@@ -103,7 +108,7 @@ try{
   LOCAL_ARENA8_NATIVE_BINARY:binary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,
   LOCAL_ARENA8_NATIVE_STORAGE_KEY:randomBytes(32).toString('hex'),LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:'local-v1',
-  LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:'https://127.0.0.1:4443',
+  LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:runtimeOrigin.origin,
   LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:resolve(directory,'tls/server.pem'),
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
  });
@@ -156,6 +161,10 @@ try{
  assert.equal(equipped.statusCode,200,JSON.stringify(equipped.json()));
  let priorLoadout,hostMaterialsAfterUpgrade;
  await pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,5000,$2,$3)',[members[0].accountId,'admin_grant',randomUUID()]);
+ const skillId='fire-coalwhisk-ember-lance';
+ const skillPath='/v1/coop/pets/'+members[0].instanceId;
+ let skillUpgrade;
+ let skillUpgradeReceipt;
  for(const boss of [fire,water]){
  const createdRoom=await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:members[0].petId,ownedPetInstanceId:members[0].instanceId});
  assert.equal(createdRoom.statusCode,200,JSON.stringify(createdRoom.json()));
@@ -213,7 +222,7 @@ try{
  const caPem=await readFile(tls.caFile,'utf8');
  const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
  function client(ticket,seat){
-  const ws=new WebSocket('wss://127.0.0.1:4443/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:'https://127.0.0.1:4443'}});
+  const ws=new WebSocket('wss://'+runtimeOrigin.host+'/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:runtimeOrigin.origin}});
   const queue=[];
   let waiting;
   ws.on('message',data=>{
@@ -310,6 +319,11 @@ try{
   for(const [projected,authored] of [['maxHp','hp'],['attack','attack'],['defense','defense']])
    assert.equal(geared[projected]-sameSpecies[projected],starterDefinition.modifiers[authored]+starterDefinition.perLevel[authored]*(upgradeLevel-1));
   facts.scenarios.push('committed-native-stats-used-the-bound-level-'+upgradeLevel+'-Artifact-and-published-modifiers');
+  assert.deepEqual(startView.state.participants[0].skillLevels,boss===fire?undefined:[1,2,1,1,1]);
+  assert.equal(startView.state.participants[2].skillLevels,undefined);
+  if(boss===water){
+   facts.scenarios.push('new-native-match-resolved-an-upgraded-skill-only-for-its-own-pet-instance');
+  }
   let version=Number(start.canonicalVersion);
   const wrongSeat=await intent(connections[1],version,'{"epoch":1,"action":{"kind":"guard"}}');
   assert.equal(wrongSeat.body.case,'rejection');
@@ -335,6 +349,21 @@ try{
    assert.equal(upgraded.statusCode,200,JSON.stringify(upgraded.json()));
    hostMaterialsAfterUpgrade=upgraded.json().state.materials;
    assert.equal(upgraded.json().state.inventory.find(artifact=>artifact.artifactId===starterId).upgradeLevel,2);
+   const authoredSkill=bundle.skills.find(skill=>skill.id===skillId);
+   const materialCost=authoredSkill.upgradeLevels[0].materials;
+   const profile=await app.http.inject({url:skillPath+'/skills',headers:{cookie:members[0].cookie}});
+   assert.equal(profile.statusCode,200);
+   assert.deepEqual(profile.json().skills.find(skill=>skill.skillId===skillId),{
+    skillId,level:1,effectiveLevel:1,maxLevel:3,nextMaterialCost:materialCost,
+   });
+   skillUpgrade={requestId:randomUUID(),skillId,expectedLevel:1,expectedConfigVersion:created.version};
+   const skillResult=await post(members[0],skillPath+'/skill-upgrades',skillUpgrade);
+   assert.equal(skillResult.statusCode,200,JSON.stringify(skillResult.json()));
+   skillUpgradeReceipt=skillResult.json();
+   assert.equal(skillUpgradeReceipt.spentMaterials,materialCost);
+   hostMaterialsAfterUpgrade-=materialCost;
+   assert.equal(skillUpgradeReceipt.remainingMaterials,hostMaterialsAfterUpgrade);
+   assert.equal(skillUpgradeReceipt.level,2);
    const nextBundle={...bundle,contentRevision:bundle.contentRevision+1};
    const draft=(await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:created.version,bundle:nextBundle})).json();
    const checked=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:draft.version,expectedRevision:draft.revision});
@@ -363,6 +392,15 @@ try{
   assert.deepEqual(state.participants,beforeRestart.participants);
   const restoredLoadout=(await pool.query("SELECT seats->0->'loadout' AS loadout FROM coop_allocations WHERE match_id=$1",[allocation.match_id])).rows[0].loadout;
   assert.deepEqual(restoredLoadout,allocation.loadout);
+  assert.deepEqual(state.participants[0].skillLevels,boss===fire?undefined:[1,2,1,1,1]);
+  if(boss===fire){
+   const replay=await post(members[0],skillPath+'/skill-upgrades',skillUpgrade);
+   assert.equal(replay.statusCode,200);
+   assert.deepEqual(replay.json(),skillUpgradeReceipt);
+   const original=await pool.query('SELECT seats FROM coop_allocations WHERE match_id=$1',[allocation.match_id]);
+   assert.equal(original.rows[0].seats[0].skillLevels,undefined);
+   facts.scenarios.push('skill-upgrade-replayed-after-publication-and-restart-without-altering-original-match');
+  }
   facts.scenarios.push('api-and-runtime-restart-recovered-the-active-allocation-and-resumed-version-5');
   let turns=4;
   while(!['won','lost'].includes(state.phase)&&turns<60){

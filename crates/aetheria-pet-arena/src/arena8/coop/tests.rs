@@ -575,3 +575,77 @@ fn historical_bundle_keeps_its_original_digest_and_boss_encoding() {
     );
     assert!(CoopRules::load(raw, "tideglass-lagoon-warden".into()).is_err());
 }
+
+#[test]
+fn owned_skill_level_changes_only_that_allocations_effect() {
+    let rules = rules();
+    let initial = rules.allocate(seats()).expect("baseline");
+    let mut skilled = initial.clone();
+    let bindings = [
+        vec![SkillLevelBinding {
+            skill_id: "pet-v3-fire-icarus-ember-lance".into(),
+            level: 2,
+        }],
+        vec![],
+        vec![],
+        vec![],
+    ];
+    rules
+        .bind_skill_levels(&mut skilled, &bindings)
+        .expect("bind level two");
+    assert_ne!(digest(&initial), digest(&skilled));
+    let cast = |initial| {
+        let mut stream = rng(0);
+        let mut started = rules
+            .reduce(initial, CoopAction::Start, &mut stream)
+            .unwrap()
+            .state;
+        started.participants[0].mana = rules.config().resources.mana_cap;
+        started.participants[0].crit_rate_bp = 0;
+        rules
+            .reduce(&started, CoopAction::Skill, &mut stream)
+            .unwrap()
+            .state
+    };
+    let original = cast(&initial);
+    let upgraded = cast(&skilled);
+    assert_eq!(original.participants[0].skill_levels(), [1; 5]);
+    assert_eq!(upgraded.participants[0].skill_levels(), [1, 2, 1, 1, 1]);
+    assert_eq!(upgraded.participants[1].skill_levels(), [1; 5]);
+    assert!(
+        upgraded.participants[0].contribution_damage > original.participants[0].contribution_damage
+    );
+    assert_eq!(original.participants[0].mana, upgraded.participants[0].mana);
+    assert_eq!(
+        original.participants[0].cooldowns,
+        upgraded.participants[0].cooldowns
+    );
+}
+
+#[test]
+fn rejects_invalid_authored_skill_level_cost_and_power() {
+    let mut changed: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    let configured = changed["skills"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|skill| skill["id"] == "pet-v3-fire-icarus-ember-lance")
+        .unwrap();
+    configured["upgradeLevels"][0]["materials"] = 0.into();
+    assert!(matches!(
+        CoopConfig::parse(&serde_json::to_vec(&changed).unwrap()),
+        Err(ConfigError::Skill)
+    ));
+    let configured = changed["skills"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|skill| skill["id"] == "pet-v3-fire-icarus-ember-lance")
+        .unwrap();
+    configured["upgradeLevels"][0]["materials"] = 2.into();
+    configured["upgradeLevels"][0]["powerPm"] = configured["powerPm"].clone();
+    assert!(matches!(
+        CoopConfig::parse(&serde_json::to_vec(&changed).unwrap()),
+        Err(ConfigError::Skill)
+    ));
+}

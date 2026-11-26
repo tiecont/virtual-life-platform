@@ -112,6 +112,8 @@ pub struct Participant {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub artifact_loadout_digest: Option<String>,
     pub level: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    skill_levels: Option<[u8; 5]>,
     pub hp: u32,
     pub max_hp: u32,
     pub attack: u32,
@@ -262,6 +264,24 @@ pub struct SeatInput {
     pub artifact_power_pm: u16,
 }
 
+/// Immutable allocation input resolved by Nest from one owned Pet instance.
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SkillLevelBinding {
+    pub skill_id: String,
+    pub level: u8,
+}
+
+impl Participant {
+    pub fn skill_levels(&self) -> [u8; 5] {
+        self.skill_levels.unwrap_or([1; 5])
+    }
+
+    pub fn upgraded_skill_levels(&self) -> Option<[u8; 5]> {
+        self.skill_levels
+    }
+}
+
 impl CoopState {
     /// Next living seat starting at `from`, wrapping once. Deterministic seat
     /// order is the engine's structural rule; the authored party size is fixed
@@ -409,6 +429,55 @@ impl CoopRules {
         Ok(state)
     }
 
+    /// Resolve the persisted bindings against this match's published cap.
+    /// Nest retains levels for skills absent from a newer publication.
+    pub fn bind_skill_levels(
+        &self,
+        state: &mut CoopState,
+        bindings: &[Vec<SkillLevelBinding>; SEATS],
+    ) -> Result<(), CoopError> {
+        if state.phase != CoopPhase::Ready || state.config_digest != self.digest {
+            return Err(CoopError::InvalidPhase);
+        }
+        let mut resolved = [[1; 5]; SEATS];
+        for ((participant, bindings), levels) in
+            state.participants.iter().zip(bindings).zip(&mut resolved)
+        {
+            let pet = self
+                .config
+                .pet(&participant.pet_id)
+                .ok_or(CoopError::InvalidSeat)?;
+            let ids = pet.skill_ids();
+            let mut seen = std::collections::BTreeSet::new();
+            if bindings.len() > 5 {
+                return Err(CoopError::InvalidSeat);
+            }
+            for binding in bindings {
+                if !(2..=config::MAX_SKILL_LEVEL).contains(&binding.level)
+                    || !seen.insert(binding.skill_id.as_str())
+                {
+                    return Err(CoopError::InvalidSeat);
+                }
+                if !ids.contains(&Some(binding.skill_id.as_str())) {
+                    return Err(CoopError::InvalidSeat);
+                }
+                let skill = self
+                    .config
+                    .skill(&binding.skill_id)
+                    .ok_or(CoopError::InvalidSeat)?;
+                for (id, level) in ids.into_iter().zip(levels.iter_mut()) {
+                    if id == Some(binding.skill_id.as_str()) {
+                        *level = binding.level.min(skill.max_level());
+                    }
+                }
+            }
+        }
+        for (participant, levels) in state.participants.iter_mut().zip(resolved) {
+            participant.skill_levels = (levels != [1; 5]).then_some(levels);
+        }
+        Ok(())
+    }
+
     fn participant(
         &self,
         seat: SeatInput,
@@ -487,6 +556,7 @@ impl CoopRules {
                 .then_some(seat.owned_pet_instance_id),
             artifact_loadout_digest: loadout.map(|loadout| loadout.digest.clone()),
             level: seat.level,
+            skill_levels: None,
             hp: max_hp,
             max_hp,
             attack,
@@ -527,7 +597,18 @@ impl CoopRules {
                 || participant.max_hp == 0
                 || participant.hp > participant.max_hp
                 || participant.attack == 0
-                || self.config.pet(&participant.pet_id).is_none()
+                || !self.config.pet(&participant.pet_id).is_some_and(|pet| {
+                    participant
+                        .skill_levels()
+                        .into_iter()
+                        .zip(pet.skill_ids())
+                        .all(|(level, id)| {
+                            level == 1
+                                || id
+                                    .and_then(|id| self.config.skill(id))
+                                    .is_some_and(|skill| skill.power_at(level).is_some())
+                        })
+                })
         }) {
             return Err(CoreError::InvalidState);
         }
@@ -640,18 +721,6 @@ impl CoopRules {
         let pet = self.config.pet(&pet_id).ok_or(CoreError::InvalidAction)?;
         // Pet Level never gates a signature, ultimate or species ability. Level
         // only scales stats.
-        let skill_id = match action {
-            CoopAction::Guard => pet.guard.clone(),
-            CoopAction::Skill => pet.skill.clone(),
-            CoopAction::Signature => pet.signature.clone(),
-            CoopAction::Ultimate => pet.ultimate.clone(),
-            CoopAction::FireZone => pet.fire_zone.clone().ok_or(CoreError::InvalidAction)?,
-            CoopAction::Start | CoopAction::Swap { .. } => return Err(CoreError::InvalidAction),
-        };
-        let skill = self
-            .config
-            .skill(&skill_id)
-            .ok_or(CoreError::InvalidState)?;
         let slot = match action {
             CoopAction::Guard => 0,
             CoopAction::Skill => 1,
@@ -660,6 +729,10 @@ impl CoopRules {
             CoopAction::FireZone => 4,
             CoopAction::Start | CoopAction::Swap { .. } => return Err(CoreError::InvalidAction),
         };
+        let skill_id = pet.skill_ids()[slot].ok_or(CoreError::InvalidAction)?;
+        let skill = self.config.skill(skill_id).ok_or(CoreError::InvalidState)?;
+        let level = state.participants[seat_index].skill_levels()[slot];
+        let power_pm = skill.power_at(level).ok_or(CoreError::InvalidState)?;
         let seat = &mut state.participants[seat_index];
         if seat.cooldowns[slot] > 0 {
             return Err(CoreError::InvalidAction);
@@ -685,6 +758,7 @@ impl CoopRules {
             state,
             seat_index,
             skill,
+            power_pm,
             actor_attack,
             crit,
             crit_damage,
@@ -699,6 +773,7 @@ impl CoopRules {
         state: &mut CoopState,
         actor: usize,
         skill: &config::SkillConfig,
+        power_pm: u32,
         attack: u32,
         crit: bool,
         crit_damage_bp: u16,
@@ -707,7 +782,7 @@ impl CoopRules {
         let effect = &skill.effect;
         let scaled = |value: u32| -> Result<u32, CoreError> {
             u64::from(value)
-                .checked_mul(u64::from(skill.power_pm))
+                .checked_mul(u64::from(power_pm))
                 .map(|total| total / 1_000)
                 .and_then(|total| u32::try_from(total).ok())
                 .ok_or(CoreError::Arithmetic)
@@ -1485,6 +1560,7 @@ fn unreachable_participant() -> Participant {
         owned_pet_instance_id: None,
         artifact_loadout_digest: None,
         level: 1,
+        skill_levels: None,
         hp: 1,
         max_hp: 1,
         attack: 1,
@@ -1619,6 +1695,13 @@ fn participant_value(seat: &Participant) -> Value {
     }
     if let Some(digest) = &seat.artifact_loadout_digest {
         fields.push(Value::Text(digest.clone()));
+    }
+    if let Some(levels) = seat.skill_levels {
+        fields.push(list(
+            levels
+                .into_iter()
+                .map(|level| Value::Uint(u64::from(level))),
+        ));
     }
     Value::List(fields)
 }

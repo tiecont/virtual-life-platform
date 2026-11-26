@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {CoopSkillLevelBindingSchema} from '@aetheria/contracts';
 import {z} from 'zod';
 
 const uuid=z.string().regex(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
@@ -10,6 +11,7 @@ const artifact=z.strictObject({
 }).readonly();
 const loadout=z.strictObject({entries:z.array(artifact).max(slots.length).readonly(),digest}).readonly();
 const seatIdentity=z.strictObject({
+ skillLevels:z.array(CoopSkillLevelBindingSchema).max(5).refine(levels=>new Set(levels.map(entry=>entry.skillId)).size===levels.length).readonly().optional(),
  account:uuid,petId:stableId,ownedPetInstanceId:uuid,petLevel:z.number().int().min(1).max(60),
 });
 const seats=z.array(z.union([

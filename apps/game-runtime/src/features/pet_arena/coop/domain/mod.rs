@@ -2,6 +2,7 @@
 use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
 use aetheria_pet_arena::arena8::coop::{
     ArtifactLoadout, ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    SkillLevelBinding,
 };
 use std::sync::Arc;
 
@@ -17,11 +18,28 @@ pub struct Rules {
 impl Rules {
     /// Bind the published bundle and the server-authored seat allocation.
     /// Missing, malformed, incompatible or mismatched input fails closed.
+    #[cfg(test)]
     pub fn load(
         bundle: &[u8],
         seats: [SeatInput; SEATS],
         boss_id: String,
         loadouts: Option<&[ArtifactLoadout; SEATS]>,
+    ) -> Result<Self, ConfigError> {
+        Self::load_with_skill_levels(
+            bundle,
+            seats,
+            boss_id,
+            loadouts,
+            &std::array::from_fn(|_| Vec::new()),
+        )
+    }
+
+    pub fn load_with_skill_levels(
+        bundle: &[u8],
+        seats: [SeatInput; SEATS],
+        boss_id: String,
+        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+        skill_levels: &[Vec<SkillLevelBinding>; SEATS],
     ) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
         let mut owned_pets = std::collections::BTreeSet::new();
@@ -37,7 +55,7 @@ impl Rules {
             }
         }
         let engine = CoopRules::load(bundle, boss_id)?;
-        let initial = match loadouts {
+        let mut initial = match loadouts {
             Some(loadouts) => engine.allocate_with_loadouts(seats, loadouts),
             None if !engine.config().has_artifact_catalog() => engine.allocate(seats),
             None => return Err(ConfigError::Artifact),
@@ -46,6 +64,9 @@ impl Rules {
             CoopError::Config(error) => error,
             _ => ConfigError::Party,
         })?;
+        engine
+            .bind_skill_levels(&mut initial, skill_levels)
+            .map_err(|_| ConfigError::Skill)?;
         Ok(Self {
             engine: Arc::new(engine),
             initial,
@@ -74,6 +95,7 @@ impl Rules {
         for (seat, participant) in self.initial.participants.iter().zip(&state.participants) {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
+                || participant.upgraded_skill_levels() != seat.upgraded_skill_levels()
                 || participant.level != seat.level
                 || participant.owned_pet_instance_id != seat.owned_pet_instance_id
                 || participant.artifact_loadout_digest != seat.artifact_loadout_digest

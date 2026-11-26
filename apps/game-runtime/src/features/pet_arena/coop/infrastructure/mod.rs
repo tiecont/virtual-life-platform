@@ -130,7 +130,7 @@ impl Game for Rules {
             .iter()
             .enumerate()
             .map(|(index, participant)| {
-                serde_json::json!({
+                let mut view = serde_json::json!({
                     "seat": index,
                     "petId": participant.pet_id,
                     "level": participant.level,
@@ -156,7 +156,11 @@ impl Game for Rules {
                         "shielding": participant.contribution_shielding,
                     },
                     "alive": participant.alive,
-                })
+                });
+                if let Some(levels) = participant.upgraded_skill_levels() {
+                    view["skillLevels"] = serde_json::json!(levels);
+                }
+                view
             })
             .collect::<Vec<_>>();
         let mut projection = serde_json::json!({

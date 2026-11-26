@@ -48,9 +48,10 @@
     },
     "coop": {
       "owner": "platform.coop",
-      "responsibility": "Durable cooperative rooms, Achievement Point eligibility and match allocation identity; no combat authority",
+      "responsibility": "Durable cooperative rooms, Achievement Point eligibility, match allocation identity, settlement and owned-Pet skill progression",
       "currentPublicEntryFiles": [
         "features/coop/modules/rooms/application/service",
+        "features/coop/modules/skills/application/service",
         "features/coop/modules/rooms/infrastructure/store",
         "features/coop/modules/rooms/presentation/http",
         "features/coop/modules/match/application/provisioner",
@@ -59,7 +60,7 @@
         "features/coop/modules/settlement/application/service",
         "features/coop/modules/settlement/infrastructure/store"
       ],
-      "targetBoundary": "Rust owns cooperative combat; Nest owns authorization, eligibility, allocation and settlement"
+      "targetBoundary": "Rust owns cooperative combat; Nest owns authorization, eligibility, allocation, settlement and progression"
     },
     "runtime-gateway": {
       "owner": "platform.identity",
