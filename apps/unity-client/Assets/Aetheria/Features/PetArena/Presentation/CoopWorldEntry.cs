@@ -18,6 +18,7 @@ namespace Aetheria.PetArena.Presentation
         private PanelSettings panel;
         private UIDocument document;
         private CoopNativeCampaignScreen campaign;
+        private Wave1CampaignScreen artifactScreen;
         private bool signedIn, savedSession, busy;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -51,6 +52,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            CloseArtifacts();
             document.rootVisualElement.Clear();
             var hud = GetComponent<CoopNativeHud>();
             if (hud != null)
@@ -120,7 +122,10 @@ namespace Aetheria.PetArena.Presentation
             SetOverlay(world, false);
             var root = document.rootVisualElement;
             root.Clear();
-            var button = new Button(() => _ = OpenCollectionAsync(world)) { text = "Pet collection" };
+            var button = new Button(() => _ = OpenCollectionAsync(world))
+            {
+                name = "coop-pet-collection", text = "Pet collection"
+            };
             button.style.position = Position.Absolute;
             button.style.bottom = 12;
             button.style.right = 12;
@@ -134,21 +139,52 @@ namespace Aetheria.PetArena.Presentation
             SetOverlay(world, true);
             var root = document.rootVisualElement;
             root.Clear();
-            root.Add(new Label("Loading Pet collection…"));
+            var collectionPanel = new VisualElement();
+            collectionPanel.AddToClassList("arena-panel");
+            root.Add(collectionPanel);
+            var status = new Label("Loading Pet collection…");
+            collectionPanel.Add(status);
             try
             {
                 var collection = await api.GetWave1State(lifetime.Token);
-                root.Clear();
-                root.Add(new Label("Pet collection · " + collection.wallet.coins + " coins"));
+                status.text = "Pet collection · " + collection.wallet.coins + " coins";
                 var list = new ScrollView();
                 foreach (var pet in collection.pets)
-                    list.Add(new Label(pet.name + " · " + pet.element + " · Lv " + pet.level + " · " + pet.exp + " EXP"));
-                root.Add(list);
+                {
+                    list.Add(new Button(() => OpenArtifacts(world, collection, pet.petId))
+                    {
+                        name = "coop-artifacts-" + pet.petId,
+                        text = pet.name + " · " + pet.element + " · Lv " + pet.level + " · " + pet.exp + " EXP · Artifacts"
+                    });
+                }
+                collectionPanel.Add(list);
             }
             catch (OperationCanceledException) { return; }
-            catch (Exception error) { root.Clear(); root.Add(new Label(error.Message)); }
+            catch (Exception error) { status.text = error.Message; }
             finally { busy = false; }
-            root.Add(new Button(() => ShowHub(world)) { text = "Back to Central Plaza" });
+            collectionPanel.Add(new Button(() => ShowHub(world))
+            {
+                name = "coop-collection-back", text = "Back to Central Plaza"
+            });
+        }
+
+        private void OpenArtifacts(WorldSceneControllerBase world, Wave1State collection, string petId)
+        {
+            if (artifactScreen != null) return;
+            artifactScreen = gameObject.AddComponent<Wave1CampaignScreen>();
+            artifactScreen.EnterArtifactLoadout(document, api, collection, petId, () =>
+            {
+                CloseArtifacts();
+                ShowHub(world);
+            });
+        }
+
+        private void CloseArtifacts()
+        {
+            if (artifactScreen == null) return;
+            artifactScreen.enabled = false;
+            Destroy(artifactScreen);
+            artifactScreen = null;
         }
 
         private async Task OpenArenaAsync(WorldMapDefinition map)

@@ -40,7 +40,8 @@ namespace Aetheria.PetArena.Presentation
         private string gachaSummary;
         private string combatMessage;
         private Func<Task> retry;
-        private bool busy, boss, registered, reduced = true, loadedSession;
+        private Action returnFromArtifacts;
+        private bool busy, boss, registered, reduced = true, loadedSession, ownsApi;
 
         public void Initialize(PetArenaMvpController arena, string origin)
         {
@@ -64,6 +65,7 @@ namespace Aetheria.PetArena.Presentation
                 var webOrigin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_WEB_ORIGIN")
                     ?? "http://127.0.0.1:3300";
                 api = new Wave1LocalApi(origin, webOrigin, Application.persistentDataPath);
+                ownsApi = true;
                 loadedSession = api.LoadSession();
             }
             catch (Exception exception) when (exception is ArgumentException || exception is System.IO.IOException ||
@@ -76,10 +78,22 @@ namespace Aetheria.PetArena.Presentation
             if (loadedSession) Run(LoadLobby);
         }
 
+        internal void EnterArtifactLoadout(UIDocument document, Wave1LocalApi session,
+            Wave1State collection, string petId, Action returnToPlaza)
+        {
+            root = document.rootVisualElement;
+            api = session;
+            state = collection;
+            selectedPet = petId;
+            returnFromArtifacts = returnToPlaza;
+            screen = Screen.Artifacts;
+            Run(LoadArtifacts);
+        }
+
         private void OnDestroy()
         {
             lifetime.Cancel();
-            api?.Dispose();
+            if (ownsApi) api?.Dispose();
             lifetime.Dispose();
             if (panel != null) Destroy(panel);
         }
@@ -93,7 +107,8 @@ namespace Aetheria.PetArena.Presentation
             var eyebrow = Label("AETHERIA / SOULBOUND", "arena-eyebrow");
             column.Add(eyebrow);
             column.Add(Label(Title(), "arena-title"));
-            column.Add(Label(state == null ? "Offline campaign" : state.wallet.coins + " coins · Offline campaign", "arena-meta"));
+            var location = returnFromArtifacts == null ? "Offline campaign" : "Central Plaza";
+            column.Add(Label(state == null ? location : state.wallet.coins + " coins · " + location, "arena-meta"));
             if (!string.IsNullOrEmpty(notice)) column.Add(Label(notice, "arena-notice"));
 
             if (busy)
@@ -106,8 +121,9 @@ namespace Aetheria.PetArena.Presentation
             column.Add(content);
             if (retry != null)
             {
-                Button("Retry", () => Run(retry));
-                if (screen == Screen.Session) Button("Back", () => { retry = null; Draw(); });
+                Button("Retry", () => Run(retry), returnFromArtifacts == null ? null : "artifacts-retry");
+                if (returnFromArtifacts != null) DrawArtifactBack();
+                else if (screen == Screen.Session) Button("Back", () => { retry = null; Draw(); });
                 FocusFirst();
                 return;
             }
@@ -249,13 +265,8 @@ namespace Aetheria.PetArena.Presentation
         private async Task LoadArtifacts()
         {
             artifacts = await api.GetArtifactState(lifetime.Token);
-            var pet = artifacts.FindPet(selectedPet);
-            if (pet == null && artifacts.pets != null && artifacts.pets.Length > 0)
-            {
+            if (returnFromArtifacts == null && artifacts.FindPet(selectedPet) == null && artifacts.pets?.Length > 0)
                 selectedPet = artifacts.pets[0].petId;
-                pet = artifacts.pets[0];
-            }
-            if (pet != null) selectedPet = pet.petId;
             Show(Screen.Artifacts);
         }
 
@@ -264,7 +275,7 @@ namespace Aetheria.PetArena.Presentation
             if (artifacts == null)
             {
                 content.Add(Label("Artifact inventory is unavailable.", "arena-notice"));
-                Button("Back to party", () => Navigate(Screen.Lobby), "artifacts-back");
+                DrawArtifactBack();
                 return;
             }
 
@@ -280,7 +291,9 @@ namespace Aetheria.PetArena.Presentation
                 content.Add(Label("Rune: " + ArtifactName(pet.slots?.rune)));
                 content.Add(Label("Totals · HP +" + pet.totals.hp + " · ATK +" + pet.totals.attack +
                                   " · DEF +" + pet.totals.defense + " · SPD +" + pet.totals.speed, "arena-meta"));
-                content.Add(Label("Stats become live only in a new Arena8 match binding; SPD is inactive in the Wave 1 compatibility fight.", "arena-meta"));
+                content.Add(Label(returnFromArtifacts == null
+                    ? "Stats become live only in a new Arena8 match binding; SPD is inactive in the Wave 1 compatibility fight."
+                    : "New cooperative matches use the published modifiers for this loadout. Speed has no effect on seat order.", "arena-meta"));
             }
 
             foreach (var item in artifacts.inventory ?? Array.Empty<WaveAArtifactInstance>())
@@ -299,7 +312,15 @@ namespace Aetheria.PetArena.Presentation
 
             if (artifacts.pve?.available != null && artifacts.pve.available.Length > 0)
                 Button("Claim PvE artifact reward", ClaimArtifactReward, "claim-artifact-reward");
-            Button("Back to party", () => Navigate(Screen.Lobby), "artifacts-back");
+            DrawArtifactBack();
+        }
+
+        private void DrawArtifactBack()
+        {
+            if (returnFromArtifacts != null)
+                Button("Back to Central Plaza", returnFromArtifacts, "artifacts-back");
+            else
+                Button("Back to party", () => Navigate(Screen.Lobby), "artifacts-back");
         }
 
         private string ArtifactName(string artifactId)
@@ -312,11 +333,12 @@ namespace Aetheria.PetArena.Presentation
         private void EquipArtifact(WaveAArtifactInstance item)
         {
             if (string.IsNullOrEmpty(selectedPet)) return;
+            var request = new WaveAArtifactEquipRequest {
+                requestId = NewRequestId(), petId = selectedPet, artifactId = item.artifactId
+            };
             Run(async () =>
             {
-                var response = await api.EquipArtifact(new WaveAArtifactEquipRequest {
-                    requestId = NewRequestId(), petId = selectedPet, artifactId = item.artifactId
-                }, lifetime.Token);
+                var response = await api.EquipArtifact(request, lifetime.Token);
                 artifacts = response.state;
                 notice = "Loadout saved. A new Arena8 match allocation will snapshot it; an active match cannot be changed.";
             });
@@ -325,11 +347,12 @@ namespace Aetheria.PetArena.Presentation
         private void UnequipArtifact(WaveAArtifactInstance item)
         {
             if (item.equipped == null) return;
+            var request = new WaveAArtifactUnequipRequest {
+                requestId = NewRequestId(), petId = item.equipped.petId, slot = item.equipped.slot
+            };
             Run(async () =>
             {
-                var response = await api.UnequipArtifact(new WaveAArtifactUnequipRequest {
-                    requestId = NewRequestId(), petId = item.equipped.petId, slot = item.equipped.slot
-                }, lifetime.Token);
+                var response = await api.UnequipArtifact(request, lifetime.Token);
                 artifacts = response.state;
                 notice = "Unequipped " + item.name + ".";
             });
@@ -337,11 +360,12 @@ namespace Aetheria.PetArena.Presentation
 
         private void UpgradeArtifact(WaveAArtifactInstance item)
         {
+            var request = new WaveAArtifactUpgradeRequest {
+                requestId = NewRequestId(), artifactId = item.artifactId
+            };
             Run(async () =>
             {
-                var response = await api.UpgradeArtifact(new WaveAArtifactUpgradeRequest {
-                    requestId = NewRequestId(), artifactId = item.artifactId
-                }, lifetime.Token);
+                var response = await api.UpgradeArtifact(request, lifetime.Token);
                 artifacts = response.state;
                 notice = "Upgraded " + item.name + " with " + response.spent + " materials.";
             });
@@ -349,11 +373,10 @@ namespace Aetheria.PetArena.Presentation
 
         private void ClaimArtifactReward()
         {
+            var request = new WaveAArtifactClaimRequest { requestId = NewRequestId() };
             Run(async () =>
             {
-                var response = await api.ClaimArtifactReward(new WaveAArtifactClaimRequest {
-                    requestId = NewRequestId()
-                }, lifetime.Token);
+                var response = await api.ClaimArtifactReward(request, lifetime.Token);
                 artifacts = response.state;
                 notice = "Claimed an Artifact reward and materials.";
             });
@@ -596,6 +619,7 @@ namespace Aetheria.PetArena.Presentation
         private void Show(Screen next)
         {
             screen = next;
+            if (returnFromArtifacts != null) return;
             var bgm = next == Screen.Combat ? ArenaBgm.Battle : ArenaBgm.Lobby;
             if (effects.CurrentBgm != bgm) effects.PlayBgm(bgm);
             if (next != Screen.Combat) stage.PresentCampaignFireZone(false);
@@ -635,7 +659,7 @@ namespace Aetheria.PetArena.Presentation
             finally
             {
                 busy = false;
-                if (this != null) Draw();
+                if (this != null && isActiveAndEnabled) Draw();
             }
         }
 
@@ -643,7 +667,7 @@ namespace Aetheria.PetArena.Presentation
         {
             var button = new Button(() =>
             {
-                effects.PlaySfx(ArenaSfx.UiClick);
+                effects?.PlaySfx(ArenaSfx.UiClick);
                 action();
             }) { text = text, name = name };
             button.SetEnabled(enabled);
