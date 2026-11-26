@@ -1,4 +1,5 @@
 import type {PoolClient} from 'pg';
+import type {CoopRoomStatus} from '@aetheria/contracts';
 import {initializeArtifactInventory} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 
 type Queryable=Pick<PoolClient,'query'>;
@@ -26,7 +27,7 @@ function seats(value:unknown){
 // Durable settlement reads and writes. All calls receive the worker
 // transaction so the outbox claim, rewards, inbox and completion commit once.
 export class CoopSettlementStore{
- async next(tx:Queryable):Promise<CoopSettlementEvent|undefined>{
+ async next(tx:Queryable,matchId?:string):Promise<CoopSettlementEvent|undefined>{
   const result=await tx.query<{
    event_id:string;settlement_id:string;match_id:string;proposal:Record<string,unknown>;
    proposal_hash:Buffer;state_version:unknown;epoch:unknown;
@@ -41,12 +42,31 @@ export class CoopSettlementStore{
      AND m.ruleset_id='arena8-coop-pve' AND m.status='SETTLING'
      AND m.state_version=s.state_version AND m.epoch=s.epoch
      AND a.status IN ('ACTIVE','SETTLED')
-   ORDER BY o.available_at,o.event_id LIMIT 1 FOR UPDATE OF o SKIP LOCKED`);
+   ${matchId===undefined?'':'AND s.match_id=$1'}
+   ORDER BY o.available_at,o.event_id LIMIT 1 FOR UPDATE OF o ${matchId===undefined?'SKIP LOCKED':'NOWAIT'}`,
+   matchId===undefined?[]:[matchId]);
   const row=result.rows[0];
   return row?Object.freeze({
    eventId:row.event_id,settlementId:row.settlement_id,matchId:row.match_id,proposal:row.proposal,
    proposalHash:row.proposal_hash,stateVersion:String(row.state_version),epoch:String(row.epoch),
   }):undefined;
+ }
+ async terminalRooms(tx:Queryable,accountId:string):Promise<readonly {
+  roomId:string;roomStatus:CoopRoomStatus;revision:number;matchId:string;matchStatus:'SETTLING'|'FINISHED';
+ }[]>{
+  const result=await tx.query<{
+   roomId:string;roomStatus:CoopRoomStatus;revision:number;matchId:string;matchStatus:'SETTLING'|'FINISHED';
+  }>(`
+   SELECT r.id AS "roomId",r.status AS "roomStatus",r.revision,m.id AS "matchId",m.status AS "matchStatus"
+   FROM coop_rooms r
+   JOIN coop_allocations a ON a.room_id=r.id
+   JOIN game_native_matches m ON m.id=a.match_id
+   WHERE m.ruleset_id='arena8-coop-pve' AND m.status IN ('SETTLING','FINISHED')
+     AND (r.host_account_id=$1 OR EXISTS (
+       SELECT 1 FROM coop_room_seats s WHERE s.room_id=r.id AND s.account_id=$1
+     ))
+   ORDER BY r.id FOR UPDATE OF r,m NOWAIT`,[accountId]);
+  return result.rows;
  }
  async inbox(tx:Queryable,settlementId:string):Promise<Readonly<{outcome:string}>|undefined>{
   const row=(await tx.query<{outcome:string}>('SELECT outcome FROM coop_settlement_inbox WHERE settlement_id=$1',[settlementId])).rows[0];

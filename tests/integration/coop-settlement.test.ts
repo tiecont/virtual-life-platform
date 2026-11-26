@@ -15,7 +15,7 @@ const contentHash=createHash('sha256').update('content:'+JSON.stringify(baseBund
 const engine:GameplayBundleValidator={async validate(){return {digest,engineCapability:'arena8-coop-v1',contentHash};}};
 const pets=['icarus','coralline','volt','terran'];
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,address=1;
-type Account={accountId:string;petId:string};
+type Account={accountId:string;petId:string;cookie:string;csrf:string};
 
 beforeAll(async()=>{
  const url=new URL(process.env.TEST_DATABASE_URL??'');
@@ -34,10 +34,17 @@ afterAll(async()=>{await server?.app.close();await pool?.end();if(admin){await a
 async function guest(name:string,petId:string):Promise<Account>{
  const response=await server.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.213.1.'+address++,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
  expect(response.statusCode).toBe(201);
- const accountId=(response.json() as {profile:{id:string}}).profile.id;
+ const {profile:{id:accountId},csrfToken:csrf}=response.json() as {profile:{id:string};csrfToken:string};
+ const cookie=String(response.headers['set-cookie']).split(';')[0]!;
  await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
  await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3)',[accountId,petId,'starter']);
- return {accountId,petId};
+ return {accountId,petId,cookie,csrf};
+}
+async function deleteAccount(owner:Account,requestId=randomUUID()){
+ return server.http.inject({
+  method:'DELETE',url:'/v1/me',
+  headers:{origin,cookie:owner.cookie,'x-csrf-token':owner.csrf,'idempotency-key':requestId},
+ });
 }
 async function fixture(accounts:Account[],outcome:'won'|'lost'){
  const roomId=randomUUID(),matchId=randomUUID(),bootId=randomUUID(),worldId='native:coop-'+matchId;
@@ -94,6 +101,57 @@ describe('cooperative settlement',()=>{
   expect((await pool.query('SELECT count(*)::int AS n FROM coop_settlement_rewards')).rows[0].n).toBe(4);
   expect((await pool.query('SELECT count(*)::int AS n FROM coop_achievement_ledger')).rows[0].n).toBe(4);
   expect((await pool.query('SELECT coins FROM pet_wave_one_players WHERE account_id=$1',[accounts[0]!.accountId])).rows[0].coins).toBe(120);
+ });
+ it.each([0,1])('preserves terminal peers’ rewards when seat %i deletes before the worker drains',async deletedSeat=>{
+  const accounts=await Promise.all(pets.map((pet,index)=>guest('Deletion '+index,pet)));
+  const {roomId,matchId,settlementId}=await fixture(accounts,'won');
+  const owner=accounts[deletedSeat]!;
+  const response=await deleteAccount(owner);
+  expect(response.statusCode,response.body).toBe(200);
+  expect(response.json()).toEqual({deleted:true});
+  expect((await pool.query('SELECT 1 FROM identity_accounts WHERE id=$1',[owner.accountId])).rowCount).toBe(0);
+  expect((await pool.query('SELECT 1 FROM coop_room_seats WHERE room_id=$1 AND account_id=$2',[roomId,owner.accountId])).rowCount).toBe(0);
+  expect((await pool.query('SELECT status FROM coop_rooms WHERE id=$1',[roomId])).rows)
+   .toEqual(deletedSeat===0?[]:[{status:'CLOSED'}]);
+  await Promise.all([new CoopSettlement(pool).drain(),new CoopSettlement(pool).drain()]);
+  const rewards=(await pool.query(
+   'SELECT account_id,seat,achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id=$1 ORDER BY seat',[settlementId],
+  )).rows;
+  expect(rewards).toEqual(accounts.flatMap((account,seat)=>seat===deletedSeat?[]:[{
+   account_id:account.accountId,seat,achievement_points:250,coins:120,exp:90,
+  }]));
+  for(const peer of accounts.filter(account=>account!==owner)){
+   const receipt=await server.http.inject({url:'/v1/coop/rooms/'+roomId+'/reward',headers:{cookie:peer.cookie}});
+   expect(receipt.statusCode,receipt.body).toBe(200);
+   expect(receipt.json()).toMatchObject({matchId,achievementPoints:250,coins:120,exp:90});
+   expect((await pool.query('SELECT coins FROM pet_wave_one_players WHERE account_id=$1',[peer.accountId])).rows).toEqual([{coins:120}]);
+  }
+  expect((await pool.query('SELECT status FROM game_native_matches WHERE id=$1',[matchId])).rows).toEqual([{status:'FINISHED'}]);
+  expect((await pool.query('SELECT delivery_outcome FROM game_native_outbox WHERE match_id=$1',[matchId])).rows).toEqual([{delivery_outcome:'granted'}]);
+ });
+ it('retries erasure after a worker-held claim without losing or duplicating peer rewards',async()=>{
+  const accounts=await Promise.all(pets.map((pet,index)=>guest('Claim race '+index,pet)));
+  const {matchId,settlementId}=await fixture(accounts,'won');
+  const owner=accounts[1]!,requestId=randomUUID();
+  const worker=await pool.connect();
+  try{
+   await worker.query('BEGIN');
+   await worker.query('SELECT event_id FROM game_native_outbox WHERE match_id=$1 FOR UPDATE',[matchId]);
+   const busy=await deleteAccount(owner,requestId);
+   expect(busy.statusCode,busy.body).toBe(409);
+   expect(busy.json().error.code).toBe('REQUEST_CONFLICT');
+   expect((await pool.query('SELECT 1 FROM identity_accounts WHERE id=$1',[owner.accountId])).rowCount).toBe(1);
+   expect((await pool.query('SELECT 1 FROM coop_settlement_inbox WHERE settlement_id=$1',[settlementId])).rowCount).toBe(0);
+  }finally{
+   await worker.query('ROLLBACK');
+   worker.release();
+  }
+  await new CoopSettlement(pool).drain();
+  const deleted=await deleteAccount(owner,requestId);
+  expect(deleted.statusCode,deleted.body).toBe(200);
+  await new CoopSettlement(pool).drain();
+  const rewards=(await pool.query('SELECT seat,coins FROM coop_settlement_rewards WHERE settlement_id=$1 ORDER BY seat',[settlementId])).rows;
+  expect(rewards).toEqual([{seat:0,coins:120},{seat:2,coins:120},{seat:3,coins:120}]);
  });
  it('pays the authored loss rewards without Pet EXP or coins',async()=>{
   const accounts=[await guest('Loss one',pets[0]!),await guest('Loss two',pets[1]!),await guest('Loss three',pets[2]!),await guest('Loss four',pets[3]!)];
