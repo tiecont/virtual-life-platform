@@ -57,6 +57,18 @@
     margin-bottom: 6px;
 }
 
+.coop-hub-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    flex-direction: row;
+}
+.coop-campaign-map {
+    margin-bottom: 10px;
+}
+.coop-campaign-map-name {
+    -unity-font-style: bold;
+}
 .coop-world Label {
     background-color: rgba(15, 23, 38, 0.94);
     color: rgb(242, 236, 217);

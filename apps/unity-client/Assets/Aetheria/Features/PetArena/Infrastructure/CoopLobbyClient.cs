@@ -50,7 +50,6 @@ namespace Aetheria.PetArena.Infrastructure
             return reward;
         }
 
-        [Serializable] public sealed class Eligibility { public string bossId; public int points, requiredPoints; public bool eligible; }
         [Serializable] private class CreateRequest { public string requestId, petId, ownedPetInstanceId, mapId; }
         [Serializable] private sealed class SelectedBossRequest : CreateRequest { public string bossId; }
         [Serializable] private sealed class PortalJoin { public string requestId, mapId; }

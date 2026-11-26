@@ -1,53 +1,48 @@
 using System;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Aetheria.Networking;
 using Aetheria.PetArena.Infrastructure;
+using Aetheria.World.Domain;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Aetheria.PetArena.Presentation
 {
-    // Lobby and native admission flow for a cooperative room. It reads only the
-    // server room view: create/join/select/ready/start, then connects the admitted
-    // seat and hands the committed projection to CoopNativeHud.
+    // Lobby and native admission flow for a cooperative room.
     [RequireComponent(typeof(UIDocument))]
     public sealed class CoopNativeCampaignScreen : MonoBehaviour
     {
         [SerializeField] private UIDocument document;
-        private PlatformSession platform;
+        private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
+        private Wave1LocalApi api;
         private CoopLobbyClient lobby;
         private CoopNativePlaySession session;
         private CoopLobbyClient.Room room;
-        private CoopLobbyClient.Eligibility encounter;
-        private string petId, instanceId, mapId;
+        private CoopCampaignCatalog catalog;
+        private WorldMapDefinition map;
+        private string petId, instanceId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
         private Action returnToHub;
         private Arena8NativeTrust trust;
-        private bool busy;
+        private bool busy, loadingCatalog;
         private TextField joinField;
         private string notice = "";
 
         // Scene bootstrap may create the component before assigning the document.
         public void Attach(UIDocument target) { document = target; }
 
-        public void Enter(PlatformSession authenticated, string ownedPetId)
+        public void Enter(Wave1LocalApi authenticated, Wave1Pet[] ownedPets, WorldMapDefinition selectedMap,
+            Action returnAction, CoopCampaignCatalog publishedCatalog)
         {
-            platform = authenticated ?? throw new ArgumentNullException(nameof(authenticated));
-            lobby = new CoopLobbyClient(platform);
-            petId = ownedPetId;
-            room = null;
-            notice = "";
-            RenderLobby();
-        }
-
-        public void Enter(Wave1LocalApi authenticated, Wave1Pet[] ownedPets, string selectedMap, Action returnAction, CoopLobbyClient.Eligibility eligibility)
-        {
-            lobby = new CoopLobbyClient(authenticated);
-            pets = (ownedPets ?? Array.Empty<Wave1Pet>()).Where(pet => Guid.TryParse(pet.ownedPetInstanceId, out _)).ToArray();
+            api = authenticated ?? throw new ArgumentNullException(nameof(authenticated));
+            map = selectedMap ?? throw new ArgumentNullException(nameof(selectedMap));
+            lobby = new CoopLobbyClient(api);
+            pets = (ownedPets ?? Array.Empty<Wave1Pet>()).Where(pet => pet != null && !string.IsNullOrWhiteSpace(pet.petId) &&
+                Guid.TryParseExact(pet.ownedPetInstanceId, "D", out var id) && id != Guid.Empty).ToArray();
             SetPet(pets.FirstOrDefault());
-            mapId = selectedMap;
-            encounter = eligibility;
+            catalog = publishedCatalog;
             returnToHub = returnAction;
             room = null;
             notice = "";
@@ -75,25 +70,72 @@ namespace Aetheria.PetArena.Presentation
         }
 
         private VisualElement Root => document != null ? document.rootVisualElement : null;
+        private CoopCampaignCatalog.Encounter Encounter => catalog?.Find(map.Id);
+        private bool CanCreate => map.IsPlayable && Encounter?.eligible == true && instanceId != null;
+
+        internal static VisualElement BuildAvailability(WorldMapDefinition map, CoopCampaignCatalog catalog,
+            bool loading = false)
+        {
+            var row = new VisualElement { name = "coop-availability-" + map.Id };
+            row.AddToClassList("coop-campaign-map");
+            var encounter = catalog?.Find(map.Id);
+            var title = new Label(encounter?.mapName ?? map.DisplayName) { enableRichText = false };
+            title.AddToClassList("coop-campaign-map-name");
+            row.Add(title);
+            if (encounter == null)
+            {
+                var message = catalog == null ? "Campaign availability could not be loaded." : "No published Boss encounter for this map.";
+                if (loading) message = "Loading campaign availability…";
+                row.Add(new Label(message) { name = "coop-availability-status" });
+            }
+            else
+            {
+                row.Add(new Label("Boss · " + encounter.bossName)
+                    { name = "coop-availability-boss", enableRichText = false });
+                row.Add(new Label("Achievement Points · " + catalog.points + " / " + encounter.requiredPoints)
+                    { name = "coop-availability-points" });
+                if (encounter.eligible)
+                    row.Add(new Label("Hosting requirements met.") { name = "coop-availability-status" });
+                else
+                {
+                    row.Add(new Label("Room hosting locked.") { name = "coop-availability-status" });
+                    if (catalog.points < encounter.requiredPoints)
+                        row.Add(new Label("Achievement Points still needed · " + (encounter.requiredPoints - catalog.points))
+                            { name = "coop-availability-points-lock" });
+                    if (encounter.prerequisite != null && !encounter.prerequisite.cleared)
+                        row.Add(new Label("Clear " + encounter.prerequisite.mapName + " first.")
+                            { name = "coop-availability-map-lock", enableRichText = false });
+                }
+            }
+            if (!map.IsPlayable)
+                row.Add(new Label("This map has no local developer scene.") { name = "coop-availability-scene" });
+            return row;
+        }
 
         private void RenderLobby()
         {
             var root = Root;
-            if (root == null) return;
+            if (root == null || !isActiveAndEnabled) return;
             root.Clear();
             root.Add(new Label("Cooperative Arena8") { name = "coop-lobby-title" });
+            root.Add(new Label("Local developer preview") { name = "coop-lobby-preview" });
             if (notice.Length > 0) root.Add(new Label(notice) { name = "coop-lobby-notice" });
             if (room == null || room.status == "OPEN") RenderCollection(root);
             if (returnToHub != null)
                 root.Add(new Button(returnToHub) { text = "Return to Central Plaza", name = "coop-return" });
             if (room == null)
             {
-                if (encounter != null)
-                    root.Add(new Label(encounter.bossId + " · Achievement Points " + encounter.points + " / " + encounter.requiredPoints));
+                root.Add(BuildAvailability(map, catalog, loadingCatalog));
+                if (Encounter?.eligible == true && instanceId == null)
+                    root.Add(new Label("An owned Pet is required to create a room."));
                 var create = new Button(() => _ = RunAsync(CreateAsync)) { text = "Create room", name = "coop-create" };
-                create.SetEnabled(lobby != null && !string.IsNullOrEmpty(petId) && (encounter == null || encounter.eligible));
+                create.SetEnabled(CanCreate);
                 root.Add(create);
-                joinField = new TextField("Room id") { name = "coop-room-id" };
+                var refresh = new Button(() => _ = RunAsync(RefreshCampaignAsync))
+                    { text = "Refresh availability", name = "coop-refresh-availability" };
+                refresh.SetEnabled(!loadingCatalog);
+                root.Add(refresh);
+                joinField = new TextField("Room id") { name = "coop-room-id", value = joinField?.value ?? "" };
                 root.Add(joinField);
                 var join = new Button(() => _ = RunAsync(JoinAsync)) { text = "Join room", name = "coop-join" };
                 join.SetEnabled(lobby != null);
@@ -120,14 +162,44 @@ namespace Aetheria.PetArena.Presentation
                 root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = "Refresh room", name = "coop-refresh" });
             if (room.status == "STARTED")
                 root.Add(new Button(() => _ = RunAsync(ResumeMatchAsync)) { text = "Enter match or view rewards", name = "coop-enter" });
-            var leave = new Button(() => { room = null; RenderLobby(); }) { text = "Back", name = "coop-back" };
+            var leave = new Button(() => _ = RunAsync(BackToLobbyAsync)) { text = "Back", name = "coop-back" };
             root.Add(leave);
         }
 
         private async Task CreateAsync()
         {
-            room = await lobby.CreateAsync(petId, instanceId, mapId, Guid.NewGuid(), bossId: encounter?.bossId);
+            if (!CanCreate) return;
+            try
+            {
+                room = await lobby.CreateAsync(petId, instanceId, map.Id, Guid.NewGuid(), lifetime.Token, Encounter.bossId);
+            }
+            catch (Wave1ApiException error) when (error.Status == 403 || error.Status == 404 || error.Status == 503)
+            {
+                notice = error.Message;
+                await RefreshCampaignAsync();
+                return;
+            }
             notice = "";
+            RenderLobby();
+        }
+
+        private Task BackToLobbyAsync()
+        {
+            room = null;
+            notice = "";
+            return RefreshCampaignAsync();
+        }
+
+        private async Task RefreshCampaignAsync()
+        {
+            catalog = null;
+            loadingCatalog = true;
+            RenderLobby();
+            var cancellation = lifetime.Token;
+            try { catalog = await api.GetCoopCampaignCatalog(cancellation); }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { return; }
+            catch (Exception) { }
+            finally { loadingCatalog = false; }
             RenderLobby();
         }
 
@@ -139,7 +211,7 @@ namespace Aetheria.PetArena.Presentation
                 RenderLobby();
                 return;
             }
-            room = await lobby.JoinAsync(roomId, Guid.NewGuid(), mapId: mapId);
+            room = await lobby.JoinAsync(roomId, Guid.NewGuid(), mapId: map.Id);
             if (instanceId != null) await SelectAsync();
             notice = "";
             RenderLobby();
@@ -152,7 +224,7 @@ namespace Aetheria.PetArena.Presentation
             var loaded = await lobby.ReadAsync(roomId);
             if (loaded.you == null || !loaded.seats.Any(seat => seat.you))
                 throw new InvalidOperationException("This account has no seat in that room.");
-            if (!string.IsNullOrEmpty(loaded.mapId) && mapId != null && loaded.mapId != mapId)
+            if (!string.IsNullOrEmpty(loaded.mapId) && loaded.mapId != map.Id)
                 throw new InvalidOperationException("Resume this room at the " + loaded.mapId + " entrance.");
             room = loaded;
             if (room.status == "STARTED") await ResumeMatchAsync();
@@ -213,7 +285,7 @@ namespace Aetheria.PetArena.Presentation
             var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid());
             if (admission.BossId != room.bossId || admission.Seat != room.you.seat) throw new FormatException("Admission does not match the room.");
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
-            var transportPlatform = platform ?? new PlatformSession(admission.HttpsOrigin);
+            var transportPlatform = new PlatformSession(admission.HttpsOrigin);
             trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
             var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId);
             try
@@ -250,6 +322,8 @@ namespace Aetheria.PetArena.Presentation
 
         private void OnDestroy()
         {
+            lifetime.Cancel();
+            lifetime.Dispose();
             session?.Dispose();
             session = null;
             trust?.Dispose();

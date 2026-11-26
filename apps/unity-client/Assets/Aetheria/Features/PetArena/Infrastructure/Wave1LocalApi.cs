@@ -134,8 +134,8 @@ namespace Aetheria.PetArena.Infrastructure
 
         public void Dispose() => http.Dispose();
 
-        public Task<CoopLobbyClient.Eligibility> GetCoopEligibility(string mapId, CancellationToken cancellation) =>
-            Request<CoopLobbyClient.Eligibility>("/v1/coop/eligibility?mapId=" + Uri.EscapeDataString(mapId), null, cancellation);
+        public async Task<CoopCampaignCatalog> GetCoopCampaignCatalog(CancellationToken cancellation) =>
+            CoopCampaignCatalog.Decode(await CoopRequest("/v1/coop/encounters", null, cancellation));
 
         internal Task<string> CoopRequest(string route, string json, CancellationToken cancellation) =>
             Request<string>(route, json, cancellation);

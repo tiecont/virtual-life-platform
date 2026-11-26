@@ -62,6 +62,7 @@ namespace Aetheria.PetArena.Presentation
             }
             if (campaign != null)
             {
+                campaign.enabled = false;
                 Destroy(campaign);
                 campaign = null;
             }
@@ -122,14 +123,51 @@ namespace Aetheria.PetArena.Presentation
             SetOverlay(world, false);
             var root = document.rootVisualElement;
             root.Clear();
-            var button = new Button(() => _ = OpenCollectionAsync(world))
+            var actions = new VisualElement();
+            actions.AddToClassList("coop-hub-actions");
+            actions.Add(new Button(() => _ = OpenCampaignAsync(world))
+            {
+                name = "coop-campaign", text = "Cooperative campaign"
+            });
+            actions.Add(new Button(() => _ = OpenCollectionAsync(world))
             {
                 name = "coop-pet-collection", text = "Pet collection"
-            };
-            button.style.position = Position.Absolute;
-            button.style.bottom = 12;
-            button.style.right = 12;
-            root.Add(button);
+            });
+            root.Add(actions);
+        }
+
+        private async Task OpenCampaignAsync(WorldSceneControllerBase world)
+        {
+            SetOverlay(world, true);
+            var root = document.rootVisualElement;
+            root.Clear();
+            var campaignPanel = new VisualElement();
+            campaignPanel.AddToClassList("arena-panel");
+            campaignPanel.Add(new Label("Cooperative campaign") { name = "coop-campaign-title" });
+            campaignPanel.Add(new Label("Local developer preview"));
+            campaignPanel.Add(new Button(() => ShowHub(world))
+                { name = "coop-campaign-back", text = "Back to Central Plaza" });
+            var status = new Label("Loading campaign availability…") { name = "coop-campaign-status" };
+            campaignPanel.Add(status);
+            root.Add(campaignPanel);
+
+            CoopCampaignCatalog catalog;
+            try { catalog = await ReadCampaignAsync(); }
+            catch (OperationCanceledException) { return; }
+            if (campaignPanel.parent != root) return;
+
+            campaignPanel.Add(new Button(() => _ = OpenCampaignAsync(world))
+                { name = "coop-campaign-refresh", text = "Refresh availability" });
+            if (catalog == null)
+            {
+                status.text = "Campaign availability could not be loaded.";
+                return;
+            }
+            status.text = "Published configuration v" + catalog.configVersion;
+            var list = new ScrollView { name = "coop-campaign-maps" };
+            foreach (var map in WorldMapCatalog.Maps)
+                list.Add(CoopNativeCampaignScreen.BuildAvailability(map, catalog));
+            campaignPanel.Add(list);
         }
 
         private async Task OpenCollectionAsync(WorldSceneControllerBase world)
@@ -209,24 +247,34 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task OpenArenaAsync(WorldMapDefinition map)
         {
+            var root = document.rootVisualElement;
+            var loading = new Label("Loading cooperative arena…");
+            var back = new Button(ReturnToHub) { text = "Return to Central Plaza" };
+            root.Add(loading);
+            root.Add(back);
             try
             {
-                var collection = await api.GetWave1State(lifetime.Token);
-                if (SceneManager.GetActiveScene().name != map.SceneName) return;
-                var eligibility = await api.GetCoopEligibility(map.Id, lifetime.Token);
-                if (eligibility == null || string.IsNullOrEmpty(eligibility.bossId)) throw new FormatException("Missing encounter for this portal.");
-                if (SceneManager.GetActiveScene().name != map.SceneName) return;
+                var collectionTask = api.GetWave1State(lifetime.Token);
+                var catalogTask = ReadCampaignAsync();
+                await Task.WhenAll(collectionTask, catalogTask);
+                if (loading.parent != root) return;
                 campaign = gameObject.AddComponent<CoopNativeCampaignScreen>();
                 campaign.Attach(document);
-                campaign.Enter(api, collection.pets, map.Id, ReturnToHub, eligibility);
+                campaign.Enter(api, (await collectionTask).pets, map, ReturnToHub, await catalogTask);
             }
             catch (OperationCanceledException) { }
             catch (Exception error)
             {
-                if (SceneManager.GetActiveScene().name != map.SceneName) return;
-                document.rootVisualElement.Add(new Label(error.Message));
-                document.rootVisualElement.Add(new Button(ReturnToHub) { text = "Return to Central Plaza" });
+                if (loading.parent == root) loading.text = error.Message;
             }
+        }
+
+        private async Task<CoopCampaignCatalog> ReadCampaignAsync()
+        {
+            var cancellation = lifetime.Token;
+            try { return await api.GetCoopCampaignCatalog(cancellation); }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { throw; }
+            catch (Exception) { return null; }
         }
 
         private static void ReturnToHub() => WorldSceneFlow.Load(WorldMapCatalog.CentralPlazaSceneName);
