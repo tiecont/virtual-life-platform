@@ -114,6 +114,13 @@ separate owner authorization and are outside the workflow catalog.
 
 ## Checkpoints and recovery
 
+Start in the lead checkout with `state.mjs list`. It returns unfinished runs in
+that checkout. Recover a matching run before assigning its file scopes or
+starting a new checkpoint. Canonical roadmap task IDs remain in
+`config/development-plan.json`. Checkpoint step IDs are scoped to their run and
+may refer to those same task IDs. The workflow registry uses its own named
+commands. Use `pnpm plan:status --workstream D3-A` for live task records.
+
 ```sh
 node scripts/engineering-harness/state.mjs init review-1 \
   '{"objective":"Validate frozen migrations","tasks":[{"id":"inspect","owner":"qa","acceptance":["Static migration check passes"],"dependsOn":[],"writePaths":[]}]}'

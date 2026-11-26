@@ -83,12 +83,12 @@ export async function recordWorkingTree(ctx) {
 }
 
 async function repoInspect(ctx) {
-  const summary = await ctx.command('development-plan', node, ['scripts/task-plan.mjs'], {
+  const summary = await ctx.command('development-plan', node, ['scripts/task-plan.mjs', '--summary'], {
     project: stdout => {
       const data = checkedJson(stdout, value => value && Number.isSafeInteger(value.total) &&
-        Number.isSafeInteger(value.remaining) && Array.isArray(value.ready) &&
+        Number.isSafeInteger(value.remaining) && Number.isSafeInteger(value.readyCount) &&
         Object.values(value.counts ?? {}).every(Number.isSafeInteger));
-      return {total: data.total, remaining: data.remaining, ready: data.ready.length, counts: {
+      return {total: data.total, remaining: data.remaining, ready: data.readyCount, counts: {
         VERIFIED: data.counts.VERIFIED ?? 0, IN_PROGRESS: data.counts.IN_PROGRESS ?? 0, TODO: data.counts.TODO ?? 0,
       }};
     },

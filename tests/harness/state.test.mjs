@@ -173,3 +173,14 @@ test('protects the database from symlink redirection and detects changed state',
   db.close()
   rejects(run('recover', 'storage'), 'CORRUPT_STATE', /schema/)
 })
+
+test('discovers an unfinished checkpoint by run ID and recovers it in a fresh process', (t) => {
+  const { call, revision } = fixture(t)
+  assert.deepEqual(call('list'), { runs: [] })
+  call('init', 'coop', JSON.stringify(plan([task('VL-200')])))
+  const result = call('list')
+  assert.deepEqual(result.runs, [{
+    id: 'coop', version: 1, baseRevision: revision, active: [], ready: ['VL-200'], blocked: [],
+  }])
+  assert.deepEqual(call('recover', result.runs[0].id).ready, ['VL-200'])
+})

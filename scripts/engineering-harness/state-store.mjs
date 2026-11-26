@@ -150,3 +150,17 @@ export function advanceCheckpoint(repoRoot, id, version, advance) {
     return writeCheckpoint(db, next)
   }))
 }
+
+
+export function listIncompleteCheckpoints(repoRoot) {
+  try {
+    return withDatabase(repoRoot, false, (db) => db.prepare(`
+      SELECT * FROM checkpoints
+      WHERE (run_id, version) IN (SELECT run_id, MAX(version) FROM checkpoints GROUP BY run_id)
+      ORDER BY run_id
+    `).all().map(decode).filter(({ state }) => state.tasks.some(({ status }) => status !== 'DONE')))
+  } catch (error) {
+    if (error instanceof StateError && error.code === 'NOT_FOUND') return []
+    throw error
+  }
+}

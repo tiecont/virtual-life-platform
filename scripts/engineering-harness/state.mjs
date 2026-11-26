@@ -1,11 +1,12 @@
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { checkId, initializeState, MAX_STATE_BYTES, StateError, summarizeState, updateState } from './state-contract.mjs'
-import { advanceCheckpoint, createCheckpoint, readCheckpoint } from './state-store.mjs'
+import { advanceCheckpoint, createCheckpoint, listIncompleteCheckpoints, readCheckpoint } from './state-store.mjs'
 
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
 const help = {
   commands: [
+    'list',
     'init RUN_ID JSON|-',
     'show RUN_ID [VERSION]',
     'recover RUN_ID [TASK_ID]',
@@ -54,6 +55,12 @@ function baseRevision() {
 
 async function main([command, id, ...args]) {
   if (command === undefined || (command === '--help' && id === undefined)) return help
+  if (command === 'list' && id === undefined) {
+    return { runs: listIncompleteCheckpoints(repoRoot).map(({ state, stateSha256 }) => {
+      const { id, version, baseRevision, active, ready, blocked } = summarizeState(state, stateSha256)
+      return { id, version, baseRevision, active, ready, blocked: blocked.map(({ id }) => id) }
+    }) }
+  }
   if (command === 'init' && args.length === 1) {
     const plan = initializeState(checkId(id, 'run ID'), await readInput(args[0]), baseRevision())
     const { state, stateSha256 } = createCheckpoint(repoRoot, plan)

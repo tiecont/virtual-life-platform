@@ -11,7 +11,7 @@
     "independentReviewRequired": false,
     "verification": "Exact committed source, actual checks, self-audit honestly labeled, actual CI before merge",
     "qualification": "Hardware, content rights, signing and deployment requirements apply to their own acceptance or release; do not gate unrelated implementation",
-    "priority": "M0 scope/catalog reconciliation; M1 playable 8x8 combat, Artifacts and progression; M2 character/environment/audio foundations; M3 integrated vertical slice; M4 full 55-Pet/six-map content; M5 human playtesting and balance; M6 Windows qualification and closed beta. Deferred expansion never blocks M0-M3.",
+    "priority": "Current-wave engineering comes first at the same priority, followed by independent critical-path MVP work. Deferred expansion is outside active recommendations.",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC; source or CI acceptance never authorizes PUBLISHED content, public registration, purchases, signing or deployment"
   },
   "initiatives": [
@@ -36,7 +36,7 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave D2",
+    "wave": "Wave D3",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
@@ -74,6 +74,332 @@
       }
     },
     "currentWave": {
+      "id": "WAVE-D3",
+      "title": "Cooperative full-stack repair and playable vertical slice",
+      "status": "IN_PROGRESS",
+      "workstreams": [
+        "D3-A",
+        "D3-B",
+        "D4",
+        "E",
+        "F"
+      ],
+      "acceptanceTasks": [
+        "VL-203",
+        "VL-199"
+      ],
+      "previousWave": {
+        "id": "WAVE-D2",
+        "pullRequest": 84,
+        "sourceRevision": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea",
+        "status": "IMPLEMENTED_WITH_ACCEPTANCE_OPEN",
+        "taskIds": [
+          "VL-190",
+          "VL-191",
+          "VL-192",
+          "VL-193",
+          "VL-194",
+          "VL-195",
+          "VL-196",
+          "VL-197"
+        ],
+        "remaining": "PR84 merged the configuration authority, cooperative rules, four-seat runtime, rooms and loss settlement, Unity lobby/HUD foundation and simulation. Cross-layer identity, multi-Boss regression, packaged portal-to-victory acceptance and balance remain open."
+      },
+      "ownerDecisions": [
+        {
+          "tasks": [
+            "VL-178",
+            "VL-208"
+          ],
+          "decision": "Approve Off-rate acquisition eligibility, Jaderyx display name, Solenne rights, power-class ladder and family map membership (historical OD-1, OD-3, OD-4, OD-5 and OD-9). Keep candidates gated meanwhile."
+        },
+        {
+          "tasks": [
+            "VL-171",
+            "VL-182",
+            "VL-198",
+            "VL-204"
+          ],
+          "decision": "Review authorized character evidence at H1, H2, H3 and H4 before each dependent stage. Record concept and any provider-spend authorization separately (OD-6 and OD-7)."
+        },
+        {
+          "tasks": [
+            "VL-211"
+          ],
+          "decision": "Approve measured candidate balance before publication."
+        },
+        {
+          "tasks": [
+            "VL-214"
+          ],
+          "decision": "Authorize the exact closed-beta release after hardware, rights, privacy, consent, signing and operational acceptance."
+        }
+      ]
+    },
+    "waveCVerification": {
+      "status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "codeRevision": "b35fa8a41bd930e5281c2d73daac65c41bdeb08e",
+      "completed": {
+        "governance": "VL-182 and M4 acceptance no longer treat a readiness field or manifest entry as production; mvpProgram.contentReadiness records the separate per-stage counts",
+        "sceneRegistry": "one canonical ProjectScenes registry feeds EditorBuildSettings and BuildPlayerOptions.scenes so a built player cannot omit a required scene",
+        "combatProgression": "FINAL OWNER DECISION supersedes PR83 level locks: every active Pet has its complete authored skill set from Lv1; a non-Icarus Pet cannot use FIRE_ZONE; Mana/Rage/cooldown/phase/ownership remain authoritative. Skill Level is bounded effectiveness, not an unlock gate.",
+        "worldHarness": "fixed the Wave B world-capture player path so the built player is spawned from the actual Linux build output"
+      },
+      "worldEvidence": {
+        "command": "UNITY_EDITOR=<pinned 6000.3.14f1> node scripts/unity-validate.mjs world",
+        "result": "PASS",
+        "player": "apps/unity-client/Builds/Linux/Aetheria (Linux development player, OpenGLCore, AMD Renoir)",
+        "scenes": ["CentralPlaza", "CinderTerraces", "TideglassLagoon"],
+        "boards": "64 visible tiles rendered in CinderTerraces and TideglassLagoon",
+        "transitions": "CentralPlaza -> CinderTerraces | CinderTerraces -> CentralPlaza | CentralPlaza -> TideglassLagoon",
+        "screenshots": 5
+      },
+      "notMet": [
+        "No authenticated arena8-pve allocator in the Nest control plane and no multi-match lifecycle",
+        "Arena8 campaign EXP/coin/recruitment/map-clear/Artifact settlement is not connected",
+        "Unity still defaults to the frozen Wave 1 compatibility campaign; no committed arena8.intent.v1/arena8.view.v1 client",
+        "The mandatory M3 integrated player loop has not executed"
+      ]
+    },
+    "waveAVerification": {
+      "sourceRevision": "38a3a536b096b2449e77aa04296da74854c9234f",
+      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "fullGates": {
+        "rust": "cargo fmt --all --check, cargo clippy --all-targets -- -D warnings and cargo test PASS",
+        "unit": "580/580 PASS",
+        "integration": "867/867 PASS across 71 real PostgreSQL/HTTP files",
+        "typecheck": "full workspace PASS",
+        "lint": "full lint PASS with one pre-existing warning",
+        "architecture": "156 SQL tables + journal, 533 source files PASS",
+        "migrationCompat": "0056 archived47/48 native and runtime compatibility PASS",
+        "unity": "36 EditMode PASS; PlayMode 6 passed/2 pre-existing skipped at source 38a3a53",
+        "linuxPlayer": "Development player build PASS and Linux player test smoke PASS at source 38a3a53; not physical Windows qualification",
+        "hostedCi": "PENDING"
+      },
+      "workstreams": [
+        {
+          "taskId": "VL-176",
+          "commit": "b7356b9",
+          "state": "RUST_ENGINE_COMPLETE_NOT_API_WIRED",
+          "checks": [
+            "cargo fmt --all --check PASS",
+            "cargo clippy --all-targets -- -D warnings PASS",
+            "cargo test PASS",
+            "aetheria-pet-arena 58 tests PASS (14 arena8 unit + 10 integration)"
+          ],
+          "remaining": "Expose Arena8Engine through the native runtime/API and replace the Wave 1 action preview for the 8x8 loop."
+        },
+        {
+          "taskId": "VL-177",
+          "commit": "67d28a4",
+          "state": "BACKEND_AND_UNITY_SCREEN_LOCAL_PASS",
+          "checks": [
+            "Artifact domain 9/9 PASS",
+            "PostgreSQL/HTTP Artifact 13/13 PASS",
+            "migration 0056 native compat PASS",
+            "migration 0056 runtime compat PASS",
+            "platform-api build/typecheck PASS"
+          ],
+          "remaining": "Hosted CI and a full Unity-to-API live equip/upgrade/claim playthrough."
+        },
+        {
+          "taskId": "VL-178",
+          "commit": "8a2fcc7",
+          "state": "ROSTER_RECONCILED_OWNER_DECISIONS_OPEN",
+          "checks": [
+            "catalog 18/18 PASS",
+            "full unit 580/580 PASS",
+            "eslint/typecheck PASS"
+          ],
+          "remaining": "OD-1 candidate banner gate, OD-4 Solenne rights, OD-7 production authorization and OD-9 family map membership."
+        },
+        {
+          "taskId": "VL-179",
+          "commit": "8db5b66",
+          "state": "UNITY_SURFACES_COMPILED_TESTED_NOT_8X8_API_CONSUMER",
+          "checks": [
+            "Unity EditMode PASS",
+            "Unity PlayMode PASS",
+            "8x8 board test PASS",
+            "Artifact loadout screen compiles in the campaign UI"
+          ],
+          "remaining": "Consume committed Arena8 events/projections; current live API still exposes the frozen Wave 1 action loop."
+        },
+        {
+          "taskId": "VL-180",
+          "commit": "86551d0",
+          "state": "ICARUS_PREFAB_REBUILT_OTHER_M2_OPEN",
+          "checks": [
+            "Reviewed VRM modular prefab rebuilt through the canonical editor path",
+            "Unity EditMode Icarus prefab gate PASS after rebuild"
+          ],
+          "remaining": "Owner H-gate, reusable morphology intakes, two arena scenes and AudioMixer groups."
+        }
+      ],
+      "integratedLoop": {
+        "status": "PARTIAL",
+        "working": [
+          "Frozen Wave 1 local API/Unity loop",
+          "8x8 standalone Rust engine",
+          "Artifact backend + default-off routes + Unity loadout screen",
+          "Canonical 61-candidate roster"
+        ],
+        "missing": [
+          "Live 8x8 authoritative API/native runtime session",
+          "Unity consumption of Arena8 event stream",
+          "Full reward-to-Artifact-to-next-match 8x8 E2E",
+          "Human playtest/balance"
+        ]
+      },
+      "ownerDecisions": [
+        "OD-1 candidate banner/summon",
+        "OD-3 Jaderyx display name",
+        "OD-4 Solenne rights",
+        "OD-5 power-class ladder",
+        "OD-6 31 concept approvals",
+        "OD-7 model/rig/animation production",
+        "OD-9 family map membership"
+      ]
+    },
+    "milestones": [
+      {
+        "id": "M0",
+        "title": "MVP scope, rules and catalog reconciliation",
+        "objective": "One authoritative 8x8 ruleset, canonical 55/61 roster and an explicit deferred list.",
+        "exitCriteria": [
+          "8x8 ruleset version and frozen-compatibility boundary documented",
+          "55 canonical Pets and six gated Off-rate candidates reconciled",
+          "M1–M6 dependency graph and active backlog agree"
+        ]
+      },
+      {
+        "id": "M1",
+        "title": "Playable combat and progression",
+        "objective": "Executable 8x8 Rust combat plus Artifact progression loop and authoritative settlement.",
+        "exitCriteria": [
+          "Deterministic 8x8 replay and typed events pass tests",
+          "Artifact inventory/equip/upgrade persist with authorization and idempotency",
+          "Reward and loadout snapshots are server-authored"
+        ]
+      },
+      {
+        "id": "M2",
+        "title": "Character, environment, audio and visual foundations",
+        "objective": "Icarus game-ready path, reusable morphology intakes, Fire/Water arenas and mixer/VFX foundation.",
+        "exitCriteria": [
+          "Icarus stages advanced to the next owner gate",
+          "Reusable humanoid/quadruped/avian/serpent/floating intakes exist",
+          "Two functioning arena scenes and audio groups exist"
+        ]
+      },
+      {
+        "id": "M3",
+        "title": "Integrated playable vertical slice",
+        "objective": "Exercise the existing packaged Unity executable with four authenticated accounts from guest login and Central Plaza through cooperative Fire and Water PvE, durable progression and restart recovery.",
+        "exitCriteria": [
+          "Real movement, portals, room creation and joining, legal four-seat combat and victory, return to Central Plaza and Fire-to-Water progression pass in a built Linux player.",
+          "Unity renders committed cooperative state. PostgreSQL, Nest and Rust preserve the pinned configuration and settle awards once across reconnect, retry and restart.",
+          "Representative developer assets are sufficient for automated acceptance. Human playtesting and final content use separate M5 and M4 gates."
+        ]
+      },
+      {
+        "id": "M4",
+        "title": "Full MVP content production",
+        "objective": "Complete the 55 active Pets, six maps and approved art/audio content.",
+        "exitCriteria": [
+          "Record each stage for 55 active Pets and six production maps with regular and Boss encounters using actual owner-accepted production assets, Unity admission, rendered review and rights receipts.",
+          "Icarus, six Dragons and six Birds retain approved identities. The six Off-rate candidates remain gated until an explicit acquisition decision.",
+          "Admin authors the supported catalog, economy, acquisition, Artifact and independent Skill Level configuration through typed engine validation."
+        ]
+      },
+      {
+        "id": "M5",
+        "title": "Human playtesting, balance and polish",
+        "objective": "Measured fun, clarity, accessibility and balance with human players.",
+        "exitCriteria": [
+          "Human playtest evidence and balance decisions",
+          "No unapproved candidate values promoted silently",
+          "Reduced-motion/accessibility acceptance",
+          "A four-human cooperative session is recorded with consent and attributable observations. Public-information simulation covers all six elements and owner approval pins the release balance digest."
+        ]
+      },
+      {
+        "id": "M6",
+        "title": "Windows qualification and closed-beta readiness",
+        "objective": "Exact Windows build, graphics/hardware qualification, signing and release gates.",
+        "exitCriteria": [
+          "Physical Windows qualification",
+          "Release/legal/privacy/signing approvals",
+          "OFFLINE_ONLY / NO_GO_PUBLIC can be lifted only by explicit owner release authorization",
+          "Installer, update, rollback, backup/restore, security and load pass for the release candidate. Official preview, privacy, consent and atomic 5,000-capacity double opt-in pass before release authorization."
+        ]
+      }
+    ],
+    "canonicalScope": {
+      "elements": [
+        "fire",
+        "water",
+        "electric",
+        "ghost",
+        "ground",
+        "light"
+      ],
+      "maps": [
+        "Cinder Terraces",
+        "Tideglass Lagoon",
+        "Stormcoil Fields",
+        "Lantern Necropolis",
+        "Ochre Labyrinth",
+        "Dawn Prism Sanctum"
+      ],
+      "powerClasses": {
+        "dragons": "S",
+        "birds": "A",
+        "note": "Presentation power class is separate from gameplay stats, acquisition source and summon rarity."
+      },
+      "artifactSlots": [
+        "Core",
+        "Aegis",
+        "Rune"
+      ],
+      "artifactRankLevels": {
+        "D": 1,
+        "C": 10,
+        "B": 20,
+        "A": 40,
+        "S": 60
+      }
+    },
+    "deferredScope": {
+      "limitedS": [
+        "Glaciemora",
+        "Voltaris",
+        "Noctalith",
+        "Sylvaris",
+        "Leviara"
+      ],
+      "maps": 19,
+      "catalog": 240,
+      "systems": [
+        "permanent fusion",
+        "PvP ranked",
+        "weekly bosses",
+        "social world",
+        "Maid Café",
+        "Card Lounge",
+        "mobile/macOS"
+      ],
+      "rule": "Deferred features retain design history and task IDs; they are not implementation or qualification dependencies of the MVP."
+    },
+    "governance": {
+      "plan": "config/development-plan.json",
+      "statusCommand": "pnpm plan:status",
+      "waveRule": "Every future wave names its milestone, file-owned workstreams, integration owner and measurable acceptance.",
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+    },
+    "waveC2Record": {
       "id": "WAVE-C2",
       "title": "Authoritative Arena8 integration and independent progression",
       "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
@@ -393,275 +719,6 @@
         "No five additional Limited S, 19 maps, 240-Pet catalog, permanent fusion, PvP or social-world dependency in MVP.",
         "No public release, purchases, production deployment or signing."
       ]
-    },
-    "waveCVerification": {
-      "status": "IN_PROGRESS_MANDATORY_M3_NOT_MET",
-      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-      "codeRevision": "b35fa8a41bd930e5281c2d73daac65c41bdeb08e",
-      "completed": {
-        "governance": "VL-182 and M4 acceptance no longer treat a readiness field or manifest entry as production; mvpProgram.contentReadiness records the separate per-stage counts",
-        "sceneRegistry": "one canonical ProjectScenes registry feeds EditorBuildSettings and BuildPlayerOptions.scenes so a built player cannot omit a required scene",
-        "combatProgression": "FINAL OWNER DECISION supersedes PR83 level locks: every active Pet has its complete authored skill set from Lv1; a non-Icarus Pet cannot use FIRE_ZONE; Mana/Rage/cooldown/phase/ownership remain authoritative. Skill Level is bounded effectiveness, not an unlock gate.",
-        "worldHarness": "fixed the Wave B world-capture player path so the built player is spawned from the actual Linux build output"
-      },
-      "worldEvidence": {
-        "command": "UNITY_EDITOR=<pinned 6000.3.14f1> node scripts/unity-validate.mjs world",
-        "result": "PASS",
-        "player": "apps/unity-client/Builds/Linux/Aetheria (Linux development player, OpenGLCore, AMD Renoir)",
-        "scenes": ["CentralPlaza", "CinderTerraces", "TideglassLagoon"],
-        "boards": "64 visible tiles rendered in CinderTerraces and TideglassLagoon",
-        "transitions": "CentralPlaza -> CinderTerraces | CinderTerraces -> CentralPlaza | CentralPlaza -> TideglassLagoon",
-        "screenshots": 5
-      },
-      "notMet": [
-        "No authenticated arena8-pve allocator in the Nest control plane and no multi-match lifecycle",
-        "Arena8 campaign EXP/coin/recruitment/map-clear/Artifact settlement is not connected",
-        "Unity still defaults to the frozen Wave 1 compatibility campaign; no committed arena8.intent.v1/arena8.view.v1 client",
-        "The mandatory M3 integrated player loop has not executed"
-      ]
-    },
-    "waveAVerification": {
-      "sourceRevision": "38a3a536b096b2449e77aa04296da74854c9234f",
-      "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
-      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-      "fullGates": {
-        "rust": "cargo fmt --all --check, cargo clippy --all-targets -- -D warnings and cargo test PASS",
-        "unit": "580/580 PASS",
-        "integration": "867/867 PASS across 71 real PostgreSQL/HTTP files",
-        "typecheck": "full workspace PASS",
-        "lint": "full lint PASS with one pre-existing warning",
-        "architecture": "156 SQL tables + journal, 533 source files PASS",
-        "migrationCompat": "0056 archived47/48 native and runtime compatibility PASS",
-        "unity": "36 EditMode PASS; PlayMode 6 passed/2 pre-existing skipped at source 38a3a53",
-        "linuxPlayer": "Development player build PASS and Linux player test smoke PASS at source 38a3a53; not physical Windows qualification",
-        "hostedCi": "PENDING"
-      },
-      "workstreams": [
-        {
-          "taskId": "VL-176",
-          "commit": "b7356b9",
-          "state": "RUST_ENGINE_COMPLETE_NOT_API_WIRED",
-          "checks": [
-            "cargo fmt --all --check PASS",
-            "cargo clippy --all-targets -- -D warnings PASS",
-            "cargo test PASS",
-            "aetheria-pet-arena 58 tests PASS (14 arena8 unit + 10 integration)"
-          ],
-          "remaining": "Expose Arena8Engine through the native runtime/API and replace the Wave 1 action preview for the 8x8 loop."
-        },
-        {
-          "taskId": "VL-177",
-          "commit": "67d28a4",
-          "state": "BACKEND_AND_UNITY_SCREEN_LOCAL_PASS",
-          "checks": [
-            "Artifact domain 9/9 PASS",
-            "PostgreSQL/HTTP Artifact 13/13 PASS",
-            "migration 0056 native compat PASS",
-            "migration 0056 runtime compat PASS",
-            "platform-api build/typecheck PASS"
-          ],
-          "remaining": "Hosted CI and a full Unity-to-API live equip/upgrade/claim playthrough."
-        },
-        {
-          "taskId": "VL-178",
-          "commit": "8a2fcc7",
-          "state": "ROSTER_RECONCILED_OWNER_DECISIONS_OPEN",
-          "checks": [
-            "catalog 18/18 PASS",
-            "full unit 580/580 PASS",
-            "eslint/typecheck PASS"
-          ],
-          "remaining": "OD-1 candidate banner gate, OD-4 Solenne rights, OD-7 production authorization and OD-9 family map membership."
-        },
-        {
-          "taskId": "VL-179",
-          "commit": "8db5b66",
-          "state": "UNITY_SURFACES_COMPILED_TESTED_NOT_8X8_API_CONSUMER",
-          "checks": [
-            "Unity EditMode PASS",
-            "Unity PlayMode PASS",
-            "8x8 board test PASS",
-            "Artifact loadout screen compiles in the campaign UI"
-          ],
-          "remaining": "Consume committed Arena8 events/projections; current live API still exposes the frozen Wave 1 action loop."
-        },
-        {
-          "taskId": "VL-180",
-          "commit": "86551d0",
-          "state": "ICARUS_PREFAB_REBUILT_OTHER_M2_OPEN",
-          "checks": [
-            "Reviewed VRM modular prefab rebuilt through the canonical editor path",
-            "Unity EditMode Icarus prefab gate PASS after rebuild"
-          ],
-          "remaining": "Owner H-gate, reusable morphology intakes, two arena scenes and AudioMixer groups."
-        }
-      ],
-      "integratedLoop": {
-        "status": "PARTIAL",
-        "working": [
-          "Frozen Wave 1 local API/Unity loop",
-          "8x8 standalone Rust engine",
-          "Artifact backend + default-off routes + Unity loadout screen",
-          "Canonical 61-candidate roster"
-        ],
-        "missing": [
-          "Live 8x8 authoritative API/native runtime session",
-          "Unity consumption of Arena8 event stream",
-          "Full reward-to-Artifact-to-next-match 8x8 E2E",
-          "Human playtest/balance"
-        ]
-      },
-      "ownerDecisions": [
-        "OD-1 candidate banner/summon",
-        "OD-3 Jaderyx display name",
-        "OD-4 Solenne rights",
-        "OD-5 power-class ladder",
-        "OD-6 31 concept approvals",
-        "OD-7 model/rig/animation production",
-        "OD-9 family map membership"
-      ]
-    },
-    "milestones": [
-      {
-        "id": "M0",
-        "title": "MVP scope, rules and catalog reconciliation",
-        "status": "IN_PROGRESS",
-        "objective": "One authoritative 8x8 ruleset, canonical 55/61 roster and an explicit deferred list.",
-        "exitCriteria": [
-          "8x8 ruleset version and frozen-compatibility boundary documented",
-          "55 canonical Pets and six gated Off-rate candidates reconciled",
-          "M1–M6 dependency graph and active backlog agree"
-        ]
-      },
-      {
-        "id": "M1",
-        "title": "Playable combat and progression",
-        "status": "IN_PROGRESS",
-        "objective": "Executable 8x8 Rust combat plus Artifact progression loop and authoritative settlement.",
-        "exitCriteria": [
-          "Deterministic 8x8 replay and typed events pass tests",
-          "Artifact inventory/equip/upgrade persist with authorization and idempotency",
-          "Reward and loadout snapshots are server-authored"
-        ]
-      },
-      {
-        "id": "M2",
-        "title": "Character, environment, audio and visual foundations",
-        "status": "IN_PROGRESS",
-        "objective": "Icarus game-ready path, reusable morphology intakes, Fire/Water arenas and mixer/VFX foundation.",
-        "exitCriteria": [
-          "Icarus stages advanced to the next owner gate",
-          "Reusable humanoid/quadruped/avian/serpent/floating intakes exist",
-          "Two functioning arena scenes and audio groups exist"
-        ]
-      },
-      {
-        "id": "M3",
-        "title": "Integrated playable vertical slice",
-        "status": "TODO",
-        "objective": "One signed-out local loop from account/Pet selection through a real 8x8 battle, Artifact reward/equip and restart recovery.",
-        "exitCriteria": [
-          "Unity consumes committed gameplay events only",
-          "Artifact stat change is observable in a later match",
-          "Restart, duplicate and unauthorized paths fail closed"
-        ]
-      },
-      {
-        "id": "M4",
-        "title": "Full MVP content production",
-        "status": "TODO",
-        "objective": "Complete the 55 active Pets, six maps and approved art/audio content.",
-        "exitCriteria": [
-          "Every active identity records an explicit per-stage production state; a missing asset remains an explicit missing/not-produced status and is never implied by a readiness flag, manifest entry or developer substitute",
-          "Every mvpProgram.contentReadiness stage is met by an actual owner-accepted, rights-cleared production asset, reported as a count per stage rather than a boolean readiness field",
-          "Six maps playable",
-          "Five additional Limited S and 19-map/240-Pet expansion remain deferred"
-        ]
-      },
-      {
-        "id": "M5",
-        "title": "Human playtesting, balance and polish",
-        "status": "TODO",
-        "objective": "Measured fun, clarity, accessibility and balance with human players.",
-        "exitCriteria": [
-          "Human playtest evidence and balance decisions",
-          "No unapproved candidate values promoted silently",
-          "Reduced-motion/accessibility acceptance"
-        ]
-      },
-      {
-        "id": "M6",
-        "title": "Windows qualification and closed-beta readiness",
-        "status": "TODO",
-        "objective": "Exact Windows build, graphics/hardware qualification, signing and release gates.",
-        "exitCriteria": [
-          "Physical Windows qualification",
-          "Release/legal/privacy/signing approvals",
-          "OFFLINE_ONLY / NO_GO_PUBLIC can be lifted only by explicit owner release authorization"
-        ]
-      }
-    ],
-    "canonicalScope": {
-      "elements": [
-        "fire",
-        "water",
-        "electric",
-        "ghost",
-        "ground",
-        "light"
-      ],
-      "maps": [
-        "Cinder Terraces",
-        "Tideglass Lagoon",
-        "Stormcoil Fields",
-        "Lantern Necropolis",
-        "Ochre Labyrinth",
-        "Dawn Prism Sanctum"
-      ],
-      "powerClasses": {
-        "dragons": "S",
-        "birds": "A",
-        "note": "Presentation power class is separate from gameplay stats, acquisition source and summon rarity."
-      },
-      "artifactSlots": [
-        "Core",
-        "Aegis",
-        "Rune"
-      ],
-      "artifactRankLevels": {
-        "D": 1,
-        "C": 10,
-        "B": 20,
-        "A": 40,
-        "S": 60
-      }
-    },
-    "deferredScope": {
-      "limitedS": [
-        "Glaciemora",
-        "Voltaris",
-        "Noctalith",
-        "Sylvaris",
-        "Leviara"
-      ],
-      "maps": 19,
-      "catalog": 240,
-      "systems": [
-        "permanent fusion",
-        "PvP ranked",
-        "weekly bosses",
-        "social world",
-        "Maid Café",
-        "Card Lounge",
-        "mobile/macOS"
-      ],
-      "rule": "Deferred features retain design history and task IDs; they are not implementation or qualification dependencies of the MVP."
-    },
-    "governance": {
-      "plan": "config/development-plan.json",
-      "statusCommand": "pnpm plan:status",
-      "waveRule": "Every future wave names its milestone, file-owned workstreams, integration owner and measurable acceptance.",
-      "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
     }
   },
   "tasks": [
@@ -814,7 +871,10 @@
           ],
           "remaining": "Complete hosted Quality and Rust against the final PR head before merge. Retain prior failed runs; no production or task-wide acceptance is inferred."
         }
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-169",
@@ -848,7 +908,10 @@
           "exitCode": 0,
           "result": "Hosted Rust43995822683 SUCCESS at exact final head; actual transactional recovery, encrypted journal backup/restored migration integrity, runtime crash recovery and Pet Arena recovery/settlement steps SUCCESS. PR36 Quality43995822670 attempt2 also SUCCESS. This audits executed hosted evidence; no new local recovery execution or privacy-policy approval claimed."
         }
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-170",
@@ -1055,7 +1118,11 @@
         "mainIntegration": "Merged current main532f255 cleanly after the first fully green hosted run. A fresh Quality/Rust run on the resulting PR head is required before merge.",
         "limitations": "No live S3/Tigris credentials, endpoint or upload was used. Provider compatibility, private bucket configuration, migration of tracked legacy bytes and CLI pull-back through the managed cache remain pending. The binary gate verifies committed Git additions only; it does not infer media rights.",
         "remaining": "VL-170 remains IN_PROGRESS for real private object ingest/binding, signed preview delivery, correction/retention policy and provider/art acceptance. VL-172, Rust gameplay defaults and legacy RoomAuthority were not changed."
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Prepare fail-closed private art delivery to Cloudflare R2 and t3.storage.dev using the existing Node stack; retain additive journaled media metadata, RBAC ingest, signed preview access and provenance as follow-up scope."
     },
     {
       "id": "VL-171",
@@ -1875,7 +1942,11 @@
         },
         "remaining": "Retopologize separate fingers/feather articulation, resolve cross-view construction, author actual74-bone rig/actions before Unity acceptance. Five other Limited held for owner designs. No source/CI acceptance promotes art."
       }
-    }
+    },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Produce the first Limited S end-to-end from kit references, preserving canonical identity and FIRE_ZONE semantics; contributes to VL-149, not the Standard S roster."
     },
     {
       "id": "VL-172",
@@ -1909,7 +1980,11 @@
           "limitations": "Planning restriction only; no new character designs, assets, runtime implementation or production acceptance. Exact final-head hosted CI is required before merge."
         },
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Replicate the accepted Icarus pipeline for Glaciemora, Voltaris, Noctalith, Sylvaris and Leviara with distinct silhouettes, rigs, opcodes, audio and motion."
     },
     {
       "id": "VL-173",
@@ -1925,7 +2000,11 @@
       "acceptance": ["Aetheria: SoulBound branding with approved reference direction, responsive VI/EN showcase, accessible media and reduced motion", "Signed private preview media with truthful missing-media fallbacks; concepts are labeled as concepts", "Registration stays closed or approval-gated; no invented founder counts/rewards, payment or live gacha", "Actual desktop/mobile browser tests and screenshots plus complete exact-source hosted CI"],
       "status": "TODO",
       "qualificationRequirements": ["Rights and human art acceptance before publication"],
-      "implementation": {"release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {"release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"},
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Integrate the kit aesthetic and six-Pet showcase into portal-web using existing routes and auth/privacy conventions."
     },
     {
       "id": "VL-174",
@@ -1945,7 +2024,11 @@
       "acceptance": ["Actual replay/reconnect/duplicate-receipt, economy and abuse tests pass across Nest/Rust/PostgreSQL/Unity", "Final asset hashes, source SHA, actual CI and remaining human/hardware acceptance are recorded", "NO_GO_PUBLIC remains enforced; Pet Arena PvE precedes new Lodge gameplay and mobile remains conditional"],
       "status": "TODO",
       "qualificationRequirements": ["Consented human playtests, retention/deletion decisions and separate release qualification"],
-      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"}
+      "implementation": {"release": "OFFLINE_ONLY / NO_GO_PUBLIC"},
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Verify 10x10 Pet Arena, capture, six Limited presentations, private media and shared awakening/economy without authorizing a public release."
     },
     {
       "id": "VL-001",
@@ -1993,7 +2076,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-001-revision2.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-002",
@@ -2032,7 +2119,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-002.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-003",
@@ -2080,7 +2171,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-003.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-004",
@@ -2148,7 +2243,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-004.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-005",
@@ -2210,7 +2309,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-005.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-006",
@@ -2230,7 +2333,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Original or licensed production brand assets and owner rights review"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Convert logo/key-art concept into owner-approved style sheet and source asset checklist."
     },
     {
       "id": "VL-007",
@@ -2255,7 +2363,12 @@
         "capabilityMatrix": "config/native-qualification.json",
         "baselineCommand": "node scripts/linux-baseline.mjs",
         "remainingQualification": "EXTERNAL_QUALIFICATION_BLOCKER; see per-gate resource, procedure and evidence fields"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Define physical Windows device tier matrix, GPU perf routes/driver logging, plus separate official-site Core Web Vitals instrumentation."
     },
     {
       "id": "VL-008",
@@ -2295,7 +2408,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-008.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-009",
@@ -2335,7 +2452,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-009.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-010",
@@ -2381,7 +2502,11 @@
           "buildManifest": "artifacts/linux-player/5e918b86004d/build-manifest.json",
           "scope": "One 32m developer blockout with capsule, cafe placeholder, Arena entrance and local activity; no production or Windows qualification"
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-011",
@@ -2402,7 +2527,12 @@
         "One-page decision shows native URP suitability and web teaser not on game critical path"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Run compiled Windows Unity anime-stylized shader test on named GPU against original art; preserve web renderer optional as N06 compatibility."
     },
     {
       "id": "VL-012",
@@ -2489,7 +2619,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-012.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-013",
@@ -2565,7 +2699,11 @@
         ],
         "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-013-single-agent-v1.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-014",
@@ -2584,7 +2722,12 @@
         "Repeatable profiler and server tick load harness outputs real data fields, no synthetic values promoted"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Instrument compiled Windows player and Rust session baseline separately; record cold/warm load, shader hitch, p95/p99, VRAM, tick overrun, reconnection."
     },
     {
       "id": "VL-015",
@@ -2663,7 +2806,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-015.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-016",
@@ -2726,7 +2873,11 @@
         ],
         "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-016-single-agent-v5.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-017",
@@ -2807,7 +2958,11 @@
         ],
         "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-017-single-agent-v1.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-018",
@@ -2868,7 +3023,11 @@
         "reward": "Nonmonetary completion marker for the terminal command actor; Pet Arena eligibility remains VL-047",
         "worker": "Native-only consumer supported through NATIVE_REWARD_POLICY_FILE",
         "platformLedger": "platform_native_reward_inbox and platform_native_reward_ledger"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-019",
@@ -2950,7 +3109,11 @@
         ],
         "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-019-single-agent-v1.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-020",
@@ -3005,7 +3168,11 @@
           "artifacts/native-verification/runtime-facts.json"
         ],
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-021",
@@ -3061,7 +3228,11 @@
           "artifacts/native-verification/runtime-facts.json"
         ],
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-022",
@@ -3143,7 +3314,11 @@
         ],
         "reviewMode": "SINGLE_AGENT_SEQUENTIAL_AUDIT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-022-single-agent-v1.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-023",
@@ -3204,7 +3379,11 @@
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only.",
         "decision": "PASS_LINUX_SYNTHETIC_HEADLESS",
         "remainingQualification": "Unity client execution and all physical Windows, rights, signing and release gates remain on their own tasks."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-024",
@@ -3244,6 +3423,10 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023"
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
     },
     {
@@ -3265,7 +3448,12 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Create production-candidate original cat/fox parts for one shared body rig."
     },
     {
       "id": "VL-026",
@@ -3283,7 +3471,12 @@
         "no unreviewed clipping on sit/drink"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Produce 12+ facial expressions and 8–12 emotes on approved pilot character."
     },
     {
       "id": "VL-027",
@@ -3305,7 +3498,12 @@
         "Native district asset streaming/LOD and measured size/GPU budget; optional portal web-lite fallback remains separately qualified"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Implement compiled Windows Unity URP plaza native scene, asset streaming and LOD budget; Three.js is optional prior-art adapter."
     },
     {
       "id": "VL-028",
@@ -3519,7 +3717,12 @@
             "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
           }
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Validate speed/nav bounds/proximity, per actor reconciliation and area interest."
     },
     {
       "id": "VL-029",
@@ -3539,7 +3742,12 @@
         "input latency, pause, scroll, alt-tab, focus handled"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "WASD, mouse/gamepad, motion sensitivity, M key focus policy, Rust-authorized move with local smoothing and click-to-move override."
     },
     {
       "id": "VL-030",
@@ -3562,7 +3770,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "N06-07 creator compatibility verified in source"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Editable, entitlement-scoped anthro avatar looks with face/ear/tail animation preview; shared source rig no character duplication."
     },
     {
       "id": "VL-031",
@@ -3581,7 +3794,12 @@
         "mobile map icon + keyboard navigation pass"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Unity M-map main screen, input focus, original city map art and safe semantic POI preview; no free client coordinate teleport."
     },
     {
       "id": "VL-032",
@@ -3601,7 +3819,12 @@
         "interactive NPC separated from cosmetic loops"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Render client-only trees/wind/ambient crowd; Rust-owned interactive NPC goals; batch/LOD and day/night animation budgets."
     },
     {
       "id": "VL-033",
@@ -3626,7 +3849,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "N06-09 web gate before integrated acceptance"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Test city/camera/avatar/animation on actual Windows PCs with profiles, frame hitches, facial and outfit clipping; no web 3D parity requirement."
     },
     {
       "id": "VL-034",
@@ -3648,7 +3876,12 @@
         "source-bound performance report and art signoff"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Coordinator certifies one district and safe Rust-authoritative movement/interactions using native Windows player."
     },
     {
       "id": "VL-035",
@@ -3734,7 +3967,12 @@
             "note": "Quality core-checks failed in scripts/verify-infra.mjs before lint/application tests; hosted log only reports infrastructure validation failure. Rust format/check/Clippy/tests and generated bindings passed; later Rust jobs were still running when checked. No green CI claim. Final metadata commit requires its own hosted checks before merge."
           }
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Versioned map POI and scoped access/capacity/private status."
     },
     {
       "id": "VL-036",
@@ -3759,7 +3997,12 @@
         "remainingAcceptance": "VL-028 peer policy integration and VL-035 authenticated runtime destination provider remain incomplete. Preserve the implementation dependency gate; subsequent Rust saga must coordinate allowlisted target holds, source release, epochs, duplicate clicks, cancellation and restart rollback without writing legacy rooms.",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "auditSourceRevision": "0672c80e01208a18fed6d47a8ff944cb3872e8b7"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Rust owns allowlisted target hold, source release, epoch fencing, safe rollback."
     },
     {
       "id": "VL-037",
@@ -3780,7 +4023,12 @@
         "client only moves after authoritative receipt"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Full POI map with place images and explicit Navigate vs Teleport; client preloads target only after Rust reservation."
     },
     {
       "id": "VL-038",
@@ -3802,7 +4050,12 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-026"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Produce Café Lumi interior with 4 seat anchors, appropriate camera/sit alignment."
     },
     {
       "id": "VL-039",
@@ -3823,7 +4076,12 @@
         "disconnect/block/account-switch cleanup and TTL proven"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Implement proximity/enter/reserve/sit/stand/forfeit and exclusive seat lease."
     },
     {
       "id": "VL-040",
@@ -3845,7 +4103,12 @@
         "network unknown state resumes correctly"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Café scene transition, camera, hand/seat IK with Rust hold/commit and optional game overlay; handle failure gracefully."
     },
     {
       "id": "VL-041",
@@ -3865,7 +4128,12 @@
         "2-player complete round+restart, hidden hand test, old journal fixture unchanged"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Implement one small ruleset and route original N15 journal compatibility, no secret spectator projection."
     },
     {
       "id": "VL-042",
@@ -3885,7 +4153,12 @@
         "forfeit/abort one receipt, no phantom continuation"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Invite/ready/decline/timeout, owner seat checks and match-reconnect, spectator policy."
     },
     {
       "id": "VL-043",
@@ -3928,6 +4201,10 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-023"
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
     },
     {
@@ -3967,7 +4244,11 @@
         ],
         "reviewNotes": "192 pet/stage/seed full matches replay identically with both win/loss outcomes; eight skills, committed AI patterns, cooldown/status order and 60-turn loss cap covered. New-process checkpoint restart matches frozen state/audit hashes and entropy cursor. Invalid actions, stale version, wrong seed, malformed/incompatible snapshots and dead boards fail safely. No Pet Arena route, database adapter, reward, Unity E2E or balance certification claimed. Hosted exact-head CI is required before merge."
       },
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-045",
@@ -3986,7 +4267,12 @@
         "damage FX driven by canonical event IDs"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Small Pet lobby, arena summon pad, 3 hero Pet representations and canonical attack FX; share the v2 animation/provenance contract with VL-121 and the six-hero/boss expansion in VL-123."
     },
     {
       "id": "VL-046",
@@ -4007,7 +4293,12 @@
         "Reduced motion works in the native player; web-lite gameplay remains separately qualified"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Move into Pet Arena from city then overlay tactical match-3 + Pet animation/VFX in Unity; Rust computes results. Preserve this integrated native scope while VL-122 implements the reusable v2 battle surface independently of full city streaming."
     },
     {
       "id": "VL-047",
@@ -4116,7 +4407,11 @@
           "artifacts/pet-verification/native.json"
         ],
         "reviewNotes": "Actual Rust process with restricted TLS PostgreSQL and Nest HTTPS/WSS admission; 26 scenarios each for a winning and losing PvE match. Invalid swap/action/reward payload, stale version/epoch, wrong actor and private view rejected; exact mid-match and terminal SIGKILL recovery; current account/incident eligibility; forged/mismatched/stale outcome rejection; deferred worker commit crash, concurrent delivery, inbox dedupe and reconciled own receipt. Shared Host and legacy RoomAuthority preserved. Full standalone adapter and synthetic orchestration regressions pass. Hosted exact-head Quality/Rust CI remains required before merge."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-048",
@@ -4137,7 +4432,12 @@
         "teleport and game state one writer each"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "E2E native two-player seat/private game and Pet Arena transition with teleport, reconnect, ledger settlement, no duplicate rewards."
     },
     {
       "id": "VL-049",
@@ -4155,7 +4455,12 @@
         "no legacy plan status fabricated"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Sign complete world+game slice with ticket/actor/DB receipts and real web demo."
     },
     {
       "id": "VL-050",
@@ -4179,7 +4484,12 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-049"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Runtime enforces current platform safety generation at command and recipient projection."
     },
     {
       "id": "VL-051",
@@ -4198,7 +4508,12 @@
         "no OOM, sustainable degraded tier and resource report"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Run defined city activities for 30 min across desktop and mobile web tier."
     },
     {
       "id": "VL-052",
@@ -4217,7 +4532,12 @@
         "asset provenance verified before release"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Repair clothing/tail/ears/fur, lighting, VFX/readability in day/evening and café."
     },
     {
       "id": "VL-053",
@@ -4236,7 +4556,12 @@
         "contrast/scale & 16:9, 19.5:9, portrait fallback report"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Font/contrast/control focus/reduced motion, controller mapping and Vietnamese/English for map/chat/card/pet interfaces."
     },
     {
       "id": "VL-054",
@@ -4255,7 +4580,12 @@
         "backlog prioritized, no simulated playtest claims"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Observe player first-play, map discovery, cafe sitting and Pet Arena, track confusion. Reuse consented Pet progression/upgrade-odds/fairness playtests from VL-125 without treating simulations as human fun acceptance."
     },
     {
       "id": "VL-055",
@@ -4277,7 +4607,6 @@
       "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "qualificationDependencies": [
-        "VL-041",
         "VL-050"
       ],
       "implementation": {
@@ -4409,7 +4738,11 @@
           ],
           "remaining": "The lifecycle acceptance stays open. The final PR head requires green hosted Quality and Rust before merge."
         }
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Restore game schema and legacy Lodge encrypted history under account privacy."
     },
     {
       "id": "VL-056",
@@ -4430,7 +4763,12 @@
         "no black screen on unsupported GPUs"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Profile and polish shaders, eyes/hair/fur, scene streaming hitches, indoor lighting, low/medium/ultra visual degradation."
     },
     {
       "id": "VL-057",
@@ -4449,7 +4787,12 @@
         "finding register and zero unmitigated CRITICAL"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Threat automation: counterfeit tickets, replay, colluding game clients, spam, content mismatch."
     },
     {
       "id": "VL-058",
@@ -4480,7 +4823,12 @@
       "qualificationRequirements": [
         "N06-09 web qualification verified",
         "human art/UX review"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Sign off Rust authority correctness, Unity compiled performance/safety and signed Windows release flow with official site."
     },
     {
       "id": "VL-059",
@@ -4501,7 +4849,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "owner activates native workstream"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. After Windows gate, review actual demand, Apple hardware/accounts, Android physical devices and native cross-platform scope."
     },
     {
       "id": "VL-060",
@@ -4522,7 +4875,12 @@
         "no native gameplay authority/damage duplication"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Use pinned existing Windows Unity project/rig/proto and renderer tiers for real macOS or mobile build pilots; do not duplicate engine."
     },
     {
       "id": "VL-061",
@@ -4542,7 +4900,12 @@
         "per-platform LOD budgets exposed"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Verify subset of Windows-approved facial/rig, content bundles and quality tier on activated macOS/mobile platform."
     },
     {
       "id": "VL-062",
@@ -4564,7 +4927,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "physical Android device and owner authorization"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Adapt gameplay input and URP quality for actual Android devices; only after G5 approval."
     },
     {
       "id": "VL-063",
@@ -4585,7 +4953,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Mac/Xcode/Apple team/iPhone resources"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Compile and profile real iPhone iOS Unity build with consent and entitlements; no claim based on emulator."
     },
     {
       "id": "VL-064",
@@ -4606,7 +4979,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "N10/N11/N14 original release approval"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Evaluate activated port quality and business need; Windows launch remains independent."
     },
     {
       "id": "VL-065",
@@ -4944,7 +5322,12 @@
           ],
           "scope": "Actual Chromium reproduction rejects HH:mm:00 because datetime-local normalizes to HH:mm. Fixture now uses canonical minute values and checks every stored schedule timestamp. No product behavior or assertion removed. Hosted final-head Quality/Rust required before merge."
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Use existing Argo/GHCR tooling, readiness, WSS draining and safe migrations."
     },
     {
       "id": "VL-066",
@@ -4963,7 +5346,12 @@
         "security signoff, compliant retention and no exposed internal endpoints"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Verify mTLS/internal identity, secrets, CSP/WSS ingress, abuse and data deletion path."
     },
     {
       "id": "VL-067",
@@ -4982,7 +5370,12 @@
         "no double membership/currency/hidden info loss"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Kill workloads, force backup restore and rollback under versions/active games."
     },
     {
       "id": "VL-068",
@@ -5002,7 +5395,12 @@
         "no score/currency client authority"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Implement small cafe festival + cosmetic achievement loop with anti-pay-to-win gating. Reuse immutable event catalogs, authoritative schedules and settlement for Pet seasons in VL-119; keep the existing cafe scope and dependencies."
     },
     {
       "id": "VL-069",
@@ -5022,7 +5420,12 @@
         "unknowns listed no false approvals"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Confirm brand/trademark/rights, privacy/moderation/support, stable website/download funnel, signed release and legal obligations."
     },
     {
       "id": "VL-070",
@@ -5046,13 +5449,18 @@
       "status": "TODO",
       "qualificationRequirements": [
         "staging/hosting credentials and human beta consent"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Canary users install signed Windows client from official site, play Rust game, safely rollback service/asset/client version."
     },
     {
       "id": "VL-071",
       "mvpMilestone": "M4",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
       "feature": "Rust-Game-Core",
       "title": "Zone lease/epoch model for multiple owners",
       "objective": "Implement fenced instance directory and takeover on observed scale need.",
@@ -5068,13 +5476,19 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-070"
-      ]
+      ],
+      "deferredExpansion": "Multi-owner scale follows demonstrated scale need outside the cooperative MVP.",
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Implement fenced instance directory and takeover on observed scale need."
     },
     {
       "id": "VL-072",
       "mvpMilestone": "M1",
       "mvpCriticalPath": false,
-      "mvpScope": "MVP",
+      "mvpScope": "DEFERRED_EXPANSION",
       "feature": "Persistence-Security",
       "title": "Legacy RoomAuthority Rust cutover pilot",
       "objective": "Migrate **one** legacy world with full travel/seat/safety and journal compatible adapter.",
@@ -5089,7 +5503,13 @@
       "status": "TODO",
       "qualificationRequirements": [
         "owner approves legacy cutover ADR"
-      ]
+      ],
+      "deferredExpansion": "Nest RoomAuthority remains the legacy writer during the cooperative MVP. A later cutover requires a separate owner-approved ADR.",
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Migrate **one** legacy world with full travel/seat/safety and journal compatible adapter."
     },
     {
       "id": "VL-073",
@@ -5099,16 +5519,18 @@
       "feature": "QA-SRE",
       "title": "Scale capacity tests and autoscaling decision",
       "objective": "Benchmark 2+ owner workloads, AOI fanout, persistence and routing costs.",
-      "dependsOn": [
-        "VL-071",
-        "VL-072"
-      ],
+      "dependsOn": [],
       "acceptance": [
         "measured saturation and partition chaos pass",
         "HPA decision based on data not assumption"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Benchmark 2+ owner workloads, AOI fanout, persistence and routing costs."
     },
     {
       "id": "VL-074",
@@ -5127,7 +5549,12 @@
         "no contract forks, safe map target and deterministic game acceptance"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Ship one new district+1 venue+1 game through same content/contract pipeline."
     },
     {
       "id": "VL-075",
@@ -5146,7 +5573,12 @@
         "new species fits chair/emotes/LOD, license manifest and device metrics pass"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Grow avatar variants without changing game collision stats; maintain approved Windows profile and future mobile parity."
     },
     {
       "id": "VL-076",
@@ -5167,7 +5599,12 @@
         "no arbitrary untrusted scripts enabled"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Review traction, moderation cost, runtime ops and native decision before opening UGC."
     },
     {
       "id": "VL-077",
@@ -5207,7 +5644,11 @@
         ],
         "reviewMode": "HISTORICAL_INDEPENDENT",
         "archiveRef": "archive/pre-cleanup-2026-11-10:docs/plans/VirtualLife-Master-Plan-2026-v1.1-Desktop-First/.agent-runtime/handoffs/VL-077.json"
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-078",
@@ -5252,7 +5693,12 @@
           "limitations": "System PostgreSQL socket inactive; tests use disposable Docker PostgreSQL. Pinned Unity 6000.3.14f1 is installed and owner-activated; actual import/tests/Linux player run passed. CachyOS/AMD OpenGLCore measured locally; Windows qualification remains external.",
           "editor": {"version": "6000.3.14f1", "revision": "d68c3f99a318", "archiveSha256": "da4f7690af316ec926acbfbb9b3347d0cb6b5ab7e7d75adfc3719a3d1b8fdbd9", "activation": "Owner performed activation; no credentials or license material recorded", "linuxPlayer": "AMD Renoir OpenGLCore; URP 17.3.0", "otherEditor": "Owner-installed 6000.6.9f1 preserved"}
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Enumerate supported test PCs GPU/driver, Unity seats/CI, build runner and legal signing needs."
     },
     {
       "id": "VL-079",
@@ -5273,7 +5719,12 @@
       "qualificationRequirements": [],
       "qualificationDependencies": [
         "VL-006"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Define website download/account/news/gallery/support structure without open world browser shader requirement."
     },
     {
       "id": "VL-080",
@@ -5341,7 +5792,12 @@
           "classification": "MISSING_OPTIONAL_LOCAL_TOOLING",
           "reason": "Pinned Editor executable not found in PATH or standard local installation locations. No entitlement/module, import, resolved lock or actual player qualification claimed."
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Create Unity LTS project, asmdefs, URP presets and standalone Windows build scripts."
     },
     {
       "id": "VL-081",
@@ -5535,7 +5991,12 @@
           "exitCode": 0,
           "result": "39 standalone assertions, netstandard2.1/net8 builds and 10 authored Unity files parsed as C# 9. Editor/player NOT_RUN."
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Generate C# from proto and connect Unity client to Rust WSS scoped ticket, reconnect."
     },
     {
       "id": "VL-082",
@@ -5556,7 +6017,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Named Windows test GPU"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Prototype face/hair/eye/toon outlines and one plaza/café lighting sample with profiles."
     },
     {
       "id": "VL-083",
@@ -5575,7 +6041,12 @@
         "No full game WebGL bundle or fake working download; accessible keyboard and reduced-motion"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Build site routes, asset strategy, account integration placeholder and localized structure."
     },
     {
       "id": "VL-084",
@@ -5595,7 +6066,12 @@
         "Rust rejects speedhack and client resync is stable, profiler output attached"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Client inputs immediate, smooth corrections and packet-loss/reconnect safety."
     },
     {
       "id": "VL-085",
@@ -5615,7 +6091,12 @@
         "Golden noon/dusk scene profiles and stream hitch count captured"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Addressables district cell/chunk prefetch, bake/probes, day-sunset scenario, transitions."
     },
     {
       "id": "VL-086",
@@ -5635,7 +6116,12 @@
         "Sitting/hand/drink no major clipping with quality tiers and reduced motion"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Connect Blender rig morphs/emotes to native Blend Tree/Animation Rigging and close/mid/far LOD."
     },
     {
       "id": "VL-087",
@@ -5657,7 +6143,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Named Windows test PCs"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Dynamic resolution/LOD/shadows/postFX profiles and shader warmup, persisted safe defaults."
     },
     {
       "id": "VL-088",
@@ -5677,7 +6168,12 @@
         "No map input steals chat text; meaningful preview and teleport permissions"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Desktop gamepad/keyboard chat focus, M map, POI cards and UI render quality."
     },
     {
       "id": "VL-089",
@@ -5699,7 +6195,12 @@
         "Disconnect/blocked seat and return to walkable world tested"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Café interior and IK/chair with Rust seat reservation and content hash gating."
     },
     {
       "id": "VL-090",
@@ -5720,7 +6221,12 @@
         "Invite/start/forfeit/leave/reconnect works without world ghost avatar"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Render table mini-game in café and reliable projection-aware hidden hands."
     },
     {
       "id": "VL-091",
@@ -5756,7 +6262,12 @@
       "qualificationRequirements": [
         "Physical Windows native player and URP qualification",
         "Approved publishable Pet art and source rights"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Native world arena gate + tactical combat board and safe cinematic VFX, Rust rules. VL-113 is the independent Linux development prototype; v2 progression/presentation are VL-118/VL-122/VL-124 and do not confer this complete Windows walk-in acceptance."
     },
     {
       "id": "VL-092",
@@ -5775,7 +6286,12 @@
         "Responsive image/video reduced-motion and correct concept-vs-gameplay labeling"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "High-impact original preview media, clear Windows CTA and launch community funnels."
     },
     {
       "id": "VL-093",
@@ -5796,7 +6312,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Windows signing environment and official publisher verification"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Define executable manifest signing, content catalog hashing, CDN and release channels."
     },
     {
       "id": "VL-094",
@@ -5817,7 +6338,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Windows code signing materials"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Package Win player with verified publisher/signature, version metadata, safe crash telemetry."
     },
     {
       "id": "VL-095",
@@ -5839,7 +6365,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Physical Windows GPU tiers"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Capture 3 golden scene profiles on named GPUs after warm/cold runs and soak."
     },
     {
       "id": "VL-096",
@@ -5859,7 +6390,12 @@
         "No double settlement, hidden card leak, ghost seat or unauthorized teleport"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Test native compiled game with lost/duplicate packets, failed transfer, private cards and ledger."
     },
     {
       "id": "VL-097",
@@ -5880,7 +6416,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Restricted signing pipeline"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Test launcher candidate if approved or signed installer-only upgrade; distinguish Unity Addressables."
     },
     {
       "id": "VL-098",
@@ -5900,7 +6441,12 @@
         "Signed Windows asset link/version/hash verified; support/legal/version compatibility flows pass"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Measure real responsive pages, safe auth/deeplink and signed Windows download."
     },
     {
       "id": "VL-099",
@@ -5922,7 +6468,12 @@
         "Windows beta evidence bundle not based on key-art/mock UI"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Owner reviews all native client, Rust correctness, website, signing and visual evidence."
     },
     {
       "id": "VL-100",
@@ -5944,7 +6495,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Mac hardware, Apple signing/notarization resources"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Prove macOS Unity app + networking/input + signature/notarization if funded."
     },
     {
       "id": "VL-101",
@@ -5966,7 +6522,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Physical mobile devices"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Compare app size/thermal/art adaptation and market need; Android/iOS separate release gates."
     },
     {
       "id": "VL-102",
@@ -5989,7 +6550,12 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Owner/legal/signing/CDN production gate"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Prepare staged download, version compatibility, backend canary, status and rollback."
     },
     {
       "id": "VL-103",
@@ -6008,7 +6574,12 @@
         "Controller/keyboard/chat map focus tested with QA report"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Remap keys, camera sensitivity, subtitle and no-shake controls in native HUD."
     },
     {
       "id": "VL-104",
@@ -6027,7 +6598,12 @@
         "Client-only NPC effects never imply interactable authority; GPU budget measured"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Create local foliage/banner shader animation, instanced ambient crowds and interactive NPC server schedule split."
     },
     {
       "id": "VL-105",
@@ -6118,7 +6694,10 @@
           "limitations": "Full pnpm check and hosted CI were not run before this record. No 3D asset production, Blender, Unity or owner-art acceptance occurred. Legacy evidence text in older verification records remains historical."
         },
         "release": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-106",
@@ -6138,7 +6717,12 @@
         "No risky emotes/flash in reduced-motion setting"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast."
     },
     {
       "id": "VL-107",
@@ -6158,7 +6742,12 @@
         "No automatic UGC store publication without moderation controls"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Only after successful Windows release, test low-risk social/photo/UGC alternatives."
     },
     {
       "id": "VL-108",
@@ -6177,7 +6766,12 @@
         "Server navmesh/target privacy/attack surface and UX route IDs specified"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Specify what Rust must validate vs decorative city movement done by Unity."
     },
     {
       "id": "VL-109",
@@ -6198,7 +6792,12 @@
         "Speedhack/teleport spoof and seat transition policy negative tests"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deferred pending explicit scope approval. Server authorizes POI pathing, cancels on manual control and prevents moving into locked venues."
     },
     {
       "id": "VL-110",
@@ -6217,7 +6816,12 @@
         "Website clearly labels approved gameplay vs remaining concept art"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Capture launch-ready windows build screenshots and hero video from real app after graphics QA."
     },
     {
       "id": "VL-111",
@@ -6286,7 +6890,11 @@
           "artifacts/native-verification/runtime-facts.json"
         ],
         "reviewNotes": "Self-audit of actor scope, authenticated receipt envelopes, transaction/replay boundaries, default-off runtime composition and restricted platform settlement. Linux synthetic ruleset acceptance only."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-112",
@@ -6398,7 +7006,11 @@
           "artifacts/pet-verification/native.json"
         ],
         "reviewNotes": "Actual Rust process with restricted TLS PostgreSQL and Nest HTTPS/WSS admission; 26 scenarios each for a winning and losing PvE match. Invalid swap/action/reward payload, stale version/epoch, wrong actor and private view rejected; exact mid-match and terminal SIGKILL recovery; current account/incident eligibility; forged/mismatched/stale outcome rejection; deferred worker commit crash, concurrent delivery, inbox dedupe and reconciled own receipt. Shared Host and legacy RoomAuthority preserved. Full standalone adapter and synthetic orchestration regressions pass. Hosted exact-head Quality/Rust CI remains required before merge."
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-113",
@@ -6530,28 +7142,32 @@
           "mainAcceptance": "Main 8fa1b63 Quality 43695336276 and Rust 43695336211 PASS. Fresh main Unity tests 16 EditMode / 3 PlayMode, Linux rebuild and 2 player smoke tests each exit 0; result directories 2026-11-15T08-57-10-386Z-5b85a77a, 2026-11-15T09-01-26-802Z-4439d7a8 and 2026-11-15T09-06-30-681Z-2546b379. Main real Pet process win exit 0 / 30 scenarios, interop-28a7b1a3. Launcher results and earlier equivalent source/hash evidence recorded above.",
           "remaining": "Linux prototype acceptance complete. Windows, production asset rights, performance and human release approvals remain separate. NO_GO_PUBLIC; OFFLINE_ONLY."
         }
-      }
+      },
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
-  {
-    "id": "VL-114",
-    "mvpMilestone": "M0",
-    "mvpCriticalPath": true,
-    "mvpScope": "MVP",
-    "feature": "Pet-Arena",
-    "title": "Pet Arena product specification and roadmap",
-    "objective": "Define original 19-element collection RPG, immutable v1/v2 compatibility, maps and an incremental implementation sequence.",
-    "dependsOn": [
+    {
+      "id": "VL-114",
+      "mvpMilestone": "M0",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Pet Arena product specification and roadmap",
+      "objective": "Define original 19-element collection RPG, immutable v1/v2 compatibility, maps and an incremental implementation sequence.",
+      "dependsOn": [
       "VL-002",
       "VL-003",
       "VL-024"
     ],
-    "acceptance": [
+      "acceptance": [
       "Reviewed combat/content/progression/admin/presentation contracts and 19-element draft catalog are source-controlled",
       "Historical verified records and VL-113 remain intact; task DAG permits independent Linux source/art work"
     ],
-    "status": "VERIFIED",
-    "qualificationRequirements": [],
-    "verification": {
+      "status": "VERIFIED",
+      "qualificationRequirements": [],
+      "verification": {
       "sourceRevision": "173f8075ac5d42ec4cd1a9749ac04971c305ee0c",
       "reviewMode": "SINGLE_AGENT_AUDIT",
       "commands": [
@@ -6566,40 +7182,41 @@
       "merge": "PR 28 merged as 111cf8672aca772ff28cdb730dcf6828838e699f; tree exactly equals tested 173f807. Post-merge Quality 43702081563 and Rust 43702081550 still pending at this record, not inferred PASS.",
       "qualification": "Specification/catalog acceptance only. All Pet metadata remains DRAFT_ONLY with missing assets, no balance acceptance and no v2 runtime activation. OFFLINE_ONLY; NO_GO_PUBLIC."
     },
-    "verificationRequirements": [
+      "verificationRequirements": [
       "Plan/governance and catalog integrity validation",
       "Exact-source hosted Quality/Rust; single-agent self-review; no gameplay or art PASS inferred"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P0",
       "specification": "specs/pet-arena/v2.md",
       "catalog": "specs/pet-arena/catalog-v2.json",
       "validation": "At b24c3fdea5ab5d60d6a8733b8ad0c4259898d83f after merging main 8fa1b63: catalog checker exit 0 (19 elements / 19 maps / 114 draft species), governance 116/116 exit 0, governance:check exit 0, focused ESLint and diff-check exit 0. All 26 historical VERIFIED task objects and VL-113 preserved exactly before adding the new VL-113 evidence above. At prior 60ab3a2 Rust push 43693908537 / PR 43694027277 PASS; Quality push 43693908583 / PR 43694027257 still pending. These are not hosted acceptance of this subsequent revision. No v2 runtime or production art implemented."
-    }
-  },
-  {
-    "id": "VL-115",
-    "mvpMilestone": "M1",
-    "mvpCriticalPath": true,
-    "mvpScope": "MVP",
-    "feature": "Pet-Arena",
-    "title": "Versioned Pet content schema and contracts",
-    "objective": "Add normalized content, element, species, loadout, encounter and asset metadata through the existing Nest migration journal; bind matches to published hashes.",
-    "dependsOn": [
+    },
+      "priority": 2
+    },
+    {
+      "id": "VL-115",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Versioned Pet content schema and contracts",
+      "objective": "Add normalized content, element, species, loadout, encounter and asset metadata through the existing Nest migration journal; bind matches to published hashes.",
+      "dependsOn": [
       "VL-114"
     ],
-    "acceptance": [
+      "acceptance": [
       "Additive migration, restricted grants, typed contracts and idempotent seed support at least 24 original metadata definitions",
       "Draft/published/retired/rollback invariants, active-match pinning and restore compatibility verified",
       "Frozen eight v1 Pets, codecs and digests remain unchanged"
     ],
-    "status": "IN_PROGRESS",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "PostgreSQL migration/rollback/restore/integrity and concurrency tests",
       "Contract unknown-field/type/depth negatives; Rust and TS validation; hosted Quality/Rust"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P1",
       "specification": "specs/pet-arena/v2.md",
       "draftFoundation": "Additive migration 0051, strict bounded 19-element contracts, normalized draft species/growth/skills/effectiveness, deterministic hash, transactional idempotent 114-species seed and integrity checks. Existing native grants and frozen v1 source unchanged. No application route or runtime activation.",
@@ -6713,9 +7330,10 @@
         "evidenceRoot": "artifacts/pet-content-verification",
         "remaining": "VL-115 stays IN_PROGRESS. No production publication, normalized editable v3 catalog or live v3 allocation. VL-116/117/118/120/129 not implemented or advanced in this slice. Next: complete publication-readiness/normalized draft contract and authorized operator workflow, then wire v3 allocation and combat using these immutable bindings."
       }
-    }
-  },
-  {
+    },
+      "priority": 2
+    },
+    {
       "id": "VL-116",
       "mvpMilestone": "M1",
       "mvpCriticalPath": true,
@@ -6741,36 +7359,40 @@
       "implementation": {
         "wave": "P2",
         "specification": "specs/pet-arena/v2.md"
-      }
+      },
+      "priority": 2,
+      "remaining": "Implement shared deterministic functional-tile formulas and commands for v3; retain v2 specification as historical design, do not build a redundant v2 gameplay release."
     },
-  {
-    "id": "VL-117",
-    "mvpMilestone": "M1",
-    "mvpCriticalPath": false,
-    "mvpScope": "MVP",
-    "feature": "Pet-Arena",
-    "title": "Reusable skills cards and combinations",
-    "objective": "Define bounded shared skill/card/combination catalogs with costs, cooldowns, targets, stack caps and authoritative animation events.",
-    "dependsOn": [
+    {
+      "id": "VL-117",
+      "mvpMilestone": "M1",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Reusable skills cards and combinations",
+      "objective": "Define bounded shared skill/card/combination catalogs with costs, cooldowns, targets, stack caps and authoritative animation events.",
+      "dependsOn": [
       "VL-116"
     ],
-    "acceptance": [
+      "acceptance": [
       "Generic opcodes support all species without Pet-specific reducers or executable definitions",
       "Resource/cooldown/combination changes are atomic and status stacking cannot create unbounded loops",
       "Stable normal/rage/skill/combo event IDs survive replay without duplicate presentation"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "Rules catalog validation, replay and adversarial loadout tests",
       "Generated protocol compatibility, owner-view privacy, immutable-ID replay and hosted CI"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P2",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
-  {
+    },
+      "priority": 2,
+      "remaining": "Define bounded shared skill/card/combination catalogs with costs, cooldowns, targets, stack caps and authoritative animation events."
+    },
+    {
       "id": "VL-118",
       "mvpMilestone": "M1",
       "mvpCriticalPath": false,
@@ -6797,9 +7419,11 @@
       "implementation": {
         "wave": "P3",
         "specification": "specs/pet-arena/v2.md"
-      }
+      },
+      "priority": 2,
+      "remaining": "Persist common receipt-backed owned inventory, XP/materials and upgrade transactions; VL-132 specializes v3 3/5-win map recruitment and VL-134 specializes Lv100/three-star progression."
     },
-  {
+    {
       "id": "VL-119",
       "mvpMilestone": "M4",
       "mvpCriticalPath": false,
@@ -6826,36 +7450,40 @@
       "implementation": {
         "wave": "P6",
         "specification": "specs/pet-arena/v2.md"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Implement shared consented assistance, scheduled boss reward and season services; VL-143 adds four-player room coordination and VL-145 ranked/PvP integration."
     },
-  {
-    "id": "VL-120",
-    "mvpMilestone": "M2",
-    "mvpCriticalPath": false,
-    "mvpScope": "MVP",
-    "feature": "Admin",
-    "title": "Operator Pet Studio draft preview and publishing",
-    "objective": "Extend existing operator console/API with database-backed Pet draft editing, preview, immutable publication, retirement and rollback.",
-    "dependsOn": [
+    {
+      "id": "VL-120",
+      "mvpMilestone": "M2",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Admin",
+      "title": "Operator Pet Studio draft preview and publishing",
+      "objective": "Extend existing operator console/API with database-backed Pet draft editing, preview, immutable publication, retirement and rollback.",
+      "dependsOn": [
       "VL-115"
     ],
-    "acceptance": [
+      "acceptance": [
       "One Pet can be created/edited/duplicated/previewed from SQL using existing operator authentication and permissions",
       "Publish/retire/rollback require step-up, CSRF, explicit hash-bound confirmation, optimistic version and audit",
       "New species using allowed rules publishes without Pet-specific Rust changes; invalid/missing/unlicensed assets block production publication"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "HTTP/admin browser authorization, CSRF, injection, concurrency, audit and rate-limit tests",
       "Draft-to-publish-to-new-match integration; active-match hash remains unchanged; hosted CI"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P1/P5",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
-  {
+    },
+      "priority": 2,
+      "remaining": "Extend existing operator console/API with database-backed Pet draft editing, preview, immutable publication, retirement and rollback."
+    },
+    {
     "id": "VL-121",
     "mvpMilestone": "M2",
     "mvpCriticalPath": true,
@@ -7080,36 +7708,38 @@
       }
     }
   },
-  {
-    "id": "VL-122",
-    "mvpMilestone": "M3",
-    "mvpCriticalPath": false,
-    "mvpScope": "MVP",
-    "feature": "Native",
-    "title": "Modern Unity battle HUD animation camera and VFX",
-    "objective": "Present typed authoritative events with original tile atlas, health/mana/rage/cards, target warnings and reusable Pet animations.",
-    "dependsOn": [
+    {
+      "id": "VL-122",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Modern Unity battle HUD animation camera and VFX",
+      "objective": "Present typed authoritative events with original tile atlas, health/mana/rage/cards, target warnings and reusable Pet animations.",
+      "dependsOn": [
       "VL-116",
       "VL-117",
       "VL-121"
     ],
-    "acceptance": [
+      "acceptance": [
       "Normal/rage/skill/combo have distinct readable presentation with complete shared animation semantics",
       "Event dedupe, skipped/slowed/unavailable VFX and reconnect preserve the exact authoritative result",
       "Reduced motion, controlled shake/hit-stop, responsive layouts and 60 FPS target measured on named Linux hardware"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "Unity EditMode/PlayMode and real OS-input Linux player evidence",
       "Event replay/scene teardown/accessibility/performance captures; hosted CI; Windows reported separately"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P4",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
-  {
+    },
+      "priority": 2,
+      "remaining": "Present typed authoritative events with original tile atlas, health/mana/rage/cards, target warnings and reusable Pet animations."
+    },
+    {
       "id": "VL-123",
       "mvpMilestone": "M2",
       "mvpCriticalPath": false,
@@ -7138,132 +7768,142 @@
       "implementation": {
         "wave": "P5",
         "specification": "specs/pet-arena/v2.md"
-      }
+      },
+      "priority": 2,
+      "remaining": "Retain 114 original IDs and v2 seed foundation; VL-131 owns the single 240-draft v3.1 importer. This task qualifies the existing six-hero plus boss priority art set; do not reseed a second catalog."
     },
-  {
-    "id": "VL-124",
-    "mvpMilestone": "M3",
-    "mvpCriticalPath": true,
-    "mvpScope": "MVP",
-    "feature": "Native",
-    "title": "Linux integrated collection RPG vertical slice",
-    "objective": "Integrate walk-in v2 combat, admin-authored content, capture, progression and polished presentation through disposable real services.",
-    "dependsOn": [
+    {
+      "id": "VL-124",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Linux integrated collection RPG vertical slice",
+      "objective": "Integrate walk-in v2 combat, admin-authored content, capture, progression and polished presentation through disposable real services.",
+      "dependsOn": [
       "VL-113",
       "VL-118",
       "VL-120",
       "VL-122",
       "VL-123"
     ],
-    "acceptance": [
+      "acceptance": [
       "Rendered Linux player wins three eligible matches, captures once, upgrades, reconnects and retains ownership after restart",
       "Admin-published Pet uses generic engine; active match remains bound to immutable content",
       "Win/loss, normal/rage/skill, settlement, return/logout and repeated launcher cleanup pass through real Rust/Nest/PostgreSQL"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "Actual OS keyboard/mouse rendered Linux acceptance; binary hashes/source revision",
       "Full relevant native/Rust/TS/database/admin/Unity regression plus hosted CI; OFFLINE_ONLY"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P4/P5",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
-  {
-    "id": "VL-125",
-    "mvpMilestone": "M5",
-    "mvpCriticalPath": false,
-    "mvpScope": "MVP",
-    "feature": "Pet-Arena",
-    "title": "Pet balance security performance and human playtests",
-    "objective": "Validate elemental/loadout balance, progression abuse, recovery/privacy and measured battle presentation; observe real consented players.",
-    "dependsOn": [
+    },
+      "priority": 2,
+      "remaining": "Integrate walk-in v2 combat, admin-authored content, capture, progression and polished presentation through disposable real services."
+    },
+    {
+      "id": "VL-125",
+      "mvpMilestone": "M5",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Pet-Arena",
+      "title": "Pet balance security performance and human playtests",
+      "objective": "Validate elemental/loadout balance, progression abuse, recovery/privacy and measured battle presentation; observe real consented players.",
+      "dependsOn": [
       "VL-124"
     ],
-    "acceptance": [
+      "acceptance": [
       "No universally dominant element, immunity softlock or uncontrolled combo/stat scaling in reviewed fixtures",
       "Capture/upgrade/boss reward/replay/unauthorized/stale/content-retirement/restore negatives pass",
       "Named Linux CPU/GPU/memory/loading/effect measurements and real participant usability/fairness feedback recorded"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [
       "Consented real participant playtests; approved retention/privacy policy"
     ],
-    "verificationRequirements": [
+      "verificationRequirements": [
       "Balance simulations with seed corpus and limitations, security/recovery matrix",
       "Physical measurements and consented human playtests; no automated fun claim; hosted CI"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P7",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
-  {
-    "id": "VL-126",
-    "mvpMilestone": "M6",
-    "mvpCriticalPath": false,
-    "mvpScope": "MVP",
-    "feature": "Native",
-    "title": "Windows battle visual and production qualification",
-    "objective": "Qualify the integrated battle on named physical Windows tiers and complete asset/signing/release-readiness gates without automatic public activation.",
-    "dependsOn": [
+    },
+      "priority": 2,
+      "remaining": "Validate elemental/loadout balance, progression abuse, recovery/privacy and measured battle presentation; observe real consented players."
+    },
+    {
+      "id": "VL-126",
+      "mvpMilestone": "M6",
+      "mvpCriticalPath": false,
+      "mvpScope": "MVP",
+      "feature": "Native",
+      "title": "Windows battle visual and production qualification",
+      "objective": "Qualify the integrated battle on named physical Windows tiers and complete asset/signing/release-readiness gates without automatic public activation.",
+      "dependsOn": [
       "VL-125"
     ],
-    "acceptance": [
+      "acceptance": [
       "Actual Windows URP/IL2CPP build, frame/memory/loading/device matrix and full battle acceptance evidence",
       "Publishable asset rights, accessibility, retention/privacy and signing/release approvals recorded separately",
       "No Linux/source-only result is represented as Windows or production qualification"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [
       "Named physical Windows hardware and URP/IL2CPP qualification",
       "Commercial art/media rights, signing and explicit release approvals"
     ],
-    "verificationRequirements": [
+      "verificationRequirements": [
       "Physical Windows devices/drivers and build artifacts with hashes",
       "Human rights/privacy/release approvals; explicit production authorization still required"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P7",
       "specification": "specs/pet-arena/v2.md"
     },
-    "qualificationDependencies": [
+      "qualificationDependencies": [
       "VL-007",
       "VL-082",
       "VL-091"
-    ]
-  },
-  {
-    "id": "VL-127",
-    "mvpMilestone": "M4",
-    "mvpCriticalPath": false,
-    "mvpScope": "DEFERRED_EXPANSION",
-    "deferredExpansion": "Ranked/unranked PvP is post-MVP expansion.",
-    "feature": "Pet-Arena",
-    "title": "Ranked and unranked PvP foundation",
-    "objective": "Extend the validated common engine to explicit PvP matchmaking and simultaneous-player privacy without a separate authority.",
-    "dependsOn": [
+    ],
+      "priority": 2,
+      "remaining": "Qualify the integrated battle on named physical Windows tiers and complete asset/signing/release-readiness gates without automatic public activation."
+    },
+    {
+      "id": "VL-127",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": false,
+      "mvpScope": "DEFERRED_EXPANSION",
+      "deferredExpansion": "Ranked/unranked PvP is post-MVP expansion.",
+      "feature": "Pet-Arena",
+      "title": "Ranked and unranked PvP foundation",
+      "objective": "Extend the validated common engine to explicit PvP matchmaking and simultaneous-player privacy without a separate authority.",
+      "dependsOn": [
       "VL-119",
       "VL-125"
     ],
-    "acceptance": [
+      "acceptance": [
       "Consent/policy-aware matchmaking and authoritative turn timeout/disconnect/forfeit rules",
       "Secret RNG/private projections never leak; season results and rewards settle once",
       "No paid competitive advantage; PvE progression and balance validation precede PvP implementation"
     ],
-    "status": "TODO",
-    "qualificationRequirements": [],
-    "verificationRequirements": [
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
       "Multi-player WSS races, wrong-viewer/replay/network-fault and anti-farming tests",
       "Rendered clients and real persistence/settlement; exact-source hosted Quality/Rust"
     ],
-    "implementation": {
+      "implementation": {
       "wave": "P6/P7",
       "specification": "specs/pet-arena/v2.md"
-    }
-  },
+    },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Extend the validated common engine to explicit PvP matchmaking and simultaneous-player privacy without a separate authority."
+    },
     {
       "id": "VL-128",
       "mvpMilestone": "M0",
@@ -7380,7 +8020,8 @@
           }
         ],
         "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
-      }
+      },
+      "priority": 2
     },
     {
       "id": "VL-129",
@@ -7409,7 +8050,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Distinct v3 ruleset, 100-cell board, replay/property tests, performance and viewport calculations."
     },
     {
       "id": "VL-130",
@@ -7618,7 +8261,9 @@
             "findings": "Self-review reproduced unpublished IDs in admin static JS through the contracts root export at947cacc. Moved draft acquisition contracts to isolated Pet-server subpath; import-boundary regression and actual rebuilt production scan PASS. Initial fixture used maps.element instead of primaryElement; corrected fixture, no assertions weakened."
           }
         }
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Reuse canonical element IDs, add morphological race data and validate all 361 matchup pairs."
     },
     {
       "id": "VL-131",
@@ -7709,7 +8354,9 @@
             "result": "Same committed-source unit/governance/Rust/type/production-bundle checks; hosted CI running at recording."
           }
         }
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Extend existing VL-115 draft storage with additive rank/source/version contracts and one canonical 240-draft import; never alter 0051 or prior v2 metadata."
     },
     {
       "id": "VL-132",
@@ -7740,7 +8387,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. No capture ball; 19 gated maps; A/B require 3 wins, map S 5 wins; idempotent unlock."
     },
     {
       "id": "VL-133",
@@ -7770,7 +8419,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Normal skill does not move/delete/refill board; typed ultimate may clear/refill with no container disappearance."
     },
     {
       "id": "VL-134",
@@ -7813,7 +8464,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Nonlinear XP/material costs; three stars MAX; immutable progression receipts."
     },
     {
       "id": "VL-135",
@@ -7843,7 +8496,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Preserve Emberpaw/Brooklet/Thornwick/Galehorn/Mireshade/Frostel; quality reusable rigs, modest VFX and usable balanced kits. These are not Standard S."
     },
     {
       "id": "VL-136",
@@ -7874,7 +8529,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Implement six Limited signature cards and bounded shared board effects; bespoke models/timelines owned by VL-149."
     },
     {
       "id": "VL-137",
@@ -7905,7 +8562,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Regular recipient, Limited donor, 200 Mana +150 Rage, +3 temporary battle level, incompatibility of two signatures."
     },
     {
       "id": "VL-138",
@@ -7935,7 +8594,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Mana cap 300, Rage cap 200; 100 ordinary rage ult, 200/150 fusion; private RNG and replay."
     },
     {
       "id": "VL-139",
@@ -7964,7 +8625,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "3-star, Level100, locked skill levels, rig preview and responsive UI with readable 10x10 HUD."
     },
     {
       "id": "VL-140",
@@ -7995,7 +8658,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. One Nest-owned ledger for Standard and Limited pulls: persist immutable ordered outcomes, debit once, replay receipts and deliver ownership atomically. VL-159 owns probability/guarantee transitions; VL-161 owns duplicate conversion."
     },
     {
       "id": "VL-141",
@@ -8027,7 +8692,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Earnable tickets and approved exchange items, full rate/curve disclosure, spending and age controls; regional legal and payment enablement remain independent release gates."
     },
     {
       "id": "VL-142",
@@ -8058,7 +8725,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Extend existing Admin Studio for 240 drafts, four sources and reviewed Standard/Limited pools, weights, full odds curves, dates and audit; one authoring workflow."
     },
     {
       "id": "VL-143",
@@ -8089,7 +8758,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Max four participants total; deterministic co-op turns; invitation, leave, ready, reconnect and reward anti-dup."
     },
     {
       "id": "VL-144",
@@ -8119,7 +8790,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Invitations capped to 3 friends, ready state, permissions, privacy and safe timeouts."
     },
     {
       "id": "VL-145",
@@ -8148,7 +8821,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Verifiable rankings, no P2W ranked stat advantage, anti-cheat, opt-out settings."
     },
     {
       "id": "VL-146",
@@ -8178,7 +8853,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Shared permitted-zone companion controller for map, Limited and Standard species; morphology-specific navigation, LOD, emotes and privacy. Each species qualifies assets independently."
     },
     {
       "id": "VL-147",
@@ -8206,7 +8883,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Reuse global settings for graphics, motion, audio, input, privacy and readable 10x10 UI; integrate accessibility without waiting on unrelated world qualification."
     },
     {
       "id": "VL-148",
@@ -8234,7 +8913,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Reuse global locale service for full VI/EN Pet Arena strings, proper English Pet names, font coverage and translated menus; other languages gated on actual translations."
     },
     {
       "id": "VL-149",
@@ -8243,7 +8924,7 @@
       "mvpScope": "MVP",
       "priority": 1,
       "feature": "Pet-Arena",
-      "title": "Unity URP hero 3D pipeline and six Limited cinematic gates",
+      "title": "Unity URP hero 3D pipeline and Icarus cinematic gate",
       "artDirection": {
         "icarus": "specs/pet-arena/icarus-art-direction.md",
         "primaryReference": "specs/pet-arena/references/icarus/owner-battle-reference.png",
@@ -8272,14 +8953,14 @@
           "nextAction": "Character artist must correct G1-G3face/hair/wing-root/cloth likeness in delivered source and return neutral close-up/front/side/back before UV/bake/rig completion. Work order:ignored artifacts/icarus-handoff-work-order.md;partial offline delivery archive:artifacts/Icarus-06-Delivery.tar.gz. Review exact new PR head CI and pipeline base before any source merge. Do not replicate failed pilot to5other Limited Pets;NO_GO_PUBLIC stays locked."
         }
       },
-      "objective": "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
+      "objective": "Qualify the reusable hero workflow and Icarus cinematic. VL-172 retains the other five Limited S cinematic assets as deferred work.",
       "dependsOn": [
         "VL-121",
         "VL-105",
         "VL-128"
       ],
       "acceptance": [
-        "Six bespoke characters, unique rigs and VFX, render/performance snapshots, original art rights.",
+        "Icarus passes the applicable canonical H1–H4 gates with hash-pinned approval and provenance.",
         "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
         "Actual hosted CI green before PR auto-merge; write truthful evidence in config/development-plan.json",
         "Rendered Unity animation footage and asset provenance, not PNG-only concept"
@@ -8294,7 +8975,8 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "remaining": "Qualify the reusable hero workflow and Icarus cinematic. VL-172 retains the other five Limited S cinematic assets as deferred work."
     },
     {
       "id": "VL-150",
@@ -8324,7 +9006,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Shared rigs for 209 B/A and 19 map S pets, morph variety, LOD/VFX quality not placeholders."
     },
     {
       "id": "VL-151",
@@ -8355,7 +9039,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Actual rendered Linux Unity + Rust + Nest + Postgres; no mocked pass."
     },
     {
       "id": "VL-152",
@@ -8385,7 +9071,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Combat/capture/fusion/boss simulations, replay fuzz, 361 pair immunity softlocks and human fun tests; gacha-specific simulations belong solely to VL-162."
     },
     {
       "id": "VL-153",
@@ -8418,7 +9106,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Only qualify Windows after physical tested build, signed media/provenance, quality and rights."
     },
     {
       "id": "VL-154",
@@ -8448,7 +9138,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Keep distinct from in-battle card fusion; transactional ownership/consumption policy and opt-in rollout."
     },
     {
       "id": "VL-155",
@@ -8479,7 +9171,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Event rotation, 5-win legend availability, boss tables, version snapshot, publish/rollback."
     },
     {
       "id": "VL-156",
@@ -8510,7 +9204,9 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "priority": 2,
+      "remaining": "Deferred pending explicit scope approval. Standard/Limited banner details, rates/full curves, pity/guarantee/history, C0-C6 and independent 0-3 star progression; bind durable owner projections."
     },
     {
       "id": "VL-157",
@@ -8520,11 +9216,7 @@
       "feature": "Pet-Arena",
       "title": "Full integrated acceptance and no-go-public release gate",
       "objective": "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
-      "dependsOn": [
-        "VL-152",
-        "VL-162",
-        "VL-181"
-      ],
+      "dependsOn": [],
       "acceptance": [
         "Source CI is not release approval; enforce security, legal, moderation, consent and hardware gates.",
         "Add regression coverage for failure, replay, disconnect, permission, and version mismatch",
@@ -8542,8 +9234,14 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
       },
       "qualificationDependencies": [
-        "VL-153"
-      ]
+        "VL-198",
+        "VL-212",
+        "VL-213",
+        "VL-214"
+      ],
+      "workstream": "F",
+      "remaining": "Aggregate exact-candidate results in the acceptance review. Keep OFFLINE_ONLY / NO_GO_PUBLIC pending separate owner release authorization.",
+      "priority": 2
     },
     {
       "id": "VL-158",
@@ -8660,7 +9358,8 @@
           }
         ],
         "scope": "Roadmap and draft design/catalog only. No v3 database import, gameplay, production models or Unity motion qualification. VL-130/131 own bounded runtime contracts and additive persistence. PR32 metadata revision must itself receive green hosted CI before merge."
-      }
+      },
+      "priority": 2
     },
     {
       "id": "VL-159",
@@ -8700,7 +9399,9 @@
             "result": "Same committed-source unit/governance/Rust/type/production-bundle checks; hosted CI running at recording."
           }
         }
-      }
+      },
+      "priority": 2,
+      "remaining": "Implement one server-authoritative probability/eligibility state machine with explicit persistence adapter contract; VL-140 owns durable pull transactions."
     },
     {
       "id": "VL-160",
@@ -8759,7 +9460,8 @@
           "nextAction": "Owner approves or marks revisions for all 22 in one review sitting; then start approved Smart Mesh batches with no paid call without a quote and authorization."
         },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "remaining": "Produce original lantern/jellyfish/owl/phantom/hexapod/deer assets using shared hero-quality rigs, Rust event-driven animation and world companionship."
     },
     {
       "id": "VL-161",
@@ -8790,7 +9492,8 @@
       "implementation": {
         "specification": "specs/pet-arena/v3.1.md",
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
-      }
+      },
+      "remaining": "Deferred pending explicit scope approval. Implement transactional Standard/Limited C0-C6 copies and overflow conversion on the VL-140 receipt ledger; extend VL-142 economy editor without duplicating banners."
     },
     {
       "id": "VL-162",
@@ -8826,7 +9529,8 @@
       },
       "qualificationDependencies": [
         "VL-160"
-      ]
+      ],
+      "remaining": "Qualify integrated Standard/Limited distribution, persistent pulls, fair endgame kits and player-facing disclosure."
     },
     {
       "id": "VL-163",
@@ -8852,7 +9556,7 @@
         "scope": "Owner expanded PR33 to complete product introduction and concept motion previews (VL-165). Signup API and operator marketing remain future slices. IDs moved from 128-132 to 163-167 after PR32 independently allocated 128-162; no old main task changed.",
         "designReference": "Owner supplied /home/tiecont/Downloads/NOYUNE_Prelaunch_AdminWeb_Handoff after initial audit. Read product copy, technical architecture, backlog, QA gates and both style-only previews. Aetheria: SoulBound supersedes the handoff name. Cropped concept media is served only in development, with source hash/provenance; no production-media or legal clearance inferred."
       },
-    "verification": {
+      "verification": {
       "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
       "reviewMode": "SINGLE_AGENT_AUDIT",
       "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
@@ -8986,7 +9690,11 @@
       "pending": "Evidence-only head requires exact committed hosted Quality/Rust and clean mergeability. Reconcile merged PR31 first, record final CI/merge SHAs in PR discussion and verify post-merge main. OFFLINE_ONLY / NO_GO_PUBLIC.",
       "limitations": "Development-only preview; actual operator authorization and publication gates retained. No public deployment, signup/mail acceptance, live credentials, media/legal clearance or production model acceptance.99 real admin DB/API cases also passed at earlier ee49 source; fresh full789 integration run above is the current-source evidence."
     },
-    "remaining": "Exact-final-source CI and merge verification; production remains default-off."
+      "remaining": "Exact-final-source CI and merge verification; production remains default-off.",
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-164",
@@ -9005,7 +9713,13 @@
         "Fake/sink mail tests exercise outbox retry/suppression and expiring tokens; production campaign acceptance and delivery default OFF"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "workstream": "F",
+      "priority": 1,
+      "remaining": "Implement expiry, idempotent double opt-in, consent audit and atomic lifetime cap of 5000 in the current PostgreSQL journal. Verify concurrent final-slot claims with local mail delivery fixtures.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-165",
@@ -9029,7 +9743,7 @@
       "qualificationRequirements": [
         "Legal/brand and official media rights approval apply to publication, not unrelated source work"
       ],
-    "verification": {
+      "verification": {
       "sourceRevision": "ead95c52eccf4130d96f2bdcb6e39a9f325bbb1e",
       "reviewMode": "SINGLE_AGENT_AUDIT",
       "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/33",
@@ -9060,7 +9774,11 @@
       "pending": "Evidence-only head requires exact committed hosted Quality/Rust and clean mergeability. Reconcile merged PR31 first, record final CI/merge SHAs in PR discussion and verify post-merge main. OFFLINE_ONLY / NO_GO_PUBLIC.",
       "limitations": "Six geometric browser motion concepts, not production Unity models, rigged GLB clips or complete Limited cinematics. Dedicated assets for other Pets remain missing. No actual gacha/purchases/rates/availability promises, signup endpoint, mail delivery or Pet grants. Rights-cleared media/performance/hardware qualification and the remaining task acceptance are incomplete; task remains IN_PROGRESS."
     },
-    "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete."
+      "remaining": "Rights-cleared production models/animations/audio, full media/performance qualification and signup API integration; do not call the production product site complete.",
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-166",
@@ -9081,7 +9799,12 @@
         "Real HTTP/browser auth, CSRF, stale session, privacy and concurrency regressions pass"
       ],
       "status": "TODO",
-      "qualificationRequirements": []
+      "qualificationRequirements": [],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth."
     },
     {
       "id": "VL-167",
@@ -9105,7 +9828,12 @@
       "qualificationRequirements": [
         "Explicit owner public release authorization",
         "Brand/legal, media rights, privacy/retention, sender/domain and SPF/DKIM/DMARC approval"
-      ]
+      ],
+      "priority": 2,
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Qualify the public prelaunch surface independently of Windows gameplay/signing. Extend site-only measurements without claiming VL-098/106 Windows or full-product completion."
     },
     {
       "id": "VL-175",
@@ -9221,7 +9949,10 @@
           ],
           "remaining": "Hosted CI must pass on the fix head before auto-merge. No production deployment, public release or paid provider work is authorized by this verification."
         }
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-176",
@@ -9243,8 +9974,13 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A",
-        "source": "crates/aetheria-pet-arena/src/arena8"
-      }
+        "source": "crates/aetheria-pet-arena/src/arena8",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Implement the authoritative deterministic 8x8 tactical board and combat loop in Rust without mutating frozen V1/V3."
     },
     {
       "id": "VL-177",
@@ -9265,8 +10001,13 @@
       "qualificationRequirements": [],
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-        "wave": "Wave A"
-      }
+        "wave": "Wave A",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Implement the first complete Artifact progression loop with three slots, deterministic upgrades and authoritative persistence."
     },
     {
       "id": "VL-178",
@@ -9287,8 +10028,13 @@
       "qualificationRequirements": [],
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-        "wave": "Wave A"
-      }
+        "wave": "Wave A",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Reconcile the 43 locked identities, 12 Dragon/Bird families and six gated Off-rate candidates into one versioned roster."
     },
     {
       "id": "VL-179",
@@ -9313,7 +10059,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Extend the existing Pet Arena scene to read the 8x8 board and Artifact loadout without owning combat authority."
     },
     {
       "id": "VL-180",
@@ -9337,7 +10087,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Advance Icarus and reusable humanoid/quadruped/avian/serpent/floating intakes, plus two functioning arena scenes and audio groups."
     },
     {
       "id": "VL-181",
@@ -9363,7 +10117,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave A"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Verify the actual integrated loop: session, Pet, 8x8 battle, authoritative reward, Artifact equip, observable stat change, recruitment and restart."
     },
     {
       "id": "VL-182",
@@ -9374,9 +10132,7 @@
       "title": "M4: 55-Pet models, rigs, animation and VFX production",
       "objective": "Produce and admit the complete active-Pet content set using reusable morphology profiles and owner-gated asset production.",
       "priority": 2,
-      "dependsOn": [
-        "VL-180"
-      ],
+      "dependsOn": [],
       "acceptance": [
         "Each of the 61 canonical identities (55 active + 6 gated candidates) carries an explicit per-stage state for concept, model, rig, animation, Unity admission, render review and rights; an unproduced stage is recorded as an explicit missing/not-produced status, never as an implied pass",
         "A model, rig, animation or Unity prefab counts toward this task only when the actual owner-accepted asset is admitted and its rights are cleared; a readiness field, manifest entry, concept file or developer substitute never satisfies acceptance",
@@ -9391,7 +10147,15 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
-      }
+      },
+      "workstream": "D4",
+      "qualificationDependencies": [
+        "VL-204"
+      ],
+      "remaining": "Prepare standard morphology and binding inventory. Record production model, textures, rig, animation, VFX, Unity admission, render and rights for each of 55 Pets and applicable H gates at each dependent stage.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-183",
@@ -9403,7 +10167,7 @@
       "objective": "Extend the Central Plaza/Fire/Water foundation into the six approved MVP arena identities with reusable kits and qualification.",
       "priority": 2,
       "dependsOn": [
-        "VL-180"
+        "VL-024"
       ],
       "acceptance": [
         "All six map identities have reusable modular kits and functional arena compositions",
@@ -9417,7 +10181,12 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
-      }
+      },
+      "workstream": "D4",
+      "remaining": "Block out eligible production environments independently and preserve Fire/Water portal identity. Supply six lit maps with navigation, authored regular/Boss spawn points and Unity performance evidence.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-184",
@@ -9428,9 +10197,7 @@
       "title": "M4: licensed audio, ambience and combat music production",
       "objective": "Replace procedural fallbacks with approved licensed/produced audio while preserving the mixer/event contract and volume/mute behavior.",
       "priority": 2,
-      "dependsOn": [
-        "VL-180"
-      ],
+      "dependsOn": [],
       "acceptance": [
         "Hub, Fire/Water ambience, regular/boss music and required combat/reward cues have cleared media",
         "No unlicensed media is committed or represented as production",
@@ -9443,7 +10210,12 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
-      }
+      },
+      "workstream": "D4",
+      "remaining": "Define six-map ambience and battle music integration, then attach licenses and verify mix levels and import configuration before production acceptance.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-185",
@@ -9469,8 +10241,13 @@
       "qualificationRequirements": [],
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-        "wave": "Wave B"
-      }
+        "wave": "Wave B",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Bind the versioned Arena8 engine to canonical Pet/level/Artifact snapshots and the existing native gameplay transport, admission, journal and settlement path."
     },
     {
       "id": "VL-186",
@@ -9495,7 +10272,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Replace the default development board with committed Arena8 projections, event-driven presentation and authoritative skill/cooldown/telegraph state."
     },
     {
       "id": "VL-187",
@@ -9521,7 +10302,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Deliver Master/Music/Ambient/SFX/Voice/UI mixer groups, persisted volume/mute controls, combat/reward hooks and pooled six-element VFX."
     },
     {
       "id": "VL-188",
@@ -9531,9 +10316,9 @@
       "feature": "Avatar-Art",
       "title": "Wave B: Central Plaza, Cinder Terraces and Tideglass Lagoon",
       "objective": "Create functioning Unity hub/Fire/Water environments with walkable collision, camera framing, portals, ambient movement and return-to-hub flow.",
-      "priority": 2,
+      "priority": 0,
       "dependsOn": [
-        "VL-180"
+        "VL-024"
       ],
       "acceptance": [
         "Central Plaza and two distinct arena scenes/compositions load and render",
@@ -9547,7 +10332,12 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
-      }
+      },
+      "workstream": "D3-B",
+      "remaining": "Complete testable hub movement, Fire and Water portals and return routes with representative geometry; rendered production environments belong to VL-183.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-189",
@@ -9581,7 +10371,11 @@
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
-      }
+      },
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ],
+      "remaining": "Exercise the coherent local flow from hub through an authoritative 8x8 battle, rewards/Artifact equip, a second match stat check, Water arena and restart recovery."
     },
     {
       "id": "VL-190",
@@ -9591,9 +10385,9 @@
       "feature": "GAMEPLAY-CONFIG",
       "title": "Wave D2: configuration-driven cooperative ruleset and engine correctness",
       "objective": "Turn the four-seat cooperative Boss foundation into a validated, configuration-driven ruleset with no authored balance value in Rust, and fix the match/refill/multiplier/RNG/phase correctness defects.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
-        "VL-189"
+        "VL-176"
       ],
       "acceptance": [
         "arena8-coop-pve loads every authored value from a strict typed bundle and fails closed when it is missing, malformed or incompatible",
@@ -9622,8 +10416,13 @@
             "exitCode": 0
           }
         ],
-        "remaining": "Rooms, achievement ledger, cooperative settlement and Unity presentation remain; PostgreSQL publication and the native four-seat ruleset now exist behind their own tasks."
-      }
+        "remaining": "Rooms, achievement ledger, cooperative settlement and Unity presentation remain; PostgreSQL publication and the native four-seat ruleset now exist behind their own tasks.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-191",
@@ -9633,7 +10432,7 @@
       "feature": "GAMEPLAY-CONFIG",
       "title": "Wave D2: PostgreSQL gameplay configuration authority and publication lifecycle",
       "objective": "Persist typed gameplay configuration versions in PostgreSQL with draft, validation, atomic publication, optimistic concurrency, rollback, audit and immutable active selection.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
         "VL-190"
       ],
@@ -9654,8 +10453,13 @@
           { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.unit.test.ts", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Allocation does not yet pin the published version, no dependency check blocks retiring a referenced version operationally, and Pet, progression, economy and campaign configuration domains are not modeled yet."
-      }
+        "remaining": "Allocation does not yet pin the published version, no dependency check blocks retiring a referenced version operationally, and Pet, progression, economy and campaign configuration domains are not modeled yet.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-192",
@@ -9665,7 +10469,7 @@
       "feature": "ADMIN",
       "title": "Wave D2: Admin gameplay configuration control panel",
       "objective": "Extend the existing Next.js Admin application with working editors for elements, Pets, Bosses, board/multiplier rules, skills, progression and rewards, plus draft comparison, validation, publication, rollback and audit history.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
         "VL-191"
       ],
@@ -9685,8 +10489,13 @@
           { "command": "pnpm exec vitest run apps/admin-web/server/proxy.unit.test.ts", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Pet, progression and campaign editors are absent; no browser-level operator acceptance has run. Admin simulation is tracked in VL-197."
-      }
+        "remaining": "Pet, progression and campaign editors are absent; no browser-level operator acceptance has run. Admin simulation is tracked in VL-197.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-193",
@@ -9696,7 +10505,7 @@
       "feature": "NATIVE",
       "title": "Wave D2: cooperative native runtime, four-seat admission and recovery",
       "objective": "Run arena8-coop-pve through the existing native Gateway, Persistence Host, admission and journal with four separately authenticated participants, seat ownership and restart recovery under the original configuration.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
         "VL-190",
         "VL-191"
@@ -9721,8 +10530,13 @@
           { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 },
           { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/coop/modules/match/application/provisioner.unit.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Packaged-player and four-human acceptance remain; Unity renders the committed projection but has no cooperative scene UI yet."
-      }
+        "remaining": "Packaged-player and four-human acceptance remain; Unity renders the committed projection but has no cooperative scene UI yet.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-194",
@@ -9732,7 +10546,7 @@
       "feature": "ROOMS",
       "title": "Wave D2: cooperative rooms, Achievement Points and eligibility",
       "objective": "Implement the durable Achievement Point ledger and the room lifecycle with per-Boss room-creation thresholds published from configuration.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
         "VL-191"
       ],
@@ -9752,8 +10566,13 @@
           { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts", "exitCode": 0 }
         ],
-        "remaining": "Start provisions the native match when the native composition is enabled, but there is no room discovery/list, return-to-hub flow, settlement award into the ledger, or reward/achievement configuration beyond the room threshold."
-      }
+        "remaining": "Start provisions the native match when the native composition is enabled, but there is no room discovery/list, return-to-hub flow, settlement award into the ledger, or reward/achievement configuration beyond the room threshold.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-195",
@@ -9763,7 +10582,7 @@
       "feature": "SETTLEMENT",
       "title": "Wave D2: cooperative settlement and per-participant progression",
       "objective": "Settle one authoritative team completion into durable per-participant rewards driven by published reward rules, including contribution-based eligibility.",
-      "priority": 0,
+      "priority": 1,
       "dependsOn": [
         "VL-193",
         "VL-194"
@@ -9788,8 +10607,13 @@
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 },
           { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
         ],
-        "remaining": "Reconnect-before-request and concurrent-worker acceptance, contribution-based eligibility policy, coop-only worker boot policy and Unity reward presentation remain."
-      }
+        "remaining": "Reconnect-before-request and concurrent-worker acceptance, contribution-based eligibility policy, coop-only worker boot policy and Unity reward presentation remain.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-A",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-196",
@@ -9801,7 +10625,8 @@
       "objective": "Present the committed four-seat cooperative match in the existing Unity Arena8 infrastructure and complete the real portal flow from Central Plaza through Cinder Terraces to Tideglass Lagoon.",
       "priority": 0,
       "dependsOn": [
-        "VL-193"
+        "VL-193",
+        "VL-194"
       ],
       "acceptance": [
         "Unity renders four combatants, the active seat, individual resources and skills, team status, the shared 8x8 board with multiplier labels, Boss HP/phase/telegraph, turn/round and contribution without hardcoding costs or caps",
@@ -9820,12 +10645,18 @@
           { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopLobbyTests", "exitCode": 0 },
           { "command": "unity test apps/unity-client --mode PlayMode --filter Aetheria.Tests.CoopCampaignScreenTests", "exitCode": 0 }
         ],
-        "remaining": "No authored scene prefab/UI style or real portal interaction is wired yet; reconnect/replay presentation, Fire Zone capability rendering and packaged-player/four-human acceptance remain."
-      }
+        "remaining": "No authored scene prefab/UI style or real portal interaction is wired yet; reconnect/replay presentation, Fire Zone capability rendering and packaged-player/four-human acceptance remain.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "D3-B",
+      "remaining": "Wire existing lobby and HUD to the portal-selected Boss, owned roster, admission and reconnect. Complete reward presentation and return to hub.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-197",
-      "mvpMilestone": "M3",
+      "mvpMilestone": "M5",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
       "feature": "BALANCE",
@@ -9833,8 +10664,8 @@
       "objective": "Run bounded simulations of draft or published configuration through the same Rust rules, with fixed documented seeds and comparable public-information policies, without touching live progression.",
       "priority": 1,
       "dependsOn": [
-        "VL-192",
-        "VL-193"
+        "VL-190",
+        "VL-192"
       ],
       "acceptance": [
         "Simulation results report team win rate, duration, actions, rounds, phase transitions, multiplier occurrence and contribution distribution for comparable seed sets",
@@ -9855,8 +10686,13 @@
           { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 },
           { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 }
         ],
-        "remaining": "Simulation has no cancellation; multiplier-occurrence and contribution-distribution metrics are not reported; Admin balance charts are absent. No browser-level operator acceptance has run."
-      }
+        "remaining": "Simulation has no cancellation; multiplier-occurrence and contribution-distribution metrics are not reported; Admin balance charts are absent. No browser-level operator acceptance has run.",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+      },
+      "workstream": "E",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
     },
     {
       "id": "VL-198",
@@ -9864,12 +10700,10 @@
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
       "feature": "CONTENT",
-      "title": "Wave D2: M4 content production on the MVP critical path",
-      "objective": "Produce the owner-approved M4 character and asset set through the existing H1-H4 gates without paid generation, visual evolution or rights assumptions.",
+      "title": "M4 production asset and content acceptance",
+      "objective": "Track and accept the full production catalog, per-stage asset readiness, six maps, encounters, audio, progression and economy.",
       "priority": 1,
-      "dependsOn": [
-        "VL-189"
-      ],
+      "dependsOn": [],
       "acceptance": [
         "Required M4 characters and assets pass their H1-H4 owner review gates with recorded decisions",
         "55 active Pet identities, six gated Off-rate candidates, six Dragons, six Birds and all approved identities remain intact",
@@ -9878,31 +10712,448 @@
       "status": "TODO",
       "qualificationRequirements": [
         "Owner H1-H4 asset acceptance"
+      ],
+      "workstream": "D4",
+      "qualificationDependencies": [
+        "VL-182",
+        "VL-183",
+        "VL-184",
+        "VL-204",
+        "VL-205",
+        "VL-206",
+        "VL-207",
+        "VL-208"
+      ],
+      "remaining": "Prepare canonical production tracking alongside D3. Close after the listed M4 production tasks and applicable art, rights and design reviews.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
     },
     {
       "id": "VL-199",
-      "mvpMilestone": "M4",
+      "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
       "feature": "QA-SRE",
-      "title": "Wave D2: four-account packaged-player cooperative acceptance",
-      "objective": "Accept cooperative gameplay on a built Linux Unity player against the real Nest API, canonical Rust runtime and PostgreSQL with four separately authenticated integration clients.",
-      "priority": 1,
+      "title": "Automated four-account packaged cooperative acceptance",
+      "objective": "Prove the existing packaged Linux Unity executable against real Nest, Rust and PostgreSQL with four independent test accounts.",
+      "priority": 0,
       "dependsOn": [
-        "VL-195",
-        "VL-196",
-        "VL-198"
+        "VL-203",
+        "VL-209",
+        "VL-210"
       ],
       "acceptance": [
-        "A human player with clearly labelled local test clients completes the cooperative flow end to end",
-        "Four separately authenticated clients provide the native authorization evidence",
-        "Four-human acceptance is claimed only if four actual humans participate"
+        "Start the normal packaged player signed out. Guest login, Central Plaza movement, Fire portal, collection and owned selection, room create/join, four-seat admission and committed 64-tile HUD all work.",
+        "Submit legal intents through the shared board, show multiplier tiles, Boss transformation and elemental skills, win through player actions and verify durable per-account awards.",
+        "Return to hub and enter Water through its portal. Reconnect and restart an active match and prove no duplicate payouts. Record build SHA, commands, evidence and automation roles."
       ],
       "status": "TODO",
       "qualificationRequirements": [
-        "Linux player build",
-        "Local PostgreSQL and native runtime"
+        "Run the packaged Linux executable in the licensed build environment."
+      ],
+      "workstream": "D3-B",
+      "remaining": "Build and run the automated packaged flow with representative assets. Four-human acceptance is tracked in VL-212.",
+      "verificationRequirements": [
+        "Record exact committed source and actual outcomes for the listed acceptance criteria."
+      ]
+    },
+    {
+      "id": "VL-200",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-A",
+      "title": "Repair PR86 integration and migration journal",
+      "objective": "Restore build and PostgreSQL compatibility on the PR86 change set.",
+      "priority": 0,
+      "dependsOn": [],
+      "acceptance": [
+        "Rust format, contract/API build and typecheck pass.",
+        "Upgrade exact PR84 migration history on real PostgreSQL and re-run historical native/admission compatibility and old writes.",
+        "Protected PR checks run against committed source."
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Repair migration order, immutable prefixes, owned identity call sites and tests.",
+      "implementation": {
+        "sourceRevision": "a94e368e103f7d3222e405d5a2d547c811a83a64",
+        "pullRequest": 86,
+        "change": "PR86 introduces canonical metadata, multiple Boss definitions and instance-aware seat inputs. The checked-in API build fails and the draft migration prefix collides with the PR84 settlement migration."
+      }
+    },
+    {
+      "id": "VL-201",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-A",
+      "title": "Complete owned Pet instance identity",
+      "objective": "Keep species, instance, account and seat identity distinct across collection, rooms, native projections and payout.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-200"
+      ],
+      "acceptance": [
+        "A four-seat room admits independently owned instances of one species and denies a foreign or repeated instance.",
+        "Collection and Unity select the persisted instance. Frozen roster, restart and settlement keep it bound to its account.",
+        "Historical rooms, receipts and legacy party writes still replay without rewriting committed data."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Carry the stable ID through the existing collection, client selection, allocation and settlement paths."
+    },
+    {
+      "id": "VL-202",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-A",
+      "title": "Publish and consume canonical Pets and multiple Bosses",
+      "objective": "Bind the published catalog and map-to-Boss routing through Admin, Nest, Rust and Unity.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-200"
+      ],
+      "acceptance": [
+        "All 55 active Pet IDs match the canonical roster and all six gated candidates remain disabled. Validate metadata and rarity without changing approved identity.",
+        "Select Fire and Water from the same published bundle and executable. Validate each selected map and Boss ID and reject unknown or ambiguous selectors.",
+        "Seed reruns preserve the operator-selected configuration; the historical single-Boss bundle retains its exact digest and can resume a pinned match."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Complete typed catalog metadata, map binding, editor and consumers. Preserve immutable historical decoding."
+    },
+    {
+      "id": "VL-203",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-A",
+      "title": "Verify PostgreSQL, Nest and Rust cooperative restart and settlement",
+      "objective": "Run the cooperative process fixture with genuine match completion and immutable allocations.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-201",
+        "VL-202",
+        "VL-193",
+        "VL-195"
+      ],
+      "acceptance": [
+        "Four authenticated seats execute legal commands against one board. Foreign or wrong-seat commands fail without mutation.",
+        "Run Fire and Water in one native build. Publish a new version during an active match, restart and verify the original board, Boss, journal and digest.",
+        "Exercise terminal win and loss, worker concurrency and restart. Each eligible participant receives one durable reward and duplicate delivery changes no balance."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Extend the existing native process harness and record exact committed outcomes."
+    },
+    {
+      "id": "VL-204",
+      "mvpMilestone": "M2",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D4",
+      "title": "Complete Icarus and reusable production morphology intakes",
+      "objective": "Prepare reusable humanoid, quadruped, avian, serpent and floating control rigs around the approved Icarus production path.",
+      "priority": 1,
+      "dependsOn": [],
+      "acceptance": [
+        "Icarus passes independent blink, smile, shout and frown deformation checks, modular turnaround, authored rig and URP review at H1 through H4.",
+        "Reusable profiles document skeleton, deformation, animation, import budgets and technical admission with sample Unity results."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner H1 face/hair, H2 modular turnaround, H3 rig/poses and H4 Unity URP approval before dependent stages."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Prepare authorized intake and validate existing samples. Stop the affected character at each H gate until its receipt names the approved evidence."
+    },
+    {
+      "id": "VL-205",
+      "mvpMilestone": "M4",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D4",
+      "title": "Complete six Dragons, six Birds and active Pet combat presentation",
+      "objective": "Produce the approved families and wire production animations, materials and skill VFX into the canonical Pet mapping.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-182"
+      ],
+      "acceptance": [
+        "Animation manifests cover locomotion, idle, hit, defeat, skills, signature and ultimate for all twelve family leads and each supported Pet archetype.",
+        "Unity admission, render captures, reduced-motion VFX and rights receipts link to exact asset hashes. No new collectible Pet is introduced by a shared rig."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner concept and applicable H gate approval; rights clearance before production admission."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Prepare binding and animation intake; produce only against authorized designs and applicable stage approval."
+    },
+    {
+      "id": "VL-206",
+      "mvpMilestone": "M4",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D4",
+      "title": "Author six campaign maps, encounters and Boss progressions",
+      "objective": "Use the six canonical maps, regular encounters and one production Boss encounter per map.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-202"
+      ],
+      "acceptance": [
+        "Publish and clear all six maps through authored regular encounters and the correct Boss with persistent unlock/recruitment state.",
+        "Match enrollment, rewards and unlocks remain pinned to the published version across restart."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner encounter design and balance approval before a production publication."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Build encounter authority and progression independently of art; pair with the Unity map to qualify it.",
+      "qualificationDependencies": [
+        "VL-183",
+        "VL-184"
+      ]
+    },
+    {
+      "id": "VL-207",
+      "mvpMilestone": "M4",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D4",
+      "title": "Complete cooperative Artifact and Skill Level progression",
+      "objective": "Make owned Artifact loadout and independent Skill Level progression server-authoritative and visible in Unity.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-177",
+        "VL-201"
+      ],
+      "acceptance": [
+        "Core, Aegis and Rune equip/upgrade affect only later pinned allocations and change observable native results.",
+        "A Skill Level upgrade consumes authored resources exactly once and does not gate authored Lv1 skill access. Cross-account requests fail."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Connect account/instance and skill progress to published configuration, receipts and Unity comparison."
+    },
+    {
+      "id": "VL-208",
+      "mvpMilestone": "M4",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D4",
+      "title": "Complete Admin catalog, economy and acquisition",
+      "objective": "Give existing Admin authorized draft, compare, validate, publish, rollback and audit controls for supported MVP domains.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-191"
+      ],
+      "acceptance": [
+        "Edit canonical metadata, encounters, Skill Level, Artifacts, economy, progression, reward and acquisition fields with typed engine approval.",
+        "Preview changes and run test-only acquisition with pinned versions and idempotency. Preserve six gated candidates and approved rarities."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner approves rarity, acquisition and production economy; purchases stay gated."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Implement typed editor and transaction paths in existing modules."
+    },
+    {
+      "id": "VL-209",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-B",
+      "title": "Wire Central Plaza and cooperative portals into the existing Unity player",
+      "objective": "Connect signed-out guest login, movement and Fire/Water portal intents, owned collection and room selection in the normal executable.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-196",
+        "VL-188"
+      ],
+      "acceptance": [
+        "Walk into the scene portal and enter the published Fire or Water lobby without starting directly inside Pet Arena.",
+        "Create/join by room identity and render owned selection, readiness and admission. Developer assets suffice for automation."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Implement portal-selected lobby entry and restore normal navigation."
+    },
+    {
+      "id": "VL-210",
+      "mvpMilestone": "M3",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "D3-B",
+      "title": "Finish cooperative HUD, receipts and active client recovery",
+      "objective": "Show committed combat and durable progression and recover the current match from the normal client flow.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-196"
+      ],
+      "acceptance": [
+        "Render the active seat, 64 tiles, multipliers, four players, skill/phase/telegraph and correct victory or defeat.",
+        "Return to Central Plaza with updated progression. Reconnect with renewed scoped admission at the committed version and avoid duplicate UI effects."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Wire HUD to native session and settlement notices, Fire unlock/Water progression and return/reconnect."
+    },
+    {
+      "id": "VL-211",
+      "mvpMilestone": "M5",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "E",
+      "title": "Measure six-element balance, progression and acquisition abuse",
+      "objective": "Compare tactical team compositions under the same public-information policy and follow with measured owner decisions.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-197"
+      ],
+      "acceptance": [
+        "Comparable fixed seeds report win rate, Boss phases, multiplier rates and contribution across six elements, team compositions and attainable progression.",
+        "Analytical and Monte Carlo gacha checks reproduce published distributions. Duplicate/retry/farming tests bound rewards and Achievement Points.",
+        "Record proposed changes and approval by digest."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner balance and economy approval before candidate publication."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Add cancellable simulation metrics, compare designs and test economy edge cases.",
+      "qualificationDependencies": [
+        "VL-206",
+        "VL-207",
+        "VL-208"
+      ]
+    },
+    {
+      "id": "VL-212",
+      "mvpMilestone": "M5",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "E",
+      "title": "Four-human cooperative playtest and polish acceptance",
+      "objective": "Observe actual parties on the existing player and qualify clarity, performance, accessibility and VI/EN localization.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-199"
+      ],
+      "acceptance": [
+        "Four consenting humans independently sign in. Record movement, portal, room, turns, phase response, victory/defeat, return and reconnect observations.",
+        "Measure gameplay frame time and memory; verify keyboard/controller, focus, readable indicators, reduced motion and Vietnamese/English feedback."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Four-human participation and explicit owner balance acceptance."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Prepare and run human sessions; resolve measured gameplay and accessibility defects.",
+      "qualificationDependencies": [
+        "VL-198",
+        "VL-211"
+      ]
+    },
+    {
+      "id": "VL-213",
+      "mvpMilestone": "M6",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "F",
+      "title": "Qualify the Windows closed-beta build and recovery",
+      "objective": "Exercise the exact Windows build on physical hardware and qualify operations for cooperative PvE.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-199"
+      ],
+      "acceptance": [
+        "Windows GPU/hardware matrix captures frame time, memory, rendering and device logs.",
+        "Run defensive security, load and stress tests, crash/reconnect and backup restoration drills.",
+        "Validate installer, authenticated update, rollback and exact build/asset manifest on a clean machine."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Physical Windows hardware and authorized signing environment."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Implement and run independent Windows, reliability and installer checks as environments become available.",
+      "qualificationDependencies": [
+        "VL-198",
+        "VL-212"
+      ]
+    },
+    {
+      "id": "VL-214",
+      "mvpMilestone": "M6",
+      "mvpScope": "MVP",
+      "mvpCriticalPath": true,
+      "feature": "F",
+      "title": "Qualify website, preregistration and owner release decision",
+      "objective": "Qualify the official site, rights-cleared character previews and cinematic media, signup consent and exact-candidate rollout.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-163",
+        "VL-164"
+      ],
+      "acceptance": [
+        "Double opt-in is idempotent and concurrent final-slot claims never exceed 5000 lifetime confirmations.",
+        "Privacy, unsubscribe, consent retention, safe public routes, review of media rights and protected delivery pass.",
+        "Owner signs off on the exact build, source SHA, website and distribution scope before release flags change."
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner legal, privacy, media, signing and release authorization."
+      ],
+      "verificationRequirements": [
+        "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
+      ],
+      "remaining": "Complete site and private acceptance independently. Keep release OFFLINE_ONLY / NO_GO_PUBLIC until owner authorization.",
+      "qualificationDependencies": [
+        "VL-167",
+        "VL-198",
+        "VL-212",
+        "VL-213"
       ]
     }
   ]
