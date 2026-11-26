@@ -40,6 +40,7 @@ export function validateTaskPlan(plan){
   assert.match(currentWave?.id??'',/^WAVE-[A-Z][A-Z0-9-]*$/,'Invalid current wave');
   assert.equal(plan.mvpProgram.wave,'Wave '+currentWave.id.slice(5),'Current wave label drift');
   assert(currentWave.acceptanceTasks?.length&&currentWave.acceptanceTasks.every(id=>tasks.get(id)?.mvpScope==='MVP'),'Current wave needs MVP acceptance tasks');
+  assert.equal(tasks.get(plan.mvpProgram.governance?.releaseAcceptanceTask)?.mvpScope,'MVP','Missing MVP release acceptance task');
   const waveComplete=currentWave.acceptanceTasks.every(id=>tasks.get(id).status==='VERIFIED');
   assert.equal(currentWave.status==='VERIFIED',waveComplete,'Current wave acceptance status drift');
   assert(currentWave.workstreams?.length&&currentWave.workstreams.every(name=>[...tasks.values()].some(t=>workstream(t)===name)),'Unknown current wave workstream');
@@ -62,17 +63,20 @@ export function validateTaskPlan(plan){
   assert(tasks.has(id),'Unknown implementation dependency '+id);
   assert(!active.has(id),'Implementation dependency cycle at '+id);
   if(visited.has(id))return;
-  active.add(id);tasks.get(id).dependsOn.forEach(visit);active.delete(id);visited.add(id);
+  active.add(id);
+  const task=tasks.get(id);
+  [...task.dependsOn,...(task.qualificationDependencies??[])].forEach(visit);
+  active.delete(id);visited.add(id);
  }
  for(const task of tasks.values()){
-  visit(task.id);
   for(const id of task.qualificationDependencies??[]){
    assert(tasks.has(id)&&id!==task.id,'Unknown qualification dependency '+id);
    if(task.mvpScope==='MVP')assert.equal(tasks.get(id).mvpScope,'MVP','MVP task has a deferred qualification dependency '+id);
   }
   if(task.mvpScope==='MVP')for(const id of task.dependsOn)assert(tasks.get(id)?.mvpScope==='MVP','MVP task '+task.id+' has a deferred implementation dependency '+id);
-  if(task.status==='VERIFIED')assert(task.dependsOn.every(id=>tasks.get(id).status==='VERIFIED'),'Verified task has incomplete implementation dependency');
+  if(task.status==='VERIFIED')assert(task.dependsOn.every(id=>tasks.get(id)?.status==='VERIFIED'),'Verified task has incomplete implementation dependency');
  }
+ for(const id of tasks.keys())visit(id);
  return tasks;
 }
 function workstream(task){
@@ -101,11 +105,24 @@ export function taskStatus(plan,{milestone,stream,scope}={}){
  const available=id=>tasks.get(id).status==='VERIFIED'||Boolean(tasks.get(id).implementation?.availableAt);
  const waiting=task=>task.dependsOn.filter(id=>!available(id));
  const qualify=task=>(task.qualificationDependencies??[]).filter(id=>tasks.get(id).status!=='VERIFIED');
- const waveOrder=task=>wave?.workstreams.indexOf(workstream(task))??-1;
+ const critical=new Set();
+ function includeRequired(id){
+  if(critical.has(id))return;
+  critical.add(id);
+  const task=tasks.get(id);
+  [...task.dependsOn,...(task.qualificationDependencies??[])].forEach(includeRequired);
+ }
+ if(wave){
+  [...wave.acceptanceTasks,plan.mvpProgram.governance.releaseAcceptanceTask].forEach(includeRequired);
+ }
+ function waveOrder(task){
+  const rank=wave?.workstreams.indexOf(workstream(task))??-1;
+  return rank<0?(wave?.workstreams.length??0):rank;
+ }
  const pending=selected.filter(incomplete).sort((a,b)=>
   (a.priority??3)-(b.priority??3)||
-  (waveOrder(a)<0?Infinity:waveOrder(a))-(waveOrder(b)<0?Infinity:waveOrder(b))||
-  Number(Boolean(b.mvpCriticalPath))-Number(Boolean(a.mvpCriticalPath))||
+  waveOrder(a)-waveOrder(b)||
+  Number(critical.has(b.id))-Number(critical.has(a.id))||
   a.id.localeCompare(b.id));
  const ready=pending.filter(task=>waiting(task).length===0);
  const acceptanceTasks=pending.filter(task=>(task.qualificationRequirements.length||qualify(task).length));
@@ -126,7 +143,7 @@ export function taskStatus(plan,{milestone,stream,scope}={}){
   active:pending.filter(task=>task.status==='IN_PROGRESS').map(task=>({id:task.id,title:task.title,remaining:task.remaining??task.implementation?.remaining})),
   waitingOnImplementation:pending.filter(task=>waiting(task).length).map(task=>({id:task.id,dependencies:waiting(task)})),
   acceptanceGates:acceptanceTasks.map(task=>({id:task.id,dependencies:qualify(task),requirements:task.qualificationRequirements})),
-  criticalPath:pending.filter(task=>task.mvpScope==='MVP'&&task.mvpCriticalPath).map(task=>task.id),
+  criticalPath:pending.filter(task=>critical.has(task.id)).map(task=>task.id),
   ownerDecisions:(wave?.ownerDecisions??[]).filter(entry=>entry.tasks.some(id=>selected.some(task=>task.id===id&&incomplete(task)))),
   recommended:ready.filter(task=>task.mvpScope==='MVP').slice(0,8).map(task=>({id:task.id,workstream:workstream(task),title:task.title})),
   ...(milestone!==undefined||stream!==undefined?{tasks:selected}:{}),

@@ -24,7 +24,7 @@
       "localKit": "/home/tiecont/Downloads/aetheria-soulbound-cinematic-kit/",
       "referencePolicy": "Kit artwork and historical UI are design references; retain canonical Pet IDs and opcodes, use Aetheria: SoulBound branding and record actual file hashes and provenance. Concept assets and synthesized audio do not imply final models, footage or publishable rights.",
       "limitedPets": ["Icarus", "Glaciemora", "Voltaris", "Noctalith", "Sylvaris", "Leviara"],
-      "taskOwnership": "VL-149 owns six Limited S; VL-160 retains six distinct Standard S. Shared authoring conventions belong to VL-105; never substitute one roster for the other.",
+      "taskOwnership": "VL-149 owns the Icarus cinematic; VL-172 retains the five deferred Limited S. VL-160 owns the six distinct Standard S. Shared authoring conventions belong to VL-105; never substitute one roster for the other.",
       "milestones": [
         {"id": "gate-0", "priority": 0, "tasks": ["VL-168", "VL-169", "VL-055"], "acceptance": "Fix actual main failures, review and merge PR33, rebase/fix/merge PR35 through green exact-source CI; prove native backup recovery and obtain actual retention/deletion approval before claiming VL-055 closure."},
         {"id": "early-3d", "priority": 1, "tasks": ["VL-105", "VL-121", "VL-171", "VL-149", "VL-160", "VL-180"], "acceptance": "Advance Icarus through the next owner H-gate with modular VRM/accessory status; build reusable humanoid/quadruped/avian/serpent/floating intakes and the Fire/Water arena foundation. The five additional Limited S remain deferred (VL-172) and are not an MVP dependency."},
@@ -397,6 +397,7 @@
       "plan": "config/development-plan.json",
       "statusCommand": "pnpm plan:status",
       "waveRule": "Every future wave names its milestone, file-owned workstreams, integration owner and measurable acceptance.",
+      "releaseAcceptanceTask": "VL-157",
       "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
     },
     "waveC2Record": {

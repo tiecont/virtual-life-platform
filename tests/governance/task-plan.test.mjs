@@ -15,6 +15,9 @@ test('all independent implementations are ready without an agent, phase, hardwar
 });
 test('real implementation dependencies, invalid states, cycles and invented verification fail closed',()=>{
  for(const tasks of [[task('VL-001',['VL-999'])],[task('VL-001',['VL-002']),task('VL-002',['VL-001'])],[task('VL-001'),task('VL-001')],[task('VL-001',[],{status:'VERIFIED'})],[task('VL-001',[],{status:'BLOCKED_AGENT'})]])assert.throws(()=>validateTaskPlan(plan(tasks)));
+ assert.throws(()=>validateTaskPlan(plan([
+  task('VL-001',['VL-002']),task('VL-002',[],{qualificationDependencies:['VL-001']}),
+ ])),/dependency cycle/);
  const verification={sourceRevision:'a'.repeat(40),reviewMode:'SINGLE_AGENT_AUDIT',commands:[{command:'pnpm test',exitCode:0}]};
  assert.doesNotThrow(()=>validateTaskPlan(plan([task('VL-001',[],{status:'VERIFIED',verification})])));
  assert.throws(()=>validateTaskPlan(plan([task('VL-001',[],{status:'VERIFIED',verification:{...verification,commands:[{command:'pnpm test',exitCode:1}]}})])));
