@@ -398,7 +398,31 @@
       "statusCommand": "pnpm plan:status",
       "waveRule": "Every future wave names its milestone, file-owned workstreams, integration owner and measurable acceptance.",
       "releaseAcceptanceTask": "VL-157",
-      "release": "OFFLINE_ONLY / NO_GO_PUBLIC"
+      "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+      "implementation": {
+        "pullRequest": 85,
+        "sourceRevision": "3c5629bb3871eaf95f9bcc250bc9ca71219071cd",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "commands": [
+          {
+            "command": "pnpm governance:check",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm test:harness",
+            "exitCode": 0
+          },
+          {
+            "command": "node --test tests/governance/task-plan.test.mjs tests/governance/content-readiness.test.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/engineering-harness/state.mjs recover canonical-d3",
+            "exitCode": 0
+          }
+        ],
+        "remaining": "Protected hosted CI and review before merge."
+      }
     },
     "waveC2Record": {
       "id": "WAVE-C2",
@@ -10332,7 +10356,8 @@
       ],
       "implementation": {
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
-        "wave": "Wave B"
+        "wave": "Wave B",
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
       },
       "workstream": "D3-B",
       "remaining": "Complete testable hub movement, Fire and Water portals and return routes with representative geometry; rendered production environments belong to VL-183.",
@@ -10754,7 +10779,7 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Build and run the automated packaged flow with representative assets. Four-human acceptance is tracked in VL-212.",
+      "remaining": "Run the real packaged Linux executable with four independently authenticated accounts. Existing editor suites do not establish this acceptance. Keep the Icarus prefab review separate.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
@@ -10779,11 +10804,31 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Repair migration order, immutable prefixes, owned identity call sites and tests.",
+      "remaining": "Focused compatibility and build checks passed locally. Complete current hosted checks and confirm real PR84 row backfill and recovery evidence for already active allocations.",
       "implementation": {
-        "sourceRevision": "a94e368e103f7d3222e405d5a2d547c811a83a64",
+        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "pullRequest": 86,
-        "change": "PR86 introduces canonical metadata, multiple Boss definitions and instance-aware seat inputs. The checked-in API build fails and the draft migration prefix collides with the PR84 settlement migration."
+        "change": "Kept the existing settlement migration and policies. Added exact 0062 prefix policies and UUID backfill, fixed build and native settings composition.",
+        "previousSourceRevision": "a94e368e103f7d3222e405d5a2d547c811a83a64",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "commands": [
+          {
+            "command": "pnpm game:migration:compat",
+            "exitCode": 0,
+            "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+          },
+          {
+            "command": "pnpm --filter @aetheria/platform-api build",
+            "exitCode": 0,
+            "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+          },
+          {
+            "command": "pnpm --filter @aetheria/platform-api typecheck",
+            "exitCode": 0,
+            "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+          }
+        ]
       }
     },
     {
@@ -10803,12 +10848,19 @@
         "Collection and Unity select the persisted instance. Frozen roster, restart and settlement keep it bound to its account.",
         "Historical rooms, receipts and legacy party writes still replay without rewriting committed data."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Carry the stable ID through the existing collection, client selection, allocation and settlement paths."
+      "remaining": "Validate awarded instances and saved guest re-admission through the packaged player. Exact historical runtime binary compatibility review remains open.",
+      "implementation": {
+        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": 86,
+        "change": "Added server-owned durable instance IDs to collection, room seats, frozen allocations and progression lookup. Native snapshots bind the selected identity for the versioned configuration.",
+        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+      }
     },
     {
       "id": "VL-202",
@@ -10827,12 +10879,36 @@
         "Select Fire and Water from the same published bundle and executable. Validate each selected map and Boss ID and reject unknown or ambiguous selectors.",
         "Seed reruns preserve the operator-selected configuration; the historical single-Boss bundle retains its exact digest and can resume a pinned match."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Complete typed catalog metadata, map binding, editor and consumers. Preserve immutable historical decoding."
+      "remaining": "Complete Admin browser/editor acceptance and all intended map and progression checks. The six Off-rate candidates remain gated.",
+      "implementation": {
+        "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": 86,
+        "change": "Added versioned multi-Boss and map bindings, a Boss selector in Admin, Fire and Water room selection and catalog metadata reconciled to all 55 active identities. The seed installer preserves the active operator publication.",
+        "availableAt": "2c1e7999b5e4303cfe3773327a91797a3c4905ba",
+        "commands": [
+          {
+            "command": "node --test tests/governance/coop-catalog.test.mjs",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          },
+          {
+            "command": "aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v1.seed.json",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          },
+          {
+            "command": "aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v2.seed.json",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          }
+        ]
+      }
     },
     {
       "id": "VL-203",
@@ -10854,12 +10930,26 @@
         "Run Fire and Water in one native build. Publish a new version during an active match, restart and verify the original board, Boss, journal and digest.",
         "Exercise terminal win and loss, worker concurrency and restart. Each eligible participant receives one durable reward and duplicate delivery changes no balance."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Extend the existing native process harness and record exact committed outcomes."
+      "remaining": "Native Fire victory and Water loss passed with independent scoped seats and disposable test balance. Repeat exact-source hosted checks and qualify persistent progression and display in the packaged flow.",
+      "implementation": {
+        "sourceRevision": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a",
+        "availableAt": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": 86,
+        "change": "Real PostgreSQL, Nest and Rust process test used one binary and the versioned Fire and Water maps. Four scoped accounts included a same-species pair with distinct owned instances. The operator published a replacement during the Fire match. Both matches resumed at the committed version with the original board and pinned publication. Legal swaps won Fire and authored round limit ended Water. Concurrent settlement consumers and a repeat drain paid each seat once.",
+        "commands": [
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0,
+            "sourceRevision": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a"
+          }
+        ]
+      }
     },
     {
       "id": "VL-204",
@@ -11004,12 +11094,31 @@
         "Walk into the scene portal and enter the published Fire or Water lobby without starting directly inside Pet Arena.",
         "Create/join by room identity and render owned selection, readiness and admission. Developer assets suffice for automation."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Implement portal-selected lobby entry and restore normal navigation."
+      "remaining": "Build and exercise the actual executable through guest login, walking, portal interaction, Fire and Water lobbies, and room create/join.",
+      "implementation": {
+        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": 86,
+        "change": "Added the existing player launch mode, Central Plaza guest login, portal-scoped class, and owned-collection lobby entry.",
+        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "commands": [
+          {
+            "command": "unity test apps/unity-client --mode EditMode --filter Coop",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          },
+          {
+            "command": "unity test apps/unity-client --mode PlayMode --filter Coop",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          }
+        ]
+      }
     },
     {
       "id": "VL-210",
@@ -11027,12 +11136,26 @@
         "Render the active seat, 64 tiles, multipliers, four players, skill/phase/telegraph and correct victory or defeat.",
         "Return to Central Plaza with updated progression. Reconnect with renewed scoped admission at the committed version and avoid duplicate UI effects."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Wire HUD to native session and settlement notices, Fire unlock/Water progression and return/reconnect."
+      "remaining": "Exercise reconnect, terminal reward presentation and return to Central Plaza in the packaged path. Confirm disabled Fire Zone and legitimate enablement for the intended Pet.",
+      "implementation": {
+        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": 86,
+        "change": "Added scoped re-admission and room refresh, native Start control and committed shared-board refresh across turns.",
+        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "commands": [
+          {
+            "command": "unity test apps/unity-client --mode PlayMode --filter Coop",
+            "exitCode": 0,
+            "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
+          }
+        ]
+      }
     },
     {
       "id": "VL-211",

@@ -65,8 +65,9 @@ test('current wave, milestone totals and targeted task discovery use canonical d
  }
  const selected=taskStatus(p,{milestone:'M3',stream:'d3-a'});
  assert(selected.tasks.every(t=>t.mvpMilestone==='M3'&&(t.workstream??t.feature)==='D3-A'));
- assert.equal(selected.recommended[0].id,'VL-200');
- assert(selected.waitingOnImplementation.some(t=>t.id==='VL-203'));
+ assert(selected.tasks.some(t=>t.id==='VL-203'));
+ assert(selected.recommended.every(t=>selected.ready.some(ready=>ready.id===t.id)));
+ assert(selected.recommended.every(t=>t.workstream==='D3-A'));
  assert(s.ownerDecisions.some(item=>item.decision.includes('H1, H2, H3 and H4')));
  assert.throws(()=>validateTaskPlan({...p,mvpProgram:{...p.mvpProgram,wave:'Wave C2'}}),/wave label drift/);
 });
