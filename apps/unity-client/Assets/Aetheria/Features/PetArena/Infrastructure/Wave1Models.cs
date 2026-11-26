@@ -37,7 +37,7 @@ namespace Aetheria.PetArena.Infrastructure
 
     [Serializable] public sealed class Wave1Pet
     {
-        public string petId, name, element, rank;
+        public string petId, name, element, rank, ownedPetInstanceId;
         public int level, exp, expToNext, stage;
         public string[] unlocks;
         public Wave1Stats stats;

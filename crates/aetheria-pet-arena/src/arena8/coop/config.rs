@@ -19,7 +19,8 @@ use std::collections::{BTreeMap, BTreeSet};
 /// Engine capability a bundle must declare compatibility with.
 pub const ENGINE_CAPABILITY: &str = "arena8-coop-v1";
 /// Supported bundle schema version.
-pub const CONFIG_SCHEMA_VERSION: u32 = 1;
+pub const CONFIG_SCHEMA_VERSION: u32 = 2;
+const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
 /// Canonical domain separation for the bundle digest.
@@ -38,7 +39,9 @@ pub struct CoopConfig {
     pub damage: DamageConfig,
     pub elements: Vec<ElementProfile>,
     pub multiplier: MultiplierConfig,
-    pub bosses: Vec<BossConfig>,
+    boss: Option<BossConfig>,
+    #[serde(default)]
+    bosses: Option<Vec<BossConfig>>,
     pub skills: Vec<SkillConfig>,
     pub pets: Vec<PetConfig>,
     pub rewards: RewardsConfig,
@@ -204,6 +207,7 @@ pub struct MultiplierTier {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BossConfig {
     pub id: String,
+    pub map_id: Option<String>,
     pub name: String,
     pub element: String,
     pub max_hp: u32,
@@ -402,8 +406,10 @@ impl CoopConfig {
 
     /// Full semantic validation of the configuration graph.
     pub fn validate(&self) -> Result<(), ConfigError> {
-        if self.schema_version != CONFIG_SCHEMA_VERSION
-            || self.engine_capability != ENGINE_CAPABILITY
+        if !matches!(
+            self.schema_version,
+            HISTORICAL_SCHEMA_VERSION | CONFIG_SCHEMA_VERSION
+        ) || self.engine_capability != ENGINE_CAPABILITY
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -430,10 +436,26 @@ impl CoopConfig {
             return Err(ConfigError::Effectiveness);
         }
         self.multiplier.validate()?;
-        if self.bosses.is_empty() {
-            return Err(ConfigError::Boss);
-        }
-        for boss in &self.bosses {
+        let bosses = match (self.schema_version, &self.boss, &self.bosses) {
+            (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
+            (CONFIG_SCHEMA_VERSION, None, Some(bosses))
+                if !bosses.is_empty() && bosses.len() <= 6 =>
+            {
+                bosses
+            }
+            _ => return Err(ConfigError::Boss),
+        };
+        let mut boss_ids = BTreeSet::new();
+        let mut map_ids = BTreeSet::new();
+        for boss in bosses {
+            match (self.schema_version, boss.map_id.as_deref()) {
+                (HISTORICAL_SCHEMA_VERSION, None) => (),
+                (CONFIG_SCHEMA_VERSION, Some(map)) if stable_id(map) && map_ids.insert(map) => (),
+                _ => return Err(ConfigError::Boss),
+            }
+            if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
+                return Err(ConfigError::Boss);
+            }
             boss.validate(elements)?;
         }
         let skills = self.skill_index()?;
@@ -460,11 +482,21 @@ impl CoopConfig {
             self.damage.to_value(),
             Value::List(self.elements.iter().map(ElementProfile::to_value).collect()),
             self.multiplier.to_value(),
-            Value::List(self.bosses.iter().map(BossConfig::to_value).collect()),
+            match &self.boss {
+                Some(boss) => boss.to_value(),
+                None => Value::List(self.bosses().iter().map(BossConfig::to_value).collect()),
+            },
             Value::List(self.skills.iter().map(SkillConfig::to_value).collect()),
             Value::List(self.pets.iter().map(PetConfig::to_value).collect()),
             self.rewards.to_value(),
         ])
+    }
+
+    pub fn bosses(&self) -> &[BossConfig] {
+        self.boss.as_ref().map_or_else(
+            || self.bosses.as_deref().unwrap_or_default(),
+            std::slice::from_ref,
+        )
     }
 
     /// Element profiles in canonical element order.
@@ -984,7 +1016,7 @@ impl BossConfig {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(self.name.clone()),
             Value::Text(self.element.clone()),
@@ -997,8 +1029,20 @@ impl BossConfig {
             self.attack_model.to_value(),
             Value::Uint(u64::from(self.telegraph_turns)),
             Value::Uint(u64::from(self.required_room_points)),
-        ])
+        ];
+        if let Some(map_id) = &self.map_id {
+            fields.push(Value::Text(map_id.clone()));
+        }
+        Value::List(fields)
     }
+}
+
+fn stable_id(value: &str) -> bool {
+    (3..=64).contains(&value.len())
+        && value.as_bytes()[0].is_ascii_lowercase()
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
 }
 
 impl PhaseConfig {

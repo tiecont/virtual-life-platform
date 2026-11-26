@@ -6,25 +6,32 @@ import type {
 type Row={
  match_id:string;room_id:string;world_id:string;boot_id:string;
  config_version:unknown;config_digest:string;content_hash:string;
- seats:unknown;status:CoopAllocationStatus;generation:unknown;
+ bound_seats:unknown;boss_id:string;status:CoopAllocationStatus;generation:unknown;
 };
-const COLUMNS='match_id,room_id,world_id,boot_id,config_version,config_digest,content_hash,seats,status,generation';
+const ALLOCATIONS=`SELECT a.*,r.boss_id,
+  (SELECT jsonb_agg(e.seat || jsonb_build_object('ownedPetInstanceId',
+    COALESCE(e.seat->>'ownedPetInstanceId',s.owned_pet_instance_id::text,p.owned_pet_instance_id::text)) ORDER BY e.ordinal)
+   FROM jsonb_array_elements(a.seats) WITH ORDINALITY e(seat,ordinal)
+   LEFT JOIN coop_room_seats s ON s.room_id=a.room_id AND s.seat=e.ordinal-1
+    AND s.account_id::text=e.seat->>'account' AND s.pet_id=e.seat->>'petId'
+   LEFT JOIN pet_wave_one_owned p ON p.account_id=s.account_id AND p.pet_id=s.pet_id) AS bound_seats
+ FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id`;
 
 function seats(value:unknown):readonly CoopSeat[]{
  if(!Array.isArray(value)||value.length!==4)throw new Error('Cooperative allocation seats are invalid');
  return Object.freeze(value.map(entry=>{
-  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown};
+  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown};
   if(typeof seat.account!=='string'||typeof seat.petId!=='string'||
-    typeof seat.petLevel!=='number'||typeof seat.artifactPowerPm!=='number')
+    typeof seat.petLevel!=='number'||typeof seat.artifactPowerPm!=='number'||typeof seat.ownedPetInstanceId!=='string')
    throw new Error('Cooperative allocation seats are invalid');
-  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:seat.artifactPowerPm});
+  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId});
  }));
 }
 function map(row:Row):CoopAllocationRecord{
  return Object.freeze({
   matchId:row.match_id,roomId:row.room_id,worldId:row.world_id,bootId:row.boot_id,
   configVersion:Number(row.config_version),configDigest:row.config_digest,contentHash:row.content_hash,
-  seats:seats(row.seats),status:row.status,generation:Number(row.generation),
+  bossId:row.boss_id,seats:seats(row.bound_seats),status:row.status,generation:Number(row.generation),
  });
 }
 
@@ -34,15 +41,15 @@ function map(row:Row):CoopAllocationRecord{
 export class CoopMatchStore implements CoopMatchStorePort{
  constructor(private readonly db:Pick<Pool,'query'>){}
  async findByRoom(roomId:string){
-  const row=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE room_id=$1`,[roomId])).rows[0];
+  const row=(await this.db.query<Row>(`${ALLOCATIONS} WHERE a.room_id=$1`,[roomId])).rows[0];
   return row?map(row):undefined;
  }
  async listRecoverable(){
-  const rows=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE status='ACTIVE' ORDER BY created_at`)).rows;
+  const rows=(await this.db.query<Row>(`${ALLOCATIONS} WHERE a.status='ACTIVE' ORDER BY a.created_at`)).rows;
   return Object.freeze(rows.map(map));
  }
  async listStarting(){
-  const rows=(await this.db.query<Row>(`SELECT ${COLUMNS} FROM coop_allocations WHERE status='STARTING' ORDER BY created_at`)).rows;
+  const rows=(await this.db.query<Row>(`${ALLOCATIONS} WHERE a.status='STARTING' ORDER BY a.created_at`)).rows;
   return Object.freeze(rows.map(map));
  }
  async recovered(matchId:string,generation:number){

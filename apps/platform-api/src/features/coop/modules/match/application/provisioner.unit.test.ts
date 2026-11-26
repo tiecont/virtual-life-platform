@@ -70,7 +70,7 @@ function fixture(overrides:{store?:MemoryStore;admission?:FakeAdmission;runtime?
  });
  return {provisioner,store,admission,runtime,issuer};
 }
-const startInput={roomId:ROOM,configVersion:1,configDigest:DIGEST,bundle,seats:SEATS};
+const startInput={roomId:ROOM,bossId:bundle.boss.id,configVersion:1,configDigest:DIGEST,bundle,seats:SEATS};
 
 describe('cooperative match provisioner',()=>{
  it('starts one four-seat match from the published bundle and reuses it',async()=>{
@@ -100,7 +100,7 @@ describe('cooperative match provisioner',()=>{
   const {provisioner,issuer}=fixture();
   const started=await provisioner.start(startInput);
   const view=await provisioner.admission(ROOM,'cred-'+ACCOUNTS[2]);
-  expect(view).toMatchObject({roomId:ROOM,matchId:started.matchId,seat:2,contentHash:CONTENT,httpsOrigin:ORIGIN});
+  expect(view).toMatchObject({roomId:ROOM,bossId:bundle.boss.id,matchId:started.matchId,seat:2,contentHash:CONTENT,httpsOrigin:ORIGIN});
   expect(view.wssUrl).toBe('wss://127.0.0.1:4443/rt/v1');
   expect(issuer.issued[0]!.scope).toMatchObject({worldId:started.worldId,runtimeBootId:started.bootId,contentHash:CONTENT});
   await expect(provisioner.admission(ROOM,'cred-99999999-9999-4999-8999-999999999999')).rejects.toMatchObject({status:403});
@@ -125,7 +125,7 @@ describe('cooperative match provisioner',()=>{
  it('recovers an active allocation with the same match, world, boot and configuration',async()=>{
   const store=new MemoryStore();
   const match='66666666-6666-4666-8666-666666666666',boot='77777777-7777-4777-8777-777777777777';
-  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:boot,configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
+  store.rows.set(match,{matchId:match,roomId:ROOM,bossId:bundle.boss.id,worldId:'native:coop-'+match,bootId:boot,configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
   const {provisioner,admission,runtime}=fixture({store});
   await expect(provisioner.recover()).resolves.toEqual({recovered:1,failed:0});
   expect(runtime.requests).toHaveLength(1);
@@ -138,7 +138,7 @@ describe('cooperative match provisioner',()=>{
  it('leaves an unresolvable allocation active but closed to admission',async()=>{
   const store=new MemoryStore();
   const match='88888888-8888-4888-8888-888888888888';
-  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
+  store.rows.set(match,{matchId:match,roomId:ROOM,bossId:bundle.boss.id,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
   const {provisioner}=fixture({store,loadBundle:async()=>undefined});
   await expect(provisioner.recover()).resolves.toEqual({recovered:0,failed:1});
   expect(store.rows.get(match)!.status).toBe('ACTIVE');
@@ -147,7 +147,7 @@ describe('cooperative match provisioner',()=>{
  it('reconciles a STARTING allocation as failed on startup',async()=>{
   const store=new MemoryStore();
   const match='77777777-7777-4777-8777-777777777777';
-  store.rows.set(match,{matchId:match,roomId:ROOM,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'STARTING',generation:0});
+  store.rows.set(match,{matchId:match,roomId:ROOM,bossId:bundle.boss.id,worldId:'native:coop-'+match,bootId:'99999999-9999-4999-8999-999999999999',configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'STARTING',generation:0});
   const {provisioner}=fixture({store});
   await expect(provisioner.recover()).resolves.toEqual({recovered:0,failed:1});
   expect(store.rows.get(match)!.status).toBe('FAILED');

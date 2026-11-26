@@ -33,6 +33,8 @@ namespace Aetheria.Networking
 
         public Task<PlayState> ConnectAsync(CancellationToken cancellation = default) => ConnectTransportAsync(cancellation);
 
+        public Task<PlayState> RefreshAsync(CancellationToken cancellation = default) => RefreshTransportAsync(cancellation);
+
         public override Task<PlayState> AdvanceAsync(CancellationToken cancellation = default) => StartAsync(cancellation);
         public Task<PlayState> StartAsync(CancellationToken cancellation = default) => Intent(CoopNativeIntent.Start, -1, -1, 0, cancellation);
         public Task<PlayState> SwapAsync(int first, int second, CancellationToken cancellation = default) =>

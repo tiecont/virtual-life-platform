@@ -86,7 +86,7 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    activeStorageKey:this.options.storageKeyId,
    storageKeys:{[this.options.storageKeyId]:hexBytes(this.options.storageKey)},
    engineHash:hexBytes(engineHash),
-   coop:{seats:nativeSeats(request.seats)},
+   coop:{bossId:request.bossId,seats:nativeSeats(request.seats)},
   };
   const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-native-'));
   const settingsFile=join(directory,'runtime.json'),bundleFile=join(directory,'bundle.json');

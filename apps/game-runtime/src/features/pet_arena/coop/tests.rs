@@ -6,7 +6,7 @@ use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, SEATS, SeatInput, 
 fn bundle() -> Vec<u8> {
     std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../config/gameplay/arena8-coop-v1.seed.json"
+        "/../../config/gameplay/arena8-coop-v2.seed.json"
     ))
     .expect("committed seed bundle")
 }
@@ -29,7 +29,8 @@ fn seats() -> [SeatInput; SEATS] {
 }
 
 fn rules() -> Rules {
-    Rules::load(&bundle(), seats(), "cinder-terraces-warden".to_string()).expect("valid seed bundle and seats")
+    Rules::load(&bundle(), seats(), "cinder-terraces-warden".to_string())
+        .expect("valid seed bundle and seats")
 }
 
 #[test]
@@ -65,7 +66,8 @@ fn durable_state_roundtrips_and_rejects_a_different_allocation() {
     assert_eq!(rules.decode(&bytes).expect("decode"), state);
     let mut other = seats();
     other[2].account = "someone-else".into();
-    let foreign = Rules::load(&bundle(), other, "cinder-terraces-warden".to_string()).expect("foreign allocation");
+    let foreign = Rules::load(&bundle(), other, "cinder-terraces-warden".to_string())
+        .expect("foreign allocation");
     assert!(matches!(foreign.decode(&bytes), Err(Error::Integrity)));
     let mut tampered = state.clone();
     tampered.config_digest = [0u8; 32];
@@ -180,18 +182,39 @@ fn invalid_bundles_and_allocations_fail_closed() {
     let mut duplicate_instance = seats();
     duplicate_instance[1].owned_pet_instance_id =
         duplicate_instance[0].owned_pet_instance_id.clone();
-    assert!(Rules::load(&bundle(), duplicate_instance, "cinder-terraces-warden".to_string()).is_err());
+    assert!(
+        Rules::load(
+            &bundle(),
+            duplicate_instance,
+            "cinder-terraces-warden".to_string()
+        )
+        .is_err()
+    );
     // Same pet species with different owned_pet_instance_id is allowed.
     let mut same_species = seats();
     same_species[1].pet_id = same_species[0].pet_id.clone();
     same_species[1].owned_pet_instance_id = "instance-different".into();
-    assert!(Rules::load(&bundle(), same_species, "cinder-terraces-warden".to_string()).is_ok());
+    assert!(
+        Rules::load(
+            &bundle(),
+            same_species,
+            "cinder-terraces-warden".to_string()
+        )
+        .is_ok()
+    );
     let mut level_zero = seats();
     level_zero[0].level = 0;
     assert!(Rules::load(&bundle(), level_zero, "cinder-terraces-warden".to_string()).is_err());
     let mut too_powerful = seats();
     too_powerful[0].artifact_power_pm = 5_001;
-    assert!(Rules::load(&bundle(), too_powerful, "cinder-terraces-warden".to_string()).is_err());
+    assert!(
+        Rules::load(
+            &bundle(),
+            too_powerful,
+            "cinder-terraces-warden".to_string()
+        )
+        .is_err()
+    );
 }
 
 #[test]

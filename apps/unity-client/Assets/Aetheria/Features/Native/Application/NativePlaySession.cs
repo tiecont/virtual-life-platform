@@ -96,6 +96,9 @@ namespace Aetheria.Networking
             }
         }
 
+        protected Task<PlayState> RefreshTransportAsync(CancellationToken cancellation = default) =>
+            Exclusive(Read, cancellation);
+
         protected abstract string ViewKind { get; }
         protected abstract PlayState Decode(ulong version, byte[] bytes);
         public abstract Task<PlayState> AdvanceAsync(CancellationToken cancellation = default);

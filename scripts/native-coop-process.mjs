@@ -28,6 +28,24 @@ function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintF
 function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,'coop-process-v1'),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
+// Search only the committed board. A stable board has no existing matches, so
+// any three aligned elements after the trial swap constitute a legal move.
+function legalSwap(board){
+ const elements=board.map(tile=>tile.element);
+ const matches=()=>elements.some((value,index)=>
+  (index%8<6&&value===elements[index+1]&&value===elements[index+2])||
+  (index<48&&value===elements[index+8]&&value===elements[index+16]));
+ for(let a=0;a<elements.length;a++){
+  for(const b of [a%8<7?a+1:-1,a<56?a+8:-1]){
+   if(b<0||elements[a]===elements[b])continue;
+   [elements[a],elements[b]]=[elements[b],elements[a]];
+   if(matches())return {kind:'swap',first:a,second:b};
+   [elements[a],elements[b]]=[elements[b],elements[a]];
+  }
+ }
+ throw Error('Committed board has no legal swap');
+}
+
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
 const facts={result:'FAIL',scenarios:[]};
 const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-process-'));
@@ -54,11 +72,19 @@ try{
  const seed=JSON.parse(await readFile('config/gameplay/arena8-coop-v1.seed.json','utf8'));
  const validator=new EngineGameplayBundleValidator(binary);
  await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
- const bundle=JSON.parse(JSON.stringify(seed));
+ const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-v2.seed.json','utf8'));
  bundle.contentRevision=4;
- bundle.boss.attackModel.baseDamage=1;
- bundle.boss.attackModel.perRoundDamage=0;
- bundle.boss.attackModel.minimumDamage=1;
+ const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
+ const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
+ for(const boss of [fire,water]){
+  boss.attackModel.baseDamage=1;
+  boss.attackModel.perRoundDamage=0;
+  boss.attackModel.minimumDamage=1;
+  boss.requiredRoomPoints=5_000;
+ }
+ // A test-only publication makes the Fire match winnable with legal swaps.
+ fire.maxHp=4;
+ fire.defense=1;
  bundle.party.maxRounds=6;
  const verdict=await validator.validate('arena8-coop-pve',bundle);
  const operatorPassword='process-operator-password',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
@@ -88,6 +114,10 @@ try{
  assert.equal(validation.json().contentDigest,verdict.digest);
  const release=await operatorPost('gameplay-config-publish',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:validation.json().revision,expectedActiveRevision:1});
  assert.equal(release.statusCode,200,JSON.stringify(release.json()));
+ const reseed=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
+ assert.equal(reseed.created,false);
+ assert.equal(reseed.version,created.version);
+ assert.equal(reseed.digest,verdict.digest);
  facts.adminPublishedVersion=created.version;
  facts.adminDigest=verdict.digest;
  facts.scenarios.push('admin-published-the-test-bundle-through-the-validated-operator-path');
@@ -97,18 +127,25 @@ try{
   assert.equal(response.statusCode,201);
   const body=response.json();const accountId=body.profile.id;
   await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
-  await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3)',[accountId,petId,'starter']);
-  return {cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId};
+  const owned=await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3) RETURNING owned_pet_instance_id',[accountId,petId,'starter']);
+  return {cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId,instanceId:owned.rows[0].owned_pet_instance_id};
  }
  const post=(auth,url,payload)=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
- const pets=['icarus','coralline','volt','terran'];
+ const pets=['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'];
  const members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('Process seat '+(index+1),pet));
  await pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,5000,$2,$3)',[members[0].accountId,'admin_grant',randomUUID()]);
- const room=(await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),petId:members[0].petId})).json();
+ for(const boss of [fire,water]){
+ const createdRoom=await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:members[0].petId,ownedPetInstanceId:members[0].instanceId});
+ assert.equal(createdRoom.statusCode,200,JSON.stringify(createdRoom.json()));
+ const room=createdRoom.json();
+ assert.equal(room.bossId,boss.id);
  for(const [index,member] of members.entries())if(index>0){
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/join',{requestId:randomUUID()})).statusCode,200);
-  assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/pet',{requestId:randomUUID(),petId:member.petId})).statusCode,200);
+  if(member.petId===members[0].petId){
+   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/pet',{requestId:randomUUID(),petId:member.petId,ownedPetInstanceId:members[0].instanceId})).statusCode,403);
+  }
+  assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/pet',{requestId:randomUUID(),petId:member.petId,ownedPetInstanceId:member.instanceId})).statusCode,200);
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/ready',{requestId:randomUUID(),ready:true})).statusCode,200);
  }
  assert.equal((await post(members[0],'/v1/coop/rooms/'+room.roomId+'/ready',{requestId:randomUUID(),ready:true})).statusCode,200);
@@ -116,12 +153,13 @@ try{
  assert.equal(started.statusCode,200,JSON.stringify(started.json()));
  assert.equal(started.json().status,'STARTED');
  facts.scenarios.push('actual-runtime-process-started-from-published-bundle-and-four-seats');
- const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations')).rows[0];
+ const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations WHERE room_id=$1',[room.roomId])).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
  assert.equal(allocation.status,'ACTIVE');assert.equal(allocation.seats,4);
- assert.equal(Number(allocation.config_version),created.version);
- assert.equal(allocation.config_digest,verdict.digest);
- assert.equal(hex(allocation.content_hash),verdict.contentHash);
+ const expected=boss===fire?verdict:await validator.validate('arena8-coop-pve',{...bundle,contentRevision:bundle.contentRevision+1});
+ assert.equal(Number(allocation.config_version),boss===fire?created.version:facts.replacementVersion);
+ assert.equal(allocation.config_digest,expected.digest);
+ assert.equal(hex(allocation.content_hash),expected.contentHash);
  facts.scenarios.push('new-allocation-pinned-the-admin-published-digest-and-content-hash');
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
@@ -190,9 +228,12 @@ try{
   assert.equal(startView.state.ruleset.id,'arena8-coop-pve');
   assert.equal(startView.state.participants.length,4);
   assert.equal(startView.state.board.length,64);
+  assert.equal(startView.state.boss.maxHp,boss.maxHp);
   assert.equal(startView.state.you,0);
   assert.equal(startView.state.phase,'playing');
   let version=Number(start.canonicalVersion);
+  const wrongSeat=await intent(connections[1],version,'{"epoch":1,"action":{"kind":"guard"}}');
+  assert.equal(wrongSeat.body.case,'rejection');
   const first=await intent(connections[0],version,'{"epoch":1,"action":{"kind":"guard"}}');
   assert.equal(first.body.case,'receipt');
   version=Number(first.canonicalVersion);
@@ -209,6 +250,16 @@ try{
    assert.equal(view.state.board.length,64);
    state=view.state;
   }
+  const beforeRestart=state;
+  if(boss===fire){
+   const nextBundle={...bundle,contentRevision:bundle.contentRevision+1};
+   const draft=(await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:created.version,bundle:nextBundle})).json();
+   const checked=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:draft.version,expectedRevision:draft.revision});
+   assert.equal(checked.statusCode,200,JSON.stringify(checked.json()));
+   const published=await operatorPost('gameplay-config-publish',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:draft.version,expectedRevision:checked.json().revision,expectedActiveRevision:2});
+   assert.equal(published.statusCode,200,JSON.stringify(published.json()));
+   facts.replacementVersion=draft.version;
+  }
   for(const connection of connections)try{connection.ws.close();}catch{/* Already closed. */}
   connections=[];
   await app.app.close();
@@ -223,36 +274,47 @@ try{
   assert.equal(version,5);
   state=JSON.parse(Buffer.from(resumed.body.value.authorizedProjection).toString('utf8')).state;
   assert.equal(state.phase,'playing');
+  assert.deepEqual(state.board,beforeRestart.board);
+  assert.deepEqual(state.boss,beforeRestart.boss);
+  assert.equal(state.configDigest,beforeRestart.configDigest);
   assert.equal(state.participants.length,4);
   facts.scenarios.push('api-and-runtime-restart-recovered-the-active-allocation-and-resumed-version-5');
   let turns=4;
   while(!['won','lost'].includes(state.phase)&&turns<60){
    const seat=state.activeSeat;
-   const receipt=await intent(connections[seat],version,JSON.stringify({epoch:1,action:{kind:'guard'}}));
+   const action=boss===fire?legalSwap(state.board):{kind:'guard'};
+   const receipt=await intent(connections[seat],version,JSON.stringify({epoch:1,action}));
    assert.equal(receipt.body.case,'receipt');
    version=Number(receipt.canonicalVersion);
    state=JSON.parse(Buffer.from(receipt.body.value.authorizedProjection).toString('utf8')).state;
    turns+=1;
   }
-  facts.terminal=state.phase;
+  facts[boss.element+'Terminal']=state.phase;
   assert.ok(['won','lost'].includes(state.phase),'match did not reach a terminal phase');
   assert.equal(version,turns+1);
   facts.scenarios.push('four-seats-committed-'+turns+'-shared-board-turns-to-terminal-'+state.phase);
-  assert.equal((await pool.query('SELECT state_version FROM game_native_matches')).rows[0].state_version,String(version));
-  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts')).rows[0].n,version);
+  assert.equal((await pool.query('SELECT state_version FROM game_native_matches WHERE id=$1',[allocation.match_id])).rows[0].state_version,String(version));
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_native_receipts WHERE match_id=$1',[allocation.match_id])).rows[0].n,version);
   facts.scenarios.push('journal-recorded-one-durable-receipt-per-committed-turn');
  }finally{
   for(const connection of connections)try{connection.ws.close();}catch{/* The socket is already closed after a rejection. */}
  }
- const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches")).rows[0];
+ const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches WHERE id=$1",[allocation.match_id])).rows[0];
  assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.content_hash,allocation.content_hash);
  assert.equal(match.status,'SETTLING');
+ await Promise.all([new CoopSettlement(pool).drain(),new CoopSettlement(pool).drain()]);
  await new CoopSettlement(pool).drain();
  const inbox=(await pool.query('SELECT outcome FROM coop_settlement_inbox WHERE match_id=$1',[allocation.match_id])).rows[0];
- assert.equal(inbox.outcome,'lost');
+ const expectedOutcome=boss===fire?'won':'lost';
+ assert.equal(inbox.outcome,expectedOutcome);
  const rewards=(await pool.query('SELECT achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id IN (SELECT settlement_id FROM coop_settlement_inbox WHERE match_id=$1)',[allocation.match_id])).rows;
  assert.equal(rewards.length,4);
- for(const row of rewards){assert.equal(row.achievement_points,25);assert.equal(row.coins,0);assert.equal(row.exp,0);}
+ const rewardPrefix=boss===fire?'clear':'loss';
+ for(const row of rewards){
+  assert.equal(row.achievement_points,bundle.rewards[rewardPrefix+'AchievementPoints']);
+  assert.equal(row.coins,bundle.rewards[rewardPrefix+'Coins']);
+  assert.equal(row.exp,bundle.rewards[rewardPrefix+'Exp']);
+ }
  const settled=(await pool.query('SELECT status FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
  assert.equal(settled.status,'SETTLED');
  const finished=(await pool.query('SELECT status FROM game_native_matches WHERE id=$1',[allocation.match_id])).rows[0];
@@ -260,7 +322,9 @@ try{
  const delivered=(await pool.query('SELECT count(*)::int AS n FROM game_native_outbox WHERE match_id=$1 AND delivered_at IS NOT NULL',[allocation.match_id])).rows[0];
  assert.equal(delivered.n,1);
  facts.scenarios.push('worker-settlement-paid-all-four-seats-once-and-finished-the-match');
- facts.result='PASS';facts.matchId=allocation.match_id;facts.worldId=allocation.world_id;
+ facts[boss.element+'MatchId']=allocation.match_id;
+ }
+ facts.result='PASS';
 }catch(error){
  facts.failure={name:error.name,message:String(error.message).slice(0,500)};
  facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);

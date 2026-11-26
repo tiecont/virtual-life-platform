@@ -17,7 +17,11 @@ pub struct Rules {
 impl Rules {
     /// Bind the published bundle and the server-authored seat allocation.
     /// Missing, malformed, incompatible or mismatched input fails closed.
-    pub fn load(bundle: &[u8], seats: [SeatInput; SEATS], boss_id: String) -> Result<Self, ConfigError> {
+    pub fn load(
+        bundle: &[u8],
+        seats: [SeatInput; SEATS],
+        boss_id: String,
+    ) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
         let mut owned_pets = std::collections::BTreeSet::new();
         for seat in &seats {
@@ -61,7 +65,10 @@ impl Rules {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
                 || participant.level != seat.level
-                || seat.owned_pet_instance_id.is_empty()
+                || participant
+                    .owned_pet_instance_id
+                    .as_ref()
+                    .is_some_and(|id| id != &seat.owned_pet_instance_id)
             {
                 return Err(Error::InvalidState);
             }

@@ -3,7 +3,7 @@ import type {CoopRoomStatus} from '@aetheria/contracts';
 
 type Queryable=Pick<PoolClient,'query'>;
 const ROOM_COLUMNS='id,ruleset,boss_id AS "bossId",host_account_id AS "hostAccountId",config_version AS "configVersion",config_digest AS "configDigest",required_points AS "requiredPoints",status,revision,created_at AS "createdAt"';
-const SEAT_COLUMNS='room_id AS "roomId",seat,account_id AS "accountId",pet_id AS "petId",pet_level AS "petLevel",artifact_power_pm AS "artifactPowerPm",ready';
+const SEAT_COLUMNS='room_id AS "roomId",seat,account_id AS "accountId",pet_id AS "petId",pet_level AS "petLevel",artifact_power_pm AS "artifactPowerPm",ready,owned_pet_instance_id AS "ownedPetInstanceId"';
 const numeric=(value:unknown)=>Number(value as string|number);
 
 export type CoopPublishedConfig=Readonly<{version:number;digest:string;bossId:string;requiredPoints:number}>;
@@ -44,10 +44,10 @@ export class CoopRoomStore{
   const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
   return numeric(result.rows[0]?.points??0);
  }
- async ownedPet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId:string):Promise<Readonly<{level:number}>|undefined>{
-  const result=await tx.query<{level:unknown}>('SELECT level FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND owned_pet_instance_id=$3',[accountId,petId,ownedPetInstanceId]);
+ async ownedPet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId?:string):Promise<Readonly<{level:number;instanceId:string}>|undefined>{
+  const result=await tx.query<{level:unknown;instance_id:string}>('SELECT level,owned_pet_instance_id AS instance_id FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND ($3::uuid IS NULL OR owned_pet_instance_id=$3)',[accountId,petId,ownedPetInstanceId??null]);
   const row=result.rows[0];
-  return row?Object.freeze({level:numeric(row.level)}):undefined;
+  return row?Object.freeze({level:numeric(row.level),instanceId:row.instance_id}):undefined;
  }
  async pinnedBundle(tx:Queryable,version:number,digest:string):Promise<Record<string,unknown>|undefined>{
   const result=await tx.query<{bundle:Record<string,unknown>}>("SELECT bundle FROM gameplay_config_versions WHERE ruleset='arena8-coop-pve' AND version=$1 AND content_digest=$2 AND published_at IS NOT NULL",[version,digest]);
@@ -70,8 +70,8 @@ export class CoopRoomStore{
   const result=await tx.query<Record<string,unknown>>(`SELECT ${SEAT_COLUMNS} FROM coop_room_seats WHERE room_id=$1 AND account_id=$2`,[roomId,accountId]);
   return result.rows[0]?seat(result.rows[0]):undefined;
  }
- async addSeat(tx:Queryable,input:Readonly<{roomId:string;seat:number;accountId:string;petId:string|null;petLevel:number|null}>):Promise<void>{
-  await tx.query('INSERT INTO coop_room_seats(room_id,seat,account_id,pet_id,pet_level) VALUES($1,$2,$3,$4,$5)',[input.roomId,input.seat,input.accountId,input.petId,input.petLevel]);
+ async addSeat(tx:Queryable,input:Readonly<{roomId:string;seat:number;accountId:string;petId:string|null;petLevel:number|null;ownedPetInstanceId:string|null}>):Promise<void>{
+  await tx.query('INSERT INTO coop_room_seats(room_id,seat,account_id,pet_id,pet_level,owned_pet_instance_id) VALUES($1,$2,$3,$4,$5,$6)',[input.roomId,input.seat,input.accountId,input.petId,input.petLevel,input.ownedPetInstanceId]);
  }
  async selectPet(tx:Queryable,input:Readonly<{roomId:string;accountId:string;petId:string;petLevel:number;ownedPetInstanceId:string}>):Promise<void>{
   await tx.query('UPDATE coop_room_seats SET pet_id=$3,pet_level=$4,owned_pet_instance_id=$5,ready=false WHERE room_id=$1 AND account_id=$2',[input.roomId,input.accountId,input.petId,input.petLevel,input.ownedPetInstanceId]);

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 using Aetheria.Networking;
 using Aetheria.PetArena.Infrastructure;
 using UnityEngine;
@@ -18,7 +19,11 @@ namespace Aetheria.PetArena.Presentation
         private CoopLobbyClient lobby;
         private CoopNativePlaySession session;
         private CoopLobbyClient.Room room;
-        private string petId;
+        private string petId, instanceId, mapId;
+        private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
+        private Action returnToHub;
+        private Arena8NativeTrust trust;
+        private bool busy;
         private TextField joinField;
         private string notice = "";
 
@@ -35,6 +40,38 @@ namespace Aetheria.PetArena.Presentation
             RenderLobby();
         }
 
+        public void Enter(Wave1LocalApi authenticated, Wave1Pet[] ownedPets, string selectedMap, Action returnAction)
+        {
+            lobby = new CoopLobbyClient(authenticated);
+            pets = (ownedPets ?? Array.Empty<Wave1Pet>()).Where(pet => Guid.TryParse(pet.ownedPetInstanceId, out _)).ToArray();
+            SetPet(pets.FirstOrDefault());
+            mapId = selectedMap;
+            returnToHub = returnAction;
+            room = null;
+            notice = "";
+            RenderLobby();
+        }
+
+        private void SetPet(Wave1Pet pet)
+        {
+            petId = pet?.petId;
+            instanceId = pet?.ownedPetInstanceId;
+        }
+
+        private void RenderCollection(VisualElement root)
+        {
+            if (pets.Length == 0) return;
+            var labels = pets.Select(p => p.name + " · Lv " + p.level + " · " + p.petId).ToList();
+            var index = Array.FindIndex(pets, pet => pet.ownedPetInstanceId == instanceId);
+            var selection = new DropdownField("Owned Pet", labels, Math.Max(0, index));
+            selection.RegisterValueChangedCallback(change =>
+            {
+                SetPet(pets[selection.index]);
+                if (room != null && room.status == "OPEN") _ = RunAsync(SelectAsync);
+            });
+            root.Add(selection);
+        }
+
         private VisualElement Root => document != null ? document.rootVisualElement : null;
 
         private void RenderLobby()
@@ -44,16 +81,21 @@ namespace Aetheria.PetArena.Presentation
             root.Clear();
             root.Add(new Label("Cooperative Arena8") { name = "coop-lobby-title" });
             if (notice.Length > 0) root.Add(new Label(notice) { name = "coop-lobby-notice" });
+            if (room == null || room.status == "OPEN") RenderCollection(root);
+            if (returnToHub != null)
+                root.Add(new Button(returnToHub) { text = "Return to Central Plaza", name = "coop-return" });
             if (room == null)
             {
                 var create = new Button(() => _ = RunAsync(CreateAsync)) { text = "Create room", name = "coop-create" };
-                create.SetEnabled(platform != null && !string.IsNullOrEmpty(petId));
+                create.SetEnabled(lobby != null && !string.IsNullOrEmpty(petId));
                 root.Add(create);
                 joinField = new TextField("Room id") { name = "coop-room-id" };
                 root.Add(joinField);
                 var join = new Button(() => _ = RunAsync(JoinAsync)) { text = "Join room", name = "coop-join" };
-                join.SetEnabled(platform != null);
+                join.SetEnabled(lobby != null);
                 root.Add(join);
+                if (lobby?.CanRefreshRoom == true)
+                    root.Add(new Button(() => _ = RunAsync(ResumeAsync)) { text = "Resume room", name = "coop-resume" });
                 return;
             }
             root.Add(new Label("Room " + room.roomId + " · " + room.status) { name = "coop-room-status" });
@@ -65,18 +107,22 @@ namespace Aetheria.PetArena.Presentation
             if (room.you != null && room.you.seat >= 0)
                 root.Add(new Label("You are seat " + room.you.seat + (room.you.isHost ? " (host)" : "")));
             var ready = new Button(() => _ = RunAsync(ReadyAsync)) { text = "Ready", name = "coop-ready" };
-            ready.SetEnabled(room.status == "OPEN" || room.status == "LOCKED");
+            ready.SetEnabled(room.status == "OPEN" && room.seats.Any(seat => seat.you && !string.IsNullOrEmpty(seat.petId)));
             root.Add(ready);
             var start = new Button(() => _ = RunAsync(StartAsync)) { text = "Start match", name = "coop-start" };
             start.SetEnabled(room.canStart && room.you != null && room.you.isHost);
             root.Add(start);
+            if (lobby.CanRefreshRoom)
+                root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = "Refresh room", name = "coop-refresh" });
+            if (room.status == "STARTED")
+                root.Add(new Button(() => _ = RunAsync(AdmitAsync)) { text = "Enter match", name = "coop-enter" });
             var leave = new Button(() => { room = null; RenderLobby(); }) { text = "Back", name = "coop-back" };
             root.Add(leave);
         }
 
         private async Task CreateAsync()
         {
-            room = await lobby.CreateAsync(petId, Guid.NewGuid());
+            room = await lobby.CreateAsync(petId, instanceId, mapId, Guid.NewGuid());
             notice = "";
             RenderLobby();
         }
@@ -90,7 +136,34 @@ namespace Aetheria.PetArena.Presentation
                 return;
             }
             room = await lobby.JoinAsync(roomId, Guid.NewGuid());
+            if (instanceId != null) await SelectAsync();
             notice = "";
+            RenderLobby();
+        }
+
+        private async Task ResumeAsync()
+        {
+            if (joinField == null || !Guid.TryParse(joinField.value, out var roomId) || roomId == Guid.Empty)
+                throw new ArgumentException("Enter a room UUID.");
+            var loaded = await lobby.ReadAsync(roomId);
+            if (loaded.you == null || !loaded.seats.Any(seat => seat.you))
+                throw new InvalidOperationException("This account has no seat in that room.");
+            room = loaded;
+            if (room.status == "STARTED") await AdmitAsync();
+            else RenderLobby();
+        }
+
+        private async Task RefreshRoomAsync()
+        {
+            if (room == null) return;
+            room = await lobby.ReadAsync(Guid.Parse(room.roomId));
+            RenderLobby();
+        }
+
+        private async Task SelectAsync()
+        {
+            if (room == null || petId == null) return;
+            room = await lobby.SelectPetAsync(Guid.Parse(room.roomId), petId, instanceId, Guid.NewGuid());
             RenderLobby();
         }
 
@@ -114,7 +187,9 @@ namespace Aetheria.PetArena.Presentation
             var roomId = Guid.Parse(room.roomId);
             var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid());
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
-            var admitted = new CoopNativePlaySession(platform, connection, admission.MatchId);
+            var transportPlatform = platform ?? new PlatformSession(admission.HttpsOrigin);
+            trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
+            var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId);
             try
             {
                 await admitted.ConnectAsync();
@@ -122,29 +197,35 @@ namespace Aetheria.PetArena.Presentation
             catch
             {
                 admitted.Dispose();
+                trust?.Dispose();
+                trust = null;
                 throw;
             }
             session = admitted;
             var hud = GetComponent<CoopNativeHud>();
             if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
             hud.Attach(document);
-            hud.Bind(session);
+            hud.Bind(session, returnToHub);
         }
 
         private async Task RunAsync(Func<Task> action)
         {
+            if (busy) return;
+            busy = true;
             try { await action(); }
             catch (Exception error)
             {
                 notice = error is NativeFailure failure ? "Native " + failure.Reason : error.Message;
                 RenderLobby();
             }
+            finally { busy = false; }
         }
 
         private void OnDestroy()
         {
             session?.Dispose();
             session = null;
+            trust?.Dispose();
         }
     }
 }

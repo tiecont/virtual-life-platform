@@ -1,17 +1,21 @@
 import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {installGameplayConfig} from '../../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config';
+import {OperatorService} from '../../apps/platform-api/src/features/identity/modules/operators/application/operator-service';
+import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 import type {GameplayBundleValidator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator';
 
-const origin='http://127.0.0.1:3300',ruleset='arena8-coop-pve';
+const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',ruleset='arena8-coop-pve';
 const bundle=(requiredRoomPoints:number)=>({schemaVersion:1,engineCapability:'arena8-coop-v1',configId:'arena8-coop-v1',boss:{id:'cinder-terraces-warden',maxHp:12_000,requiredRoomPoints}});
 const engine:GameplayBundleValidator={async validate(_ruleset,input){
  return {digest:createHash('sha256').update(JSON.stringify(input)).digest('hex'),engineCapability:'arena8-coop-v1',contentHash:createHash('sha256').update('content:'+JSON.stringify(input)).digest('hex')};
 }};
+const operatorPassword='coop-fixture-operator-password',operatorFactor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
+const operatorNow=Date.now();
 type Auth={cookie:string;csrf:string;accountId:string};
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,address=1;
 beforeAll(async()=>{
@@ -24,8 +28,10 @@ beforeAll(async()=>{
  pool=new Pool({connectionString:url.toString()});
  await migrate(pool);
  await installGameplayConfig(pool,ruleset,bundle(5_000),engine,'system:test-installation');
- const config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'coop-rooms-test-secret-'.repeat(2),LOCAL_COOP_ROOMS:'1'});
- server=await createApp(config,pool,false,{});
+ const authKey=randomBytes(32).toString('hex');
+ await new OperatorService(pool,authKey,()=>operatorNow-60_000).bootstrap({password:operatorPassword,totpSecret:operatorFactor,code:totp(operatorFactor,operatorNow-60_000)});
+ const config=readConfig({ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:authKey,NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'coop-rooms-test-secret-'.repeat(2),LOCAL_COOP_ROOMS:'1'});
+ server=await createApp(config,pool,false,{now:()=>operatorNow,gameplayConfig:{validator:engine}});
 });
 afterAll(async()=>{await server?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin.end();}});
 async function guest(name:string):Promise<Auth>{
@@ -73,7 +79,7 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const {response}=await createRoom(poor);
   expect(response.statusCode).toBe(200);
   expect(response.json()).toMatchObject({ruleset,bossId:'cinder-terraces-warden',requiredPoints:5_000,status:'OPEN',you:{seat:0,isHost:true}});
-  expect(response.json().seats).toEqual([{seat:0,petId:pet,petLevel:1,ready:false,you:true}]);
+  expect(response.json().seats).toEqual([{seat:0,petId:pet,petLevel:1,ready:false,you:true,ownedPetInstanceId:expect.any(String)}]);
   expect((await pool.query('SELECT count(*)::int AS n FROM coop_rooms WHERE host_account_id=$1',[poor.accountId])).rows[0].n).toBe(1);
  });
  it('runs create, join, select, ready and start for four accounts and then freezes the roster',async()=>{
@@ -115,7 +121,20 @@ describe('cooperative rooms and achievement eligibility',()=>{
  it('keeps a room on its pinned threshold when a new version publishes',async()=>{
   const host=await eligibleHost();
   const room=(await createRoom(host.auth)).response.json();
-  await installGameplayConfig(pool,ruleset,bundle(6_000),engine,'system:test-installation');
+  const changedBundle=bundle(6_000);
+  await expect(installGameplayConfig(pool,ruleset,changedBundle,engine,'system:test-installation'))
+   .resolves.toMatchObject({created:false,version:1});
+  const login=await server.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(operatorFactor,operatorNow)}});
+  expect(login.statusCode).toBe(200);
+  const headers={origin:adminOrigin,cookie:String(login.headers['set-cookie']).split(';')[0],'x-csrf-token':login.json().csrfToken};
+  const operatorPost=async(action:string,payload:Record<string,unknown>)=>{
+   const response=await server.http.inject({method:'POST',url:'/v1/operator/gameplay-config-'+action,headers,payload:{...payload,requestId:randomUUID(),ruleset}});
+   expect(response.statusCode).toBe(200);
+   return response.json();
+  };
+  const draft=await operatorPost('draft',{parentVersion:1,bundle:changedBundle});
+  const checked=await operatorPost('validate',{version:draft.version,expectedRevision:draft.revision});
+  await operatorPost('publish',{version:checked.version,expectedRevision:checked.revision,expectedActiveRevision:1});
   expect((await get(host.auth,'/v1/coop/eligibility')).json()).toMatchObject({requiredPoints:6_000,points:5_000,eligible:false});
   expect((await post(host.auth,'/v1/coop/rooms',{requestId:randomUUID(),petId:'icarus'})).statusCode).toBe(403);
   const pinned=await get(host.auth,'/v1/coop/rooms/'+room.roomId);

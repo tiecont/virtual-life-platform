@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-candidate-v1",
   "contentRevision": 3,
@@ -969,7 +969,8 @@
         "minimumDamage": 40
       },
       "telegraphTurns": 2,
-      "requiredRoomPoints": 5000
+      "requiredRoomPoints": 5000,
+      "mapId": "cinder-terraces-boss"
     }
   ]
 }

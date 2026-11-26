@@ -36,7 +36,7 @@ export type GachaInput={count:1|10};
 export type Wave1PetView=Readonly<{
   petId:string;name:string;element:CoreElement;rank:Wave1PetRank;
   level:number;exp:number;expToNext:number;stage:number;unlocks:string[];
-  stats:Stats;duplicateExp:number;
+  stats:Stats;duplicateExp:number;ownedPetInstanceId:string;
 }>;
 export type Wave1GachaHistoryView=Readonly<{
   seq:number;petId:string|null;featured:boolean;duplicate:boolean;pityBefore:number;createdAt:string;
@@ -244,7 +244,7 @@ export class Wave1Service {
       return {
         petId:row.petId,name:catalog.name,element:catalog.element,rank:catalog.rank,
         level:row.level,exp:row.exp,expToNext:expToNext(row.level),stage:view.stage,
-        unlocks:view.unlocks,stats:view.stats,duplicateExp:row.duplicateExp,
+        unlocks:view.unlocks,stats:view.stats,duplicateExp:row.duplicateExp,ownedPetInstanceId:row.ownedPetInstanceId,
       };
     }).sort((left,right)=>(WAVE1_PET_INDEX.get(left.petId)??0)-(WAVE1_PET_INDEX.get(right.petId)??0));
     const cleared=new Set(clears.map(row=>row.mapId));

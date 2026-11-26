@@ -14,14 +14,18 @@ namespace Aetheria.PetArena.Presentation
         [SerializeField] private UIDocument document;
         private CoopNativePlaySession session;
         private int selected = -1;
+        private Action returnToHub;
+        private float nextRefresh;
+        private bool reading;
         private ulong renderedVersion = ulong.MaxValue;
 
         // Scene bootstrap may create the component before assigning the document.
         public void Attach(UIDocument target) { document = target; }
 
-        public void Bind(CoopNativePlaySession admitted)
+        public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
         {
             session = admitted;
+            returnToHub = returnAction;
             selected = -1;
             renderedVersion = ulong.MaxValue;
             Refresh();
@@ -30,9 +34,25 @@ namespace Aetheria.PetArena.Presentation
         private void Update()
         {
             var view = session?.State?.Coop;
-            if (view == null || view.Version == renderedVersion) return;
-            renderedVersion = view.Version;
-            Render(view);
+            if (view == null) return;
+            if (view.Version != renderedVersion) Refresh();
+            if (view.Terminal || reading || session.NeedsRefresh || session.HasPendingCommand ||
+                view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
+            nextRefresh = Time.unscaledTime + 1f;
+            _ = ReadSharedBoardAsync();
+        }
+
+        private async System.Threading.Tasks.Task ReadSharedBoardAsync()
+        {
+            reading = true;
+            try { await session.RefreshAsync(); }
+            catch (NativeFailure failure) when (failure.Reason == Failure.Busy) { }
+            catch (NativeFailure)
+            {
+                Refresh();
+            }
+            catch (OperationCanceledException) { }
+            finally { reading = false; }
         }
 
         private void Refresh()
@@ -50,6 +70,10 @@ namespace Aetheria.PetArena.Presentation
             if (target == null) return;
             target.Clear();
             target.Add(CoopNativePresentation.Build(view, Select, Cast));
+            if (session != null && view.Phase == "ready" && view.ActiveSeat == view.You)
+                target.Add(new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" });
+            if (returnToHub != null)
+                target.Add(new Button(returnToHub) { name = "coop-return", text = "Return to Central Plaza" });
             if (session != null && session.NeedsRefresh)
             {
                 var reconnect = new Button(() => _ = ReconnectAsync()) { text = "Reconnect", name = "coop-reconnect" };
@@ -113,6 +137,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 switch (kind)
                 {
+                    case "start": await current.StartAsync(); break;
                     case "guard": await current.GuardAsync(); break;
                     case "skill": await current.SkillAsync(); break;
                     case "signature": await current.SignatureAsync(); break;

@@ -1,7 +1,7 @@
 import type {FastifyInstance,FastifyRequest} from 'fastify';
 import {z} from 'zod';
 import {
- CoopAdmissionCommandSchema,CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,
+ CoopBossIdSchema,CoopAdmissionCommandSchema,CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {Config} from '../../../../../shared/config/environment';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
@@ -36,7 +36,7 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    accounts.set(req,context.accountId);
    if(!limits.take('coop-session:'+identity.hash(credential),180))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
-  api.get('/coop/eligibility',req=>rooms.eligibility(account(req)));
+  api.get('/coop/eligibility',req=>rooms.eligibility(account(req),CoopBossIdSchema.optional().parse((req.query as {bossId?:unknown}).bossId)));
   api.post('/coop/rooms',req=>{
    write(req);
    const body=CoopCreateRoomSchema.parse(req.body);

@@ -11,7 +11,7 @@ const SEATS=4,CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
 export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string}>;
 export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED';
 export type CoopAllocationRecord=Readonly<{
- matchId:string;roomId:string;worldId:string;bootId:string;
+ matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
  configVersion:number;configDigest:string;contentHash:string;
  seats:readonly CoopSeat[];status:CoopAllocationStatus;generation:number;
 }>;
@@ -32,7 +32,7 @@ export type CoopAdmissionPort=Readonly<{
 }>;
 export type CoopIssuerPort=Readonly<{issue(credential:string,scope:RuntimeScope):Promise<Readonly<{ticket:string;expiresAt:string}>>}>;
 export type CoopRuntimeRequest=Readonly<{
- matchId:string;bootId:string;worldId:string;origin:string;
+ matchId:string;bootId:string;worldId:string;origin:string;bossId:string;
  configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];
 }>;
 export type CoopRuntimeHandle=Readonly<{port:number;stop():Promise<void>;onExit(listener:()=>void):void}>;
@@ -44,7 +44,7 @@ export type CoopProvisionerOptions=Readonly<{
  id?:()=>string;
 }>;
 export type CoopStartInput=Readonly<{
- roomId:string;configVersion:number;configDigest:string;
+ roomId:string;bossId:string;configVersion:number;configDigest:string;
  bundle:Record<string,unknown>;seats:readonly CoopSeat[];
 }>;
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
@@ -109,9 +109,21 @@ export class CoopMatchProvisioner{
   await this.options.store.fail(record.matchId).catch(()=>{});
  }
 
+ private async releaseSettledRuntimes(){
+  for(const active of this.active.values()){
+   const current=await this.options.store.findByRoom(active.record.roomId);
+   if(current?.status!=='SETTLED')continue;
+   active.stopped=true;
+   active.lease.stop();
+   await active.handle.stop();
+   this.active.delete(active.record.matchId);
+   await this.options.admission.configure(active.scope,active.generation,false,0).catch(()=>{});
+  }
+ }
+
  async start(input:CoopStartInput):Promise<CoopStartResult>{
   if(this.closing)throw unavailable();
-  if(!UUID.test(input.roomId)||!seatsValid(input.seats))throw conflict('Cooperative allocation is invalid');
+  if(!UUID.test(input.roomId)||!PET.test(input.bossId)||!seatsValid(input.seats))throw conflict('Cooperative allocation is invalid');
   const prior=await this.options.store.findByRoom(input.roomId);
   if(prior){
    const current=this.active.get(prior.matchId);
@@ -125,10 +137,11 @@ export class CoopMatchProvisioner{
   try{verdict=await this.options.validator.validate('arena8-coop-pve',input.bundle);}
   catch{throw unavailable('Published cooperative configuration is invalid');}
   if(verdict.digest!==input.configDigest)throw unavailable('Published cooperative configuration does not match its digest');
+  await this.releaseSettledRuntimes();
   const matchId=this.id(),bootId=this.id(),worldId='native:coop-'+matchId;
   if(!WORLD.test(worldId))throw unavailable();
   const record:CoopAllocationRecord=Object.freeze({
-   matchId,roomId:input.roomId,worldId,bootId,configVersion:input.configVersion,
+   matchId,roomId:input.roomId,worldId,bootId,bossId:input.bossId,configVersion:input.configVersion,
    configDigest:input.configDigest,contentHash:verdict.contentHash,
    seats:Object.freeze(input.seats.map(seat=>Object.freeze({...seat}))),status:'STARTING',generation:0,
   });
@@ -145,7 +158,7 @@ export class CoopMatchProvisioner{
    for(let attempt=0;attempt<3;attempt++){
     try{
      handle=await this.options.runtime.start(Object.freeze({
-      matchId,bootId,worldId,origin:this.origin,configDigest:input.configDigest,
+      matchId,bootId,worldId,origin:this.origin,bossId:record.bossId,configDigest:input.configDigest,
       bundle:input.bundle,seats:record.seats,
      }));
      startError=undefined;break;
@@ -215,7 +228,7 @@ export class CoopMatchProvisioner{
     let handle:CoopRuntimeHandle|undefined;
     try{handle=await this.options.runtime.start({
      matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
-     configDigest:record.configDigest,bundle,seats:record.seats,
+     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,
     });}catch{handle=undefined;}
     if(!handle)throw unavailable();
     const lease=this.lease(scope,generation,()=>{

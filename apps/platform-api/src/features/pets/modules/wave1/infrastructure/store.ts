@@ -5,7 +5,7 @@ export type Wave1PlayerRow=Readonly<{
   coins:number;revision:number;gachaMisses:number;gachaGuaranteed:boolean;gachaRevision:number;
 }>;
 export type Wave1OwnedRow=Readonly<{
-  petId:string;level:number;exp:number;duplicateExp:number;
+  petId:string;ownedPetInstanceId:string;level:number;exp:number;duplicateExp:number;
   source:'starter'|'gacha'|'campaign';acquiredAt:Date;
 }>;
 export type Wave1ClearRow=Readonly<{mapId:string;replays:number;clearedAt:Date}>;
@@ -15,7 +15,7 @@ export type Wave1GachaRow=Readonly<{
 export type Wave1ReceiptRow=Readonly<{fingerprint:string;response:unknown}>;
 
 const PLAYER_COLUMNS=`coins,revision,gacha_misses AS "gachaMisses",gacha_guaranteed AS "gachaGuaranteed",gacha_revision AS "gachaRevision"`;
-const OWNED_COLUMNS=`pet_id AS "petId",level,exp,duplicate_exp AS "duplicateExp",source,acquired_at AS "acquiredAt"`;
+const OWNED_COLUMNS=`pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanceId",level,exp,duplicate_exp AS "duplicateExp",source,acquired_at AS "acquiredAt"`;
 const CLEAR_COLUMNS=`map_id AS "mapId",replays,cleared_at AS "clearedAt"`;
 const GACHA_COLUMNS=`seq,pet_id AS "petId",featured,duplicate,pity_before AS "pityBefore",created_at AS "createdAt"`;
 

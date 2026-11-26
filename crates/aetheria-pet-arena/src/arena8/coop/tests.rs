@@ -1,6 +1,6 @@
 //! Engine correctness tests for the configuration-driven cooperative ruleset.
 //!
-//! Every authored number comes from `config/gameplay/arena8-coop-v1.seed.json`,
+//! Every authored number comes from `config/gameplay/arena8-coop-v2.seed.json`,
 //! so these tests also prove that no production balance value is compiled into
 //! the crate: changing the bundle changes the observable behaviour.
 
@@ -11,7 +11,7 @@ use aetheria_game_core::{SecretSeed, TurnRng};
 fn bundle() -> Vec<u8> {
     std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../config/gameplay/arena8-coop-v1.seed.json"
+        "/../../config/gameplay/arena8-coop-v2.seed.json"
     ))
     .expect("seed bundle")
 }
@@ -105,7 +105,7 @@ fn seed_bundle_is_accepted_and_separates_digests() {
 fn digest_seed_bundle() -> [u8; 32] {
     let hex = std::fs::read_to_string(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../config/gameplay/arena8-coop-v1.digest"
+        "/../../config/gameplay/arena8-coop-v2.digest"
     ))
     .expect("golden digest");
     let hex = hex.trim();
@@ -118,14 +118,21 @@ fn digest_seed_bundle() -> [u8; 32] {
 
 #[test]
 fn configuration_fails_closed_when_missing_or_invalid() {
-    assert!(matches!(CoopRules::load(b"", "dummy".to_string()), Err(ConfigError::Malformed)));
+    assert!(matches!(
+        CoopRules::load(b"", "dummy".to_string()),
+        Err(ConfigError::Malformed)
+    ));
     assert!(matches!(
         CoopRules::load(br#"{"schemaVersion":1}"#, "dummy".to_string()),
         Err(ConfigError::Malformed)
     ));
     let source: serde_json::Value = serde_json::from_slice(&bundle()).expect("json");
-    let rejected =
-        |value: &serde_json::Value| CoopRules::load(&serde_json::to_vec(value).expect("encode"), "dummy".to_string());
+    let rejected = |value: &serde_json::Value| {
+        CoopRules::load(
+            &serde_json::to_vec(value).expect("encode"),
+            "dummy".to_string(),
+        )
+    };
     // Unknown fields never silently become defaults.
     let mut unknown = source.clone();
     unknown["unexpected"] = serde_json::json!(1);
@@ -506,4 +513,16 @@ fn settlement_reports_contribution_for_every_participant() {
     assert_eq!(values[0], Value::Uint(u64::from(COOP_RULESET_VERSION)));
     assert_eq!(values[1], Value::Text(COOP_RULESET_ID.into()));
     assert_eq!(values[2], Value::Bytes(rules.digest().to_vec()));
+}
+
+#[test]
+fn historical_bundle_keeps_its_original_digest_and_boss_encoding() {
+    let raw = include_bytes!("../../../../../config/gameplay/arena8-coop-v1.seed.json");
+    let legacy = CoopRules::load(raw, "cinder-terraces-warden".into()).unwrap();
+    let digest = legacy.digest().map(|byte| format!("{byte:02x}")).concat();
+    assert_eq!(
+        digest,
+        include_str!("../../../../../config/gameplay/arena8-coop-v1.digest").trim()
+    );
+    assert!(CoopRules::load(raw, "tideglass-lagoon-warden".into()).is_err());
 }

@@ -9,16 +9,16 @@ export type CoopSettlementEvent=Readonly<{
 }>;
 export type CoopAllocationBinding=Readonly<{
  roomId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
- seats:readonly {account:string;petId:string;petLevel:number;artifactPowerPm:number}[];
+ seats:readonly {account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string|null}[];
 }>;
 
 function seats(value:unknown){
  if(!Array.isArray(value)||value.length!==SEAT_LIMIT)throw new Error('Cooperative settlement seats are invalid');
  return Object.freeze(value.map(entry=>{
-  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown};
-  if(typeof seat.account!=='string'||typeof seat.petId!=='string'||typeof seat.petLevel!=='number')
+  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown};
+  if(typeof seat.account!=='string'||typeof seat.petId!=='string'||typeof seat.petLevel!=='number'||(seat.ownedPetInstanceId!==undefined&&typeof seat.ownedPetInstanceId!=='string'))
    throw new Error('Cooperative settlement seats are invalid');
-  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:Number(seat.artifactPowerPm)});
+  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:Number(seat.artifactPowerPm),ownedPetInstanceId:seat.ownedPetInstanceId??null});
  }));
 }
 
@@ -81,7 +81,7 @@ export class CoopSettlementStore{
  }
  async award(tx:Queryable,input:Readonly<{
   settlementId:string;accountId:string;seat:number;outcome:'won'|'lost';
-  points:number;coins:number;exp:number;petId:string;petLevel:number;petExp:number;currentLevel:number;currentExp:number;
+  points:number;coins:number;exp:number;petId:string;ownedPetInstanceId:string|null;petLevel:number;petExp:number;currentLevel:number;currentExp:number;
  }>):Promise<void>{
   if(input.points>0){
    await tx.query(
@@ -98,8 +98,8 @@ export class CoopSettlementStore{
    );
   }
   if(input.exp>0){
-   await tx.query('UPDATE pet_wave_one_owned SET level=$3,exp=$4 WHERE account_id=$1 AND pet_id=$2',[
-    input.accountId,input.petId,input.petLevel,input.petExp,
+   await tx.query('UPDATE pet_wave_one_owned SET level=$3,exp=$4 WHERE account_id=$1 AND pet_id=$2 AND ($5::uuid IS NULL OR owned_pet_instance_id=$5)',[
+    input.accountId,input.petId,input.petLevel,input.petExp,input.ownedPetInstanceId,
    ]);
   }
   await tx.query(
@@ -108,8 +108,8 @@ export class CoopSettlementStore{
    [input.settlementId,input.accountId,input.seat,input.outcome,input.points,input.coins,input.exp,input.petId],
   );
  }
- async pet(tx:Queryable,accountId:string,petId:string):Promise<Readonly<{level:number;exp:number}>|undefined>{
-  const row=(await tx.query<{level:unknown;exp:unknown}>('SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 FOR UPDATE',[accountId,petId])).rows[0];
+ async pet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId:string|null):Promise<Readonly<{level:number;exp:number}>|undefined>{
+  const row=(await tx.query<{level:unknown;exp:unknown}>('SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND ($3::uuid IS NULL OR owned_pet_instance_id=$3) FOR UPDATE',[accountId,petId,ownedPetInstanceId])).rows[0];
   return row?Object.freeze({level:Number(row.level),exp:Number(row.exp)}):undefined;
  }
  async finish(tx:Queryable,input:Readonly<{

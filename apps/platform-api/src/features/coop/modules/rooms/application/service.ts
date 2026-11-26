@@ -46,11 +46,18 @@ export class CoopRoomService{
   if(prior.fingerprint!==fingerprint)throw conflict('Request key was used with different input');
   return parse(prior.response);
  }
- private async configuration(tx:Queryable){
+ private async configuration(tx:Queryable,requestedBossId?:string,requestedMapId?:string){
   const active=await this.store.activeConfiguration(tx);
-  const boss=active.bundle.boss;
+  const catalog=active.bundle.bosses;
+  const boss=Array.isArray(catalog)
+   ?catalog.find(entry=>entry&&(requestedBossId===undefined||entry.id===requestedBossId)&&(requestedMapId===undefined||entry.mapId===requestedMapId)&&(requestedBossId!==undefined||requestedMapId!==undefined))
+   :active.bundle.boss;
+  if(!boss&&(requestedBossId!==undefined||Array.isArray(catalog)))
+   throw new DomainError('NOT_AVAILABLE',404,'Choose a Boss from the published cooperative catalog');
   if(!boss||typeof boss!=='object'||Array.isArray(boss))throw unavailable();
   const value=boss as Record<string,unknown>,bossId=value.id,required=value.requiredRoomPoints;
+  if(requestedMapId!==undefined&&requestedMapId!==value.mapId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative map is unavailable');
+  if(requestedBossId!==undefined&&requestedBossId!==bossId)throw new DomainError('NOT_AVAILABLE',404,'Cooperative Boss is unavailable');
   if(typeof bossId!=='string'||!/^[a-z][a-z0-9-]{2,63}$/.test(bossId))throw unavailable();
   if(typeof required!=='number'||!Number.isInteger(required)||required<0||required>1_000_000)throw unavailable();
   return Object.freeze({version:active.version,digest:active.digest,bossId,requiredPoints:required});
@@ -64,9 +71,9 @@ export class CoopRoomService{
    roomId:room.id,ruleset:room.ruleset,bossId:room.bossId,status:room.status,revision:room.revision,
    configVersion:room.configVersion,requiredPoints:room.requiredPoints,createdAt:room.createdAt.toISOString(),
    you:{seat:mine?.seat??null,isHost},
-   seats:seats.map(seat=>({seat:seat.seat,petId:seat.petId,petLevel:seat.petLevel,ready:seat.ready,you:seat.accountId===accountId})),
+   seats:seats.map(seat=>({seat:seat.seat,petId:seat.petId,petLevel:seat.petLevel,ready:seat.ready,you:seat.accountId===accountId,ownedPetInstanceId:seat.accountId===accountId?seat.ownedPetInstanceId:null})),
    canJoin:room.status==='OPEN'&&!mine&&seats.length<ROOM_LIMIT,
-   canStart:isHost&&room.status==='OPEN'&&seats.length===ROOM_LIMIT&&seats.every(seat=>seat.ready&&seat.petId!==null&&seat.petLevel!==null),
+   canStart:isHost&&room.status==='OPEN'&&seats.length===ROOM_LIMIT&&seats.every(seat=>seat.ready&&seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null),
   });
  }
  private async seatOrFail(tx:Queryable,roomId:string,accountId:string):Promise<CoopSeatRow>{
@@ -75,11 +82,11 @@ export class CoopRoomService{
   return seat;
  }
 
- async eligibility(accountId:string){
+ async eligibility(accountId:string,bossId?:string){
   const client=await this.db.connect();
   try{
    await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='3000ms'");
-   const config=await this.configuration(client),points=await this.store.achievementPoints(client,accountId);
+   const config=await this.configuration(client,bossId),points=await this.store.achievementPoints(client,accountId);
    await client.query('COMMIT');
    return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',bossId:config.bossId,points,requiredPoints:config.requiredPoints,eligible:points>=config.requiredPoints});
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
@@ -90,16 +97,18 @@ export class CoopRoomService{
   return this.transaction(accountId,requestId,async tx=>{
    const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
    if(prior)return prior;
-   const config=await this.configuration(tx),points=await this.store.achievementPoints(tx,accountId);
+   const config=await this.configuration(tx,input.bossId,input.mapId),points=await this.store.achievementPoints(tx,accountId);
    if(points<config.requiredPoints)throw forbidden('Achievement Points required to create this room');
-   let petLevel:number|null=null;
+   let petLevel:number|null=null,ownedPetInstanceId:string|null=null;
+   if(input.ownedPetInstanceId&&!input.petId)throw conflict('Pet species is required with an instance ID');
    if(input.petId){
-    const owned=await this.store.ownedPet(tx,accountId,input.petId);
+    const owned=await this.store.ownedPet(tx,accountId,input.petId,input.ownedPetInstanceId);
     if(!owned)throw forbidden('Pet is not owned');
     petLevel=owned.level;
+    ownedPetInstanceId=owned.instanceId;
    }
    const room=await this.store.createRoom(tx,{id:randomUUID(),bossId:config.bossId,hostAccountId:accountId,configVersion:config.version,configDigest:config.digest,requiredPoints:config.requiredPoints});
-   await this.store.addSeat(tx,{roomId:room.id,seat:0,accountId,petId:input.petId??null,petLevel});
+   await this.store.addSeat(tx,{roomId:room.id,seat:0,accountId,petId:input.petId??null,petLevel,ownedPetInstanceId});
    await this.store.event(tx,{roomId:room.id,accountId,action:'create',fromState:null,toState:'OPEN'});
    const view=await this.view(tx,room,accountId);
    await this.store.saveRequest(tx,{accountId,requestId,fingerprint,response:view});
@@ -138,7 +147,7 @@ export class CoopRoomService{
    if(seats.length>=ROOM_LIMIT)throw conflict('Room is full');
    const used=new Set(seats.map(seat=>seat.seat));
    const seat=[0,1,2,3].find(value=>!used.has(value))!;
-   await this.store.addSeat(tx,{roomId,seat,accountId,petId:null,petLevel:null});
+   await this.store.addSeat(tx,{roomId,seat,accountId,petId:null,petLevel:null,ownedPetInstanceId:null});
    const touched=await this.store.touch(tx,{roomId,expectedRevision:room.revision});
    if(!touched)throw conflict('Room changed; refresh before retrying');
    await this.store.event(tx,{roomId,accountId,action:'join',fromState:'OPEN',toState:'OPEN'});
@@ -188,8 +197,8 @@ export class CoopRoomService{
    const owned=await this.store.ownedPet(tx,accountId,input.petId,input.ownedPetInstanceId);
    if(!owned)throw forbidden('Pet is not owned');
    const seats=await this.store.seats(tx,roomId);
-   if(seats.some(seat=>seat.accountId!==accountId&&seat.ownedPetInstanceId===input.ownedPetInstanceId))throw conflict('Pet instance is already selected by another participant');
-   await this.store.selectPet(tx,{roomId,accountId,petId:input.petId,petLevel:owned.level,ownedPetInstanceId:input.ownedPetInstanceId});
+   if(seats.some(seat=>seat.accountId!==accountId&&seat.ownedPetInstanceId===owned.instanceId))throw conflict('Pet instance is already selected by another participant');
+   await this.store.selectPet(tx,{roomId,accountId,petId:input.petId,petLevel:owned.level,ownedPetInstanceId:owned.instanceId});
    const touched=await this.store.touch(tx,{roomId,expectedRevision:room.revision});
    if(!touched)throw conflict('Room changed; refresh before retrying');
    await this.store.event(tx,{roomId,accountId,action:'select_pet',fromState:'OPEN',toState:'OPEN'});
@@ -240,7 +249,7 @@ export class CoopRoomService{
    if(room.status!=='OPEN')throw conflict('Room is not open');
    const seats=await this.store.seats(tx,roomId);
    if(seats.length!==ROOM_LIMIT)throw conflict('Four participants are required');
-   if(!seats.every(seat=>seat.ready&&seat.petId!==null&&seat.petLevel!==null))throw conflict('Every participant must select a Pet and ready up');
+   if(!seats.every(seat=>seat.ready&&seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null))throw conflict('Every participant must select a Pet and ready up');
    const locked=await this.store.setStatus(tx,{roomId,status:'LOCKED',expectedRevision:room.revision});
    if(!locked)throw conflict('Room changed; refresh before retrying');
    await this.store.event(tx,{roomId,accountId,action:'start',fromState:'OPEN',toState:'LOCKED'});
@@ -251,12 +260,12 @@ export class CoopRoomService{
    const room=await this.store.room(this.db,roomId);
    if(!room||room.status!=='LOCKED')throw conflict('Room changed; refresh before retrying');
    const seats=await this.store.seats(this.db,roomId);
-   if(seats.length!==ROOM_LIMIT||!seats.every(seat=>seat.petId!==null&&seat.petLevel!==null))throw conflict('Four prepared participants are required');
+   if(seats.length!==ROOM_LIMIT||!seats.every(seat=>seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null))throw conflict('Four prepared participants are required');
    const bundle=await this.store.pinnedBundle(this.db,room.configVersion,room.configDigest);
    if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
    try{
     await this.provisioner.start({
-     roomId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
+     roomId,bossId:room.bossId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
      seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId!})) as readonly CoopSeat[],
     });
    }catch(error){

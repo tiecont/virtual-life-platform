@@ -80,14 +80,14 @@ export class CoopSettlement{
     const awardPoints=active?points:0,awardCoins=active?coins:0,awardExp=active?exp:0;
     let level=seat.petLevel,petExp=0;
     if(awardExp>0){
-     const current=await this.store.pet(db,seat.account,seat.petId);
+     const current=await this.store.pet(db,seat.account,seat.petId,seat.ownedPetInstanceId);
      if(!current)throw new Error('Cooperative settlement Pet unavailable');
      const next=levelIncrement(current.level,current.exp+awardExp);
      level=next.level;petExp=next.exp;
     }
     await this.store.award(db,{
      settlementId:event.settlementId,accountId:seat.account,seat:seatIndex,outcome,
-     points:awardPoints,coins:awardCoins,exp:awardExp,petId:seat.petId,
+     points:awardPoints,coins:awardCoins,exp:awardExp,petId:seat.petId,ownedPetInstanceId:seat.ownedPetInstanceId,
      petLevel:level,petExp,currentLevel:level,currentExp:petExp,
     });
    }

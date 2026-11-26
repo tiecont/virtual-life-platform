@@ -134,6 +134,9 @@ namespace Aetheria.PetArena.Infrastructure
 
         public void Dispose() => http.Dispose();
 
+        internal Task<string> CoopRequest(string route, string json, CancellationToken cancellation) =>
+            Request<string>(route, json, cancellation);
+
         private async Task<T> Request<T>(string route, object body, CancellationToken cancellation,
             bool rememberSession = false, int retry = 0) where T : class
         {
@@ -143,7 +146,7 @@ namespace Aetheria.PetArena.Infrastructure
             {
                 request.Headers.TryAddWithoutValidation("Origin", webOrigin);
                 if (csrf != null) request.Headers.TryAddWithoutValidation("X-CSRF-Token", csrf);
-                request.Content = new StringContent(JsonUtility.ToJson(body), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(body is string jsonBody ? jsonBody : JsonUtility.ToJson(body), Encoding.UTF8, "application/json");
             }
 
             using var response = await http.SendAsync(request, cancellation);
@@ -165,6 +168,7 @@ namespace Aetheria.PetArena.Infrastructure
                 throw new Wave1ApiException(status, message);
             }
 
+            if (typeof(T) == typeof(string)) return (T)(object)json;
             T value;
             try { value = JsonUtility.FromJson<T>(json); }
             catch (ArgumentException error) { throw new InvalidDataException("Invalid Wave 1 API response.", error); }
