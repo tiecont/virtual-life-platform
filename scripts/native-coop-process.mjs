@@ -164,23 +164,17 @@ try{
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
- async function freshTickets(){
-  const issued=[];
-  for(const [seat,member] of members.entries()){
-   const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
-   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
-   const view=response.json();
-   assert.equal(view.bootId,allocation.boot_id);
-   assert.equal(view.accountId,member.accountId);
-   assert.equal(view.seat,seat);
-   assert.equal(view.contentHash,allocation.content_hash);
-   issued.push(view.ticket);
-  }
-  assert.equal(new Set(issued).size,4);
-  return issued;
+ async function freshTicket(seat){
+  const member=members[seat];
+  const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
+  assert.equal(response.statusCode,200,JSON.stringify(response.json()));
+  const view=response.json();
+  assert.equal(view.bootId,allocation.boot_id);
+  assert.equal(view.accountId,member.accountId);
+  assert.equal(view.seat,seat);
+  assert.equal(view.contentHash,allocation.content_hash);
+  return view.ticket;
  }
- let tickets=await freshTickets();
- facts.scenarios.push('four-subject-scoped-tickets-issued-by-the-real-issuer');
  const caPem=await readFile(tls.caFile,'utf8');
  const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
  function client(ticket,seat){
@@ -192,18 +186,20 @@ try{
   const opened=new Promise((resolve,reject)=>{ws.once('open',resolve);ws.once('error',error=>reject(new Error('native socket failed: '+String(error?.message??error))));});
   return {ws,seat,ticket,opened,next,sequence:1};
  }
- async function openConnections(issued){
-  const list=[];
+ async function openConnections(list){
+  const issued=new Set();
   for(const seat of members.keys()){
-   const connection=client(issued[seat],seat);
+   const ticket=await freshTicket(seat);
+   assert.ok(!issued.has(ticket));
+   issued.add(ticket);
+   const connection=client(ticket,seat);
+   list.push(connection);
    await connection.opened;
    const id=randomBytes(16);
-   connection.ws.send(envelope(10,helloMessage(issued[seat],contentBytes),id,connection.sequence++));
+   connection.ws.send(envelope(10,helloMessage(ticket,contentBytes),id,connection.sequence++));
    const hello=await connection.next(5000);
    assert.equal(hello.body.case,'hello');
-   list.push(connection);
   }
-  return list;
  }
  async function intent(connection,expectedVersion,action,kind='arena8-coop.intent.v1'){
   const id=randomBytes(16);
@@ -216,8 +212,8 @@ try{
  }
  let connections=[];
  try{
-  connections=await openConnections(tickets);
-  facts.scenarios.push('four-authenticated-sockets-completed-hello-with-their-own-ticket');
+  await openConnections(connections);
+  facts.scenarios.push('four-authenticated-sockets-completed-hello-with-distinct-subject-scoped-tickets');
   const initial=await intent(connections[0],0,'','arena8-coop.view.v1');
   assert.equal(initial.body.case,'receipt');
   const initialVersion=Number(initial.canonicalVersion);
@@ -266,8 +262,7 @@ try{
   app=await createApp(config,pool,false,{});
   const recovered=(await pool.query('SELECT status,generation FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
   assert.equal(recovered.status,'ACTIVE');
-  tickets=await freshTickets();
-  connections=await openConnections(tickets);
+  await openConnections(connections);
   const resumed=await intent(connections[0],0,'','arena8-coop.view.v1');
   assert.equal(resumed.body.case,'receipt');
   version=Number(resumed.canonicalVersion);
