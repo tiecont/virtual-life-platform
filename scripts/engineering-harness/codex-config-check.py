@@ -55,6 +55,7 @@ def verify():
         catalog = json.loads(run([codex, 'debug', 'models', '--bundled'], repo, env))
         by_slug = {item['slug']: item for item in catalog['models']}
         root = settings['model']
+        assert (root, settings['model_reasoning_effort']) == ('gpt-6.2-astra', 'medium')
         worker = settings['agents']['default_subagent_model']
         roles = []
         for path in sorted((repo / '.codex/agents').glob('*.toml')):

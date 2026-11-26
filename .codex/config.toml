@@ -1,6 +1,6 @@
 # Project defaults for the OpenAI Codex CLI. Shared workflows live outside .codex.
 model = "gpt-6.2-astra"
-model_reasoning_effort = "high"
+model_reasoning_effort = "medium"
 approval_policy = "on-request"
 approvals_reviewer = "user"
 default_permissions = "aetheria-local"

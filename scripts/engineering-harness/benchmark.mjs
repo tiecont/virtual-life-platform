@@ -356,7 +356,11 @@ function main() {
     revision,
     worktreeDirty: report.worktreeDirty,
     trialCount: report.trialCount,
-    scenarios: results.map(({ trials, ...summary }) => summary),
+    scenarios: results.map(result => {
+      const summary = { ...result };
+      delete summary.trials;
+      return summary;
+    }),
     nativeScenarios: report.nativeScenarios,
     modelMetrics: report.modelMetrics,
     evidence: { path: relative(root, path), bytes: bytes.length, sha256: hash(bytes) },

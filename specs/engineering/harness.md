@@ -47,7 +47,7 @@ integrating any patch. Independent reviewers can start their own session with
 
 Previously the CLI used a user-level Sol/high default and user MCP settings.
 Repository checks were invoked individually, with the complete development plan
-and command output available to read. The project config now uses Astra/high for
+and command output available to read. The project config now uses Astra/medium for
 the lead and Sol/medium by default for specialists, with role-specific effort,
 a four-thread budget. The configured depth of one applies to the V1 backend.
 The installed model selected V2 during the smoke test. V2 has no hard depth
