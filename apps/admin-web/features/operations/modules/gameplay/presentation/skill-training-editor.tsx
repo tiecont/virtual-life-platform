@@ -17,6 +17,15 @@ export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBun
  if(!skill)return null;
  const rows=Array.isArray(skill.upgradeLevels)?skill.upgradeLevels as Row[]:[];
  const effect=skill.effect as Record<string,unknown>;
+ const kind=String(effect?.kind??''),target=String(effect?.target??'');
+ const timedPartyStatus=(kind==='buff'||kind==='debuff')&&target!=='boss';
+ function effectField(key:string,label:string,min:number,max:number){
+  return <label>{label}<input className="aetheria-field" type="number" min={min} max={max} step={1} value={Number(effect[key])}
+   onChange={event=>{
+    const value=event.target.valueAsNumber;
+    if(Number.isSafeInteger(value)&&value>=min&&value<=max)change(['skills',String(index),'effect',key],value);
+   }}/></label>;
+ }
  const last=rows.at(-1)?.powerPm??Number(skill.powerPm);
  const materials=Number(materialInput),powerPm=Number(powerInput);
  const valid=Number.isInteger(materials)&&materials>=1&&materials<=1000000&&Number.isInteger(powerPm)&&powerPm>last&&powerPm<=10000;
@@ -25,6 +34,12 @@ export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBun
  return <details><summary>Skill training costs and levels</summary>
   <label>Training Pet<select value={String(pet.id)} onChange={e=>{setPet(e.target.value);setSkill('');clearInput();}}>{pets.map(p=><option key={String(p.id)}>{String(p.id)}</option>)}</select></label>
   <label>Training skill<select value={id} onChange={e=>{setSkill(e.target.value);clearInput();}}>{slots.map(value=><option key={value}>{value}</option>)}</select></label>
+  {effect&&<fieldset disabled={!editable}><legend>{kind} · {target}</legend><div className="fields">
+   {kind!=='cleanse'&&effectField('value','Base effect value',1,4294967295)}
+   {(timedPartyStatus||kind==='damage-over-time'||kind==='curse')&&effectField('durationTurns','Effect duration (turns)',1,32)}
+   {kind==='chain-damage'&&effectField('hits','Hits per cast',2,8)}
+   {timedPartyStatus&&effectField('stackingPm','Reapplication scaling (‰)',1,10000)}
+  </div></fieldset>}
   <p>Level 1 power {String(skill.powerPm)}‰ · Maximum skill level {rows.length+1}</p>
   <fieldset disabled={!editable}>{rows.map((row,i)=><div key={i} className="fields">
    <strong>Level {i+2}</strong>{(['materials','powerPm'] as const).map(key=><label key={key}>{key==='materials'?'Materials':'Power (‰)'}<input className="aetheria-field" type="number" min={1} value={row[key]} onChange={e=>{
