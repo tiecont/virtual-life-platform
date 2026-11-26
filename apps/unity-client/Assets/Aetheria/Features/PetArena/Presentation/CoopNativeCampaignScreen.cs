@@ -119,7 +119,7 @@ namespace Aetheria.PetArena.Presentation
             if (lobby.CanRefreshRoom)
                 root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = "Refresh room", name = "coop-refresh" });
             if (room.status == "STARTED")
-                root.Add(new Button(() => _ = RunAsync(AdmitAsync)) { text = "Enter match", name = "coop-enter" });
+                root.Add(new Button(() => _ = RunAsync(ResumeMatchAsync)) { text = "Enter match or view rewards", name = "coop-enter" });
             var leave = new Button(() => { room = null; RenderLobby(); }) { text = "Back", name = "coop-back" };
             root.Add(leave);
         }
@@ -153,8 +153,28 @@ namespace Aetheria.PetArena.Presentation
             if (loaded.you == null || !loaded.seats.Any(seat => seat.you))
                 throw new InvalidOperationException("This account has no seat in that room.");
             room = loaded;
-            if (room.status == "STARTED") await AdmitAsync();
+            if (room.status == "STARTED") await ResumeMatchAsync();
             else RenderLobby();
+        }
+
+        private async Task ResumeMatchAsync()
+        {
+            if (lobby.CanRefreshRoom)
+            {
+                try
+                {
+                    var reward = await lobby.RewardAsync(Guid.Parse(room.roomId));
+                    notice = reward.outcome + " · " + reward.coins + " coins · " +
+                        reward.exp + " Pet EXP · " + reward.achievementPoints + " Achievement Points";
+                    RenderLobby();
+                    return;
+                }
+                catch (Wave1ApiException error) when (error.Status == 404)
+                {
+                    // A participant has no receipt until settlement commits.
+                }
+            }
+            await AdmitAsync();
         }
 
         private async Task RefreshRoomAsync()

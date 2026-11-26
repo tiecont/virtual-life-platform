@@ -36,12 +36,13 @@ namespace Aetheria.PetArena.Infrastructure
 
         [Serializable] public sealed class Reward { public string roomId, matchId, outcome, petId; public int achievementPoints, coins, exp; }
 
-        public async System.Threading.Tasks.Task<Reward> RewardAsync(Guid roomId, Guid matchId)
+        public async System.Threading.Tasks.Task<Reward> RewardAsync(Guid roomId, Guid? matchId = null)
         {
             if (local == null) throw new InvalidOperationException("Room session required.");
             var json = await local.CoopRequest(RoomPath(roomId, "reward"), null, default);
             var reward = JsonUtility.FromJson<Reward>(json);
-            if (reward == null || !Guid.TryParse(reward.matchId, out var match) || match != matchId ||
+            if (reward == null || !Guid.TryParse(reward.matchId, out var match) || match == Guid.Empty ||
+                (matchId.HasValue && match != matchId.Value) ||
                 !Guid.TryParse(reward.roomId, out var room) || room != roomId)
                 throw new FormatException("Reward receipt does not match this battle.");
             return reward;
