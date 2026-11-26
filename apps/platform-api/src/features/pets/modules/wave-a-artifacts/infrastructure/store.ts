@@ -192,3 +192,30 @@ export class ArtifactTransaction {
     return row.revision;
   }
 }
+
+// The whole roster is read in one PostgreSQL statement snapshot. Recheck the
+// owned Pet identity and join equipped rows to inventory by account as well as
+// Artifact id. A different account's copy of a species cannot contribute gear.
+export async function readOwnedArtifactLoadouts(
+  db:Pick<PoolClient,'query'>,
+  pets:readonly Readonly<{account:string;petId:string;ownedPetInstanceId:string}>[],
+){
+  return (await db.query<{
+    account:string;petId:string;ownedPetInstanceId:string;petLevel:number;
+    entries:readonly {slot:ArtifactSlot;artifactId:string;definitionId:string;upgradeLevel:number}[];
+  }>(`
+    SELECT owned.account_id AS account,owned.pet_id AS "petId",owned.owned_pet_instance_id AS "ownedPetInstanceId",
+           owned.level AS "petLevel",COALESCE(gear.entries,'[]'::jsonb) AS entries
+    FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS seat(pet,position)
+    JOIN pet_wave_one_owned owned ON owned.account_id=(seat.pet->>'account')::uuid
+     AND owned.pet_id=seat.pet->>'petId' AND owned.owned_pet_instance_id=(seat.pet->>'ownedPetInstanceId')::uuid
+    LEFT JOIN LATERAL (
+      SELECT jsonb_agg(jsonb_build_object('slot',equipped.slot,'artifactId',item.artifact_id,
+             'definitionId',item.definition_id,'upgradeLevel',item.upgrade_level)) AS entries
+      FROM pet_artifact_loadouts equipped
+      JOIN pet_artifact_owned item ON item.account_id=equipped.account_id AND item.artifact_id=equipped.artifact_id
+      WHERE equipped.account_id=owned.account_id AND equipped.pet_id=owned.pet_id
+    ) gear ON true
+    ORDER BY seat.position
+  `,[JSON.stringify(pets)])).rows;
+}

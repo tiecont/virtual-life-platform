@@ -1,7 +1,7 @@
 //! Configuration-bound cooperative domain adapter.
 use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
 use aetheria_pet_arena::arena8::coop::{
-    ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    ArtifactLoadout, ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
 };
 use std::sync::Arc;
 
@@ -11,7 +11,7 @@ pub const MAX_SEAT_POWER_PM: u16 = 5_000;
 
 pub struct Rules {
     engine: Arc<CoopRules>,
-    seats: [SeatInput; SEATS],
+    initial: CoopState,
 }
 
 impl Rules {
@@ -21,6 +21,7 @@ impl Rules {
         bundle: &[u8],
         seats: [SeatInput; SEATS],
         boss_id: String,
+        loadouts: Option<&[ArtifactLoadout; SEATS]>,
     ) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
         let mut owned_pets = std::collections::BTreeSet::new();
@@ -36,14 +37,23 @@ impl Rules {
             }
         }
         let engine = CoopRules::load(bundle, boss_id)?;
+        let initial = match loadouts {
+            Some(loadouts) => engine.allocate_with_loadouts(seats, loadouts),
+            None if !engine.config().has_artifact_catalog() => engine.allocate(seats),
+            None => return Err(ConfigError::Artifact),
+        }
+        .map_err(|error| match error {
+            CoopError::Config(error) => error,
+            _ => ConfigError::Party,
+        })?;
         Ok(Self {
             engine: Arc::new(engine),
-            seats,
+            initial,
         })
     }
 
-    pub fn initial(&self) -> Result<CoopState, CoopError> {
-        self.engine.allocate(self.seats.clone())
+    pub fn initial(&self) -> CoopState {
+        self.initial.clone()
     }
 
     pub fn engine(&self) -> &CoopRules {
@@ -61,14 +71,15 @@ impl Rules {
         if state.config_digest != self.engine.digest() {
             return Err(Error::InvalidState);
         }
-        for (seat, participant) in self.seats.iter().zip(state.participants.iter()) {
+        for (seat, participant) in self.initial.participants.iter().zip(&state.participants) {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
                 || participant.level != seat.level
-                || participant
-                    .owned_pet_instance_id
-                    .as_ref()
-                    .is_some_and(|id| id != &seat.owned_pet_instance_id)
+                || participant.owned_pet_instance_id != seat.owned_pet_instance_id
+                || participant.artifact_loadout_digest != seat.artifact_loadout_digest
+                || (seat.artifact_loadout_digest.is_some()
+                    && (participant.max_hp, participant.attack, participant.defense)
+                        != (seat.max_hp, seat.attack, seat.defense))
             {
                 return Err(Error::InvalidState);
             }

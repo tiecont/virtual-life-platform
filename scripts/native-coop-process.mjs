@@ -74,6 +74,10 @@ try{
  await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-v2.seed.json','utf8'));
  bundle.contentRevision=4;
+ const starterDefinition=bundle.artifacts.find(artifact=>artifact.id==='core-emberglass');
+ // Prove the published catalog supplies combat stats independently of the
+ // account-facing Artifact catalog.
+ starterDefinition.modifiers.defense=1;
  const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
  const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
  for(const boss of [fire,water]){
@@ -102,7 +106,7 @@ try{
   LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:resolve(directory,'tls/server.pem'),
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
  });
- app=await createApp(config,pool,false,{});
+ app=await createApp(config,pool,false,{petArtifacts:{enabled:true}});
  const loginResponse=await app.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(operatorSecret,operatorNow)}});
  assert.equal(loginResponse.statusCode,200,JSON.stringify(loginResponse.json()));
  const operator={cookie:String(loginResponse.headers['set-cookie']).split(';')[0],csrf:loginResponse.json().csrfToken};
@@ -138,6 +142,16 @@ try{
  await pool.query('INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id) VALUES($1,$3,$4),($2,$3,$5)',[
   members[2].accountId,members[3].accountId,fire.mapId,fire.mapId+'-regular',fire.mapId+'-boss',
  ]);
+ const host=members[0];
+ const inventory=await app.http.inject({url:'/v1/pets/artifacts/state',headers:{cookie:host.cookie}});
+ assert.equal(inventory.statusCode,200,JSON.stringify(inventory.json()));
+ const starterId=inventory.json().inventory.find(artifact=>artifact.definitionId===starterDefinition.id).artifactId;
+ const equipInput={petId:host.petId,artifactId:starterId};
+ const deniedEquip=await post(members[2],'/v1/pets/artifacts/equip',{...equipInput,requestId:randomUUID()});
+ assert.equal(deniedEquip.statusCode,404);
+ const equipped=await post(host,'/v1/pets/artifacts/equip',{...equipInput,requestId:randomUUID()});
+ assert.equal(equipped.statusCode,200,JSON.stringify(equipped.json()));
+ let priorLoadout;
  await pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,5000,$2,$3)',[members[0].accountId,'admin_grant',randomUUID()]);
  for(const boss of [fire,water]){
  const createdRoom=await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:members[0].petId,ownedPetInstanceId:members[0].instanceId});
@@ -157,9 +171,17 @@ try{
  assert.equal(started.statusCode,200,JSON.stringify(started.json()));
  assert.equal(started.json().status,'STARTED');
  facts.scenarios.push('actual-runtime-process-started-from-published-bundle-and-four-seats');
- const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations WHERE room_id=$1',[room.roomId])).rows[0];
+ const allocation=(await pool.query(`SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,
+   jsonb_array_length(seats) AS seats, seats->0->'loadout' AS loadout, seats->2->'loadout' AS unequipped
+   FROM coop_allocations WHERE room_id=$1`,[room.roomId])).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
  assert.equal(allocation.status,'ACTIVE');assert.equal(allocation.seats,4);
+ const upgradeLevel=boss===fire?1:2;
+ assert.match(allocation.loadout.digest,/^[a-f0-9]{64}$/);
+ assert.deepEqual(allocation.loadout.entries,[{slot:'core',artifactId:starterId,definitionId:starterDefinition.id,upgradeLevel}]);
+ assert.deepEqual(allocation.unequipped.entries,[]);
+ if(priorLoadout)assert.notEqual(allocation.loadout.digest,priorLoadout);
+ priorLoadout=allocation.loadout.digest;
  const expected=boss===fire?verdict:await validator.validate('arena8-coop-pve',{...bundle,contentRevision:bundle.contentRevision+1});
  assert.equal(Number(allocation.config_version),boss===fire?created.version:facts.replacementVersion);
  assert.equal(allocation.config_digest,expected.digest);
@@ -275,6 +297,12 @@ try{
   assert.equal(startView.state.boss.maxHp,boss.maxHp);
   assert.equal(startView.state.you,0);
   assert.equal(startView.state.phase,'playing');
+  const [geared,,sameSpecies]=startView.state.participants;
+  assert.equal(geared.petId,sameSpecies.petId);
+  assert.equal(geared.level,sameSpecies.level);
+  for(const [projected,authored] of [['maxHp','hp'],['attack','attack'],['defense','defense']])
+   assert.equal(geared[projected]-sameSpecies[projected],starterDefinition.modifiers[authored]+starterDefinition.perLevel[authored]*(upgradeLevel-1));
+  facts.scenarios.push('committed-native-stats-used-the-bound-level-'+upgradeLevel+'-Artifact-and-published-modifiers');
   let version=Number(start.canonicalVersion);
   const wrongSeat=await intent(connections[1],version,'{"epoch":1,"action":{"kind":"guard"}}');
   assert.equal(wrongSeat.body.case,'rejection');
@@ -296,6 +324,9 @@ try{
   }
   const beforeRestart=state;
   if(boss===fire){
+   const upgraded=await post(host,'/v1/pets/artifacts/upgrade',{artifactId:starterId,requestId:randomUUID()});
+   assert.equal(upgraded.statusCode,200,JSON.stringify(upgraded.json()));
+   assert.equal(upgraded.json().state.inventory.find(artifact=>artifact.artifactId===starterId).upgradeLevel,2);
    const nextBundle={...bundle,contentRevision:bundle.contentRevision+1};
    const draft=(await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:created.version,bundle:nextBundle})).json();
    const checked=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:draft.version,expectedRevision:draft.revision});
@@ -307,7 +338,7 @@ try{
   for(const connection of connections)try{connection.ws.close();}catch{/* Already closed. */}
   connections=[];
   await app.app.close();
-  app=await createApp(config,pool,false,{});
+  app=await createApp(config,pool,false,{petArtifacts:{enabled:true}});
   const recovered=(await pool.query('SELECT status,generation FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
   assert.equal(recovered.status,'ACTIVE');
   await openConnections(connections);
@@ -321,6 +352,9 @@ try{
   assert.deepEqual(state.boss,beforeRestart.boss);
   assert.equal(state.configDigest,beforeRestart.configDigest);
   assert.equal(state.participants.length,4);
+  assert.deepEqual(state.participants,beforeRestart.participants);
+  const restoredLoadout=(await pool.query("SELECT seats->0->'loadout' AS loadout FROM coop_allocations WHERE match_id=$1",[allocation.match_id])).rows[0].loadout;
+  assert.deepEqual(restoredLoadout,allocation.loadout);
   facts.scenarios.push('api-and-runtime-restart-recovered-the-active-allocation-and-resumed-version-5');
   let turns=4;
   while(!['won','lost'].includes(state.phase)&&turns<60){

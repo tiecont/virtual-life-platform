@@ -6,7 +6,9 @@ import {
 import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore,type CoopRoomRow,type CoopSeatRow} from '../infrastructure/store';
-import type {CoopMatchProvisioner,CoopSeat} from '../../match/application/provisioner';
+import type {CoopMatchProvisioner} from '../../match/application/provisioner';
+import {bindArtifactLoadout} from '../../match/domain/loadout';
+import {readOwnedArtifactLoadouts} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 
 type Queryable=Pick<PoolClient,'query'>;
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
@@ -265,14 +267,27 @@ export class CoopRoomService{
   if(this.provisioner){
    const room=await this.store.room(this.db,roomId);
    if(!room||room.status!=='LOCKED')throw conflict('Room changed; refresh before retrying');
-   const seats=await this.store.seats(this.db,roomId);
-   if(seats.length!==ROOM_LIMIT||!seats.every(seat=>seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null))throw conflict('Four prepared participants are required');
    const bundle=await this.store.pinnedBundle(this.db,room.configVersion,room.configDigest);
    if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
    try{
     await this.provisioner.start({
      roomId,bossId:room.bossId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
-     seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId!})) as readonly CoopSeat[],
+     readSeats:async()=>{
+      const seats=await this.store.seats(this.db,roomId);
+      if(seats.length!==ROOM_LIMIT||seats.some(seat=>seat.petId===null||seat.ownedPetInstanceId===null))
+       throw conflict('Four prepared participants are required');
+      const roster=await readOwnedArtifactLoadouts(this.db,seats.map(seat=>({
+       account:seat.accountId,petId:seat.petId!,ownedPetInstanceId:seat.ownedPetInstanceId!,
+      })));
+      if(roster.length!==ROOM_LIMIT)throw conflict('A selected Pet is no longer owned');
+      if(Array.isArray(bundle.artifacts))
+       return roster.map(({entries,...seat})=>({...seat,loadout:bindArtifactLoadout(room.configDigest,seat,entries)}));
+      if(roster.some(seat=>seat.entries.length>0))
+       throw conflict('Equipped Artifacts require a room with a published Artifact catalog');
+      return roster.map(({account,petId,ownedPetInstanceId,petLevel},index)=>({
+       account,petId,ownedPetInstanceId,petLevel,artifactPowerPm:seats[index]!.artifactPowerPm,
+      }));
+     },
     });
    }catch(error){
     if(error instanceof DomainError)throw error;

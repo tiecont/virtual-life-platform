@@ -10,6 +10,7 @@
 //! MVP elements and the minimum match run) lives in the engine. Everything an
 //! author tunes lives here.
 
+use super::loadout::ArtifactCatalog;
 use crate::arena8::Element;
 use aetheria_game_core::Value;
 use aetheria_game_core::canonical::{hash, list};
@@ -37,6 +38,7 @@ pub struct CoopConfig {
     pub party: PartyConfig,
     pub resources: ResourceConfig,
     pub damage: DamageConfig,
+    pub(super) artifacts: Option<ArtifactCatalog>,
     pub elements: Vec<ElementProfile>,
     pub multiplier: MultiplierConfig,
     boss: Option<BossConfig>,
@@ -144,7 +146,7 @@ pub struct DamageConfig {
     pub own_tile_weight_pm: u32,
     pub defense_divisor: u32,
     pub crit_roll_basis: u32,
-    pub artifact_scale_pm: u32,
+    pub(super) artifact_scale_pm: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -435,6 +437,7 @@ pub enum ConfigError {
     MissingReference,
     Arithmetic,
     Rewards,
+    Artifact,
 }
 
 impl ConfigError {
@@ -462,6 +465,7 @@ impl ConfigError {
             Self::MissingReference => "gameplay configuration references a missing skill",
             Self::Arithmetic => "gameplay configuration numeric bounds are unsafe",
             Self::Rewards => "gameplay reward configuration is outside the supported range",
+            Self::Artifact => "gameplay Artifact configuration or loadout is invalid",
         }
     }
 }
@@ -505,6 +509,13 @@ impl CoopConfig {
         self.party.validate()?;
         self.resources.validate()?;
         self.damage.validate()?;
+        match (&self.artifacts, self.damage.artifact_scale_pm) {
+            (None, Some(_)) => {} // Previously published scalar-based bundles.
+            (Some(artifacts), None) if self.schema_version == CONFIG_SCHEMA_VERSION => {
+                artifacts.validate()?;
+            }
+            _ => return Err(ConfigError::Artifact),
+        }
         let elements = self.element_index()?;
         let mut immunity = false;
         for profile in &self.elements {
@@ -552,7 +563,7 @@ impl CoopConfig {
 
     /// Canonical value used for the digest.
     pub fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Uint(u64::from(self.schema_version)),
             Value::Text(self.engine_capability.clone()),
             Value::Text(self.config_id.clone()),
@@ -570,7 +581,15 @@ impl CoopConfig {
             Value::List(self.skills.iter().map(SkillConfig::to_value).collect()),
             Value::List(self.pets.iter().map(PetConfig::to_value).collect()),
             self.rewards.to_value(),
-        ])
+        ];
+        if let Some(artifacts) = &self.artifacts {
+            fields.push(artifacts.to_value());
+        }
+        Value::List(fields)
+    }
+
+    pub fn has_artifact_catalog(&self) -> bool {
+        self.artifacts.is_some()
     }
 
     pub fn bosses(&self) -> &[BossConfig] {
@@ -835,7 +854,7 @@ impl DamageConfig {
             || self.defense_divisor == 0
             || self.crit_roll_basis == 0
             || !(10_000..=1_000_000).contains(&self.crit_roll_basis)
-            || self.artifact_scale_pm == 0
+            || self.artifact_scale_pm == Some(0)
         {
             return Err(ConfigError::Damage);
         }
@@ -849,7 +868,8 @@ impl DamageConfig {
             Value::Uint(u64::from(self.own_tile_weight_pm)),
             Value::Uint(u64::from(self.defense_divisor)),
             Value::Uint(u64::from(self.crit_roll_basis)),
-            Value::Uint(u64::from(self.artifact_scale_pm)),
+            self.artifact_scale_pm
+                .map_or(Value::Null, |scale| Value::Uint(u64::from(scale))),
         ])
     }
 }
@@ -1181,7 +1201,7 @@ impl BossConfig {
     }
 }
 
-fn stable_id(value: &str) -> bool {
+pub(super) fn stable_id(value: &str) -> bool {
     (3..=64).contains(&value.len())
         && value.as_bytes()[0].is_ascii_lowercase()
         && value

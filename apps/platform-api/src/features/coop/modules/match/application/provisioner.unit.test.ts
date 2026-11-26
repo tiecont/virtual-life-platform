@@ -70,7 +70,7 @@ function fixture(overrides:{store?:MemoryStore;admission?:FakeAdmission;runtime?
  });
  return {provisioner,store,admission,runtime,issuer};
 }
-const startInput={roomId:ROOM,bossId:bundle.boss.id,configVersion:1,configDigest:DIGEST,bundle,seats:SEATS};
+const startInput={roomId:ROOM,bossId:bundle.boss.id,configVersion:1,configDigest:DIGEST,bundle,readSeats:async()=>SEATS};
 
 describe('cooperative match provisioner',()=>{
  it('starts one four-seat match from the published bundle and reuses it',async()=>{
@@ -84,16 +84,18 @@ describe('cooperative match provisioner',()=>{
   expect(runtime.requests[0]!.bundle).toBe(bundle);
   const stored=store.rows.get(first.matchId)!;
   expect(stored).toMatchObject({status:'ACTIVE',generation:1,contentHash:CONTENT,configDigest:DIGEST});
-  const second=await provisioner.start(startInput);
+  const readSeats=vi.fn(async()=>{throw Error('An active allocation must reuse its captured loadout');});
+  const second=await provisioner.start({...startInput,readSeats});
   expect(second).toEqual(first);
+  expect(readSeats).not.toHaveBeenCalled();
   expect(runtime.requests).toHaveLength(1);
  });
  it('fails closed on an invalid bundle, a digest mismatch or a malformed roster',async()=>{
   const {provisioner,store}=fixture();
   await expect(provisioner.start({...startInput,configDigest:'cc'.repeat(32)})).rejects.toMatchObject({status:503});
-  await expect(provisioner.start({...startInput,seats:SEATS.slice(0,3) as unknown as readonly CoopSeat[]})).rejects.toBeInstanceOf(DomainError);
+  await expect(provisioner.start({...startInput,readSeats:async()=>SEATS.slice(0,3)})).rejects.toBeInstanceOf(DomainError);
   const repeated=SEATS.map(seat=>({...seat,ownedPetInstanceId:SEATS[0].ownedPetInstanceId}));
-  await expect(provisioner.start({...startInput,seats:repeated})).rejects.toBeInstanceOf(DomainError);
+  await expect(provisioner.start({...startInput,readSeats:async()=>repeated})).rejects.toBeInstanceOf(DomainError);
   expect(store.rows.size).toBe(0);
  });
  it('issues a scoped admission ticket for a seated account only',async()=>{

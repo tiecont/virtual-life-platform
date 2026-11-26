@@ -3,13 +3,14 @@ import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
 import {DomainError} from '../../../../../shared/common/errors';
+import {readAllocationSeats,type CoopSeat} from '../domain/loadout';
+export type {CoopSeat} from '../domain/loadout';
 
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const PET=/^[a-z][a-z0-9-]{2,63}$/;
 const WORLD=/^native:[a-z0-9][a-z0-9._-]{0,63}$/;
-const SEATS=4,CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
+const CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
 
-export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string}>;
 export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED';
 export type CoopAllocationRecord=Readonly<{
  matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
@@ -46,7 +47,7 @@ export type CoopProvisionerOptions=Readonly<{
 }>;
 export type CoopStartInput=Readonly<{
  roomId:string;bossId:string;configVersion:number;configDigest:string;
- bundle:Record<string,unknown>;seats:readonly CoopSeat[];
+ bundle:Record<string,unknown>;readSeats:()=>Promise<readonly CoopSeat[]>;
 }>;
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
 export type {CoopAdmissionView} from '@aetheria/contracts';
@@ -59,14 +60,6 @@ const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
 
 function scopeFor(record:Pick<CoopAllocationRecord,'worldId'|'bootId'|'contentHash'>):RuntimeScope{
  return Object.freeze({worldId:record.worldId,runtimeBootId:record.bootId,contentHash:record.contentHash,protocolVersion:1 as const});
-}
-function seatsValid(seats:readonly CoopSeat[]){
- if(seats.length!==SEATS)return false;
- const accounts=new Set(seats.map(seat=>seat.account)),instances=new Set(seats.map(seat=>seat.ownedPetInstanceId));
- return accounts.size===SEATS&&instances.size===SEATS&&seats.every(seat=>
-  UUID.test(seat.account)&&PET.test(seat.petId)&&Number.isInteger(seat.petLevel)&&seat.petLevel>=1&&seat.petLevel<=60&&
-  Number.isInteger(seat.artifactPowerPm)&&seat.artifactPowerPm>=1_000&&seat.artifactPowerPm<=5_000&&
-  UUID.test(seat.ownedPetInstanceId));
 }
 
 // One authoritative cooperative match per room. The published bundle and the
@@ -121,7 +114,7 @@ export class CoopMatchProvisioner{
 
  async start(input:CoopStartInput):Promise<CoopStartResult>{
   if(this.closing)throw unavailable();
-  if(!UUID.test(input.roomId)||!PET.test(input.bossId)||!seatsValid(input.seats))throw conflict('Cooperative allocation is invalid');
+  if(!UUID.test(input.roomId)||!PET.test(input.bossId))throw conflict('Cooperative allocation is invalid');
   const prior=await this.options.store.findByRoom(input.roomId);
   if(prior){
    const current=this.active.get(prior.matchId);
@@ -135,13 +128,19 @@ export class CoopMatchProvisioner{
   try{verdict=await this.options.validator.validate('arena8-coop-pve',input.bundle);}
   catch{throw unavailable('Published cooperative configuration is invalid');}
   if(verdict.digest!==input.configDigest)throw unavailable('Published cooperative configuration does not match its digest');
+  const selected=await input.readSeats();
+  let seats;
+  try{seats=readAllocationSeats(selected,input.configDigest);}
+  catch{throw conflict('Cooperative allocation is invalid');}
+  if(('loadout' in seats[0]!)!==Array.isArray(input.bundle.artifacts))
+   throw conflict('Cooperative allocation does not match the published Artifact configuration');
   await this.releaseSettledRuntimes();
   const matchId=this.id(),bootId=this.id(),worldId='native:coop-'+matchId;
   if(!WORLD.test(worldId))throw unavailable();
   const record:CoopAllocationRecord=Object.freeze({
    matchId,roomId:input.roomId,worldId,bootId,bossId:input.bossId,configVersion:input.configVersion,
    configDigest:input.configDigest,contentHash:verdict.contentHash,
-   seats:Object.freeze(input.seats.map(seat=>Object.freeze({...seat}))),status:'STARTING',generation:0,
+   seats,status:'STARTING',generation:0,
   });
   try{await this.options.store.create(record);}
   catch{throw conflict('Cooperative room already has an allocation');}
