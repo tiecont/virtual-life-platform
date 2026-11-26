@@ -21,7 +21,7 @@ export function assertArtifactWorkflows(quality, publish, pins) {
   assert(integrationJob.includes('shard: [1, 2, 3, 4]'));
   assert(integrationJob.includes('max-parallel: 4') && integrationJob.includes('fail-fast: false'));
   assert(integrationJob.includes('--project integration') && integrationJob.includes('--shard="${{ matrix.shard }}/4"'));
-  assert(integrationJob.includes("VITEST_MAX_WORKERS: '4'"));
+  assert(integrationJob.includes("VITEST_MAX_WORKERS: '2'"));
   assert(integrationJob.includes('postgres:17.7-alpine'));
   assert(integrationJob.includes('name: integration-report-${{ matrix.shard }}'));
   const browserJob = quality.split('\n  browser:')[1]?.split('\n  images:')[0];

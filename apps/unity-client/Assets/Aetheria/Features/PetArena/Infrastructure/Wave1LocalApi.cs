@@ -14,6 +14,7 @@ namespace Aetheria.PetArena.Infrastructure
     {
         public const string Prefix = "/v1/pets/wave1";
         public const string ArtifactPrefix = "/v1/pets/artifacts";
+        public const string Arena8Prefix = "/v1/pets/wave-a/arena8";
         private const string CookieName = "city_session=";
         private readonly HttpClient http;
         private readonly string webOrigin;
@@ -69,6 +70,49 @@ namespace Aetheria.PetArena.Infrastructure
         public Task<T> Post<T>(string route, object body, CancellationToken cancellation) where T : class =>
             Request<T>(Prefix + route, body, cancellation);
 
+        public Task<Wave1State> GetWave1State(CancellationToken cancellation) =>
+            Request<Wave1State>(Prefix + "/state", null, cancellation);
+
+        public Task<Arena8AllocateResponse> AllocateArena8(Arena8AllocateRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8AllocateResponse>(Arena8Prefix + "/allocate", body, cancellation);
+
+        // Native transport allocation. The reply carries a match-scoped admission
+        // ticket plus the WSS scope; every later command uses the native session,
+        // never this HTTP compatibility bridge.
+        public Task<Arena8NativeAllocation> AllocateArena8Native(Arena8AllocateRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8NativeAllocation>(Arena8Prefix + "/native/allocate", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8StartCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8GuardCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8SwapCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8CommandResponse> CommandArena8(Arena8SkillCommandRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);
+
+        public Task<Arena8MatchResponse> GetArena8Match(string matchId, CancellationToken cancellation) =>
+            Request<Arena8MatchResponse>(Arena8Prefix + "/matches/" + Uri.EscapeDataString(matchId), null, cancellation);
+
+        public Task<Arena8Settlement> SettleArena8(string matchId, Arena8SettleRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8Settlement>(Arena8Prefix + "/matches/" + Uri.EscapeDataString(matchId) + "/settle",
+                body, cancellation);
+
+        public Task<Arena8Settlement> SettleArena8Native(string matchId, Arena8SettleRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8Settlement>(Arena8Prefix + "/native/matches/" + Uri.EscapeDataString(matchId) + "/settle",
+                body, cancellation);
+
         public Task<WaveAArtifactState> GetArtifactState(CancellationToken cancellation) =>
             Request<WaveAArtifactState>(ArtifactPrefix + "/state", null, cancellation);
 
@@ -91,7 +135,7 @@ namespace Aetheria.PetArena.Infrastructure
         public void Dispose() => http.Dispose();
 
         private async Task<T> Request<T>(string route, object body, CancellationToken cancellation,
-            bool rememberSession = false) where T : class
+            bool rememberSession = false, int retry = 0) where T : class
         {
             using var request = new HttpRequestMessage(body == null ? HttpMethod.Get : HttpMethod.Post, route);
             if (cookie != null) request.Headers.TryAddWithoutValidation("Cookie", cookie);
@@ -107,6 +151,11 @@ namespace Aetheria.PetArena.Infrastructure
             if (!response.IsSuccessStatusCode)
             {
                 var status = (int)response.StatusCode;
+                if (status == 429 && retry < 2)
+                {
+                    await Task.Delay(65_000, cancellation);
+                    return await Request<T>(route, body, cancellation, rememberSession, retry + 1);
+                }
                 var message = "HTTP " + status;
                 if (response.Content.Headers.ContentType?.MediaType == "application/json")
                 {

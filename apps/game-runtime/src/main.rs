@@ -13,6 +13,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
     let args: Vec<_> = std::env::args().skip(1).collect();
+    // Authoritative bundle validation for Admin publication. The Nest control
+    // plane never re-implements the schema or the digest: it asks the engine.
+    if let [flag, path] = args.as_slice()
+        && flag == "--check-gameplay-config"
+    {
+        let bytes = std::fs::read(path)?;
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+            .map_err(|_| "Invalid cooperative gameplay configuration")?;
+        let digest = rules.digest();
+        let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
+        let hex = |bytes: &[u8]| {
+            bytes
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        };
+        println!(
+            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\",\"contentHash\":\"{}\"}}",
+            hex(&digest),
+            hex(&content)
+        );
+        return Ok(());
+    }
     if let [flag, ruleset] = args.as_slice()
         && flag == "--ruleset-content-hash"
     {
@@ -31,6 +54,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         return Ok(());
     }
+    if let [flag, path, policy, seeds] = args.as_slice()
+        && flag == "--simulate-coop"
+    {
+        let policy = aetheria_pet_arena::arena8::coop::simulation::Policy::parse(policy)
+            .ok_or("Unknown cooperative simulation policy")?;
+        let seeds: u32 = seeds
+            .parse()
+            .map_err(|_| "Invalid cooperative simulation seed count")?;
+        let bytes = std::fs::read(path)?;
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+            .map_err(|_| "Invalid cooperative gameplay configuration")?;
+        let report = aetheria_pet_arena::arena8::coop::simulation::simulate(&rules, policy, seeds)
+            .map_err(|_| "Cooperative simulation rejected")?;
+        println!("{}", serde_json::to_string(&report)?);
+        return Ok(());
+    }
     if args == ["--healthcheck"] {
         probe(config.bind).await?;
         return Ok(());
@@ -46,9 +85,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map_err(|_| "Native gameplay configuration required")?;
         let database = std::env::var("AETHERIA_GAME_DATABASE_URL")
             .map_err(|_| "Native game database configuration required")?;
+        let bundle = std::env::var("AETHERIA_GAMEPLAY_BUNDLE")
+            .ok()
+            .map(std::fs::read)
+            .transpose()?;
         let runtime =
             aetheria_game_runtime::features::runtime::infrastructure::NativeRuntime::start(
-                &file, &database,
+                &file, &database, bundle,
             )
             .await?;
         let listener = tokio::net::TcpListener::bind(config.bind).await?;

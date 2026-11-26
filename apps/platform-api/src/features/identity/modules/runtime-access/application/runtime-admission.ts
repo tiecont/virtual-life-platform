@@ -14,7 +14,7 @@ function next(value:string|undefined){const n=Number(value??0);if(!Number.isSafe
 // Internal control plane only. Composition owns world registration/lease; callers
 // cannot choose an enabled world through a public route or mutate gameplay here.
 export class RuntimeAdmissionStore {
- constructor(private pool:Pool,private identity:IdentityService){}
+ constructor(private pool:Pick<Pool,'query'|'connect'>,private identity:IdentityService){}
  private async clock(db:PoolClient){return (await db.query<{at:Date}>('SELECT clock_timestamp() AS at')).rows[0].at;}
  private async transaction<T>(credential:string|undefined,work:(db:PoolClient,actor:IdentityContext|undefined)=>Promise<T>){
   const initial=credential===undefined?undefined:await this.identity.authenticate(credential);

@@ -1,12 +1,14 @@
 use super::application::{Commands, NativeGame};
 use crate::features::{
     pet_arena::arena8::domain as bound,
+    pet_arena::coop as coordinated,
     pet_arena::domain as pet,
     synthetic::domain::{Rules, State},
 };
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
+use aetheria_pet_arena::arena8::coop::{SEATS, SeatInput};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -46,6 +48,23 @@ struct Arena8Artifact {
     upgrade_level: u8,
 }
 
+/// Server-authored cooperative seat allocation. Accounts, Pets and levels are
+/// never read from an intent payload.
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CoopSeat {
+    account: Uuid,
+    pet_id: String,
+    level: u8,
+    artifact_power_pm: u16,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CoopSettings {
+    seats: Vec<CoopSeat>,
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Settings {
@@ -57,6 +76,8 @@ struct Settings {
     stage: Option<u8>,
     #[serde(default)]
     arena8: Option<Arena8Settings>,
+    #[serde(default)]
+    coop: Option<CoopSettings>,
     world: String,
     boot: Uuid,
     match_id: Uuid,
@@ -88,7 +109,13 @@ pub struct NativeRuntime {
     task: JoinHandle<()>,
 }
 impl NativeRuntime {
-    pub async fn start(file: &str, database: &str) -> Result<Self, &'static str> {
+    /// `bundle` is the validated, published gameplay configuration supplied by
+    /// the server-owned allocator. Only the cooperative ruleset consumes it.
+    pub async fn start(
+        file: &str,
+        database: &str,
+        bundle: Option<Vec<u8>>,
+    ) -> Result<Self, &'static str> {
         let bytes = fs::read(file).map_err(|_| "Native configuration unavailable")?;
         if bytes.len() > 65_536 {
             return Err("Native configuration too large");
@@ -102,6 +129,9 @@ impl NativeRuntime {
             || settings.public_keys.len() > 8
         {
             return Err("Explicit native ruleset and scope required");
+        }
+        if settings.ruleset != coordinated::domain::RULESET_ID && settings.coop.is_some() {
+            return Err("Cooperative allocation is not valid for this ruleset");
         }
         match settings.ruleset.as_str() {
             "headless-counter" if settings.pet.is_none() && settings.stage.is_none() => {
@@ -158,6 +188,39 @@ impl NativeRuntime {
                     let initial = game.initial().map_err(|_| "Invalid Arena8 allocation")?;
                     (game, initial)
                 };
+                Self::compose(settings, database, game, initial).await
+            }
+            "arena8-coop-pve" => {
+                if settings.pet.is_some() || settings.stage.is_some() || settings.arena8.is_some() {
+                    return Err("Cooperative match requires an explicit four-seat allocation");
+                }
+                let allocation = settings
+                    .coop
+                    .as_ref()
+                    .ok_or("Server-selected cooperative allocation required")?;
+                let [first, second, third, fourth] = allocation.seats.as_slice() else {
+                    return Err("Four cooperative seats required");
+                };
+                if allocation
+                    .seats
+                    .iter()
+                    .any(|seat| seat.account.is_nil() || seat.pet_id.is_empty())
+                {
+                    return Err("Invalid cooperative allocation");
+                }
+                let seats: [SeatInput; SEATS] =
+                    [first, second, third, fourth].map(|seat| SeatInput {
+                        account: seat.account.to_string(),
+                        pet_id: seat.pet_id.clone(),
+                        level: seat.level,
+                        artifact_power_pm: seat.artifact_power_pm,
+                    });
+                let bundle = bundle.ok_or("Published gameplay configuration required")?;
+                let game = coordinated::domain::Rules::load(&bundle, seats)
+                    .map_err(|_| "Invalid cooperative gameplay configuration")?;
+                let initial = game
+                    .initial()
+                    .map_err(|_| "Invalid cooperative allocation")?;
                 Self::compose(settings, database, game, initial).await
             }
             _ => Err("Unknown or incomplete native ruleset"),

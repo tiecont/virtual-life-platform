@@ -48,7 +48,12 @@ const MAX_PROJECTION: usize = 16_384;
 /// Turn authorization is separate from membership so old receipts remain readable.
 pub enum Completion {
     Game,
-    PetArena { won: bool },
+    PetArena {
+        won: bool,
+    },
+    /// A bounded, game-authored settlement proposal. The platform layer owns
+    /// validation, recipients and amounts; this value is never a client input.
+    Proposal(serde_json::Value),
 }
 
 pub trait Game: Reducer + Send + Sync + 'static {
@@ -636,12 +641,18 @@ where
         );
         let transition = transition?;
         let version = i64::try_from(transition.next.version).map_err(|_| Error::Invalid)?;
-        // Only an explicit completion sentinel is supported. Economy effects and
-        // arbitrary/private reducer settlement payloads require a separate adapter.
+        // Economy effects are not inferred from reducer payloads. A non-null
+        // settlement is accepted only when the domain also exposes its bounded
+        // completion proposal, as cooperative terminal turns do; PvE and
+        // synthetic games leave the sentinel null.
         if transition
             .settlement
             .as_ref()
             .is_some_and(|s| s != &Value::Null)
+            && !matches!(
+                self.game.completion(&transition.next.state)?,
+                Completion::Proposal(_)
+            )
         {
             return Err(Error::Invalid);
         }
@@ -694,8 +705,12 @@ where
                 Completion::PetArena { won } => {
                     serde_json::json!({"kind":"pet-arena.completed.v1","outcome":if won { "won" } else { "lost" },"ruleset":rules.id,"rulesetVersion":rules.version})
                 }
+                Completion::Proposal(value) => value,
             };
             let proposal = serde_json::to_string(&proposal).map_err(|_| Error::Invalid)?;
+            if proposal.len() > 16_384 {
+                return Err(Error::Invalid);
+            }
             tx.execute("INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1::text::uuid,$2,$3,$4::text::uuid,$5,$6::text::jsonb)",&[&r.match_id.to_string(),&version,&stored.epoch,&id,&&Sha256::digest(proposal.as_bytes())[..],&proposal]).await?;
             tx.execute("INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1::text::uuid,$2::text::uuid,$3::text::uuid,'game.settlement.v1')",&[&Uuid::new_v4().to_string(),&r.match_id.to_string(),&id]).await?;
         }

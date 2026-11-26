@@ -111,13 +111,14 @@ V1 adapter and its receipts are untouched.
 
 The match is allocated from an immutable snapshot built by the versioned Arena8
 content binding (`crates/aetheria-pet-arena/src/arena8/binding.rs`,
-`aetheria-pet-arena-arena8-binding` v1, pinned digest
-`dc6522b16f3f9cbee8ba29046bb575e197053180cb442cca63dd58740de2a977`). The
+`aetheria-pet-arena-arena8-binding` v2, pinned digest
+`198351cc3b4f8c2e493e5f60602fddf2c368c6052f176d904060d508ffa5b5ae`). The
 snapshot binds the canonical roster identity, account, owned Pet id, level,
 base/grown/effective stats, equipped Artifact definitions and levels, bounded
-modifiers, available skills, the encounter and its revision, and the binding and
-rules digests. A later loadout change never alters an allocated match; a new
-match is required. Restoring a rewritten snapshot fails closed.
+modifiers, complete authored skills available from Pet Lv1, the encounter and
+its revision, and the binding and rules digests. A later loadout change never
+alters an allocated match; a new match is required. Restoring a rewritten
+snapshot fails closed. Pet level gates Artifact ranks, never skill access.
 
 The allocation is server-authored private configuration. It is not an intent
 field and no client can send it:
@@ -130,7 +131,7 @@ field and no client can send it:
     "ownedPetId": "<owned pet UUID>",
     "level": 20,
     "encounterId": "cinder-terraces-regular",
-    "bindingVersion": 1,
+    "bindingVersion": 2,
     "artifacts": [
       {"definitionId": "core-emberglass", "upgradeLevel": 1},
       {"definitionId": "aegis-bastionplate", "upgradeLevel": 5}
@@ -169,3 +170,40 @@ combat effect. `hp`, `attack` and `defense` are active and bounded.
 Both a win and a loss commit a terminal checkpoint and the existing
 `pet-arena.completed.v1` completion proposal, so settlement reuses the existing
 nonmonetary reward worker path.
+
+## `arena8-coop-pve`: configuration-bound four-seat cooperative ruleset
+
+`arena8-coop-pve` runs the cooperative reducer from an engine-validated bundle.
+Publication is authorized by `aetheria-game-runtime --check-gameplay-config
+<bundle>`, which prints the canonical configuration digest and the adapter
+content hash. The runtime never carries fallback balance values: a missing,
+malformed or incompatible bundle refuses to start. The allocator writes the
+published bundle to a private file and starts the runtime with
+`AETHERIA_GAMEPLAY_BUNDLE=<absolute file>` in addition to the existing
+`AETHERIA_GAMEPLAY_CONFIG`, `AETHERIA_GAME_DATABASE_URL` and TLS settings.
+
+The allocation is a server-authored four-seat roster inside the settings file:
+
+```json
+{
+  "ruleset": "arena8-coop-pve",
+  "coop": {
+    "seats": [
+      {"account": "<account UUID>", "petId": "icarus", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "coralline", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "volt", "level": 1, "artifactPowerPm": 1000},
+      {"account": "<account UUID>", "petId": "terran", "level": 1, "artifactPowerPm": 1000}
+    ]
+  }
+}
+```
+
+Every seat must be distinct and authorized by the allocator; `pet`, `stage` and
+`arena8` are rejected for this ruleset. Each of the four authenticated sessions
+is projected its own `you` seat and the shared committed state. Intents use
+`GameIntent.kind = arena8-coop.intent.v1` with
+`{"epoch":1,"action":{"kind":"start"}}`, `swap` (`first`, `second`), `guard`,
+`skill`, `signature`, `ultimate` or `fireZone`; unknown fields are rejected.
+`arena8-coop.view.v1` with an empty payload reads the caller's projection.
+Durable restore revalidates the configuration digest, the four seat identities
+and the committed state; a later published bundle never resumes an old match.

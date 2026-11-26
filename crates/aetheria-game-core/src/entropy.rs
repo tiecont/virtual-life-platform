@@ -18,6 +18,13 @@ impl SecretSeed {
     pub fn from_host_entropy(bytes: [u8; 32]) -> Self {
         Self(Zeroizing::new(bytes))
     }
+    /// Build an ephemeral server-owned stream for an isolated simulation or a
+    /// test. The caller must already own the secret seed; no client value is
+    /// accepted and no seed is serialized.
+    #[doc(hidden)]
+    pub fn stream(&self, binding: Value, cursor: u64) -> Result<TurnRng, Error> {
+        TurnRng::new(self, binding, cursor)
+    }
     pub(crate) fn commitment(&self, binding: Value) -> Result<[u8; 32], Error> {
         canonical::hash(
             "vl.seed-commit.v1",
@@ -43,7 +50,10 @@ pub struct TurnRng {
 }
 
 impl TurnRng {
-    pub(crate) fn new(seed: &SecretSeed, binding: Value, cursor: u64) -> Result<Self, Error> {
+    /// Ephemeral stream for an isolated simulation or test. Only an owner of
+    /// the secret seed can construct one; no client value is accepted.
+    #[doc(hidden)]
+    pub fn new(seed: &SecretSeed, binding: Value, cursor: u64) -> Result<Self, Error> {
         let key = Zeroizing::new(seed.key(binding)?);
         let mut rng = ChaCha20Rng::from_seed(*key);
         rng.set_word_pos(u128::from(cursor));

@@ -22,10 +22,11 @@ banner and purchase settings.
   when both are defeated. The regular and boss fights each start at full HP
   with zero Rage and allow up to 12 turns each. Strike and Guard build Rage.
   Guard halves retaliation. Skills share a three-turn cooldown.
-- Lv 20 unlocks Power skill. Lv 40 unlocks Signature, including Icarus's
-  `FIRE_ZONE`, which damages the opponent for two subsequent turns. Lv 60
-  unlocks Ultimate. Signature and Ultimate require full Rage and a ready
-  skill. The first-clear and replay rewards grant EXP and coins. Each victory
+- **Historical Wave 1 compatibility rule:** Lv 20 once unlocked Power skill,
+  Lv 40 Signature (including Icarus's `FIRE_ZONE`) and Lv 60 Ultimate. The
+  final Arena8 owner decision supersedes this for the authoritative target:
+  every authored skill is available from Pet Lv1, subject only to Mana, Rage,
+  cooldown, phase and ownership. Do not apply these level locks to Arena8. The first-clear and replay rewards grant EXP and coins. Each victory
   recruits one unowned Pet from that map, regular Pets first and Legendary
   last. This makes all 36 map Pets obtainable through the campaign.
 - First-clear EXP is 500, 750, 1,100, 1,500, 2,000 and 2,600. First-clear

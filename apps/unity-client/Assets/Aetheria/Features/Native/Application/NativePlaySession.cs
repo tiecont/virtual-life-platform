@@ -16,9 +16,12 @@ namespace Aetheria.Networking
         public int OwnRoll { get; }
         public string Reward { get; }
         public PetArenaView Arena { get; }
+        public Arena8NativeView Arena8 { get; }
+        public CoopNativeView Coop { get; }
         public string ReceiptId { get; internal set; }
-        internal PlayState(ulong version, long epoch, int turns, int roll, string reward, PetArenaView arena = null)
-        { Version = version; Epoch = epoch; Turns = turns; OwnRoll = roll; Reward = reward; Arena = arena; }
+        internal PlayState(ulong version, long epoch, int turns, int roll, string reward,
+            PetArenaView arena = null, Arena8NativeView arena8 = null, CoopNativeView coop = null)
+        { Version = version; Epoch = epoch; Turns = turns; OwnRoll = roll; Reward = reward; Arena = arena; Arena8 = arena8; Coop = coop; }
     }
 
     /// <summary>Scene use cases over the existing adapter. Only server receipts update state.</summary>
@@ -62,6 +65,16 @@ namespace Aetheria.Networking
         public Task<PlayState> ReconnectAsync(CancellationToken cancellation = default) =>
             Exclusive(async token => {
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
+                return await Read(token).ConfigureAwait(false);
+            }, cancellation);
+
+        // A native match allocation can already scope the admission ticket to one
+        // match, so the transport must connect without a fresh platform login.
+        // The ticket provider still owns re-admission on reconnect.
+        protected Task<PlayState> ConnectTransportAsync(CancellationToken cancellation = default) =>
+            Exclusive(async token => {
+                await connection.ConnectAsync(token).ConfigureAwait(false);
+                await connection.ResyncAsync(token).ConfigureAwait(false);
                 return await Read(token).ConfigureAwait(false);
             }, cancellation);
 

@@ -1,0 +1,127 @@
+import type {PoolClient} from 'pg';
+
+type Queryable=Pick<PoolClient,'query'>;
+const SEAT_LIMIT=4;
+
+export type CoopSettlementEvent=Readonly<{
+ eventId:string;settlementId:string;matchId:string;proposal:Record<string,unknown>;
+ proposalHash:Buffer;stateVersion:string;epoch:string;
+}>;
+export type CoopAllocationBinding=Readonly<{
+ roomId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
+ seats:readonly {account:string;petId:string;petLevel:number;artifactPowerPm:number}[];
+}>;
+
+function seats(value:unknown){
+ if(!Array.isArray(value)||value.length!==SEAT_LIMIT)throw new Error('Cooperative settlement seats are invalid');
+ return Object.freeze(value.map(entry=>{
+  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown};
+  if(typeof seat.account!=='string'||typeof seat.petId!=='string'||typeof seat.petLevel!=='number')
+   throw new Error('Cooperative settlement seats are invalid');
+  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:Number(seat.artifactPowerPm)});
+ }));
+}
+
+// Durable settlement reads and writes. All calls receive the worker
+// transaction so the outbox claim, rewards, inbox and completion commit once.
+export class CoopSettlementStore{
+ async next(tx:Queryable):Promise<CoopSettlementEvent|undefined>{
+  const result=await tx.query<{
+   event_id:string;settlement_id:string;match_id:string;proposal:Record<string,unknown>;
+   proposal_hash:Buffer;state_version:unknown;epoch:unknown;
+  }>(`
+   SELECT o.event_id,o.settlement_id,s.match_id,s.proposal,s.proposal_hash,s.state_version,s.epoch
+   FROM game_native_outbox o
+   JOIN game_native_settlements s USING (match_id,settlement_id)
+   JOIN game_native_matches m ON m.id=s.match_id
+   JOIN coop_allocations a ON a.match_id=s.match_id
+   WHERE o.delivered_at IS NULL AND o.available_at<=clock_timestamp()
+     AND o.effect_type='game.settlement.v1'
+     AND m.ruleset_id='arena8-coop-pve' AND m.status='SETTLING'
+     AND m.state_version=s.state_version AND m.epoch=s.epoch
+     AND a.status IN ('ACTIVE','SETTLED')
+   ORDER BY o.available_at,o.event_id LIMIT 1 FOR UPDATE OF o SKIP LOCKED`);
+  const row=result.rows[0];
+  return row?Object.freeze({
+   eventId:row.event_id,settlementId:row.settlement_id,matchId:row.match_id,proposal:row.proposal,
+   proposalHash:row.proposal_hash,stateVersion:String(row.state_version),epoch:String(row.epoch),
+  }):undefined;
+ }
+ async inbox(tx:Queryable,settlementId:string):Promise<Readonly<{outcome:string}>|undefined>{
+  const row=(await tx.query<{outcome:string}>('SELECT outcome FROM coop_settlement_inbox WHERE settlement_id=$1',[settlementId])).rows[0];
+  return row?Object.freeze({outcome:row.outcome}):undefined;
+ }
+ async allocation(tx:Queryable,matchId:string):Promise<CoopAllocationBinding|undefined>{
+  const row=(await tx.query<{
+   room_id:string;world_id:string;config_version:unknown;config_digest:string;content_hash:string;seats:unknown;
+  }>('SELECT room_id,world_id,config_version,config_digest,content_hash,seats FROM coop_allocations WHERE match_id=$1',[matchId])).rows[0];
+  return row?Object.freeze({
+   roomId:row.room_id,worldId:row.world_id,configVersion:Number(row.config_version),
+   configDigest:row.config_digest,contentHash:row.content_hash,seats:seats(row.seats),
+  }):undefined;
+ }
+ async bundle(tx:Queryable,version:number,digest:string):Promise<Record<string,unknown>|undefined>{
+  const row=(await tx.query<{bundle:Record<string,unknown>}>(
+   "SELECT bundle FROM gameplay_config_versions WHERE ruleset='arena8-coop-pve' AND version=$1 AND content_digest=$2 AND published_at IS NOT NULL",
+   [version,digest],
+  )).rows[0];
+  return row?.bundle;
+ }
+ async accountActive(tx:Queryable,accountId:string):Promise<boolean>{
+  return (await tx.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'",[accountId])).rowCount===1;
+ }
+ async begin(tx:Queryable,input:Readonly<{
+  settlementId:string;matchId:string;roomId:string;outcome:'won'|'lost';points:number;
+ }>):Promise<void>{
+  await tx.query(
+   `INSERT INTO coop_settlement_inbox(settlement_id,match_id,room_id,outcome,achievement_points)
+    VALUES($1,$2,$3,$4,$5) ON CONFLICT (settlement_id) DO NOTHING`,
+   [input.settlementId,input.matchId,input.roomId,input.outcome,input.points],
+  );
+ }
+ async award(tx:Queryable,input:Readonly<{
+  settlementId:string;accountId:string;seat:number;outcome:'won'|'lost';
+  points:number;coins:number;exp:number;petId:string;petLevel:number;petExp:number;currentLevel:number;currentExp:number;
+ }>):Promise<void>{
+  if(input.points>0){
+   await tx.query(
+    "INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,'settlement',$3) ON CONFLICT DO NOTHING",
+    [input.accountId,input.points,input.settlementId],
+   );
+  }
+  if(input.coins>0){
+   await tx.query(
+    `INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,$2)
+     ON CONFLICT(account_id) DO UPDATE SET coins=pet_wave_one_players.coins+EXCLUDED.coins,
+       revision=pet_wave_one_players.revision+1,updated_at=clock_timestamp()`,
+    [input.accountId,input.coins],
+   );
+  }
+  if(input.exp>0){
+   await tx.query('UPDATE pet_wave_one_owned SET level=$3,exp=$4 WHERE account_id=$1 AND pet_id=$2',[
+    input.accountId,input.petId,input.petLevel,input.petExp,
+   ]);
+  }
+  await tx.query(
+   `INSERT INTO coop_settlement_rewards(settlement_id,account_id,seat,outcome,achievement_points,coins,exp,pet_id)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (settlement_id,account_id) DO NOTHING`,
+   [input.settlementId,input.accountId,input.seat,input.outcome,input.points,input.coins,input.exp,input.petId],
+  );
+ }
+ async pet(tx:Queryable,accountId:string,petId:string):Promise<Readonly<{level:number;exp:number}>|undefined>{
+  const row=(await tx.query<{level:unknown;exp:unknown}>('SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 FOR UPDATE',[accountId,petId])).rows[0];
+  return row?Object.freeze({level:Number(row.level),exp:Number(row.exp)}):undefined;
+ }
+ async finish(tx:Queryable,input:Readonly<{
+  eventId:string;settlementId:string;matchId:string;roomId:string;outcome:'won'|'lost';points:number;
+ }>):Promise<void>{
+  await tx.query(
+   `INSERT INTO coop_settlement_inbox(settlement_id,match_id,room_id,outcome,achievement_points)
+    VALUES($1,$2,$3,$4,$5) ON CONFLICT (settlement_id) DO NOTHING`,
+   [input.settlementId,input.matchId,input.roomId,input.outcome,input.points],
+  );
+  await tx.query("UPDATE game_native_outbox SET delivered_at=clock_timestamp(),delivery_outcome='granted' WHERE event_id=$1 AND delivered_at IS NULL",[input.eventId]);
+  await tx.query("UPDATE coop_allocations SET status='SETTLED',updated_at=clock_timestamp() WHERE match_id=$1 AND status='ACTIVE'",[input.matchId]);
+  await tx.query("UPDATE game_native_matches SET status='FINISHED',updated_at=clock_timestamp() WHERE id=$1 AND status='SETTLING'",[input.matchId]);
+ }
+}
