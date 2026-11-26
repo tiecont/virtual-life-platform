@@ -1,5 +1,6 @@
 using System;
 using Aetheria.Networking;
+using Aetheria.PetArena.Vfx;
 using Aetheria.PetArena.Infrastructure;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,7 +22,9 @@ namespace Aetheria.PetArena.Presentation
         private bool reading, renderedReconnect, loadingReward;
         private Func<Task<CoopLobbyClient.Reward>> loadReward;
         private CoopLobbyClient.Reward reward;
-        private string rewardNotice;
+        private string rewardNotice, feedback;
+        private CoopNativeView previous;
+        private ArenaPresentationKit effects;
         public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) { loadReward = loader; Refresh(); }
 
         private ulong renderedVersion = ulong.MaxValue;
@@ -32,6 +35,15 @@ namespace Aetheria.PetArena.Presentation
         public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
         {
             reward = null; rewardNotice = null; loadReward = null;
+            previous = null;
+            feedback = null;
+            if (admitted != null && Application.isPlaying)
+            {
+                effects = ArenaPresentationKit.Ensure(gameObject);
+                effects.SetReducedMotion(true);
+                effects.PlayBgm(ArenaBgm.Battle);
+            }
+            else if (effects != null) effects.StopAll();
             session = admitted;
             returnToHub = returnAction;
             selected = -1;
@@ -67,6 +79,35 @@ namespace Aetheria.PetArena.Presentation
         {
             var view = session?.State?.Coop;
             if (view == null) return;
+            if (previous != null && view.Version > previous.Version)
+            {
+                feedback = null;
+                if (view.Terminal)
+                {
+                    feedback = view.Phase == "won" ? "Victory" : "Defeat";
+                    effects?.PlaySfx(view.Phase == "won" ? ArenaSfx.Victory : ArenaSfx.Defeat);
+                }
+                else if (view.BossState.Phase > previous.BossState.Phase)
+                {
+                    feedback = "The Boss transformed";
+                    effects?.PlaySfx(ArenaSfx.Ultimate);
+                }
+                else
+                {
+                    for (var seat = 0; seat < view.Participants.Count; seat++)
+                    {
+                        var now = view.Participants[seat];
+                        var prior = previous.Participants[seat];
+                        var healed = now.Contribution.Healing - prior.Contribution.Healing;
+                        var shielded = now.Contribution.Shielding - prior.Contribution.Shielding;
+                        if (healed > 0) feedback = now.PetId + " restored " + healed + " HP";
+                        else if (shielded > 0) feedback = now.PetId + " granted " + shielded + " shield";
+                    }
+                    if (feedback != null) effects?.PlaySfx(ArenaSfx.Skill);
+                    else if (view.BossState.Health < previous.BossState.Health) effects?.PlaySfx(ArenaSfx.Attack);
+                }
+            }
+            previous = view;
             renderedReconnect = session.RequiresReconnect;
             renderedVersion = view.Version;
             Render(view);
@@ -79,6 +120,7 @@ namespace Aetheria.PetArena.Presentation
             if (target == null) return;
             target.Clear();
             target.Add(CoopNativePresentation.Build(view, Select, Cast, selected));
+            if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)
             {
                 if (reward != null)

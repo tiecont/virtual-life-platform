@@ -24,7 +24,10 @@ namespace Aetheria.PetArena.Presentation
             var root = new VisualElement { name = "coop-hud" };
             root.AddToClassList("coop-panel");
             root.Add(Label(TurnName, CoopNativePresenter.TurnLabel(view)));
+            root.Add(new ProgressBar { name = BossName + "-meter", lowValue = 0, highValue = view.BossState.MaxHealth, value = view.BossState.Health });
             root.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
+            if (view.BossState.DotTurns > 0)
+                root.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
 
             if (view.PendingAttack != null)
                 root.Add(Label("coop-telegraph", "Incoming attack · " + view.PendingAttack.Targets + " targets · " + view.PendingAttack.Remaining + " turns"));
@@ -85,7 +88,7 @@ namespace Aetheria.PetArena.Presentation
                 {
                     var prefix = view.Own.PetId + "-";
                     var name = ability.Id.StartsWith(prefix, StringComparison.Ordinal) ? ability.Id.Substring(prefix.Length) : ability.Id;
-                    label = name.Replace('-', ' ') + " · " + ability.Mana + " MP / " + ability.Rage + " rage";
+                    label = name.Replace('-', ' ') + " · Lv " + view.Own.SkillLevels[Array.IndexOf(kinds, kind)] + " · " + ability.Mana + " MP / " + ability.Rage + " rage";
                     if (ability.Cooldown > 0) label += " · cooldown " + ability.Cooldown;
                 }
                 var button = new Button(() => cast(action)) { text = label };
