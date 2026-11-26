@@ -20,6 +20,7 @@ namespace Aetheria.PetArena.Presentation
         private Action returnToHub;
         private float nextRefresh;
         private bool reading, renderedReconnect, loadingReward;
+        private bool recovering, leaving;
         private Func<Task<CoopLobbyClient.Reward>> loadReward;
         private CoopLobbyClient.Reward reward;
         private string rewardNotice, feedback;
@@ -37,6 +38,8 @@ namespace Aetheria.PetArena.Presentation
             reward = null; rewardNotice = null; loadReward = null;
             previous = null;
             feedback = null;
+            recovering = false;
+            leaving = false;
             if (admitted != null && Application.isPlaying)
             {
                 effects = ArenaPresentationKit.Ensure(gameObject);
@@ -56,7 +59,7 @@ namespace Aetheria.PetArena.Presentation
             var view = session?.State?.Coop;
             if (view == null) return;
             if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect) Refresh();
-            if (view.Terminal || reading || session.RequiresReconnect || session.HasPendingCommand ||
+            if (view.Terminal || reading || !CanSubmit ||
                 view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
             nextRefresh = Time.unscaledTime + 1f;
             _ = ReadSharedBoardAsync();
@@ -119,7 +122,13 @@ namespace Aetheria.PetArena.Presentation
             var target = document != null ? document.rootVisualElement : null;
             if (target == null) return;
             target.Clear();
-            target.Add(CoopNativePresentation.Build(view, Select, Cast, selected));
+            var presentation = CoopNativePresentation.Build(view, Select, Cast, selected);
+            if (session != null && !CanSubmit)
+            {
+                presentation.Q("coop-board").SetEnabled(false);
+                presentation.Q("coop-actions").SetEnabled(false);
+            }
+            target.Add(presentation);
             if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)
             {
@@ -130,19 +139,48 @@ namespace Aetheria.PetArena.Presentation
                     target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
             }
             if (session != null && view.Phase == "ready" && view.ActiveSeat == view.You)
-                target.Add(new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" });
-            if (returnToHub != null)
-                target.Add(new Button(returnToHub) { name = "coop-return", text = "Return to Central Plaza" });
-            if (session != null && session.RequiresReconnect && !session.HasPendingCommand)
             {
-                var reconnect = new Button(() => _ = ReconnectAsync()) { text = "Reconnect", name = "coop-reconnect" };
-                target.Add(reconnect);
+                var start = new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" };
+                start.SetEnabled(CanSubmit);
+                target.Add(start);
             }
-            if (session != null && session.HasPendingCommand)
+            if (returnToHub != null || session != null) target.Add(BuildFooter());
+        }
+
+        private bool CanSubmit => session != null && !recovering && !leaving &&
+            !session.RequiresReconnect && !session.HasPendingCommand;
+
+        private VisualElement BuildFooter()
+        {
+            var footer = new VisualElement { name = "coop-footer" };
+            footer.AddToClassList("coop-footer");
+            var leave = new Button(Leave) { name = "coop-return", text = "Return to Central Plaza" };
+            leave.AddToClassList("coop-footer-button");
+            leave.SetEnabled(!recovering && !leaving);
+            if (returnToHub == null) leave.AddToClassList("coop-footer-hidden");
+            footer.Add(leave);
+
+            var retry = session?.HasPendingCommand == true;
+            var needsRecovery = retry || session?.RequiresReconnect == true;
+            var recover = new Button(() => _ = RecoverAsync())
             {
-                var retry = new Button(() => _ = RetryAsync()) { text = "Retry pending command", name = "coop-retry" };
-                target.Add(retry);
-            }
+                name = retry ? "coop-retry" : "coop-reconnect",
+                text = retry ? "Retry pending command" : "Reconnect",
+            };
+            recover.AddToClassList("coop-footer-button");
+            recover.SetEnabled(needsRecovery && !recovering && !leaving);
+            if (!needsRecovery && !recovering) recover.AddToClassList("coop-footer-hidden");
+            footer.Add(recover);
+            return footer;
+        }
+
+        private void Leave()
+        {
+            var exit = returnToHub;
+            if (exit == null || recovering || leaving) return;
+            leaving = true;
+            Refresh();
+            exit();
         }
 
         private async Task ReadRewardAsync()
@@ -154,22 +192,38 @@ namespace Aetheria.PetArena.Presentation
             finally { loadingReward = false; if (this != null) Refresh(); }
         }
 
-        private async System.Threading.Tasks.Task ReconnectAsync()
+        private async Task RecoverAsync()
         {
-            try { if (session != null) await session.ReconnectAsync(); }
-            catch (NativeFailure failure) { Debug.LogWarning("Coop reconnect failed: " + failure.Reason); }
-            finally { Refresh(); }
-        }
+            var current = session;
+            var retry = current?.HasPendingCommand == true;
+            if (current == null || recovering || leaving || (!retry && !current.RequiresReconnect)) return;
+            recovering = true;
+            selected = -1;
+            Refresh();
 
-        private async System.Threading.Tasks.Task RetryAsync()
-        {
-            try { if (session != null) await session.RetryAsync(); }
-            catch (NativeFailure failure) { Debug.LogWarning("Coop retry failed: " + failure.Reason); }
-            finally { Refresh(); }
+            try
+            {
+                if (retry) await current.RetryAsync();
+                else await current.ReconnectAsync();
+            }
+            catch (NativeFailure failure)
+            {
+                Debug.LogWarning("Coop recovery failed: " + failure.Reason);
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                if (this != null && session == current)
+                {
+                    recovering = false;
+                    Refresh();
+                }
+            }
         }
 
         private void Select(int cell)
         {
+            if (!CanSubmit) return;
             var view = session?.State?.Coop;
             if (view == null || view.Terminal || !CoopNativePresenter.CanAct(view)) return;
             if (selected < 0)
@@ -199,8 +253,8 @@ namespace Aetheria.PetArena.Presentation
 
         private async void Cast(string kind)
         {
+            if (!CanSubmit) return;
             var current = session;
-            if (current == null) return;
             try
             {
                 switch (kind)

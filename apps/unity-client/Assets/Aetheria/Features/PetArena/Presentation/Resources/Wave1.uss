@@ -70,6 +70,9 @@
 .coop-world #coop-seats { flex-wrap: wrap; }
 .coop-member { flex-grow: 1; flex-basis: 22%; min-width: 130px; }
 .coop-active-member { border-top-width: 3px; border-top-color: rgb(255, 206, 104); }
+.coop-footer { flex-direction: row; }
+.coop-footer-button { flex-basis: 0; flex-grow: 1; }
+.coop-footer-hidden { visibility: hidden; }
 .coop-world #coop-turn, .coop-world #coop-boss, .coop-world #coop-telegraph {
     color: rgb(255, 217, 148);
     -unity-font-style: bold;

@@ -23,11 +23,18 @@ namespace Aetheria.Tests
                 hud.Attach(document);
                 var bytes = System.Text.Encoding.UTF8.GetBytes(Projection());
                 var view = CoopNativeView.Decode(3, bytes);
+                hud.Bind(null, () => { });
                 hud.Render(view);
                 var root = document.rootVisualElement;
                 Assert.That(root, Is.Not.Null);
                 Assert.That(root.Q("coop-hud"), Is.Not.Null);
                 Assert.That(root.Q<Label>("coop-boss").text, Does.Contain("Boss 5000/5000"));
+                var footer = root.Q("coop-footer");
+                var recover = footer.Q<Button>("coop-reconnect");
+                Assert.That(footer[0].name, Is.EqualTo("coop-return"));
+                Assert.That(footer[1], Is.SameAs(recover));
+                Assert.That(recover.ClassListContains("coop-footer-hidden"), Is.True);
+                Assert.That(recover.enabledSelf, Is.False);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
