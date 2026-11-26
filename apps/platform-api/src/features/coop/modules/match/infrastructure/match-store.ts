@@ -1,7 +1,8 @@
 import type {Pool} from 'pg';
 import type {
- CoopAllocationRecord,CoopAllocationStatus,CoopMatchStorePort,CoopSeat,
+ CoopAllocationRecord,CoopAllocationStatus,CoopMatchStorePort,
 } from '../application/provisioner';
+import {readAllocationSeats} from '../domain/loadout';
 
 type Row={
  match_id:string;room_id:string;world_id:string;boot_id:string;
@@ -17,21 +18,11 @@ const ALLOCATIONS=`SELECT a.*,r.boss_id,
    LEFT JOIN pet_wave_one_owned p ON p.account_id=s.account_id AND p.pet_id=s.pet_id) AS bound_seats
  FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id`;
 
-function seats(value:unknown):readonly CoopSeat[]{
- if(!Array.isArray(value)||value.length!==4)throw new Error('Cooperative allocation seats are invalid');
- return Object.freeze(value.map(entry=>{
-  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown};
-  if(typeof seat.account!=='string'||typeof seat.petId!=='string'||
-    typeof seat.petLevel!=='number'||typeof seat.artifactPowerPm!=='number'||typeof seat.ownedPetInstanceId!=='string')
-   throw new Error('Cooperative allocation seats are invalid');
-  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId});
- }));
-}
 function map(row:Row):CoopAllocationRecord{
  return Object.freeze({
   matchId:row.match_id,roomId:row.room_id,worldId:row.world_id,bootId:row.boot_id,
   configVersion:Number(row.config_version),configDigest:row.config_digest,contentHash:row.content_hash,
-  bossId:row.boss_id,seats:seats(row.bound_seats),status:row.status,generation:Number(row.generation),
+  bossId:row.boss_id,seats:readAllocationSeats(row.bound_seats,row.config_digest),status:row.status,generation:Number(row.generation),
  });
 }
 

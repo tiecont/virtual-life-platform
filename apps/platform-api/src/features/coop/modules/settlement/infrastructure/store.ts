@@ -9,16 +9,16 @@ export type CoopSettlementEvent=Readonly<{
 }>;
 export type CoopAllocationBinding=Readonly<{
  roomId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
- seats:readonly {account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string|null}[];
+ seats:readonly {account:string;petId:string;petLevel:number;ownedPetInstanceId:string|null}[];
 }>;
 
 function seats(value:unknown){
  if(!Array.isArray(value)||value.length!==SEAT_LIMIT)throw new Error('Cooperative settlement seats are invalid');
  return Object.freeze(value.map(entry=>{
-  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown};
+  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;ownedPetInstanceId?:unknown};
   if(typeof seat.account!=='string'||typeof seat.petId!=='string'||typeof seat.petLevel!=='number'||(seat.ownedPetInstanceId!==undefined&&typeof seat.ownedPetInstanceId!=='string'))
    throw new Error('Cooperative settlement seats are invalid');
-  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:Number(seat.artifactPowerPm),ownedPetInstanceId:seat.ownedPetInstanceId??null});
+  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,ownedPetInstanceId:seat.ownedPetInstanceId??null});
  }));
 }
 

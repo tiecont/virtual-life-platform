@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 7,
+  "contentRevision": 8,
   "board": {
     "spawnWeights": [
       {
@@ -53,9 +53,129 @@
     "contributionScalePm": 60,
     "ownTileWeightPm": 1500,
     "defenseDivisor": 8,
-    "critRollBasis": 10000,
-    "artifactScalePm": 20
+    "critRollBasis": 10000
   },
+  "artifacts": [
+    {
+      "id": "core-emberglass",
+      "slot": "core",
+      "requiredPetLevel": 1,
+      "modifiers": {
+        "hp": 4,
+        "attack": 2,
+        "defense": 0,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 0,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "core-amberlattice",
+      "slot": "core",
+      "requiredPetLevel": 10,
+      "modifiers": {
+        "hp": 6,
+        "attack": 3,
+        "defense": 1,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 0,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-mistquill",
+      "slot": "rune",
+      "requiredPetLevel": 10,
+      "modifiers": {
+        "hp": 0,
+        "attack": 4,
+        "defense": 0,
+        "speed": 2
+      },
+      "perLevel": {
+        "hp": 0,
+        "attack": 1,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "aegis-bastionplate",
+      "slot": "aegis",
+      "requiredPetLevel": 20,
+      "modifiers": {
+        "hp": 8,
+        "attack": 0,
+        "defense": 5,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 2,
+        "attack": 0,
+        "defense": 1,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-whisperknot",
+      "slot": "rune",
+      "requiredPetLevel": 20,
+      "modifiers": {
+        "hp": 0,
+        "attack": 6,
+        "defense": 0,
+        "speed": 3
+      },
+      "perLevel": {
+        "hp": 0,
+        "attack": 1,
+        "defense": 0,
+        "speed": 1
+      }
+    },
+    {
+      "id": "core-prismheart",
+      "slot": "core",
+      "requiredPetLevel": 40,
+      "modifiers": {
+        "hp": 12,
+        "attack": 6,
+        "defense": 3,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 2,
+        "attack": 1,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-temporal-seal",
+      "slot": "rune",
+      "requiredPetLevel": 60,
+      "modifiers": {
+        "hp": 8,
+        "attack": 10,
+        "defense": 0,
+        "speed": 6
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 2,
+        "defense": 0,
+        "speed": 1
+      }
+    }
+  ],
   "elements": [
     {
       "element": "fire",

@@ -8,7 +8,7 @@ use crate::features::{
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
-use aetheria_pet_arena::arena8::coop::{SEATS, SeatInput};
+use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -59,7 +59,8 @@ struct CoopSeat {
     /// the same canonical pet species if each owns a separate authorized instance.
     owned_pet_instance_id: Uuid,
     level: u8,
-    artifact_power_pm: u16,
+    artifact_power_pm: Option<u16>,
+    loadout: Option<ArtifactLoadout>,
 }
 
 #[derive(Deserialize)]
@@ -209,24 +210,31 @@ impl NativeRuntime {
                     seat.account.is_nil()
                         || seat.pet_id.is_empty()
                         || seat.owned_pet_instance_id.is_nil()
+                        || seat.artifact_power_pm.is_some() == seat.loadout.is_some()
                 }) {
                     return Err("Invalid cooperative allocation");
                 }
-                let seats: [SeatInput; SEATS] =
-                    [first, second, third, fourth].map(|seat| SeatInput {
-                        account: seat.account.to_string(),
-                        pet_id: seat.pet_id.clone(),
-                        owned_pet_instance_id: seat.owned_pet_instance_id.to_string(),
-                        level: seat.level,
-                        artifact_power_pm: seat.artifact_power_pm,
-                    });
+                let roster = [first, second, third, fourth];
+                let loadouts = if roster.iter().all(|seat| seat.loadout.is_some()) {
+                    Some(roster.map(|seat| seat.loadout.clone().expect("every seat has a loadout")))
+                } else if roster.iter().all(|seat| seat.artifact_power_pm.is_some()) {
+                    None
+                } else {
+                    return Err("Invalid cooperative Artifact allocation");
+                };
+                let seats: [SeatInput; SEATS] = roster.map(|seat| SeatInput {
+                    account: seat.account.to_string(),
+                    pet_id: seat.pet_id.clone(),
+                    owned_pet_instance_id: seat.owned_pet_instance_id.to_string(),
+                    level: seat.level,
+                    artifact_power_pm: seat.artifact_power_pm.unwrap_or_default(),
+                });
                 let bundle = bundle.ok_or("Published gameplay configuration required")?;
                 let boss_id = allocation.boss_id.clone();
-                let game = coordinated::domain::Rules::load(&bundle, seats, boss_id)
-                    .map_err(|_| "Invalid cooperative gameplay configuration")?;
-                let initial = game
-                    .initial()
-                    .map_err(|_| "Invalid cooperative allocation")?;
+                let game =
+                    coordinated::domain::Rules::load(&bundle, seats, boss_id, loadouts.as_ref())
+                        .map_err(|_| "Invalid cooperative gameplay configuration or allocation")?;
+                let initial = game.initial();
                 Self::compose(settings, database, game, initial).await
             }
             _ => Err("Unknown or incomplete native ruleset"),

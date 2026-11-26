@@ -14,6 +14,7 @@
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
 pub mod config;
+mod loadout;
 pub mod simulation;
 
 use crate::arena8::Element;
@@ -48,6 +49,7 @@ mod board_cells {
 }
 
 pub use config::{ConfigError, CoopConfig};
+pub use loadout::{ArtifactLoadout, EquippedArtifact};
 
 /// Stable identifier of the cooperative ruleset family.
 pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
@@ -107,6 +109,8 @@ pub struct Participant {
     pub pet_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub owned_pet_instance_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub artifact_loadout_digest: Option<String>,
     pub level: u8,
     pub hp: u32,
     pub max_hp: u32,
@@ -253,8 +257,8 @@ pub struct SeatInput {
     /// the same canonical pet species if each owns a separate authorized instance.
     pub owned_pet_instance_id: String,
     pub level: u8,
-    /// Artifact power contribution in permille (1000 = none), from authorized
-    /// owned Artifacts. Server-authored, never client-supplied.
+    /// Scalar used by historical published bundles. Typed allocations carry
+    /// their equipped Artifact instances separately.
     pub artifact_power_pm: u16,
 }
 
@@ -328,8 +332,38 @@ impl CoopRules {
         self.effectiveness[attacker.index()][defender.index()]
     }
 
-    /// Allocate the unstarted match from server-authored seats.
+    /// Allocate an unstarted match without equipment, or replay a historical
+    /// scalar allocation. The live host requires explicit bindings for a typed
+    /// catalog, including an empty binding for an unequipped Pet.
     pub fn allocate(&self, seats: [SeatInput; SEATS]) -> Result<CoopState, CoopError> {
+        let loadouts = self.config.has_artifact_catalog().then(|| {
+            seats.each_ref().map(|seat| ArtifactLoadout {
+                digest: ArtifactLoadout::digest(self.digest, seat, &[]),
+                entries: Vec::new(),
+            })
+        });
+        self.allocate_bound(seats, loadouts.as_ref())
+    }
+
+    /// Bind the exact Artifact instances read from the server-owned inventory.
+    pub fn allocate_with_loadouts(
+        &self,
+        seats: [SeatInput; SEATS],
+        loadouts: &[ArtifactLoadout; SEATS],
+    ) -> Result<CoopState, CoopError> {
+        if !self.config.has_artifact_catalog()
+            || seats.iter().any(|seat| seat.artifact_power_pm != 0)
+        {
+            return Err(CoopError::Config(ConfigError::Artifact));
+        }
+        self.allocate_bound(seats, Some(loadouts))
+    }
+
+    fn allocate_bound(
+        &self,
+        seats: [SeatInput; SEATS],
+        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+    ) -> Result<CoopState, CoopError> {
         let mut participants = [(); SEATS].map(|()| unreachable_participant());
         let mut seen_accounts = std::collections::BTreeSet::new();
         let mut seen_pets = std::collections::BTreeSet::new();
@@ -344,7 +378,8 @@ impl CoopRules {
             {
                 return Err(CoopError::InvalidSeat);
             }
-            participants[index] = self.participant(seat)?;
+            participants[index] =
+                self.participant(seat, loadouts.map(|loadouts| &loadouts[index]))?;
         }
         let boss_config = self.selected_boss();
         let state = CoopState {
@@ -374,7 +409,11 @@ impl CoopRules {
         Ok(state)
     }
 
-    fn participant(&self, seat: SeatInput) -> Result<Participant, CoopError> {
+    fn participant(
+        &self,
+        seat: SeatInput,
+        loadout: Option<&ArtifactLoadout>,
+    ) -> Result<Participant, CoopError> {
         let pet = self
             .config
             .pet(&seat.pet_id)
@@ -385,14 +424,6 @@ impl CoopRules {
         let element = pet.element().map_err(CoopError::Config)?;
         let profile = self.config.element_index().map_err(CoopError::Config)?[element.index()];
         let steps = u32::from(seat.level.saturating_sub(1));
-        let artifact = u64::from(seat.artifact_power_pm.min(10_000))
-            * u64::from(self.config.damage.artifact_scale_pm)
-            / 1_000;
-        let scale = u32::try_from(1_000 + artifact).map_err(|_| CoopError::Arithmetic)?;
-        let scale = |value: u32| {
-            u32::try_from(u64::from(value) * u64::from(scale) / 1_000)
-                .map_err(|_| CoopError::Arithmetic)
-        };
         let (hp, atk, def) = if let Some(growth) = &pet.growth {
             (
                 growth
@@ -416,14 +447,45 @@ impl CoopRules {
                     .saturating_add(profile.defense_growth.saturating_mul(steps)),
             )
         };
-        let max_hp = scale(hp)?;
-        let attack = scale(atk)?;
-        let defense = scale(def)?;
+        let (max_hp, attack, defense) = match (&self.config.artifacts, loadout) {
+            (Some(catalog), Some(loadout)) => {
+                let stats = catalog
+                    .apply(self.digest, &seat, loadout)
+                    .map_err(CoopError::Config)?;
+                let add = |base: u32, added: u16| {
+                    base.checked_add(u32::from(added))
+                        .ok_or(CoopError::Arithmetic)
+                };
+                (
+                    add(hp, stats.hp)?,
+                    add(atk, stats.attack)?,
+                    add(def, stats.defense)?,
+                )
+            }
+            (None, None) => {
+                let historical_scale = self
+                    .config
+                    .damage
+                    .artifact_scale_pm
+                    .ok_or(CoopError::Config(ConfigError::Artifact))?;
+                let artifact = u64::from(seat.artifact_power_pm.min(10_000))
+                    * u64::from(historical_scale)
+                    / 1_000;
+                let scale = u32::try_from(1_000 + artifact).map_err(|_| CoopError::Arithmetic)?;
+                let apply = |value: u32| {
+                    u32::try_from(u64::from(value) * u64::from(scale) / 1_000)
+                        .map_err(|_| CoopError::Arithmetic)
+                };
+                (apply(hp)?, apply(atk)?, apply(def)?)
+            }
+            _ => return Err(CoopError::Config(ConfigError::Artifact)),
+        };
         Ok(Participant {
             account: seat.account,
             pet_id: seat.pet_id,
             owned_pet_instance_id: (self.config.schema_version == config::CONFIG_SCHEMA_VERSION)
                 .then_some(seat.owned_pet_instance_id),
+            artifact_loadout_digest: loadout.map(|loadout| loadout.digest.clone()),
             level: seat.level,
             hp: max_hp,
             max_hp,
@@ -460,6 +522,8 @@ impl CoopRules {
                 None => !versioned,
             };
             !valid_instance
+                || participant.artifact_loadout_digest.is_some()
+                    != self.config.has_artifact_catalog()
                 || participant.max_hp == 0
                 || participant.hp > participant.max_hp
                 || participant.attack == 0
@@ -1419,6 +1483,7 @@ fn unreachable_participant() -> Participant {
         account: String::new(),
         pet_id: String::new(),
         owned_pet_instance_id: None,
+        artifact_loadout_digest: None,
         level: 1,
         hp: 1,
         max_hp: 1,
@@ -1551,6 +1616,9 @@ fn participant_value(seat: &Participant) -> Value {
     ];
     if let Some(id) = &seat.owned_pet_instance_id {
         fields.push(Value::Text(id.clone()));
+    }
+    if let Some(digest) = &seat.artifact_loadout_digest {
+        fields.push(Value::Text(digest.clone()));
     }
     Value::List(fields)
 }
