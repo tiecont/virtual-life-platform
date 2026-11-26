@@ -847,8 +847,8 @@
     {
       "id": "icarus",
       "element": "fire",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 900,
       "attack": 125,
       "defense": 85,
@@ -858,13 +858,17 @@
       "signature": "fire-cinder-brand",
       "ultimate": "fire-solar-flare",
       "guard": "fire-ember-guard",
-      "fireZone": "fire-icarus-fire-zone"
+      "fireZone": "fire-icarus-fire-zone",
+      "catalog": {
+        "name": "Icarus",
+        "mapId": null
+      }
     },
     {
       "id": "marivell",
       "element": "water",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 1100,
       "attack": 85,
       "defense": 100,
@@ -873,13 +877,17 @@
       "skill": "water-tide-mend",
       "signature": "water-wellspring",
       "ultimate": "water-deep-bulwark",
-      "guard": "water-flow-guard"
+      "guard": "water-flow-guard",
+      "catalog": {
+        "name": "Marivell",
+        "mapId": null
+      }
     },
     {
       "id": "quorion",
       "element": "electric",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 850,
       "attack": 110,
       "defense": 80,
@@ -888,13 +896,17 @@
       "skill": "electric-arc",
       "signature": "electric-storm-surge",
       "ultimate": "electric-thunderfall",
-      "guard": "electric-charge-guard"
+      "guard": "electric-charge-guard",
+      "catalog": {
+        "name": "Quorion",
+        "mapId": null
+      }
     },
     {
       "id": "vesperyn",
       "element": "ghost",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 900,
       "attack": 105,
       "defense": 90,
@@ -903,13 +915,17 @@
       "skill": "ghost-hollow-wail",
       "signature": "ghost-soul-rend",
       "ultimate": "ghost-nightfall",
-      "guard": "ghost-veil-guard"
+      "guard": "ghost-veil-guard",
+      "catalog": {
+        "name": "Vesperyn",
+        "mapId": null
+      }
     },
     {
       "id": "gravorn",
       "element": "ground",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 1400,
       "attack": 95,
       "defense": 135,
@@ -918,13 +934,17 @@
       "skill": "ground-tremor",
       "signature": "ground-bastion",
       "ultimate": "ground-quake-core",
-      "guard": "ground-iron-guard"
+      "guard": "ground-iron-guard",
+      "catalog": {
+        "name": "Gravorn",
+        "mapId": null
+      }
     },
     {
       "id": "aurelune",
       "element": "light",
-      "rarity": "standard",
-      "powerClass": "balanced",
+      "rarity": "standard-s",
+      "powerClass": "a",
       "maxHp": 1050,
       "attack": 95,
       "defense": 105,
@@ -933,7 +953,11 @@
       "skill": "light-lumen-bolt",
       "signature": "light-hallowed-aegis",
       "ultimate": "light-radiance",
-      "guard": "light-guiding-guard"
+      "guard": "light-guiding-guard",
+      "catalog": {
+        "name": "Aurelune",
+        "mapId": null
+      }
     }
   ],
   "rewards": {

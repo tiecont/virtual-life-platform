@@ -317,6 +317,7 @@ pub struct PetConfig {
     pub element: String,
     pub rarity: String,
     pub power_class: String,
+    pub catalog: Option<PetCatalog>,
     pub max_hp: u32,
     pub attack: u32,
     pub defense: u32,
@@ -328,6 +329,13 @@ pub struct PetConfig {
     pub guard: String,
     #[serde(default)]
     pub fire_zone: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PetCatalog {
+    pub name: String,
+    pub map_id: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -560,6 +568,30 @@ impl CoopConfig {
         for pet in &self.pets {
             if pet.id.is_empty() || pet.id.len() > 64 || pet.max_hp == 0 || pet.attack == 0 {
                 return Err(ConfigError::Pet);
+            }
+            match (self.schema_version, &pet.catalog) {
+                (HISTORICAL_SCHEMA_VERSION, None) => (),
+                (CONFIG_SCHEMA_VERSION, Some(catalog))
+                    if catalog.name.trim() == catalog.name
+                        && !catalog.name.is_empty()
+                        && catalog.name.len() <= 128
+                        && catalog.map_id.as_deref().is_none_or(stable_id)
+                        && matches!(pet.power_class.as_str(), "s" | "a" | "b")
+                        && matches!(
+                            pet.rarity.as_str(),
+                            "limited-s"
+                                | "standard-s"
+                                | "map-legendary"
+                                | "map-regular"
+                                | "family-exploration"
+                        )
+                        && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
+                            identity.roster_state == crate::arena8::binding::RosterState::Candidate
+                        }) =>
+                {
+                    ()
+                }
+                _ => return Err(ConfigError::Pet),
             }
             if pet.crit_rate_bp > 10_000 || pet.crit_damage_bp == 0 {
                 return Err(ConfigError::Pet);
@@ -1162,7 +1194,7 @@ impl PetConfig {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(self.element.clone()),
             Value::Text(self.rarity.clone()),
@@ -1177,7 +1209,17 @@ impl PetConfig {
             Value::Text(self.ultimate.clone()),
             Value::Text(self.guard.clone()),
             Value::Text(self.fire_zone.clone().unwrap_or_default()),
-        ])
+        ];
+        if let Some(catalog) = &self.catalog {
+            fields.push(list([
+                Value::Text(catalog.name.clone()),
+                catalog
+                    .map_id
+                    .as_ref()
+                    .map_or(Value::Null, |id| Value::Text(id.clone())),
+            ]));
+        }
+        Value::List(fields)
     }
 }
 
