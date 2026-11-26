@@ -57,6 +57,11 @@ pub struct SimulationReport {
     pub average_actions_milli: u64,
     pub average_logical_duration_ms: u64,
     pub matches_with_multiplier: u32,
+    pub swaps_using_visible_multiplier: u64,
+    pub player_criticals: u64,
+    pub ability_casts: u64,
+    pub mana_spent: u64,
+    pub rage_spent: u64,
     pub contributions: [SeatContribution; SEATS],
 }
 
@@ -73,6 +78,11 @@ struct Sample {
     state: CoopState,
     actions: u64,
     multiplier_seen: bool,
+    swaps_using_visible_multiplier: u64,
+    player_criticals: u64,
+    ability_casts: u64,
+    mana_spent: u64,
+    rage_spent: u64,
 }
 
 struct SplitMix(u64);
@@ -87,6 +97,59 @@ impl SplitMix {
     }
 }
 
+/// Rank only runs already visible after exchanging adjacent tiles. No refill,
+/// cascade, critical roll or future Boss action is sampled by the policy.
+fn visible_swap(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, bool)> {
+    let own = rules
+        .config()
+        .pet(&state.participants[state.active_seat].pet_id)?
+        .element()
+        .ok()?;
+    let mut best = None;
+    let mut best_weight = 0;
+    for first in 0..super::CELLS {
+        for second in [first + 1, first + super::SIDE] {
+            if second >= super::CELLS || !super::adjacent(first, second) {
+                continue;
+            }
+            let mut board = state.board;
+            board.swap(first, second);
+            let mut weight = 0u64;
+            let mut count = 0;
+            let mut multiplier = false;
+            for (matched, tile) in super::matched_cells(&board).into_iter().zip(board) {
+                if let Some(tile) = tile.filter(|_| matched) {
+                    let element_weight = if tile.element == own {
+                        rules.config().damage.own_tile_weight_pm
+                    } else {
+                        1000
+                    };
+                    weight += u64::from(
+                        rules
+                            .config()
+                            .multiplier
+                            .damage_weight(tile.multiplier)
+                            .ok()?,
+                    ) * u64::from(element_weight);
+                    count += 1;
+                    multiplier |= tile.multiplier > 1;
+                }
+            }
+            if weight > best_weight {
+                best_weight = weight;
+                best = Some((
+                    CoopAction::Swap {
+                        first: first as u8,
+                        second: second as u8,
+                    },
+                    count >= 4 || multiplier,
+                ));
+            }
+        }
+    }
+    best
+}
+
 fn candidates(
     rules: &CoopRules,
     state: &CoopState,
@@ -96,9 +159,16 @@ fn candidates(
     if state.phase == CoopPhase::Ready {
         return vec![CoopAction::Start];
     }
-    let swap = rules
-        .legal_swap(state)
-        .map(|(first, second)| CoopAction::Swap { first, second });
+    let (swap, priority_swap) = match policy {
+        Policy::Tactical | Policy::Coordinated => visible_swap(rules, state)
+            .map_or((None, false), |(action, priority)| (Some(action), priority)),
+        _ => (
+            rules
+                .legal_swap(state)
+                .map(|(first, second)| CoopAction::Swap { first, second }),
+            false,
+        ),
+    };
     let mut out = Vec::with_capacity(7);
     match policy {
         Policy::Basic => {
@@ -124,6 +194,9 @@ fn candidates(
         Policy::Tactical | Policy::Coordinated => {
             if policy == Policy::Coordinated {
                 prioritize_support(rules, state, &mut out);
+            }
+            if let Some(action) = swap.filter(|_| priority_swap) {
+                out.push(action);
             }
             for action in [
                 Some(CoopAction::Ultimate),
@@ -197,6 +270,11 @@ fn play(
     let mut prng = SplitMix(seed ^ 0xA5A5_5A5A_1234_5678);
     let mut actions = 0u64;
     let mut multiplier_seen = false;
+    let mut swaps_using_visible_multiplier = 0;
+    let mut player_criticals = 0;
+    let mut ability_casts = 0;
+    let mut mana_spent = 0;
+    let mut rage_spent = 0;
     for step in 0..=super::MAX_TURNS {
         if checkpoint.state.phase.terminal() {
             break;
@@ -233,6 +311,20 @@ fn play(
                 .iter()
                 .flatten()
                 .any(|tile| tile.multiplier > 1);
+            if let CoopAction::Swap { first, second } = action {
+                let mut board = checkpoint.state.board;
+                board.swap(usize::from(first), usize::from(second));
+                swaps_using_visible_multiplier +=
+                    u64::from(super::matched_cells(&board).into_iter().zip(board).any(
+                        |(matched, tile)| matched && tile.is_some_and(|tile| tile.multiplier > 1),
+                    ));
+            } else if let Ok(cast) = rules.prepare_ability(&checkpoint.state, action) {
+                ability_casts += 1;
+                mana_spent += u64::from(cast.skill.mana_cost);
+                rage_spent += u64::from(cast.skill.rage_cost);
+            }
+            player_criticals += transition.events.iter().filter(|event| matches!(event,
+                aetheria_game_core::Value::List(fields) if matches!(fields.first(),Some(aetheria_game_core::Value::Text(kind)) if kind=="critical"))).count() as u64;
             checkpoint = transition.next;
             accepted = true;
             actions += 1;
@@ -246,6 +338,11 @@ fn play(
         state: checkpoint.state,
         actions,
         multiplier_seen,
+        swaps_using_visible_multiplier,
+        player_criticals,
+        ability_casts,
+        mana_spent,
+        rage_spent,
     })
 }
 
@@ -343,6 +440,11 @@ pub fn simulate_party(
         average_actions_milli: 0,
         average_logical_duration_ms: 0,
         matches_with_multiplier: 0,
+        swaps_using_visible_multiplier: 0,
+        player_criticals: 0,
+        ability_casts: 0,
+        mana_spent: 0,
+        rage_spent: 0,
         contributions: initial
             .participants
             .each_ref()
@@ -360,6 +462,11 @@ pub fn simulate_party(
         report.total_actions += sample.actions;
         report.phase_two_reached += u32::from(sample.state.boss.transformed);
         report.matches_with_multiplier += u32::from(sample.multiplier_seen);
+        report.swaps_using_visible_multiplier += sample.swaps_using_visible_multiplier;
+        report.player_criticals += sample.player_criticals;
+        report.ability_casts += sample.ability_casts;
+        report.mana_spent += sample.mana_spent;
+        report.rage_spent += sample.rage_spent;
         match sample.state.phase {
             CoopPhase::Won => report.wins += 1,
             CoopPhase::Lost => report.losses += 1,

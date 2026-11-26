@@ -60,6 +60,7 @@ export const EngineGameplaySimulationReportSchema=z.strictObject({
  bossId,contentDigest:hash,policy:GameplaySimulationPolicySchema,seeds:GameplaySimulationSeedsSchema,
  wins:count,losses:count,unresolved:count,phaseTwoReached:count,totalActions:simulationMetric,
  averageRoundsMilli:simulationMetric,averageActionsMilli:simulationMetric,
+ swapsUsingVisibleMultiplier:z.int().nonnegative().optional(),playerCriticals:z.int().nonnegative().optional(),abilityCasts:z.int().nonnegative().optional(),manaSpent:z.int().nonnegative().optional(),rageSpent:z.int().nonnegative().optional(),
  averageLogicalDurationMs:simulationMetric,matchesWithMultiplier:count,contributions:z.array(contribution).length(4),
 });
 export type EngineGameplaySimulationReport=z.infer<typeof EngineGameplaySimulationReportSchema>;

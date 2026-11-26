@@ -54,11 +54,11 @@ function SimulationResults({result}:{result:SimulationResult}){
   <p className="small muted">Version {result.version} · {result.seeds} seeds per row · <code title={digest}>{digest?.slice(0,16)}</code></p>
   <div className="audit"><table>
    <caption>Cooperative simulation results</caption>
-   <thead><tr><th>Encounter</th><th>Policy</th><th>Win rate</th><th>Wins</th><th>Losses</th><th>Unresolved</th><th>Phase two</th><th>Multiplier seen</th><th>Avg. rounds</th><th>Avg. actions</th><th>Avg. simulated time</th></tr></thead>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Win rate</th><th>Wins</th><th>Losses</th><th>Unresolved</th><th>Phase two</th><th>Multiplier seen</th><th>Multiplier swaps</th><th>Critical hits</th><th>Casts</th><th>Mana spent</th><th>Rage spent</th><th>Avg. rounds</th><th>Avg. actions</th><th>Avg. simulated time</th></tr></thead>
    <tbody>{reports.map(row=><tr key={row.bossId+':'+row.policy}>
     <td>{row.bossId}</td><td>{row.policy}</td><td>{(row.wins/row.seeds*100).toFixed(1)}%</td>
     <td>{row.wins}</td><td>{row.losses}</td><td>{row.unresolved}</td><td>{row.phaseTwoReached}</td><td>{row.matchesWithMultiplier}</td>
-    <td>{(row.averageRoundsMilli/1000).toFixed(2)}</td><td>{(row.averageActionsMilli/1000).toFixed(2)}</td><td>{(row.averageLogicalDurationMs/1000).toFixed(2)} s</td>
+    <td>{row.swapsUsingVisibleMultiplier??"—"}</td><td>{row.playerCriticals??"—"}</td><td>{row.abilityCasts??"—"}</td><td>{row.manaSpent??"—"}</td><td>{row.rageSpent??"—"}</td><td>{(row.averageRoundsMilli/1000).toFixed(2)}</td><td>{(row.averageActionsMilli/1000).toFixed(2)}</td><td>{(row.averageLogicalDurationMs/1000).toFixed(2)} s</td>
    </tr>)}</tbody>
   </table></div>
   <details><summary>Contribution totals by seat</summary><div className="audit"><table>
