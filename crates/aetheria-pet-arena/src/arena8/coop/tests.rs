@@ -1031,3 +1031,32 @@ fn ghost_curse_amplifies_allied_damage_then_expires_at_the_authored_turn() {
     assert_eq!(marked.boss.curse, None);
     assert_eq!(rules.damage_boss(&mut marked, 100).unwrap(), 100);
 }
+
+#[test]
+fn immediate_boss_attack_hands_the_round_to_a_surviving_seat() {
+    let mut config: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    config["bosses"][0]["telegraphTurns"] = 1.into();
+    let rules = CoopRules::load(
+        &serde_json::to_vec(&config).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+    let mut rng = rng(0);
+    let mut state = rules
+        .reduce(
+            &rules.allocate(seats()).unwrap(),
+            CoopAction::Start,
+            &mut rng,
+        )
+        .unwrap()
+        .state;
+    state.active_seat = 3;
+    state.participants[0].hp = 1;
+    let next = rules
+        .reduce(&state, CoopAction::Guard, &mut rng)
+        .unwrap()
+        .state;
+    assert!(!next.participants[0].alive);
+    assert_eq!(next.active_seat, 1);
+    assert!(rules.reduce(&next, CoopAction::Guard, &mut rng).is_ok());
+}

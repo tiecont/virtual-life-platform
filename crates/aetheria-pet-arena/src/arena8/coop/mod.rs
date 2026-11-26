@@ -1571,6 +1571,9 @@ impl CoopRules {
                 // Durations tick at the start of the affected participant's own
                 // turn, so a cooldown, buff or shield authored for N turns lasts
                 // exactly N of that participant's turns.
+                // An immediate round-opening attack can defeat the seat selected
+                // before the Boss acted. Start the turn of the next survivor.
+                let next = state.next_alive(next).unwrap_or(next);
                 self.begin_turn(&mut state.participants[next]);
                 state.active_seat = next;
             }
