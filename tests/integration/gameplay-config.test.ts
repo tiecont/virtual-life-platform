@@ -8,6 +8,7 @@ import {OperatorService} from '../../apps/platform-api/src/features/identity/mod
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 import {InvalidGameplayBundleError,type GameplayBundleValidator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator';
 import type {GameplaySimulator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-simulator';
+import {GameplaySimulationPolicySchema,type GameplaySimulationPolicy} from '@aetheria/contracts';
 import {installGameplayConfig} from '../../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config';
 
 const origin='http://127.0.0.1:3400',ruleset='arena8-coop-pve',password='synthetic-gameplay-operator-password',factor='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
@@ -18,7 +19,18 @@ const engine:GameplayBundleValidator={async validate(_ruleset,input){
  if((input as {reject?:boolean}).reject)throw new InvalidGameplayBundleError();
  return {digest:createHash('sha256').update(JSON.stringify(input)).digest('hex'),engineCapability:'arena8-coop-v1',contentHash:createHash('sha256').update('content:'+JSON.stringify(input)).digest('hex')};
 }};
-const simulator:GameplaySimulator={async simulate(_bundle,policy,seeds){return {wins:seeds-1,losses:1,unresolved:0,phaseTwoReached:seeds,totalActions:100,averageRoundsMilli:5_000,averageActionsMilli:2_500};}};
+const fire='cinder-terraces-warden',water='tideglass-lagoon-warden';
+function simReport(policy:GameplaySimulationPolicy,seeds:number,bossId=fire){
+ return {
+  bossId,contentDigest:'d'.repeat(64),policy,seeds,wins:seeds-1,losses:1,unresolved:0,phaseTwoReached:seeds,
+  totalActions:100,averageRoundsMilli:5_000,averageActionsMilli:2_500,averageLogicalDurationMs:2_500,matchesWithMultiplier:seeds,
+  contributions:['icarus','coralline','volt','terran'].map(petId=>({petId,damage:20,healing:0,shielding:10})),
+ };
+}
+const simulator:GameplaySimulator={
+ async simulate(_bundle,policy,seeds,bossId){return simReport(policy,seeds,bossId);},
+ async compare(_bundle,bossIds,seeds){return bossIds.flatMap(bossId=>GameplaySimulationPolicySchema.options.map(policy=>simReport(policy,seeds,bossId)));},
+};
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,now:number,key:string,config:ReturnType<typeof readConfig>;
 beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');admin=new Pool({connectionString:url.toString()});});
 beforeEach(async()=>{
@@ -149,9 +161,22 @@ describe('gameplay configuration authority',()=>{
   expect((await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:created.version,policy:'tactical',seeds:201})).statusCode).toBe(422);
   expect((await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:created.version,policy:'shell',seeds:4})).statusCode).toBe(422);
   const released=await published(op);
-  const again=await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:released.version,policy:'coordinated',seeds:3});
+  const again=await post(op,'gameplay-config-simulate',{requestId:randomUUID(),ruleset,version:released.version,policy:'coordinated',seeds:3,bossId:water});
   expect(again.statusCode).toBe(200);
-  expect(again.json()).toMatchObject({policy:'coordinated',seeds:3,wins:2,losses:1});
+  expect(again.json()).toMatchObject({policy:'coordinated',seeds:3,wins:2,losses:1,bossId:water});
+ });
+ it('compares up to two selected encounters with all policies on an identical seed count',async()=>{
+  const op=await login(),created=await draft(op);
+  const input={ruleset,version:created.version,bossIds:[fire,water],seeds:12};
+  const action='gameplay-config-simulate';
+  expect((await post({...op,csrf:'a'.repeat(64)},action,{...input,requestId:randomUUID()})).statusCode).toBe(403);
+  expect((await post(op,action,{...input,bossIds:[fire,fire],requestId:randomUUID()})).statusCode).toBe(422);
+  expect((await post(op,action,{...input,seeds:26,requestId:randomUUID()})).statusCode).toBe(422);
+  const response=await post(op,action,{...input,requestId:randomUUID()});
+  expect(response.statusCode).toBe(200);
+  expect(response.json()).toMatchObject({ruleset,version:created.version,seeds:12,reports:[fire,water].flatMap(bossId=>GameplaySimulationPolicySchema.options.map(policy=>({bossId,policy,seeds:12})))});
+  const current=await get(op,'gameplay-config-version?ruleset='+ruleset+'&version='+created.version);
+  expect(current.json()).toMatchObject({version:created.version,revision:created.revision,state:'DRAFT'});
  });
  it('accepts a realistic bundle above the global body bound and rejects oversized bodies',async()=>{
   const op=await login();

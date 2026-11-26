@@ -3,14 +3,15 @@ import {useEffect,useRef,useState} from 'react';
 import {
  GameplayConfigAuditSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
- GameplaySimulationReportSchema,type GameplayBundle,
+ GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,
 } from '@aetheria/contracts';
 import {bundleDifferences} from './bundle-diff';
 
 type Overview=ReturnType<typeof GameplayConfigOverviewSchema.parse>;
 type Version=ReturnType<typeof GameplayConfigVersionViewSchema.parse>;
 type Audit=ReturnType<typeof GameplayConfigAuditSchema.parse>;
-type Request=(action:string,body?:unknown)=>Promise<unknown>;
+type Request=(action:string,body?:unknown,signal?:AbortSignal)=>Promise<unknown>;
+type SimulationResult=ReturnType<typeof GameplaySimulationResultSchema.parse>;
 const RULESET='arena8-coop-pve';
 
 function read(source:unknown,path:readonly string[]):unknown{
@@ -32,19 +33,62 @@ function write(source:GameplayBundle,path:readonly string[],value:unknown):Gamep
  (parent as Record<string,unknown>)[path[path.length-1]!]=value;
  return copy;
 }
-function Num({label,value,onChange,step=1}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number}){
+function Num({label,value,onChange,step=1,min=0,max}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number;min?:number;max?:number}){
  const number=typeof value==='number'?value:0;
- return <label>{label}<input className="aetheria-field" type="number" step={step} min={0} value={number} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)onChange(next);}}/></label>;
+ return <label>{label}<input className="aetheria-field" type="number" step={step} min={min} max={max} value={number} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)onChange(next);}}/></label>;
+}
+
+function encounterOptions(bundle:GameplayBundle|undefined){
+ const bosses=Array.isArray(bundle?.bosses)?bundle.bosses:[bundle?.boss];
+ return bosses.flatMap(boss=>{
+  const id=read(boss,['id']),name=read(boss,['name']),map=read(boss,['mapId']);
+  if(typeof id!=='string')return [];
+  return [{id,label:[typeof name==='string'?name:id,map].filter(Boolean).join(' · ')}];
+ });
+}
+function SimulationResults({result}:{result:SimulationResult}){
+ const reports:EngineGameplaySimulationReport[]='reports' in result?result.reports:[result];
+ const digest=reports[0]?.contentDigest;
+ return <>
+  <p className="small muted">Version {result.version} · {result.seeds} seeds per row · <code title={digest}>{digest?.slice(0,16)}</code></p>
+  <div className="audit"><table>
+   <caption>Cooperative simulation results</caption>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Win rate</th><th>Wins</th><th>Losses</th><th>Unresolved</th><th>Phase two</th><th>Multiplier seen</th><th>Avg. rounds</th><th>Avg. actions</th><th>Avg. simulated time</th></tr></thead>
+   <tbody>{reports.map(row=><tr key={row.bossId+':'+row.policy}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{(row.wins/row.seeds*100).toFixed(1)}%</td>
+    <td>{row.wins}</td><td>{row.losses}</td><td>{row.unresolved}</td><td>{row.phaseTwoReached}</td><td>{row.matchesWithMultiplier}</td>
+    <td>{(row.averageRoundsMilli/1000).toFixed(2)}</td><td>{(row.averageActionsMilli/1000).toFixed(2)}</td><td>{(row.averageLogicalDurationMs/1000).toFixed(2)} s</td>
+   </tr>)}</tbody>
+  </table></div>
+  <details><summary>Contribution totals by seat</summary><div className="audit"><table>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Seat</th><th>Pet</th><th>Damage</th><th>Healing</th><th>Shielding</th></tr></thead>
+   <tbody>{reports.flatMap(row=>row.contributions.map((seat,index)=><tr key={row.bossId+':'+row.policy+':'+index}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{index+1}</td><td>{seat.petId}</td><td>{seat.damage}</td><td>{seat.healing}</td><td>{seat.shielding}</td>
+   </tr>))}</tbody>
+  </table></div></details>
+ </>;
 }
 
 // Operator-only Gameplay Configuration workspace. The typed fields edit the
 // authored bundle; the Rust engine remains the authority that accepts or
 // rejects it, and the digest shown here is the engine's verdict.
 export default function GameplayConfig({request}:{request:Request}){
- const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[simPolicy,setSimPolicy]=useState<'random'|'basic'|'tactical'|'coordinated'>('tactical'),[simSeeds,setSimSeeds]=useState(12),[simReport,setSimReport]=useState<ReturnType<typeof GameplaySimulationReportSchema.parse>|null>(null),[comparison,setComparison]=useState<string[]|null>(null);
+ const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[comparison,setComparison]=useState<string[]|null>(null);
+ const [simPolicy,setSimPolicy]=useState<GameplaySimulationPolicy|'all'>('tactical');
+ const [simSeeds,setSimSeeds]=useState(12);
+ const [simReport,setSimReport]=useState<SimulationResult|null>(null);
+ const [simBossId,setSimBossId]=useState('');
+ const [simOtherBossId,setSimOtherBossId]=useState('');
+ const [simRunning,setSimRunning]=useState(false);
+ const simCancellation=useRef<AbortController|null>(null);
  const [petSearch,setPetSearch]=useState('');
  const [bossIndex,setBossIndex]=useState(0);
  const lock=useRef(false);
+ const encounters=encounterOptions(selected?.bundle);
+ const encounter=encounters.find(option=>option.id===simBossId)??encounters[0];
+ const otherEncounters=encounters.filter(option=>option.id!==encounter?.id);
+ const otherEncounter=otherEncounters.find(option=>option.id===simOtherBossId);
+ const seedLimit=simPolicy==='all'?25:200;
 
  async function work(run:()=>Promise<unknown>){
   if(lock.current)return;lock.current=true;setBusy(true);setMessage('');
@@ -58,10 +102,11 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  async function open(version:number){
   const value=GameplayConfigVersionViewSchema.parse(await request('gameplay-config-version?ruleset='+RULESET+'&version='+version));
-  setSelected(value);setBundle(value.bundle);setBossIndex(0);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
+  setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
  }
  async function refresh(version?:number){await work(async()=>{const current=await loadOverview();await open(version??current.active?.version??current.versions[0]?.version??0);});}
  useEffect(()=>{void work(async()=>{const current=await loadOverview();if(current.active)await open(current.active.version);else if(current.versions[0])await open(current.versions[0].version);});},[]);
+ useEffect(()=>()=>simCancellation.current?.abort(),[]);
  function change(path:readonly string[],value:unknown){
   if(!bundle||selected?.state!=='DRAFT')return;
   const next=write(bundle,path,value);setBundle(next);setJson(JSON.stringify(next,null,2));
@@ -101,11 +146,28 @@ export default function GameplayConfig({request}:{request:Request}){
   });
  }
  async function runSimulation(){
-  if(!selected)return;
+  if(!selected||!encounter)return;
   await work(async()=>{
-   const report=GameplaySimulationReportSchema.parse(await request('gameplay-config-simulate',{requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,policy:simPolicy,seeds:simSeeds}));
-   setSimReport(report);
-   setMessage('Simulation complete: '+report.wins+' wins / '+report.losses+' losses / '+report.unresolved+' unresolved across '+report.seeds+' seeds.');
+   const cancellation=new AbortController();
+   simCancellation.current=cancellation;
+   setSimRunning(true);
+   setSimReport(null);
+   const input={requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,seeds:simSeeds};
+   const settings=simPolicy==='all'
+    ? {bossIds:otherEncounter?[encounter.id,otherEncounter.id]:[encounter.id]}
+    : {policy:simPolicy,bossId:encounter.id};
+   try{
+    const result=await request('gameplay-config-simulate',{...input,...settings},cancellation.signal);
+    cancellation.signal.throwIfAborted();
+    setSimReport(GameplaySimulationResultSchema.parse(result));
+    setMessage('Simulation complete.');
+   }catch(error){
+    if(!cancellation.signal.aborted)throw error;
+    setMessage('Simulation cancelled.');
+   }finally{
+    simCancellation.current=null;
+    setSimRunning(false);
+   }
   });
  }
  async function compareWithActive(){
@@ -131,7 +193,29 @@ export default function GameplayConfig({request}:{request:Request}){
  <section className="aetheria-card"><h2>Active configuration</h2>{overview?.active?<dl className="metrics"><div><dt>Version</dt><dd>{overview.active.version}</dd></div><div><dt>State</dt><dd>{overview.active.state}</dd></div><div><dt>Engine</dt><dd>{overview.active.engineCapability}</dd></div><div><dt>Digest</dt><dd title={overview.active.contentDigest}>{overview.active.contentDigest.slice(0,16)}…</dd></div><div><dt>Published</dt><dd>{new Date(overview.active.publishedAt).toLocaleString()}</dd></div><div><dt>Active revision</dt><dd>{overview.active.revision}</dd></div></dl>:<p className="muted">No published gameplay configuration. Install the seed configuration through the reviewed migration/installation workflow before editing.</p>}</section>
  <section className="aetheria-card"><h2>Versions</h2><div className="audit"><table><caption>Draft and published gameplay configurations</caption><thead><tr><th>Version</th><th>State</th><th>Engine digest</th><th>Updated</th><th/></tr></thead><tbody>{(overview?.versions??[]).map(row=><tr key={row.version}><td>{row.version}</td><td>{row.state}</td><td>{row.contentDigest?row.contentDigest.slice(0,12)+'…':'—'}</td><td>{new Date(row.createdAt).toLocaleString()}</td><td><button type="button" className="text-button" disabled={busy} onClick={()=>void work(()=>open(row.version))}>Open</button>{row.publishedAt&&row.version!==overview?.active?.version?<button type="button" className="text-button" disabled={busy} onClick={()=>void rollback(row.version)}>Roll back</button>:null}</td></tr>)}</tbody></table>{!overview?.versions.length?<p className="muted">No versions yet.</p>:null}</div></section>
  {selected?<section className="aetheria-card"><h2>Version {selected.version} · {selected.state}</h2><p className="small muted">Author {selected.createdBy} · revision {selected.revision}{selected.contentDigest?' · engine digest '+selected.contentDigest:''}</p><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('save')}>Save draft</button><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('validate')}>Save and validate</button><button type="button" className="aetheria-button" disabled={busy||!activatable} onClick={()=>void publish()}>Publish validated version</button><button type="button" className="aetheria-button secondary" disabled={busy||!overview?.active} onClick={()=>void compareWithActive()}>Compare with active</button></p>{comparison?<div className="aetheria-card"><h3>Differences from active</h3>{comparison.length?<ul>{comparison.slice(0,40).map(path=><li key={path}><code>{path}</code></li>)}</ul>:<p className="muted">The selected bundle matches the active version.</p>}{comparison.length>40?<p className="small muted">Plus {comparison.length-40} more fields.</p>:null}</div>:null}
- <h3>Engine simulation</h3><p className="small muted">Runs the same Rust reducer with public-information policies on the authored bundle; it never mutates progression.</p><div className="fields"><label>Policy<select className="aetheria-field" value={simPolicy} onChange={event=>setSimPolicy(event.target.value as typeof simPolicy)}><option value="tactical">Tactical</option><option value="coordinated">Coordinated</option><option value="basic">Basic</option><option value="random">Random</option></select></label><Num label="Seeds (1-200)" value={simSeeds} onChange={value=>setSimSeeds(value)}/><button type="button" className="aetheria-button secondary" disabled={busy} onClick={()=>void runSimulation()}>Run simulation</button></div>{simReport?<dl className="metrics"><div><dt>Wins</dt><dd>{simReport.wins}</dd></div><div><dt>Losses</dt><dd>{simReport.losses}</dd></div><div><dt>Unresolved</dt><dd>{simReport.unresolved}</dd></div><div><dt>Phase two</dt><dd>{simReport.phaseTwoReached}</dd></div><div><dt>Average rounds</dt><dd>{(simReport.averageRoundsMilli/1000).toFixed(2)}</dd></div><div><dt>Average actions</dt><dd>{(simReport.averageActionsMilli/1000).toFixed(2)}</dd></div><div><dt>Total actions</dt><dd>{simReport.totalActions}</dd></div></dl>:null}
+ <h3>Engine simulation</h3>
+ <p className="small muted">Uses the saved version and the same Rust reducer as live matches. Each seat is level 1 and unequipped. Seeds start at 1, and the simulation clock advances one second per action.</p>
+ <div className="fields">
+  <label>Encounter<select className="aetheria-field" value={encounter?.id??''} disabled={busy||!encounter} onChange={event=>setSimBossId(event.target.value)}>
+   {encounters.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}
+  </select></label>
+  <label>Policy<select className="aetheria-field" value={simPolicy} disabled={busy} onChange={event=>{
+   const value=event.target.value as typeof simPolicy;
+   setSimPolicy(value);
+   if(value==='all')setSimSeeds(current=>Math.min(current,25));
+  }}>
+   {GameplaySimulationPolicySchema.options.map(policy=><option key={policy} value={policy}>{policy}</option>)}
+   <option value="all">Compare all policies</option>
+  </select></label>
+  {simPolicy==='all'&&otherEncounters.length>0?<label>Compare with<select className="aetheria-field" value={otherEncounter?.id??''} disabled={busy} onChange={event=>setSimOtherBossId(event.target.value)}>
+   <option value="">One encounter</option>
+   {otherEncounters.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}
+  </select></label>:null}
+  <Num label={'Seeds (1–'+seedLimit+')'} value={simSeeds} min={1} max={seedLimit} onChange={setSimSeeds}/>
+  <button type="button" className="aetheria-button secondary" disabled={busy||!encounter||!Number.isInteger(simSeeds)||simSeeds<1||simSeeds>seedLimit} onClick={()=>void runSimulation()}>Run simulation</button>
+  {simRunning?<button type="button" className="text-button" onClick={()=>simCancellation.current?.abort()}>Cancel simulation</button>:null}
+ </div>
+ {simReport?<SimulationResults result={simReport}/>:null}
  <dl className="metrics">
   <div><dt>Publication record schema</dt><dd>{selected.schemaVersion}</dd></div>
   <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>

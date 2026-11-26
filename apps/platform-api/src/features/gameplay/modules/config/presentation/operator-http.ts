@@ -33,6 +33,12 @@ export function registerGameplayConfig(http:FastifyInstance,config:Config,contro
   api.post('/gameplay-config-validate',req=>controls.validate(token(req),req.headers['x-csrf-token'],req.body));
   api.post('/gameplay-config-publish',req=>controls.publish(token(req),req.headers['x-csrf-token'],req.body));
   api.post('/gameplay-config-rollback',req=>controls.rollback(token(req),req.headers['x-csrf-token'],req.body));
-  api.post('/gameplay-config-simulate',req=>controls.simulate(token(req),req.headers['x-csrf-token'],req.body));
+  api.post('/gameplay-config-simulate',async(req,reply)=>{
+   const cancellation=new AbortController();
+   const abort=()=>cancellation.abort();
+   reply.raw.once('close',abort);
+   try{return await controls.simulate(token(req),req.headers['x-csrf-token'],req.body,cancellation.signal);}
+   finally{reply.raw.off('close',abort);}
+  });
  },{prefix:'/v1/operator'});
 }

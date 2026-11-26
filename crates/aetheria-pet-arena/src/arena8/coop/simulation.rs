@@ -6,7 +6,18 @@
 use aetheria_game_core::{Command, LogicalClock, SecretSeed, apply, begin};
 use serde::Serialize;
 
-use super::{CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SeatInput};
+use super::config::EffectKind;
+use super::{CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput};
+
+const LOGICAL_ACTION_MS: u64 = 1_000;
+pub const COMPARISON_MAX_SEEDS: u32 = 25;
+pub const COMPARISON_MAX_BOSSES: usize = 2;
+pub const POLICIES: [Policy; 4] = [
+    Policy::Random,
+    Policy::Basic,
+    Policy::Tactical,
+    Policy::Coordinated,
+];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -32,6 +43,8 @@ impl Policy {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SimulationReport {
+    pub boss_id: String,
+    pub content_digest: String,
     pub policy: Policy,
     pub seeds: u32,
     pub wins: u32,
@@ -41,6 +54,24 @@ pub struct SimulationReport {
     pub total_actions: u64,
     pub average_rounds_milli: u64,
     pub average_actions_milli: u64,
+    pub average_logical_duration_ms: u64,
+    pub matches_with_multiplier: u32,
+    pub contributions: [SeatContribution; SEATS],
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SeatContribution {
+    pub pet_id: String,
+    pub damage: u64,
+    pub healing: u64,
+    pub shielding: u64,
+}
+
+struct Sample {
+    state: CoopState,
+    actions: u64,
+    multiplier_seen: bool,
 }
 
 struct SplitMix(u64);
@@ -67,7 +98,7 @@ fn candidates(
     let swap = rules
         .legal_swap(state)
         .map(|(first, second)| CoopAction::Swap { first, second });
-    let mut out = Vec::with_capacity(5);
+    let mut out = Vec::with_capacity(7);
     match policy {
         Policy::Basic => {
             if let Some(swap) = swap {
@@ -83,60 +114,72 @@ fn candidates(
             out.push(CoopAction::Skill);
             out.push(CoopAction::Signature);
             out.push(CoopAction::Ultimate);
+            out.push(CoopAction::FireZone);
             for index in (1..out.len()).rev() {
                 let pick = usize::try_from(prng.next() % (index as u64 + 1)).unwrap_or(0);
                 out.swap(index, pick);
             }
         }
-        Policy::Tactical => {
-            out.extend([
-                CoopAction::Ultimate,
-                CoopAction::Signature,
-                CoopAction::Skill,
-            ]);
-            if let Some(swap) = swap {
-                out.push(swap);
+        Policy::Tactical | Policy::Coordinated => {
+            if policy == Policy::Coordinated {
+                prioritize_support(rules, state, &mut out);
             }
-            out.push(CoopAction::Guard);
-        }
-        Policy::Coordinated => {
-            let active = &state.participants[state.active_seat];
-            let wounded = state.participants.iter().any(|participant| {
-                participant.alive && u64::from(participant.hp) * 2 < u64::from(participant.max_hp)
-            });
-            // Water is the authored sustain archetype; a coordinated team leans
-            // on its support skill while an ally is hurt.
-            if wounded && active.pet_id == "coralline" {
-                out.push(CoopAction::Skill);
+            for action in [
+                Some(CoopAction::Ultimate),
+                Some(CoopAction::Signature),
+                Some(CoopAction::FireZone),
+                Some(CoopAction::Skill),
+                swap,
+                Some(CoopAction::Guard),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                if !out.contains(&action) {
+                    out.push(action);
+                }
             }
-            out.extend([
-                CoopAction::Ultimate,
-                CoopAction::Signature,
-                CoopAction::Skill,
-            ]);
-            if let Some(swap) = swap {
-                out.push(swap);
-            }
-            out.push(CoopAction::Guard);
         }
     }
     out
 }
-fn play(rules: &CoopRules, policy: Policy, seed: u64) -> (CoopPhase, u16, u64, bool) {
-    let mut seats = Vec::new();
-    for (index, pet) in rules.config().pets.iter().take(4).enumerate() {
-        seats.push(SeatInput {
-            account: format!("simulation-seat-{index}"),
-            pet_id: pet.id.clone(),
-            owned_pet_instance_id: format!("simulation-instance-{index}"),
-            level: 1,
-            artifact_power_pm: 1_000,
-        });
+fn prioritize_support(rules: &CoopRules, state: &CoopState, out: &mut Vec<CoopAction>) {
+    let active = &state.participants[state.active_seat];
+    let low_health = |seat: &super::Participant| u64::from(seat.hp) * 2 < u64::from(seat.max_hp);
+    let living = state.participants.iter().filter(|seat| seat.alive).count();
+    if state.pending.is_some_and(|pending| {
+        pending.remaining <= 1 && (low_health(active) || usize::from(pending.targets) >= living)
+    }) {
+        out.push(CoopAction::Guard);
     }
-    let seats: [SeatInput; 4] = seats.try_into().expect("four cooperative Pets");
-    let state = rules
-        .allocate(seats)
-        .expect("validated simulation allocation");
+    let wounded = state
+        .participants
+        .iter()
+        .filter(|seat| seat.alive)
+        .any(low_health);
+    if wounded && let Some(pet) = rules.config().pet(&active.pet_id) {
+        for (action, skill) in [
+            (CoopAction::Skill, &pet.skill),
+            (CoopAction::Signature, &pet.signature),
+            (CoopAction::Ultimate, &pet.ultimate),
+        ] {
+            if rules
+                .config()
+                .skill(skill)
+                .is_some_and(|skill| skill.effect.kind == EffectKind::Heal)
+            {
+                out.push(action);
+            }
+        }
+    }
+}
+
+fn play(
+    rules: &CoopRules,
+    initial: &CoopState,
+    policy: Policy,
+    seed: u64,
+) -> Result<Sample, CoopError> {
     let mut entropy = [0u8; 32];
     for (index, byte) in seed.to_le_bytes().iter().cycle().take(32).enumerate() {
         entropy[index] = *byte;
@@ -149,14 +192,11 @@ fn play(rules: &CoopRules, policy: Policy, seed: u64) -> (CoopPhase, u16, u64, b
         server_tick: 0,
         logical_time_ms: 0,
     };
-    let mut checkpoint = match begin(rules, match_id, state, &secret, clock) {
-        Ok(checkpoint) => checkpoint,
-        Err(_) => return (CoopPhase::Lost, 1, 0, false),
-    };
+    let mut checkpoint = begin(rules, match_id, initial.clone(), &secret, clock)?;
     let mut prng = SplitMix(seed ^ 0xA5A5_5A5A_1234_5678);
     let mut actions = 0u64;
-    let mut phase_two = false;
-    for step in 0..super::MAX_TURNS {
+    let mut multiplier_seen = false;
+    for step in 0..=super::MAX_TURNS {
         if checkpoint.state.phase.terminal() {
             break;
         }
@@ -179,15 +219,19 @@ fn play(rules: &CoopRules, policy: Policy, seed: u64) -> (CoopPhase, u16, u64, b
                 &secret,
                 LogicalClock {
                     server_tick: step,
-                    logical_time_ms: step * 1_000,
+                    logical_time_ms: step * LOGICAL_ACTION_MS,
                 },
             );
             let Ok(transition) = result else {
                 continue;
             };
-            if transition.next.state.boss.phase == 2 {
-                phase_two = true;
-            }
+            multiplier_seen |= transition
+                .next
+                .state
+                .board
+                .iter()
+                .flatten()
+                .any(|tile| tile.multiplier > 1);
             checkpoint = transition.next;
             accepted = true;
             actions += 1;
@@ -197,11 +241,11 @@ fn play(rules: &CoopRules, policy: Policy, seed: u64) -> (CoopPhase, u16, u64, b
             break;
         }
     }
-    let state = &checkpoint.state;
-    if state.phase.terminal() {
-        phase_two |= state.boss.phase == 2;
-    }
-    (state.phase, state.round_index, actions, phase_two)
+    Ok(Sample {
+        state: checkpoint.state,
+        actions,
+        multiplier_seen,
+    })
 }
 
 fn command_id(version: u64, attempt: usize) -> [u8; 16] {
@@ -221,34 +265,67 @@ pub fn simulate(
     if seeds == 0 || seeds > 1_000 {
         return Err(CoopError::InvalidSeat);
     }
-    let mut wins = 0u32;
-    let mut losses = 0u32;
-    let mut unresolved = 0u32;
-    let mut phase_two = 0u32;
-    let mut rounds = 0u64;
-    let mut actions = 0u64;
-    for seed in 1..=u64::from(seeds) {
-        let (phase, round, count, transformed) = play(rules, policy, seed);
-        rounds += u64::from(round);
-        actions += count;
-        if transformed {
-            phase_two += 1;
-        }
-        match phase {
-            CoopPhase::Won => wins += 1,
-            CoopPhase::Lost => losses += 1,
-            CoopPhase::Ready | CoopPhase::Playing => unresolved += 1,
-        }
-    }
-    Ok(SimulationReport {
+    let pets = &rules.config().pets;
+    let initial = rules.allocate(std::array::from_fn(|index| SeatInput {
+        account: format!("simulation-seat-{index}"),
+        pet_id: pets[index % pets.len()].id.clone(),
+        owned_pet_instance_id: format!("simulation-instance-{index}"),
+        level: 1,
+        artifact_power_pm: 0,
+    }))?;
+    let mut report = SimulationReport {
+        boss_id: rules.selected_boss().id.clone(),
+        content_digest: rules
+            .digest()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect(),
         policy,
         seeds,
-        wins,
-        losses,
-        unresolved,
-        phase_two_reached: phase_two,
-        total_actions: actions,
-        average_rounds_milli: rounds.saturating_mul(1_000) / u64::from(seeds),
-        average_actions_milli: actions.saturating_mul(1_000) / u64::from(seeds),
-    })
+        wins: 0,
+        losses: 0,
+        unresolved: 0,
+        phase_two_reached: 0,
+        total_actions: 0,
+        average_rounds_milli: 0,
+        average_actions_milli: 0,
+        average_logical_duration_ms: 0,
+        matches_with_multiplier: 0,
+        contributions: initial
+            .participants
+            .each_ref()
+            .map(|participant| SeatContribution {
+                pet_id: participant.pet_id.clone(),
+                damage: 0,
+                healing: 0,
+                shielding: 0,
+            }),
+    };
+    let mut rounds = 0u64;
+    for seed in 1..=u64::from(seeds) {
+        let sample = play(rules, &initial, policy, seed)?;
+        rounds += u64::from(sample.state.round_index);
+        report.total_actions += sample.actions;
+        report.phase_two_reached += u32::from(sample.state.boss.transformed);
+        report.matches_with_multiplier += u32::from(sample.multiplier_seen);
+        match sample.state.phase {
+            CoopPhase::Won => report.wins += 1,
+            CoopPhase::Lost => report.losses += 1,
+            CoopPhase::Ready | CoopPhase::Playing => report.unresolved += 1,
+        }
+        for (total, participant) in report
+            .contributions
+            .iter_mut()
+            .zip(sample.state.participants)
+        {
+            total.damage += participant.contribution_damage;
+            total.healing += participant.contribution_healing;
+            total.shielding += participant.contribution_shielding;
+        }
+    }
+    report.average_rounds_milli = rounds * 1_000 / u64::from(seeds);
+    report.average_actions_milli = report.total_actions * 1_000 / u64::from(seeds);
+    report.average_logical_duration_ms =
+        report.total_actions * LOGICAL_ACTION_MS / u64::from(seeds);
+    Ok(report)
 }
