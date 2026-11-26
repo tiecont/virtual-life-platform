@@ -32,11 +32,11 @@ export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBun
  function save(next:Row[]){change(['skills',String(index),'upgradeLevels'],next.length?next:undefined);}
  function clearInput(){setMaterials('');setPower('');}
  return <details><summary>Skill training costs and levels</summary>
-  <label>Training Pet<select value={String(pet.id)} onChange={e=>{setPet(e.target.value);setSkill('');clearInput();}}>{pets.map(p=><option key={String(p.id)}>{String(p.id)}</option>)}</select></label>
-  <label>Training skill<select value={id} onChange={e=>{setSkill(e.target.value);clearInput();}}>{slots.map(value=><option key={value}>{value}</option>)}</select></label>
+  <label>Training Pet<select aria-label="Training Pet" value={String(pet.id)} onChange={e=>{setPet(e.target.value);setSkill('');clearInput();}}>{pets.map(p=><option key={String(p.id)}>{String(p.id)}</option>)}</select></label>
+  <label>Training skill<select aria-label="Training skill" value={id} onChange={e=>{setSkill(e.target.value);clearInput();}}>{slots.map(value=><option key={value}>{value}</option>)}</select></label>
   {effect&&<fieldset disabled={!editable}><legend>{kind} · {target}</legend><div className="fields">
    {kind!=='cleanse'&&effectField('value','Base effect value',1,4294967295)}
-   {(timedPartyStatus||kind==='damage-over-time'||kind==='curse')&&effectField('durationTurns','Effect duration (turns)',1,32)}
+   {(timedPartyStatus||kind==='shield'||kind==='damage-over-time'||kind==='curse')&&effectField('durationTurns','Effect duration (turns)',1,32)}
    {kind==='chain-damage'&&effectField('hits','Hits per cast',2,8)}
    {timedPartyStatus&&effectField('stackingPm','Reapplication scaling (‰)',1,10000)}
   </div></fieldset>}
