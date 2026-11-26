@@ -128,6 +128,7 @@ fn play(rules: &CoopRules, policy: Policy, seed: u64) -> (CoopPhase, u16, u64, b
         seats.push(SeatInput {
             account: format!("simulation-seat-{index}"),
             pet_id: pet.id.clone(),
+            owned_pet_instance_id: format!("simulation-instance-{index}"),
             level: 1,
             artifact_power_pm: 1_000,
         });

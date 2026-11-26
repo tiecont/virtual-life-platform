@@ -19,11 +19,12 @@ impl Rules {
     /// Missing, malformed, incompatible or mismatched input fails closed.
     pub fn load(bundle: &[u8], seats: [SeatInput; SEATS]) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
-        let mut pets = std::collections::BTreeSet::new();
+        let mut owned_pets = std::collections::BTreeSet::new();
         for seat in &seats {
             if seat.account.is_empty()
                 || !accounts.insert(seat.account.clone())
-                || !pets.insert(seat.pet_id.clone())
+                || seat.owned_pet_instance_id.is_empty()
+                || !owned_pets.insert(seat.owned_pet_instance_id.clone())
                 || !(1..=60).contains(&seat.level)
                 || seat.artifact_power_pm > MAX_SEAT_POWER_PM
             {
@@ -60,6 +61,7 @@ impl Rules {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
                 || participant.level != seat.level
+                || seat.owned_pet_instance_id.is_empty()
             {
                 return Err(Error::InvalidState);
             }

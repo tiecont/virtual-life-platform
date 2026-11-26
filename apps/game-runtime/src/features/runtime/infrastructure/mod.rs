@@ -55,6 +55,9 @@ struct Arena8Artifact {
 struct CoopSeat {
     account: Uuid,
     pet_id: String,
+    /// Distinct owned pet instance identifier. Allows multiple accounts to bring
+    /// the same canonical pet species if each owns a separate authorized instance.
+    owned_pet_instance_id: String,
     level: u8,
     artifact_power_pm: u16,
 }
@@ -204,7 +207,7 @@ impl NativeRuntime {
                 if allocation
                     .seats
                     .iter()
-                    .any(|seat| seat.account.is_nil() || seat.pet_id.is_empty())
+                    .any(|seat| seat.account.is_nil() || seat.pet_id.is_empty() || seat.owned_pet_instance_id.is_empty())
                 {
                     return Err("Invalid cooperative allocation");
                 }
@@ -212,6 +215,7 @@ impl NativeRuntime {
                     [first, second, third, fourth].map(|seat| SeatInput {
                         account: seat.account.to_string(),
                         pet_id: seat.pet_id.clone(),
+                        owned_pet_instance_id: seat.owned_pet_instance_id.clone(),
                         level: seat.level,
                         artifact_power_pm: seat.artifact_power_pm,
                     });

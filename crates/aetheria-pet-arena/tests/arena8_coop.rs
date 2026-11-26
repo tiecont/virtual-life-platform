@@ -46,24 +46,28 @@ fn seats() -> [SeatInput; SEATS] {
         SeatInput {
             account: "account-1".into(),
             pet_id: "icarus".into(),
+            owned_pet_instance_id: "instance-1".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "account-2".into(),
             pet_id: "marivell".into(),
+            owned_pet_instance_id: "instance-2".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "account-3".into(),
             pet_id: "quorion".into(),
+            owned_pet_instance_id: "instance-3".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "account-4".into(),
             pet_id: "gravorn".into(),
+            owned_pet_instance_id: "instance-4".into(),
             level: 10,
             artifact_power_pm: 0,
         },

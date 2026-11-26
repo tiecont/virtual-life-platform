@@ -243,6 +243,9 @@ pub struct CoopRules {
 pub struct SeatInput {
     pub account: String,
     pub pet_id: String,
+    /// Distinct owned pet instance identifier. Allows multiple accounts to bring
+    /// the same canonical pet species if each owns a separate authorized instance.
+    pub owned_pet_instance_id: String,
     pub level: u8,
     /// Artifact power contribution in permille (1000 = none), from authorized
     /// owned Artifacts. Server-authored, never client-supplied.
@@ -315,7 +318,9 @@ impl CoopRules {
             if seat.account.is_empty() || !seen_accounts.insert(seat.account.clone()) {
                 return Err(CoopError::InvalidSeat);
             }
-            if !seen_pets.insert(seat.pet_id.clone()) {
+            // Allow duplicate pet species if each account owns a distinct authorized instance.
+            // Enforce strict separation of canonical_pet_id, owned_pet_instance_id, account_id, and seat_id.
+            if seat.owned_pet_instance_id.is_empty() || !seen_pets.insert(seat.owned_pet_instance_id.clone()) {
                 return Err(CoopError::InvalidSeat);
             }
             participants[index] = self.participant(seat)?;

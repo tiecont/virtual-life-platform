@@ -24,25 +24,29 @@ fn seats() -> [SeatInput; SEATS] {
     [
         SeatInput {
             account: "acct-a".into(),
-            pet_id: "icarus".into(),
+            pet_id: "pet-v3-fire-icarus".into(),
+            owned_pet_instance_id: "instance-a".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "acct-b".into(),
-            pet_id: "coralline".into(),
+            pet_id: "pet-v31-water-marivell".into(),
+            owned_pet_instance_id: "instance-b".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "acct-c".into(),
-            pet_id: "volt".into(),
+            pet_id: "pet-v31-electric-quorion".into(),
+            owned_pet_instance_id: "instance-c".into(),
             level: 10,
             artifact_power_pm: 0,
         },
         SeatInput {
             account: "acct-d".into(),
-            pet_id: "terran".into(),
+            pet_id: "pet-v31-ground-gravorn".into(),
+            owned_pet_instance_id: "instance-d".into(),
             level: 10,
             artifact_power_pm: 0,
         },
@@ -387,32 +391,36 @@ fn boss_phase_transition_happens_exactly_once() {
 fn skill_costs_cooldowns_and_level_independence() {
     let (rules, mut state, mut stream) = started();
     state.active_seat = 0;
-    let pet = rules.config().pet("icarus").unwrap();
+    let pet = rules.config().pet("pet-v3-fire-icarus").unwrap();
     let skill = rules.config().skill(&pet.skill).unwrap();
     // Level 1 never gates Signature, Ultimate or the authored Fire Zone.
     let low = rules
         .allocate([
             SeatInput {
                 account: "a".into(),
-                pet_id: "icarus".into(),
+                pet_id: "pet-v3-fire-icarus".into(),
+                owned_pet_instance_id: "instance-a".into(),
                 level: 1,
                 artifact_power_pm: 0,
             },
             SeatInput {
                 account: "b".into(),
-                pet_id: "coralline".into(),
+                pet_id: "pet-v31-water-marivell".into(),
+                owned_pet_instance_id: "instance-b".into(),
                 level: 1,
                 artifact_power_pm: 0,
             },
             SeatInput {
                 account: "c".into(),
-                pet_id: "volt".into(),
+                pet_id: "pet-v31-electric-quorion".into(),
+                owned_pet_instance_id: "instance-c".into(),
                 level: 1,
                 artifact_power_pm: 0,
             },
             SeatInput {
                 account: "d".into(),
-                pet_id: "terran".into(),
+                pet_id: "pet-v31-ground-gravorn".into(),
+                owned_pet_instance_id: "instance-d".into(),
                 level: 1,
                 artifact_power_pm: 0,
             },
@@ -441,9 +449,9 @@ fn skill_costs_cooldowns_and_level_independence() {
 #[test]
 fn ground_identity_is_configuration_not_a_copy_of_fire() {
     let rules = rules();
-    let ground = rules.config().pet("terran").unwrap();
-    let fire = rules.config().pet("icarus").unwrap();
-    let electric = rules.config().pet("volt").unwrap();
+    let ground = rules.config().pet("pet-v31-ground-gravorn").unwrap();
+    let fire = rules.config().pet("pet-v3-fire-icarus").unwrap();
+    let electric = rules.config().pet("pet-v31-electric-quorion").unwrap();
     // Higher HP and DEF, lower critical rate, higher critical damage.
     assert!(ground.max_hp > fire.max_hp);
     assert!(ground.defense > fire.defense);
