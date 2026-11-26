@@ -69,17 +69,18 @@ namespace Aetheria.Networking
             public int Shield { get; }
             public int ShieldTurns { get; }
             public IReadOnlyList<int> Cooldowns { get; }
+            public IReadOnlyList<int> SkillLevels { get; }
             public IReadOnlyList<Status> Statuses { get; }
             public Contribution Contribution { get; }
             public bool Alive { get; }
             internal Participant(int seat, string petId, int level, int health, int maxHealth, int attack, int defense,
                 int critRateBp, int critDamageBp, int mana, int rage, int shield, int shieldTurns,
-                int[] cooldowns, Status[] statuses, Contribution contribution, bool alive)
+                int[] cooldowns, int[] skillLevels, Status[] statuses, Contribution contribution, bool alive)
             {
                 Seat = seat; PetId = petId; Level = level; Health = health; MaxHealth = maxHealth;
                 Attack = attack; Defense = defense; CritRateBp = critRateBp; CritDamageBp = critDamageBp;
                 Mana = mana; Rage = rage; Shield = shield; ShieldTurns = shieldTurns;
-                Cooldowns = Array.AsReadOnly(cooldowns); Statuses = Array.AsReadOnly(statuses);
+                Cooldowns = Array.AsReadOnly(cooldowns); SkillLevels = Array.AsReadOnly(skillLevels); Statuses = Array.AsReadOnly(statuses);
                 Contribution = contribution; Alive = alive;
             }
         }
@@ -216,7 +217,7 @@ namespace Aetheria.Networking
                 var seat = items[index];
                 ProjectionJson.ObjectFields(seat, "seat", "petId", "level", "hp", "maxHp", "attack", "defense",
                     "critRateBp", "critDamageBp", "mana", "rage", "shield", "shieldTurns", "cooldowns",
-                    "statuses", "contribution", "alive");
+                    "statuses", "contribution", "alive", "skillLevels");
                 if (Bounded(seat.Element("seat"), 0, Seats - 1) != index) throw new FormatException("Invalid coop seat");
                 var maxHealth = Bounded(seat.Element("maxHp"), 1, MaxHealth);
                 var health = Bounded(seat.Element("hp"), 0, MaxHealth);
@@ -224,6 +225,10 @@ namespace Aetheria.Networking
                 var cooldowns = ProjectionJson.Array(seat.Element("cooldowns"), 5)
                     .Select(item => Bounded(item, 0, MaxCooldown)).ToArray();
                 if (cooldowns.Length != 5) throw new FormatException("Invalid coop cooldowns");
+                var rankField = seat.Element("skillLevels");
+                var skillLevels = rankField == null ? new[] { 1, 1, 1, 1, 1 }
+                    : ProjectionJson.Array(rankField, 5).Select(item => Bounded(item, 1, 10)).ToArray();
+                if (skillLevels.Length != 5) throw new FormatException("Invalid coop skill levels");
                 var statuses = ProjectionJson.Array(seat.Element("statuses"), 8).Select(ReadStatus).ToArray();
                 var contribution = seat.Element("contribution");
                 ProjectionJson.ObjectFields(contribution, "damage", "healing", "shielding");
@@ -236,7 +241,7 @@ namespace Aetheria.Networking
                     Bounded(seat.Element("critRateBp"), 0, 10_000), Bounded(seat.Element("critDamageBp"), 0, 100_000),
                     Bounded(seat.Element("mana"), 0, MaxMana), Bounded(seat.Element("rage"), 0, MaxRage),
                     Bounded(seat.Element("shield"), 0, MaxHealth), Bounded(seat.Element("shieldTurns"), 0, 100),
-                    cooldowns, statuses, value, ProjectionJson.Boolean(seat.Element("alive")));
+                    cooldowns, skillLevels, statuses, value, ProjectionJson.Boolean(seat.Element("alive")));
             }
             return seats;
         }

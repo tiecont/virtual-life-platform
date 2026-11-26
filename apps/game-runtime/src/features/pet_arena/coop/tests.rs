@@ -36,7 +36,7 @@ fn rules() -> Rules {
 #[test]
 fn bundle_binds_the_published_configuration_and_a_ready_board() {
     let rules = rules();
-    let state = rules.initial().expect("allocation");
+    let state = rules.initial();
     assert_eq!(state.phase, CoopPhase::Ready);
     assert_eq!(state.config_digest, rules.engine().digest());
     assert_eq!(rules.content_hash(), content_hash(rules.engine().digest()));
@@ -61,7 +61,7 @@ fn bundle_binds_the_published_configuration_and_a_ready_board() {
 #[test]
 fn durable_state_roundtrips_and_rejects_a_different_allocation() {
     let rules = rules();
-    let state = rules.initial().expect("allocation");
+    let state = rules.initial();
     let bytes = rules.encode(&state).expect("encode");
     assert_eq!(rules.decode(&bytes).expect("decode"), state);
     let mut other = seats();
@@ -77,7 +77,7 @@ fn durable_state_roundtrips_and_rejects_a_different_allocation() {
 #[test]
 fn membership_and_projection_are_scoped_to_the_authenticated_seat() {
     let rules = rules();
-    let state = rules.initial().expect("allocation");
+    let state = rules.initial();
     assert!(rules.member(&state, "account-pet-v3-fire-icarus"));
     assert!(!rules.member(&state, "account-outsider"));
     assert_eq!(
@@ -165,7 +165,7 @@ fn intents_are_strict_and_never_carry_authority() {
 #[test]
 fn only_the_owner_of_the_active_seat_may_command() {
     let rules = rules();
-    let state = rules.initial().expect("allocation");
+    let state = rules.initial();
     assert!(rules.authorize(&state, "account-pet-v3-fire-icarus", &CoopAction::Start));
     assert!(!rules.authorize(&state, "account-pet-v31-water-marivell", &CoopAction::Start));
     assert!(!rules.authorize(&state, "account-outsider", &CoopAction::Guard));
@@ -220,7 +220,7 @@ fn invalid_bundles_and_allocations_fail_closed() {
 #[test]
 fn only_a_terminal_state_completes_the_match() {
     let rules = rules();
-    let state = rules.initial().expect("allocation");
+    let state = rules.initial();
     assert!(matches!(rules.completion(&state), Err(Error::Invalid)));
     let mut won = state.clone();
     won.phase = CoopPhase::Won;
@@ -252,7 +252,7 @@ fn historical_allocation_retains_the_legacy_snapshot_shape() {
         seat.pet_id = species.into();
     }
     let rules = Rules::load(&bundle, seats, "cinder-terraces-warden".into()).unwrap();
-    let state = rules.initial().unwrap();
+    let state = rules.initial();
     let bytes = rules.encode(&state).unwrap();
     let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert!(json["state"].get("boss_id").is_none());
@@ -262,4 +262,43 @@ fn historical_allocation_retains_the_legacy_snapshot_shape() {
             .is_none()
     );
     assert_eq!(rules.decode(&bytes).unwrap(), state);
+}
+
+#[test]
+fn durable_skill_level_must_match_the_original_allocation() {
+    use aetheria_pet_arena::arena8::coop::SkillLevelBinding;
+
+    let base = rules();
+    let upgraded = Rules::load_with_skill_levels(
+        &bundle(),
+        seats(),
+        "cinder-terraces-warden".into(),
+        &[
+            vec![SkillLevelBinding {
+                skill_id: "pet-v3-fire-icarus-ember-lance".into(),
+                level: 2,
+            }],
+            vec![],
+            vec![],
+            vec![],
+        ],
+    )
+    .unwrap();
+    let original_state = base.initial();
+    let upgraded_state = upgraded.initial();
+    let old_bytes = base.encode(&original_state).unwrap();
+    let new_bytes = upgraded.encode(&upgraded_state).unwrap();
+    assert_eq!(base.decode(&old_bytes).unwrap(), original_state);
+    assert_eq!(upgraded.decode(&new_bytes).unwrap(), upgraded_state);
+    assert!(matches!(base.decode(&new_bytes), Err(Error::Integrity)));
+    assert!(matches!(upgraded.decode(&old_bytes), Err(Error::Integrity)));
+    let projected = upgraded
+        .project(&upgraded_state, "account-pet-v3-fire-icarus")
+        .unwrap();
+    let view: serde_json::Value = serde_json::from_slice(&projected).unwrap();
+    assert_eq!(
+        view["participants"][0]["skillLevels"],
+        serde_json::json!([1, 2, 1, 1, 1])
+    );
+    assert!(view["participants"][1].get("skillLevels").is_none());
 }

@@ -1,7 +1,7 @@
 //! Configuration-bound cooperative domain adapter.
 use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
 use aetheria_pet_arena::arena8::coop::{
-    ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    ConfigError, CoopAction, CoopRules, CoopState, SEATS, SeatInput, SkillLevelBinding,
 };
 use std::sync::Arc;
 
@@ -12,15 +12,26 @@ pub const MAX_SEAT_POWER_PM: u16 = 5_000;
 pub struct Rules {
     engine: Arc<CoopRules>,
     seats: [SeatInput; SEATS],
+    initial: CoopState,
 }
 
 impl Rules {
     /// Bind the published bundle and the server-authored seat allocation.
     /// Missing, malformed, incompatible or mismatched input fails closed.
+    #[cfg(test)]
     pub fn load(
         bundle: &[u8],
         seats: [SeatInput; SEATS],
         boss_id: String,
+    ) -> Result<Self, ConfigError> {
+        Self::load_with_skill_levels(bundle, seats, boss_id, &std::array::from_fn(|_| Vec::new()))
+    }
+
+    pub fn load_with_skill_levels(
+        bundle: &[u8],
+        seats: [SeatInput; SEATS],
+        boss_id: String,
+        skill_levels: &[Vec<SkillLevelBinding>; SEATS],
     ) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
         let mut owned_pets = std::collections::BTreeSet::new();
@@ -36,14 +47,21 @@ impl Rules {
             }
         }
         let engine = CoopRules::load(bundle, boss_id)?;
+        let mut initial = engine
+            .allocate(seats.clone())
+            .map_err(|_| ConfigError::Party)?;
+        engine
+            .bind_skill_levels(&mut initial, skill_levels)
+            .map_err(|_| ConfigError::Skill)?;
         Ok(Self {
             engine: Arc::new(engine),
             seats,
+            initial,
         })
     }
 
-    pub fn initial(&self) -> Result<CoopState, CoopError> {
-        self.engine.allocate(self.seats.clone())
+    pub fn initial(&self) -> CoopState {
+        self.initial.clone()
     }
 
     pub fn engine(&self) -> &CoopRules {
@@ -61,10 +79,14 @@ impl Rules {
         if state.config_digest != self.engine.digest() {
             return Err(Error::InvalidState);
         }
-        for (seat, participant) in self.seats.iter().zip(state.participants.iter()) {
+        for (index, (seat, participant)) in
+            self.seats.iter().zip(state.participants.iter()).enumerate()
+        {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
                 || participant.level != seat.level
+                || participant.upgraded_skill_levels()
+                    != self.initial.participants[index].upgraded_skill_levels()
                 || participant
                     .owned_pet_instance_id
                     .as_ref()

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 8,
+  "contentRevision": 9,
   "board": {
     "spawnWeights": [
       {
@@ -449,6 +449,10 @@
       "rageCost": 0,
       "cooldownTurns": 1,
       "powerPm": 1000,
+      "upgradeLevels": [
+        { "materials": 2, "powerPm": 1100 },
+        { "materials": 4, "powerPm": 1200 }
+      ],
       "critEligible": true,
       "effect": {
         "kind": "damage",
@@ -610,6 +614,10 @@
       "rageCost": 40,
       "cooldownTurns": 2,
       "powerPm": 1000,
+      "upgradeLevels": [
+        { "materials": 2, "powerPm": 1100 },
+        { "materials": 4, "powerPm": 1200 }
+      ],
       "critEligible": false,
       "effect": {
         "kind": "heal",
@@ -1307,6 +1315,10 @@
       "rageCost": 0,
       "cooldownTurns": 1,
       "powerPm": 1000,
+      "upgradeLevels": [
+        { "materials": 2, "powerPm": 1100 },
+        { "materials": 4, "powerPm": 1200 }
+      ],
       "critEligible": true,
       "effect": {
         "kind": "damage",

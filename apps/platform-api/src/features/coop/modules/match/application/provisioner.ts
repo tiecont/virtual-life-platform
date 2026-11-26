@@ -1,4 +1,4 @@
-import type {CoopAdmissionView} from '@aetheria/contracts';
+import {CoopSkillLevelBindingSchema,type CoopAdmissionView,type CoopSkillLevelBinding} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
@@ -9,7 +9,7 @@ const PET=/^[a-z][a-z0-9-]{2,63}$/;
 const WORLD=/^native:[a-z0-9][a-z0-9._-]{0,63}$/;
 const SEATS=4,CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
 
-export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string}>;
+export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string;skillLevels?:readonly CoopSkillLevelBinding[]}>;
 export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED';
 export type CoopAllocationRecord=Readonly<{
  matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
@@ -66,7 +66,10 @@ function seatsValid(seats:readonly CoopSeat[]){
  return accounts.size===SEATS&&instances.size===SEATS&&seats.every(seat=>
   UUID.test(seat.account)&&PET.test(seat.petId)&&Number.isInteger(seat.petLevel)&&seat.petLevel>=1&&seat.petLevel<=60&&
   Number.isInteger(seat.artifactPowerPm)&&seat.artifactPowerPm>=1_000&&seat.artifactPowerPm<=5_000&&
-  UUID.test(seat.ownedPetInstanceId));
+  UUID.test(seat.ownedPetInstanceId)&&
+  (seat.skillLevels===undefined||(seat.skillLevels.length<=5&&
+   new Set(seat.skillLevels.map(entry=>entry.skillId)).size===seat.skillLevels.length&&
+   seat.skillLevels.every(entry=>CoopSkillLevelBindingSchema.safeParse(entry).success))));
 }
 
 // One authoritative cooperative match per room. The published bundle and the

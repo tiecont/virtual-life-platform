@@ -7,6 +7,7 @@ import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore,type CoopRoomRow,type CoopSeatRow} from '../infrastructure/store';
 import type {CoopMatchProvisioner,CoopSeat} from '../../match/application/provisioner';
+import type {CoopSkillService} from '../../skills/application/service';
 
 type Queryable=Pick<PoolClient,'query'>;
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
@@ -21,7 +22,8 @@ const ROOM_LIMIT=4;
 export class CoopRoomService{
  constructor(
   private readonly db:Pick<Pool,'query'|'connect'>,
-  private readonly store=new CoopRoomStore(),
+  private readonly store:CoopRoomStore,
+  private readonly skills:CoopSkillService,
   private readonly provisioner?:CoopMatchProvisioner,
  ){}
 
@@ -269,10 +271,21 @@ export class CoopRoomService{
    if(seats.length!==ROOM_LIMIT||!seats.every(seat=>seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null))throw conflict('Four prepared participants are required');
    const bundle=await this.store.pinnedBundle(this.db,room.configVersion,room.configDigest);
    if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
+   const levels=await this.skills.allocationLevels(bundle,seats.map(seat=>({
+    instanceId:seat.ownedPetInstanceId!,petId:seat.petId!,
+   })));
+   const boundSeats:readonly CoopSeat[]=seats.map((seat,index)=>{
+    const skillLevels=levels[index]!;
+    return Object.freeze({
+     account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,
+     artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId!,
+     ...(skillLevels.length?{skillLevels}:{}),
+    });
+   });
    try{
     await this.provisioner.start({
      roomId,bossId:room.bossId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
-     seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId!})) as readonly CoopSeat[],
+     seats:boundSeats,
     });
    }catch(error){
     if(error instanceof DomainError)throw error;

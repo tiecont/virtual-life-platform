@@ -11,8 +11,8 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 const execute=promisify(execFile),root=process.cwd(),revision='5386a8cd3cf3e4360fd55f8f06bc84d159ff540b';
 const directory=resolve('artifacts/desktop-first/vl016/compat-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=v=>createHash('sha256').update(v).digest('hex');
-const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json', 'config/schema-compatibility-0061-native-expand.json','config/schema-compatibility-0062-native-expand.json'],policyRef='config/schema-compatibility-0063-native-expand.json';
-const facts={taskId:'VL-013',scope:'Actual archived47 Nest API and migrator on additive56 disposable PG; no production, Rust orchestration, deployment or GPU qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
+const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json', 'config/schema-compatibility-0061-native-expand.json','config/schema-compatibility-0062-native-expand.json', 'config/schema-compatibility-0063-native-expand.json'],policyRef='config/schema-compatibility-0064-native-expand.json';
+const facts={taskId:'VL-013',scope:'Actual archived47 Nest API and migrator on additive64 disposable PG; no production, Rust orchestration, deployment or GPU qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
  const name='build-'+facts.commands.length+'.log';
@@ -76,7 +76,7 @@ try{
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();
  stage='old-runtime-rollback';for(const previousPolicyRef of previousPolicyRefs){await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();}
  await start(old,true);await ready(200);await sameUser(cookie,account);await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy);assert.deepEqual(await readNative(),frozen);
- facts.scenarios.push('Strict archived47 and frozen50/53/54/55/61/62 expansion policies refuse undeclared63; explicit exact-prefix63 policy allows old runtime rollback without down migration or touching native ciphertext');
+ facts.scenarios.push('Strict archived47 and frozen50/53/54/55/61/62/63 expansion policies refuse undeclared64; explicit exact-prefix64 policy allows old runtime rollback without down migration or touching native ciphertext');
  stage='checksum-negatives';
  for(const name of [Object.keys(before)[0],'0048_native_game_storage.sql',Object.keys(after).at(-1)]){
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1',[name,'0'.repeat(64)]);await ready(503);

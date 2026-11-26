@@ -23,6 +23,8 @@ pub const CONFIG_SCHEMA_VERSION: u32 = 2;
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
+/// Structural maximum independent of the cap authored for an individual skill.
+pub const MAX_SKILL_LEVEL: u8 = 10;
 /// Canonical domain separation for the bundle digest.
 pub const DIGEST_DOMAIN: &str = "aetheria.arena8-coop.config.v1";
 
@@ -324,6 +326,14 @@ pub struct SkillConfig {
     pub power_pm: u32,
     pub crit_eligible: bool,
     pub effect: EffectConfig,
+    pub upgrade_levels: Option<Vec<SkillUpgrade>>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SkillUpgrade {
+    pub materials: u32,
+    pub power_pm: u32,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -624,6 +634,9 @@ impl CoopConfig {
             if self.schema_version == HISTORICAL_SCHEMA_VERSION
                 && skill.effect.contribution.is_some()
             {
+                return Err(ConfigError::Skill);
+            }
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION && skill.upgrade_levels.is_some() {
                 return Err(ConfigError::Skill);
             }
             skill.validate()?;
@@ -1251,7 +1264,40 @@ impl SkillConfig {
         {
             return Err(ConfigError::Skill);
         }
+        if let Some(upgrades) = &self.upgrade_levels {
+            if upgrades.is_empty() || upgrades.len() >= usize::from(MAX_SKILL_LEVEL) {
+                return Err(ConfigError::Skill);
+            }
+            let mut previous = self.power_pm;
+            for upgrade in upgrades {
+                if !(1..=1_000_000).contains(&upgrade.materials)
+                    || upgrade.power_pm <= previous
+                    || upgrade.power_pm > 10_000
+                {
+                    return Err(ConfigError::Skill);
+                }
+                previous = upgrade.power_pm;
+            }
+        }
         self.effect.validate()
+    }
+
+    pub fn max_level(&self) -> u8 {
+        self.upgrade_levels
+            .as_ref()
+            .map_or(1, |levels| 1 + levels.len() as u8)
+    }
+
+    pub fn power_at(&self, level: u8) -> Option<u32> {
+        match level {
+            0 => None,
+            1 => Some(self.power_pm),
+            level => self
+                .upgrade_levels
+                .as_ref()?
+                .get(usize::from(level) - 2)
+                .map(|upgrade| upgrade.power_pm),
+        }
     }
 
     fn to_value(&self) -> Value {
@@ -1273,6 +1319,14 @@ impl SkillConfig {
         ];
         if self.effect.contribution.is_some() {
             fields.push(Value::Text("caster".into()));
+        }
+        if let Some(upgrades) = &self.upgrade_levels {
+            fields.push(list(upgrades.iter().map(|upgrade| {
+                list([
+                    Value::Uint(u64::from(upgrade.materials)),
+                    Value::Uint(u64::from(upgrade.power_pm)),
+                ])
+            })));
         }
         Value::List(fields)
     }
@@ -1313,6 +1367,16 @@ impl EffectConfig {
 impl PetConfig {
     pub fn element(&self) -> Result<Element, ConfigError> {
         parse_element(&self.element)
+    }
+
+    pub fn skill_ids(&self) -> [Option<&str>; 5] {
+        [
+            Some(&self.guard),
+            Some(&self.skill),
+            Some(&self.signature),
+            Some(&self.ultimate),
+            self.fire_zone.as_deref(),
+        ]
     }
 
     fn to_value(&self) -> Value {

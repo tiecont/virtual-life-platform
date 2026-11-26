@@ -1,6 +1,7 @@
 import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {createHash,randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -10,7 +11,7 @@ import {CoopMatchProvisioner,type CoopRuntimeRequest} from '../../apps/platform-
 import {CoopMatchStore} from '../../apps/platform-api/src/features/coop/modules/match/infrastructure/match-store';
 
 const origin='http://127.0.0.1:3300',ruleset='arena8-coop-pve',HTTPS='https://127.0.0.1:4443';
-const bundle={schemaVersion:1,engineCapability:'arena8-coop-v1',configId:'arena8-coop-v1',boss:{id:'cinder-terraces-warden',maxHp:12_000,requiredRoomPoints:5_000}};
+const bundle=JSON.parse(readFileSync(new URL('../../config/gameplay/arena8-coop-v2.seed.json',import.meta.url),'utf8'));
 const digest=createHash('sha256').update(JSON.stringify(bundle)).digest('hex');
 const contentHash=createHash('sha256').update('content:'+JSON.stringify(bundle)).digest('hex');
 const engine:GameplayBundleValidator={async validate(){return {digest,engineCapability:'arena8-coop-v1',contentHash};}};
@@ -72,10 +73,62 @@ async function readyParticipant(name:string,petId:string,points=0){
 const post=(auth:Auth,url:string,body:Record<string,unknown>)=>server.http.inject({method:'POST',url,remoteAddress:'127.211.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload:body});
 
 describe('four-account cooperative native allocation',()=>{
+ it('upgrades only the selected owned instance and charges the published costs once',async()=>{
+  const owner=await readyParticipant('Skill owner','fire-coalwhisk');
+  const outsider=await readyParticipant('Other skill owner','fire-coalwhisk');
+  const instance=(await pool.query('SELECT owned_pet_instance_id FROM pet_wave_one_owned WHERE account_id=$1',[owner.accountId])).rows[0].owned_pet_instance_id;
+  const base='/v1/coop/pets/'+instance;
+  const get=()=>server.http.inject({url:base+'/skills',headers:{cookie:owner.cookie}});
+  const initial=await get();
+  expect(initial.statusCode).toBe(200);
+  expect(initial.headers['cache-control']).toBe('private, no-store');
+  expect(initial.json()).toMatchObject({ownedPetInstanceId:instance,configVersion:1,materials:0,skills:expect.arrayContaining([
+   {skillId:'fire-coalwhisk-ember-lance',level:1,effectiveLevel:1,maxLevel:3,nextMaterialCost:2},
+   {skillId:'fire-coalwhisk-guard',level:1,effectiveLevel:1,maxLevel:1,nextMaterialCost:null},
+  ])});
+  const input={requestId:randomUUID(),skillId:'fire-coalwhisk-ember-lance',expectedLevel:1,expectedConfigVersion:1};
+  const upgrade=base+'/skill-upgrades';
+  expect((await server.http.inject({url:base+'/skills',headers:{cookie:outsider.cookie}})).statusCode).toBe(404);
+  expect((await post(outsider,upgrade,input)).statusCode).toBe(404);
+  expect((await post({...owner,csrf:'a'.repeat(64)},upgrade,input)).statusCode).toBe(403);
+  expect((await post(owner,upgrade,input)).json()).toMatchObject({error:{code:'INSUFFICIENT_FUNDS'}});
+  await pool.query('INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,6)',[owner.accountId]);
+  const responses=await Promise.all([post(owner,upgrade,input),post(owner,upgrade,input)]);
+  expect(responses.map(response=>response.statusCode)).toEqual([200,200]);
+  expect(responses[0]!.json()).toEqual(responses[1]!.json());
+  expect(responses[0]!.json()).toMatchObject({skillId:input.skillId,level:2,maxLevel:3,spentMaterials:2,remainingMaterials:4,configVersion:1});
+  expect((await post(owner,upgrade,{...input,skillId:'fire-coalwhisk-guard'})).statusCode).toBe(409);
+  expect((await post(owner,upgrade,{...input,requestId:randomUUID(),expectedLevel:2,expectedConfigVersion:2})).statusCode).toBe(409);
+  const next={...input,expectedLevel:2};
+  const race=await Promise.all([post(owner,upgrade,{...next,requestId:randomUUID()}),post(owner,upgrade,{...next,requestId:randomUUID()})]);
+  expect(race.map(response=>response.statusCode).sort()).toEqual([200,409]);
+  expect(race.find(response=>response.statusCode===200)!.json()).toMatchObject({level:3,spentMaterials:4,remainingMaterials:0});
+  expect((await post(owner,upgrade,{...input,requestId:randomUUID(),expectedLevel:3})).statusCode).toBe(409);
+  const final=await get();
+  expect(final.json()).toMatchObject({materials:0,skills:expect.arrayContaining([
+   {skillId:input.skillId,level:3,effectiveLevel:3,maxLevel:3,nextMaterialCost:null},
+  ])});
+  const counts=await pool.query('SELECT (SELECT count(*)::int FROM coop_skill_levels WHERE owned_pet_instance_id=$1) AS levels,(SELECT count(*)::int FROM coop_skill_upgrade_receipts WHERE account_id=$2) AS receipts',[instance,owner.accountId]);
+  expect(counts.rows[0]).toEqual({levels:1,receipts:2});
+  const exported=await server.http.inject({url:'/v1/me/export',headers:{cookie:owner.cookie}});
+  expect(exported.statusCode).toBe(200);
+  expect(exported.json().domains.coopSkillLevels).toMatchObject({
+   levels:[{ownedPetInstanceId:instance,skillId:input.skillId,level:3}],
+   receipts:[{ownedPetInstanceId:instance,level:2,spentMaterials:2},{ownedPetInstanceId:instance,level:3,spentMaterials:4}],
+  });
+  const deleted=await server.http.inject({method:'DELETE',url:'/v1/me',headers:{
+   origin,cookie:owner.cookie,'x-csrf-token':owner.csrf,'idempotency-key':randomUUID(),
+  }});
+  expect(deleted.statusCode).toBe(200);
+  const erased=await pool.query('SELECT (SELECT count(*)::int FROM coop_skill_levels WHERE owned_pet_instance_id=$1) AS levels,(SELECT count(*)::int FROM coop_skill_upgrade_receipts WHERE account_id=$2) AS receipts',[instance,owner.accountId]);
+  expect(erased.rows[0]).toEqual({levels:0,receipts:0});
+ });
  it('provisions one match from the room roster and issues a scoped ticket per seat',async()=>{
-  const pets=['icarus','coralline','volt','terran'];
+  const pets=['fire-coalwhisk','water-dewskip','electric-zipspool','ground-clodkin'];
   const host=await readyParticipant('Native host',pets[0]!,5_000);
-  const room=(await post(host,'/v1/coop/rooms',{requestId:randomUUID(),petId:pets[0]})).json();
+  const created=await post(host,'/v1/coop/rooms',{requestId:randomUUID(),bossId:'cinder-terraces-warden',petId:pets[0]});
+  expect(created.statusCode).toBe(200);
+  const room=created.json();
   const members=[host];
   for(const [index,pet] of pets.slice(1).entries()){
    const member=await readyParticipant('Native seat '+(index+2),pet);

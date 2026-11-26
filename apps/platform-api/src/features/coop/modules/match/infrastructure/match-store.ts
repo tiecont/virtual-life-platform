@@ -1,4 +1,5 @@
 import type {Pool} from 'pg';
+import {CoopSkillLevelBindingSchema} from '@aetheria/contracts';
 import type {
  CoopAllocationRecord,CoopAllocationStatus,CoopMatchStorePort,CoopSeat,
 } from '../application/provisioner';
@@ -20,11 +21,15 @@ const ALLOCATIONS=`SELECT a.*,r.boss_id,
 function seats(value:unknown):readonly CoopSeat[]{
  if(!Array.isArray(value)||value.length!==4)throw new Error('Cooperative allocation seats are invalid');
  return Object.freeze(value.map(entry=>{
-  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown};
+  const seat=entry as {account?:unknown;petId?:unknown;petLevel?:unknown;artifactPowerPm?:unknown;ownedPetInstanceId?:unknown;skillLevels?:unknown};
   if(typeof seat.account!=='string'||typeof seat.petId!=='string'||
     typeof seat.petLevel!=='number'||typeof seat.artifactPowerPm!=='number'||typeof seat.ownedPetInstanceId!=='string')
    throw new Error('Cooperative allocation seats are invalid');
-  return Object.freeze({account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId});
+  const skillLevels=CoopSkillLevelBindingSchema.array().max(5).optional().parse(seat.skillLevels);
+  return Object.freeze({
+   account:seat.account,petId:seat.petId,petLevel:seat.petLevel,artifactPowerPm:seat.artifactPowerPm,
+   ownedPetInstanceId:seat.ownedPetInstanceId,...skillLevels===undefined?{}:{skillLevels},
+  });
  }));
 }
 function map(row:Row):CoopAllocationRecord{
