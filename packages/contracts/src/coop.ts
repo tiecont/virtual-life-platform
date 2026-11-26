@@ -11,7 +11,7 @@ export const CoopRoomSeatSchema=z.strictObject({
 });
 export const CoopRoomViewSchema=z.strictObject({
  roomId:z.uuid(),ruleset:CoopRulesetSchema,bossId:z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),
- status:CoopRoomStatusSchema,revision:z.number().int().nonnegative().max(2_147_483_647),
+ mapId:CoopPetIdSchema.nullable().optional(),status:CoopRoomStatusSchema,revision:z.number().int().nonnegative().max(2_147_483_647),
  configVersion:z.number().int().positive().max(9_007_199_254_740_991),
  requiredPoints:points,createdAt:z.iso.datetime(),
  you:z.strictObject({seat:seatNumber.nullable(),isHost:z.boolean()}),
@@ -22,7 +22,7 @@ export const CoopEligibilitySchema=z.strictObject({
  ruleset:CoopRulesetSchema,bossId:z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),points,requiredPoints:points,eligible:z.boolean(),
 });
 export const CoopCreateRoomSchema=z.strictObject({requestId,bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional(),petId:CoopPetIdSchema.optional(),ownedPetInstanceId:z.uuid().optional()});
-export const CoopJoinRoomSchema=z.strictObject({requestId});
+export const CoopJoinRoomSchema=z.strictObject({requestId,mapId:CoopPetIdSchema.optional()});
 export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema,ownedPetInstanceId:z.uuid().optional()});
 export const CoopReadySchema=z.strictObject({requestId,ready:z.boolean()});
 export const CoopRoomCommandSchema=z.strictObject({requestId});

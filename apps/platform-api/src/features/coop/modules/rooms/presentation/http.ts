@@ -57,7 +57,7 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    write(req);
    const {roomId}=CoopRoomParamsSchema.parse(req.params);
    const body=CoopJoinRoomSchema.parse(req.body);
-   return rooms.join(account(req),body.requestId,roomId);
+   return rooms.join(account(req),body.requestId,roomId,body.mapId);
   });
   api.post('/coop/rooms/:roomId/leave',req=>{
    write(req);

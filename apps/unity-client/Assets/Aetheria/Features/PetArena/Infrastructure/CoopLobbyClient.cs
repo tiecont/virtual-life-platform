@@ -27,7 +27,7 @@ namespace Aetheria.PetArena.Infrastructure
 
         [Serializable] public sealed class Room
         {
-            public string roomId, ruleset, bossId, status, createdAt;
+            public string roomId, ruleset, bossId, mapId, status, createdAt;
             public int revision, configVersion, requiredPoints;
             public bool canJoin, canStart;
             public You you;
@@ -53,6 +53,7 @@ namespace Aetheria.PetArena.Infrastructure
         [Serializable] public sealed class Eligibility { public string bossId; public int points, requiredPoints; public bool eligible; }
         [Serializable] private class CreateRequest { public string requestId, petId, ownedPetInstanceId, mapId; }
         [Serializable] private sealed class SelectedBossRequest : CreateRequest { public string bossId; }
+        [Serializable] private sealed class PortalJoin { public string requestId, mapId; }
         [Serializable] private sealed class RequestId { public string requestId; }
         [Serializable] private sealed class LegacyPetRequest { public string requestId, petId; }
         [Serializable] private sealed class PetRequest { public string requestId, petId, ownedPetInstanceId; }
@@ -98,9 +99,10 @@ namespace Aetheria.PetArena.Infrastructure
         }
 
         public async System.Threading.Tasks.Task<Room> JoinAsync(Guid roomId, Guid requestId,
-            System.Threading.CancellationToken cancellation = default)
+            System.Threading.CancellationToken cancellation = default, string mapId = null)
         {
-            var body = JsonUtility.ToJson(new RequestId { requestId = requestId.ToString() });
+            var body = mapId == null ? JsonUtility.ToJson(new RequestId { requestId = requestId.ToString() })
+                : JsonUtility.ToJson(new PortalJoin { requestId = requestId.ToString(), mapId = mapId });
             return ParseRoom(await post(RoomPath(roomId, "join"), body, requestId, cancellation), roomId);
         }
 

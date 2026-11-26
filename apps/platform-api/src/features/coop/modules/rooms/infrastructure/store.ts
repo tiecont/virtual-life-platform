@@ -34,6 +34,14 @@ function seat(row:Record<string,unknown>):CoopSeatRow{
 // Durable cooperative room persistence. The service owns authorization and
 // transitions; this store owns bounded SQL and the pinned configuration read.
 export class CoopRoomStore{
+ async pinnedMap(tx:Queryable,room:CoopRoomRow):Promise<string|null>{
+  const row=(await tx.query<{map_id:string}>(
+   `SELECT encounter->>'mapId' AS map_id FROM gameplay_config_versions v
+    CROSS JOIN LATERAL jsonb_array_elements(v.bundle->'bosses') encounter
+    WHERE v.ruleset=$1 AND v.version=$2 AND v.content_digest=$3 AND encounter->>'id'=$4`,
+   [room.ruleset,room.configVersion,room.configDigest,room.bossId])).rows[0];
+  return row?.map_id??null;
+ }
  async activeConfiguration(tx:Queryable):Promise<Readonly<{version:number;digest:string;bundle:Record<string,unknown>}>>{
   const result=await tx.query<{version:unknown;digest:string;bundle:Record<string,unknown>}>('SELECT v.version,v.content_digest AS digest,v.bundle FROM gameplay_config_active a JOIN gameplay_config_versions v ON v.ruleset=a.ruleset AND v.version=a.version WHERE a.ruleset=$1',['arena8-coop-pve']);
   const row=result.rows[0];

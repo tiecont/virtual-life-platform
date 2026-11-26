@@ -161,6 +161,9 @@ try{
  assert.equal(createdRoom.statusCode,200,JSON.stringify(createdRoom.json()));
  const room=createdRoom.json();
  assert.equal(room.bossId,boss.id);
+ assert.equal(room.mapId,boss.mapId);
+ const otherMap=boss===fire?water.mapId:fire.mapId;
+ assert.equal((await post(members[1],'/v1/coop/rooms/'+room.roomId+'/join',{requestId:randomUUID(),mapId:otherMap})).statusCode,409);
  for(const [index,member] of members.entries())if(index>0){
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/join',{requestId:randomUUID()})).statusCode,200);
   if(member.petId===members[0].petId){

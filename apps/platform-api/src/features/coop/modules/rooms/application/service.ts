@@ -70,7 +70,7 @@ export class CoopRoomService{
   if(!mine&&!allowForeign&&room.status!=='OPEN'&&room.hostAccountId!==accountId)throw missing();
   const isHost=room.hostAccountId===accountId;
   return CoopRoomViewSchema.parse({
-   roomId:room.id,ruleset:room.ruleset,bossId:room.bossId,status:room.status,revision:room.revision,
+   roomId:room.id,ruleset:room.ruleset,bossId:room.bossId,mapId:await this.store.pinnedMap(tx,room),status:room.status,revision:room.revision,
    configVersion:room.configVersion,requiredPoints:room.requiredPoints,createdAt:room.createdAt.toISOString(),
    you:{seat:mine?.seat??null,isHost},
    seats:seats.map(seat=>({seat:seat.seat,petId:seat.petId,petLevel:seat.petLevel,ready:seat.ready,you:seat.accountId===accountId,ownedPetInstanceId:seat.accountId===accountId?seat.ownedPetInstanceId:null})),
@@ -136,13 +136,15 @@ export class CoopRoomService{
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
  }
 
- async join(accountId:string,requestId:string,roomId:string){
-  const fingerprint=this.fingerprint('join',requestId,{roomId});
+ async join(accountId:string,requestId:string,roomId:string,mapId?:string){
+  const fingerprint=this.fingerprint('join',requestId,{roomId,mapId});
   return this.transaction(accountId,requestId,async tx=>{
    const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
    if(prior)return prior;
    const room=await this.store.room(tx,roomId,true);
    if(!room)throw missing();
+   if(mapId!==undefined&&mapId!==await this.store.pinnedMap(tx,room))
+    throw conflict('This room belongs to a different encounter entrance');
    const existing=await this.store.seatFor(tx,roomId,accountId);
    if(existing){
     if(room.status!=='OPEN')throw conflict('Room is not open');

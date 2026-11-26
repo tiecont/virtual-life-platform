@@ -139,7 +139,7 @@ namespace Aetheria.PetArena.Presentation
                 RenderLobby();
                 return;
             }
-            room = await lobby.JoinAsync(roomId, Guid.NewGuid());
+            room = await lobby.JoinAsync(roomId, Guid.NewGuid(), mapId: mapId);
             if (instanceId != null) await SelectAsync();
             notice = "";
             RenderLobby();
@@ -152,6 +152,8 @@ namespace Aetheria.PetArena.Presentation
             var loaded = await lobby.ReadAsync(roomId);
             if (loaded.you == null || !loaded.seats.Any(seat => seat.you))
                 throw new InvalidOperationException("This account has no seat in that room.");
+            if (!string.IsNullOrEmpty(loaded.mapId) && mapId != null && loaded.mapId != mapId)
+                throw new InvalidOperationException("Resume this room at the " + loaded.mapId + " entrance.");
             room = loaded;
             if (room.status == "STARTED") await ResumeMatchAsync();
             else RenderLobby();
