@@ -11070,8 +11070,15 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Owner reviews h1-face-review.jpg against approved references before dependent character production.",
+      "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
       "implementation": {
+        "reviewImportVerification": {
+          "sourceRevision": "fe9ae1f0ee4fdd4fefa56fded7abcaaee2b75864",
+          "command": "UNITY_EDITOR=<6000.3.14f1> node scripts/unity-validate.mjs tests",
+          "exitCode": 0,
+          "result": "Fresh Unity import recovered the existing VRM, wings and bow. All 75 EditMode cases passed; ordinary PlayMode reported 20 passed and 2 disposable-database cases skipped. Reviewed VRM has zero morph bindings. Owner H1 R3 receipt is pending.",
+          "evidence": "artifacts/vl204/clean-source/artifacts/unity/2026-11-26T23-40-50-379Z-aced7f91/result.json"
+        },
         "integrationCheckpoint": {
           "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
           "pullRequest": 86,
@@ -11203,6 +11210,13 @@
       ],
       "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
       "implementation": {
+        "browserPublicationAcceptance": {
+          "sourceRevision": "b0243209ecf22d62d67d94fe5d276c444adf6bf1",
+          "command": "node scripts/with-test-db.mjs node --import tsx artifacts/admin-ab-participation/accept.mjs",
+          "exitCode": 0,
+          "result": "28 real Chromium/Nest/Rust/PostgreSQL scenarios passed. Published versions 2 and 3, verified changed Fire HP, Coalwhisk ATK and skill cost, multiplier weights and host AP threshold. Selected skill effect magnitude, Water prerequisite and Fire participation persisted. Restarted A with B active and B after rollback, then allocated A again.",
+          "evidence": "artifacts/admin-ab-participation/facts.json"
+        },
         "integrationCheckpoint": {
           "sourceRevision": "051892a3a4f00f4eeb09188c6f6fa4d5a586d057",
           "pullRequest": 86,
@@ -11283,6 +11297,13 @@
       ],
       "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
       "implementation": {
+        "roundHandoffRegression": {
+          "sourceRevision": "40953260250a662fc8f3c56cf5b6a368236c5c60",
+          "command": "cargo test --workspace --locked",
+          "exitCode": 0,
+          "result": "Immediate round-opening Boss hit previously left a defeated participant active. Regression failed before fix and passed after, 217 Rust workspace tests passed, no failures or skips.",
+          "evidence": "artifacts/integrated-d3/boss-round-fixed.log"
+        },
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
@@ -11333,6 +11354,13 @@
         "VL-208"
       ],
       "implementation": {
+        "policyComparison": {
+          "sourceRevision": "053c624972cda3fbf957887a9ec4d35ff3da3c43",
+          "command": "aetheria-game-runtime --compare-coop <candidate> 25 cinder-terraces-warden --party <level-60 starter party>",
+          "exitCode": 0,
+          "result": "Four policies used seeds 1–25 with Coalwhisk, Dewskip, Clodkin, Dewskip, no gear or training. Fire uses base damage 90, +4 per round and telegraph 3. Increasing only tier 2–6 damage weights from 2000–6000 to 3000/5000/7000/9000/11000 changed random/basic/tactical/coordinated wins from 0/0/1/0 to 0/5/8/5. Baseline and candidate each resolved all 100 trials. Exploratory design candidate pending owner review; early progression and Water viability remain open.",
+          "evidence": "artifacts/integrated-d3/confirm-late-burst-fire.json"
+        },
         "integrationCheckpoint": {
           "sourceRevision": "37679d72695146e9f9d218a4cbf561f889a4307e",
           "pullRequest": 86,
