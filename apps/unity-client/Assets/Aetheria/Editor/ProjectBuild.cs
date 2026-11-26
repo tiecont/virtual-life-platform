@@ -2,9 +2,11 @@ using System;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Build;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 namespace Aetheria.Editor
 {
@@ -71,8 +73,13 @@ namespace Aetheria.Editor
             Prepare();
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, target))
                 throw new InvalidOperationException("Required platform build module is unavailable");
+            var scenes = ProjectScenes.PlayerScenes;
+            // The shader build pass reopens the previous scene after scanning
+            // the registry. A fresh batch editor may have only an untitled scene.
+            if (Application.isBatchMode && string.IsNullOrEmpty(SceneManager.GetActiveScene().path))
+                EditorSceneManager.OpenScene(scenes[0]);
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = ProjectScenes.PlayerScenes, locationPathName = output, target = target,
+                scenes = scenes, locationPathName = output, target = target,
                 options = BuildOptions.Development
             });
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Blockout build failed");
