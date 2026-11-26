@@ -238,3 +238,28 @@ fn only_a_terminal_state_completes_the_match() {
         _ => panic!("unexpected completion"),
     }
 }
+
+#[test]
+fn historical_allocation_retains_the_legacy_snapshot_shape() {
+    let bundle = std::fs::read(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-v1.seed.json"
+    ))
+    .unwrap();
+    let historic_pets = ["icarus", "coralline", "volt", "terran"];
+    let mut seats = seats();
+    for (seat, species) in seats.iter_mut().zip(historic_pets) {
+        seat.pet_id = species.into();
+    }
+    let rules = Rules::load(&bundle, seats, "cinder-terraces-warden".into()).unwrap();
+    let state = rules.initial().unwrap();
+    let bytes = rules.encode(&state).unwrap();
+    let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+    assert!(json["state"].get("boss_id").is_none());
+    assert!(
+        json["state"]["participants"][0]
+            .get("owned_pet_instance_id")
+            .is_none()
+    );
+    assert_eq!(rules.decode(&bytes).unwrap(), state);
+}
