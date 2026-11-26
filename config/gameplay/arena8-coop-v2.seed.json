@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 5,
+  "contentRevision": 6,
   "board": {
     "spawnWeights": [
       {
@@ -5075,7 +5075,7 @@
       "phase": {
         "thresholdBp": 2500,
         "maxGrowthBp": 7000,
-        "currentBp": 8500,
+        "currentBp": 8000,
         "phase2AttackPm": 1200,
         "excessDamage": "discard",
         "attackTargets": 2
@@ -5102,7 +5102,7 @@
       "phase": {
         "thresholdBp": 2500,
         "maxGrowthBp": 8000,
-        "currentBp": 7500,
+        "currentBp": 8000,
         "phase2AttackPm": 1300,
         "excessDamage": "discard",
         "attackTargets": 2
@@ -5156,7 +5156,7 @@
       "phase": {
         "thresholdBp": 2500,
         "maxGrowthBp": 7000,
-        "currentBp": 9000,
+        "currentBp": 8000,
         "phase2AttackPm": 1150,
         "excessDamage": "discard",
         "attackTargets": 2

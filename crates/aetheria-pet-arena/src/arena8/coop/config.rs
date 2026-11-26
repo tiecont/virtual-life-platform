@@ -1012,6 +1012,9 @@ impl BossConfig {
             return Err(ConfigError::Boss);
         }
         self.phase.validate()?;
+        if self.phase2_current_hp()? == 0 {
+            return Err(ConfigError::BossPhase);
+        }
         self.attack_model.validate()?;
         Ok(())
     }

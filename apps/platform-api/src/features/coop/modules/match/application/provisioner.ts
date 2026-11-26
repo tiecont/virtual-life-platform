@@ -1,3 +1,4 @@
+import type {CoopAdmissionView} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
@@ -48,10 +49,7 @@ export type CoopStartInput=Readonly<{
  bundle:Record<string,unknown>;seats:readonly CoopSeat[];
 }>;
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
-export type CoopAdmissionView=Readonly<{
- roomId:string;matchId:string;bootId:string;accountId:string;seat:number;wssUrl:string;httpsOrigin:string;
- ticket:string;expiresAt:string;contentHash:string;
-}>;
+export type {CoopAdmissionView} from '@aetheria/contracts';
 type Lease={timer:ReturnType<typeof setInterval>;stop:()=>void};
 type ActiveMatch={record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
 
@@ -203,7 +201,7 @@ export class CoopMatchProvisioner{
   try{issued=await this.options.issuer.issue(credential,current.scope);}
   catch{throw unavailable('Cooperative native admission is unavailable');}
   return Object.freeze({
-   roomId,matchId:record.matchId,bootId:record.bootId,accountId:allocated.accountId,seat,
+   roomId,bossId:record.bossId,matchId:record.matchId,bootId:record.bootId,accountId:allocated.accountId,seat,
    wssUrl:'wss:'+this.origin.slice('https:'.length)+WSS_PATH,
    httpsOrigin:this.origin,ticket:issued.ticket,expiresAt:issued.expiresAt,
    contentHash:record.contentHash,

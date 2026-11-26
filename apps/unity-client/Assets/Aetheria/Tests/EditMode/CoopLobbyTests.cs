@@ -61,7 +61,7 @@ namespace Aetheria.Tests
             "\"canJoin\":true,\"canStart\":false}";
 
         private static string AdmissionJson(string room = RoomId) => "{\"roomId\":\"" + room + "\"," +
-            "\"matchId\":\"22222222-2222-4222-8222-222222222222\",\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
+            "\"bossId\":\"cinder-terraces-warden\",\"matchId\":\"22222222-2222-4222-8222-222222222222\",\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
             "\"accountId\":\"" + AccountId + "\",\"seat\":2,\"wssUrl\":\"wss://127.0.0.1:4443/rt/v1\"," +
             "\"httpsOrigin\":\"https://127.0.0.1:4443\",\"ticket\":\"ticket.payload.signature\"," +
             "\"expiresAt\":\"" + DateTimeOffset.UtcNow.AddSeconds(10).ToString("O") + "\",\"contentHash\":\"" + new string('a', 64) + "\"}";

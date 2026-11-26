@@ -9,8 +9,8 @@ use aetheria_game_core::{
 };
 use aetheria_pet_arena::arena8::Element;
 use aetheria_pet_arena::arena8::coop::{
-    CELLS, COOP_RULESET_ID, CoopAction, CoopPhase, CoopRules, CoopState, SEATS, SIDE, SeatInput,
-    Tile, board_digest, content_hash, state_digest,
+    CELLS, COOP_RULESET_ID, ConfigError, CoopAction, CoopPhase, CoopRules, CoopState, SEATS, SIDE,
+    SeatInput, Tile, board_digest, content_hash, state_digest,
 };
 use std::path::PathBuf;
 
@@ -219,25 +219,35 @@ fn missing_skill_reference_rejected() {
 
 #[test]
 fn invalid_phase_configuration_rejected() {
+    for (key, amount) in [("thresholdBp", 9_000), ("currentBp", 0)] {
+        let mut value = fixture_json();
+        value["bosses"][0]["phase"][key] = amount.into();
+        assert!(matches!(
+            CoopRules::load(
+                &serde_json::to_vec(&value).unwrap(),
+                "cinder-terraces-boss".into()
+            ),
+            Err(ConfigError::BossPhase)
+        ));
+    }
     let mut value = fixture_json();
-    value["boss"]["phase"]["thresholdBp"] = serde_json::json!(9_000);
-    assert!(
+    value["bosses"][0]["maxHp"] = u32::MAX.into();
+    assert!(matches!(
         CoopRules::load(
             &serde_json::to_vec(&value).unwrap(),
-            "cinder-terraces-boss".to_string()
-        )
-        .is_err()
-    );
-
-    let mut value = fixture_json();
-    value["boss"]["phase"]["currentBp"] = serde_json::json!(0);
-    assert!(
+            "cinder-terraces-boss".into()
+        ),
+        Err(ConfigError::Arithmetic)
+    ));
+    value["bosses"][0]["maxHp"] = 4.into();
+    value["bosses"][0]["phase"]["currentBp"] = 1.into();
+    assert!(matches!(
         CoopRules::load(
             &serde_json::to_vec(&value).unwrap(),
-            "cinder-terraces-boss".to_string()
-        )
-        .is_err()
-    );
+            "cinder-terraces-boss".into()
+        ),
+        Err(ConfigError::BossPhase)
+    ));
 }
 
 #[test]

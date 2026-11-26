@@ -34,7 +34,9 @@ namespace Aetheria.PetArena.Infrastructure
             public Seat[] seats;
         }
 
-        [Serializable] private sealed class CreateRequest { public string requestId, petId, ownedPetInstanceId, mapId; }
+        [Serializable] public sealed class Eligibility { public string bossId; public int points, requiredPoints; public bool eligible; }
+        [Serializable] private class CreateRequest { public string requestId, petId, ownedPetInstanceId, mapId; }
+        [Serializable] private sealed class SelectedBossRequest : CreateRequest { public string bossId; }
         [Serializable] private sealed class RequestId { public string requestId; }
         [Serializable] private sealed class LegacyPetRequest { public string requestId, petId; }
         [Serializable] private sealed class PetRequest { public string requestId, petId, ownedPetInstanceId; }
@@ -69,11 +71,13 @@ namespace Aetheria.PetArena.Infrastructure
         }
 
         public async System.Threading.Tasks.Task<Room> CreateAsync(string petId, string instanceId, string mapId,
-            Guid requestId, System.Threading.CancellationToken cancellation = default)
+            Guid requestId, System.Threading.CancellationToken cancellation = default, string bossId = null)
         {
             var body = instanceId == null && mapId == null
                 ? JsonUtility.ToJson(new LegacyPetRequest { requestId = requestId.ToString(), petId = petId })
-                : JsonUtility.ToJson(new CreateRequest { requestId = requestId.ToString(), petId = petId, ownedPetInstanceId = instanceId, mapId = mapId });
+                : bossId == null
+                    ? JsonUtility.ToJson(new CreateRequest { requestId = requestId.ToString(), petId = petId, ownedPetInstanceId = instanceId, mapId = mapId })
+                    : JsonUtility.ToJson(new SelectedBossRequest { requestId = requestId.ToString(), petId = petId, ownedPetInstanceId = instanceId, mapId = mapId, bossId = bossId });
             return ParseRoom(await post("/v1/coop/rooms", body, requestId, cancellation));
         }
 

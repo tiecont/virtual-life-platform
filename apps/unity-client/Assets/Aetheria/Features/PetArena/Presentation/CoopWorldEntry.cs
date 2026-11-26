@@ -64,12 +64,13 @@ namespace Aetheria.PetArena.Presentation
             var world = FindFirstObjectByType<WorldSceneControllerBase>();
             if (map.Id == WorldMapCatalog.CentralPlazaId)
             {
-                if (world != null) world.InputLocked = !signedIn;
+                SetOverlay(world, !signedIn);
                 if (!signedIn) ShowGuest(world);
+                else ShowHub(world);
                 return;
             }
             if (!signedIn) { ReturnToHub(); return; }
-            if (world != null) world.InputLocked = true;
+            SetOverlay(world, true);
             _ = OpenArenaAsync(map);
         }
 
@@ -96,12 +97,55 @@ namespace Aetheria.PetArena.Presentation
                 else
                     await api.CreateGuest(name, Guid.NewGuid().ToString(), lifetime.Token);
                 signedIn = true;
-                document.rootVisualElement.Clear();
-                if (world != null) world.InputLocked = false;
+                ShowHub(world);
             }
             catch (OperationCanceledException) { }
             catch (Exception error) { ShowGuest(world, error.Message); }
             finally { busy = false; }
+        }
+
+        private static void SetOverlay(WorldSceneControllerBase world, bool open)
+        {
+            if (world == null) return;
+            world.InputLocked = open;
+            var hud = world.GetComponent<WorldHud>();
+            if (hud != null) hud.enabled = !open;
+        }
+
+        private void ShowHub(WorldSceneControllerBase world)
+        {
+            SetOverlay(world, false);
+            var root = document.rootVisualElement;
+            root.Clear();
+            var button = new Button(() => _ = OpenCollectionAsync(world)) { text = "Pet collection" };
+            button.style.position = Position.Absolute;
+            button.style.bottom = 12;
+            button.style.right = 12;
+            root.Add(button);
+        }
+
+        private async Task OpenCollectionAsync(WorldSceneControllerBase world)
+        {
+            if (busy) return;
+            busy = true;
+            SetOverlay(world, true);
+            var root = document.rootVisualElement;
+            root.Clear();
+            root.Add(new Label("Loading Pet collection…"));
+            try
+            {
+                var collection = await api.GetWave1State(lifetime.Token);
+                root.Clear();
+                root.Add(new Label("Pet collection · " + collection.wallet.coins + " coins"));
+                var list = new ScrollView();
+                foreach (var pet in collection.pets)
+                    list.Add(new Label(pet.name + " · " + pet.element + " · Lv " + pet.level + " · " + pet.exp + " EXP"));
+                root.Add(list);
+            }
+            catch (OperationCanceledException) { return; }
+            catch (Exception error) { root.Clear(); root.Add(new Label(error.Message)); }
+            finally { busy = false; }
+            root.Add(new Button(() => ShowHub(world)) { text = "Back to Central Plaza" });
         }
 
         private async Task OpenArenaAsync(WorldMapDefinition map)
@@ -110,9 +154,13 @@ namespace Aetheria.PetArena.Presentation
             {
                 var collection = await api.GetWave1State(lifetime.Token);
                 if (SceneManager.GetActiveScene().name != map.SceneName) return;
+                var eligibilityJson = await api.CoopRequest("/v1/coop/eligibility?mapId=" + Uri.EscapeDataString(map.Id), null, lifetime.Token);
+                var eligibility = JsonUtility.FromJson<CoopLobbyClient.Eligibility>(eligibilityJson);
+                if (eligibility == null || string.IsNullOrEmpty(eligibility.bossId)) throw new FormatException("Missing encounter for this portal.");
+                if (SceneManager.GetActiveScene().name != map.SceneName) return;
                 campaign = gameObject.AddComponent<CoopNativeCampaignScreen>();
                 campaign.Attach(document);
-                campaign.Enter(api, collection.pets, map.Id, ReturnToHub);
+                campaign.Enter(api, collection.pets, map.Id, ReturnToHub, eligibility);
             }
             catch (OperationCanceledException) { }
             catch (Exception error)

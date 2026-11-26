@@ -169,6 +169,8 @@ try{
   const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
   const view=response.json();
+  assert.equal(view.bossId,boss.id);
+  assert.equal(view.matchId,allocation.match_id);
   assert.equal(view.bootId,allocation.boot_id);
   assert.equal(view.accountId,member.accountId);
   assert.equal(view.seat,seat);

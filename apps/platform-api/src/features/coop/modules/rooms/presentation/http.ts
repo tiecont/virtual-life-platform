@@ -30,13 +30,16 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    if(!limits.take('coop-ip:'+req.ip,300))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
   api.addHook('preHandler',async req=>{
-   z.strictObject({}).parse(req.query);
+   if(req.routeOptions.url!=='/v1/coop/eligibility')z.strictObject({}).parse(req.query);
    const credential=token(req);
    const context=await identity.authenticate(credential);
    accounts.set(req,context.accountId);
    if(!limits.take('coop-session:'+identity.hash(credential),180))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
-  api.get('/coop/eligibility',req=>rooms.eligibility(account(req),CoopBossIdSchema.optional().parse((req.query as {bossId?:unknown}).bossId)));
+  api.get('/coop/eligibility',req=>{
+   const {bossId,mapId}=z.strictObject({bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional()}).parse(req.query);
+   return rooms.eligibility(account(req),bossId,mapId);
+  });
   api.post('/coop/rooms',req=>{
    write(req);
    const body=CoopCreateRoomSchema.parse(req.body);

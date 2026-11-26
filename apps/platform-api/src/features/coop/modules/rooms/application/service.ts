@@ -82,11 +82,11 @@ export class CoopRoomService{
   return seat;
  }
 
- async eligibility(accountId:string,bossId?:string){
+ async eligibility(accountId:string,bossId?:string,mapId?:string){
   const client=await this.db.connect();
   try{
    await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='3000ms'");
-   const config=await this.configuration(client,bossId),points=await this.store.achievementPoints(client,accountId);
+   const config=await this.configuration(client,bossId,mapId),points=await this.store.achievementPoints(client,accountId);
    await client.query('COMMIT');
    return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',bossId:config.bossId,points,requiredPoints:config.requiredPoints,eligible:points>=config.requiredPoints});
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}

@@ -65,6 +65,8 @@ describe('cooperative rooms and achievement eligibility',()=>{
   const before=await get(auth,'/v1/coop/eligibility');
   expect(before.statusCode).toBe(200);
   expect(before.json()).toMatchObject({ruleset:'arena8-coop-pve',bossId:'cinder-terraces-warden',points:0,requiredPoints:5_000,eligible:false});
+  expect((await get(auth,'/v1/coop/eligibility?bossId=cinder-terraces-warden')).json()).toEqual(before.json());
+  expect((await get(auth,'/v1/coop/eligibility?unknown=1')).statusCode).toBe(422);
   await grantPoints(auth,4_999);
   expect((await get(auth,'/v1/coop/eligibility')).json()).toMatchObject({points:4_999,eligible:false});
   await grantPoints(auth,1);

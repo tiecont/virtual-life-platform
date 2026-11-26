@@ -19,6 +19,7 @@ namespace Aetheria.PetArena.Presentation
         private CoopLobbyClient lobby;
         private CoopNativePlaySession session;
         private CoopLobbyClient.Room room;
+        private CoopLobbyClient.Eligibility encounter;
         private string petId, instanceId, mapId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
         private Action returnToHub;
@@ -40,12 +41,13 @@ namespace Aetheria.PetArena.Presentation
             RenderLobby();
         }
 
-        public void Enter(Wave1LocalApi authenticated, Wave1Pet[] ownedPets, string selectedMap, Action returnAction)
+        public void Enter(Wave1LocalApi authenticated, Wave1Pet[] ownedPets, string selectedMap, Action returnAction, CoopLobbyClient.Eligibility eligibility)
         {
             lobby = new CoopLobbyClient(authenticated);
             pets = (ownedPets ?? Array.Empty<Wave1Pet>()).Where(pet => Guid.TryParse(pet.ownedPetInstanceId, out _)).ToArray();
             SetPet(pets.FirstOrDefault());
             mapId = selectedMap;
+            encounter = eligibility;
             returnToHub = returnAction;
             room = null;
             notice = "";
@@ -61,7 +63,7 @@ namespace Aetheria.PetArena.Presentation
         private void RenderCollection(VisualElement root)
         {
             if (pets.Length == 0) return;
-            var labels = pets.Select(p => p.name + " · Lv " + p.level + " · " + p.petId).ToList();
+            var labels = pets.Select((p, i) => (i + 1) + ". " + p.name + " · Lv " + p.level).ToList();
             var index = Array.FindIndex(pets, pet => pet.ownedPetInstanceId == instanceId);
             var selection = new DropdownField("Owned Pet", labels, Math.Max(0, index));
             selection.RegisterValueChangedCallback(change =>
@@ -86,8 +88,10 @@ namespace Aetheria.PetArena.Presentation
                 root.Add(new Button(returnToHub) { text = "Return to Central Plaza", name = "coop-return" });
             if (room == null)
             {
+                if (encounter != null)
+                    root.Add(new Label(encounter.bossId + " · Achievement Points " + encounter.points + " / " + encounter.requiredPoints));
                 var create = new Button(() => _ = RunAsync(CreateAsync)) { text = "Create room", name = "coop-create" };
-                create.SetEnabled(lobby != null && !string.IsNullOrEmpty(petId));
+                create.SetEnabled(lobby != null && !string.IsNullOrEmpty(petId) && (encounter == null || encounter.eligible));
                 root.Add(create);
                 joinField = new TextField("Room id") { name = "coop-room-id" };
                 root.Add(joinField);
@@ -122,7 +126,7 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task CreateAsync()
         {
-            room = await lobby.CreateAsync(petId, instanceId, mapId, Guid.NewGuid());
+            room = await lobby.CreateAsync(petId, instanceId, mapId, Guid.NewGuid(), bossId: encounter?.bossId);
             notice = "";
             RenderLobby();
         }
@@ -186,6 +190,7 @@ namespace Aetheria.PetArena.Presentation
         {
             var roomId = Guid.Parse(room.roomId);
             var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid());
+            if (admission.BossId != room.bossId || admission.Seat != room.you.seat) throw new FormatException("Admission does not match the room.");
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
             var transportPlatform = platform ?? new PlatformSession(admission.HttpsOrigin);
             trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
