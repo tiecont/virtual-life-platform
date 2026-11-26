@@ -66,6 +66,7 @@ struct CoopSeat {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct CoopSettings {
     seats: Vec<CoopSeat>,
+    boss_id: String,
 }
 
 #[derive(Deserialize)]
@@ -204,11 +205,11 @@ impl NativeRuntime {
                 let [first, second, third, fourth] = allocation.seats.as_slice() else {
                     return Err("Four cooperative seats required");
                 };
-                if allocation
-                    .seats
-                    .iter()
-                    .any(|seat| seat.account.is_nil() || seat.pet_id.is_empty() || seat.owned_pet_instance_id.is_empty())
-                {
+                if allocation.seats.iter().any(|seat| {
+                    seat.account.is_nil()
+                        || seat.pet_id.is_empty()
+                        || seat.owned_pet_instance_id.is_empty()
+                }) {
                     return Err("Invalid cooperative allocation");
                 }
                 let seats: [SeatInput; SEATS] =
@@ -220,7 +221,8 @@ impl NativeRuntime {
                         artifact_power_pm: seat.artifact_power_pm,
                     });
                 let bundle = bundle.ok_or("Published gameplay configuration required")?;
-                let game = coordinated::domain::Rules::load(&bundle, seats)
+                let boss_id = allocation.boss_id.clone();
+                let game = coordinated::domain::Rules::load(&bundle, seats, boss_id)
                     .map_err(|_| "Invalid cooperative gameplay configuration")?;
                 let initial = game
                     .initial()

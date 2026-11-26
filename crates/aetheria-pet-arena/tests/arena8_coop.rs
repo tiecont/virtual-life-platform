@@ -27,7 +27,7 @@ fn fixture_json() -> serde_json::Value {
 }
 
 fn rules() -> CoopRules {
-    CoopRules::load(&fixture_bytes()).expect("candidate seed must validate")
+    CoopRules::load(&fixture_bytes(), "cinder-terraces-boss".to_string()).expect("candidate seed must validate")
 }
 
 fn clock(version: u64) -> LogicalClock {
@@ -138,8 +138,8 @@ fn candidate_seed_validates_and_is_stable() {
 
 #[test]
 fn absent_configuration_fails_closed() {
-    assert!(CoopRules::load(b"").is_err());
-    assert!(CoopRules::load(b"not-json").is_err());
+    assert!(CoopRules::load(b"", "cinder-terraces-boss".to_string()).is_err());
+    assert!(CoopRules::load(b"not-json", "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
@@ -147,15 +147,15 @@ fn unknown_field_rejected() {
     let mut value = fixture_json();
     value["hiddenBalance"] = serde_json::json!(1);
     let bytes = serde_json::to_vec(&value).unwrap();
-    assert!(CoopRules::load(&bytes).is_err());
+    assert!(CoopRules::load(&bytes, "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
 fn missing_boss_field_rejected() {
     let mut value = fixture_json();
-    value["boss"].as_object_mut().unwrap().remove("maxHp");
+    value["bosses"][0].as_object_mut().unwrap().remove("maxHp");
     let bytes = serde_json::to_vec(&value).unwrap();
-    assert!(CoopRules::load(&bytes).is_err());
+    assert!(CoopRules::load(&bytes, "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
@@ -164,7 +164,7 @@ fn duplicate_element_rejected() {
     let first = value["elements"][0].clone();
     value["elements"][1] = first;
     let bytes = serde_json::to_vec(&value).unwrap();
-    assert!(CoopRules::load(&bytes).is_err());
+    assert!(CoopRules::load(&bytes, "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
@@ -175,55 +175,59 @@ fn partial_effectiveness_matrix_rejected() {
         .unwrap()
         .pop();
     let bytes = serde_json::to_vec(&value).unwrap();
-    assert!(CoopRules::load(&bytes).is_err());
+    assert!(CoopRules::load(&bytes, "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
 fn invalid_spawn_distribution_rejected() {
     let mut value = fixture_json();
     value["board"]["spawnWeights"][0]["weight"] = serde_json::json!(0);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 
     // Duplicate element in the spawn weights is also rejected.
     let mut value = fixture_json();
     let first = value["board"]["spawnWeights"][0].clone();
     value["board"]["spawnWeights"][1] = first;
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
 fn missing_skill_reference_rejected() {
     let mut value = fixture_json();
     value["pets"][0]["signature"] = serde_json::json!("no-such-skill");
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
 fn invalid_phase_configuration_rejected() {
     let mut value = fixture_json();
     value["boss"]["phase"]["thresholdBp"] = serde_json::json!(9_000);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 
     let mut value = fixture_json();
     value["boss"]["phase"]["currentBp"] = serde_json::json!(0);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
 fn room_threshold_is_authored_and_bounded() {
-    assert_eq!(rules().config().boss.required_room_points, 5000);
+    assert_eq!(rules().selected_boss().required_room_points, 5000);
     let mut value = fixture_json();
-    value["boss"]
+    value["bosses"]
+        .as_array_mut()
+        .unwrap()
+        .get_mut(0)
+        .unwrap()
         .as_object_mut()
         .unwrap()
         .remove("requiredRoomPoints");
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
     let mut value = fixture_json();
-    value["boss"]["requiredRoomPoints"] = serde_json::json!(1_000_001);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    value["bosses"][0]["requiredRoomPoints"] = serde_json::json!(1_000_001);
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
     let mut value = fixture_json();
-    value["boss"]["requiredRoomPoints"] = serde_json::json!(0);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_ok());
+    value["bosses"][0]["requiredRoomPoints"] = serde_json::json!(0);
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_ok());
 }
 
 #[test]
@@ -233,10 +237,10 @@ fn reward_configuration_is_authored_and_bounded() {
     assert_eq!(rules.config().rewards.clear_coins, 120);
     let mut value = fixture_json();
     value["rewards"]["clearExp"] = serde_json::json!(1_000_001);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
     let mut value = fixture_json();
     value.as_object_mut().unwrap().remove("rewards");
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
@@ -246,7 +250,7 @@ fn multiplier_weights_may_not_change_between_stages() {
     let mut value = fixture_json();
     let schedule = value["multiplier"]["schedule"].as_array_mut().unwrap();
     schedule[2]["tiers"][0]["damageWeightPm"] = serde_json::json!(7_000);
-    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).is_err());
 }
 
 #[test]
@@ -281,6 +285,8 @@ fn start_generates_a_playable_board_from_server_entropy() {
     assert!(!matched.iter().any(|value| *value));
     assert!(rules.legal_swap(&state).is_some());
 }
+
+
 
 #[test]
 fn no_match_swap_mutates_nothing() {
@@ -464,7 +470,7 @@ fn gravity_preserves_column_order_and_skips_full_columns() {
 fn cascades_are_bounded_by_authored_limit() {
     let mut value = fixture_json();
     value["party"]["maxCascades"] = serde_json::json!(2);
-    let rules = CoopRules::load(&serde_json::to_vec(&value).unwrap()).unwrap();
+    let rules = CoopRules::load(&serde_json::to_vec(&value).unwrap(), "cinder-terraces-boss".to_string()).unwrap();
     assert_eq!(rules.config().party.max_cascades, 2);
     // A bounded limit is structural: the reducer must terminate and leave a
     // board with no unresolved matches after the cap.
@@ -559,11 +565,11 @@ fn boss_transforms_exactly_once_and_never_skips_phase_two() {
     assert!(state.boss.transformed);
     assert_eq!(
         state.boss.max_hp,
-        rules.config().boss.phase2_max_hp().unwrap()
+        rules.selected_boss().phase2_max_hp().unwrap()
     );
     assert_eq!(
         state.boss.hp,
-        rules.config().boss.phase2_current_hp().unwrap()
+        rules.selected_boss().phase2_current_hp().unwrap()
     );
     assert!(dealt > 0);
 
@@ -580,19 +586,19 @@ fn boss_transforms_exactly_once_and_never_skips_phase_two() {
 fn phase_transition_discards_excess_by_authored_policy() {
     let rules = rules();
     assert!(matches!(
-        rules.config().boss.phase.excess_damage,
+        rules.selected_boss().phase.excess_damage,
         aetheria_pet_arena::arena8::coop::config::ExcessDamage::Discard
     ));
     let mut state = rules.allocate(seats()).unwrap();
     state.phase = CoopPhase::Playing;
-    let threshold = rules.config().boss.phase_threshold();
+    let threshold = rules.selected_boss().phase_threshold();
     state.boss.hp = threshold + 1;
     rules.damage_boss_for_test(&mut state, 1_000_000).unwrap();
     assert_eq!(state.boss.phase, 2);
     // Discard: phase 2 starts at the authored current HP, not at 0.
     assert_eq!(
         state.boss.hp,
-        rules.config().boss.phase2_current_hp().unwrap()
+        rules.selected_boss().phase2_current_hp().unwrap()
     );
 }
 
@@ -603,7 +609,7 @@ fn phase_two_zero_hp_wins() {
     state.phase = CoopPhase::Playing;
     state.boss.phase = 2;
     state.boss.transformed = true;
-    state.boss.max_hp = rules.config().boss.phase2_max_hp().unwrap();
+    state.boss.max_hp = rules.selected_boss().phase2_max_hp().unwrap();
     state.boss.hp = 50;
     rules.damage_boss_for_test(&mut state, 500).unwrap();
     assert_eq!(state.boss.hp, 0);

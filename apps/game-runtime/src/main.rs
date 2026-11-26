@@ -19,7 +19,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         && flag == "--check-gameplay-config"
     {
         let bytes = std::fs::read(path)?;
-        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+        // For validation, use the first boss in the config
+        let config = aetheria_pet_arena::arena8::coop::CoopConfig::parse(&bytes)?;
+        let boss_id = config.bosses.first().map(|b| b.id.clone()).unwrap_or_default();
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes, boss_id)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let digest = rules.digest();
         let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
@@ -63,7 +66,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .parse()
             .map_err(|_| "Invalid cooperative simulation seed count")?;
         let bytes = std::fs::read(path)?;
-        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+        // For simulation, use the first boss in the config
+        let config = aetheria_pet_arena::arena8::coop::CoopConfig::parse(&bytes)?;
+        let boss_id = config.bosses.first().map(|b| b.id.clone()).unwrap_or_default();
+        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes, boss_id)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let report = aetheria_pet_arena::arena8::coop::simulation::simulate(&rules, policy, seeds)
             .map_err(|_| "Cooperative simulation rejected")?;

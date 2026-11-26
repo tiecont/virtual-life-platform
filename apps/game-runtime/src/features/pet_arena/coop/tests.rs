@@ -18,7 +18,8 @@ fn seats() -> [SeatInput; SEATS] {
         ("pet-v31-water-marivell", "instance-marivell"),
         ("pet-v31-electric-quorion", "instance-quorion"),
         ("pet-v31-ground-gravorn", "instance-gravorn"),
-    ].map(|(pet, instance)| SeatInput {
+    ]
+    .map(|(pet, instance)| SeatInput {
         account: format!("account-{pet}"),
         pet_id: pet.into(),
         owned_pet_instance_id: instance.into(),
@@ -28,7 +29,7 @@ fn seats() -> [SeatInput; SEATS] {
 }
 
 fn rules() -> Rules {
-    Rules::load(&bundle(), seats()).expect("valid seed bundle and seats")
+    Rules::load(&bundle(), seats(), "cinder-terraces-warden".to_string()).expect("valid seed bundle and seats")
 }
 
 #[test]
@@ -46,7 +47,12 @@ fn bundle_binds_the_published_configuration_and_a_ready_board() {
             .iter()
             .map(|seat| seat.pet_id.as_str())
             .collect::<Vec<_>>(),
-        ["pet-v3-fire-icarus", "pet-v31-water-marivell", "pet-v31-electric-quorion", "pet-v31-ground-gravorn"]
+        [
+            "pet-v3-fire-icarus",
+            "pet-v31-water-marivell",
+            "pet-v31-electric-quorion",
+            "pet-v31-ground-gravorn"
+        ]
     );
     assert!(state.board.iter().all(Option::is_none));
 }
@@ -59,7 +65,7 @@ fn durable_state_roundtrips_and_rejects_a_different_allocation() {
     assert_eq!(rules.decode(&bytes).expect("decode"), state);
     let mut other = seats();
     other[2].account = "someone-else".into();
-    let foreign = Rules::load(&bundle(), other).expect("foreign allocation");
+    let foreign = Rules::load(&bundle(), other, "cinder-terraces-warden".to_string()).expect("foreign allocation");
     assert!(matches!(foreign.decode(&bytes), Err(Error::Integrity)));
     let mut tampered = state.clone();
     tampered.config_digest = [0u8; 32];
@@ -72,8 +78,13 @@ fn membership_and_projection_are_scoped_to_the_authenticated_seat() {
     let state = rules.initial().expect("allocation");
     assert!(rules.member(&state, "account-pet-v3-fire-icarus"));
     assert!(!rules.member(&state, "account-outsider"));
-    assert_eq!(rules.seat(&state, "account-pet-v31-electric-quorion"), Some(2));
-    let projected = rules.project(&state, "account-pet-v31-electric-quorion").expect("projection");
+    assert_eq!(
+        rules.seat(&state, "account-pet-v31-electric-quorion"),
+        Some(2)
+    );
+    let projected = rules
+        .project(&state, "account-pet-v31-electric-quorion")
+        .expect("projection");
     assert!(projected.len() <= 16_384);
     let value: serde_json::Value = serde_json::from_slice(&projected).expect("json");
     assert_eq!(value["schemaVersion"], 1);
@@ -160,26 +171,27 @@ fn only_the_owner_of_the_active_seat_may_command() {
 
 #[test]
 fn invalid_bundles_and_allocations_fail_closed() {
-    assert!(Rules::load(b"", seats()).is_err());
+    assert!(Rules::load(b"", seats(), "cinder-terraces-warden".to_string()).is_err());
     // Duplicate accounts must fail.
     let mut duplicate = seats();
     duplicate[1].account = duplicate[0].account.clone();
-    assert!(Rules::load(&bundle(), duplicate).is_err());
+    assert!(Rules::load(&bundle(), duplicate, "cinder-terraces-warden".to_string()).is_err());
     // Duplicate owned_pet_instance_id must fail (even with different accounts).
     let mut duplicate_instance = seats();
-    duplicate_instance[1].owned_pet_instance_id = duplicate_instance[0].owned_pet_instance_id.clone();
-    assert!(Rules::load(&bundle(), duplicate_instance).is_err());
+    duplicate_instance[1].owned_pet_instance_id =
+        duplicate_instance[0].owned_pet_instance_id.clone();
+    assert!(Rules::load(&bundle(), duplicate_instance, "cinder-terraces-warden".to_string()).is_err());
     // Same pet species with different owned_pet_instance_id is allowed.
     let mut same_species = seats();
     same_species[1].pet_id = same_species[0].pet_id.clone();
     same_species[1].owned_pet_instance_id = "instance-different".into();
-    assert!(Rules::load(&bundle(), same_species).is_ok());
+    assert!(Rules::load(&bundle(), same_species, "cinder-terraces-warden".to_string()).is_ok());
     let mut level_zero = seats();
     level_zero[0].level = 0;
-    assert!(Rules::load(&bundle(), level_zero).is_err());
+    assert!(Rules::load(&bundle(), level_zero, "cinder-terraces-warden".to_string()).is_err());
     let mut too_powerful = seats();
     too_powerful[0].artifact_power_pm = 5_001;
-    assert!(Rules::load(&bundle(), too_powerful).is_err());
+    assert!(Rules::load(&bundle(), too_powerful, "cinder-terraces-warden".to_string()).is_err());
 }
 
 #[test]
@@ -195,7 +207,10 @@ fn only_a_terminal_state_completes_the_match() {
             assert_eq!(value["outcome"], "won");
             assert_eq!(value["ruleset"], "arena8-coop-pve");
             assert_eq!(value["participants"].as_array().map(Vec::len), Some(4));
-            assert_eq!(value["participants"][0]["account"], "account-pet-v3-fire-icarus");
+            assert_eq!(
+                value["participants"][0]["account"],
+                "account-pet-v3-fire-icarus"
+            );
         }
         _ => panic!("unexpected completion"),
     }

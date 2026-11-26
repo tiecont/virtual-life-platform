@@ -8,7 +8,7 @@ import {
 const ROOM='11111111-1111-4111-8111-111111111111';
 const DIGEST='aa'.repeat(32),CONTENT='bb'.repeat(32),ORIGIN='https://127.0.0.1:4443';
 const ACCOUNTS=['22222222-2222-4222-8222-222222222221','22222222-2222-4222-8222-222222222222','22222222-2222-4222-8222-222222222223','22222222-2222-4222-8222-222222222224'];
-const SEATS:readonly CoopSeat[]=ACCOUNTS.map((account,index)=>Object.freeze({account,petId:['icarus','coralline','volt','terran'][index]!,petLevel:1,artifactPowerPm:1_000}));
+const SEATS:readonly CoopSeat[]=ACCOUNTS.map((account,index)=>Object.freeze({account,petId:['icarus','coralline','volt','terran'][index]!,petLevel:1,artifactPowerPm:1_000,ownedPetInstanceId:'aaaaaaaa-aaaa-4aaa-8aaa-'+String(index+1).padStart(12,'0')}));
 const bundle={schemaVersion:1,boss:{id:'cinder-terraces-warden',requiredRoomPoints:5_000}};
 
 class MemoryStore implements CoopMatchStorePort{
@@ -92,7 +92,7 @@ describe('cooperative match provisioner',()=>{
   const {provisioner,store}=fixture();
   await expect(provisioner.start({...startInput,configDigest:'cc'.repeat(32)})).rejects.toMatchObject({status:503});
   await expect(provisioner.start({...startInput,seats:SEATS.slice(0,3) as unknown as readonly CoopSeat[]})).rejects.toBeInstanceOf(DomainError);
-  const repeated=SEATS.map(seat=>({...seat,petId:'icarus'}));
+  const repeated=SEATS.map((seat,index)=>({...seat,ownedPetInstanceId:SEATS[0].ownedPetInstanceId}));
   await expect(provisioner.start({...startInput,seats:repeated})).rejects.toBeInstanceOf(DomainError);
   expect(store.rows.size).toBe(0);
  });

@@ -12,7 +12,7 @@ export type CoopRoomRow=Readonly<{
  configDigest:string;requiredPoints:number;status:CoopRoomStatus;revision:number;createdAt:Date;
 }>;
 export type CoopSeatRow=Readonly<{
- roomId:string;seat:number;accountId:string;petId:string|null;petLevel:number|null;artifactPowerPm:number;ready:boolean;
+ roomId:string;seat:number;accountId:string;petId:string|null;petLevel:number|null;artifactPowerPm:number;ready:boolean;ownedPetInstanceId:string|null;
 }>;
 
 function room(row:Record<string,unknown>):CoopRoomRow{
@@ -27,6 +27,7 @@ function seat(row:Record<string,unknown>):CoopSeatRow{
   roomId:String(row.roomId),seat:numeric(row.seat),accountId:String(row.accountId),
   petId:(row.petId??null) as string|null,petLevel:row.petLevel===null||row.petLevel===undefined?null:numeric(row.petLevel),
   artifactPowerPm:numeric(row.artifactPowerPm),ready:Boolean(row.ready),
+  ownedPetInstanceId:(row.ownedPetInstanceId??null) as string|null,
  });
 }
 
@@ -43,8 +44,8 @@ export class CoopRoomStore{
   const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
   return numeric(result.rows[0]?.points??0);
  }
- async ownedPet(tx:Queryable,accountId:string,petId:string):Promise<Readonly<{level:number}>|undefined>{
-  const result=await tx.query<{level:unknown}>('SELECT level FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',[accountId,petId]);
+ async ownedPet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId:string):Promise<Readonly<{level:number}>|undefined>{
+  const result=await tx.query<{level:unknown}>('SELECT level FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND owned_pet_instance_id=$3',[accountId,petId,ownedPetInstanceId]);
   const row=result.rows[0];
   return row?Object.freeze({level:numeric(row.level)}):undefined;
  }
@@ -72,8 +73,8 @@ export class CoopRoomStore{
  async addSeat(tx:Queryable,input:Readonly<{roomId:string;seat:number;accountId:string;petId:string|null;petLevel:number|null}>):Promise<void>{
   await tx.query('INSERT INTO coop_room_seats(room_id,seat,account_id,pet_id,pet_level) VALUES($1,$2,$3,$4,$5)',[input.roomId,input.seat,input.accountId,input.petId,input.petLevel]);
  }
- async selectPet(tx:Queryable,input:Readonly<{roomId:string;accountId:string;petId:string;petLevel:number}>):Promise<void>{
-  await tx.query('UPDATE coop_room_seats SET pet_id=$3,pet_level=$4,ready=false WHERE room_id=$1 AND account_id=$2',[input.roomId,input.accountId,input.petId,input.petLevel]);
+ async selectPet(tx:Queryable,input:Readonly<{roomId:string;accountId:string;petId:string;petLevel:number;ownedPetInstanceId:string}>):Promise<void>{
+  await tx.query('UPDATE coop_room_seats SET pet_id=$3,pet_level=$4,owned_pet_instance_id=$5,ready=false WHERE room_id=$1 AND account_id=$2',[input.roomId,input.accountId,input.petId,input.petLevel,input.ownedPetInstanceId]);
  }
  async setReady(tx:Queryable,input:Readonly<{roomId:string;accountId:string;ready:boolean}>):Promise<void>{
   await tx.query('UPDATE coop_room_seats SET ready=$3 WHERE room_id=$1 AND account_id=$2',[input.roomId,input.accountId,input.ready]);

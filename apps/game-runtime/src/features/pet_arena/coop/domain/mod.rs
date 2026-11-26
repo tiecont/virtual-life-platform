@@ -17,7 +17,7 @@ pub struct Rules {
 impl Rules {
     /// Bind the published bundle and the server-authored seat allocation.
     /// Missing, malformed, incompatible or mismatched input fails closed.
-    pub fn load(bundle: &[u8], seats: [SeatInput; SEATS]) -> Result<Self, ConfigError> {
+    pub fn load(bundle: &[u8], seats: [SeatInput; SEATS], boss_id: String) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
         let mut owned_pets = std::collections::BTreeSet::new();
         for seat in &seats {
@@ -31,7 +31,7 @@ impl Rules {
                 return Err(ConfigError::Party);
             }
         }
-        let engine = CoopRules::load(bundle)?;
+        let engine = CoopRules::load(bundle, boss_id)?;
         Ok(Self {
             engine: Arc::new(engine),
             seats,

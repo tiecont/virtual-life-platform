@@ -8,7 +8,7 @@ const PET=/^[a-z][a-z0-9-]{2,63}$/;
 const WORLD=/^native:[a-z0-9][a-z0-9._-]{0,63}$/;
 const SEATS=4,CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
 
-export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number}>;
+export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string}>;
 export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED';
 export type CoopAllocationRecord=Readonly<{
  matchId:string;roomId:string;worldId:string;bootId:string;
@@ -64,10 +64,11 @@ function scopeFor(record:Pick<CoopAllocationRecord,'worldId'|'bootId'|'contentHa
 }
 function seatsValid(seats:readonly CoopSeat[]){
  if(seats.length!==SEATS)return false;
- const accounts=new Set(seats.map(seat=>seat.account)),pets=new Set(seats.map(seat=>seat.petId));
- return accounts.size===SEATS&&pets.size===SEATS&&seats.every(seat=>
+ const accounts=new Set(seats.map(seat=>seat.account)),instances=new Set(seats.map(seat=>seat.ownedPetInstanceId));
+ return accounts.size===SEATS&&instances.size===SEATS&&seats.every(seat=>
   UUID.test(seat.account)&&PET.test(seat.petId)&&Number.isInteger(seat.petLevel)&&seat.petLevel>=1&&seat.petLevel<=60&&
-  Number.isInteger(seat.artifactPowerPm)&&seat.artifactPowerPm>=1_000&&seat.artifactPowerPm<=5_000);
+  Number.isInteger(seat.artifactPowerPm)&&seat.artifactPowerPm>=1_000&&seat.artifactPowerPm<=5_000&&
+  UUID.test(seat.ownedPetInstanceId));
 }
 
 // One authoritative cooperative match per room. The published bundle and the

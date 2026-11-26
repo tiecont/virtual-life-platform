@@ -31,7 +31,7 @@
       }
     ],
     "deadBoardPolicy": "regenerate",
-    "generationAttempts": 64
+    "generationAttempts": 256
   },
   "party": {
     "seats": 4,
@@ -440,32 +440,6 @@
         ]
       }
     ]
-  },
-  "boss": {
-    "id": "cinder-terraces-boss",
-    "name": "Embercoil Warden",
-    "element": "fire",
-    "maxHp": 120000,
-    "attack": 320,
-    "defense": 260,
-    "critRateBp": 1200,
-    "critDamageBp": 16000,
-    "phase": {
-      "thresholdBp": 2500,
-      "maxGrowthBp": 7500,
-      "currentBp": 8000,
-      "phase2AttackPm": 1250,
-      "excessDamage": "discard",
-      "attackTargets": 2
-    },
-    "attackModel": {
-      "baseDamage": 320,
-      "perRoundDamage": 45,
-      "defenseDivisor": 4,
-      "minimumDamage": 40
-    },
-    "telegraphTurns": 2,
-    "requiredRoomPoints": 5000
   },
   "skills": [
     {
@@ -969,5 +943,33 @@
     "lossAchievementPoints": 25,
     "lossCoins": 0,
     "lossExp": 0
-  }
+  },
+  "bosses": [
+    {
+      "id": "cinder-terraces-boss",
+      "name": "Embercoil Warden",
+      "element": "fire",
+      "maxHp": 120000,
+      "attack": 320,
+      "defense": 260,
+      "critRateBp": 1200,
+      "critDamageBp": 16000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 320,
+        "perRoundDamage": 45,
+        "defenseDivisor": 4,
+        "minimumDamage": 40
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000
+    }
+  ]
 }

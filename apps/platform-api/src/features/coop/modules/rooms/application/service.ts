@@ -177,7 +177,7 @@ export class CoopRoomService{
  }
 
  async selectPet(accountId:string,requestId:string,roomId:string,input:z.infer<typeof CoopSelectPetSchema>){
-  const fingerprint=this.fingerprint('select-pet',requestId,{roomId,petId:input.petId});
+  const fingerprint=this.fingerprint('select-pet',requestId,{roomId,petId:input.petId,ownedPetInstanceId:input.ownedPetInstanceId});
   return this.transaction(accountId,requestId,async tx=>{
    const prior=await this.replay(tx,accountId,requestId,fingerprint,value=>CoopRoomViewSchema.parse(value));
    if(prior)return prior;
@@ -185,11 +185,11 @@ export class CoopRoomService{
    if(!room)throw missing();
    if(room.status!=='OPEN')throw conflict('Room roster is frozen');
    await this.seatOrFail(tx,roomId,accountId);
-   const owned=await this.store.ownedPet(tx,accountId,input.petId);
+   const owned=await this.store.ownedPet(tx,accountId,input.petId,input.ownedPetInstanceId);
    if(!owned)throw forbidden('Pet is not owned');
    const seats=await this.store.seats(tx,roomId);
-   if(seats.some(seat=>seat.accountId!==accountId&&seat.petId===input.petId))throw conflict('Pet is already selected by another participant');
-   await this.store.selectPet(tx,{roomId,accountId,petId:input.petId,petLevel:owned.level});
+   if(seats.some(seat=>seat.accountId!==accountId&&seat.ownedPetInstanceId===input.ownedPetInstanceId))throw conflict('Pet instance is already selected by another participant');
+   await this.store.selectPet(tx,{roomId,accountId,petId:input.petId,petLevel:owned.level,ownedPetInstanceId:input.ownedPetInstanceId});
    const touched=await this.store.touch(tx,{roomId,expectedRevision:room.revision});
    if(!touched)throw conflict('Room changed; refresh before retrying');
    await this.store.event(tx,{roomId,accountId,action:'select_pet',fromState:'OPEN',toState:'OPEN'});
@@ -257,7 +257,7 @@ export class CoopRoomService{
    try{
     await this.provisioner.start({
      roomId,configVersion:room.configVersion,configDigest:room.configDigest,bundle,
-     seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm})) as readonly CoopSeat[],
+     seats:seats.map(seat=>Object.freeze({account:seat.accountId,petId:seat.petId!,petLevel:seat.petLevel!,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId!})) as readonly CoopSeat[],
     });
    }catch(error){
     if(error instanceof DomainError)throw error;

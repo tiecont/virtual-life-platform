@@ -7,7 +7,7 @@ fn rules() -> CoopRules {
         "/../../config/gameplay/arena8-coop-v1.seed.json"
     ))
     .expect("committed seed bundle");
-    CoopRules::load(&bytes).expect("valid seed bundle")
+    CoopRules::load(&bytes, "cinder-terraces-warden".to_string()).expect("valid seed bundle")
 }
 
 #[test]

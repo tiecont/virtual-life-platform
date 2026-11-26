@@ -38,7 +38,7 @@ pub struct CoopConfig {
     pub damage: DamageConfig,
     pub elements: Vec<ElementProfile>,
     pub multiplier: MultiplierConfig,
-    pub boss: BossConfig,
+    pub bosses: Vec<BossConfig>,
     pub skills: Vec<SkillConfig>,
     pub pets: Vec<PetConfig>,
     pub rewards: RewardsConfig,
@@ -381,6 +381,14 @@ impl ConfigError {
     }
 }
 
+impl std::fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message())
+    }
+}
+
+impl std::error::Error for ConfigError {}
+
 impl CoopConfig {
     /// Parse an authoritative bundle. Unknown or missing fields are rejected.
     pub fn parse(bytes: &[u8]) -> Result<Self, ConfigError> {
@@ -422,7 +430,12 @@ impl CoopConfig {
             return Err(ConfigError::Effectiveness);
         }
         self.multiplier.validate()?;
-        self.boss.validate(elements)?;
+        if self.bosses.is_empty() {
+            return Err(ConfigError::Boss);
+        }
+        for boss in &self.bosses {
+            boss.validate(elements)?;
+        }
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
         self.rewards.validate()?;
@@ -447,7 +460,7 @@ impl CoopConfig {
             self.damage.to_value(),
             Value::List(self.elements.iter().map(ElementProfile::to_value).collect()),
             self.multiplier.to_value(),
-            self.boss.to_value(),
+            Value::List(self.bosses.iter().map(BossConfig::to_value).collect()),
             Value::List(self.skills.iter().map(SkillConfig::to_value).collect()),
             Value::List(self.pets.iter().map(PetConfig::to_value).collect()),
             self.rewards.to_value(),

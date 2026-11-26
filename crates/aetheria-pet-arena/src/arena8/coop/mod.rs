@@ -17,6 +17,7 @@ pub mod config;
 pub mod simulation;
 
 use crate::arena8::Element;
+use crate::arena8::coop::config::BossConfig;
 use aetheria_game_core::{
     Canonical, Decision, Error as CoreError, LogicalClock, ProjectionIntent, RNG_VERSION, Reducer,
     Ruleset, TurnRng, Value, canonical::list,
@@ -237,6 +238,7 @@ pub struct CoopRules {
     spawn_table: [u32; 6],
     spawn_total: u32,
     effectiveness: [[u16; 6]; 6],
+    selected_boss_id: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -265,12 +267,16 @@ impl CoopState {
 
 impl CoopRules {
     /// Validate and bind an authored bundle. Fails closed on any defect.
-    pub fn load(bytes: &[u8]) -> Result<Self, ConfigError> {
-        Self::from_config(CoopConfig::parse(bytes)?)
+    pub fn load(bytes: &[u8], boss_id: String) -> Result<Self, ConfigError> {
+        Self::from_config(CoopConfig::parse(bytes)?, boss_id)
     }
 
-    pub fn from_config(config: CoopConfig) -> Result<Self, ConfigError> {
+    pub fn from_config(config: CoopConfig, boss_id: String) -> Result<Self, ConfigError> {
         config.validate()?;
+        // Verify the boss_id exists in the configuration
+        if !config.bosses.iter().any(|b| b.id == boss_id) {
+            return Err(ConfigError::Boss);
+        }
         let (spawn_table, spawn_total) = config.board.spawn_table()?;
         let mut effectiveness = [[1_000u16; 6]; 6];
         for (index, profile) in config.elements.iter().enumerate() {
@@ -285,11 +291,21 @@ impl CoopRules {
             spawn_table,
             spawn_total,
             effectiveness,
+            selected_boss_id: boss_id,
         })
     }
 
     pub fn config(&self) -> &CoopConfig {
         &self.config
+    }
+
+    pub fn selected_boss(&self) -> &BossConfig {
+        self.config.bosses.iter().find(|b| b.id == self.selected_boss_id).expect("validated boss_id")
+    }
+
+    /// Get the selected boss configuration for the current match.
+    pub fn boss_config(&self) -> &BossConfig {
+        self.selected_boss()
     }
 
     pub fn digest(&self) -> [u8; 32] {
@@ -320,17 +336,20 @@ impl CoopRules {
             }
             // Allow duplicate pet species if each account owns a distinct authorized instance.
             // Enforce strict separation of canonical_pet_id, owned_pet_instance_id, account_id, and seat_id.
-            if seat.owned_pet_instance_id.is_empty() || !seen_pets.insert(seat.owned_pet_instance_id.clone()) {
+            if seat.owned_pet_instance_id.is_empty()
+                || !seen_pets.insert(seat.owned_pet_instance_id.clone())
+            {
                 return Err(CoopError::InvalidSeat);
             }
             participants[index] = self.participant(seat)?;
         }
+        let boss_config = self.selected_boss();
         let state = CoopState {
             config_digest: self.digest,
             participants,
             boss: Boss {
-                hp: self.config.boss.max_hp,
-                max_hp: self.config.boss.max_hp,
+                hp: boss_config.max_hp,
+                max_hp: boss_config.max_hp,
                 phase: 1,
                 shield: 0,
                 armor_break_pm: 1_000,
@@ -610,8 +629,7 @@ impl CoopRules {
                     .and_then(|pet| pet.element().ok())
                     .ok_or(CoreError::InvalidState)?;
                 let boss_element = self
-                    .config
-                    .boss
+                    .boss_config()
                     .element()
                     .map_err(|_| CoreError::InvalidState)?;
                 damage = u32::try_from(
@@ -770,7 +788,7 @@ impl CoopRules {
             remaining -= absorbed;
         }
         if state.boss.phase == 1 {
-            let threshold = self.config.boss.phase_threshold();
+            let threshold = self.boss_config().phase_threshold();
             let to_threshold = state.boss.hp.saturating_sub(threshold);
             if remaining >= to_threshold {
                 // Reaches the transition. Phase 1 damage is capped at the
@@ -778,7 +796,7 @@ impl CoopRules {
                 let dealt = to_threshold;
                 state.boss.hp = state.boss.hp.saturating_sub(dealt);
                 self.transform(state)?;
-                match self.config.boss.phase.excess_damage {
+                match self.boss_config().phase.excess_damage {
                     config::ExcessDamage::Discard => return Ok(dealt),
                     config::ExcessDamage::Carry => {
                         let carried = remaining - to_threshold;
@@ -811,13 +829,11 @@ impl CoopRules {
             return Ok(());
         }
         let max_hp = self
-            .config
-            .boss
+            .boss_config()
             .phase2_max_hp()
             .map_err(|_| CoreError::InvalidState)?;
         let current = self
-            .config
-            .boss
+            .boss_config()
             .phase2_current_hp()
             .map_err(|_| CoreError::InvalidState)?;
         state.boss.max_hp = max_hp;
@@ -958,7 +974,7 @@ impl CoopRules {
         let mut damage = u32::try_from(raw).map_err(|_| CoreError::Arithmetic)?;
         // Boss defense mitigation uses the authored divisor.
         let mitigation = u32::try_from(
-            u64::from(self.config.boss.defense) / u64::from(self.config.damage.defense_divisor),
+            u64::from(self.boss_config().defense) / u64::from(self.config.damage.defense_divisor),
         )
         .unwrap_or(u32::MAX);
         damage = damage.saturating_sub(mitigation).max(1);
@@ -971,8 +987,7 @@ impl CoopRules {
                 .map_err(|_| CoreError::Arithmetic)?;
         }
         let boss_element = self
-            .config
-            .boss
+            .boss_config()
             .element()
             .map_err(|_| CoreError::InvalidState)?;
         damage = u32::try_from(
@@ -1206,9 +1221,9 @@ impl CoopRules {
         if state.pending.is_some() {
             return;
         }
-        let model = &self.config.boss.attack_model;
+        let model = &self.boss_config().attack_model;
         let phase_scale = if state.boss.phase == 2 {
-            u64::from(self.config.boss.phase.phase2_attack_pm)
+            u64::from(self.boss_config().phase.phase2_attack_pm)
         } else {
             1_000
         };
@@ -1221,32 +1236,32 @@ impl CoopRules {
         let mut damage = u32::try_from(base).unwrap_or(u32::MAX);
         let crit = rng
             .below(self.config.damage.crit_roll_basis)
-            .map(|roll| roll < u32::from(self.config.boss.crit_rate_bp))
+            .map(|roll| roll < u32::from(self.boss_config().crit_rate_bp))
             .unwrap_or(false);
         if crit {
             damage = u32::try_from(
-                u64::from(damage) * u64::from(self.config.boss.crit_damage_bp) / 10_000,
+                u64::from(damage) * u64::from(self.boss_config().crit_damage_bp) / 10_000,
             )
             .unwrap_or(u32::MAX);
             events.push(event("boss-critical", None, 0));
         }
         let targets = if state.boss.phase == 2 {
-            self.config.boss.phase.attack_targets.min(SEATS as u8)
+            self.boss_config().phase.attack_targets.min(SEATS as u8)
         } else {
             1
         };
-        if self.config.boss.telegraph_turns <= 1 {
+        if self.boss_config().telegraph_turns <= 1 {
             self.apply_boss_attack(state, targets, damage, events);
         } else {
             state.pending = Some(PendingAttack {
                 targets,
-                remaining: self.config.boss.telegraph_turns - 1,
+                remaining: self.boss_config().telegraph_turns - 1,
                 damage,
             });
             events.push(event(
                 "boss-telegraph",
                 None,
-                u64::from(self.config.boss.telegraph_turns),
+                u64::from(self.boss_config().telegraph_turns),
             ));
         }
     }
@@ -1292,16 +1307,16 @@ impl CoopRules {
                     .unwrap_or(u32::MAX);
             let effective_defense = u32::try_from(
                 u64::from(buffed_defense)
-                    / u64::from(self.config.boss.attack_model.defense_divisor),
+                    / u64::from(self.boss_config().attack_model.defense_divisor),
             )
             .unwrap_or(u32::MAX);
             let vulnerability = self.status_permille(seat, StatusKind::Vulnerability);
             let mut taken = damage
                 .saturating_sub(effective_defense)
-                .max(self.config.boss.attack_model.minimum_damage);
+                .max(self.boss_config().attack_model.minimum_damage);
             taken = u32::try_from(u64::from(taken) * u64::from(vulnerability) / 1_000)
                 .unwrap_or(u32::MAX)
-                .max(self.config.boss.attack_model.minimum_damage);
+                .max(self.boss_config().attack_model.minimum_damage);
             let seat = &mut state.participants[target];
             if seat.shield > 0 {
                 let absorbed = seat.shield.min(taken);
@@ -1332,7 +1347,7 @@ impl CoopRules {
             Value::Bytes(self.digest.to_vec()),
             Value::Bytes(content_hash(self.digest).to_vec()),
             Value::Text(phase_name(state.phase).into()),
-            Value::Text(self.config.boss.id.clone()),
+            Value::Text(self.boss_config().id.clone()),
             Value::List(state.participants.iter().map(participant_value).collect()),
             Value::Uint(u64::from(state.round_index)),
             Value::Uint(u64::from(state.turn_index)),
@@ -1601,8 +1616,8 @@ pub mod test_support {
 
     impl CoopRules {
         /// Rebuild a ruleset from a caller-supplied authored bundle.
-        pub fn for_test(config: CoopConfig) -> Result<Self, CoopError> {
-            Self::from_config(config).map_err(CoopError::Config)
+        pub fn for_test(config: CoopConfig, boss_id: String) -> Result<Self, CoopError> {
+            Self::from_config(config, boss_id).map_err(CoopError::Config)
         }
     }
 

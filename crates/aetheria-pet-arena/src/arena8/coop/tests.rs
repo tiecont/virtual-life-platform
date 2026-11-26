@@ -17,7 +17,7 @@ fn bundle() -> Vec<u8> {
 }
 
 fn rules() -> CoopRules {
-    CoopRules::load(&bundle()).expect("valid seed bundle")
+    CoopRules::load(&bundle(), "cinder-terraces-warden".to_string()).expect("valid seed bundle")
 }
 
 fn seats() -> [SeatInput; SEATS] {
@@ -118,14 +118,14 @@ fn digest_seed_bundle() -> [u8; 32] {
 
 #[test]
 fn configuration_fails_closed_when_missing_or_invalid() {
-    assert!(matches!(CoopRules::load(b""), Err(ConfigError::Malformed)));
+    assert!(matches!(CoopRules::load(b"", "dummy".to_string()), Err(ConfigError::Malformed)));
     assert!(matches!(
-        CoopRules::load(br#"{"schemaVersion":1}"#),
+        CoopRules::load(br#"{"schemaVersion":1}"#, "dummy".to_string()),
         Err(ConfigError::Malformed)
     ));
     let source: serde_json::Value = serde_json::from_slice(&bundle()).expect("json");
     let rejected =
-        |value: &serde_json::Value| CoopRules::load(&serde_json::to_vec(value).expect("encode"));
+        |value: &serde_json::Value| CoopRules::load(&serde_json::to_vec(value).expect("encode"), "dummy".to_string());
     // Unknown fields never silently become defaults.
     let mut unknown = source.clone();
     unknown["unexpected"] = serde_json::json!(1);
@@ -169,7 +169,7 @@ fn configuration_fails_closed_when_missing_or_invalid() {
     ));
     // Phase thresholds outside the authored design range are rejected.
     let mut phase = source.clone();
-    phase["boss"]["phase"]["thresholdBp"] = serde_json::json!(9000);
+    phase["bosses"][0]["phase"]["thresholdBp"] = serde_json::json!(9000);
     assert!(matches!(rejected(&phase), Err(ConfigError::BossPhase)));
     // An unsupported effect kind cannot execute, because the schema is typed.
     let mut effect = source.clone();
@@ -360,9 +360,11 @@ fn boss_phase_transition_happens_exactly_once() {
     let mut state = rules.allocate(seats()).expect("allocate");
     state.phase = CoopPhase::Playing;
     state.board = calm_board();
-    let threshold = rules.config().boss.phase_threshold();
-    assert_eq!(threshold, 3_000);
-    state.boss.hp = threshold + 10;
+    let boss_config = rules.selected_boss();
+    let threshold_bp = boss_config.phase.threshold_bp;
+    assert_eq!(threshold_bp, 2_500);
+    let threshold_hp = u32::from(boss_config.max_hp) * u32::from(threshold_bp) / 10_000;
+    state.boss.hp = threshold_hp + 10;
     // A single huge phase-1 hit may not skip phase 2.
     let huge = 10_000_000;
     rules.damage_boss(&mut state, huge).expect("phase one hit");

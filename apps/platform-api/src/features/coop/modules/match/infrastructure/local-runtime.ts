@@ -50,7 +50,7 @@ async function waitForReady(port:number,timeoutMs:number){
  throw new Error('Cooperative native runtime readiness timed out');
 }
 function nativeSeats(seats:readonly CoopSeat[]){
- return seats.map(seat=>({account:seat.account,petId:seat.petId,level:seat.petLevel,artifactPowerPm:seat.artifactPowerPm}));
+ return seats.map(seat=>({account:seat.account,petId:seat.petId,level:seat.petLevel,artifactPowerPm:seat.artifactPowerPm,ownedPetInstanceId:seat.ownedPetInstanceId}));
 }
 
 // Local-only process adapter for the configuration-bound cooperative ruleset.
