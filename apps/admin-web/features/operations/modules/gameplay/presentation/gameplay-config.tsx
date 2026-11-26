@@ -5,6 +5,7 @@ import {
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
  GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
 } from '@aetheria/contracts';
+import {SkillTrainingEditor} from './skill-training-editor';
 import {initialParty,SimulationParty} from './simulation-party';
 import {bundleDifferences} from './bundle-diff';
 
@@ -31,7 +32,9 @@ function write(source:GameplayBundle,path:readonly string[],value:unknown):Gamep
  const copy=structuredClone(source) as Record<string,unknown>;
  const parent=read(copy,path.slice(0,-1));
  if(!parent||typeof parent!=='object'||Array.isArray(parent))return source;
- (parent as Record<string,unknown>)[path[path.length-1]!]=value;
+ const key=path[path.length-1]!;
+ if(value===undefined)delete (parent as Record<string,unknown>)[key];
+ else (parent as Record<string,unknown>)[key]=value;
  return copy;
 }
 function Num({label,value,onChange,step=1,min=0,max}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number;min?:number;max?:number}){
@@ -265,7 +268,7 @@ export default function GameplayConfig({request}:{request:Request}){
   const path=[...bossPath,'rewardPolicy',kind,key];return <Num key={key} label={['Achievement Points','Coins','Pet EXP','Artifact materials'][j]} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
  })}</div></fieldset>)}</div>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
 
- <h3>Skills</h3><div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
+ <h3>Skills</h3>{bundle&&<SkillTrainingEditor key={selected.version} bundle={bundle} editable={editable} change={change}/>}<div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
  </div>
  <h3>Raw bundle (advanced)</h3><textarea className="aetheria-field" rows={14} value={json} onChange={event=>setJson(event.target.value)} disabled={!editable} /><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={applyJson}>Apply JSON to editor</button></p>
  </section>:null}
