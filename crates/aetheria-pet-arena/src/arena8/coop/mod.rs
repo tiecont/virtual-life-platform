@@ -140,9 +140,25 @@ pub struct Boss {
     pub phase: u8,
     pub shield: u32,
     pub armor_break_pm: u16,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub curse: Option<BossCurse>,
     pub dot_damage: u32,
     pub dot_turns: u8,
     pub transformed: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct BossCurse {
+    pub bonus_pm: u16,
+    pub turns: u8,
+}
+
+impl Boss {
+    pub fn incoming_damage_pm(&self) -> u16 {
+        self.armor_break_pm
+            .saturating_add(self.curse.map_or(0, |curse| curse.bonus_pm))
+            .min(10_000)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -432,6 +448,7 @@ impl CoopRules {
                 phase: 1,
                 shield: 0,
                 armor_break_pm: 1_000,
+                curse: None,
                 dot_damage: 0,
                 dot_turns: 0,
                 transformed: false,
@@ -603,6 +620,15 @@ impl CoopRules {
         let versioned = self.config.schema_version == config::CONFIG_SCHEMA_VERSION;
         let expected_boss = versioned.then_some(self.selected_boss().id.as_str());
         if state.config_digest != self.digest
+            || state.boss.curse.is_some_and(|curse| {
+                !(1..=32).contains(&curse.turns)
+                    || !(1..=9000).contains(&curse.bonus_pm)
+                    || !self
+                        .config
+                        .skills
+                        .iter()
+                        .any(|skill| skill.effect.kind == config::EffectKind::Curse)
+            })
             || state.active_seat >= SEATS
             || state.boss_id.as_deref() != expected_boss
         {
@@ -818,6 +844,17 @@ impl CoopRules {
                     Some(UtilityEffect::ManaRestore { target, amount })
                 }
             }
+            config::EffectKind::Curse => {
+                let amount = scale_effect(effect.value, power_pm)?;
+                if state.boss.curse.is_some_and(|active| {
+                    u32::from(active.bonus_pm) > amount
+                        || (u32::from(active.bonus_pm) == amount
+                            && active.turns >= effect.duration_turns)
+                }) {
+                    return Err(CoreError::InvalidAction);
+                }
+                None
+            }
             config::EffectKind::Cleanse => {
                 let statuses: Vec<_> = self
                     .targets(state, actor, effect.target)
@@ -1017,6 +1054,16 @@ impl CoopRules {
                     events.push(event("shield", Some(target as u8), u64::from(amount)));
                 }
             }
+            config::EffectKind::Curse => {
+                let bonus_pm =
+                    u16::try_from(scaled(effect.value)?).map_err(|_| CoreError::Arithmetic)?;
+                let curse = BossCurse {
+                    bonus_pm,
+                    turns: effect.duration_turns + 1,
+                };
+                state.boss.curse = Some(curse);
+                events.push(event("curse", Some(actor as u8), u64::from(bonus_pm)));
+            }
             config::EffectKind::Buff | config::EffectKind::Debuff => {
                 let value = i64::from(scaled(effect.value)?);
                 let debuff = matches!(effect.kind, config::EffectKind::Debuff);
@@ -1127,7 +1174,7 @@ impl CoopRules {
     fn damage_boss(&self, state: &mut CoopState, damage: u32) -> Result<u32, CoreError> {
         let mut remaining = u32::try_from(
             u64::from(damage)
-                .checked_mul(u64::from(state.boss.armor_break_pm))
+                .checked_mul(u64::from(state.boss.incoming_damage_pm()))
                 .ok_or(CoreError::Arithmetic)?
                 / 1_000,
         )
@@ -1501,6 +1548,12 @@ impl CoopRules {
     fn complete_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
         state.turn_index = state.turn_index.saturating_add(1);
         self.tick_dot(state, events);
+        if let Some(active) = state.boss.curse.as_mut() {
+            active.turns -= 1;
+            if active.turns == 0 {
+                state.boss.curse = None;
+            }
+        }
         self.tick_pending(state, events);
         if state.phase.terminal() {
             return;
@@ -1942,6 +1995,13 @@ impl Canonical for CoopState {
                 None => Value::Null,
             },
         ];
+        if let Some(curse) = self.boss.curse {
+            fields.push(list([
+                Value::Text("curse".into()),
+                Value::Uint(u64::from(curse.bonus_pm)),
+                Value::Uint(u64::from(curse.turns)),
+            ]));
+        }
         if let Some(id) = &self.boss_id {
             fields.push(Value::Text(id.clone()));
         }

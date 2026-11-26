@@ -26,6 +26,8 @@ namespace Aetheria.PetArena.Presentation
             root.Add(Label(TurnName, CoopNativePresenter.TurnLabel(view)));
             root.Add(new ProgressBar { name = BossName + "-meter", lowValue = 0, highValue = view.BossState.MaxHealth, value = view.BossState.Health });
             root.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
+            if (view.BossState.ArmorBreakPm > 1000)
+                root.Add(Label("coop-boss-vulnerability", "Boss damage taken ×" + (view.BossState.ArmorBreakPm / 1000f).ToString("0.###")));
             if (view.BossState.DotTurns > 0)
                 root.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
 

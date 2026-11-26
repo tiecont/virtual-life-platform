@@ -952,3 +952,36 @@ fn extended_effects_reject_inert_or_unsupported_parameters() {
         Err(ConfigError::ElementSet)
     );
 }
+
+#[test]
+fn ghost_curse_amplifies_allied_damage_then_expires_at_the_authored_turn() {
+    let mut roster = seats();
+    roster[0].pet_id = "pet-v31-ghost-vesperyn".into();
+    let (rules, mut state, mut rng) = started_with("cinder-terraces-warden", roster);
+    state.participants[0].mana = rules.config.resources.mana_cap;
+    state.participants[0].rage = rules.config.resources.rage_cap;
+    let mut marked = rules
+        .reduce(&state, CoopAction::Signature, &mut rng)
+        .unwrap()
+        .state;
+    assert_eq!(
+        marked.boss.curse,
+        Some(BossCurse {
+            bonus_pm: 300,
+            turns: 3
+        })
+    );
+    let restored: CoopState =
+        serde_json::from_slice(&serde_json::to_vec(&marked).unwrap()).unwrap();
+    assert_eq!(state_digest(&restored), state_digest(&marked));
+    let mut plain = marked.clone();
+    plain.boss.curse = None;
+    assert_ne!(state_digest(&marked), state_digest(&plain));
+    assert_eq!(rules.damage_boss(&mut plain, 100).unwrap(), 100);
+    assert_eq!(rules.damage_boss(&mut marked, 100).unwrap(), 130);
+    for _ in 0..3 {
+        rules.complete_turn(&mut marked, &mut rng, &mut Vec::new());
+    }
+    assert_eq!(marked.boss.curse, None);
+    assert_eq!(rules.damage_boss(&mut marked, 100).unwrap(), 100);
+}

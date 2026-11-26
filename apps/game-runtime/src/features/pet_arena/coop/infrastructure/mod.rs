@@ -181,7 +181,7 @@ impl Game for Rules {
                 "maxHp": state.boss.max_hp,
                 "phase": state.boss.phase,
                 "shield": state.boss.shield,
-                "armorBreakPm": state.boss.armor_break_pm,
+                "armorBreakPm": state.boss.incoming_damage_pm(),
                 "dotDamage": state.boss.dot_damage,
                 "dotTurns": state.boss.dot_turns,
                 "transformed": state.boss.transformed,

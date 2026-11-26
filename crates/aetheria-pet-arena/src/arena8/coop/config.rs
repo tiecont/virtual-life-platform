@@ -382,6 +382,7 @@ pub enum EffectKind {
     ManaRestore,
     Cleanse,
     ChainDamage,
+    Curse,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -1398,6 +1399,7 @@ impl SkillConfig {
             {
                 Err(ConfigError::Skill)
             }
+            EffectKind::Curse if !(1..=9_000).contains(&scaled_value) => Err(ConfigError::Skill),
             EffectKind::Cleanse if power != 1_000 => Err(ConfigError::Skill),
             EffectKind::ChainDamage if !(1..=u64::from(u32::MAX)).contains(&scaled_value) => {
                 Err(ConfigError::Skill)
@@ -1482,6 +1484,17 @@ impl EffectConfig {
     }
 
     fn validate_extended(&self) -> Result<(), ConfigError> {
+        if self.kind == EffectKind::Curse {
+            return if self.target == EffectTarget::Boss
+                && self.hits.is_none()
+                && (1..=32).contains(&self.duration_turns)
+                && self.stacking_pm == 1000
+            {
+                Ok(())
+            } else {
+                Err(ConfigError::Skill)
+            };
+        }
         if self.duration_turns != 0 || self.stacking_pm != 1_000 {
             return Err(ConfigError::Skill);
         }
@@ -1517,7 +1530,11 @@ impl EffectKind {
     fn is_extended(self) -> bool {
         matches!(
             self,
-            Self::RageTransfer | Self::ManaRestore | Self::Cleanse | Self::ChainDamage
+            Self::RageTransfer
+                | Self::ManaRestore
+                | Self::Cleanse
+                | Self::ChainDamage
+                | Self::Curse
         )
     }
 }
@@ -1617,6 +1634,7 @@ const fn effect_kind_name(kind: EffectKind) -> &'static str {
         EffectKind::ManaRestore => "mana-restore",
         EffectKind::Cleanse => "cleanse",
         EffectKind::ChainDamage => "chain-damage",
+        EffectKind::Curse => "curse",
     }
 }
 
