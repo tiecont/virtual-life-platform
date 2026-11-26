@@ -154,8 +154,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 var collection = await api.GetWave1State(lifetime.Token);
                 if (SceneManager.GetActiveScene().name != map.SceneName) return;
-                var eligibilityJson = await api.CoopRequest("/v1/coop/eligibility?mapId=" + Uri.EscapeDataString(map.Id), null, lifetime.Token);
-                var eligibility = JsonUtility.FromJson<CoopLobbyClient.Eligibility>(eligibilityJson);
+                var eligibility = await api.GetCoopEligibility(map.Id, lifetime.Token);
                 if (eligibility == null || string.IsNullOrEmpty(eligibility.bossId)) throw new FormatException("Missing encounter for this portal.");
                 if (SceneManager.GetActiveScene().name != map.SceneName) return;
                 campaign = gameObject.AddComponent<CoopNativeCampaignScreen>();
