@@ -151,11 +151,21 @@ namespace Aetheria.PetArena.Presentation
                 var list = new ScrollView();
                 foreach (var pet in collection.pets)
                 {
-                    list.Add(new Button(() => OpenArtifacts(world, collection, pet.petId))
+                    var row = new VisualElement();
+                    var summary = new Label(pet.name + " · " + pet.element + " · Lv " + pet.level + " · " + pet.exp + " EXP");
+                    summary.AddToClassList("arena-meta");
+                    row.Add(summary);
+                    row.Add(new Button(() => OpenArtifacts(world, collection, pet.petId))
                     {
                         name = "coop-artifacts-" + pet.petId,
-                        text = pet.name + " · " + pet.element + " · Lv " + pet.level + " · " + pet.exp + " EXP · Artifacts"
+                        text = "Artifacts"
                     });
+                    if (Guid.TryParseExact(pet.ownedPetInstanceId, "D", out var instanceId) && instanceId != Guid.Empty)
+                        row.Add(new Button(() => OpenSkills(world, pet, instanceId))
+                        {
+                            name = "coop-skills-" + instanceId.ToString("D"), text = "Skills"
+                        });
+                    list.Add(row);
                 }
                 collectionPanel.Add(list);
             }
@@ -166,6 +176,16 @@ namespace Aetheria.PetArena.Presentation
             {
                 name = "coop-collection-back", text = "Back to Central Plaza"
             });
+        }
+
+        private void OpenSkills(WorldSceneControllerBase world, Wave1Pet pet, Guid instanceId)
+        {
+            var root = document.rootVisualElement;
+            root.Clear();
+            var skills = new CoopSkillPanel(new CoopSkillClient(api), instanceId, pet, lifetime.Token,
+                () => _ = OpenCollectionAsync(world));
+            root.Add(skills);
+            _ = skills.RefreshAsync();
         }
 
         private void OpenArtifacts(WorldSceneControllerBase world, Wave1State collection, string petId)
