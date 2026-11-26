@@ -250,9 +250,18 @@ impl EncounterPayout {
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EncounterRewards {
+    /// Successful combat commands per seat, excluding the initial Start command.
+    pub minimum_actions: Option<ParticipationThreshold>,
     pub first_clear: EncounterPayout,
     pub repeat_clear: EncounterPayout,
     pub defeat: EncounterPayout,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ParticipationThreshold {
+    pub victory: u16,
+    pub defeat: u16,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -1208,7 +1217,11 @@ impl BossConfig {
             return Err(ConfigError::Boss);
         }
         if let Some(policy) = &self.reward_policy {
-            if self.map_id.is_none() {
+            if self.map_id.is_none()
+                || policy.minimum_actions.as_ref().is_some_and(|limits| {
+                    limits.victory > super::MAX_TURNS || limits.defeat > super::MAX_TURNS
+                })
+            {
                 return Err(ConfigError::Rewards);
             }
             for payout in [&policy.first_clear, &policy.repeat_clear, &policy.defeat] {
@@ -1270,11 +1283,18 @@ impl BossConfig {
             fields.push(Value::Text(map_id.clone()));
         }
         if let Some(p) = &self.reward_policy {
-            fields.push(list([
+            let mut payouts = vec![
                 p.first_clear.to_value(),
                 p.repeat_clear.to_value(),
                 p.defeat.to_value(),
-            ]));
+            ];
+            if let Some(limits) = &p.minimum_actions {
+                payouts.push(list([
+                    Value::Uint(u64::from(limits.victory)),
+                    Value::Uint(u64::from(limits.defeat)),
+                ]));
+            }
+            fields.push(Value::List(payouts));
         }
         if let Some(required) = &self.required_map_clear {
             // Append only when authored to preserve existing published digests.

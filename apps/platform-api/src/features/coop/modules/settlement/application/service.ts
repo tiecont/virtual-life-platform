@@ -21,7 +21,7 @@ const RewardsSchema=z.strictObject({
 
 const PayoutSchema=z.strictObject({achievementPoints:count,coins:count,exp:count,materials:count});
 const EncounterSchema=z.object({
- id:pet,mapId:pet,rewardPolicy:z.strictObject({firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema}).optional(),
+ id:pet,mapId:pet,rewardPolicy:z.strictObject({minimumActions:z.strictObject({victory:z.int().min(0).max(4096),defeat:z.int().min(0).max(4096)}).optional(),firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema}).optional(),
 });
 
 function encounterFor(bundle:Record<string,unknown>,bossId:string){
@@ -93,8 +93,10 @@ export class CoopSettlement{
    const exp=outcome==='won'?rewards.clearExp:rewards.lossExp;
    await this.store.begin(db,{settlementId:event.settlementId,matchId:event.matchId,roomId:allocation.roomId,outcome,points});
    await lockAccounts(db,allocation.seats.map(seat=>seat.account));
+   const minimum=policy?.minimumActions?.[outcome==='won'?'victory':'defeat']??0;
+   const qualified=minimum>0?await this.store.participatingAccounts(db,event.matchId,event.stateVersion,minimum):null;
    for(const [seatIndex,seat] of allocation.seats.entries()){
-    const active=await this.store.accountActive(db,seat.account);
+    const active=(!qualified||qualified.has(seat.account))&&await this.store.accountActive(db,seat.account);
     const firstClear=active&&policy&&encounter&&outcome==='won'&&await this.store.clearBoss(db,seat.account,encounter.mapId);
     const payout=firstClear?policy.firstClear:defaultPayout;
     const awardPoints=active?(payout?.achievementPoints??points):0;

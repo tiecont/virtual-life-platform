@@ -68,6 +68,14 @@ export class CoopSettlementStore{
   )).rows[0];
   return row?.bundle;
  }
+ async participatingAccounts(tx:Queryable,matchId:string,terminalVersion:string,minimumActions:number):Promise<Set<string>>{
+  // Each committed version has exactly one receipt, including support moves.
+  // Version one starts the board and is not a combat action.
+  const {rows}=await tx.query<{actor_id:string}>(
+   `SELECT actor_id FROM game_native_receipts WHERE match_id=$1 AND committed_version>1 AND committed_version<=$2
+    GROUP BY actor_id HAVING count(*) >= $3`,[matchId,terminalVersion,minimumActions]);
+  return new Set(rows.map(row=>row.actor_id));
+ }
  async accountActive(tx:Queryable,accountId:string):Promise<boolean>{
   return (await tx.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'",[accountId])).rowCount===1;
  }

@@ -14,6 +14,7 @@ const {installGameplayConfig}=require('../apps/platform-api/src/features/gamepla
 const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
 const {STARTING_MATERIALS}=require('../apps/platform-api/src/features/pets/modules/wave-a-artifacts/domain/catalog.ts');
 const {CoopSettlement}=require('../apps/platform-api/src/features/coop/modules/settlement/application/service.ts');
+const {CoopSettlementStore}=require('../apps/platform-api/src/features/coop/modules/settlement/infrastructure/store.ts');
 const {OperatorService}=require('../apps/platform-api/src/features/identity/modules/operators/application/operator-service.ts');
 const {totp}=require('../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto.ts');
 const {decodeServer}=require('../packages/native-protocol/dist/index.js');
@@ -94,6 +95,9 @@ try{
  }
  // A test-only publication makes the Fire match winnable with legal swaps.
  fire.rewardPolicy.repeatClear.coins=17;
+ // All four seats perform a combat action in Water. A recovered player earns
+ // the pinned defeat payout regardless of their final connection or damage.
+ water.rewardPolicy.minimumActions={victory:1,defeat:1};
  fire.maxHp=4;
  fire.defense=1;
  bundle.party.maxRounds=6;
@@ -342,6 +346,14 @@ try{
    assert.equal(view.state.participants.length,4);
    assert.equal(view.state.board.length,64);
    state=view.state;
+  }
+  if(boss===water){
+   const store=new CoopSettlementStore();
+   // Version two includes Start, a rejected wrong-seat attempt, and the host's guard.
+   assert.deepEqual(await store.participatingAccounts(pool,allocation.match_id,'2',1),new Set([host.accountId]));
+   assert.equal((await store.participatingAccounts(pool,allocation.match_id,'2',2)).size,0);
+   assert.deepEqual(await store.participatingAccounts(pool,allocation.match_id,String(version),1),new Set(members.map(member=>member.accountId)));
+   facts.scenarios.push('pinned-participation-counted-committed-guards-and-excluded-start-rejections-and-idle-seats');
   }
   const beforeRestart=state;
   if(boss===fire){
