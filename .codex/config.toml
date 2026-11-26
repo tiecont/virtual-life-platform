@@ -1,0 +1,108 @@
+# Project defaults for the OpenAI Codex CLI. Shared workflows live outside .codex.
+model = "gpt-6.2-astra"
+model_reasoning_effort = "medium"
+approval_policy = "on-request"
+approvals_reviewer = "user"
+default_permissions = "aetheria-local"
+web_search = "disabled"
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+# V1 depth limit. For isolated writers, start a worker with delegation disabled.
+max_depth = 1
+default_subagent_model = "gpt-6.2-sol"
+default_subagent_reasoning_effort = "medium"
+
+[features]
+apps = false
+plugins = false
+
+[shell_environment_policy]
+inherit = "core"
+
+[permissions.aetheria-local]
+description = "Offline Aetheria development in this workspace"
+extends = ":workspace"
+
+[permissions.aetheria-local.filesystem]
+glob_scan_max_depth = 4
+"~/.codex/auth*" = "deny"
+"~/.codex/.cockpit*auth*" = "deny"
+"~/.codex/config.toml*" = "deny"
+"~/.codex/*.config.toml" = "deny"
+"~/.codex/backup-deepseek" = "deny"
+"~/.codex/sessions" = "deny"
+"~/.codex/archived_sessions" = "deny"
+"~/.codex/*history*" = "deny"
+"~/.codex/log*" = "deny"
+"~/.ssh" = "deny"
+"~/.gnupg" = "deny"
+"~/.aws" = "deny"
+"~/.config/gh" = "deny"
+"~/.config/gcloud" = "deny"
+"~/.docker" = "deny"
+"~/.git-credentials" = "deny"
+"~/.netrc" = "deny"
+"~/.kube" = "deny"
+"~/.npmrc" = "deny"
+"/run/docker.sock" = "deny"
+
+[permissions.aetheria-local.filesystem.":workspace_roots"]
+".env" = "deny"
+".env.*" = "deny"
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"artifacts/local-preview" = "deny"
+
+[permissions.aetheria-local.network]
+enabled = false
+
+[permissions.aetheria-review]
+description = "Offline Aetheria review with the repository mounted read-only"
+extends = "aetheria-local"
+
+[permissions.aetheria-review.filesystem.":workspace_roots"]
+"." = "read"
+
+# Installed system tools plus the checkout are readable. Use the system Codex
+# binary for this profile so the sandbox helper is inside the system paths.
+[permissions.aetheria-restricted]
+description = "Read-only local review with checkout and system runtime reads"
+extends = "aetheria-review"
+
+[permissions.aetheria-restricted.filesystem]
+":root" = "deny"
+":minimal" = "read"
+":tmpdir" = "deny"
+":slash_tmp" = "deny"
+
+[permissions.aetheria-worker]
+description = "Isolated implementation inside a dedicated worktree"
+extends = "aetheria-restricted"
+
+[permissions.aetheria-worker.filesystem.":workspace_roots"]
+"." = "write"
+".git" = "read"
+".codex" = "read"
+".agents" = "read"
+
+# These inherited integrations start disabled here. Global registrations are preserved.
+[mcp_servers.node_repl]
+enabled = false
+command = "false"
+[mcp_servers.blender]
+enabled = false
+command = "false"
+[mcp_servers.meshy]
+enabled = false
+command = "false"
+[mcp_servers.chrome-devtools]
+enabled = false
+command = "false"
+[mcp_servers.cloudflare]
+enabled = false
+url = "http://127.0.0.1:1"
+[mcp_servers.unity-mcp]
+enabled = false
+command = "false"
