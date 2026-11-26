@@ -54,6 +54,13 @@ namespace Aetheria.Tests
             Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2", "\"seat\":4")));
         }
 
+        [Test]
+        public void RequiresAnExplicitSeatIncludingForTheHost()
+        {
+            Assert.That(CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2", "\"seat\":0")).Seat, Is.Zero);
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2,", "")));
+        }
+
         private static string RoomJson() => "{\"roomId\":\"" + RoomId + "\",\"ruleset\":\"arena8-coop-pve\"," +
             "\"bossId\":\"cinder-terraces-warden\",\"status\":\"OPEN\",\"revision\":1,\"configVersion\":2," +
             "\"requiredPoints\":5000,\"createdAt\":\"2026-01-01T00:00:00Z\",\"you\":{\"seat\":0,\"isHost\":true}," +
