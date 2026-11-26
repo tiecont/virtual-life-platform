@@ -92,7 +92,7 @@ describe('cooperative match provisioner',()=>{
   const {provisioner,store}=fixture();
   await expect(provisioner.start({...startInput,configDigest:'cc'.repeat(32)})).rejects.toMatchObject({status:503});
   await expect(provisioner.start({...startInput,seats:SEATS.slice(0,3) as unknown as readonly CoopSeat[]})).rejects.toBeInstanceOf(DomainError);
-  const repeated=SEATS.map((seat,index)=>({...seat,ownedPetInstanceId:SEATS[0].ownedPetInstanceId}));
+  const repeated=SEATS.map(seat=>({...seat,ownedPetInstanceId:SEATS[0].ownedPetInstanceId}));
   await expect(provisioner.start({...startInput,seats:repeated})).rejects.toBeInstanceOf(DomainError);
   expect(store.rows.size).toBe(0);
  });
