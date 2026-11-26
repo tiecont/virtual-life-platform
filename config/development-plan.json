@@ -419,6 +419,11 @@
           {
             "command": "node scripts/engineering-harness/state.mjs recover canonical-d3",
             "exitCode": 0
+          },
+          {
+            "command": "python3 scripts/engineering-harness/codex-config-check.py",
+            "exitCode": 0,
+            "result": "Profile and specialist validation, sibling and credential isolation, network denial and worker write scope passed."
           }
         ],
         "remaining": "Protected hosted CI and review before merge."
@@ -10774,15 +10779,27 @@
         "Submit legal intents through the shared board, show multiplier tiles, Boss transformation and elemental skills, win through player actions and verify durable per-account awards.",
         "Return to hub and enter Water through its portal. Reconnect and restart an active match and prove no duplicate payouts. Record build SHA, commands, evidence and automation roles."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Run the real packaged Linux executable with four independently authenticated accounts. Existing editor suites do not establish this acceptance. Keep the Icarus prefab review separate.",
+      "remaining": "Run four independently authenticated accounts through the normal packaged player path and record guest login, actual movement, portal interaction, Fire victory, durable payout, return, Water entry and reconnect. Keep human playtesting and Icarus prefab acceptance separate.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
-      ]
+      ],
+      "implementation": {
+        "sourceRevision": "098379930a7d4bc3945f71fe6021632c8713a4ae",
+        "pullRequest": 86,
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The existing Linux executable builds with the registered world scenes. Batch builds load the normal initial scene before the shader preprocessor scans and restores the active scene.",
+        "commands": [
+          {
+            "command": "UNITY_EDITOR=<pinned 6000.3.14f1 Editor> node scripts/unity-validate.mjs linux",
+            "exitCode": 0
+          }
+        ]
+      }
     },
     {
       "id": "VL-200",
@@ -10804,7 +10821,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Focused compatibility and build checks passed locally. Complete current hosted checks and confirm real PR84 row backfill and recovery evidence for already active allocations.",
+      "remaining": "Confirm current hosted checks before merge. Original runtime binary qualification is tracked separately from the successful database expansion and historical schema decoding.",
       "implementation": {
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "pullRequest": 86,
@@ -10827,6 +10844,12 @@
             "command": "pnpm --filter @aetheria/platform-api typecheck",
             "exitCode": 0,
             "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx artifacts/d3-pr84-backfill.mjs",
+            "exitCode": 0,
+            "sourceRevision": "098379930a7d4bc3945f71fe6021632c8713a4ae",
+            "result": "Focused disposable proof seeded a frozen four-seat PR84 allocation and an unselected seat. Migration 0062 backfilled four real ownership IDs, left the unselected ID null, retained all 61 prior checksums and original allocation JSON, and preserved the roster freeze."
           }
         ]
       }
