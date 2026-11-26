@@ -111,6 +111,29 @@ namespace Aetheria.Networking
             { Targets = targets; Remaining = remaining; Damage = damage; }
         }
 
+        public sealed class Ability
+        {
+            public string Kind { get; }
+            public string Id { get; }
+            public int Mana { get; }
+            public int Rage { get; }
+            public int Cooldown { get; }
+            public bool Ready { get; }
+
+            internal Ability(XElement value, string kind)
+            {
+                ProjectionJson.ObjectFields(value, "kind", "id", "mana", "rage", "cooldown", "ready");
+                Kind = Token(value.Element("kind"), kind);
+                Id = Text(value.Element("id"), 3, 128);
+                Mana = Bounded(value.Element("mana"), 0, ushort.MaxValue);
+                Rage = Bounded(value.Element("rage"), 0, ushort.MaxValue);
+                Cooldown = Bounded(value.Element("cooldown"), 0, byte.MaxValue);
+                Ready = ProjectionJson.Boolean(value.Element("ready"));
+            }
+        }
+
+        public IReadOnlyList<Ability> Abilities { get; }
+        public string BossId { get; }
         public ulong Version { get; }
         public long Epoch { get; }
         public string Reward { get; }
@@ -133,6 +156,7 @@ namespace Aetheria.Networking
         private CoopNativeView(ulong version, long epoch, string reward, Fields fields)
         {
             Version = version; Epoch = epoch; Reward = reward;
+            Abilities = Array.AsReadOnly(fields.Abilities); BossId = fields.BossId;
             RulesetId = fields.RulesetId; RulesetVersion = fields.RulesetVersion;
             ContentHash = fields.ContentHash; ConfigDigest = fields.ConfigDigest;
             You = fields.You; Phase = fields.Phase; ActiveSeat = fields.ActiveSeat; Turn = fields.Turn; Round = fields.Round;
@@ -152,7 +176,7 @@ namespace Aetheria.Networking
                 throw new FormatException("Invalid coop reward");
             var play = root.Element("state");
             ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
-                "turn", "round", "boss", "board", "participants", "pending");
+                "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId");
             if (ProjectionJson.Integer(play.Element("schemaVersion")) != 1) throw new FormatException("Invalid coop schema");
 
             var fields = new Fields { Epoch = epoch, Reward = reward };
@@ -167,6 +191,14 @@ namespace Aetheria.Networking
             fields.ActiveSeat = Bounded(play.Element("activeSeat"), 0, Seats - 1);
             fields.Turn = Bounded(play.Element("turn"), 0, MaxTurn);
             fields.Round = Bounded(play.Element("round"), 1, MaxRound);
+            if (play.Element("abilities") != null)
+            {
+                var kinds = new[] { Guard, Skill, Signature, Ultimate, FireZone };
+                var entries = ProjectionJson.Array(play.Element("abilities"), kinds.Length);
+                if (entries.Length < 4) throw new FormatException("Incomplete ability projection");
+                fields.Abilities = entries.Select((value, slot) => new Ability(value, kinds[slot])).ToArray();
+                fields.BossId = Text(play.Element("bossId"), 3, 64);
+            }
             fields.Boss = ReadBoss(play.Element("boss"));
             fields.Board = ReadBoard(play.Element("board"));
             fields.Participants = ReadParticipants(play.Element("participants"));
@@ -182,7 +214,7 @@ namespace Aetheria.Networking
             var health = Bounded(boss.Element("hp"), 0, MaxHealth);
             if (health > maxHealth) throw new FormatException("Boss health exceeds its maximum");
             return new Boss(health, maxHealth, Bounded(boss.Element("phase"), 1, 2),
-                Bounded(boss.Element("shield"), 0, MaxHealth), Bounded(boss.Element("armorBreakPm"), 0, 1_000),
+                Bounded(boss.Element("shield"), 0, MaxHealth), Bounded(boss.Element("armorBreakPm"), 0, 10_000),
                 Bounded(boss.Element("dotDamage"), 0, MaxHealth), Bounded(boss.Element("dotTurns"), 0, 100),
                 ProjectionJson.Boolean(boss.Element("transformed")));
         }
@@ -317,6 +349,8 @@ namespace Aetheria.Networking
             public int Turn;
             public int Round;
             public Boss Boss;
+            public Ability[] Abilities = Array.Empty<Ability>();
+            public string BossId;
             public Tile[] Board;
             public Participant[] Participants;
             public Pending Pending;

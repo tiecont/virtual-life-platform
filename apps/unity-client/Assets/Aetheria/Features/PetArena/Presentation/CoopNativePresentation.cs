@@ -73,10 +73,22 @@ namespace Aetheria.PetArena.Presentation
             var actions = new VisualElement { name = "coop-actions" };
             actions.style.flexDirection = FlexDirection.Row;
             var available = CoopNativePresenter.AvailableActions(view);
-            foreach (var kind in new[] { "guard", "skill", "signature", "ultimate" })
+            actions.style.flexWrap = Wrap.Wrap;
+            var kinds = view.Abilities.Count == 0 ? new[] { "guard", "skill", "signature", "ultimate" } :
+                view.Abilities.Select(ability => ability.Kind).ToArray();
+            foreach (var kind in kinds)
             {
                 var action = kind;
-                var button = new Button(() => cast(action)) { text = ActionName(action) };
+                var ability = view.Abilities.FirstOrDefault(item => item.Kind == action);
+                var label = ActionName(action);
+                if (ability != null)
+                {
+                    var prefix = view.Own.PetId + "-";
+                    var name = ability.Id.StartsWith(prefix, StringComparison.Ordinal) ? ability.Id.Substring(prefix.Length) : ability.Id;
+                    label = name.Replace('-', ' ') + " · " + ability.Mana + " MP / " + ability.Rage + " rage";
+                    if (ability.Cooldown > 0) label += " · cooldown " + ability.Cooldown;
+                }
+                var button = new Button(() => cast(action)) { text = label };
                 button.name = ActionPrefix + action;
                 button.SetEnabled(available.Contains(action));
                 actions.Add(button);

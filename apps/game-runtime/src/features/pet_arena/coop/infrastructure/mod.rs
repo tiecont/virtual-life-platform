@@ -159,7 +159,7 @@ impl Game for Rules {
                 })
             })
             .collect::<Vec<_>>();
-        let projection = serde_json::json!({
+        let mut projection = serde_json::json!({
             "schemaVersion": 1,
             "ruleset": {
                 "id": ruleset.id,
@@ -190,6 +190,34 @@ impl Game for Rules {
                 "damage": pending.damage,
             })),
         });
+        // Older bundles retain the historical projection exactly. New local
+        // catalog matches present the caller's own published abilities.
+        let config = self.engine().config();
+        if config.has_artifact_catalog() {
+            let own = &state.participants[seat];
+            let pet = config.pet(&own.pet_id).ok_or(Error::Integrity)?;
+            let slots = [
+                ("guard", Some(pet.guard.as_str())),
+                ("skill", Some(pet.skill.as_str())),
+                ("signature", Some(pet.signature.as_str())),
+                ("ultimate", Some(pet.ultimate.as_str())),
+                ("fire-zone", pet.fire_zone.as_deref()),
+            ];
+            let mut abilities = Vec::new();
+            for (slot, (kind, id)) in slots.into_iter().enumerate() {
+                let Some(id) = id else { continue };
+                let skill = config.skill(id).ok_or(Error::Integrity)?;
+                abilities.push(serde_json::json!({
+                    "kind": kind, "id": id, "mana": skill.mana_cost, "rage": skill.rage_cost,
+                    "cooldown": own.cooldowns[slot],
+                    "ready": state.phase == CoopPhase::Playing && seat == state.active_seat && own.alive
+                        && own.cooldowns[slot] == 0 && own.mana >= skill.mana_cost && own.rage >= skill.rage_cost,
+                }));
+            }
+            projection["abilities"] = serde_json::Value::Array(abilities);
+            projection["bossId"] =
+                serde_json::Value::String(self.engine().selected_boss().id.clone());
+        }
         serde_json::to_vec(&projection).map_err(|_| Error::Invalid)
     }
 }

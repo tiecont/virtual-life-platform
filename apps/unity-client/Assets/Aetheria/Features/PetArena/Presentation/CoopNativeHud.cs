@@ -167,6 +167,7 @@ namespace Aetheria.PetArena.Presentation
                     case "guard": await current.GuardAsync(); break;
                     case "skill": await current.SkillAsync(); break;
                     case "signature": await current.SignatureAsync(); break;
+                    case "fire-zone": await current.FireZoneAsync(); break;
                     case "ultimate": await current.UltimateAsync(); break;
                 }
             }
