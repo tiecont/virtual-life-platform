@@ -16,6 +16,7 @@ pub mod binding;
 mod board;
 mod bound;
 mod combat;
+pub mod coop;
 mod engine;
 mod events;
 mod model;

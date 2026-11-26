@@ -201,7 +201,7 @@ fn projection_is_authored_and_excludes_secrets_and_the_account() {
             .map(|byte| format!("{byte:02x}"))
             .collect::<String>()
     );
-    assert_eq!(projection["ruleset"]["bindingVersion"], 1);
+    assert_eq!(projection["ruleset"]["bindingVersion"], 2);
     assert_eq!(
         projection["stats"]["effective"]["health"],
         u64::from(blob(&state).effective().health)
@@ -217,11 +217,10 @@ fn projection_is_authored_and_excludes_secrets_and_the_account() {
         binding::stat_semantics(ArtifactStat::Speed).effect,
         StatEffect::Inactive
     );
-    // Lv20 in this ruleset version unlocks only the reserved power-skill
-    // milestone; Signature (Lv40) and Ultimate (Lv60) stay locked.
+    // Owner decision: complete authored skills are available from Lv1.
     assert_eq!(
         projection["skills"],
-        serde_json::json!(["shared-skill", "guard"])
+        serde_json::json!(["shared-skill", "signature", "ultimate", "guard"])
     );
 }
 

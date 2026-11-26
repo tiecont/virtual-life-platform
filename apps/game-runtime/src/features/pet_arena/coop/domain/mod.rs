@@ -1,0 +1,105 @@
+//! Configuration-bound cooperative domain adapter.
+use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
+use aetheria_pet_arena::arena8::coop::{
+    ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+};
+use std::sync::Arc;
+
+pub const RULESET_ID: &str = "arena8-coop-pve";
+pub const RULESET_VERSION: u32 = 1;
+pub const MAX_SEAT_POWER_PM: u16 = 5_000;
+
+pub struct Rules {
+    engine: Arc<CoopRules>,
+    seats: [SeatInput; SEATS],
+}
+
+impl Rules {
+    /// Bind the published bundle and the server-authored seat allocation.
+    /// Missing, malformed, incompatible or mismatched input fails closed.
+    pub fn load(bundle: &[u8], seats: [SeatInput; SEATS]) -> Result<Self, ConfigError> {
+        let mut accounts = std::collections::BTreeSet::new();
+        let mut pets = std::collections::BTreeSet::new();
+        for seat in &seats {
+            if seat.account.is_empty()
+                || !accounts.insert(seat.account.clone())
+                || !pets.insert(seat.pet_id.clone())
+                || !(1..=60).contains(&seat.level)
+                || seat.artifact_power_pm > MAX_SEAT_POWER_PM
+            {
+                return Err(ConfigError::Party);
+            }
+        }
+        let engine = CoopRules::load(bundle)?;
+        Ok(Self {
+            engine: Arc::new(engine),
+            seats,
+        })
+    }
+
+    pub fn initial(&self) -> Result<CoopState, CoopError> {
+        self.engine.allocate(self.seats.clone())
+    }
+
+    pub fn engine(&self) -> &CoopRules {
+        &self.engine
+    }
+
+    pub fn content_hash(&self) -> [u8; 32] {
+        self.engine.ruleset().content_hash
+    }
+
+    /// Restored state must belong to the same published configuration and the
+    /// same immutable seat allocation. A different bundle never resumes a match.
+    pub fn verify(&self, state: &CoopState) -> Result<(), Error> {
+        self.engine.validate(state)?;
+        if state.config_digest != self.engine.digest() {
+            return Err(Error::InvalidState);
+        }
+        for (seat, participant) in self.seats.iter().zip(state.participants.iter()) {
+            if participant.account != seat.account
+                || participant.pet_id != seat.pet_id
+                || participant.level != seat.level
+            {
+                return Err(Error::InvalidState);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn member(&self, state: &CoopState, account: &str) -> bool {
+        state
+            .participants
+            .iter()
+            .any(|participant| !participant.account.is_empty() && participant.account == account)
+    }
+
+    pub fn seat(&self, state: &CoopState, account: &str) -> Option<usize> {
+        state.participants.iter().position(|participant| {
+            !participant.account.is_empty() && participant.account == account
+        })
+    }
+}
+
+impl Reducer for Rules {
+    type State = CoopState;
+    type Action = CoopAction;
+
+    fn ruleset(&self) -> Ruleset {
+        self.engine.ruleset()
+    }
+
+    fn validate(&self, state: &Self::State) -> Result<(), Error> {
+        self.verify(state)
+    }
+
+    fn reduce(
+        &self,
+        state: &Self::State,
+        action: &Self::Action,
+        _clock: LogicalClock,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<Self::State>, Error> {
+        self.engine.reduce(state, *action, rng)
+    }
+}

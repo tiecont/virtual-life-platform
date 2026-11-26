@@ -34,6 +34,33 @@ Keep authentication, authorization, privacy, consent, moderation and release gat
 Source implementation and green CI do not authorize production deployment,
 purchases, signing, media licensing, destructive migrations or public dating.
 
+## Gameplay Configuration Authority
+
+PostgreSQL is the single source of truth for supported gameplay configuration
+and progression. Admin owns validation, draft/published versions, publication,
+rollback and audit; Nest owns authorization/allocation/progression; Rust executes
+the validated immutable configuration; Unity presents committed results. Rust
+must not carry production gameplay balance defaults. Missing or invalid required
+configuration fails closed. New gameplay mechanisms require an implemented typed
+engine capability, never arbitrary Admin scripts.
+
+Enforceable rules for new gameplay:
+
+- A supported gameplay value is authored in a typed, versioned configuration
+  bundle and published from PostgreSQL. Rust owns algorithms, structural engine
+  capability and technical safety bounds only.
+- The cooperative ruleset `arena8-coop-pve` must load its bundle through
+  `CoopRules::load` and fail closed. Do not add a fallback table, a hidden
+  default or a numeric balance constant to it.
+- Publication must be validated by the engine itself:
+  `aetheria-game-runtime --check-gameplay-config <bundle>` prints the content
+  digest and exits non-zero on any defect. Do not re-implement the schema in
+  TypeScript.
+- An active match keeps its original configuration digest and bundle across
+  restart; publication affects new allocations only.
+- Seed and test bundles are source-controlled inputs (`config/gameplay/`,
+  `crates/*/tests/fixtures/`), never a live authority.
+
 Keep the checkout focused on source, tests, assets, build/runtime configuration,
 and the maintained backlog. Do not add session diaries, review transcripts,
 generated evidence or archived plan packs. Put fresh logs under ignored artifacts/.
@@ -48,9 +75,12 @@ Preserve owner changes and untracked files. Do not commit secrets or local IDE d
 ## Token-Saving CI Rule
 
 Never poll or loop on `gh pr checks` or GitHub Actions, including watch modes.
-After pushing and opening or updating the PR, check once that CI triggered and
-end the session. Before merging in a later session, confirm green CI for the
-current source revision.
+After a final delivery push, check once that CI triggered. A push, open PR or
+triggered CI run is not a completion boundary: continue all unblocked
+implementation and local verification while CI runs. Check CI again only after
+another final delivery push; before merging in a later session, confirm green CI
+for the current source revision. Never skip or weaken security, compatibility,
+branch-protection or release gates to make CI pass.
 
 Session report: task IDs, changed areas, actual checks, commit/PR, remaining risks,
 and next exact action. Do not imply background progress after ending a session.

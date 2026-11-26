@@ -9,7 +9,7 @@ const tables = new Set();
 for (const file of await readdir('apps/platform-api/src/shared/database/migrations')) {
   if (!file.endsWith('.sql')) continue;
   const sql = await readFile('apps/platform-api/src/shared/database/migrations/' + file, 'utf8');
-  for (const match of sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z_]+)/gi)) {
+  for (const match of sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-z0-9_]+)/gi)) {
     const table = match[1];
     assert(!tables.has(table), `Table created twice: ${table}`);
     assert(ownership.tables[table], `Table without declared owner: ${table}`);

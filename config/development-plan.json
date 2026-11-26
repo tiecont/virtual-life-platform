@@ -36,7 +36,7 @@
   ],
   "mvpProgram": {
     "schemaVersion": 1,
-    "wave": "Wave C",
+    "wave": "Wave D2",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
     "operatingRule": "Future development requests are executed as substantial, coordinated development waves: name the MVP milestone, split independent file-owned workstreams, integrate through one owner, and record measured acceptance. Do not substitute isolated microtasks, audits or documentation for playable progress.",
     "backlog": "config/development-plan.json",
@@ -48,7 +48,8 @@
       "gatedCandidates": 6,
       "stages": {
         "combatBound": 55,
-        "combatVerified": 55,
+        "bindingVerified": 55,
+        "combatVerified": 0,
         "conceptApproved": 0,
         "modelProduced": 0,
         "rigValidated": 0,
@@ -68,13 +69,208 @@
       "basis": {
         "canonicalIdentities": "crates/aetheria-pet-arena binding IDENTITY_COUNT = 55 ACTIVE + 6 CANDIDATE",
         "combatBound": "every active identity binds; arena8_binding.rs every_active_identity_binds_and_every_candidate_stays_gated",
-        "combatVerified": "all 55 active identities exercised at Lv1/30/60 by automated authoritative tests; owner playtesting remains M5",
+        "combatVerified": "0 identities have a claimed full battle-verification result. All 55 are bindingVerified (snapshot/allocation construction); actual battle simulation across families/levels/loadouts is Wave C2 work, and owner playtesting remains M5.",
         "artStages": "no owner-accepted production model/rig/animation/render exists; all PetVisualAsset rights remain PENDING_REVIEW; Icarus assets are developer substitutes"
       }
     },
     "currentWave": {
-      "id": "WAVE-B",
-      "title": "Authoritative 8x8, progression and living world",
+      "id": "WAVE-C2",
+      "title": "Authoritative Arena8 integration and independent progression",
+      "c2Contract": "specs/pet-arena/wave-c2-arena8-contract.md",
+      "c2Status": "NATIVE_FIRST_TURN_PASS_M3_REMAINING",
+      "waveC2Verification": {
+        "status": "LOCAL_PLAYER_SLICE_PASS_FULL_M3_REMAINING",
+        "ownerSkillDecision": "All active Pets expose complete authored skills from Lv1; Pet level never gates access. Non-Icarus Pets cannot use FIRE_ZONE. Mana/Rage/cooldown/phase/ownership remain authoritative.",
+        "binding": {
+          "version": 2,
+          "digest": "198351cc3b4f8c2e493e5f60602fddf2c368c6052f176d904060d508ffa5b5ae",
+          "rulesetVersion": 2,
+          "adapterContentHash": "713cca3d4fe38567de4c8ed372833171fe98450beb54b2b15a3b07f9e31b054f"
+        },
+        "completedLocal": [
+          "Lv1 complete-skill reducer behavior with Sig/Ultimate/FIRE_ZONE tests and non-Icarus FIRE_ZONE denial",
+          "binding and bound ruleset version bump without reusing the old digest",
+          "authenticated Nest allocate/command/view/settle over owned Pets, current Artifact loadout, map encounters, CSRF and no-store",
+          "loopback supervisor internal token, ownership, allocation/command idempotency, fingerprints and canonical event envelopes",
+          "real PostgreSQL settlement receipt for EXP/level, coins, encounter/map clear, recruitment, Artifact reward and materials",
+          "built Linux player authenticated, rendered 64 tiles, won regular and boss, equipped the Artifact and allocated Water with changed effective stats",
+          "API/client restart recovered coins=8400, Cinder clear, roster and level; duplicate settlement returned the original receipt",
+          "cross-account view/settle denied 403; changed duplicate command denied 409"
+        ],
+        "localEvidence": {
+          "sourceRevision": "9dfddb6",
+          "facts": "artifacts/m3-arena8/facts.json",
+          "resumeFacts": "artifacts/m3-arena8-resume/resume-facts.json",
+          "player": "apps/unity-client/Builds/Linux/Aetheria",
+          "summary": "regular/boss victory; artifactEquipped=true; same-level effective 180/18/10 -> 205/22/11 after equip; Water allocation 218/23/12 after level growth; coins=8400; boardTiles=64"
+        },
+        "nativeVerification": {
+          "status": "NATIVE_FIRE_PROGRESSION_VICTORY_PASS_WATER_ENTRY_OPEN",
+          "sourceRevision": "fc57deca",
+          "allocation": "Nest NativeArena8Provisioner configured a restricted runtime world, issued a scoped Ed25519 ticket and returned only wss/https/content/boot/match identity",
+          "transport": "local TLS/WSS bridge terminated the native runtime; scoped ticket, ownership, world lease and admission were exercised",
+          "packagedPlayer": "built Linux player authenticated, allocated, connected over WSS, started and submitted a legal swap",
+          "evidence": {
+            "facts": "artifacts/m3-native-turn/native-facts.json",
+            "screenshot": "artifacts/m3-native-turn/native-turn-03-swap.png",
+            "matchId": "39d2b411-2945-43e9-ad8a-d7fafbece03d",
+            "version": 2,
+            "boardTiles": 64,
+            "skills": ["shared-skill", "signature", "ultimate", "guard"]
+          },
+          "nativeSettlement": "native terminal outbox joined to the existing campaign/Artifact transaction; packaged one-match defeat and full Fire regular/boss victory receipts are persisted",
+          "oneMatchEvidence": {
+            "facts": "artifacts/m3-native-one/native-facts.json",
+            "matchId": "65385f2b-404f-48fc-8358-93242c2fbe9e",
+            "phase": "lost",
+            "settlement": "defeat +0 coins +0 XP materials 0",
+            "boardTiles": 64
+          },
+          "victoryEvidence": {
+            "facts": "artifacts/m3-native-policy/native-facts.json",
+            "matchId": "16807995-1af7-43f1-b892-489adf35af98",
+            "regularSettlement": "victory; first clear plus replay rewards persisted",
+            "bossSettlement": "victory +200 coins +500 XP materials 60",
+            "artifactEquipped": true,
+            "waterAllocated": true,
+            "coins": 9160,
+            "boardTiles": 64,
+            "policy": "public board/telegraph/resources only; scored runs; offensive skills before Guard; Guard only for a resolving heavy telegraph and never consecutively"
+          },
+          "combatPolicySimulation": {
+            "source": "crates/aetheria-pet-arena/examples/arena8_policy_sim.rs",
+            "seedsPerScenario": 100,
+            "results": {
+              "fire-coalwhisk_regular_L1": "68 wins / 32 losses, avg turns 12.24",
+              "water-dewskip_regular_L1": "100 wins / 0 losses, avg turns 8.23",
+              "ground-clodkin_regular_L1": "100 wins / 0 losses, avg turns 8.05",
+              "fire-coalwhisk_boss_L16": "5 wins / 95 losses, avg turns 11.20",
+              "fire-coalwhisk_water_regular_L16": "17 wins / 83 losses, avg turns 10.07"
+            },
+            "finding": "Fire boss and Water regular are materially underpowered at attainable progression; no balance or entropy change was made. Owner balance review is required."
+          },
+          "waterBattleEvidence": {
+            "facts": "artifacts/m3-native-water/native-facts.json",
+            "matchId": "16807995-1af7-43f1-b892-489adf35af98",
+            "phase": "playing",
+            "version": 2,
+            "boardTiles": 64,
+            "waterStarted": true,
+            "note": "Native Water battle started through the server-owned Water allocation; actual Tideglass Lagoon portal entry is still pending"
+          },
+          "migrationCompatibility": {
+            "status": "PASS",
+            "command": "pnpm game:migration:compat",
+            "artifacts": [
+              "artifacts/desktop-first/vl016/compat-5ccffd08",
+              "artifacts/desktop-first/vl013/migration-3b535ca7"
+            ],
+            "policies": [
+              "config/schema-compatibility-0058-native-expand.json",
+              "config/schema-compatibility-0058-admission-expand.json"
+            ],
+            "scope": "Explicit exact-prefix 47/48 -> 58 additive policies; existing 56 policies remain frozen negative fixtures."
+          },
+          "remaining": [
+            "Actual Central Plaza -> Fire portal -> Cinder Terraces and Water portal -> Tideglass Lagoon movement entry",
+            "Active-match resume after API/runtime restart is not proven",
+            "Consecutive native matches and full reconnect lifecycle remain incomplete",
+            "Full native M3 Gates 1-8 are not met"
+          ]
+        },
+        "notMet": [
+          "The player enters PetArenaPve directly instead of the Central Plaza/Cinder Terraces portal with a native ticket",
+          "Human-input UI, audio/VFX dedupe and full reconnect UX are not acceptance-tested",
+          "Native Fire win -> boss win -> Water -> consecutive-match lifecycle is not proven",
+          "Combat verification remains 0 of 55 for full battle simulation; only the slice path is proven",
+          "Skill Level upgrade economy and persisted skill effects remain default Lv1"
+        ]
+      },
+      "waveD1Verification": {
+        "status": "IMPLEMENTATION_STARTED_NO_ACCEPTANCE",
+        "ownerDirection": "Production Boss combat is strategic four-player cooperative PvE. Solo Boss win rate is diagnostic, not the production balance target.",
+        "ruleset": "arena8-coop-pve (separate versioned capability; frozen solo arena8-pve remains compatible)",
+        "candidateParameters": {
+          "partySeats": 4,
+          "bossPhaseThresholdBp": 2500,
+          "bossPhase2MaxHpGrowthBp": 7500,
+          "bossPhase2CurrentHpBp": 8000,
+          "multiplierClockUnit": "completed team rounds",
+          "multiplierSchedule": "1-11 x1; 12-16 x1-x2; 17-21 x1-x3; 22-26 x1-x4; 27-31 x1-x5; 32+ x1-x6",
+          "achievementThresholdExample": 5000,
+          "elementalProfiles": "Fire burst; Water sustain; Electric crit tempo; Ghost debuff; Ground HP/DEF with low crit and high crit damage; Light shields/buffs",
+          "note": "All values are local/test candidates pending owner balance review."
+        },
+        "workstreams": [
+          "Rust cooperative combat model: four seats, shared board, turn/round separation, Boss phases, multiplier tiles, critical profiles",
+          "Nest Achievement Points ledger and four-seat cooperative room lifecycle",
+          "Unity Central Plaza/Fire/Water portal entry and cooperative presentation",
+          "Native lifecycle/restart and cooperative settlement remain open"
+        ],
+        "cooperativeFoundation": {
+          "status": "RUST_MODEL_CORRECTNESS_TESTS_PASS_NOT_NATIVE_INTEGRATED",
+          "module": "crates/aetheria-pet-arena/src/arena8/coop/",
+          "rulesetId": "aetheria-pet-arena-arena8-coop",
+          "tests": [
+            "seed_bundle_is_accepted_and_separates_digests",
+            "configuration_fails_closed_when_missing_or_invalid",
+            "initial_board_is_matchless_and_playable",
+            "no_match_swap_is_rejected_without_any_mutation",
+            "mixed_multiplier_same_element_tiles_form_one_match",
+            "scoring_counts_each_tile_once_and_uses_multipliers",
+            "gravity_preserves_order_and_refills_only_empty_cells",
+            "rng_is_deterministic_and_seed_bound",
+            "boss_phase_transition_happens_exactly_once",
+            "skill_costs_cooldowns_and_level_independence",
+            "ground_identity_is_configuration_not_a_copy_of_fire"
+          ],
+          "limits": "The engine and its configuration bundle exist; no native Host, WSS intent/view, Nest room, achievement ledger, cooperative settlement, PostgreSQL configuration lifecycle or Unity cooperative UI is wired to it.",
+          "configurationAuthority": "ENGINE_LEVEL_ONLY: the cooperative ruleset now reads every authored value from a strict versioned bundle and fails closed (config/gameplay/arena8-coop-v1.seed.json, digest c641ee51...); PostgreSQL draft/published configuration, Admin editors, publication and snapshot binding remain open (VL-191, VL-192)."
+        },
+        "gates": {
+          "cooperativeCombatFoundation": "RUST_MODEL_TESTS_PASS_NOT_INTEGRATED",
+          "bossPhaseTransition": "RUST_MODEL_TEST_PASS_NOT_NATIVE",
+          "multiplierTiles": "RUST_MODEL_TEST_PASS_NOT_NATIVE",
+          "fourSeatAdmission": "NOT_ACCEPTED",
+          "cooperativeSettlement": "NOT_ACCEPTED",
+          "packagedFourSeatPlayer": "NOT_ACCEPTED"
+        }
+      },
+      "waveD2Verification": {
+        "status": "CONFIGURATION_DRIVEN_ENGINE_PASS_PLATFORM_OPEN",
+        "sourceRevision": "d6f68ca6a99bc6fabb03c75033344eacbcecb8d8",
+        "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
+        "engine": {
+          "ruleset": "arena8-coop-pve",
+          "engineCapability": "arena8-coop-v1",
+          "configBundle": "config/gameplay/arena8-coop-v1.seed.json",
+          "configDigest": "c641ee510328bb5c27719783e3a80e63298644cf815435f12cb46b2daaa5b059",
+          "hardcodedBalance": "none in the cooperative ruleset; structural bounds only (64 cells, 4 seats, 6 elements, turn/cascade ceilings)",
+          "validator": "aetheria-game-runtime --check-gameplay-config <bundle> prints the canonical digest and exits non-zero on any defect"
+        },
+        "correctness": [
+          "a no-match swap is rejected before any state or RNG change",
+          "matches use element identity with mixed multipliers and no double counting at intersections",
+          "gravity preserves survivor order, refills only empty cells and never overwrites full columns",
+          "cascades are bounded by the authored cap and a dead board is regenerated to a matchless board with a legal move",
+          "server entropy comes from the native SecretSeed/TurnRng stream, not a standalone generator",
+          "the Boss phase transition happens exactly once from authored thresholds and cannot skip phase two"
+        ],
+        "checks": [
+          {"command": "cargo test -p aetheria-pet-arena", "exitCode": 0, "result": "38 lib + 30 arena8_coop conformance + 27 existing integration tests PASS"},
+          {"command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-core -p aetheria-game-runtime --all-targets", "exitCode": 0, "result": "0 warnings"},
+          {"command": "cargo check --workspace --all-targets --locked", "exitCode": 0},
+          {"command": "artifacts/rust/target/debug/aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v1.seed.json", "exitCode": 0, "result": "{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"c641ee51...\"}"}
+        ],
+        "open": [
+          "PostgreSQL configuration authority, publication lifecycle, rollback and audit (VL-191)",
+          "Admin control panel and simulation tooling (VL-192, VL-197)",
+          "native four-seat runtime, admission, rooms, Achievement Points, settlement (VL-193, VL-194, VL-195)",
+          "Unity cooperative presentation and portal world flow (VL-196)",
+          "four-account packaged acceptance and M4 content production (VL-198, VL-199)"
+        ],
+        "notClaimed": "No production balance approval, no native cooperative acceptance, no four-human playtest and no public release."
+      },
       "waveBVerification": {
       "sourceRevision": "07362b52907d1cca5cade398e0c0f99747c10bb9",
       "status": "PARTIAL_LOCAL_GATES_PASS_HOSTED_CI_PENDING",
@@ -205,7 +401,7 @@
       "completed": {
         "governance": "VL-182 and M4 acceptance no longer treat a readiness field or manifest entry as production; mvpProgram.contentReadiness records the separate per-stage counts",
         "sceneRegistry": "one canonical ProjectScenes registry feeds EditorBuildSettings and BuildPlayerOptions.scenes so a built player cannot omit a required scene",
-        "combatProgression": "level-based skill eligibility is enforced in the Arena8Bound reducer: Lv1 basic/guard, Lv40 Signature/FIRE_ZONE, Lv60 Ultimate; Lv20 reserved pending OD",
+        "combatProgression": "FINAL OWNER DECISION supersedes PR83 level locks: every active Pet has its complete authored skill set from Lv1; a non-Icarus Pet cannot use FIRE_ZONE; Mana/Rage/cooldown/phase/ownership remain authoritative. Skill Level is bounded effectiveness, not an unlock gate.",
         "worldHarness": "fixed the Wave B world-capture player path so the built player is spawned from the actual Linux build output"
       },
       "worldEvidence": {
@@ -9266,7 +9462,7 @@
         "A single player can run consecutive arena8-pve matches with a changed Artifact loadout without editing private settings or restarting infrastructure",
         "Allocation validates the authenticated account, owned Pet identity/species, encounter eligibility, map progression, level and equipment, then captures an immutable loadout pinned to the content/ruleset digests",
         "Accepted commands/receipts survive restart and reconnect; stale/duplicate/lost-ACK behavior is bounded",
-        "Level-based skill eligibility is enforced by the authoritative reducer, not only by the UI",
+        "Every Pet has its complete authored skill set from Lv1; Pet level never gates Signature, Ultimate or FIRE_ZONE, and non-Icarus FIRE_ZONE is rejected by the reducer",
         "Completion settlement is idempotent and cannot be granted twice by a parallel legacy route"
       ],
       "status": "IN_PROGRESS",
@@ -9386,6 +9582,328 @@
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B"
       }
+    },
+    {
+      "id": "VL-190",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "GAMEPLAY-CONFIG",
+      "title": "Wave D2: configuration-driven cooperative ruleset and engine correctness",
+      "objective": "Turn the four-seat cooperative Boss foundation into a validated, configuration-driven ruleset with no authored balance value in Rust, and fix the match/refill/multiplier/RNG/phase correctness defects.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-189"
+      ],
+      "acceptance": [
+        "arena8-coop-pve loads every authored value from a strict typed bundle and fails closed when it is missing, malformed or incompatible",
+        "No-match swaps, mixed-multiplier same-element matches, gravity/refill, bounded cascades, dead-board recovery, server-entropy RNG, canonical state encoding and one-time Boss phase transitions are covered by committed tests",
+        "aetheria-game-runtime --check-gameplay-config validates a bundle and prints its canonical digest"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [
+        "Owner review of the candidate balance bundle before any production balance claim"
+      ],
+      "implementation": {
+        "sourceRevision": "d6f68ca6a99bc6fabb03c75033344eacbcecb8d8",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Configuration module, engine refactor, seed bundle and digest, authoritative validation CLI, cooldown/duration ticking at the start of the affected participant's turn, matrix immunity rule applied across the graph.",
+        "commands": [
+          {
+            "command": "cargo test -p aetheria-pet-arena",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-core -p aetheria-game-runtime --all-targets -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "artifacts/rust/target/debug/aetheria-game-runtime --check-gameplay-config config/gameplay/arena8-coop-v1.seed.json",
+            "exitCode": 0
+          }
+        ],
+        "remaining": "Rooms, achievement ledger, cooperative settlement and Unity presentation remain; PostgreSQL publication and the native four-seat ruleset now exist behind their own tasks."
+      }
+    },
+    {
+      "id": "VL-191",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "GAMEPLAY-CONFIG",
+      "title": "Wave D2: PostgreSQL gameplay configuration authority and publication lifecycle",
+      "objective": "Persist typed gameplay configuration versions in PostgreSQL with draft, validation, atomic publication, optimistic concurrency, rollback, audit and immutable active selection.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-190"
+      ],
+      "acceptance": [
+        "A draft can be created, validated and published atomically; partial publication is impossible",
+        "Published versions are immutable, rollback selects a compatible published version without rewriting history, and versions referenced by persisted matches cannot be deleted",
+        "Publication validates the bundle with the engine validator and binds the engine digest into the snapshot; missing or invalid configuration fails closed"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "5e9de28cca2e6d607e5ff1868b0ad9e45459370a",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Migration 0059 adds immutable-identity gameplay configuration versions, atomic active selection, an immutable audit journal and match pins. The gameplay/config module adds an engine-validated draft lifecycle, optimistic revisions, idempotent replay, atomic publication, rollback and the reviewed seed installation path. The Admin console exposes the operator HTTP routes.",
+        "commands": [
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.unit.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Allocation does not yet pin the published version, no dependency check blocks retiring a referenced version operationally, and Pet, progression, economy and campaign configuration domains are not modeled yet."
+      }
+    },
+    {
+      "id": "VL-192",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "ADMIN",
+      "title": "Wave D2: Admin gameplay configuration control panel",
+      "objective": "Extend the existing Next.js Admin application with working editors for elements, Pets, Bosses, board/multiplier rules, skills, progression and rewards, plus draft comparison, validation, publication, rollback and audit history.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-191"
+      ],
+      "acceptance": [
+        "An operator can edit a Boss phase, a Pet or element stat and a multiplier probability, validate the draft and publish it from the existing Admin UI",
+        "A newly allocated native match uses the published values without rebuilding Rust or Unity, while an already active match keeps its original configuration",
+        "Administrative operations stay behind the existing operator authentication and authorization"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "34b05cba32563b30fd0eaccb8f1a65b79906f23c",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The existing operator console has a Gameplay configuration workspace with typed party/board, Boss phase, elemental profile, multiplier schedule, skill and settlement-reward editors, raw-bundle editing, engine validation, publication, rollback, audit and a draft-versus-active field comparison. Draft and update routes now accept the real 1.2 MiB bundle bound instead of 8 KiB, so the reviewed seed can be authored. The real-process proof publishes a draft through this operator path and verifies a new native allocation pins the Admin digest and content hash.",
+        "commands": [
+          { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 },
+          { "command": "pnpm exec vitest run apps/admin-web/server/proxy.unit.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Pet, progression and campaign editors are absent; no browser-level operator acceptance has run. Admin simulation is tracked in VL-197."
+      }
+    },
+    {
+      "id": "VL-193",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "NATIVE",
+      "title": "Wave D2: cooperative native runtime, four-seat admission and recovery",
+      "objective": "Run arena8-coop-pve through the existing native Gateway, Persistence Host, admission and journal with four separately authenticated participants, seat ownership and restart recovery under the original configuration.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-190",
+        "VL-191"
+      ],
+      "acceptance": [
+        "Four separately authenticated accounts receive scoped tickets and execute only their own seat's legal actions against one shared board and Boss",
+        "Out-of-turn, cross-account and unauthorized-Ability commands are rejected without state change",
+        "Restart restores the match, participants, board, phase, configuration digest and RNG cursor, and does not mark recoverable matches FAILED"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "55e02ae9b80a36eb743de0714278c625f2812a65",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The runtime serves arena8-coop-pve from a published bundle with per-seat membership, projection, strict intents and durable restore that revalidates the configuration digest and allocation. Nest freezes the room roster, validates the pinned bundle with the engine, records the match/world/boot/content-hash/seats allocation, configures admission capacity four, starts the real runtime with private bundle and settings files, issues one scoped ticket per session-authenticated seat, and re-provisions durable ACTIVE allocations on API restart. The adapter authorizes commands only from the owner of the committed active seat. The real-process script publishes the test bundle through the operator draft/validate/publish path, asserts the new allocation pins that digest and content hash, then drives four authenticated sockets over the real transport through hello, start, a graceful API/runtime restart, recovery of the same ACTIVE allocation, four fresh tickets resumed at version 5, a full round-limit loss and terminal settlement: 24 committed turns, four loss rewards paid once, allocation SETTLED, match FINISHED and outbox delivered. Terminal persistence accepts a non-null reducer settlement only when the domain exposes a bounded Completion::Proposal. Startup also reconciles STARTING allocations as FAILED, since no ticket or command could reach them before activation.",
+        "commands": [
+          { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-game-core --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-native.test.ts tests/integration/coop-recovery.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 },
+          { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/coop/modules/match/application/provisioner.unit.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Packaged-player and four-human acceptance remain; Unity renders the committed projection but has no cooperative scene UI yet."
+      }
+    },
+    {
+      "id": "VL-194",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "ROOMS",
+      "title": "Wave D2: cooperative rooms, Achievement Points and eligibility",
+      "objective": "Implement the durable Achievement Point ledger and the room lifecycle with per-Boss room-creation thresholds published from configuration.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-191"
+      ],
+      "acceptance": [
+        "With a published threshold of 5000, an account at 4999 cannot create the room and an account at 5000 can",
+        "Changing the published threshold changes eligibility without rebuilding the application",
+        "Create, join, leave, select owned Pet, ready, start, freeze roster and return to hub are durable and idempotent"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "77ae39aea238aa41ec17823a3c7fdef9b7a222eb",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Migration 0060 adds an idempotent Achievement Point ledger, pinned cooperative rooms, a frozen roster and allocation identity. The coop/rooms module implements create, join, leave, owned-Pet selection, ready, start (roster lock) and close with session+CSRF authorization, request fingerprints, journaled transitions and immutable room identity. The published Boss threshold drives eligibility; 4999 is refused and 5000 accepted.",
+        "commands": [
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts", "exitCode": 0 }
+        ],
+        "remaining": "Start provisions the native match when the native composition is enabled, but there is no room discovery/list, return-to-hub flow, settlement award into the ledger, or reward/achievement configuration beyond the room threshold."
+      }
+    },
+    {
+      "id": "VL-195",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "SETTLEMENT",
+      "title": "Wave D2: cooperative settlement and per-participant progression",
+      "objective": "Settle one authoritative team completion into durable per-participant rewards driven by published reward rules, including contribution-based eligibility.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-193",
+        "VL-194"
+      ],
+      "acceptance": [
+        "Every eligible participant receives Achievement Points, Pet EXP, coins and authored rewards exactly once",
+        "Disconnect, client retry, outbox retry, restart and concurrent settlement never duplicate progression",
+        "An authorized completed match settles even when the client disconnects before requesting rewards"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "87c4871518441b74f063191cee131bf6555894f7",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it as an explicit opt-in consumer (COOP_SETTLEMENT_ENABLED=1), so restricted reward workers never open cooperative tables. The real-process script now reaches a terminal loss through four WebSocket seats and drains this consumer, verifying four loss payouts, SETTLED, FINISHED and delivered outbox.",
+        "commands": [
+          { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
+          { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-persistence --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
+          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
+        ],
+        "remaining": "Reconnect-before-request and concurrent-worker acceptance, contribution-based eligibility policy, coop-only worker boot policy and Unity reward presentation remain."
+      }
+    },
+    {
+      "id": "VL-196",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "UNITY",
+      "title": "Wave D2: cooperative presentation and real world portal flow",
+      "objective": "Present the committed four-seat cooperative match in the existing Unity Arena8 infrastructure and complete the real portal flow from Central Plaza through Cinder Terraces to Tideglass Lagoon.",
+      "priority": 0,
+      "dependsOn": [
+        "VL-193"
+      ],
+      "acceptance": [
+        "Unity renders four combatants, the active seat, individual resources and skills, team status, the shared 8x8 board with multiplier labels, Boss HP/phase/telegraph, turn/round and contribution without hardcoding costs or caps",
+        "Guest login, Pet selection, portal interaction, native combat, settlement and return to hub work without direct PetArenaPve entry",
+        "Reconnect and receipt replay never duplicate committed presentation events"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "7a46d565e8ff8c63ea0c0a13128aac847cf5b999",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "Unity now has a strict consumer for arena8-coop.view.v1 (four seats, 64 tiles, boss, cooldowns, contributions, pending attack, digests and terminal reward), a play session that submits closed arena8-coop.intent.v1 payloads only for the active committed seat, and a presenter that labels the boss/seat/turn and gates guard/skill/signature/ultimate on active seat, life and committed cooldowns. The UI Toolkit HUD builds the turn/boss labels, four seat panels with HP/mana/rage/shield/contribution, the 64-cell element/multiplier board and gated guard/skill/signature/ultimate actions. Unity also parses the room-scoped admission response strictly (bootId, accountId, match, seat, WSS/HTTPS scope, content hash and <=31s ticket window) and can construct the native connection. CoopNativeHud mounts the HUD into a UIDocument, forwards adjacent swaps and the four gated actions and refreshes only on a new committed version. CoopLobbyClient covers create/join/select/ready/start/admission over the authenticated room-scoped session, CoopNativeCampaignScreen renders the room lobby and admits the started match, and CoopSceneBootstrap mounts a pre-admitted seat from AETHERIA_COOP_ADMISSION. Eight EditMode tests cover projections/payloads/gates/admission, two cover lobby paths and headers, a PlayMode test mounts and renders the committed HUD, and a PlayMode test mounts the lobby screen.",
+        "commands": [
+          { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopNativeTests", "exitCode": 0 },
+          { "command": "unity test apps/unity-client --mode PlayMode --filter Aetheria.Tests.CoopNativeHudTests", "exitCode": 0 },
+          { "command": "unity test apps/unity-client --mode EditMode --filter Aetheria.Tests.CoopLobbyTests", "exitCode": 0 },
+          { "command": "unity test apps/unity-client --mode PlayMode --filter Aetheria.Tests.CoopCampaignScreenTests", "exitCode": 0 }
+        ],
+        "remaining": "No authored scene prefab/UI style or real portal interaction is wired yet; reconnect/replay presentation, Fire Zone capability rendering and packaged-player/four-human acceptance remain."
+      }
+    },
+    {
+      "id": "VL-197",
+      "mvpMilestone": "M3",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "BALANCE",
+      "title": "Wave D2: Admin simulation and cooperative balance measurement",
+      "objective": "Run bounded simulations of draft or published configuration through the same Rust rules, with fixed documented seeds and comparable public-information policies, without touching live progression.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-192",
+        "VL-193"
+      ],
+      "acceptance": [
+        "Simulation results report team win rate, duration, actions, rounds, phase transitions, multiplier occurrence and contribution distribution for comparable seed sets",
+        "Random, basic, tactical and coordinated policies use identical seeds and never inspect hidden tiles",
+        "Simulation is authorized, bounded, cancellable and cannot mutate live state"
+      ],
+      "status": "IN_PROGRESS",
+      "qualificationRequirements": [],
+      "implementation": {
+        "sourceRevision": "62bc8a1578c7294c3c1d491dc98d5542327262b1",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "change": "The cooperative reducer has a deterministic public-information simulation harness with random, basic, tactical and coordinated policies. The runtime CLI --simulate-coop <bundle> <policy> <seeds> prints bounded metrics, and the existing Admin gameplay workspace can run it on any draft or published version through an authorized, CSRF-protected operator action bounded to 1-200 seeds. The same workspace now compares the edited bundle with the active version and lists exact differing field paths. The candidate seed reports 0 wins / 12 losses over 12 seeds under tactical and coordinated policies, so the candidate balance is loss-heavy and needs owner review.",
+        "commands": [
+          { "command": "cargo test -p aetheria-pet-arena --test arena8_coop_sim", "exitCode": 0 },
+          { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
+          { "command": "cargo clippy -p aetheria-pet-arena -p aetheria-game-runtime --all-targets -- -D warnings", "exitCode": 0 },
+          { "command": "pnpm exec vitest run --project unit apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-simulator.unit.test.ts", "exitCode": 0 },
+          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 },
+          { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 }
+        ],
+        "remaining": "Simulation has no cancellation; multiplier-occurrence and contribution-distribution metrics are not reported; Admin balance charts are absent. No browser-level operator acceptance has run."
+      }
+    },
+    {
+      "id": "VL-198",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "CONTENT",
+      "title": "Wave D2: M4 content production on the MVP critical path",
+      "objective": "Produce the owner-approved M4 character and asset set through the existing H1-H4 gates without paid generation, visual evolution or rights assumptions.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-189"
+      ],
+      "acceptance": [
+        "Required M4 characters and assets pass their H1-H4 owner review gates with recorded decisions",
+        "55 active Pet identities, six gated Off-rate candidates, six Dragons, six Birds and all approved identities remain intact",
+        "No paid generation, unauthorized media or production claim is made"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Owner H1-H4 asset acceptance"
+      ]
+    },
+    {
+      "id": "VL-199",
+      "mvpMilestone": "M4",
+      "mvpCriticalPath": true,
+      "mvpScope": "MVP",
+      "feature": "QA-SRE",
+      "title": "Wave D2: four-account packaged-player cooperative acceptance",
+      "objective": "Accept cooperative gameplay on a built Linux Unity player against the real Nest API, canonical Rust runtime and PostgreSQL with four separately authenticated integration clients.",
+      "priority": 1,
+      "dependsOn": [
+        "VL-195",
+        "VL-196",
+        "VL-198"
+      ],
+      "acceptance": [
+        "A human player with clearly labelled local test clients completes the cooperative flow end to end",
+        "Four separately authenticated clients provide the native authorization evidence",
+        "Four-human acceptance is claimed only if four actual humans participate"
+      ],
+      "status": "TODO",
+      "qualificationRequirements": [
+        "Linux player build",
+        "Local PostgreSQL and native runtime"
+      ]
     }
   ]
 }
