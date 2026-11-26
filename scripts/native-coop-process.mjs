@@ -83,6 +83,7 @@ try{
   boss.requiredRoomPoints=5_000;
  }
  // A test-only publication makes the Fire match winnable with legal swaps.
+ fire.rewardPolicy.repeatClear.coins=17;
  fire.maxHp=4;
  fire.defense=1;
  bundle.party.maxRounds=6;
@@ -134,6 +135,9 @@ try{
  const pets=['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'];
  const members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('Process seat '+(index+1),pet));
+ await pool.query('INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id) VALUES($1,$3,$4),($2,$3,$5)',[
+  members[2].accountId,members[3].accountId,fire.mapId,fire.mapId+'-regular',fire.mapId+'-boss',
+ ]);
  await pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,5000,$2,$3)',[members[0].accountId,'admin_grant',randomUUID()]);
  for(const boss of [fire,water]){
  const createdRoom=await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:members[0].petId,ownedPetInstanceId:members[0].instanceId});
@@ -346,7 +350,7 @@ try{
  const inbox=(await pool.query('SELECT outcome FROM coop_settlement_inbox WHERE match_id=$1',[allocation.match_id])).rows[0];
  const expectedOutcome=boss===fire?'won':'lost';
  assert.equal(inbox.outcome,expectedOutcome);
- const rewards=(await pool.query('SELECT achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id IN (SELECT settlement_id FROM coop_settlement_inbox WHERE match_id=$1)',[allocation.match_id])).rows;
+ const rewards=(await pool.query('SELECT seat,achievement_points,coins,exp FROM coop_settlement_rewards WHERE settlement_id IN (SELECT settlement_id FROM coop_settlement_inbox WHERE match_id=$1)',[allocation.match_id])).rows;
  assert.equal(rewards.length,4);
  for(const member of members){
   const receipt=await app.http.inject({url:'/v1/coop/rooms/'+room.roomId+'/reward',headers:{cookie:member.cookie}});
@@ -358,11 +362,22 @@ try{
  const outsider=await guest('Receipt outsider','ground-clodkin');
  const denied=await app.http.inject({url:'/v1/coop/rooms/'+room.roomId+'/reward',headers:{cookie:outsider.cookie}});
  assert.equal(denied.statusCode,404);
- const rewardPrefix=boss===fire?'clear':'loss';
  for(const row of rewards){
-  assert.equal(row.achievement_points,bundle.rewards[rewardPrefix+'AchievementPoints']);
-  assert.equal(row.coins,bundle.rewards[rewardPrefix+'Coins']);
-  assert.equal(row.exp,bundle.rewards[rewardPrefix+'Exp']);
+  const payout=boss===water?boss.rewardPolicy.defeat:row.seat===3?boss.rewardPolicy.repeatClear:boss.rewardPolicy.firstClear;
+  assert.equal(row.achievement_points,payout.achievementPoints);
+  assert.equal(row.coins,payout.coins);
+  assert.equal(row.exp,payout.exp);
+ }
+ const encounter=await pool.query('SELECT account_id FROM pet_wave_one_encounters WHERE map_id=$1 AND encounter_id=$2',[boss.mapId,boss.mapId+'-boss']);
+ assert.equal(encounter.rowCount,boss===fire?4:0);
+ if(boss===fire){
+  const materials=await pool.query('SELECT account_id,materials FROM pet_artifact_players WHERE account_id=ANY($1::uuid[])',[members.map(m=>m.accountId)]);
+  assert.equal(materials.rowCount,4);
+  for(const row of materials.rows){
+   const payout=row.account_id===members[3].accountId?fire.rewardPolicy.repeatClear:fire.rewardPolicy.firstClear;
+   assert.equal(row.materials,payout.materials);
+  }
+  assert.deepEqual((await pool.query('SELECT account_id FROM pet_wave_one_map_clears WHERE map_id=$1',[boss.mapId])).rows,[{account_id:members[2].accountId}]);
  }
  const settled=(await pool.query('SELECT status FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
  assert.equal(settled.status,'SETTLED');

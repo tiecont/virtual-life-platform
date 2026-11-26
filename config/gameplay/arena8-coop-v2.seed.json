@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 7,
+  "contentRevision": 8,
   "board": {
     "spawnWeights": [
       {
@@ -5491,7 +5491,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "cinder-terraces"
+      "mapId": "cinder-terraces",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     },
     {
       "id": "tideglass-lagoon-warden",
@@ -5518,7 +5538,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "tideglass-lagoon"
+      "mapId": "tideglass-lagoon",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     },
     {
       "id": "stormcoil-fields-warden",
@@ -5545,7 +5585,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "stormcoil-fields"
+      "mapId": "stormcoil-fields",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     },
     {
       "id": "lantern-necropolis-warden",
@@ -5572,7 +5632,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "lantern-necropolis"
+      "mapId": "lantern-necropolis",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     },
     {
       "id": "ochre-labyrinth-warden",
@@ -5599,7 +5679,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "ochre-labyrinth"
+      "mapId": "ochre-labyrinth",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     },
     {
       "id": "dawn-prism-sanctum-warden",
@@ -5626,7 +5726,27 @@
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
-      "mapId": "dawn-prism-sanctum"
+      "mapId": "dawn-prism-sanctum",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
     }
   ]
 }

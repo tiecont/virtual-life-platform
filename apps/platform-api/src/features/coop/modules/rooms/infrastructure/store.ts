@@ -47,7 +47,7 @@ export class CoopRoomStore{
  async rewardFor(tx:Queryable,roomId:string,accountId:string){
   const result=await tx.query(`
    SELECT i.room_id AS "roomId",i.match_id AS "matchId",r.outcome,r.pet_id AS "petId",
-          r.achievement_points AS "achievementPoints",r.coins,r.exp
+          r.achievement_points AS "achievementPoints",r.coins,r.exp,r.materials,r.first_clear AS "firstClear"
    FROM coop_settlement_inbox i JOIN coop_settlement_rewards r USING(settlement_id)
    WHERE i.room_id=$1 AND r.account_id=$2`,[roomId,accountId]);
   return result.rows[0];

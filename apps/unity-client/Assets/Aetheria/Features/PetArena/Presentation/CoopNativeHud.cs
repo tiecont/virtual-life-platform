@@ -82,7 +82,7 @@ namespace Aetheria.PetArena.Presentation
             if (view.Terminal && loadReward != null)
             {
                 if (reward != null)
-                    target.Add(new Label("Rewards received · " + reward.coins + " coins · " + reward.exp + " Pet EXP · " + reward.achievementPoints + " Achievement Points"));
+                    target.Add(new Label("Rewards received · " + reward.Summary));
                 else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
                 else if (rewardNotice != null)
                     target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });

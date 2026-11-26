@@ -17,6 +17,19 @@ const RewardsSchema=z.strictObject({
  lossAchievementPoints:count,lossCoins:count,lossExp:count,
 });
 
+const PayoutSchema=z.strictObject({achievementPoints:count,coins:count,exp:count,materials:count});
+const EncounterSchema=z.object({
+ id:pet,mapId:pet,rewardPolicy:z.strictObject({firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema}).optional(),
+});
+
+function encounterFor(bundle:Record<string,unknown>,bossId:string){
+ if(bundle.schemaVersion===1)return undefined;
+ const encounters=z.array(EncounterSchema).parse(bundle.bosses);
+ const encounter=encounters.find(candidate=>candidate.id===bossId);
+ if(!encounter)throw new Error('Cooperative settlement Boss unavailable');
+ return encounter;
+}
+
 function canonical(value:unknown):unknown{
  if(Array.isArray(value))return value.map(canonical);
  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value as Record<string,unknown>).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([key,item])=>[key,canonical(item)]));
@@ -69,15 +82,22 @@ export class CoopSettlement{
    const bundle=await this.store.bundle(db,allocation.configVersion,allocation.configDigest);
    if(!bundle)throw new Error('Cooperative settlement rewards unavailable');
    const rewards=RewardsSchema.parse(bundle.rewards);
+   const encounter=encounterFor(bundle,allocation.bossId);
+   const policy=encounter?.rewardPolicy;
    const outcome=proposal.outcome;
-   const points=outcome==='won'?rewards.clearAchievementPoints:rewards.lossAchievementPoints;
+   const defaultPayout=outcome==='won'?policy?.repeatClear:policy?.defeat;
+   const points=defaultPayout?.achievementPoints??(outcome==='won'?rewards.clearAchievementPoints:rewards.lossAchievementPoints);
    const coins=outcome==='won'?rewards.clearCoins:rewards.lossCoins;
    const exp=outcome==='won'?rewards.clearExp:rewards.lossExp;
    await this.store.begin(db,{settlementId:event.settlementId,matchId:event.matchId,roomId:allocation.roomId,outcome,points});
    await lockAccounts(db,allocation.seats.map(seat=>seat.account));
    for(const [seatIndex,seat] of allocation.seats.entries()){
     const active=await this.store.accountActive(db,seat.account);
-    const awardPoints=active?points:0,awardCoins=active?coins:0,awardExp=active?exp:0;
+    const firstClear=active&&policy&&encounter&&outcome==='won'&&await this.store.clearBoss(db,seat.account,encounter.mapId);
+    const payout=firstClear?policy.firstClear:defaultPayout;
+    const awardPoints=active?(payout?.achievementPoints??points):0;
+    const awardCoins=active?(payout?.coins??coins):0,awardExp=active?(payout?.exp??exp):0;
+    if(active&&payout)await this.store.materials(db,seat.account,payout.materials);
     let level=seat.petLevel,petExp=0;
     if(awardExp>0){
      const current=await this.store.pet(db,seat.account,seat.petId,seat.ownedPetInstanceId);
@@ -87,6 +107,7 @@ export class CoopSettlement{
     }
     await this.store.award(db,{
      settlementId:event.settlementId,accountId:seat.account,seat:seatIndex,outcome,
+     firstClear:Boolean(firstClear),materials:active?(payout?.materials??0):0,
      points:awardPoints,coins:awardCoins,exp:awardExp,petId:seat.petId,ownedPetInstanceId:seat.ownedPetInstanceId,
      petLevel:level,petExp,currentLevel:level,currentExp:petExp,
     });

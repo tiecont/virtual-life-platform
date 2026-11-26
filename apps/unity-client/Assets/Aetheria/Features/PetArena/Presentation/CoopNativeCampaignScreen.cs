@@ -164,8 +164,7 @@ namespace Aetheria.PetArena.Presentation
                 try
                 {
                     var reward = await lobby.RewardAsync(Guid.Parse(room.roomId));
-                    notice = reward.outcome + " · " + reward.coins + " coins · " +
-                        reward.exp + " Pet EXP · " + reward.achievementPoints + " Achievement Points";
+                    notice = reward.outcome + " · " + reward.Summary;
                     RenderLobby();
                     return;
                 }

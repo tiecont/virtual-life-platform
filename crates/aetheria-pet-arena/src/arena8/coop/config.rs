@@ -205,6 +205,52 @@ pub struct MultiplierTier {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EncounterPayout {
+    pub achievement_points: u32,
+    pub coins: u32,
+    pub exp: u32,
+    pub materials: u32,
+}
+
+impl EncounterPayout {
+    fn to_value(&self) -> Value {
+        list(
+            [
+                self.achievement_points,
+                self.coins,
+                self.exp,
+                self.materials,
+            ]
+            .map(|v| Value::Uint(u64::from(v))),
+        )
+    }
+
+    fn validate(&self) -> Result<(), ConfigError> {
+        if [
+            self.achievement_points,
+            self.coins,
+            self.exp,
+            self.materials,
+        ]
+        .into_iter()
+        .any(|v| v > 1_000_000)
+        {
+            return Err(ConfigError::Rewards);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EncounterRewards {
+    pub first_clear: EncounterPayout,
+    pub repeat_clear: EncounterPayout,
+    pub defeat: EncounterPayout,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BossConfig {
     pub id: String,
     pub map_id: Option<String>,
@@ -222,6 +268,7 @@ pub struct BossConfig {
     /// Authored and published; the engine carries it into the content digest but
     /// does not spend it during combat.
     pub required_room_points: u32,
+    pub reward_policy: Option<EncounterRewards>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -1061,6 +1108,14 @@ impl BossConfig {
         {
             return Err(ConfigError::Boss);
         }
+        if let Some(policy) = &self.reward_policy {
+            if self.map_id.is_none() {
+                return Err(ConfigError::Rewards);
+            }
+            for payout in [&policy.first_clear, &policy.repeat_clear, &policy.defeat] {
+                payout.validate()?;
+            }
+        }
         self.phase.validate()?;
         if self.phase2_current_hp()? == 0 {
             return Err(ConfigError::BossPhase);
@@ -1114,6 +1169,13 @@ impl BossConfig {
         ];
         if let Some(map_id) = &self.map_id {
             fields.push(Value::Text(map_id.clone()));
+        }
+        if let Some(p) = &self.reward_policy {
+            fields.push(list([
+                p.first_clear.to_value(),
+                p.repeat_clear.to_value(),
+                p.defeat.to_value(),
+            ]));
         }
         Value::List(fields)
     }

@@ -8,7 +8,7 @@ export type CoopSettlementEvent=Readonly<{
  proposalHash:Buffer;stateVersion:string;epoch:string;
 }>;
 export type CoopAllocationBinding=Readonly<{
- roomId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
+ roomId:string;bossId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
  seats:readonly {account:string;petId:string;petLevel:number;artifactPowerPm:number;ownedPetInstanceId:string|null}[];
 }>;
 
@@ -53,10 +53,10 @@ export class CoopSettlementStore{
  }
  async allocation(tx:Queryable,matchId:string):Promise<CoopAllocationBinding|undefined>{
   const row=(await tx.query<{
-   room_id:string;world_id:string;config_version:unknown;config_digest:string;content_hash:string;seats:unknown;
-  }>('SELECT room_id,world_id,config_version,config_digest,content_hash,seats FROM coop_allocations WHERE match_id=$1',[matchId])).rows[0];
+   room_id:string;boss_id:string;world_id:string;config_version:unknown;config_digest:string;content_hash:string;seats:unknown;
+  }>('SELECT a.room_id,r.boss_id,a.world_id,a.config_version,a.config_digest,a.content_hash,a.seats FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id WHERE a.match_id=$1',[matchId])).rows[0];
   return row?Object.freeze({
-   roomId:row.room_id,worldId:row.world_id,configVersion:Number(row.config_version),
+   roomId:row.room_id,bossId:row.boss_id,worldId:row.world_id,configVersion:Number(row.config_version),
    configDigest:row.config_digest,contentHash:row.content_hash,seats:seats(row.seats),
   }):undefined;
  }
@@ -70,6 +70,25 @@ export class CoopSettlementStore{
  async accountActive(tx:Queryable,accountId:string):Promise<boolean>{
   return (await tx.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'",[accountId])).rowCount===1;
  }
+ async clearBoss(tx:Queryable,accountId:string,mapId:string):Promise<boolean>{
+  const first=await tx.query(
+   `INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id)
+    VALUES ($1,$2,$2 || '-boss') ON CONFLICT DO NOTHING RETURNING encounter_id`,[accountId,mapId]);
+  if(first.rowCount){
+   await tx.query(
+    `INSERT INTO pet_wave_one_map_clears(account_id,map_id)
+     SELECT $1,$2 WHERE EXISTS(SELECT 1 FROM pet_wave_one_encounters
+      WHERE account_id=$1 AND map_id=$2 AND encounter_id=$2 || '-regular')
+     ON CONFLICT DO NOTHING`,[accountId,mapId]);
+  }
+  return first.rowCount===1;
+ }
+ async materials(tx:Queryable,accountId:string,amount:number):Promise<void>{
+  if(amount>0)await tx.query(
+   `INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2)
+    ON CONFLICT(account_id) DO UPDATE SET materials=pet_artifact_players.materials+EXCLUDED.materials,
+     revision=pet_artifact_players.revision+1,updated_at=clock_timestamp()`,[accountId,amount]);
+ }
  async begin(tx:Queryable,input:Readonly<{
   settlementId:string;matchId:string;roomId:string;outcome:'won'|'lost';points:number;
  }>):Promise<void>{
@@ -81,7 +100,7 @@ export class CoopSettlementStore{
  }
  async award(tx:Queryable,input:Readonly<{
   settlementId:string;accountId:string;seat:number;outcome:'won'|'lost';
-  points:number;coins:number;exp:number;petId:string;ownedPetInstanceId:string|null;petLevel:number;petExp:number;currentLevel:number;currentExp:number;
+  points:number;coins:number;exp:number;materials:number;firstClear:boolean;petId:string;ownedPetInstanceId:string|null;petLevel:number;petExp:number;currentLevel:number;currentExp:number;
  }>):Promise<void>{
   if(input.points>0){
    await tx.query(
@@ -103,9 +122,9 @@ export class CoopSettlementStore{
    ]);
   }
   await tx.query(
-   `INSERT INTO coop_settlement_rewards(settlement_id,account_id,seat,outcome,achievement_points,coins,exp,pet_id)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (settlement_id,account_id) DO NOTHING`,
-   [input.settlementId,input.accountId,input.seat,input.outcome,input.points,input.coins,input.exp,input.petId],
+   `INSERT INTO coop_settlement_rewards(settlement_id,account_id,seat,outcome,achievement_points,coins,exp,pet_id,materials,first_clear)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (settlement_id,account_id) DO NOTHING`,
+   [input.settlementId,input.accountId,input.seat,input.outcome,input.points,input.coins,input.exp,input.petId,input.materials,input.firstClear],
   );
  }
  async pet(tx:Queryable,accountId:string,petId:string,ownedPetInstanceId:string|null):Promise<Readonly<{level:number;exp:number}>|undefined>{

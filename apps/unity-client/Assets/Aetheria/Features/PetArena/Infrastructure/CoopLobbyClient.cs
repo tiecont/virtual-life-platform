@@ -34,7 +34,9 @@ namespace Aetheria.PetArena.Infrastructure
             public Seat[] seats;
         }
 
-        [Serializable] public sealed class Reward { public string roomId, matchId, outcome, petId; public int achievementPoints, coins, exp; }
+        [Serializable] public sealed class Reward { public string roomId, matchId, outcome, petId; public int achievementPoints, coins, exp, materials; public bool firstClear;
+            public string Summary => (firstClear ? "First clear · " : "") + coins + " coins · " + exp + " Pet EXP · " +
+                achievementPoints + " Achievement Points" + (materials > 0 ? " · " + materials + " Artifact materials" : ""); }
 
         public async System.Threading.Tasks.Task<Reward> RewardAsync(Guid roomId, Guid? matchId = null)
         {
