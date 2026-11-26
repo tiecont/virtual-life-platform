@@ -158,6 +158,8 @@ pub struct ElementProfile {
     pub defense: u32,
     pub crit_rate_bp: u16,
     pub crit_damage_bp: u16,
+    /// Additive critical damage in basis points when attacking the encounter Boss.
+    pub boss_crit_damage_bonus_bp: Option<u16>,
     pub hp_growth: u32,
     pub attack_growth: u32,
     pub defense_growth: u32,
@@ -303,6 +305,15 @@ pub struct BossAttackModel {
     pub per_round_damage: u32,
     pub defense_divisor: u32,
     pub minimum_damage: u32,
+    pub vulnerability: Option<BossVulnerability>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BossVulnerability {
+    /// Bonus incoming damage in permille after the attack that applies it.
+    pub value_pm: u16,
+    pub duration_turns: u8,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -338,6 +349,8 @@ pub struct EffectConfig {
     /// Multiplier applied per matching source stack (1000 = no stacking).
     pub stacking_pm: u16,
     pub contribution: Option<SupportContribution>,
+    /// Number of damage packets in a chain cast against the Boss.
+    pub hits: Option<u8>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -355,6 +368,10 @@ pub enum EffectKind {
     Shield,
     Buff,
     Debuff,
+    RageTransfer,
+    ManaRestore,
+    Cleanse,
+    ChainDamage,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -364,6 +381,8 @@ pub enum EffectTarget {
     SelfActor,
     Allies,
     LowestAlly,
+    LowestRageAlly,
+    LowestManaAlly,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -519,6 +538,11 @@ impl CoopConfig {
         let elements = self.element_index()?;
         let mut immunity = false;
         for profile in &self.elements {
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && profile.boss_crit_damage_bonus_bp.is_some()
+            {
+                return Err(ConfigError::ElementSet);
+            }
             profile.validate()?;
             // The MVP matrix intentionally carries at least one immunity across
             // the whole attacker/defender graph, not one per attacker row.
@@ -546,6 +570,11 @@ impl CoopConfig {
                 _ => return Err(ConfigError::Boss),
             }
             if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
+                return Err(ConfigError::Boss);
+            }
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && boss.attack_model.vulnerability.is_some()
+            {
                 return Err(ConfigError::Boss);
             }
             boss.validate(elements)?;
@@ -641,11 +670,11 @@ impl CoopConfig {
                 return Err(ConfigError::Skill);
             }
             if self.schema_version == HISTORICAL_SCHEMA_VERSION
-                && skill.effect.contribution.is_some()
+                && (skill.effect.contribution.is_some() || skill.effect.kind.is_extended())
             {
                 return Err(ConfigError::Skill);
             }
-            skill.validate()?;
+            skill.validate(&self.resources)?;
             if skills.insert(skill.id.as_str(), skill).is_some() {
                 return Err(ConfigError::DuplicateSkill);
             }
@@ -714,6 +743,11 @@ impl CoopConfig {
             }
             let element = parse_element(&pet.element)?;
             let profile = elements[element.index()];
+            if profile.boss_crit_damage_bonus_bp.is_some_and(|bonus| {
+                pet.crit_damage_bp < 10_000 || pet.crit_damage_bp.checked_add(bonus).is_none()
+            }) {
+                return Err(ConfigError::Pet);
+            }
             // A Pet keeps its individual identity but must stay within the
             // authored elemental budget envelope.
             if pet.max_hp > profile.max_hp.saturating_mul(4)
@@ -722,15 +756,21 @@ impl CoopConfig {
             {
                 return Err(ConfigError::PetBudget);
             }
-            for binding in [&pet.skill, &pet.signature, &pet.ultimate, &pet.guard] {
-                if !skills.contains_key(binding.as_str()) {
-                    return Err(ConfigError::MissingReference);
+            for (binding, kind) in [
+                (Some(&pet.skill), SkillKind::Skill),
+                (Some(&pet.signature), SkillKind::Signature),
+                (Some(&pet.ultimate), SkillKind::Ultimate),
+                (Some(&pet.guard), SkillKind::Guard),
+                (pet.fire_zone.as_ref(), SkillKind::FireZone),
+            ] {
+                if let Some(binding) = binding {
+                    let skill = skills
+                        .get(binding.as_str())
+                        .ok_or(ConfigError::MissingReference)?;
+                    if skill.effect.kind.is_extended() && skill.kind != kind {
+                        return Err(ConfigError::Skill);
+                    }
                 }
-            }
-            if let Some(id) = &pet.fire_zone
-                && !skills.contains_key(id.as_str())
-            {
-                return Err(ConfigError::MissingReference);
             }
         }
         Ok(())
@@ -1078,6 +1118,9 @@ impl ElementProfile {
             || self.crit_rate_bp > 10_000
             || self.crit_damage_bp < 10_000
             || self.crit_damage_bp > 40_000
+            || self
+                .boss_crit_damage_bonus_bp
+                .is_some_and(|bonus| !(1..=10_000).contains(&bonus))
         {
             return Err(ConfigError::ElementSet);
         }
@@ -1086,7 +1129,7 @@ impl ElementProfile {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.element.clone()),
             Value::Uint(u64::from(self.max_hp)),
             Value::Uint(u64::from(self.attack)),
@@ -1107,7 +1150,11 @@ impl ElementProfile {
                     })
                     .collect(),
             ),
-        ])
+        ];
+        if let Some(bonus) = self.boss_crit_damage_bonus_bp {
+            fields.push(Value::Uint(u64::from(bonus)));
+        }
+        Value::List(fields)
     }
 }
 
@@ -1247,21 +1294,33 @@ impl BossAttackModel {
         if self.base_damage == 0 || self.defense_divisor == 0 || self.minimum_damage == 0 {
             return Err(ConfigError::Boss);
         }
+        if self.vulnerability.is_some_and(|status| {
+            !(1..=9_000).contains(&status.value_pm) || !(2..=32).contains(&status.duration_turns)
+        }) {
+            return Err(ConfigError::Boss);
+        }
         Ok(())
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Uint(u64::from(self.base_damage)),
             Value::Uint(u64::from(self.per_round_damage)),
             Value::Uint(u64::from(self.defense_divisor)),
             Value::Uint(u64::from(self.minimum_damage)),
-        ])
+        ];
+        if let Some(status) = self.vulnerability {
+            fields.push(list([
+                Value::Uint(u64::from(status.value_pm)),
+                Value::Uint(u64::from(status.duration_turns)),
+            ]));
+        }
+        Value::List(fields)
     }
 }
 
 impl SkillConfig {
-    fn validate(&self) -> Result<(), ConfigError> {
+    fn validate(&self, resources: &ResourceConfig) -> Result<(), ConfigError> {
         if self.id.is_empty()
             || self.id.len() > 64
             || self.power_pm == 0
@@ -1271,7 +1330,36 @@ impl SkillConfig {
         {
             return Err(ConfigError::Skill);
         }
-        self.effect.validate()
+        self.effect.validate()?;
+        if !self.effect.kind.is_extended() {
+            return Ok(());
+        }
+        if matches!(self.kind, SkillKind::Guard | SkillKind::FireZone)
+            || self.mana_cost > resources.mana_cap
+            || self.rage_cost > resources.rage_cap
+            || self.crit_eligible && self.effect.kind != EffectKind::ChainDamage
+        {
+            return Err(ConfigError::Skill);
+        }
+        let scaled_value = u64::from(self.effect.value) * u64::from(self.power_pm) / 1_000;
+        match self.effect.kind {
+            EffectKind::RageTransfer
+                if !(1..=u64::from(resources.rage_cap)).contains(&scaled_value)
+                    || self.rage_cost == resources.rage_cap =>
+            {
+                Err(ConfigError::Skill)
+            }
+            EffectKind::ManaRestore
+                if !(1..=u64::from(resources.mana_cap)).contains(&scaled_value) =>
+            {
+                Err(ConfigError::Skill)
+            }
+            EffectKind::Cleanse if self.power_pm != 1_000 => Err(ConfigError::Skill),
+            EffectKind::ChainDamage if !(1..=u64::from(u32::MAX)).contains(&scaled_value) => {
+                Err(ConfigError::Skill)
+            }
+            _ => Ok(()),
+        }
     }
 
     fn to_value(&self) -> Value {
@@ -1283,13 +1371,7 @@ impl SkillConfig {
             Value::Uint(u64::from(self.cooldown_turns)),
             Value::Uint(u64::from(self.power_pm)),
             Value::Bool(self.crit_eligible),
-            list([
-                Value::Text(effect_kind_name(self.effect.kind).into()),
-                Value::Text(effect_target_name(self.effect.target).into()),
-                Value::Uint(u64::from(self.effect.value)),
-                Value::Uint(u64::from(self.effect.duration_turns)),
-                Value::Uint(u64::from(self.effect.stacking_pm)),
-            ]),
+            self.effect.to_value(),
         ];
         if self.effect.contribution.is_some() {
             fields.push(Value::Text("caster".into()));
@@ -1300,26 +1382,26 @@ impl SkillConfig {
 
 impl EffectConfig {
     fn validate(&self) -> Result<(), ConfigError> {
-        if self.contribution.is_some()
-            && (!matches!(self.kind, EffectKind::Heal | EffectKind::Shield)
-                || matches!(self.target, EffectTarget::Boss))
+        if self.value == 0
+            || self.contribution.is_some()
+                && (!matches!(self.kind, EffectKind::Heal | EffectKind::Shield)
+                    || matches!(self.target, EffectTarget::Boss))
         {
             return Err(ConfigError::Skill);
         }
-        match self.kind {
-            EffectKind::Buff | EffectKind::Debuff => {
-                if self.duration_turns == 0 || self.value == 0 {
-                    return Err(ConfigError::Skill);
-                }
-            }
-            EffectKind::Damage
-            | EffectKind::DamageOverTime
-            | EffectKind::Heal
-            | EffectKind::Shield => {
-                if self.value == 0 {
-                    return Err(ConfigError::Skill);
-                }
-            }
+        if self.kind.is_extended() {
+            return self.validate_extended();
+        }
+        if self.hits.is_some()
+            || matches!(
+                self.target,
+                EffectTarget::LowestRageAlly | EffectTarget::LowestManaAlly
+            )
+        {
+            return Err(ConfigError::Skill);
+        }
+        if matches!(self.kind, EffectKind::Buff | EffectKind::Debuff) && self.duration_turns == 0 {
+            return Err(ConfigError::Skill);
         }
         if matches!(self.kind, EffectKind::Damage | EffectKind::DamageOverTime)
             && !matches!(self.target, EffectTarget::Boss)
@@ -1327,6 +1409,46 @@ impl EffectConfig {
             return Err(ConfigError::Skill);
         }
         Ok(())
+    }
+
+    fn validate_extended(&self) -> Result<(), ConfigError> {
+        if self.duration_turns != 0 || self.stacking_pm != 1_000 {
+            return Err(ConfigError::Skill);
+        }
+        match (self.kind, self.target, self.hits) {
+            (EffectKind::RageTransfer, EffectTarget::LowestRageAlly, None)
+            | (EffectKind::ManaRestore, EffectTarget::LowestManaAlly, None)
+            | (EffectKind::ChainDamage, EffectTarget::Boss, Some(2..=8)) => Ok(()),
+            (EffectKind::Cleanse, EffectTarget::Allies | EffectTarget::SelfActor, None)
+                if self.value == 1 =>
+            {
+                Ok(())
+            }
+            _ => Err(ConfigError::Skill),
+        }
+    }
+
+    fn to_value(&self) -> Value {
+        let mut fields = vec![
+            Value::Text(effect_kind_name(self.kind).into()),
+            Value::Text(effect_target_name(self.target).into()),
+            Value::Uint(u64::from(self.value)),
+            Value::Uint(u64::from(self.duration_turns)),
+            Value::Uint(u64::from(self.stacking_pm)),
+        ];
+        if let Some(hits) = self.hits {
+            fields.push(Value::Uint(u64::from(hits)));
+        }
+        Value::List(fields)
+    }
+}
+
+impl EffectKind {
+    fn is_extended(self) -> bool {
+        matches!(
+            self,
+            Self::RageTransfer | Self::ManaRestore | Self::Cleanse | Self::ChainDamage
+        )
     }
 }
 
@@ -1411,6 +1533,10 @@ const fn effect_kind_name(kind: EffectKind) -> &'static str {
         EffectKind::Shield => "shield",
         EffectKind::Buff => "buff",
         EffectKind::Debuff => "debuff",
+        EffectKind::RageTransfer => "rage-transfer",
+        EffectKind::ManaRestore => "mana-restore",
+        EffectKind::Cleanse => "cleanse",
+        EffectKind::ChainDamage => "chain-damage",
     }
 }
 
@@ -1420,5 +1546,7 @@ const fn effect_target_name(target: EffectTarget) -> &'static str {
         EffectTarget::SelfActor => "self-actor",
         EffectTarget::Allies => "allies",
         EffectTarget::LowestAlly => "lowest-ally",
+        EffectTarget::LowestRageAlly => "lowest-rage-ally",
+        EffectTarget::LowestManaAlly => "lowest-mana-ally",
     }
 }

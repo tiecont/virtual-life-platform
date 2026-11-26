@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "engineCapability": "arena8-coop-v1",
   "configId": "arena8-coop-v1",
-  "contentRevision": 9,
+  "contentRevision": 10,
   "board": {
     "spawnWeights": [
       {
@@ -360,7 +360,8 @@
           "element": "light",
           "permille": 1000
         }
-      ]
+      ],
+      "bossCritDamageBonusBp": 5500
     },
     {
       "element": "light",
@@ -794,15 +795,15 @@
       "manaCost": 0,
       "rageCost": 40,
       "cooldownTurns": 2,
-      "powerPm": 1000,
-      "critEligible": false,
+      "powerPm": 500,
+      "critEligible": true,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
+        "kind": "chain-damage",
+        "target": "boss",
+        "value": 155,
+        "durationTurns": 0,
         "stackingPm": 1000,
-        "contribution": "caster"
+        "hits": 2
       }
     },
     {
@@ -983,20 +984,19 @@
       }
     },
     {
-      "id": "pet-v31-light-aurelune-ray-prism-burst",
+      "id": "pet-v31-light-aurelune-dawn-cleanse",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 16,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
+        "kind": "cleanse",
         "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "value": 1,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -1113,20 +1113,19 @@
       }
     },
     {
-      "id": "water-lagoonarch-tide-tidal-bulwark",
+      "id": "water-lagoonarch-mana-current",
       "kind": "signature",
       "manaCost": 0,
-      "rageCost": 40,
+      "rageCost": 22,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -1178,20 +1177,19 @@
       }
     },
     {
-      "id": "electric-stormdiadem-volt-thunder-chain",
+      "id": "electric-stormdiadem-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -1827,20 +1825,19 @@
       }
     },
     {
-      "id": "water-ripplefin-tide-tidal-bulwark",
+      "id": "water-ripplefin-mana-current",
       "kind": "signature",
       "manaCost": 0,
-      "rageCost": 40,
+      "rageCost": 22,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2022,20 +2019,19 @@
       }
     },
     {
-      "id": "water-abyssail-tide-tidal-bulwark",
+      "id": "water-abyssail-mana-current",
       "kind": "signature",
       "manaCost": 0,
-      "rageCost": 40,
+      "rageCost": 22,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2087,20 +2083,19 @@
       }
     },
     {
-      "id": "electric-zipspool-volt-thunder-chain",
+      "id": "electric-zipspool-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2152,20 +2147,19 @@
       }
     },
     {
-      "id": "electric-copperkip-volt-thunder-chain",
+      "id": "electric-copperkip-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2217,20 +2211,19 @@
       }
     },
     {
-      "id": "electric-arcshell-volt-thunder-chain",
+      "id": "electric-arcshell-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2282,20 +2275,19 @@
       }
     },
     {
-      "id": "electric-pulsecrest-volt-thunder-chain",
+      "id": "electric-pulsecrest-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -2347,20 +2339,19 @@
       }
     },
     {
-      "id": "electric-thundrel-volt-thunder-chain",
+      "id": "electric-thundrel-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -3057,20 +3048,19 @@
       }
     },
     {
-      "id": "light-gleamlet-ray-prism-burst",
+      "id": "light-gleamlet-dawn-cleanse",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 16,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
+        "kind": "cleanse",
         "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "value": 1,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -3447,20 +3437,19 @@
       }
     },
     {
-      "id": "dragon-water-tidecoil-tide-tidal-bulwark",
+      "id": "dragon-water-tidecoil-mana-current",
       "kind": "signature",
       "manaCost": 0,
-      "rageCost": 40,
+      "rageCost": 22,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -3512,20 +3501,19 @@
       }
     },
     {
-      "id": "dragon-electric-voltrazik-volt-thunder-chain",
+      "id": "dragon-electric-voltrazik-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -3901,20 +3889,19 @@
       }
     },
     {
-      "id": "bird-electric-arcswift-volt-thunder-chain",
+      "id": "bird-electric-arcswift-voltage-transfer",
       "kind": "signature",
-      "manaCost": 0,
-      "rageCost": 40,
+      "manaCost": 12,
+      "rageCost": 0,
       "cooldownTurns": 2,
       "powerPm": 1000,
       "critEligible": false,
       "effect": {
-        "kind": "shield",
-        "target": "allies",
-        "value": 150,
-        "durationTurns": 2,
-        "stackingPm": 1000,
-        "contribution": "caster"
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
       }
     },
     {
@@ -4313,7 +4300,7 @@
       "critRateBp": 1500,
       "critDamageBp": 16000,
       "skill": "pet-v31-light-aurelune-ray-lance",
-      "signature": "pet-v31-light-aurelune-ray-prism-burst",
+      "signature": "pet-v31-light-aurelune-dawn-cleanse",
       "ultimate": "pet-v31-light-aurelune-ray-dawn-prism",
       "guard": "pet-v31-light-aurelune-guard",
       "catalog": {
@@ -4365,7 +4352,7 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-lagoonarch-tide-lance",
-      "signature": "water-lagoonarch-tide-tidal-bulwark",
+      "signature": "water-lagoonarch-mana-current",
       "ultimate": "water-lagoonarch-tide-deep-current",
       "guard": "water-lagoonarch-guard",
       "catalog": {
@@ -4391,7 +4378,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-stormdiadem-volt-lance",
-      "signature": "electric-stormdiadem-volt-thunder-chain",
+      "signature": "electric-stormdiadem-voltage-transfer",
       "ultimate": "electric-stormdiadem-volt-storm-crown",
       "guard": "electric-stormdiadem-guard",
       "catalog": {
@@ -4651,7 +4638,7 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-ripplefin-tide-lance",
-      "signature": "water-ripplefin-tide-tidal-bulwark",
+      "signature": "water-ripplefin-mana-current",
       "ultimate": "water-ripplefin-tide-deep-current",
       "guard": "water-ripplefin-guard",
       "catalog": {
@@ -4729,7 +4716,7 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "water-abyssail-tide-lance",
-      "signature": "water-abyssail-tide-tidal-bulwark",
+      "signature": "water-abyssail-mana-current",
       "ultimate": "water-abyssail-tide-deep-current",
       "guard": "water-abyssail-guard",
       "catalog": {
@@ -4755,7 +4742,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-zipspool-volt-lance",
-      "signature": "electric-zipspool-volt-thunder-chain",
+      "signature": "electric-zipspool-voltage-transfer",
       "ultimate": "electric-zipspool-volt-storm-crown",
       "guard": "electric-zipspool-guard",
       "catalog": {
@@ -4781,7 +4768,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-copperkip-volt-lance",
-      "signature": "electric-copperkip-volt-thunder-chain",
+      "signature": "electric-copperkip-voltage-transfer",
       "ultimate": "electric-copperkip-volt-storm-crown",
       "guard": "electric-copperkip-guard",
       "catalog": {
@@ -4807,7 +4794,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-arcshell-volt-lance",
-      "signature": "electric-arcshell-volt-thunder-chain",
+      "signature": "electric-arcshell-voltage-transfer",
       "ultimate": "electric-arcshell-volt-storm-crown",
       "guard": "electric-arcshell-guard",
       "catalog": {
@@ -4833,7 +4820,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-pulsecrest-volt-lance",
-      "signature": "electric-pulsecrest-volt-thunder-chain",
+      "signature": "electric-pulsecrest-voltage-transfer",
       "ultimate": "electric-pulsecrest-volt-storm-crown",
       "guard": "electric-pulsecrest-guard",
       "catalog": {
@@ -4859,7 +4846,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "electric-thundrel-volt-lance",
-      "signature": "electric-thundrel-volt-thunder-chain",
+      "signature": "electric-thundrel-voltage-transfer",
       "ultimate": "electric-thundrel-volt-storm-crown",
       "guard": "electric-thundrel-guard",
       "catalog": {
@@ -5145,7 +5132,7 @@
       "critRateBp": 1500,
       "critDamageBp": 16000,
       "skill": "light-gleamlet-ray-lance",
-      "signature": "light-gleamlet-ray-prism-burst",
+      "signature": "light-gleamlet-dawn-cleanse",
       "ultimate": "light-gleamlet-ray-dawn-prism",
       "guard": "light-gleamlet-guard",
       "catalog": {
@@ -5301,7 +5288,7 @@
       "critRateBp": 1200,
       "critDamageBp": 17000,
       "skill": "dragon-water-tidecoil-tide-lance",
-      "signature": "dragon-water-tidecoil-tide-tidal-bulwark",
+      "signature": "dragon-water-tidecoil-mana-current",
       "ultimate": "dragon-water-tidecoil-tide-deep-current",
       "guard": "dragon-water-tidecoil-guard",
       "catalog": {
@@ -5327,7 +5314,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "dragon-electric-voltrazik-volt-lance",
-      "signature": "dragon-electric-voltrazik-volt-thunder-chain",
+      "signature": "dragon-electric-voltrazik-voltage-transfer",
       "ultimate": "dragon-electric-voltrazik-volt-storm-crown",
       "guard": "dragon-electric-voltrazik-guard",
       "catalog": {
@@ -5483,7 +5470,7 @@
       "critRateBp": 3000,
       "critDamageBp": 20000,
       "skill": "bird-electric-arcswift-volt-lance",
-      "signature": "bird-electric-arcswift-volt-thunder-chain",
+      "signature": "bird-electric-arcswift-voltage-transfer",
       "ultimate": "bird-electric-arcswift-volt-storm-crown",
       "guard": "bird-electric-arcswift-guard",
       "catalog": {
@@ -5748,7 +5735,11 @@
         "baseDamage": 175,
         "perRoundDamage": 12,
         "defenseDivisor": 8,
-        "minimumDamage": 5
+        "minimumDamage": 5,
+        "vulnerability": {
+          "valuePm": 350,
+          "durationTurns": 3
+        }
       },
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
