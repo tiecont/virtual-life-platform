@@ -1,10 +1,12 @@
 use super::domain::Rules;
 use crate::features::runtime::application::NativeGame;
+use aetheria_game_core::{Error as CoreError, SecretSeed, Value};
 use aetheria_persistence::{Completion, Error, Game};
 use aetheria_pet_arena::arena8::binding::ArtifactSlot;
+use aetheria_pet_arena::arena8::coop::config::EffectKind;
 use aetheria_pet_arena::arena8::coop::{
-    ArtifactLoadout, CoopAction, CoopConfig, CoopPhase, EquippedArtifact, SEATS, SeatInput,
-    content_hash,
+    ArtifactLoadout, CoopAction, CoopConfig, CoopPhase, CoopState, EquippedArtifact, SEATS,
+    SeatInput, Status, StatusKind, content_hash,
 };
 
 fn bundle() -> Vec<u8> {
@@ -125,6 +127,110 @@ fn membership_and_projection_are_scoped_to_the_authenticated_seat() {
         rules.project(&state, "account-outsider"),
         Err(Error::Unauthorized)
     ));
+}
+
+#[test]
+fn projected_utility_readiness_matches_the_reducer() {
+    for pet_id in [
+        "electric-copperkip",
+        "water-ripplefin",
+        "pet-v31-light-aurelune",
+    ] {
+        let mut roster = seats();
+        roster[0].pet_id = pet_id.into();
+        let rules = load(roster).expect("utility Pet allocation");
+        let engine = rules.engine();
+        let config = engine.config();
+        let pet = config.pet(pet_id).unwrap();
+        let signature = config.skill(&pet.signature).unwrap();
+        let seed = SecretSeed::from_host_entropy([7; 32]);
+        let mut rng = seed
+            .stream(Value::Text("utility-readiness".into()), 0)
+            .unwrap();
+        let mut state = engine
+            .reduce(&rules.initial(), CoopAction::Start, &mut rng)
+            .unwrap()
+            .state;
+        let account = state.participants[0].account.clone();
+        let cursor = rng.cursor();
+        state.participants[0].mana = config.resources.mana_cap;
+        state.participants[0].rage = config.resources.rage_cap;
+        for ally in &mut state.participants[1..] {
+            ally.mana = config.resources.mana_cap;
+            ally.rage = config.resources.rage_cap;
+        }
+
+        let projected_ready = |state: &CoopState| {
+            let projected = rules.project(state, &account).unwrap();
+            let value: serde_json::Value = serde_json::from_slice(&projected).unwrap();
+            let ability = value["abilities"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|ability| ability["kind"] == "signature")
+                .unwrap();
+            assert_eq!(ability["id"], signature.id);
+            ability["ready"].as_bool().unwrap()
+        };
+        let assert_can_cast = |state: &CoopState, expected| {
+            assert_eq!(projected_ready(state), expected, "{pet_id} projection");
+            let mut rng = seed
+                .stream(Value::Text("utility-readiness".into()), cursor)
+                .unwrap();
+            let decision = engine.reduce(state, CoopAction::Signature, &mut rng);
+            if expected {
+                assert!(decision.is_ok(), "{pet_id} reducer");
+            } else {
+                assert!(
+                    matches!(decision, Err(CoreError::InvalidAction)),
+                    "{pet_id} reducer"
+                );
+                assert_eq!(rng.cursor(), cursor, "{pet_id} rejected cast entropy");
+            }
+        };
+
+        assert_can_cast(&state, false);
+        let target = &mut state.participants[1];
+        match signature.effect.kind {
+            EffectKind::RageTransfer => target.rage -= 1,
+            EffectKind::ManaRestore => target.mana -= 1,
+            EffectKind::Cleanse => {
+                target.statuses[0] = Some(Status {
+                    kind: StatusKind::Vulnerability,
+                    value: 100,
+                    turns: 2,
+                });
+            }
+            _ => panic!("unexpected utility signature for {pet_id}"),
+        }
+        assert_can_cast(&state, true);
+
+        if signature.effect.kind == EffectKind::RageTransfer {
+            let mut no_donor_rage = state.clone();
+            no_donor_rage.participants[0].rage = signature.rage_cost;
+            assert_can_cast(&no_donor_rage, false);
+        }
+
+        let mut dead_target = state.clone();
+        dead_target.participants[1].alive = false;
+        dead_target.participants[1].hp = 0;
+        assert_can_cast(&dead_target, false);
+        for ally in &mut dead_target.participants[2..] {
+            ally.alive = false;
+            ally.hp = 0;
+        }
+        assert_can_cast(&dead_target, false);
+
+        let mut on_cooldown = state.clone();
+        on_cooldown.participants[0].cooldowns[2] = 1;
+        assert_can_cast(&on_cooldown, false);
+
+        state.active_seat = 1;
+        assert!(
+            !projected_ready(&state),
+            "{pet_id} inactive seat projection"
+        );
+    }
 }
 
 #[test]

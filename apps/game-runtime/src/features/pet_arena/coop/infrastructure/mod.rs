@@ -2,7 +2,7 @@
 use super::domain::Rules;
 use aetheria_persistence::{Completion, Error, Game};
 use aetheria_pet_arena::arena8::Element;
-use aetheria_pet_arena::arena8::coop::{CoopPhase, CoopState, StatusKind, Tile};
+use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind, Tile};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -201,21 +201,20 @@ impl Game for Rules {
             let own = &state.participants[seat];
             let pet = config.pet(&own.pet_id).ok_or(Error::Integrity)?;
             let slots = [
-                ("guard", Some(pet.guard.as_str())),
-                ("skill", Some(pet.skill.as_str())),
-                ("signature", Some(pet.signature.as_str())),
-                ("ultimate", Some(pet.ultimate.as_str())),
-                ("fire-zone", pet.fire_zone.as_deref()),
+                ("guard", CoopAction::Guard),
+                ("skill", CoopAction::Skill),
+                ("signature", CoopAction::Signature),
+                ("ultimate", CoopAction::Ultimate),
+                ("fire-zone", CoopAction::FireZone),
             ];
             let mut abilities = Vec::new();
-            for (slot, (kind, id)) in slots.into_iter().enumerate() {
+            for (slot, ((kind, action), id)) in slots.into_iter().zip(pet.skill_ids()).enumerate() {
                 let Some(id) = id else { continue };
                 let skill = config.skill(id).ok_or(Error::Integrity)?;
                 abilities.push(serde_json::json!({
                     "kind": kind, "id": id, "mana": skill.mana_cost, "rage": skill.rage_cost,
                     "cooldown": own.cooldowns[slot],
-                    "ready": state.phase == CoopPhase::Playing && seat == state.active_seat && own.alive
-                        && own.cooldowns[slot] == 0 && own.mana >= skill.mana_cost && own.rage >= skill.rage_cost,
+                    "ready": self.engine().ability_ready(state, seat, action),
                 }));
             }
             projection["abilities"] = serde_json::Value::Array(abilities);

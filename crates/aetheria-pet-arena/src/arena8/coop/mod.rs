@@ -251,6 +251,20 @@ pub struct CoopRules {
     selected_boss_id: String,
 }
 
+struct PreparedAbility<'a> {
+    slot: usize,
+    skill: &'a config::SkillConfig,
+    power_pm: u32,
+    remaining_rage: u16,
+    utility: Option<UtilityEffect>,
+}
+
+enum UtilityEffect {
+    RageTransfer { target: usize, amount: u16 },
+    ManaRestore { target: usize, amount: u16 },
+    Cleanse(Vec<(usize, usize)>),
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SeatInput {
     pub account: String,
@@ -270,6 +284,11 @@ pub struct SeatInput {
 pub struct SkillLevelBinding {
     pub skill_id: String,
     pub level: u8,
+}
+
+fn scale_effect(value: u32, power_pm: u32) -> Result<u32, CoreError> {
+    let total = u64::from(value) * u64::from(power_pm) / 1_000;
+    u32::try_from(total).map_err(|_| CoreError::Arithmetic)
 }
 
 impl Participant {
@@ -679,7 +698,6 @@ impl CoopRules {
                 self.complete_turn(&mut next, rng, &mut events);
             }
             ability => {
-                self.require_turn(&next)?;
                 self.act_ability(&mut next, ability, rng, &mut events)?;
                 self.complete_turn(&mut next, rng, &mut events);
             }
@@ -713,16 +731,23 @@ impl CoopRules {
         }
     }
 
-    fn act_ability(
+    /// Checks turn ownership, cast costs, cooldown and required utility targets.
+    pub fn ability_ready(&self, state: &CoopState, seat: usize, action: CoopAction) -> bool {
+        seat == state.active_seat && self.prepare_ability(state, action).is_ok()
+    }
+
+    fn prepare_ability(
         &self,
-        state: &mut CoopState,
+        state: &CoopState,
         action: CoopAction,
-        rng: &mut TurnRng,
-        events: &mut Vec<Value>,
-    ) -> Result<(), CoreError> {
-        let seat_index = state.active_seat;
-        let pet_id = state.participants[seat_index].pet_id.clone();
-        let pet = self.config.pet(&pet_id).ok_or(CoreError::InvalidAction)?;
+    ) -> Result<PreparedAbility<'_>, CoreError> {
+        self.require_turn(state)?;
+        let actor = state.active_seat;
+        let seat = &state.participants[actor];
+        let pet = self
+            .config
+            .pet(&seat.pet_id)
+            .ok_or(CoreError::InvalidAction)?;
         // Pet Level never gates a signature, ultimate or species ability. Level
         // only scales stats.
         let slot = match action {
@@ -735,24 +760,141 @@ impl CoopRules {
         };
         let skill_id = pet.skill_ids()[slot].ok_or(CoreError::InvalidAction)?;
         let skill = self.config.skill(skill_id).ok_or(CoreError::InvalidState)?;
-        let level = state.participants[seat_index].skill_levels()[slot];
+        let level = seat.skill_levels()[slot];
         let power_pm = skill.power_at(level).ok_or(CoreError::InvalidState)?;
-        let seat = &mut state.participants[seat_index];
-        if seat.cooldowns[slot] > 0 {
+        if seat.cooldowns[slot] > 0 || seat.mana < skill.mana_cost || seat.rage < skill.rage_cost {
             return Err(CoreError::InvalidAction);
         }
-        if seat.mana < skill.mana_cost || seat.rage < skill.rage_cost {
-            return Err(CoreError::InvalidAction);
-        }
-        seat.mana -= skill.mana_cost;
-        seat.rage -= skill.rage_cost;
+        let mut remaining_rage = seat.rage - skill.rage_cost;
         if matches!(action, CoopAction::Guard) {
-            seat.rage = seat
-                .rage
+            remaining_rage = remaining_rage
                 .saturating_add(self.config.resources.rage_per_guard)
                 .min(self.config.resources.rage_cap);
         }
+        let utility = self.prepare_utility(state, actor, skill, power_pm, remaining_rage)?;
+        Ok(PreparedAbility {
+            slot,
+            skill,
+            power_pm,
+            remaining_rage,
+            utility,
+        })
+    }
+
+    fn prepare_utility(
+        &self,
+        state: &CoopState,
+        actor: usize,
+        skill: &config::SkillConfig,
+        power_pm: u32,
+        remaining_rage: u16,
+    ) -> Result<Option<UtilityEffect>, CoreError> {
+        let effect = &skill.effect;
+        Ok(match effect.kind {
+            config::EffectKind::RageTransfer | config::EffectKind::ManaRestore => {
+                // Validated resource effects always target a different living seat.
+                let target = self
+                    .targets(state, actor, effect.target)
+                    .into_iter()
+                    .next()
+                    .ok_or(CoreError::InvalidAction)?;
+                let amount = u16::try_from(scale_effect(effect.value, power_pm)?)
+                    .map_err(|_| CoreError::Arithmetic)?;
+                let ally = &state.participants[target];
+                let resources = &self.config.resources;
+                if effect.kind == config::EffectKind::RageTransfer {
+                    let amount = amount
+                        .min(resources.rage_cap.saturating_sub(ally.rage))
+                        .min(remaining_rage);
+                    if amount == 0 {
+                        return Err(CoreError::InvalidAction);
+                    }
+                    Some(UtilityEffect::RageTransfer { target, amount })
+                } else {
+                    let amount = amount.min(resources.mana_cap.saturating_sub(ally.mana));
+                    if amount == 0 {
+                        return Err(CoreError::InvalidAction);
+                    }
+                    Some(UtilityEffect::ManaRestore { target, amount })
+                }
+            }
+            config::EffectKind::Cleanse => {
+                let statuses: Vec<_> = self
+                    .targets(state, actor, effect.target)
+                    .into_iter()
+                    .filter_map(|target| {
+                        let slot =
+                            state.participants[target]
+                                .statuses
+                                .iter()
+                                .position(|status| {
+                                    status.is_some_and(|active| {
+                                        active.kind == StatusKind::Vulnerability
+                                    })
+                                })?;
+                        Some((target, slot))
+                    })
+                    .collect();
+                if statuses.is_empty() {
+                    return Err(CoreError::InvalidAction);
+                }
+                Some(UtilityEffect::Cleanse(statuses))
+            }
+            _ => None,
+        })
+    }
+
+    fn act_ability(
+        &self,
+        state: &mut CoopState,
+        action: CoopAction,
+        rng: &mut TurnRng,
+        events: &mut Vec<Value>,
+    ) -> Result<(), CoreError> {
+        let PreparedAbility {
+            slot,
+            skill,
+            power_pm,
+            remaining_rage,
+            utility,
+        } = self.prepare_ability(state, action)?;
+        let seat_index = state.active_seat;
+        let seat = &mut state.participants[seat_index];
+        seat.mana -= skill.mana_cost;
+        seat.rage = remaining_rage;
         seat.cooldowns[slot] = skill.cooldown_turns;
+        if let Some(utility) = utility {
+            match utility {
+                UtilityEffect::RageTransfer { target, amount } => {
+                    seat.rage -= amount;
+                    state.participants[target].rage += amount;
+                    events.push(event(
+                        "rage-transfer",
+                        Some(target as u8),
+                        u64::from(amount),
+                    ));
+                }
+                UtilityEffect::ManaRestore { target, amount } => {
+                    state.participants[target].mana += amount;
+                    events.push(event(
+                        "mana-restored",
+                        Some(target as u8),
+                        u64::from(amount),
+                    ));
+                }
+                UtilityEffect::Cleanse(statuses) => {
+                    for (target, slot) in statuses {
+                        state.participants[target].statuses[slot] = None;
+                        events.push(event(
+                            "cleanse",
+                            Some(target as u8),
+                            u64::from(skill.effect.value),
+                        ));
+                    }
+                }
+            }
+            return Ok(());
+        }
         let actor_attack = seat.attack;
         let crit_rate = seat.crit_rate_bp;
         let crit_damage = seat.crit_damage_bp;
@@ -784,13 +926,7 @@ impl CoopRules {
         events: &mut Vec<Value>,
     ) -> Result<(), CoreError> {
         let effect = &skill.effect;
-        let scaled = |value: u32| -> Result<u32, CoreError> {
-            u64::from(value)
-                .checked_mul(u64::from(power_pm))
-                .map(|total| total / 1_000)
-                .and_then(|total| u32::try_from(total).ok())
-                .ok_or(CoreError::Arithmetic)
-        };
+        let scaled = |value| scale_effect(value, power_pm);
         match effect.kind {
             config::EffectKind::Damage
             | config::EffectKind::DamageOverTime
@@ -944,64 +1080,9 @@ impl CoopRules {
                     }
                 }
             }
-            config::EffectKind::RageTransfer | config::EffectKind::ManaRestore => {
-                let target = self
-                    .targets(state, actor, effect.target)
-                    .into_iter()
-                    .next()
-                    .ok_or(CoreError::InvalidAction)?;
-                let amount =
-                    u16::try_from(scaled(effect.value)?).map_err(|_| CoreError::Arithmetic)?;
-                let (kind, gained) = match effect.kind {
-                    config::EffectKind::RageTransfer => {
-                        let room = self
-                            .config
-                            .resources
-                            .rage_cap
-                            .saturating_sub(state.participants[target].rage);
-                        let moved = amount.min(room).min(state.participants[actor].rage);
-                        state.participants[actor].rage -= moved;
-                        state.participants[target].rage += moved;
-                        ("rage-transfer", moved)
-                    }
-                    _ => {
-                        let seat = &mut state.participants[target];
-                        let gained =
-                            amount.min(self.config.resources.mana_cap.saturating_sub(seat.mana));
-                        seat.mana += gained;
-                        ("mana-restored", gained)
-                    }
-                };
-                if gained == 0 {
-                    return Err(CoreError::InvalidAction);
-                }
-                events.push(event(kind, Some(target as u8), u64::from(gained)));
-            }
-            config::EffectKind::Cleanse => {
-                let mut removed = false;
-                for target in self.targets(state, actor, effect.target) {
-                    if let Some(status) =
-                        state.participants[target]
-                            .statuses
-                            .iter_mut()
-                            .find(|status| {
-                                status
-                                    .is_some_and(|active| active.kind == StatusKind::Vulnerability)
-                            })
-                    {
-                        *status = None;
-                        events.push(event(
-                            "cleanse",
-                            Some(target as u8),
-                            u64::from(effect.value),
-                        ));
-                        removed = true;
-                    }
-                }
-                if !removed {
-                    return Err(CoreError::InvalidAction);
-                }
-            }
+            config::EffectKind::RageTransfer
+            | config::EffectKind::ManaRestore
+            | config::EffectKind::Cleanse => return Err(CoreError::InvalidState),
         }
         Ok(())
     }
