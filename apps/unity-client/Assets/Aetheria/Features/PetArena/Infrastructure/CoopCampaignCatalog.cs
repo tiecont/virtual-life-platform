@@ -30,7 +30,7 @@ namespace Aetheria.PetArena.Infrastructure
         [DataMember(IsRequired = true)] private string ruleset;
         [DataMember(IsRequired = true)] private Encounter[] encounters;
         [DataMember(IsRequired = true)] public long configVersion;
-        [DataMember(IsRequired = true)] public int points;
+        [DataMember(IsRequired = true)] public long points;
 
         private static readonly Regex Identifier = new Regex(@"\A[a-z][a-z0-9-]{2,63}\z");
 
@@ -52,14 +52,14 @@ namespace Aetheria.PetArena.Infrastructure
 
             if (catalog == null || catalog.ruleset != "arena8-coop-pve" ||
                 catalog.configVersion <= 0 || catalog.configVersion > 9_007_199_254_740_991 ||
-                !ValidPoints(catalog.points) || catalog.encounters == null || catalog.encounters.Length > 6 ||
+                catalog.points < 0 || catalog.points > 9_007_199_254_740_991 || catalog.encounters == null || catalog.encounters.Length > 6 ||
                 catalog.encounters.Any(encounter => !ValidEncounter(encounter, catalog.points)) ||
                 catalog.encounters.Select(encounter => encounter.mapId).Distinct(StringComparer.Ordinal).Count() != catalog.encounters.Length)
                 throw new FormatException("Invalid cooperative campaign response.");
             return catalog;
         }
 
-        private static bool ValidEncounter(Encounter encounter, int points)
+        private static bool ValidEncounter(Encounter encounter, long points)
         {
             if (encounter == null || !ValidId(encounter.mapId) || !ValidId(encounter.bossId) ||
                 !ValidMapName(encounter.mapName) || string.IsNullOrWhiteSpace(encounter.bossName) ||

@@ -94,6 +94,10 @@ describe('cooperative rooms and achievement eligibility',()=>{
   expect((await get(auth,'/v1/coop/eligibility')).json()).toMatchObject({points:4_999,eligible:false});
   await grantPoints(auth,1);
   expect((await get(auth,'/v1/coop/eligibility')).json()).toMatchObject({points:5_000,eligible:true});
+  // Individual rewards and requirements are capped independently of lifetime earnings.
+  await pool.query("INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) SELECT $1,1000000,'admin_grant','test-'||n FROM generate_series(1,2148) n",[auth.accountId]);
+  expect((await get(auth,'/v1/coop/eligibility')).json()).toMatchObject({points:2_148_005_000,eligible:true});
+  expect((await get(auth,'/v1/coop/encounters')).json()).toMatchObject({points:2_148_005_000});
  });
  it('rejects room creation one point below the published threshold and accepts equality',async()=>{
   const poor=await guest('Coop near miss'),pet='icarus';

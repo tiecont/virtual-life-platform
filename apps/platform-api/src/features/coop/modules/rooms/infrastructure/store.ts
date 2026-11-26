@@ -49,8 +49,10 @@ export class CoopRoomStore{
   return Object.freeze({version:numeric(row.version),digest:String(row.digest),bundle:row.bundle});
  }
  async achievementPoints(tx:Queryable,accountId:string):Promise<number>{
-  const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0)::int AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
-  return numeric(result.rows[0]?.points??0);
+  const result=await tx.query<{points:unknown}>('SELECT COALESCE(SUM(points),0) AS points FROM coop_achievement_ledger WHERE account_id=$1',[accountId]);
+  const total=numeric(result.rows[0]?.points??0);
+  if(!Number.isSafeInteger(total)||total<0)throw new Error('Invalid achievement balance');
+  return total;
  }
  async clearedMaps(tx:Queryable,accountId:string,mapIds:readonly string[]):Promise<ReadonlySet<string>>{
   if(mapIds.length===0)return new Set();

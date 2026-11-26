@@ -6,6 +6,7 @@ export const CoopPetIdSchema=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/);
 export const CoopBossIdSchema=CoopPetIdSchema;
 const requestId=z.uuid().transform(value=>value.toLowerCase());
 const points=z.number().int().min(0).max(1_000_000),seatNumber=z.number().int().min(0).max(3);
+const accumulatedPoints=z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 const configVersion=z.number().int().positive().max(9_007_199_254_740_991);
 const displayName=z.string().min(1).max(128);
 export const CoopRoomSeatSchema=z.strictObject({
@@ -24,7 +25,7 @@ export const CoopMapPrerequisiteSchema=z.strictObject({mapId:CoopPetIdSchema,map
 const coopHosting=z.strictObject({
  bossId:CoopBossIdSchema,requiredPoints:points,eligible:z.boolean(),prerequisite:CoopMapPrerequisiteSchema.nullable().optional(),
 });
-export const CoopEligibilitySchema=coopHosting.extend({ruleset:CoopRulesetSchema,points});
+export const CoopEligibilitySchema=coopHosting.extend({ruleset:CoopRulesetSchema,points:accumulatedPoints});
 const encounterId=z.string().regex(/^[a-z][a-z0-9-]{2,63}-(regular|boss)$/);
 const coopEncounter=coopHosting.extend({
  mapId:CoopPetIdSchema,mapName:displayName,bossName:z.string().min(1),
@@ -32,7 +33,7 @@ const coopEncounter=coopHosting.extend({
  prerequisite:CoopMapPrerequisiteSchema.nullable(),
  recruitment:z.strictObject({regularPetIds:z.array(CoopPetIdSchema),legendaryPetId:CoopPetIdSchema.nullable()}).nullable(),
 });
-export const CoopEncounterCatalogSchema=z.strictObject({ruleset:CoopRulesetSchema,configVersion,points,encounters:z.array(coopEncounter).max(6)});
+export const CoopEncounterCatalogSchema=z.strictObject({ruleset:CoopRulesetSchema,configVersion,points:accumulatedPoints,encounters:z.array(coopEncounter).max(6)});
 export const CoopCreateRoomSchema=z.strictObject({requestId,bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional(),petId:CoopPetIdSchema.optional(),ownedPetInstanceId:z.uuid().optional()});
 export const CoopJoinRoomSchema=z.strictObject({requestId,mapId:CoopPetIdSchema.optional()});
 export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema,ownedPetInstanceId:z.uuid().optional()});
