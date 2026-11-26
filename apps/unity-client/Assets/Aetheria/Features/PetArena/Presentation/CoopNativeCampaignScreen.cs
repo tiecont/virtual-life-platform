@@ -114,7 +114,7 @@ namespace Aetheria.PetArena.Presentation
             ready.SetEnabled(room.status == "OPEN" && room.seats.Any(seat => seat.you && !string.IsNullOrEmpty(seat.petId)));
             root.Add(ready);
             var start = new Button(() => _ = RunAsync(StartAsync)) { text = "Start match", name = "coop-start" };
-            start.SetEnabled(room.canStart && room.you != null && room.you.isHost);
+            start.SetEnabled((room.canStart || room.status == "LOCKED") && room.you != null && room.you.isHost);
             root.Add(start);
             if (lobby.CanRefreshRoom)
                 root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = "Refresh room", name = "coop-refresh" });

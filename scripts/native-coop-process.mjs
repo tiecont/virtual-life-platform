@@ -12,6 +12,7 @@ const {createApp}=require('../apps/platform-api/src/app.ts');
 const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
 const {installGameplayConfig}=require('../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config.ts');
 const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
+const {STARTING_MATERIALS}=require('../apps/platform-api/src/features/pets/modules/wave-a-artifacts/domain/catalog.ts');
 const {CoopSettlement}=require('../apps/platform-api/src/features/coop/modules/settlement/application/service.ts');
 const {OperatorService}=require('../apps/platform-api/src/features/identity/modules/operators/application/operator-service.ts');
 const {totp}=require('../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto.ts');
@@ -140,8 +141,10 @@ try{
  const members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('Process seat '+(index+1),pet));
  await pool.query('INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id) VALUES($1,$3,$4),($2,$3,$5)',[
-  members[2].accountId,members[3].accountId,fire.mapId,fire.mapId+'-regular',fire.mapId+'-boss',
+  members[1].accountId,members[3].accountId,fire.mapId,fire.mapId+'-regular',fire.mapId+'-boss',
  ]);
+ await pool.query('UPDATE pet_wave_one_owned SET level=10 WHERE account_id=$1 AND owned_pet_instance_id=$2',[members[1].accountId,members[1].instanceId]);
+ let earnedArtifactId;
  const host=members[0];
  const inventory=await app.http.inject({url:'/v1/pets/artifacts/state',headers:{cookie:host.cookie}});
  assert.equal(inventory.statusCode,200,JSON.stringify(inventory.json()));
@@ -151,7 +154,7 @@ try{
  assert.equal(deniedEquip.statusCode,404);
  const equipped=await post(host,'/v1/pets/artifacts/equip',{...equipInput,requestId:randomUUID()});
  assert.equal(equipped.statusCode,200,JSON.stringify(equipped.json()));
- let priorLoadout;
+ let priorLoadout,hostMaterialsAfterUpgrade;
  await pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,5000,$2,$3)',[members[0].accountId,'admin_grant',randomUUID()]);
  for(const boss of [fire,water]){
  const createdRoom=await post(members[0],'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:members[0].petId,ownedPetInstanceId:members[0].instanceId});
@@ -172,7 +175,7 @@ try{
  assert.equal(started.json().status,'STARTED');
  facts.scenarios.push('actual-runtime-process-started-from-published-bundle-and-four-seats');
  const allocation=(await pool.query(`SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,
-   jsonb_array_length(seats) AS seats, seats->0->'loadout' AS loadout, seats->2->'loadout' AS unequipped
+   jsonb_array_length(seats) AS seats, seats->0->'loadout' AS loadout, seats->2->'loadout' AS unequipped, seats->1->'loadout' AS campaign_loadout
    FROM coop_allocations WHERE room_id=$1`,[room.roomId])).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
  assert.equal(allocation.status,'ACTIVE');assert.equal(allocation.seats,4);
@@ -180,6 +183,7 @@ try{
  assert.match(allocation.loadout.digest,/^[a-f0-9]{64}$/);
  assert.deepEqual(allocation.loadout.entries,[{slot:'core',artifactId:starterId,definitionId:starterDefinition.id,upgradeLevel}]);
  assert.deepEqual(allocation.unequipped.entries,[]);
+ if(boss===water)assert.deepEqual(allocation.campaign_loadout.entries,[{slot:'core',artifactId:earnedArtifactId,definitionId:'core-amberlattice',upgradeLevel:1}]);
  if(priorLoadout)assert.notEqual(allocation.loadout.digest,priorLoadout);
  priorLoadout=allocation.loadout.digest;
  const expected=boss===fire?verdict:await validator.validate('arena8-coop-pve',{...bundle,contentRevision:bundle.contentRevision+1});
@@ -326,6 +330,7 @@ try{
   if(boss===fire){
    const upgraded=await post(host,'/v1/pets/artifacts/upgrade',{artifactId:starterId,requestId:randomUUID()});
    assert.equal(upgraded.statusCode,200,JSON.stringify(upgraded.json()));
+   hostMaterialsAfterUpgrade=upgraded.json().state.materials;
    assert.equal(upgraded.json().state.inventory.find(artifact=>artifact.artifactId===starterId).upgradeLevel,2);
    const nextBundle={...bundle,contentRevision:bundle.contentRevision+1};
    const draft=(await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:created.version,bundle:nextBundle})).json();
@@ -409,9 +414,20 @@ try{
   assert.equal(materials.rowCount,4);
   for(const row of materials.rows){
    const payout=row.account_id===members[3].accountId?fire.rewardPolicy.repeatClear:fire.rewardPolicy.firstClear;
-   assert.equal(row.materials,payout.materials);
+   assert.equal(row.materials,(row.account_id===host.accountId?hostMaterialsAfterUpgrade:STARTING_MATERIALS)+payout.materials);
   }
-  assert.deepEqual((await pool.query('SELECT account_id FROM pet_wave_one_map_clears WHERE map_id=$1',[boss.mapId])).rows,[{account_id:members[2].accountId}]);
+  assert.deepEqual((await pool.query('SELECT account_id FROM pet_wave_one_map_clears WHERE map_id=$1',[boss.mapId])).rows,[{account_id:members[1].accountId}]);
+  const earner=members[1],requestId=randomUUID();
+  const claim=await post(earner,'/v1/pets/artifacts/pve/claim',{requestId});
+  assert.equal(claim.statusCode,200,JSON.stringify(claim.json()));
+  const earned=claim.json().state.inventory.find(item=>item.acquiredMapId===boss.mapId);
+  assert.equal(earned.definitionId,'core-amberlattice');
+  earnedArtifactId=earned.artifactId;
+  const replay=await post(earner,'/v1/pets/artifacts/pve/claim',{requestId});
+  assert.deepEqual(replay.json(),claim.json());
+  const equipped=await post(earner,'/v1/pets/artifacts/equip',{requestId:randomUUID(),petId:earner.petId,artifactId:earnedArtifactId});
+  assert.equal(equipped.statusCode,200,JSON.stringify(equipped.json()));
+  facts.scenarios.push('regular-plus-coop-Boss-clear-earned-an-owned-Artifact-claimed-once-and-equipped-by-eligible-Pet');
  }
  const settled=(await pool.query('SELECT status FROM coop_allocations WHERE match_id=$1',[allocation.match_id])).rows[0];
  assert.equal(settled.status,'SETTLED');

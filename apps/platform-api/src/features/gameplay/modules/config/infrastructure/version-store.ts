@@ -15,9 +15,12 @@ export type EventRow=Readonly<{sequence:string;ruleset:GameplayRuleset;version:n
 
 const numeric=(value:unknown)=>Number(value as string|number);
 function summary(row:Record<string,unknown>):GameplayVersionSummary{
+ // Publication row encoding is independent of the engine-validated JSON bundle schema.
+ const publicationSchema=row.schemaVersion;
+ if(publicationSchema!==1)throw new Error('Unsupported gameplay publication record schema');
  return Object.freeze({
   ruleset:row.ruleset as GameplayRuleset,version:numeric(row.version),state:row.state as GameplayConfigState,
-  schemaVersion:1,engineCapability:(row.engineCapability??null) as string|null,contentDigest:(row.contentDigest??null) as string|null,
+  schemaVersion:publicationSchema,engineCapability:(row.engineCapability??null) as string|null,contentDigest:(row.contentDigest??null) as string|null,
   revision:numeric(row.revision),parentVersion:row.parentVersion===null||row.parentVersion===undefined?null:numeric(row.parentVersion),
   createdBy:String(row.createdBy),updatedBy:String(row.updatedBy),createdAt:row.createdAt as Date,
   validatedAt:(row.validatedAt??null) as Date|null,publishedAt:(row.publishedAt??null) as Date|null,

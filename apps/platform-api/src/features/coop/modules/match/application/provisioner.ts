@@ -70,6 +70,7 @@ export class CoopMatchProvisioner{
  private readonly id:()=>string;
  private readonly origin:string;
  private closing=false;
+ private startingRoom:string|undefined;
 
  constructor(private readonly options:CoopProvisionerOptions){
   const origin=new URL(options.httpsOrigin);
@@ -80,24 +81,26 @@ export class CoopMatchProvisioner{
  }
 
  private lease(scope:RuntimeScope,generation:number,onFailure:()=>void):Lease{
-  let stopped=false,failed=false;
+  let stopped=false,pending=false;
   const timer=setInterval(()=>{
-   if(stopped||failed)return;
+   if(stopped||pending)return;
+   pending=true;
    void this.options.admission.heartbeat(scope,generation).catch(()=>{
-    failed=true;onFailure();
-   });
+    if(!stopped){stopped=true;clearInterval(timer);onFailure();}
+   }).finally(()=>{pending=false;});
   },HEARTBEAT_MS);
   timer.unref?.();
   return {timer,stop:()=>{stopped=true;clearInterval(timer);}};
  }
  private async abandon(record:CoopAllocationRecord,generation:number){
   const active=this.active.get(record.matchId);
-  active?.lease.stop();
-  await active?.handle.stop().catch(()=>{});
+  if(!active||active.generation!==generation||active.stopped||this.closing)return;
+  active.stopped=true;
+  active.lease.stop();
+  await active.handle.stop().catch(()=>{});
+  const disabled=await this.options.admission.configure(active.scope,generation,false,0).catch(()=>0);
+  if(disabled>0)await this.options.store.recovered(record.matchId,disabled).catch(()=>{});
   this.active.delete(record.matchId);
-  if(generation>0)
-   await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>{});
-  await this.options.store.fail(record.matchId).catch(()=>{});
  }
 
  private async releaseSettledRuntimes(){
@@ -121,9 +124,19 @@ export class CoopMatchProvisioner{
    if(prior.status==='ACTIVE'&&current&&!current.stopped&&!current.exited)
     return Object.freeze({matchId:prior.matchId,worldId:prior.worldId,bootId:prior.bootId,contentHash:prior.contentHash,generation:current.generation});
    if(prior.status==='STARTING')throw conflict('Cooperative allocation is still starting');
-   if(prior.status==='ACTIVE')throw unavailable('Cooperative native match recovery is not implemented');
+   if(prior.status==='ACTIVE')throw unavailable('Cooperative native match awaits recovery');
    throw conflict('Cooperative allocation is no longer active');
   }
+  if(this.startingRoom)throw conflict('Another cooperative allocation is starting');
+  this.startingRoom=input.roomId;
+  try{
+   await this.releaseSettledRuntimes();
+   if(this.active.size>0)throw conflict('Cooperative runtime is busy. Retry after the current battle settles.');
+   return await this.startRoom(input);
+  }finally{this.startingRoom=undefined;}
+ }
+
+ private async startRoom(input:CoopStartInput):Promise<CoopStartResult>{
   let verdict;
   try{verdict=await this.options.validator.validate('arena8-coop-pve',input.bundle);}
   catch{throw unavailable('Published cooperative configuration is invalid');}
@@ -134,7 +147,6 @@ export class CoopMatchProvisioner{
   catch{throw conflict('Cooperative allocation is invalid');}
   if(('loadout' in seats[0]!)!==Array.isArray(input.bundle.artifacts))
    throw conflict('Cooperative allocation does not match the published Artifact configuration');
-  await this.releaseSettledRuntimes();
   const matchId=this.id(),bootId=this.id(),worldId='native:coop-'+matchId;
   if(!WORLD.test(worldId))throw unavailable();
   const record:CoopAllocationRecord=Object.freeze({
@@ -190,7 +202,7 @@ export class CoopMatchProvisioner{
   const record=await this.options.store.findByRoom(roomId);
   if(!record||record.status!=='ACTIVE')throw conflict('Cooperative match is not active');
   const current=this.active.get(record.matchId);
-  if(!current||current.stopped||current.exited)throw unavailable('Cooperative native match recovery is not implemented');
+  if(!current||current.stopped||current.exited)throw unavailable('Cooperative native match awaits recovery');
   let allocated;
   try{allocated=await this.options.admission.allocate(credential,current.scope);}
   catch{throw unavailable('Cooperative native admission is unavailable');}
@@ -213,7 +225,7 @@ export class CoopMatchProvisioner{
   let recovered=0,failed=0;
   for(const record of records){
    if(this.active.has(record.matchId)){recovered+=1;continue;}
-   let generation=0;
+   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined;
    try{
     const bundle=await this.options.loadBundle(record);
     if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
@@ -222,13 +234,11 @@ export class CoopMatchProvisioner{
      throw unavailable('Pinned cooperative configuration no longer matches the allocation');
     const scope=scopeFor(record);
     generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
-    let handle:CoopRuntimeHandle|undefined;
-    try{handle=await this.options.runtime.start({
+    handle=await this.options.runtime.start({
      matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
      bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,
-    });}catch{handle=undefined;}
-    if(!handle)throw unavailable();
-    const lease=this.lease(scope,generation,()=>{
+    });
+    lease=this.lease(scope,generation,()=>{
      const current=this.active.get(record.matchId);
      if(current)void this.abandon(current.record,current.generation);
     });
@@ -242,7 +252,12 @@ export class CoopMatchProvisioner{
     recovered+=1;
    }catch{
     failed+=1;
-    if(generation>0)await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>{});
+    lease?.stop();
+    await handle?.stop().catch(()=>{});
+    if(generation>0){
+     const disabled=await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>0);
+     if(disabled>0)await this.options.store.recovered(record.matchId,disabled).catch(()=>{});
+    }
     // Never mark a durable ACTIVE allocation FAILED merely because recovery
     // could not reacquire it; admission stays closed until an operator resolves it.
    }

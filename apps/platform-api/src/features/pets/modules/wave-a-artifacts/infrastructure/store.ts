@@ -22,6 +22,19 @@ const SNAPSHOT_COLUMNS=`snapshot_id AS "snapshotId",pet_id AS "petId",pet_level 
 const CLAIM_COLUMNS=`map_id AS "mapId",artifact_id AS "artifactId",materials,claimed_at AS "claimedAt"`;
 const RECENT_SNAPSHOTS=10;
 
+export async function initializeArtifactInventory(client:Pick<PoolClient,'query'>,accountId:string):Promise<void>{
+  const created=await client.query(
+    'INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2) ON CONFLICT(account_id) DO NOTHING RETURNING account_id',
+    [accountId,STARTING_MATERIALS],
+  );
+  if((created.rowCount??0)>0){
+    await client.query(
+      "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
+      [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
+    );
+  }
+}
+
 // One transaction owner for Wave A artifact state. The account artifact row is
 // locked before any command work, so receipts, materials, equipment and
 // snapshots serialize per account. Pet ownership and level are read from the
@@ -33,16 +46,7 @@ export class ArtifactStore {
     const client=await this.pool.connect();
     try{
       await client.query('BEGIN');
-      const created=await client.query(
-        'INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2) ON CONFLICT(account_id) DO NOTHING RETURNING account_id',
-        [accountId,STARTING_MATERIALS],
-      );
-      if((created.rowCount??0)>0){
-        await client.query(
-          "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
-          [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
-        );
-      }
+      await initializeArtifactInventory(client,accountId);
       await client.query(`SELECT ${PLAYER_COLUMNS} FROM pet_artifact_players WHERE account_id=$1 FOR UPDATE`,[accountId]);
       const value=await work(new ArtifactTransaction(client,accountId));
       await client.query('COMMIT');

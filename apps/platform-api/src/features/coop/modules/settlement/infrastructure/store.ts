@@ -1,4 +1,5 @@
 import type {PoolClient} from 'pg';
+import {initializeArtifactInventory} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 
 type Queryable=Pick<PoolClient,'query'>;
 const SEAT_LIMIT=4;
@@ -84,10 +85,11 @@ export class CoopSettlementStore{
   return first.rowCount===1;
  }
  async materials(tx:Queryable,accountId:string,amount:number):Promise<void>{
-  if(amount>0)await tx.query(
-   `INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2)
-    ON CONFLICT(account_id) DO UPDATE SET materials=pet_artifact_players.materials+EXCLUDED.materials,
-     revision=pet_artifact_players.revision+1,updated_at=clock_timestamp()`,[accountId,amount]);
+  if(amount===0)return;
+  await initializeArtifactInventory(tx,accountId);
+  await tx.query(
+   `UPDATE pet_artifact_players SET materials=materials+$2,revision=revision+1,
+    updated_at=clock_timestamp() WHERE account_id=$1`,[accountId,amount]);
  }
  async begin(tx:Queryable,input:Readonly<{
   settlementId:string;matchId:string;roomId:string;outcome:'won'|'lost';points:number;

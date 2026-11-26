@@ -90,6 +90,29 @@ describe('cooperative match provisioner',()=>{
   expect(readSeats).not.toHaveBeenCalled();
   expect(runtime.requests).toHaveLength(1);
  });
+ it('keeps a second room retryable while the configured runtime is occupied',async()=>{
+  const {provisioner,store}=fixture();
+  const first=await provisioner.start(startInput);
+  const next={...startInput,roomId:'55555555-5555-4555-8555-555555555555'};
+  await expect(provisioner.start(next)).rejects.toMatchObject({status:409});
+  expect(await store.findByRoom(next.roomId)).toBeUndefined();
+  store.rows.set(first.matchId,{...store.rows.get(first.matchId)!,status:'SETTLED'});
+  await expect(provisioner.start(next)).resolves.toHaveProperty('matchId');
+  await provisioner.close();
+ });
+ it('retains an active allocation for restart when its admission heartbeat fails',async()=>{
+  vi.useFakeTimers();
+  try{
+   const {provisioner,store,admission,runtime}=fixture();
+   const first=await provisioner.start(startInput);
+   vi.spyOn(admission,'heartbeat').mockRejectedValueOnce(new Error('Expired lease'));
+   await vi.advanceTimersByTimeAsync(2000);
+   expect(runtime.stops).toHaveBeenCalledTimes(1);
+   expect(store.rows.get(first.matchId)).toMatchObject({status:'ACTIVE',generation:2});
+   await expect(provisioner.recover()).resolves.toEqual({recovered:1,failed:0});
+   await provisioner.close();
+  }finally{vi.useRealTimers();}
+ });
  it('fails closed on an invalid bundle, a digest mismatch or a malformed roster',async()=>{
   const {provisioner,store}=fixture();
   await expect(provisioner.start({...startInput,configDigest:'cc'.repeat(32)})).rejects.toMatchObject({status:503});
