@@ -10784,11 +10784,20 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Run four independently authenticated accounts through the normal packaged player path and record guest login, actual movement, portal interaction, Fire victory, durable payout, return, Water entry and reconnect. Keep human playtesting and Icarus prefab acceptance separate.",
+      "remaining": "Exercise visible multiplier and skill usage, verify packaged restart/reconnect against the exact committed board, and repeat on the integrated release candidate. Human and production-balance qualification remain independent.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "packagedAcceptance": {
+          "sourceRevision": "ef6cdb8dd18d98cfbb560761b360abf681af266d",
+          "pullRequest": 86,
+          "reviewMode": "SINGLE_AGENT_EXECUTED",
+          "command": "node scripts/with-test-db.mjs node --import tsx artifacts/integrated-d3/packaged.mjs, plus normal packaged Linux keyboard/mouse actions",
+          "exitCode": 0,
+          "evidence": "artifacts/integrated-d3/packaged2.log, collection.png, portal.png, round.png, rewarded.png, water-room.png",
+          "observed": "One packaged guest and three authenticated integration clients shared the Fire room. Controlled Fire victory paid 250 Achievement Points, 90 Pet EXP and 120 coins per seat. Guest returned to Central Plaza at 8120 coins, saw Coalwhisk Lv3, walked to Tideglass and created a Water room."
+        },
         "sourceRevision": "098379930a7d4bc3945f71fe6021632c8713a4ae",
         "pullRequest": 86,
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -10960,6 +10969,13 @@
       ],
       "remaining": "Native Fire victory and Water loss passed with independent scoped seats and disposable test balance. Repeat exact-source hosted checks and qualify persistent progression and display in the packaged flow.",
       "implementation": {
+        "localAcceptance": {
+          "sourceRevision": "49de4dcc7a44a606c47b37a9aac2fb1b430a8996",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+          "exitCode": 0,
+          "evidence": "artifacts/integrated-d3/integration-final.log",
+          "observed": "Fire victory and Water defeat. API and runtime restart restored committed version five. Four private reward receipts and outsider rejection exercised."
+        },
         "sourceRevision": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a",
         "availableAt": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a",
         "reviewMode": "SINGLE_AGENT_AUDIT",
@@ -11122,7 +11138,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Build and exercise the actual executable through guest login, walking, portal interaction, Fire and Water lobbies, and room create/join.",
+      "remaining": "Fire and Water portal navigation, guest collection, Fire host and return were exercised on ef6cdb8d (VL-199). Verify packaged guest joining a room, threshold messaging after publication and final integrated build.",
       "implementation": {
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
