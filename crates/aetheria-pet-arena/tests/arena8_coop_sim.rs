@@ -34,6 +34,10 @@ fn every_policy_runs_the_same_seed_set() {
     ] {
         let report = simulate(&rules, policy, 4).expect("simulation");
         assert_eq!(report.policy, policy);
+        assert_eq!(
+            report.casts_by_skill.values().sum::<u64>(),
+            report.ability_casts
+        );
         assert_eq!(report.wins + report.losses + report.unresolved, 4);
     }
 }

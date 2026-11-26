@@ -152,6 +152,31 @@ fn visible_swap(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, boo
     best
 }
 
+// Sample a legal move from the visible board independently of the private
+// match RNG. The random policy then chooses between swapping and casting.
+fn random_visible_swap(
+    rules: &CoopRules,
+    state: &CoopState,
+    prng: &mut SplitMix,
+) -> Option<CoopAction> {
+    let mut choices = Vec::new();
+    for first in 0..super::CELLS {
+        for second in [first + 1, first + super::SIDE] {
+            if rules.swap_matches(state, first, second) {
+                choices.push(CoopAction::Swap {
+                    first: first as u8,
+                    second: second as u8,
+                });
+            }
+        }
+    }
+    if choices.is_empty() {
+        return None;
+    }
+    let index = prng.next() % choices.len() as u64;
+    Some(choices[index as usize])
+}
+
 fn candidates(
     rules: &CoopRules,
     state: &CoopState,
@@ -162,9 +187,10 @@ fn candidates(
         return vec![CoopAction::Start];
     }
     let (swap, priority_swap) = match policy {
+        Policy::Random => (random_visible_swap(rules, state, prng), false),
         Policy::Tactical | Policy::Coordinated => visible_swap(rules, state)
             .map_or((None, false), |(action, priority)| (Some(action), priority)),
-        _ => (
+        Policy::Basic => (
             rules
                 .legal_swap(state)
                 .map(|(first, second)| CoopAction::Swap { first, second }),
