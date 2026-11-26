@@ -587,10 +587,7 @@ impl CoopConfig {
                         )
                         && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
                             identity.roster_state == crate::arena8::binding::RosterState::Candidate
-                        }) =>
-                {
-                    ()
-                }
+                        }) => {}
                 _ => return Err(ConfigError::Pet),
             }
             if pet.crit_rate_bp > 10_000 || pet.crit_damage_bp == 0 {

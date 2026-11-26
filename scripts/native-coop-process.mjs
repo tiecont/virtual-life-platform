@@ -173,44 +173,86 @@ try{
   assert.equal(view.accountId,member.accountId);
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,allocation.content_hash);
-  return view.ticket;
+  return {value:view.ticket,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
  const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
  function client(ticket,seat){
   const ws=new WebSocket('wss://127.0.0.1:4443/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:'https://127.0.0.1:4443'}});
-  const queue=[],waiters=[];
-  const flush=()=>{while(waiters.length&&queue.length){const waiter=waiters.shift();waiter(queue.shift());}};
-  ws.on('message',data=>{let env;try{env=decodeServer(new Uint8Array(data));}catch{return;}queue.push(env);flush();});
-  const next=timeout=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('native message timeout')),timeout);const done=env=>{clearTimeout(timer);resolve(env);};if(queue.length)done(queue.shift());else waiters.push(done);});
-  const opened=new Promise((resolve,reject)=>{ws.once('open',resolve);ws.once('error',error=>reject(new Error('native socket failed: '+String(error?.message??error))));});
+  const queue=[];
+  let waiting;
+  ws.on('message',data=>{
+   try{queue.push(decodeServer(new Uint8Array(data)));}
+   catch{waiting?.(new Error('Invalid native message'));return;}
+   waiting?.(null,queue.shift());
+  });
+  ws.on('close',()=>waiting?.(new Error('Native socket closed')));
+  const next=()=>new Promise((resolve,reject)=>{
+   if(queue.length){resolve(queue.shift());return;}
+   if(ws.readyState!==WebSocket.OPEN){reject(new Error('Native socket closed'));return;}
+   const timer=setTimeout(()=>waiting?.(new Error('Native message timeout')),5000);
+   waiting=(error,message)=>{
+    waiting=undefined;
+    clearTimeout(timer);
+    if(error)reject(error);else resolve(message);
+   };
+  });
+  const opened=new Promise((resolve,reject)=>{
+   ws.once('open',resolve);
+   ws.on('error',()=>{const error=new Error('Native socket transport failed');waiting?.(error);reject(error);});
+  });
   return {ws,seat,ticket,opened,next,sequence:1};
+ }
+ async function openConnection(seat,ticket){
+  const connection=client(ticket,seat);
+  try{
+   await connection.opened;
+   const id=randomBytes(16);
+   connection.ws.send(envelope(10,helloMessage(ticket.value,contentBytes),id,connection.sequence++));
+   const hello=await connection.next();
+   assert.equal(hello.body.case,'hello');
+   return connection;
+  }catch(error){
+   connection.ws.terminate();
+   throw error;
+  }
  }
  async function openConnections(list){
   const issued=new Set();
   for(const seat of members.keys()){
    const ticket=await freshTicket(seat);
-   assert.ok(!issued.has(ticket));
-   issued.add(ticket);
-   const connection=client(ticket,seat);
-   list.push(connection);
-   await connection.opened;
-   const id=randomBytes(16);
-   connection.ws.send(envelope(10,helloMessage(ticket,contentBytes),id,connection.sequence++));
-   const hello=await connection.next(5000);
-   assert.equal(hello.body.case,'hello');
-  }
- }
- async function intent(connection,expectedVersion,action,kind='arena8-coop.intent.v1'){
-  const id=randomBytes(16);
-  connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
-  for(;;){
-   const env=await connection.next(5000);
-   if(Buffer.compare(Buffer.from(env.commandId),id)!==0)continue;
-   if(env.body.case==='receipt'||env.body.case==='rejection')return env;
+   assert.ok(!issued.has(ticket.value));
+   issued.add(ticket.value);
+   list.push(await openConnection(seat,ticket));
   }
  }
  let connections=[];
+ async function intent({seat},expectedVersion,action,kind='arena8-coop.intent.v1'){
+  const id=randomBytes(16);
+  let connection=connections[seat];
+  for(let attempt=0;attempt<2;attempt++){
+   if(attempt>0||connection.ws.readyState!==WebSocket.OPEN||connection.ticket.expiresAt-Date.now()<1_000){
+    connection.ws.terminate();
+    connection=await openConnection(seat,await freshTicket(seat));
+    connections[seat]=connection;
+   }
+   connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
+   try{
+    for(let message=0;message<16;message++){
+     const env=await connection.next();
+     if(Buffer.compare(Buffer.from(env.commandId),id)!==0)continue;
+     if(env.body.case==='receipt')return env;
+     if(env.body.case==='rejection'){
+      if(attempt===0&&[12,13].includes(env.body.value.code))break;
+      return env;
+     }
+    }
+   }catch(error){
+    if(attempt===1)throw error;
+   }
+  }
+  throw Error('Native command did not return a matching result');
+ }
  try{
   await openConnections(connections);
   facts.scenarios.push('four-authenticated-sockets-completed-hello-with-distinct-subject-scoped-tickets');
@@ -238,7 +280,7 @@ try{
   let state=firstView.state;
   for(const seat of [1,2,3]){
    const receipt=await intent(connections[seat],version,'{"epoch":1,"action":{"kind":"guard"}}');
-   assert.equal(receipt.body.case,'receipt');
+   assert.equal(receipt.body.case,'receipt','Cooperative command rejected with code '+receipt.body.value.code);
    version=Number(receipt.canonicalVersion);
    const view=JSON.parse(Buffer.from(receipt.body.value.authorizedProjection).toString('utf8'));
    assert.equal(view.state.you,seat);
@@ -279,7 +321,7 @@ try{
    const seat=state.activeSeat;
    const action=boss===fire?legalSwap(state.board):{kind:'guard'};
    const receipt=await intent(connections[seat],version,JSON.stringify({epoch:1,action}));
-   assert.equal(receipt.body.case,'receipt');
+   assert.equal(receipt.body.case,'receipt','Cooperative command rejected with code '+receipt.body.value.code);
    version=Number(receipt.canonicalVersion);
    state=JSON.parse(Buffer.from(receipt.body.value.authorizedProjection).toString('utf8')).state;
    turns+=1;
