@@ -562,7 +562,11 @@ impl CoopRules {
             attack,
             defense,
             crit_rate_bp: pet.crit_rate_bp,
-            crit_damage_bp: pet.crit_damage_bp,
+            // All player critical damage in this encounter targets the Boss.
+            crit_damage_bp: pet
+                .crit_damage_bp
+                .checked_add(profile.boss_crit_damage_bonus_bp.unwrap_or(0))
+                .ok_or(CoopError::Arithmetic)?,
             mana: 0,
             rage: 0,
             shield: 0,
@@ -788,7 +792,9 @@ impl CoopRules {
                 .ok_or(CoreError::Arithmetic)
         };
         match effect.kind {
-            config::EffectKind::Damage | config::EffectKind::DamageOverTime => {
+            config::EffectKind::Damage
+            | config::EffectKind::DamageOverTime
+            | config::EffectKind::ChainDamage => {
                 let mut damage = scaled(attack.saturating_add(effect.value))?;
                 if crit {
                     damage = u32::try_from(u64::from(damage) * u64::from(crit_damage_bp) / 10_000)
@@ -808,15 +814,26 @@ impl CoopRules {
                         / 1_000,
                 )
                 .map_err(|_| CoreError::Arithmetic)?;
-                if matches!(effect.kind, config::EffectKind::DamageOverTime) {
-                    state.boss.dot_damage = state.boss.dot_damage.saturating_add(damage);
-                    state.boss.dot_turns = effect.duration_turns.max(1);
-                } else {
-                    let dealt = self.damage_boss(state, damage)?;
-                    state.participants[actor].contribution_damage = state.participants[actor]
-                        .contribution_damage
-                        .saturating_add(u64::from(dealt));
-                    events.push(event("boss-damage", Some(actor as u8), u64::from(dealt)));
+                match effect.kind {
+                    config::EffectKind::DamageOverTime => {
+                        state.boss.dot_damage = state.boss.dot_damage.saturating_add(damage);
+                        state.boss.dot_turns = effect.duration_turns.max(1);
+                    }
+                    _ => {
+                        // A chain uses one critical roll for the cast. Resolve each
+                        // packet separately so shields, phases and victory apply.
+                        for _ in 0..effect.hits.unwrap_or(1) {
+                            let dealt = self.damage_boss(state, damage)?;
+                            state.participants[actor].contribution_damage = state.participants
+                                [actor]
+                                .contribution_damage
+                                .saturating_add(u64::from(dealt));
+                            events.push(event("boss-damage", Some(actor as u8), u64::from(dealt)));
+                            if state.phase.terminal() {
+                                break;
+                            }
+                        }
+                    }
                 }
                 if crit {
                     events.push(event("critical", Some(actor as u8), 0));
@@ -927,6 +944,64 @@ impl CoopRules {
                     }
                 }
             }
+            config::EffectKind::RageTransfer | config::EffectKind::ManaRestore => {
+                let target = self
+                    .targets(state, actor, effect.target)
+                    .into_iter()
+                    .next()
+                    .ok_or(CoreError::InvalidAction)?;
+                let amount =
+                    u16::try_from(scaled(effect.value)?).map_err(|_| CoreError::Arithmetic)?;
+                let (kind, gained) = match effect.kind {
+                    config::EffectKind::RageTransfer => {
+                        let room = self
+                            .config
+                            .resources
+                            .rage_cap
+                            .saturating_sub(state.participants[target].rage);
+                        let moved = amount.min(room).min(state.participants[actor].rage);
+                        state.participants[actor].rage -= moved;
+                        state.participants[target].rage += moved;
+                        ("rage-transfer", moved)
+                    }
+                    _ => {
+                        let seat = &mut state.participants[target];
+                        let gained =
+                            amount.min(self.config.resources.mana_cap.saturating_sub(seat.mana));
+                        seat.mana += gained;
+                        ("mana-restored", gained)
+                    }
+                };
+                if gained == 0 {
+                    return Err(CoreError::InvalidAction);
+                }
+                events.push(event(kind, Some(target as u8), u64::from(gained)));
+            }
+            config::EffectKind::Cleanse => {
+                let mut removed = false;
+                for target in self.targets(state, actor, effect.target) {
+                    if let Some(status) =
+                        state.participants[target]
+                            .statuses
+                            .iter_mut()
+                            .find(|status| {
+                                status
+                                    .is_some_and(|active| active.kind == StatusKind::Vulnerability)
+                            })
+                    {
+                        *status = None;
+                        events.push(event(
+                            "cleanse",
+                            Some(target as u8),
+                            u64::from(effect.value),
+                        ));
+                        removed = true;
+                    }
+                }
+                if !removed {
+                    return Err(CoreError::InvalidAction);
+                }
+            }
         }
         Ok(())
     }
@@ -947,6 +1022,19 @@ impl CoopRules {
                     });
                 lowest.into_iter().collect()
             }
+            config::EffectTarget::LowestRageAlly | config::EffectTarget::LowestManaAlly => (0
+                ..SEATS)
+                .filter(|seat| *seat != actor && state.participants[*seat].alive)
+                .min_by_key(|index| {
+                    let seat = &state.participants[*index];
+                    if target == config::EffectTarget::LowestRageAlly {
+                        seat.rage
+                    } else {
+                        seat.mana
+                    }
+                })
+                .into_iter()
+                .collect(),
         }
     }
 
@@ -1513,6 +1601,29 @@ impl CoopRules {
                 seat.alive = false;
             }
             events.push(event("boss-attack", Some(target as u8), u64::from(taken)));
+            if seat.alive
+                && let Some(vulnerability) = self.selected_boss().attack_model.vulnerability
+            {
+                // Reapplication refreshes the same status. A successful
+                // shield still leaves the surviving target marked.
+                let index = seat
+                    .statuses
+                    .iter()
+                    .position(|status| status.is_some_and(|s| s.kind == StatusKind::Vulnerability))
+                    .or_else(|| seat.statuses.iter().position(Option::is_none));
+                if let Some(index) = index {
+                    seat.statuses[index] = Some(Status {
+                        kind: StatusKind::Vulnerability,
+                        value: i32::from(vulnerability.value_pm),
+                        turns: vulnerability.duration_turns,
+                    });
+                    events.push(event(
+                        "vulnerability",
+                        Some(target as u8),
+                        u64::from(vulnerability.value_pm),
+                    ));
+                }
+            }
         }
         if state.participants.iter().all(|seat| !seat.alive) {
             state.phase = CoopPhase::Lost;

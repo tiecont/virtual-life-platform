@@ -649,3 +649,306 @@ fn rejects_invalid_authored_skill_level_cost_and_power() {
         Err(ConfigError::Skill)
     ));
 }
+
+#[test]
+fn revision_nine_retains_its_content_digest_and_replay() {
+    let rules = CoopRules::load(
+        include_bytes!("../../../tests/fixtures/arena8-coop-r9.json"),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+    let hex = |digest: [u8; 32]| digest.map(|byte| format!("{byte:02x}")).concat();
+    assert_eq!(
+        hex(rules.digest()),
+        "85a314d5cd96abc833bf67100b93461de397ba4793cc9bcd63bce16a0569a413"
+    );
+    let mut state = rules.allocate(seats()).unwrap();
+    let mut stream = rng(0);
+    for action in [CoopAction::Start, CoopAction::Guard, CoopAction::Guard] {
+        state = rules.reduce(&state, action, &mut stream).unwrap().state;
+    }
+    assert_eq!(state.active_seat, 2);
+    state.participants[2].rage = 40;
+    state = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap()
+        .state;
+    assert!(state.participants.iter().all(|seat| seat.shield > 0));
+    assert_eq!(
+        hex(state_digest(&state)),
+        "d1cbeaf25bf4c3149ff93c4ffa190a54dbb23f9d82e655890d8727559027eb71"
+    );
+}
+
+fn started_with(boss: &str, roster: [SeatInput; SEATS]) -> (CoopRules, CoopState, TurnRng) {
+    let rules = CoopRules::load(&bundle(), boss.into()).unwrap();
+    let initial = rules.allocate(roster).unwrap();
+    let mut stream = rng(0);
+    let state = rules
+        .reduce(&initial, CoopAction::Start, &mut stream)
+        .unwrap()
+        .state;
+    (rules, state, stream)
+}
+
+#[test]
+fn electric_transfer_conserves_rage_and_selects_a_living_teammate() {
+    let mut roster = seats();
+    roster[0].pet_id = "electric-copperkip".into();
+    let (rules, mut state, mut stream) = started_with("cinder-terraces-warden", roster);
+    let (caster, target, tie, dead) = (0, 1, 2, 3);
+    state.participants[caster].mana = 12;
+    state.participants[caster].rage = 7;
+    state.participants[target].rage = 96;
+    state.participants[tie].rage = 96;
+    state.participants[dead].alive = false;
+    state.participants[dead].hp = 0;
+    let cursor = stream.cursor();
+    let Decision {
+        state: next,
+        events,
+        ..
+    } = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap();
+    assert_eq!(events, [event("rage-transfer", Some(target as u8), 4)]);
+    assert_eq!(next.participants[caster].rage, 3);
+    assert_eq!(next.participants[caster].mana, 0);
+    assert_eq!(next.participants[target].rage, 100);
+    assert_eq!(next.participants[tie].rage, 96);
+    assert_eq!(next.participants[dead].rage, 0);
+    assert_eq!(stream.cursor(), cursor);
+
+    state.participants[target].rage = 100;
+    state.participants[tie].rage = 100;
+    assert!(matches!(
+        rules.reduce(&state, CoopAction::Signature, &mut stream),
+        Err(CoreError::InvalidAction)
+    ));
+    assert_eq!(stream.cursor(), cursor);
+    assert_eq!(state.participants[caster].mana, 12);
+    assert_eq!(state.participants[caster].rage, 7);
+}
+
+#[test]
+fn water_mana_current_restores_only_the_lowest_mana_teammate() {
+    let mut roster = seats();
+    roster[0].pet_id = "water-ripplefin".into();
+    let (rules, mut state, mut stream) = started_with("cinder-terraces-warden", roster);
+    state.participants[0].rage = 22;
+    state.participants[1].mana = 92;
+    state.participants[2].mana = 88;
+    state.participants[3].mana = 95;
+    let Decision {
+        state: next,
+        events,
+        ..
+    } = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap();
+    assert_eq!(events, [event("mana-restored", Some(2), 12)]);
+    assert_eq!(next.participants[0].mana, 0);
+    assert_eq!(next.participants[0].rage, 0);
+    assert_eq!(next.participants[1].mana, 92);
+    assert_eq!(next.participants[2].mana, 100);
+    assert_eq!(next.participants[3].mana, 95);
+}
+
+#[test]
+fn light_cleanses_the_vulnerability_applied_by_a_real_boss_attack() {
+    let mut roster = seats();
+    roster[1].pet_id = "pet-v31-light-aurelune".into();
+    let (rules, mut state, mut stream) = started_with("lantern-necropolis-warden", roster);
+    let attack = PendingAttack {
+        targets: 1,
+        remaining: 1,
+        damage: 50,
+    };
+    state.participants[0].hp -= 12;
+    state.participants[1].mana = 16;
+    state.pending = Some(attack);
+    let Decision {
+        mut state, events, ..
+    } = rules
+        .reduce(&state, CoopAction::Guard, &mut stream)
+        .unwrap();
+    assert!(events.contains(&event("vulnerability", Some(0), 350)));
+    assert!(state.participants[0].statuses.contains(&Some(Status {
+        kind: StatusKind::Vulnerability,
+        value: 350,
+        turns: 3,
+    })));
+
+    let cleared = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap();
+    assert_eq!(cleared.events, [event("cleanse", Some(0), 1)]);
+    assert_eq!(cleared.state.participants[1].mana, 0);
+    assert!(
+        cleared.state.participants[0]
+            .statuses
+            .iter()
+            .flatten()
+            .all(|status| { status.kind != StatusKind::Vulnerability })
+    );
+    assert!(
+        cleared.state.participants[0]
+            .statuses
+            .contains(&Some(Status {
+                kind: StatusKind::DefenseBuff,
+                value: 250,
+                turns: 2,
+            }))
+    );
+
+    state.pending = Some(attack);
+    let still_marked = rules
+        .reduce(&state, CoopAction::Guard, &mut stream)
+        .unwrap();
+    let cleansed = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap();
+    let before = state.participants[0].hp;
+    let unmarked_damage = before - cleansed.state.participants[0].hp;
+    let marked_damage = before - still_marked.state.participants[0].hp;
+    assert!(unmarked_damage > 0);
+    assert_eq!(marked_damage, unmarked_damage * 1_350 / 1_000);
+}
+
+#[test]
+fn electric_chain_resolves_two_hits_across_boss_phase_transition() {
+    let (rules, mut state, mut stream) = started();
+    state.active_seat = 2;
+    let caster = &mut state.participants[2];
+    caster.rage = 40;
+    caster.crit_rate_bp = 10_000;
+    state.boss.hp = rules.selected_boss().phase_threshold() + 1;
+    let before_cursor = stream.cursor();
+    let Decision {
+        state: next,
+        events,
+        ..
+    } = rules
+        .reduce(&state, CoopAction::Signature, &mut stream)
+        .unwrap();
+    assert_eq!(next.boss.phase, 2);
+    let phase_two_damage = rules.selected_boss().phase2_current_hp().unwrap() - next.boss.hp;
+    assert!(phase_two_damage > 0);
+    assert_eq!(
+        next.participants[2].contribution_damage,
+        1 + u64::from(phase_two_damage)
+    );
+    assert_eq!(
+        events,
+        [
+            event("boss-damage", Some(2), 1),
+            event("boss-damage", Some(2), u64::from(phase_two_damage)),
+            event("critical", Some(2), 0),
+        ]
+    );
+    assert_eq!(stream.cursor(), before_cursor + 1);
+}
+
+#[test]
+fn ground_boss_crit_specialization_applies_to_swap_and_active_skill() {
+    let boss = "cinder-terraces-warden";
+    let (rules, state, _) = started_with(boss, seats());
+    let mut baseline_config = rules.config().clone();
+    let profile = &mut baseline_config.elements[Element::Ground.index()];
+    let bonus = profile.boss_crit_damage_bonus_bp.take().unwrap();
+    let baseline = CoopRules::from_config(baseline_config, boss.into()).unwrap();
+    let old_state = baseline
+        .reduce(
+            &baseline.allocate(seats()).unwrap(),
+            CoopAction::Start,
+            &mut rng(0),
+        )
+        .unwrap()
+        .state;
+    assert_eq!(state.board, old_state.board);
+    assert_eq!(
+        state.participants[3].crit_damage_bp,
+        old_state.participants[3].crit_damage_bp + bonus
+    );
+    let (first, second) = rules.legal_swap(&state).unwrap();
+    for action in [CoopAction::Swap { first, second }, CoopAction::Skill] {
+        let damage = |rules: &CoopRules, mut state: CoopState, rate| {
+            state.active_seat = 3;
+            state.participants[3].mana = 100;
+            state.participants[3].crit_rate_bp = rate;
+            rules
+                .reduce(&state, action, &mut rng(100))
+                .unwrap()
+                .state
+                .participants[3]
+                .contribution_damage
+        };
+        assert_eq!(
+            damage(&rules, state.clone(), 0),
+            damage(&baseline, old_state.clone(), 0)
+        );
+        assert!(
+            damage(&rules, state.clone(), 10_000) > damage(&baseline, old_state.clone(), 10_000)
+        );
+    }
+}
+
+#[test]
+fn extended_effects_reject_inert_or_unsupported_parameters() {
+    let source: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    let skill = |id| {
+        source["skills"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .position(|skill| skill["id"] == id)
+            .unwrap()
+    };
+    let electric = skill("electric-copperkip-voltage-transfer");
+    let water = skill("water-ripplefin-mana-current");
+    let cleanse = skill("light-gleamlet-dawn-cleanse");
+    let chain = skill("pet-v31-electric-quorion-volt-thunder-chain");
+    use serde_json::json;
+    for (index, path, value) in [
+        (electric, "/effect/target", json!("self-actor")),
+        (electric, "/effect/durationTurns", json!(2)),
+        (electric, "/critEligible", json!(true)),
+        (electric, "/rageCost", json!(100)),
+        (water, "/effect/value", json!(101)),
+        (water, "/effect/stackingPm", json!(1_200)),
+        (cleanse, "/effect/target", json!("boss")),
+        (cleanse, "/effect/value", json!(2)),
+        (cleanse, "/powerPm", json!(1_200)),
+        (chain, "/effect/target", json!("lowest-rage-ally")),
+        (chain, "/effect/hits", json!(1)),
+        (chain, "/effect/hits", serde_json::Value::Null),
+        (chain, "/effect/durationTurns", json!(2)),
+    ] {
+        let mut candidate = source.clone();
+        *candidate["skills"][index].pointer_mut(path).unwrap() = value;
+        assert_eq!(
+            CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap()),
+            Err(ConfigError::Skill),
+            "accepted invalid field {index}{path}",
+        );
+    }
+    let mut candidate = source.clone();
+    let boss = candidate["bosses"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|boss| boss["id"] == "lantern-necropolis-warden")
+        .unwrap();
+    boss["attackModel"]["vulnerability"]["durationTurns"] = json!(1);
+    assert_eq!(
+        CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap()),
+        Err(ConfigError::Boss)
+    );
+
+    let mut candidate = source;
+    candidate["elements"][Element::Ground.index()]["bossCritDamageBonusBp"] = json!(10_001);
+    assert_eq!(
+        CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap()),
+        Err(ConfigError::ElementSet)
+    );
+}
