@@ -6,7 +6,9 @@ import {levelIncrement} from '../../../../pets/modules/wave1/domain/progression'
 import {CoopSettlementStore} from '../infrastructure/store';
 
 const hash=z.string().regex(/^[a-f0-9]{64}$/),pet=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),count=z.number().int().min(0).max(1000000);
-const ParticipantSchema=z.strictObject({account:z.uuid(),petId:pet,alive:z.boolean(),damage:count,healing:count,shielding:count});
+// Contributions accumulate across turns. Keep JSON integer precision for the signed proposal.
+const contribution=z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+const ParticipantSchema=z.strictObject({account:z.uuid(),petId:pet,alive:z.boolean(),damage:contribution,healing:contribution,shielding:contribution});
 export const CoopSettlementProposalSchema=z.strictObject({
  configDigest:hash,contentHash:hash,kind:z.literal('coop.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.array(ParticipantSchema).length(4),round:z.number().int().min(0).max(65535),

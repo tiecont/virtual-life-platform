@@ -53,7 +53,7 @@ async function fixture(accounts:Account[],outcome:'won'|'lost'){
  await pool.query("INSERT INTO game_native_receipts(match_id,actor_id,command_id,payload_fingerprint,committed_version,epoch,receipt_hash,key_id,nonce,tag,sealed_receipt) VALUES($1,$2,$3,$4,1,1,$5,'fixture-key',$6,$7,$8)",[matchId,accounts[0]!.accountId,randomUUID(),randomBytes(32),randomBytes(32),randomBytes(12),randomBytes(16),Buffer.from('receipt')]);
  const proposal={
   configDigest:digest,contentHash,kind:'coop.completed.v1',outcome,
-  participants:accounts.map(account=>({account:account.accountId,alive:true,damage:100,healing:10,petId:account.petId,shielding:5})),
+  participants:accounts.map(account=>({account:account.accountId,alive:true,damage:1_000_001,healing:2_000_000,petId:account.petId,shielding:3_000_000})),
   round:6,ruleset:'arena8-coop-pve',rulesetVersion:1,turn:14,
  };
  await pool.query('INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1,1,1,$2,$3,$4::jsonb)',[matchId,settlementId,canonicalProposalHash(proposal),JSON.stringify(proposal)]);
