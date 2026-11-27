@@ -73,6 +73,30 @@ def shared_pressure(bundle):
     water["telegraphTurns"] = 4
     set_effectiveness(bundle, "ground", "water", 1000)
 
+def functional_reference(bundle):
+    """Reproduce the tested co-op candidate B on the supplied functional revision."""
+    fire, water = (next(b for b in bundle["bosses"] if b["id"] == name) for name in BOSSES)
+    for boss, health in ((fire, 3500), (water, 3800)):
+        boss["maxHp"] = health
+        boss["attackModel"].update(baseDamage=45, perRoundDamage=3)
+
+def tideglass_endurance(bundle):
+    """Compare slower Water attack growth at candidate B's original boss health."""
+    functional_reference(bundle)
+    water = next(b for b in bundle["bosses"] if b["id"] == BOSSES[1])
+    water["attackModel"].update(baseDamage=30, perRoundDamage=1)
+
+def tideglass_vitality(bundle):
+    """Compare a shorter Water encounter at candidate B's original attack pressure."""
+    functional_reference(bundle)
+    water = next(b for b in bundle["bosses"] if b["id"] == BOSSES[1])
+    water["maxHp"] = 2200
+
+ELEMENTAL_VARIANTS = {"lower-pressure": lower_pressure, "resource-burst": resource_burst,
+                      "shared-pressure": shared_pressure}
+FUNCTIONAL_VARIANTS = {"functional-b": functional_reference, "tideglass-endurance": tideglass_endurance,
+                       "tideglass-vitality": tideglass_vitality}
+
 def party(name, level, gear):
     result = []
     for i, pet in enumerate(PARTIES[name], 1):
@@ -110,7 +134,7 @@ def main():
     parser.add_argument("--seed-count", type=int, default=6)
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
-    parser.add_argument("--bundles", nargs="+", choices=["baseline", "lower-pressure", "resource-burst", "shared-pressure"])
+    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS])
     parser.add_argument("--stage", choices=["progression", "composition", "confirmation"], default="progression")
     args = parser.parse_args()
     if not 1 <= args.seed_count <= 25 or not 1 <= args.seed_start <= 2**32 - 1 or args.jobs < 1:
@@ -125,13 +149,12 @@ def main():
     if capability not in ("arena8-coop-v1", "arena8-coop-v2"):
         parser.error("unsupported engine capability in study input")
     functional = capability == "arena8-coop-v2"
-    selected = args.bundles or (["baseline"] if functional else
-                                ["baseline", "lower-pressure", "resource-burst", "shared-pressure"])
-    if functional and any(name != "baseline" for name in selected):
-        parser.error("elemental-board variants cannot be applied to a functional-board bundle")
+    variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
+    selected = args.bundles or (["baseline"] if functional else ["baseline", *variants])
+    if any(name != "baseline" and name not in variants for name in selected):
+        parser.error(f"requested balance variant is incompatible with {capability}")
     bundles = {"baseline": args.baseline.resolve()}
-    for name, patch in (("lower-pressure", lower_pressure), ("resource-burst", resource_burst),
-                        ("shared-pressure", shared_pressure)):
+    for name, patch in variants.items():
         if name not in selected:
             continue
         bundle = copy.deepcopy(base)
