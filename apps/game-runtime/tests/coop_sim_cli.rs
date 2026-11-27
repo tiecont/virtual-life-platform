@@ -9,7 +9,7 @@ const WATER: &str = "tideglass-lagoon-warden";
 
 fn run(flag: &str, version: u8, args: &[&str]) -> std::process::Output {
     let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join(match version {
-        1 => "../tests/fixtures/arena8-coop-v1-legacy.seed.json".to_string(),
+        1 => "tests/fixtures/arena8-coop-v1-legacy.seed.json".to_string(),
         v => format!("../../config/gameplay/arena8-coop-v{v}.seed.json"),
     });
     Command::new(BINARY)
