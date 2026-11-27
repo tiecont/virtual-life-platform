@@ -576,9 +576,10 @@ fn historical_bundle_keeps_its_original_digest_and_boss_encoding() {
     let raw = include_bytes!("../../../tests/fixtures/arena8-coop-v1-legacy.seed.json");
     let legacy = CoopRules::load(raw, "cinder-terraces-warden".into()).unwrap();
     let digest = legacy.digest().map(|byte| format!("{byte:02x}")).concat();
+    // Legacy digest from a1c6f0b (before typed artifacts and balance changes)
     assert_eq!(
         digest,
-        include_str!("../../../../../config/gameplay/arena8-coop-v1.digest").trim()
+        "1875e6ee24d12917abd465cbf65aa82ae96fa5beb1b6345f4f75e154b7e20ad2"
     );
     assert!(CoopRules::load(raw, "tideglass-lagoon-warden".into()).is_err());
 }
