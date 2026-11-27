@@ -56,7 +56,7 @@ function legalSwap(board){
 
 // Use the committed tile kinds to find an opening swap whose first batch is
 // all Mana. Subsequent authoritative cascade gains can only increase Mana.
-function manaSwap(board){
+function pureSwap(board,requiredKind){
  const kinds=board.map(tile=>tile.kind);
  function firstBatch(){
   const matched=new Set();
@@ -69,7 +69,7 @@ function manaSwap(board){
     }
    }
   }
-  return matched.size>0&&[...matched].every(index=>kinds[index]==='mana')?matched.size:0;
+  return matched.size>0&&[...matched].every(index=>kinds[index]===requiredKind)?matched.size:0;
  }
  for(let first=0;first<kinds.length;first++){
   for(const second of [first%8<7?first+1:-1,first<56?first+8:-1]){
@@ -81,7 +81,9 @@ function manaSwap(board){
   }
  }
 }
-const functional=process.argv.includes('--functional');
+const solo=process.argv.includes('--solo');
+const direct=solo||process.argv.includes('--direct');
+const functional=solo||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
 const historicalBinary=historicalArg?.slice('--historical-binary='.length);
 assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
@@ -90,8 +92,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,functional?'functional-':'run-'));
-const facts={result:'FAIL',board:functional?'functional':'elemental',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -143,12 +145,20 @@ try{
  boss.attackModel.baseDamage=1;
  boss.attackModel.perRoundDamage=0;
  boss.attackModel.minimumDamage=1;
+ if(solo){
+  assert.ok(boss.solo);
+  boss.solo.maxRounds=2;
+  assert.ok(boss.regular);
+  boss.regular.maxHp=1;
+  boss.regular.defense=1;
+  boss.regular.maxRounds=20;
+ }
  if(functional){
   // Keep the test segment on a known ×1 utility factor and make an eligible
   // committed Mana match common even though the host chooses a fresh seed.
   seed.multiplier.schedule=seed.multiplier.schedule.slice(0,1);
   seed.multiplier.schedule[0].tiers=[{multiplier:1,weight:1,damageWeightPm:1000,resourceWeightPm:1000}];
-  for(const row of seed.board.functionalTiles.spawnWeights)row.weight=row.kind==='mana'?5:1;
+  for(const row of seed.board.functionalTiles.spawnWeights)row.weight=row.kind==='mana'||(solo&&row.kind==='sword')?5:1;
  }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  const validator=new EngineGameplayBundleValidator(binary);
  const installed=await installGameplayConfig(pool,ruleset,seed,validator,'system:disposable-admin-ab-fixture');
@@ -175,10 +185,22 @@ try{
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
  });
  async function startApi(){
-  app=await createApp(configForRuntime(),pool,false,{});
+  const config=configForRuntime();
+  app=await createApp(config,pool,false,solo?{petArena8Native:{
+   enabled:true,binary:runtimeBinary,databaseUrl:runtime.toString(),role,caFile:tls.caFile,
+   storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,
+   httpsOrigin:nativeOrigin,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE,
+  }}:{});
   await app.app.listen(apiPort,'127.0.0.1');
  }
  await startApi();
+ let operator;
+ if(direct){
+  const response=await app.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},
+   payload:{password:operatorPassword,code:totp(operatorSecret,Date.now())}});
+  assert.equal(response.statusCode,200,JSON.stringify(response.json()));
+  operator={cookie:String(response.headers['set-cookie']).split(';')[0],csrf:response.json().csrfToken};
+ }else{
  logFile=await open(join(artifact,'next.log'),'w',0o600);
  nextProcess=spawn(process.execPath,[require.resolve('../apps/admin-web/node_modules/next/dist/bin/next'),'dev','--webpack','--hostname','127.0.0.1','--port',String(adminPort)],{
   cwd:join(root,'apps/admin-web'),env:{...process.env,NODE_ENV:'development',ADMIN_ORIGIN:adminOrigin,ADMIN_API_ORIGIN:apiOrigin},
@@ -211,6 +233,7 @@ try{
  await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Version 1 · PUBLISHED',exact:true})).toBeVisible({timeout:60000});
  mark('actual Chromium signed in with operator password and TOTP through Next and Nest; unauthenticated overview denied',{unauthenticatedStatus:unauthorized.status()});
+ }
  const variants={
   A:{hp:boss.maxHp,attack:seed.pets.find(pet=>pet.id==='fire-coalwhisk').attack,points:5000,materials:1,priority:''},
   B:{hp:boss.maxHp,attack:seed.pets.find(pet=>pet.id==='fire-coalwhisk').attack,points:5500,materials:3,priority:'highest-mana'},
@@ -263,7 +286,32 @@ try{
   priority:bundle.bosses[0].attackModel.targetPriority??'',
   ...(functional?{manaYield:bundle.board.functionalTiles.manaPerTile}:{}),
  });
+ async function operatorPost(action,input){
+  const response=await app.http.inject({method:'POST',url:'/v1/operator/gameplay-config-'+action,
+   headers:{origin:adminOrigin,cookie:operator.cookie,'x-csrf-token':operator.csrf},payload:{requestId:randomUUID(),ruleset,...input}});
+  assert.equal(response.statusCode,200,JSON.stringify(response.json()));
+  return response.json();
+ }
+ async function directPublish(label){
+  const fields=variants[label],active=await dbActive();
+  const bundle=structuredClone((await dbConfig(active.version)).bundle),boss=bundle.bosses[0];
+  boss.requiredRoomPoints=fields.points;
+  boss.rewardPolicy.defeat.materials=fields.materials;
+  if(fields.priority)boss.attackModel.targetPriority=fields.priority;
+  if(functional)bundle.board.functionalTiles.manaPerTile=fields.manaYield;
+  const {version,revision}=await operatorPost('draft',{parentVersion:active.version,bundle});
+  const validated=await operatorPost('validate',{version,expectedRevision:revision});
+  const published=await operatorPost('publish',{version,expectedRevision:validated.revision,expectedActiveRevision:active.revision});
+  const stored=await dbConfig(version),verdict=await validator.validate(ruleset,stored.bundle);
+  assert.equal(verdict.digest,published.contentDigest);
+  assert.deepEqual(stored.bundle,bundle);
+  assert.deepEqual(await dbActive(),{version,revision:published.activeRevision});
+  mark('published '+label+' through authenticated Nest operator HTTP with actual engine validation and PostgreSQL selection',
+   {version,digest:verdict.digest,fields});
+  return configurations[label]={version,digest:verdict.digest,hash:verdict.contentHash,fields,bundle:stored.bundle};
+ }
  async function publish(label){
+  if(direct)return directPublish(label);
   const fields=variants[label];
   const created=await clickMutation('New draft from active','draft');
   await expect(page.locator('h2').filter({hasText:new RegExp('^Version '+created.version+'\\s*·\\s*DRAFT$')})).toBeVisible();
@@ -411,6 +459,14 @@ try{
   }
   return room;
  }
+ async function soloAdmission(input){
+  const result=await post(host,'/v1/pets/wave-a/arena8/native/allocate',input);
+  assert.equal(result.statusCode,200,JSON.stringify(result.json()));
+  const value=result.json();
+  assert.equal(value.ruleset,'arena8-functional-pve');
+  assert.equal(value.principal,host.accountId);
+  return value;
+ }
  const startRoom=(room,requestId)=>post(host,'/v1/coop/rooms/'+room.roomId+'/start',{requestId});
  const allocationRow=async room=>(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version::int,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations WHERE room_id=$1',[room.roomId])).rows[0];
  async function allocate(version,room,requestId=randomUUID()){
@@ -429,7 +485,12 @@ try{
   mark('four-seat room allocated actual Rust process with the expected version, digest and content hash',facts.allocations.at(-1));
   return {row,room,version};
  }
- async function freshTicket(match,seat){
+  async function freshTicket(match,seat){
+  if(solo){
+   const ticket=await soloAdmission(match.input);
+   assert.equal(ticket.matchId,match.row.match_id);
+   return {value:ticket.ticket,expiresAt:Date.parse(ticket.expiresAt),url:ticket.wssUrl};
+  }
   const member=members[seat];
   const response=await post(member,'/v1/coop/rooms/'+match.room.roomId+'/admission',{});
   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
@@ -578,7 +639,7 @@ try{
  async function functionalBehavior(match,response){
   for(let attempt=0;attempt<4;attempt++){
    const seat=response.state.activeSeat,before=response.state.participants[seat].mana;
-   const found=manaSwap(response.state.board);
+   const found=pureSwap(response.state.board,'mana');
    if(found&&before===0){
     const after=await native(match,seat,response.version,found.action);
     if(after.committed){
@@ -594,7 +655,7 @@ try{
      return after;
     }
    }
-   response=await native(match,seat,response.version,legalSwap(response.state.board));
+   response=await native(match,seat,response.version,solo?{kind:'guard'}:legalSwap(response.state.board));
    assert.equal(response.committed,true,JSON.stringify(response));
   }
   throw Error('No pure Mana swap was observed on a fresh seat');
@@ -656,6 +717,93 @@ try{
   mark('all four receipts used the material award pinned at allocation',{version:match.version.version,materials:match.version.fields.materials});
   mark('disposable match settled to free the local runtime listener',{matchId:match.row.match_id,canonicalVersion:response.version});
  }
+ if(solo){
+  const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:'cinder-terraces',encounterId:'cinder-terraces-boss'};
+  const admission=await soloAdmission(input);
+  const match={input,row:{match_id:admission.matchId,content_hash:admission.contentHash},version:A};
+  connections.push(match);
+  const started=await native(match,0,0,{kind:'start'});
+  assert.equal(started.committed,true,JSON.stringify(started));
+  assert.equal(started.state.ruleset.id,'arena8-functional-pve');
+  assert.equal(started.state.ruleset.version,1);
+  assert.equal(started.state.ruleset.configDigest,A.digest);
+  assert.equal(started.state.participants.length,1);
+  assert.equal(started.state.board.length,64);
+  assert.ok(started.state.board.every(tile=>typeof tile.kind==='string'&&!Object.hasOwn(tile,'element')));
+  const pinned=(await pool.query('SELECT functional_config_version::int, functional_config_digest, functional_allocation FROM platform_native_arena8_matches WHERE match_id=$1',[match.row.match_id])).rows[0];
+  assert.equal(pinned.functional_config_version,A.version);
+  assert.equal(pinned.functional_config_digest,A.digest);
+  assert.equal(pinned.functional_allocation.seat.ownedPetInstanceId,host.instanceId);
+  const B=await publish('B');
+  await restart();
+  const restored=await native(match,0,0);
+  assert.equal(restored.version,started.version);
+  assert.deepEqual(restored.state,started.state);
+  mark('authenticated functional solo resumed with the original DB publication and owned Pet after B publication and restart',
+   {version:A.version,digest:A.digest,newActiveVersion:B.version,canonicalVersion:restored.version});
+  const terminal=await functionalBehavior(match,restored);
+  let current=terminal;
+  while(current.state.phase==='playing'){
+   assert.ok(current.version<8);
+   current=await native(match,0,current.version,{kind:'guard'});
+   assert.equal(current.committed,true,JSON.stringify(current));
+  }
+  const settlementUrl='/v1/pets/wave-a/arena8/native/matches/'+match.row.match_id+'/settle',request={requestId:randomUUID()};
+  const another=await post(members[1],settlementUrl,request);
+  assert.equal(another.statusCode,403);
+  const first=await post(host,settlementUrl,request);
+  assert.equal(first.statusCode,200,JSON.stringify(first.json()));
+  assert.equal(first.json().materials,A.fields.materials);
+  const replay=await post(host,settlementUrl,{requestId:randomUUID()});
+  assert.equal(replay.statusCode,200,JSON.stringify(replay.json()));
+  assert.deepEqual(replay.json(),first.json());
+  const finished=(await pool.query('SELECT status FROM game_native_matches WHERE id=$1',[match.row.match_id])).rows[0];
+  assert.equal(finished.status,'FINISHED');
+  const row=(await pool.query('SELECT delivery_outcome FROM game_native_outbox WHERE match_id=$1',[match.row.match_id])).rows[0];
+  assert.equal(row.delivery_outcome,'granted');
+  mark('functional solo terminal settlement used pinned rewards once and rejected a different account',
+   {version:A.version,digest:A.digest,materials:first.json().materials,deniedStatus:another.statusCode,outbox:row.delivery_outcome});
+  const waterInput={...input,requestId:randomUUID(),mapId:'tideglass-lagoon',encounterId:'tideglass-lagoon-regular'};
+  const locked=await post(host,'/v1/pets/wave-a/arena8/native/allocate',waterInput);
+  assert.equal(locked.statusCode,403);
+  for(const firstClear of [true,false]){
+   const regularId='cinder-terraces-regular';
+   const regularInput={...input,requestId:randomUUID(),encounterId:regularId};
+   const admitted=await soloAdmission(regularInput);
+   const regular={input:regularInput,row:{match_id:admitted.matchId,content_hash:admitted.contentHash},version:B};
+   connections.push(regular);
+   let view=await native(regular,0,0,{kind:'start'});
+   assert.equal(view.committed,true,JSON.stringify(view));
+   assert.equal(view.state.bossId,regularId);
+   assert.equal(view.state.ruleset.configDigest,B.digest);
+   while(view.state.phase==='playing'){
+    assert.ok(view.version<20,'Regular fixture did not generate a Sword match');
+    const action=pureSwap(view.state.board,'sword')?.action??legalSwap(view.state.board);
+    view=await native(regular,0,view.version,action);
+    assert.equal(view.committed,true,JSON.stringify(view));
+   }
+   assert.equal(view.state.phase,'won');
+   const expected=B.bundle.bosses[0].regular.rewardPolicy[firstClear?'firstClear':'repeatClear'];
+   const settlementUrl='/v1/pets/wave-a/arena8/native/matches/'+admitted.matchId+'/settle';
+   const previousCoins=Number((await pool.query('SELECT coins FROM pet_wave_one_players WHERE account_id=$1',[host.accountId])).rows[0].coins);
+   const settled=await post(host,settlementUrl,{requestId:randomUUID()});
+   assert.equal(settled.statusCode,200,JSON.stringify(settled.json()));
+   const value=settled.json();
+   assert.deepEqual({firstClear:value.firstClear,coins:value.coins,exp:value.exp,materials:value.materials},
+    {firstClear,coins:expected.coins,exp:expected.exp,materials:expected.materials});
+   const retry=await post(host,settlementUrl,{requestId:randomUUID()});
+   assert.equal(retry.statusCode,200);
+   assert.deepEqual(retry.json(),value);
+   const coins=Number((await pool.query('SELECT coins FROM pet_wave_one_players WHERE account_id=$1',[host.accountId])).rows[0].coins);
+   assert.equal(coins,previousCoins+expected.coins);
+   const proposal=(await pool.query('SELECT proposal FROM game_native_settlements WHERE match_id=$1',[admitted.matchId])).rows[0].proposal;
+   assert.equal(proposal.encounterId,regularId);
+   assert.equal(proposal.configDigest,B.digest);
+   mark('functional solo regular win settled the exact encounter once',
+    {encounterId:proposal.encounterId,configDigest:proposal.configDigest,canonicalVersion:view.version,
+     firstClear,coins:value.coins,exp:value.exp,nextMapLockedStatus:locked.statusCode});
+  }
+ }else{
  const first=await allocate(A,await prepareRoom(A,await checkGate(host,5250,A,true)));
  let firstStarted=await launch(first);
  const B=await publish('B');
@@ -691,6 +839,14 @@ try{
  facts.retry={httpStatus:200,roomId:roomB.roomId,requestId:requestB,matchId:second.row.match_id,configVersion:B.version,configDigest:B.digest,replayStatus:replay.statusCode,bindErrors:[...bindErrors]};
  mark('after A settled, the same B room and start request became active and replayed the same allocation',facts.retry);
  const secondStarted=await launch(second);
+ if(direct){
+  const active=await dbActive();
+  const rolled=await operatorPost('rollback',{version:A.version,expectedActiveRevision:active.revision});
+  assert.deepEqual(await dbActive(),{version:A.version,revision:rolled.activeRevision});
+  assert.deepEqual((await dbConfig(A.version)).bundle,A.bundle);
+  assert.deepEqual((await dbConfig(B.version)).bundle,B.bundle);
+  mark('authenticated Nest rollback restored A and both historical publications',{version:A.version,digest:A.digest});
+ }else{
  const table=page.getByRole('table',{name:'Draft and published gameplay configurations'});
  const rollbackRow=table.getByRole('row').filter({has:page.getByRole('cell',{name:String(A.version),exact:true})});
  const rollBack=await clickMutation('Roll back','rollback',rollbackRow);
@@ -717,6 +873,7 @@ try{
  await expect(auditRow('rollback',A.version)).toHaveCount(1);
  await auditSection().screenshot({path:join(artifact,'browser-audit.png')});
  mark('browser rollback reselected A and audit showed both publications and the rollback',{version:A.version,activeRevision:rollBack.activeRevision,digest:A.digest});
+ }
  await stillPinned(second,secondStarted,'B matched the original committed projection after rollback');
  await restart();
  const restoredB=await stillPinned(second,secondStarted,'B restored its original projection, config and content hash after API and Rust restart with A active in Admin');
@@ -724,6 +881,7 @@ try{
  const third=await allocate(A);
  await settle(third,await behavior(third,await launch(third)));
  mark('a new post-rollback native match selected A again',{matchId:third.row.match_id,version:A.version,digest:A.digest});
+ }
  assert.deepEqual(facts.pageErrors??[],[]);
  assert.deepEqual(bindErrors,[]);
  facts.result='PASS';
