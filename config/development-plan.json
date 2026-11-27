@@ -10888,12 +10888,12 @@
       ],
       "remaining": "Confirm current hosted checks before merge. Original runtime binary qualification is tracked separately from the successful database expansion and historical schema decoding.",
       "implementation": {
-        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
         "pullRequest": 86,
-        "change": "Kept the existing settlement migration and policies. Added exact 0062 prefix policies and UUID backfill, fixed build and native settings composition.",
+        "change": "Kept the existing settlement migration and policies. Added exact 0062 prefix policies and UUID backfill, fixed build and native settings composition. Then removed the artifact catalog from the historical schema-1 seed so the engine accepts it, dropped an unnecessary pnpm setup that broke the pinned toolchain contract, and replaced md5-derived pet instance ids with an immutable aetheria_pet_instance_id() function that pins the RFC version and variant nibbles with explicitly cast seeds.",
         "previousSourceRevision": "a94e368e103f7d3222e405d5a2d547c811a83a64",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "availableAt": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
         "commands": [
           {
             "command": "pnpm game:migration:compat",
@@ -10915,6 +10915,30 @@
             "exitCode": 0,
             "sourceRevision": "098379930a7d4bc3945f71fe6021632c8713a4ae",
             "result": "Focused disposable proof seeded a frozen four-seat PR84 allocation and an unselected seat. Migration 0062 backfilled four real ownership IDs, left the unselected ID null, retained all 61 prior checksums and original allocation JSON, and preserved the roster freeze."
+          },
+          {
+            "command": "node scripts/verify-ci.mjs",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "Workflow, pin, browser-coverage and toolchain contracts pass with four pinned pnpm setups and six .node-version readers."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "Twenty-three scenarios pass, including the admin draft/validate/publish path that previously returned 422, Fire and Water rooms on one published bundle, restart recovery and worker settlement."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=1/4",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "215 tests pass; pet-artifacts-wave-a no longer returns 503 from Wave One state."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=2/4",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "174 tests pass with the prepared legacy API baselines."
           }
         ]
       }
@@ -10943,11 +10967,23 @@
       ],
       "remaining": "Validate awarded instances and saved guest re-admission through the packaged player. Exact historical runtime binary compatibility review remains open.",
       "implementation": {
-        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
-        "change": "Added server-owned durable instance IDs to collection, room seats, frozen allocations and progression lookup. Native snapshots bind the selected identity for the versioned configuration.",
-        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+        "change": "Added server-owned durable instance IDs to collection, room seats, frozen allocations and progression lookup. Native snapshots bind the selected identity for the versioned configuration. Deterministic instance ids are now minted by the shared immutable aetheria_pet_instance_id() SQL function, which pins the RFC 4122 version and variant nibbles, so contracts that validate UUID shape accept every generated id instead of rejecting roughly three of four as INVALID_REQUEST.",
+        "availableAt": "1e169c80976670fca45ca693b5eca4e44115e178",
+        "commands": [
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0,
+            "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+            "exitCode": 0,
+            "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178"
+          }
+        ]
       }
     },
     {
