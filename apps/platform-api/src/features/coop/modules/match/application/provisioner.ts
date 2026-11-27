@@ -226,7 +226,7 @@ export class CoopMatchProvisioner{
   let recovered=0,failed=0;
   for(const record of records){
    if(this.active.has(record.matchId)){recovered+=1;continue;}
-   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined;
+   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined,leaseFailed=false;
    try{
     const bundle=await this.options.loadBundle(record);
     if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
@@ -235,15 +235,18 @@ export class CoopMatchProvisioner{
      throw unavailable('Pinned cooperative configuration no longer matches the allocation');
     const scope=scopeFor(record);
     generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
+    lease=this.lease(scope,generation,()=>{
+     leaseFailed=true;
+     const current=this.active.get(record.matchId);
+     if(current)void this.abandon(current.record,current.generation);
+    });
     handle=await this.options.runtime.start({
      matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
      bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,engineHash:record.engineHash,
     });
-    lease=this.lease(scope,generation,()=>{
-     const current=this.active.get(record.matchId);
-     if(current)void this.abandon(current.record,current.generation);
-    });
+    if(leaseFailed)throw unavailable('Cooperative runtime lease expired during recovery');
     await this.options.store.recovered(record.matchId,generation);
+    if(leaseFailed)throw unavailable('Cooperative runtime lease expired during recovery');
     const restored:CoopAllocationRecord=Object.freeze({...record,status:'ACTIVE',generation});
     handle.onExit(()=>{
      const current=this.active.get(record.matchId);
