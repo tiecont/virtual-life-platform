@@ -8,6 +8,11 @@ export GIT_TERMINAL_PROMPT=0 GH_PROMPT_DISABLED=1 GIT_ASKPASS=/bin/false
 export SSH_ASKPASS=/bin/false SSH_ASKPASS_REQUIRE=never
 export GIT_SSH_COMMAND='ssh -oBatchMode=yes'
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=''
+# The disposable database starts its child with a restricted environment.
+# Carry review inputs across that boundary as validated arguments.
+if [[ ${1:-} == "--inside-disposable-db" ]]; then
+  export PACKAGED_QA_SIZE="${7:?missing player size}" PACKAGED_QA_BOARD="${8:?missing board contract}"
+fi
 case "${PACKAGED_QA_SIZE:-1024x768}" in
   1024x768|1280x720|1920x1080) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
   *) echo "Unsupported packaged player resolution" >&2; exit 2 ;;
@@ -52,7 +57,7 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
   sha256sum "$qa_run/player-package.sha256" "$qa_engine" > "$qa_run/build.sha256"
   printf 'Acceptance evidence will be saved in %s\n' "$qa_run"
   exec node scripts/with-test-db.mjs bash "$driver_dir/run.sh" --inside-disposable-db \
-    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata"
+    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata" "$PACKAGED_QA_SIZE" "${PACKAGED_QA_BOARD:-functional}"
 fi
 
 shift
