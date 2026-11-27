@@ -115,6 +115,7 @@ namespace Aetheria.PetArena.Presentation
             root.Clear();
             var panelElement = new VisualElement();
             panelElement.AddToClassList("arena-panel");
+            if (nativeMode && nativeView?.Terminal == false) panelElement.style.width = 620;
             panelElement.style.paddingLeft = 24;
             panelElement.style.paddingRight = 24;
             panelElement.style.paddingTop = 18;

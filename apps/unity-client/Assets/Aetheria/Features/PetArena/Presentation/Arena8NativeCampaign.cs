@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Aetheria.Native.Public.V1;
 using Aetheria.Networking;
 using Aetheria.PetArena.Infrastructure;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Aetheria.PetArena.Presentation
 {
@@ -177,7 +179,7 @@ namespace Aetheria.PetArena.Presentation
                 content.Add(Label("Telegraph: " + current.TelegraphKind + " " + current.TelegraphAxis + " " +
                     current.TelegraphTarget + " resolves turn " + current.TelegraphResolvesTurn + " · cells " +
                     string.Join(",", current.TelegraphCells), "arena-notice"));
-            content.Add(Arena8NativePresentation.BuildBoard(current, selectedCell, SelectNativeCell));
+            content.Add(BuildNativeCombatBoard(current, selectedCell, SelectNativeCell));
             content.Add(Label(selectedCell < 0 ? "Select a tile, then an adjacent tile to swap."
                 : "Selected " + selectedCell + ". Choose an adjacent tile."));
             if (current.Phase == "ready")
@@ -189,6 +191,26 @@ namespace Aetheria.PetArena.Presentation
                 Button("Retry pending command (same ID)", () => Run(RetryNative, "Retrying pending command"));
             if (nativeSession != null && nativeSession.NeedsRefresh)
                 Button("Reconnect + resync", () => Run(ReconnectNative, "Reconnecting to the native match"));
+        }
+
+        private static VisualElement BuildNativeCombatBoard(Arena8NativeView view, int selected, Action<int> select)
+        {
+            var combatBoard = Arena8NativePresentation.BuildBoard(view, selected, select);
+            combatBoard.style.maxWidth = combatBoard.style.width;
+            combatBoard.style.width = Length.Percent(100);
+            foreach (var cell in combatBoard.Children())
+            {
+                cell.style.width = Length.Percent(100f / 8);
+                cell.style.height = 40;
+                cell.style.marginLeft = 0;
+                cell.style.marginRight = 0;
+                cell.style.marginTop = 1;
+                cell.style.marginBottom = 1;
+                cell.style.paddingLeft = 0;
+                cell.style.paddingRight = 0;
+                cell.style.unityTextAlign = TextAnchor.MiddleCenter;
+            }
+            return combatBoard;
         }
 
         private void DrawNativeTerminal()
