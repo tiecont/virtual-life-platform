@@ -54,7 +54,8 @@ export function createAdminHandler(config:Config|undefined,fetcher:Fetch=fetch,n
   let body:unknown;
   if(post){try{const input=JSON.parse(await boundedBody(request,['gameplay-config-draft','gameplay-config-update'].includes(action)?1258291:8192));body=(action==='login'||action==='step-up'?OperatorLoginSchema:action==='recover'?OperatorRecoverySchema:action==='account-command'?OperatorAccountCommandSchema:action==='privacy-review'?OperatorPrivacyReviewSchema:action==='event-command'?OperatorEventCommandSchema:action==='runtime-command'?RuntimeControlCommandSchema:action==='gameplay-config-draft'?GameplayConfigCreateSchema:action==='gameplay-config-update'?GameplayConfigUpdateSchema:action==='gameplay-config-validate'?GameplayConfigValidateSchema:action==='gameplay-config-publish'?GameplayConfigPublishSchema:action==='gameplay-config-rollback'?GameplayConfigRollbackSchema:action==='gameplay-config-simulate'?GameplaySimulationRequestSchema:empty).parse(input);}catch{return error(400);}}
   async function auth(path:string,method='GET'){
-   const timeout=globalThis.AbortSignal.timeout(action==='gameplay-config-simulate'?32000:2500);
+   const validatesBundle=['gameplay-config-validate','gameplay-config-publish','gameplay-config-rollback'].includes(action);
+   const timeout=globalThis.AbortSignal.timeout(action==='gameplay-config-simulate'?32000:validatesBundle?12000:2500);
    const signal=action==='gameplay-config-simulate'?globalThis.AbortSignal.any([request.signal,timeout]):timeout;
    return fetcher(config!.api+'/v1/operator/'+path,{method,headers:{accept:'application/json',...cookie?{cookie}:{},...method==='POST'?{origin:config!.origin,'content-type':'application/json',...csrf?{'x-csrf-token':csrf}:{}}:{}},...method==='POST'?{body:JSON.stringify(body)}:{},cache:'no-store',redirect:'error',signal});
   }
