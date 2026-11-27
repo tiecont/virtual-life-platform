@@ -45,7 +45,7 @@ const fingerprint=(value:string)=>createHash('sha256').update(value).digest('hex
 const hex=z.string().regex(/^[a-f0-9]{64}$/),id=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/);
 const counter=z.int().nonnegative();
 const soloProposal=z.strictObject({
- configDigest:hex,contentHash:hex,kind:z.literal('solo.completed.v1'),outcome:z.enum(['won','lost']),
+ configDigest:hex,contentHash:hex,encounterId:id.optional(),kind:z.literal('solo.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.tuple([z.strictObject({account:z.uuid(),petId:id,alive:z.boolean(),damage:counter,healing:counter,shielding:counter})]),
  round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.literal(1),turn:counter.max(65535),
 });
@@ -302,7 +302,13 @@ export class Arena8Service {
         row.proposal_hash.length!==32||!timingSafeEqual(row.proposal_hash,canonicalProposalHash(proposal)))
         throw runtime('Functional solo completion does not match the allocated match');
       const bosses=Array.isArray(row.bundle.bosses)?row.bundle.bosses:[];
-      const rewards=policy.safeParse(bosses.find(candidate=>candidate?.id===pin.bossId&&candidate?.mapId===row.map_id)?.rewardPolicy);
+      const map=bosses.find(candidate=>candidate?.mapId===row.map_id);
+      const regular=row.encounter_id===row.map_id+'-regular';
+      const expectedEncounter=regular?row.encounter_id:undefined;
+      if(parsed.data.encounterId!==expectedEncounter||
+        (regular?map?.regular?.id!==pin.bossId||pin.bossId!==row.encounter_id:map?.id!==pin.bossId))
+        throw runtime('Functional solo completion does not match the pinned encounter');
+      const rewards=policy.safeParse(regular?map?.regular?.rewardPolicy:map?.rewardPolicy);
       if(!rewards.success)throw runtime('Functional solo reward policy is unavailable');
       const minimum=rewards.data.minimumActions?.[parsed.data.outcome==='won'?'victory':'defeat']??0;
       const receipts=minimum===0?undefined:await this.db.query(

@@ -11,12 +11,15 @@ import {forbidden,invalid,readOwnedArena8Allocation,unavailable,type AllocateInp
 const RULESET='arena8-coop-pve';
 const stableId=/^[a-z][a-z0-9-]{2,63}$/;
 
-function soloBoss(bundle:Record<string,unknown>,mapId:string):string{
+function soloEncounter(bundle:Record<string,unknown>,mapId:string,encounterId:string):string{
   const catalog=Array.isArray(bundle.bosses)?bundle.bosses:[];
   const selected=catalog.find(candidate=>candidate?.mapId===mapId);
-  if(!selected?.solo||!selected.rewardPolicy||typeof selected.id!=='string'||!stableId.test(selected.id))
-    throw unavailable('This encounter has no published functional solo profile');
-  return selected.id;
+  if(encounterId===mapId+'-regular'&&selected?.regular?.id===encounterId&&selected.regular.rewardPolicy)
+    return encounterId;
+  if(encounterId===mapId+'-boss'&&selected?.solo&&selected.rewardPolicy&&
+    typeof selected.id==='string'&&stableId.test(selected.id))
+    return selected.id;
+  throw unavailable('This encounter has no published functional solo profile');
 }
 
 export class FunctionalSoloAllocation {
@@ -40,7 +43,8 @@ export class FunctionalSoloAllocation {
   }
 
   async allocate(accountId:string,input:AllocateInput){
-    if(input.encounterId!==input.mapId+'-boss')throw invalid('Functional solo currently requires an authored Boss encounter');
+    if(input.encounterId!==input.mapId+'-boss'&&input.encounterId!==input.mapId+'-regular')
+      throw invalid('Encounter does not belong to the functional solo map');
     const tx=await this.db.connect();
     let published:GameplayVersion|undefined,seat:Awaited<ReturnType<typeof readOwnedArtifactLoadouts>>[number],skillLevels;
     try{
@@ -68,7 +72,7 @@ export class FunctionalSoloAllocation {
       ...identity,...(skillLevels?.length?{skillLevels}:{}),loadout:bindArtifactLoadout(configDigest,identity,entries),
     },configDigest);
     return {
-      contentHash,bundle,pin:{configVersion,configDigest,bossId:soloBoss(bundle,input.mapId),seat:bound},
+      contentHash,bundle,pin:{configVersion,configDigest,bossId:soloEncounter(bundle,input.mapId,input.encounterId),seat:bound},
     };
   }
 
@@ -76,7 +80,7 @@ export class FunctionalSoloAllocation {
     const pin=record.functional;
     if(!pin)throw unavailable('Pinned functional solo configuration is unavailable');
     const verified=await this.verify(await this.store.read(this.db,RULESET,pin.configVersion));
-    if(verified.configDigest!==pin.configDigest||verified.contentHash!==record.contentHash||soloBoss(verified.bundle,record.mapId)!==pin.bossId)
+    if(verified.configDigest!==pin.configDigest||verified.contentHash!==record.contentHash||soloEncounter(verified.bundle,record.mapId,record.encounterId)!==pin.bossId)
       throw unavailable('Pinned functional solo configuration does not match the allocation');
     return verified.bundle;
   }
