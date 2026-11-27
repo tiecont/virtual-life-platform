@@ -45,7 +45,7 @@ namespace Aetheria.World.Presentation
                 var texture = Resources.Load<Texture2D>("BattleBackdrops/" + mapId);
                 if (texture != null)
                     backdropSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                        new Vector2(.5f, .5f));
+                        new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
             }
             if (asset != null || backdropSprite != null)
             {

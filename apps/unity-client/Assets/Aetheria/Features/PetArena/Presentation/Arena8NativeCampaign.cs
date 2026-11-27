@@ -53,8 +53,11 @@ namespace Aetheria.PetArena.Presentation
             " to the HTTPS platform origin, or opt in to the frozen HTTP compatibility bridge with " +
             HttpBridgeVariable + "=1.";
 
-        private Task AllocateMatch(string map, string encounter) =>
-            nativeMode ? AllocateNative(map, encounter) : Allocate(map, encounter);
+        private Task AllocateMatch(string map, string encounter)
+        {
+            if (!nativeMode) return Allocate(map, encounter);
+            return UsesFunctionalBoard(encounter) ? AllocateFunctional(map, encounter) : AllocateNative(map, encounter);
+        }
 
         private async Task AllocateNative(string map, string encounter)
         {
@@ -156,6 +159,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void DisposeNative()
         {
+            DisposeFunctional();
             var session = nativeSession;
             nativeSession = null;
             nativeView = null;

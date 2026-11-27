@@ -58,6 +58,10 @@ namespace Aetheria.PetArena.Presentation
             center.style.width = boardEdge;
             center[0].style.height = boardEdge;
             stage.EnableInClassList("battle-compact", viewport.x < 960f);
+            var upperMargin = 14f + Mathf.Max(0f, viewport.y - boardEdge - 110f) * .5f;
+            stage.style.paddingTop = upperMargin;
+            foreach (var element in stage.Children())
+                if (element.ClassListContains("battle-side")) element.style.top = upperMargin;
             stage.style.minHeight = viewport.y;
         }
     }

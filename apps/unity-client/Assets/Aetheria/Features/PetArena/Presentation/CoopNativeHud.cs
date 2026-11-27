@@ -21,19 +21,28 @@ namespace Aetheria.PetArena.Presentation
         private float nextRefresh;
         private bool reading, renderedReconnect, renderedRecovery, loadingReward;
         private bool recovering, leaving, submitting;
-        private Func<Task<CoopLobbyClient.Reward>> loadReward;
-        private CoopLobbyClient.Reward reward;
-        private string rewardNotice, feedback;
+        private Func<Task<string>> loadReward;
+        private string reward, rewardNotice, feedback;
+        private bool terminalExitOnly;
+        private string exitLabel;
         private CoopNativeView previous;
         private ArenaAudioDirector battleAudio;
-        public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) { loadReward = loader; Refresh(); }
+        public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) =>
+            SetSettlementLoader(loader == null ? null : async () => (await loader()).Summary);
+
+        public void SetSettlementLoader(Func<Task<string>> loader)
+        {
+            loadReward = loader;
+            Refresh();
+        }
 
         private ulong renderedVersion = ulong.MaxValue;
 
         // Scene bootstrap may create the component before assigning the document.
         public void Attach(UIDocument target) { document = target; }
 
-        public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
+        public void Bind(CoopNativePlaySession admitted, Action returnAction = null,
+            string returnLabel = "Return to Central Plaza", bool requireSettlement = false)
         {
             reward = null; rewardNotice = null; loadReward = null;
             loadingReward = false;
@@ -55,6 +64,8 @@ namespace Aetheria.PetArena.Presentation
             else if (battleAudio != null) battleAudio.StopAll();
             session = admitted;
             returnToHub = returnAction;
+            exitLabel = returnLabel;
+            terminalExitOnly = requireSettlement;
             selected = -1;
             renderedVersion = ulong.MaxValue;
             Refresh();
@@ -223,7 +234,7 @@ namespace Aetheria.PetArena.Presentation
             if (view.Terminal && loadReward != null)
             {
                 if (reward != null)
-                    target.Add(new Label("Rewards received · " + reward.Summary) { name = "coop-reward" });
+                    target.Add(new Label("Rewards received · " + reward) { name = "coop-reward" });
                 else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
                 else if (rewardNotice != null)
                     target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
@@ -235,20 +246,21 @@ namespace Aetheria.PetArena.Presentation
                 start.AddToClassList("battle-primary-action");
                 target.Add(start);
             }
-            if (returnToHub != null || session != null) target.Add(BuildFooter());
+            if (returnToHub != null || session != null) target.Add(BuildFooter(view));
         }
 
         private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&
             !session.RequiresReconnect && !session.HasPendingCommand;
 
-        private VisualElement BuildFooter()
+        private VisualElement BuildFooter(CoopNativeView view)
         {
             var footer = new VisualElement { name = "coop-footer" };
             footer.AddToClassList("coop-footer");
-            var leave = new Button(Leave) { name = "coop-return", text = "Return to Central Plaza" };
+            var leave = new Button(Leave) { name = "coop-return", text = exitLabel };
             leave.AddToClassList("coop-footer-button");
-            leave.SetEnabled(!recovering && !leaving);
-            if (returnToHub == null) leave.AddToClassList("coop-footer-hidden");
+            leave.SetEnabled(!recovering && !leaving && (!terminalExitOnly || reward != null));
+            if (returnToHub == null || terminalExitOnly && !view.Terminal)
+                leave.AddToClassList("coop-footer-hidden");
             footer.Add(leave);
 
             var retry = session?.HasPendingCommand == true;

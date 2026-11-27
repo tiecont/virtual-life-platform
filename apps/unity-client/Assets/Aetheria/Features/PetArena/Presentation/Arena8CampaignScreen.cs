@@ -114,6 +114,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void Draw()
         {
+            if (functionalHud != null) return;
             root.Clear();
             if (nativeMode && nativeView?.Terminal == false)
             {
@@ -243,7 +244,9 @@ namespace Aetheria.PetArena.Presentation
 
             var map = selectedMap;
             var encounter = map + (boss ? "-boss" : "-regular");
-            Button("Enter authoritative match", () => Run(() => AllocateMatch(map, encounter), "Allocating match"), enabled: map != null && ChapterOpen(map));
+            var label = UsesFunctionalBoard(encounter) ? "Enter functional Boss battle" : "Enter authoritative match";
+            Button(label, () => Run(() => AllocateMatch(map, encounter), "Allocating match"),
+                enabled: map != null && ChapterOpen(map));
             if (!string.IsNullOrEmpty(notice)) content.Add(Label(notice));
         }
 
