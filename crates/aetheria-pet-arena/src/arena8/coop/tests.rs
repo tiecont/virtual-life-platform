@@ -1229,3 +1229,118 @@ fn terminal_policy_resolves_due_telegraph_when_the_boss_survives() {
         Some(configured.settlement(&finished.state))
     );
 }
+
+fn constructive_rules() -> CoopRules {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["board"]["initialBoardPolicy"] = "constructive".into();
+    CoopRules::load(
+        &serde_json::to_vec(&candidate).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap()
+}
+
+#[test]
+fn constructive_openings_are_playable_under_skewed_weights() {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["board"]["initialBoardPolicy"] = "constructive".into();
+    candidate["board"]["generationAttempts"] = 1.into();
+    for (index, weight) in candidate["board"]["spawnWeights"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .enumerate()
+    {
+        weight["weight"] = if index == 0 { 1_000_000 } else { 1 }.into();
+    }
+    let rules = CoopRules::load(
+        &serde_json::to_vec(&candidate).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+    let initial = rules.allocate(seats()).unwrap();
+    for seed in 1..=1_000 {
+        let secret = SecretSeed::from_host_entropy([43; 32]);
+        let mut rng = TurnRng::new(&secret, Value::Uint(seed), 0).unwrap();
+        let state = rules
+            .reduce(&initial, CoopAction::Start, &mut rng)
+            .unwrap()
+            .state;
+        assert!(
+            state
+                .board
+                .iter()
+                .all(|tile| tile.is_some_and(|tile| tile.multiplier == 1))
+        );
+        assert!(!matched_cells(&state.board).contains(&true), "seed {seed}");
+        assert!(rules.legal_swap(&state).is_some(), "seed {seed}");
+    }
+}
+
+#[test]
+fn constructive_openings_are_explicit_and_bind_to_the_match_digest() {
+    use aetheria_game_core::{Command, apply, begin};
+
+    let historical = rules();
+    let candidate = constructive_rules();
+    assert_eq!(
+        historical
+            .digest()
+            .map(|byte| format!("{byte:02x}"))
+            .concat(),
+        "69c326020b10f28bace6dab175ee1b1630afe83ec1165d9ff1fb845c143419bf"
+    );
+    assert_ne!(candidate.digest(), historical.digest());
+
+    let legacy = include_bytes!("../../../tests/fixtures/arena8-coop-v1-legacy.seed.json");
+    let mut invalid: serde_json::Value = serde_json::from_slice(legacy).unwrap();
+    invalid["board"]["initialBoardPolicy"] = "constructive".into();
+    assert!(CoopConfig::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+    invalid = serde_json::from_slice(&bundle()).unwrap();
+    invalid["board"]["initialBoardPolicy"] = "unknown-policy".into();
+    assert!(CoopConfig::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+
+    let ready_to_start = |rules: &CoopRules, seed: u64| {
+        let mut entropy = [0u8; 32];
+        for bytes in entropy.chunks_exact_mut(8) {
+            bytes.copy_from_slice(&seed.to_le_bytes());
+        }
+        let secret = SecretSeed::from_host_entropy(entropy);
+        let mut match_id = [0u8; 16];
+        match_id[..8].copy_from_slice(&seed.to_le_bytes());
+        match_id[15] = 1;
+        let clock = LogicalClock {
+            server_tick: 0,
+            logical_time_ms: 0,
+        };
+        let state = rules.allocate(seats()).unwrap();
+        let checkpoint = begin(rules, match_id, state, &secret, clock).unwrap();
+        let command = Command {
+            id: [1; 16],
+            match_id,
+            expected_version: checkpoint.version,
+            ruleset: checkpoint.ruleset.clone(),
+            action: CoopAction::Start,
+        };
+        (checkpoint, command, secret, clock)
+    };
+    for seed in [233, 548, 605, 892] {
+        let (ready, command, entropy, clock) = ready_to_start(&historical, seed);
+        // These fixed seeds previously exhausted the opening generator.
+        assert!(matches!(
+            apply(&historical, &ready, &command, &entropy, clock),
+            Err(CoreError::InvalidState)
+        ));
+        assert!(matches!(
+            apply(&candidate, &ready, &command, &entropy, clock),
+            Err(CoreError::ContentMismatch)
+        ));
+        let (ready, command, entropy, clock) = ready_to_start(&candidate, seed);
+        let first = apply(&candidate, &ready, &command, &entropy, clock).unwrap();
+        let replay = apply(&candidate, &ready, &command, &entropy, clock).unwrap();
+        assert_eq!(first.next.audit_hash, replay.next.audit_hash);
+        assert_eq!(first.next.state.config_digest, candidate.digest());
+        assert_ne!(first.next.state.config_digest, historical.digest());
+        assert!(candidate.legal_swap(&first.next.state).is_some());
+    }
+}
