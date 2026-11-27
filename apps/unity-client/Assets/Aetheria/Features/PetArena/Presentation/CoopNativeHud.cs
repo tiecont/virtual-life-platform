@@ -145,9 +145,12 @@ namespace Aetheria.PetArena.Presentation
             }
             if (previous == null && !view.Terminal && battleAudio != null)
             {
-                battleAudio.SetCombatScore(ArenaCombatScore.Boss);
-                if (view.BossId == "cinder-terraces-warden") battleAudio.SetAmbience(ArenaAmbience.Fire);
-                else if (view.BossId == "tideglass-lagoon-warden") battleAudio.SetAmbience(ArenaAmbience.Water);
+                var regular = view.BossId?.EndsWith("-regular", StringComparison.Ordinal) == true;
+                battleAudio.SetCombatScore(regular ? ArenaCombatScore.Regular : ArenaCombatScore.Boss);
+                if (view.BossId?.StartsWith("cinder-terraces-", StringComparison.Ordinal) == true)
+                    battleAudio.SetAmbience(ArenaAmbience.Fire);
+                else if (view.BossId?.StartsWith("tideglass-lagoon-", StringComparison.Ordinal) == true)
+                    battleAudio.SetAmbience(ArenaAmbience.Water);
             }
             previous = view;
             renderedReconnect = session.RequiresReconnect;

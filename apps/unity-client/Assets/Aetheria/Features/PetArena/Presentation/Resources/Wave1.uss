@@ -162,16 +162,20 @@
     height: 78%;
     -unity-background-scale-mode: scale-to-fit;
 }
-.coop-tile-multiplied .coop-element-icon,
-.coop-tile-multiplied .coop-functional-icon {
+.coop-tile-multiplied .coop-element-icon {
     left: 0;
     top: 31%;
     width: 32%;
     height: 55%;
 }
-.battle-compact .coop-tile-multiplied .coop-element-icon,
-.battle-compact .coop-tile-multiplied .coop-functional-icon {
+.battle-compact .coop-tile-multiplied .coop-element-icon {
     width: 20%;
+}
+.coop-tile-multiplied .coop-functional-icon {
+    left: 2%;
+    top: 23%;
+    width: 74%;
+    height: 73%;
 }
 .battle-stage .coop-tile-multiplier {
     position: absolute;
