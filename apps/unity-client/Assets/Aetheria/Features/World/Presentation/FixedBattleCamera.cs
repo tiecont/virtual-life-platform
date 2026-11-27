@@ -11,9 +11,6 @@ namespace Aetheria.World.Presentation
     [RequireComponent(typeof(Camera))]
     public sealed class FixedBattleCamera : MonoBehaviour
     {
-        private static readonly bool ProfileBackdrop = Debug.isDebugBuild &&
-            Array.IndexOf(Environment.GetCommandLineArgs(), "-aetheria-profile-battle-backdrop") >= 0;
-
         private Camera view;
         private Transform pet, enemy, backdrop;
         private Vector3 petAnchor, enemyAnchor;
@@ -47,10 +44,12 @@ namespace Aetheria.World.Presentation
             view.backgroundColor = new Color(.09f, .07f, .13f);
 
             var resourcePath = "BattleBackdrops/" + mapId;
-            var loadStarted = ProfileBackdrop ? Stopwatch.GetTimestamp() : 0;
+            var profileBackdrop = Debug.isDebugBuild &&
+                Array.IndexOf(Environment.GetCommandLineArgs(), "-aetheria-profile-battle-backdrop") >= 0;
+            var loadStarted = profileBackdrop ? Stopwatch.GetTimestamp() : 0;
             var asset = Resources.Load<Sprite>(resourcePath);
             var texture = asset == null ? Resources.Load<Texture2D>(resourcePath) : null;
-            if (ProfileBackdrop)
+            if (profileBackdrop)
             {
                 var requestMs = (Stopwatch.GetTimestamp() - loadStarted) * 1000d / Stopwatch.Frequency;
                 var measuredTexture = asset != null ? asset.texture : texture;
