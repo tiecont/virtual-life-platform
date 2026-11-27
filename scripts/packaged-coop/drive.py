@@ -68,6 +68,19 @@ def word_button(image, words, box):
             return box[0]+(x+width//2)//2, box[1]+(y+height//2)//2
     return None
 
+def action_button(image, word, board_y):
+    # Search only below the board so a participant or status cannot match.
+    position = word_button(image, {word}, (0, board_y + 410, 1000, 724))
+    if position is None:
+        return None
+    x, y = position
+    with Image.open(image) as frame:
+        pixel = frame.convert('RGB').getpixel((x, y - 12))
+    # Inactive controls expose the same labels against a dark gray background.
+    if min(pixel) < 120 or max(pixel) - min(pixel) > 30:
+        return None
+    return position
+
 def status_button(image):
     return word_button(image,{'reconnect','retry'},(600,732,900,761))
 
@@ -306,7 +319,6 @@ elif stage=='resume':
         run(['python3', root / 'x11.py', 'scroll', direction], check=True)
 
     names = {'guard': 'guard', 'skill': 'lance', 'signature': 'flare', 'ultimate': 'descent'}
-    centers = {'guard': 110, 'skill': 345, 'signature': 605, 'ultimate': 145}
 
     while True:
         gate = expect('live-state', lambda f: f['state']['phase'] in ('won', 'lost') or
@@ -363,17 +375,23 @@ elif stage=='resume':
                         continue
                     copyfile(shot,output/'10b-release-turn-after-scroll.png')
                     print('Sticky turn',turn,'row moved from',original_top,'to',top,flush=True)
-                center = centers[action]
-                y = top + (477 if action == 'ultimate' else 434)
-                if y >= 724:
+                position = action_button(shot, names[action], top)
+                if position is None:
                     continue
-                with Image.open(shot) as frame:
-                    pixel = frame.convert('RGB').getpixel((center, y - 14))
-                if min(pixel) < 120 or max(pixel) - min(pixel) > 30:
-                    print(f'Expected visible {action} control at ({center}, {y}): {pixel}', flush=True)
+                # UI Toolkit scrolling can continue after wheel input. Verify
+                # the same labeled button in a second frame before clicking.
+                sleep(.25)
+                settled_shot = capture(f'resumed-turn-{turn:02d}-settled-{attempt+1}')
+                if live_turn(settled_shot) != (turn, 0) or status_button(settled_shot):
                     continue
-                copyfile(shot, output / f'resumed-turn-{turn:02d}-{action}.png')
-                click(center, y)
+                try:
+                    settled_top = board_top(settled_shot)
+                except RuntimeError:
+                    continue
+                if action_button(settled_shot, names[action], settled_top) != position:
+                    continue
+                copyfile(settled_shot, output / f'resumed-turn-{turn:02d}-{action}.png')
+                click(*position)
             print('Packaged action submitted', turn, action, flush=True)
             try:
                 later = expect('live-state', lambda f: f['version'] > gate['version'], timeout=3)
