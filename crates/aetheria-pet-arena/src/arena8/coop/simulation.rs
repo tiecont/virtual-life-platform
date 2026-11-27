@@ -243,6 +243,26 @@ fn candidates(
             }
         }
     }
+    if matches!(policy, Policy::Tactical | Policy::Coordinated) {
+        let actor_element = rules
+            .config()
+            .pet(&state.participants[state.active_seat].pet_id)
+            .and_then(|pet| pet.element().ok());
+        let immune = actor_element
+            .zip(rules.selected_boss().element().ok())
+            .is_some_and(|(actor, boss)| rules.effectiveness(actor, boss) == 0);
+        if immune {
+            // Keep a legal last resort for custom kits with no support or board move.
+            out.sort_by_key(|action| {
+                rules.prepare_ability(state, *action).is_ok_and(|cast| {
+                    matches!(
+                        cast.skill.effect.kind,
+                        EffectKind::Damage | EffectKind::DamageOverTime | EffectKind::ChainDamage
+                    )
+                })
+            });
+        }
+    }
     out
 }
 fn prioritize_support(rules: &CoopRules, state: &CoopState, out: &mut Vec<CoopAction>) {

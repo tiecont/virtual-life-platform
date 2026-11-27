@@ -87,3 +87,44 @@ fn customized_party_preserves_distinct_instances_and_checks_gear_and_skill_bindi
     party[0].skill_levels[0].level = 99;
     assert!(simulate_party(&rules, Policy::Basic, 3, Some(&party)).is_err());
 }
+
+#[test]
+fn tactical_policy_uses_support_while_the_boss_is_immune_to_its_attacks() {
+    use aetheria_pet_arena::arena8::coop::simulation::{SimulationSeat, simulate_party};
+    let rules = CoopRules::load(
+        include_bytes!("../../../config/gameplay/arena8-coop-v2.seed.json"),
+        "tideglass-lagoon-warden".into(),
+    )
+    .unwrap();
+    let party = std::array::from_fn(|_| SimulationSeat {
+        pet_id: "fire-coalwhisk".into(),
+        level: 60,
+        artifacts: vec![],
+        skill_levels: vec![],
+    });
+    let run = |policy| simulate_party(&rules, policy, 3, Some(&party)).unwrap();
+    for policy in [Policy::Tactical, Policy::Coordinated] {
+        let report = run(policy);
+        assert_eq!(report.unresolved, 0);
+        assert!(
+            !report
+                .casts_by_skill
+                .contains_key("fire-coalwhisk-ember-lance")
+        );
+        assert!(
+            !report
+                .casts_by_skill
+                .contains_key("fire-coalwhisk-blazing-descent")
+        );
+        assert!(
+            report
+                .casts_by_skill
+                .contains_key("fire-coalwhisk-ember-solar-flare")
+        );
+    }
+    assert!(
+        run(Policy::Random)
+            .casts_by_skill
+            .contains_key("fire-coalwhisk-ember-lance")
+    );
+}
