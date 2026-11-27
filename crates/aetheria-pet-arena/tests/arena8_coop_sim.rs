@@ -4,7 +4,7 @@ use aetheria_pet_arena::arena8::coop::simulation::{Policy, simulate};
 fn rules() -> CoopRules {
     let bytes = std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../config/gameplay/arena8-coop-v1.seed.json"
+        "/tests/fixtures/arena8-coop-v1-legacy.seed.json"
     ))
     .expect("committed seed bundle");
     CoopRules::load(&bytes, "cinder-terraces-warden".to_string()).expect("valid seed bundle")
