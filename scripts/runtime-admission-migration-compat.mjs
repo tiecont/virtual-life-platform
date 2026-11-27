@@ -11,8 +11,8 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 const execute=promisify(execFile),root=process.cwd(),revision='aca14de0c50fe5d80c7563846a07b6bd55fc7321';
 const directory=resolve('artifacts/desktop-first/vl013/migration-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=value=>createHash('sha256').update(value).digest('hex');
-const previousPolicyRefs=['config/schema-compatibility-0048-admission-expand.json','config/schema-compatibility-0048-pet-acquisition-expand.json','config/schema-compatibility-0048-private-art-expand.json','config/schema-compatibility-0048-wave1-expand.json', 'config/schema-compatibility-0061-admission-expand.json','config/schema-compatibility-0062-admission-expand.json', 'config/schema-compatibility-0063-admission-expand.json', 'config/schema-compatibility-0064-admission-expand.json'],policyRef='config/schema-compatibility-0065-admission-expand.json';
-const facts={taskId:'VL-013',scope:'Actual archived48 Nest runtime on additive65 disposable PG; no production, runtime-role or TLS qualification',previousRevision:revision,commands:[],scenarios:[],startedAt:new Date().toISOString()};
+const previousPolicyRefs=['config/schema-compatibility-0048-admission-expand.json','config/schema-compatibility-0048-pet-acquisition-expand.json','config/schema-compatibility-0048-private-art-expand.json','config/schema-compatibility-0048-wave1-expand.json', 'config/schema-compatibility-0061-admission-expand.json','config/schema-compatibility-0062-admission-expand.json', 'config/schema-compatibility-0063-admission-expand.json', 'config/schema-compatibility-0064-admission-expand.json', 'config/schema-compatibility-0065-admission-expand.json'],policyRef='config/schema-compatibility-0066-admission-expand.json';
+const facts={taskId:'VL-013',scope:'Actual archived48 Nest runtime on additive66 disposable PG; no production, runtime-role or TLS qualification',previousRevision:revision,commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
  const log='build-'+facts.commands.length+'.log';
@@ -44,7 +44,7 @@ try{
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
  const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest();
- assert.equal(Object.keys(before).length,48);assert.equal(Object.keys(after).length,66);
+ assert.equal(Object.keys(before).length,48);assert.equal(Object.keys(after).length,67);
  for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
  const policy=JSON.parse(await readFile(policyRef));facts.policySha256=sha(await readFile(policyRef));
  const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));admin=new Pool({connectionString:address.toString()});
@@ -63,9 +63,9 @@ try{
   VALUES($1,'native:compat-fixture','fixture-only',1,$2,$3,$4,1,0,0,0,'ACTIVE',$5,$6,'fixture-key',$7,$8,$9,1,1,1)`,[randomUUID(),randomBytes(32),randomBytes(32),randomUUID(),randomBytes(32),randomBytes(32),randomBytes(12),randomBytes(16),randomBytes(20)]);
  const legacy=(await pool.query("SELECT jsonb_agg(to_jsonb(m) ORDER BY id) AS data FROM engine_game_matches m")).rows[0].data;
  const native=(await pool.query("SELECT jsonb_agg(to_jsonb(m) ORDER BY id) AS data FROM game_native_matches m")).rows[0].data;
- stage='expand65';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameIdentity(cookie,account);
+ stage='expand66';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameIdentity(cookie,account);
  assert.equal((await pool.query('SELECT count(*)::int AS n FROM platform_native_worlds WHERE enabled')).rows[0].n,0);
- facts.scenarios.push('Two current migrators expand48->65 under existing lock; archived48 API stays ready with same identity; no enabled native world');
+ facts.scenarios.push('Two current migrators expand48->66 under existing lock; archived48 API stays ready with same identity; no enabled native world');
  const world='native:compat-'+randomUUID();await pool.query("INSERT INTO platform_native_worlds(world_id,boot_id,content_hash,lease_until) VALUES($1,$2,$3,clock_timestamp())",[world,randomUUID(),'ab'.repeat(32)]);
  const frozen=(await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data;
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();

@@ -11,8 +11,8 @@ import {validateTestDatabaseURL} from './test-environment.mjs';
 const execute=promisify(execFile),root=process.cwd(),revision='5386a8cd3cf3e4360fd55f8f06bc84d159ff540b';
 const directory=resolve('artifacts/desktop-first/vl016/compat-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=v=>createHash('sha256').update(v).digest('hex');
-const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json', 'config/schema-compatibility-0061-native-expand.json','config/schema-compatibility-0062-native-expand.json', 'config/schema-compatibility-0063-native-expand.json', 'config/schema-compatibility-0064-native-expand.json'],policyRef='config/schema-compatibility-0065-native-expand.json';
-const facts={taskId:'VL-013',scope:'Actual archived47 Nest API and migrator on additive65 disposable PG; no production, Rust orchestration, deployment or GPU qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
+const previousPolicyRefs=['config/schema-compatibility-0047-admission-expand.json','config/schema-compatibility-0047-pet-acquisition-expand.json','config/schema-compatibility-0047-private-art-expand.json','config/schema-compatibility-0047-wave1-expand.json', 'config/schema-compatibility-0061-native-expand.json','config/schema-compatibility-0062-native-expand.json', 'config/schema-compatibility-0063-native-expand.json', 'config/schema-compatibility-0064-native-expand.json', 'config/schema-compatibility-0065-native-expand.json'],policyRef='config/schema-compatibility-0066-native-expand.json';
+const facts={taskId:'VL-013',scope:'Actual archived47 Nest API and migrator on additive66 disposable PG; no production, Rust orchestration, deployment or GPU qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
  const name='build-'+facts.commands.length+'.log';
@@ -44,7 +44,7 @@ try{
  const old={...require(source+'/apps/platform-api/dist/app.js'),...require(source+'/apps/platform-api/dist/config.js'),...require(source+'/apps/platform-api/dist/db/migrations.js')};
  const current={...require(root+'/apps/platform-api/dist/app.js'),...require(root+'/apps/platform-api/dist/shared/config/environment.js'),...require(root+'/apps/platform-api/dist/shared/database/migrations.js')};
  const before=await old.migrationManifest(source+'/apps/platform-api/dist/db/migrations'),after=await current.migrationManifest(root+'/apps/platform-api/dist/shared/database/migrations');
- assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,66);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
+ assert.equal(Object.keys(before).length,47);assert.equal(Object.keys(after).length,67);for(const [name,checksum]of Object.entries(before))assert.equal(after[name],checksum);
  const policy=JSON.parse(await readFile(policyRef));facts.policySha256=sha(await readFile(policyRef));
  const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));admin=new Pool({connectionString:address.toString()});
  await admin.query(`CREATE SCHEMA "${schema}"`);created=true;address.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:address.toString()});
@@ -65,8 +65,8 @@ try{
   'participants',(SELECT jsonb_agg(to_jsonb(p) ORDER BY match_id,account_id) FROM engine_game_participants p WHERE match_id=$1),
   'receipts',(SELECT jsonb_agg(to_jsonb(r) ORDER BY match_id,account_id,request_id) FROM engine_game_receipts r WHERE match_id=$1)
  ) AS data`,[legacyId])).rows[0].data;
- stage='expand65';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameUser(cookie,account);
- facts.scenarios.push('Two current migrators expand47->65 under existing lock; actual archived47 API remains ready and preserves same browser identity');
+ stage='expand66';await Promise.all([current.migrate(pool),current.migrate(pool)]);await ready(200);await sameUser(cookie,account);
+ facts.scenarios.push('Two current migrators expand47->66 under existing lock; actual archived47 API remains ready and preserves same browser identity');
  const match=randomUUID(),key=randomBytes(32),nonce=randomBytes(12),aad=Buffer.from('VL016-fixture:'+match+':v0');
  const secret=Buffer.from(JSON.stringify({seed:randomBytes(32).toString('hex'),hidden:'synthetic-private-only'}));
  const cipher=createCipheriv('aes-256-gcm',key,nonce);cipher.setAAD(aad);const ciphertext=Buffer.concat([cipher.update(secret),cipher.final()]),tag=cipher.getAuthTag();
