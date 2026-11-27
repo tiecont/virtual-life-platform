@@ -17,6 +17,7 @@ namespace Aetheria.PetArena.Presentation
         public const string HttpBridgeVariable = "AETHERIA_ARENA8_HTTP_BRIDGE";
         private Arena8NativePlaySession nativeSession;
         private Arena8NativeView nativeView;
+        private string nativeSettlementRequest;
         private Arena8NativeTrust nativeTrust;
         private bool nativeMode, nativeUnavailable;
 
@@ -86,6 +87,7 @@ namespace Aetheria.PetArena.Presentation
                 nativeView = admitted.Arena8;
                 matchId = admission.MatchIdText;
                 selectedCell = -1;
+                nativeSettlementRequest = NewRequestId();
                 settlementText = "";
                 notice = "";
                 view = null;
@@ -194,8 +196,27 @@ namespace Aetheria.PetArena.Presentation
             content.Add(Label(nativeView.Phase == "won" ? "Victory" : "Defeat", "arena-title"));
             content.Add(Label("Committed native terminal receipt · match " + matchId +
                 " · v" + nativeView.Version, "arena-meta"));
-            content.Add(Label("Rewards and settlement are server-authored; this client never calculates an outcome."));
-            Button("Return to roster / next match", () => Run(LoadLobby, "Loading roster"));
+            if (string.IsNullOrEmpty(settlementText))
+                Button("Collect battle results", () => Run(async () => { await SettleNativeBattle(); }, "Collecting battle results"));
+            else
+                content.Add(Label(settlementText, "arena-notice"));
+            Button("Return to roster / next match", () => Run(async () =>
+            {
+                if (string.IsNullOrEmpty(settlementText)) await SettleNativeBattle();
+                await LoadLobby();
+            }, "Returning to roster"));
+        }
+
+        private async Task<Arena8Settlement> SettleNativeBattle()
+        {
+            var receipt = await api.SettleArena8Native(matchId, new Arena8SettleRequest
+            {
+                requestId = nativeSettlementRequest,
+            }, lifetime.Token);
+            settlementText = receipt.coins + " coins · " + receipt.exp + " Pet EXP · " + receipt.materials + " materials" +
+                (string.IsNullOrEmpty(receipt.recruitedPetId) ? "" : " · recruited " + receipt.recruitedPetId) +
+                (string.IsNullOrEmpty(receipt.artifactId) ? "" : " · Artifact " + receipt.artifactId);
+            return receipt;
         }
 
         private void SelectNativeCell(int cell)
