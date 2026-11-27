@@ -573,7 +573,7 @@ fn settlement_reports_contribution_for_every_participant() {
 
 #[test]
 fn historical_bundle_keeps_its_original_digest_and_boss_encoding() {
-    let raw = include_bytes!("../../../../../config/gameplay/arena8-coop-v1.seed.json");
+    let raw = include_bytes!("../../tests/fixtures/arena8-coop-v1-legacy.seed.json");
     let legacy = CoopRules::load(raw, "cinder-terraces-warden".into()).unwrap();
     let digest = legacy.digest().map(|byte| format!("{byte:02x}")).concat();
     assert_eq!(
@@ -696,7 +696,7 @@ fn published_map_clear_prerequisites_are_validated_and_digest_bound() {
     assert!(matches!(parse(&candidate), Err(ConfigError::Boss)));
 
     let mut historical: serde_json::Value = serde_json::from_slice(include_bytes!(
-        "../../../../../config/gameplay/arena8-coop-v1.seed.json"
+        "../../tests/fixtures/arena8-coop-v1-legacy.seed.json"
     ))
     .unwrap();
     historical["boss"]["requiredMapClear"] = fixture["requiredMapClear"].clone();
@@ -1114,7 +1114,7 @@ fn terminal_outcome_policy_is_digest_bound_and_requires_schema_two() {
     assert!(matches!(parse(&candidate), Err(ConfigError::Malformed)));
 
     let mut historical: serde_json::Value = serde_json::from_slice(include_bytes!(
-        "../../../../../config/gameplay/arena8-coop-v1.seed.json"
+        "../../tests/fixtures/arena8-coop-v1-legacy.seed.json"
     ))
     .unwrap();
     historical["terminalOutcomePolicy"] = "boss-defeat-first".into();
