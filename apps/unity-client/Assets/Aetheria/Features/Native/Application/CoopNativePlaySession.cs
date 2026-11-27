@@ -10,8 +10,15 @@ namespace Aetheria.Networking
     // the projection marks as active. It never computes damage, rewards or turns.
     public sealed class CoopNativePlaySession : NativePlaySession
     {
-        public CoopNativePlaySession(PlatformSession platform, NativeConnection connection, Guid match)
-            : base(platform, connection, match) { }
+        private readonly string expectedRuleset;
+
+        public CoopNativePlaySession(PlatformSession platform, NativeConnection connection, Guid match,
+            string expectedRuleset = CoopNativeView.Ruleset) : base(platform, connection, match)
+        {
+            if (expectedRuleset != CoopNativeView.Ruleset && expectedRuleset != CoopNativeView.FunctionalSoloRuleset)
+                throw new ArgumentException("Unsupported match ruleset", nameof(expectedRuleset));
+            this.expectedRuleset = expectedRuleset;
+        }
 
         public const string ViewKindName = "arena8-coop.view.v1";
 
@@ -21,6 +28,11 @@ namespace Aetheria.Networking
             try
             {
                 var view = CoopNativeView.Decode(version, bytes);
+                var prior = State?.Coop;
+                if (view.RulesetId != expectedRuleset || prior != null &&
+                    (view.RulesetVersion != prior.RulesetVersion || view.You != prior.You ||
+                     view.ContentHash != prior.ContentHash || view.ConfigDigest != prior.ConfigDigest))
+                    throw new FormatException("Match projection scope changed");
                 return new PlayState(version, view.Epoch, view.Turn, 0, view.Reward, null, null, view);
             }
             catch (FormatException error)
