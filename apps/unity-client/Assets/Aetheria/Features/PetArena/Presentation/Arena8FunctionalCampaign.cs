@@ -40,6 +40,7 @@ namespace Aetheria.PetArena.Presentation
                 await session.ConnectAsync(lifetime.Token);
 
                 functionalSession = session;
+                matchId = admission.MatchIdText;
                 var document = GetComponent<UIDocument>();
                 functionalHud = gameObject.AddComponent<CoopNativeHud>();
                 functionalHud.Attach(document);
