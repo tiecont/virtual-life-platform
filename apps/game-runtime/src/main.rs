@@ -1,8 +1,9 @@
 use aetheria_game_runtime::{Config, probe, router};
 use aetheria_pet_arena::arena8::coop::simulation::{
     COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
+    simulate_solo,
 };
-use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules};
+use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules, solo_content_hash};
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -47,6 +48,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
         if rules.functional_board() {
             receipt["rulesetVersion"] = ruleset.version.into();
+        }
+        if config.bosses().iter().any(|boss| boss.solo.is_some()) {
+            receipt["soloContentHash"] = hex(&solo_content_hash(digest)).into();
         }
         println!("{receipt}");
         return Ok(());
@@ -125,6 +129,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 reports.push(
                     simulate_party(&rules, policy, seeds, party.as_ref())
                         .map_err(|error| error.message())?,
+                );
+            }
+        }
+        println!("{}", serde_json::to_string(&reports)?);
+        return Ok(());
+    }
+    if let [flag, path, pet_id, level, seeds, bosses @ ..] = args.as_slice()
+        && flag == "--compare-solo"
+    {
+        let seeds = simulation_seeds(seeds)?;
+        let level = level.parse::<u8>()?;
+        if seeds == 0 || seeds > COMPARISON_MAX_SEEDS || !(1..=60).contains(&level) {
+            return Err("Solo comparison inputs are outside their bounds".into());
+        }
+        if bosses.is_empty()
+            || bosses.len() > COMPARISON_MAX_BOSSES
+            || (bosses.len() == 2 && bosses[0] == bosses[1])
+        {
+            return Err("Solo comparison requires one or two distinct encounters".into());
+        }
+        let bytes = std::fs::read(path)?;
+        let seat = SimulationSeat {
+            pet_id: pet_id.clone(),
+            level,
+            artifacts: vec![],
+            skill_levels: vec![],
+        };
+        let mut reports = Vec::new();
+        for boss in bosses {
+            let rules = CoopRules::load_solo(&bytes, boss.clone())?;
+            for policy in POLICIES {
+                reports.push(
+                    simulate_solo(&rules, policy, seeds, &seat).map_err(|err| err.message())?,
                 );
             }
         }

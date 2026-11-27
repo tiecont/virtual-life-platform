@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "engineCapability": "arena8-coop-v2",
   "configId": "arena8-coop-functional-candidate",
-  "contentRevision": 1,
+  "contentRevision": 2,
   "board": {
     "deadBoardPolicy": "regenerate",
     "generationAttempts": 64,
@@ -5665,6 +5665,13 @@
           "exp": 0,
           "materials": 0
         }
+      },
+      "solo": {
+        "maxHp": 1700,
+        "baseDamage": 13,
+        "perRoundDamage": 1,
+        "minimumDamage": 3,
+        "maxRounds": 25
       }
     },
     {
@@ -5712,6 +5719,13 @@
           "exp": 0,
           "materials": 0
         }
+      },
+      "solo": {
+        "maxHp": 1900,
+        "baseDamage": 14,
+        "perRoundDamage": 1,
+        "minimumDamage": 3,
+        "maxRounds": 25
       }
     },
     {

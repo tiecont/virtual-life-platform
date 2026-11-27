@@ -73,6 +73,36 @@ impl Rules {
         })
     }
 
+    pub fn load_solo(
+        bundle: &[u8],
+        seat: SeatInput,
+        boss_id: String,
+        loadout: &ArtifactLoadout,
+        skill_levels: Vec<SkillLevelBinding>,
+    ) -> Result<Self, ConfigError> {
+        if seat.account.is_empty()
+            || seat.owned_pet_instance_id.is_empty()
+            || !(1..=60).contains(&seat.level)
+            || seat.artifact_power_pm != 0
+        {
+            return Err(ConfigError::Party);
+        }
+        let engine = CoopRules::load_solo(bundle, boss_id)?;
+        let mut initial = engine
+            .allocate_solo(seat, loadout)
+            .map_err(|error| match error {
+                CoopError::Config(error) => error,
+                _ => ConfigError::Party,
+            })?;
+        engine
+            .bind_skill_levels(&mut initial, &[skill_levels])
+            .map_err(|_| ConfigError::Skill)?;
+        Ok(Self {
+            engine: Arc::new(engine),
+            initial,
+        })
+    }
+
     pub fn initial(&self) -> CoopState {
         self.initial.clone()
     }

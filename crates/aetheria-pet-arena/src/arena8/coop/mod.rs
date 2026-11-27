@@ -58,6 +58,8 @@ pub use loadout::{ArtifactLoadout, EquippedArtifact};
 pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
 pub const COOP_RULESET_VERSION: u32 = 1;
 pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
+pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
+pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
 /// Structural engine capability: the board is 8x8 and the party has 4 seats.
 pub const SEATS: usize = 4;
 pub const SIDE: usize = 8;
@@ -240,7 +242,8 @@ pub struct CoopState {
     pub config_digest: [u8; 32],
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub boss_id: Option<String>,
-    pub participants: [Participant; SEATS],
+    #[serde(deserialize_with = "deserialize_party")]
+    pub participants: Vec<Participant>,
     pub boss: Boss,
     #[serde(with = "board_cells")]
     pub board: [Option<Tile>; CELLS],
@@ -249,6 +252,18 @@ pub struct CoopState {
     pub turn_index: u16,
     pub round_index: u16,
     pub pending: Option<PendingAttack>,
+}
+
+// Historical records remain arrays of four participants on the wire. Only the
+// new solo ruleset may use an array of one, checked again against the bound game.
+fn deserialize_party<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<Participant>, D::Error> {
+    let participants = Vec::<Participant>::deserialize(deserializer)?;
+    if !matches!(participants.len(), 1 | SEATS) {
+        return Err(serde::de::Error::custom("invalid Arena8 party length"));
+    }
+    Ok(participants)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -331,7 +346,8 @@ pub struct CoopRules {
     spawn_total: u32,
     board_tiers: u64,
     effectiveness: [[u16; 6]; 6],
-    selected_boss_id: String,
+    boss_profile: BossConfig,
+    solo_round_limit: Option<u16>,
 }
 
 struct PreparedAbility<'a> {
@@ -389,8 +405,9 @@ impl CoopState {
     /// order is the engine's structural rule; the authored party size is fixed
     /// by configuration validation to the engine's four seats.
     fn next_alive(&self, from: usize) -> Option<usize> {
-        (0..SEATS)
-            .map(|offset| (from + offset) % SEATS)
+        let seats = self.participants.len();
+        (0..seats)
+            .map(|offset| (from + offset) % seats)
             .find(|index| self.participants[*index].alive)
     }
 }
@@ -401,12 +418,27 @@ impl CoopRules {
         Self::from_config(CoopConfig::parse(bytes)?, boss_id)
     }
 
+    pub fn load_solo(bytes: &[u8], boss_id: String) -> Result<Self, ConfigError> {
+        Self::bind(CoopConfig::parse(bytes)?, &boss_id, true)
+    }
+
     pub fn from_config(config: CoopConfig, boss_id: String) -> Result<Self, ConfigError> {
+        Self::bind(config, &boss_id, false)
+    }
+
+    fn bind(config: CoopConfig, boss_id: &str, solo: bool) -> Result<Self, ConfigError> {
         config.validate()?;
-        // Verify the boss_id exists in the configuration
-        if !config.bosses().iter().any(|b| b.id == boss_id) {
-            return Err(ConfigError::Boss);
-        }
+        let selected = config
+            .bosses()
+            .iter()
+            .find(|boss| boss.id == boss_id)
+            .ok_or(ConfigError::Boss)?;
+        let (boss_profile, solo_round_limit) = if solo {
+            let profile = selected.solo.as_ref().ok_or(ConfigError::Boss)?;
+            (selected.solo_profile(profile), Some(profile.max_rounds))
+        } else {
+            (selected.clone(), None)
+        };
         let (spawn_table, spawn_total) = config.board.spawn_table()?;
         let mut effectiveness = [[1_000u16; 6]; 6];
         for (index, profile) in config.elements.iter().enumerate() {
@@ -428,7 +460,8 @@ impl CoopRules {
             spawn_total,
             board_tiers,
             effectiveness,
-            selected_boss_id: boss_id,
+            boss_profile,
+            solo_round_limit,
         })
     }
 
@@ -437,11 +470,7 @@ impl CoopRules {
     }
 
     pub fn selected_boss(&self) -> &BossConfig {
-        self.config
-            .bosses()
-            .iter()
-            .find(|b| b.id == self.selected_boss_id)
-            .expect("validated boss_id")
+        &self.boss_profile
     }
 
     pub fn digest(&self) -> [u8; 32] {
@@ -449,6 +478,14 @@ impl CoopRules {
     }
 
     pub fn ruleset(&self) -> Ruleset {
+        if self.solo_round_limit.is_some() {
+            return Ruleset {
+                id: FUNCTIONAL_SOLO_RULESET_ID.into(),
+                version: FUNCTIONAL_SOLO_RULESET_VERSION,
+                content_hash: solo_content_hash(self.digest),
+                rng_version: RNG_VERSION,
+            };
+        }
         Ruleset {
             id: COOP_RULESET_ID.into(),
             version: if self.functional_board() {
@@ -462,12 +499,26 @@ impl CoopRules {
                     FUNCTIONAL_RULESET_VERSION,
                     "aetheria.arena8-coop-native.v2",
                     "functional-board-v1;independent-tile-effects",
+                    SEATS,
                 )
             } else {
                 content_hash(self.digest)
             },
             rng_version: RNG_VERSION,
         }
+    }
+
+    fn seat_count(&self) -> usize {
+        if self.solo_round_limit.is_some() {
+            1
+        } else {
+            SEATS
+        }
+    }
+
+    fn max_rounds(&self) -> u16 {
+        self.solo_round_limit
+            .unwrap_or(self.config.party.max_rounds)
     }
 
     pub fn functional_board(&self) -> bool {
@@ -488,7 +539,7 @@ impl CoopRules {
                 entries: Vec::new(),
             })
         });
-        self.allocate_bound(seats, loadouts.as_ref())
+        self.allocate_bound(seats, loadouts.as_ref().map(|value| value.as_slice()))
     }
 
     /// Bind the exact Artifact instances read from the server-owned inventory.
@@ -505,12 +556,30 @@ impl CoopRules {
         self.allocate_bound(seats, Some(loadouts))
     }
 
-    fn allocate_bound(
+    /// One authenticated owned Pet enters without artificial party members.
+    pub fn allocate_solo(
         &self,
-        seats: [SeatInput; SEATS],
-        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+        seat: SeatInput,
+        loadout: &ArtifactLoadout,
     ) -> Result<CoopState, CoopError> {
-        let mut participants = [(); SEATS].map(|()| unreachable_participant());
+        if self.solo_round_limit.is_none()
+            || !self.config.has_artifact_catalog()
+            || seat.artifact_power_pm != 0
+        {
+            return Err(CoopError::InvalidSeat);
+        }
+        self.allocate_bound([seat], Some(std::slice::from_ref(loadout)))
+    }
+
+    fn allocate_bound<const N: usize>(
+        &self,
+        seats: [SeatInput; N],
+        loadouts: Option<&[ArtifactLoadout]>,
+    ) -> Result<CoopState, CoopError> {
+        if N != self.seat_count() || loadouts.is_some_and(|entries| entries.len() != N) {
+            return Err(CoopError::InvalidSeat);
+        }
+        let mut participants = Vec::with_capacity(N);
         let mut seen_accounts = std::collections::BTreeSet::new();
         let mut seen_pets = std::collections::BTreeSet::new();
         for (index, seat) in seats.into_iter().enumerate() {
@@ -524,8 +593,7 @@ impl CoopRules {
             {
                 return Err(CoopError::InvalidSeat);
             }
-            participants[index] =
-                self.participant(seat, loadouts.map(|loadouts| &loadouts[index]))?;
+            participants.push(self.participant(seat, loadouts.map(|loadouts| &loadouts[index]))?);
         }
         let boss_config = self.selected_boss();
         let state = CoopState {
@@ -560,12 +628,15 @@ impl CoopRules {
     pub fn bind_skill_levels(
         &self,
         state: &mut CoopState,
-        bindings: &[Vec<SkillLevelBinding>; SEATS],
+        bindings: &[Vec<SkillLevelBinding>],
     ) -> Result<(), CoopError> {
         if state.phase != CoopPhase::Ready || state.config_digest != self.digest {
             return Err(CoopError::InvalidPhase);
         }
-        let mut resolved = [[1; 5]; SEATS];
+        if state.participants.len() != self.seat_count() || bindings.len() != self.seat_count() {
+            return Err(CoopError::InvalidSeat);
+        }
+        let mut resolved = vec![[1; 5]; self.seat_count()];
         for ((participant, bindings), levels) in
             state.participants.iter().zip(bindings).zip(&mut resolved)
         {
@@ -719,7 +790,8 @@ impl CoopRules {
                         .iter()
                         .any(|skill| skill.effect.kind == config::EffectKind::Curse)
             })
-            || state.active_seat >= SEATS
+            || state.participants.len() != self.seat_count()
+            || state.active_seat >= self.seat_count()
             || state.boss_id.as_deref() != expected_boss
         {
             return Err(CoreError::InvalidState);
@@ -763,20 +835,37 @@ impl CoopRules {
             return Err(CoreError::InvalidState);
         }
         if self.functional_board()
-            && ((state.phase == CoopPhase::Ready && state.board.iter().any(Option::is_some))
+            && (state.boss.max_hp
+                != match state.boss.phase {
+                    1 if !state.boss.transformed => self.selected_boss().max_hp,
+                    2 if state.boss.transformed => self
+                        .selected_boss()
+                        .phase2_max_hp()
+                        .map_err(|_| CoreError::InvalidState)?,
+                    _ => return Err(CoreError::InvalidState),
+                }
+                || state.pending.is_some_and(|attack| {
+                    attack.targets == 0
+                        || usize::from(attack.targets) > self.seat_count()
+                        || attack.remaining == 0
+                        || attack.remaining >= self.selected_boss().telegraph_turns
+                })
+                || (state.phase == CoopPhase::Won && state.boss.hp != 0)
+                || (state.phase == CoopPhase::Ready && state.board.iter().any(Option::is_some))
                 || (state.phase == CoopPhase::Playing
-                    && (state.board.iter().any(Option::is_none)
+                    && (!state.participants[state.active_seat].alive
+                        || state.boss.hp == 0
+                        || state.board.iter().any(Option::is_none)
                         || matched_cells(&state.board).into_iter().any(|marked| marked)))
                 || state.participants.iter().any(|seat| {
-                    seat.mana > self.config.resources.mana_cap
+                    seat.alive != (seat.hp > 0)
+                        || seat.mana > self.config.resources.mana_cap
                         || seat.rage > self.config.resources.rage_cap
                 }))
         {
             return Err(CoreError::InvalidState);
         }
-        if u32::from(state.round_index) > u32::from(self.config.party.max_rounds)
-            && !state.phase.terminal()
-        {
+        if u32::from(state.round_index) > u32::from(self.max_rounds()) && !state.phase.terminal() {
             return Err(CoreError::InvalidState);
         }
         Ok(())
@@ -790,7 +879,10 @@ impl CoopRules {
         action: CoopAction,
         rng: &mut TurnRng,
     ) -> Result<Decision<CoopState>, CoreError> {
-        if self.functional_board() || state.config_digest != self.digest {
+        if self.functional_board()
+            || state.config_digest != self.digest
+            || state.participants.len() != self.seat_count()
+        {
             self.validate(state)?;
         }
         let mut next = state.clone();
@@ -1246,11 +1338,11 @@ impl CoopRules {
         match target {
             config::EffectTarget::Boss => Vec::new(),
             config::EffectTarget::SelfActor => vec![actor],
-            config::EffectTarget::Allies => (0..SEATS)
+            config::EffectTarget::Allies => (0..state.participants.len())
                 .filter(|seat| state.participants[*seat].alive)
                 .collect(),
             config::EffectTarget::LowestAlly => {
-                let lowest = (0..SEATS)
+                let lowest = (0..state.participants.len())
                     .filter(|seat| state.participants[*seat].alive)
                     .min_by_key(|seat| {
                         let seat = &state.participants[*seat];
@@ -1259,7 +1351,7 @@ impl CoopRules {
                 lowest.into_iter().collect()
             }
             config::EffectTarget::LowestRageAlly | config::EffectTarget::LowestManaAlly => (0
-                ..SEATS)
+                ..state.participants.len())
                 .filter(|seat| *seat != actor && state.participants[*seat].alive)
                 .min_by_key(|index| {
                     let seat = &state.participants[*index];
@@ -1738,8 +1830,9 @@ impl CoopRules {
             return;
         }
         let current = state.active_seat;
-        let next = (1..=SEATS)
-            .map(|offset| (current + offset) % SEATS)
+        let seats = state.participants.len();
+        let next = (1..=seats)
+            .map(|offset| (current + offset) % seats)
             .find(|index| state.participants[*index].alive);
         match next {
             Some(next) => {
@@ -1759,7 +1852,7 @@ impl CoopRules {
             None => state.phase = CoopPhase::Lost,
         }
         if state.phase == CoopPhase::Playing
-            && u32::from(state.round_index) > u32::from(self.config.party.max_rounds)
+            && u32::from(state.round_index) > u32::from(self.max_rounds())
         {
             state.phase = CoopPhase::Lost;
             events.push(event("round-limit", None, u64::from(state.round_index)));
@@ -1831,7 +1924,10 @@ impl CoopRules {
             events.push(event("boss-critical", None, 0));
         }
         let targets = if state.boss.phase == 2 {
-            self.selected_boss().phase.attack_targets.min(SEATS as u8)
+            self.selected_boss()
+                .phase
+                .attack_targets
+                .min(self.seat_count() as u8)
         } else {
             1
         };
@@ -1874,7 +1970,7 @@ impl CoopRules {
         events: &mut Vec<Value>,
     ) {
         // Resolve from the committed party at impact. Historical bundles rank by HP ratio.
-        let mut order: Vec<usize> = (0..SEATS)
+        let mut order: Vec<usize> = (0..state.participants.len())
             .filter(|seat| state.participants[*seat].alive)
             .collect();
         order.sort_by_key(|index| {
@@ -1950,11 +2046,12 @@ impl CoopRules {
     /// Canonical settlement payload. The economy owner validates and commits it
     /// idempotently; this engine only reports contribution.
     pub fn settlement(&self, state: &CoopState) -> Value {
+        let ruleset = self.ruleset();
         list([
-            Value::Uint(u64::from(COOP_RULESET_VERSION)),
-            Value::Text(COOP_RULESET_ID.into()),
+            Value::Uint(u64::from(ruleset.version)),
+            Value::Text(ruleset.id),
             Value::Bytes(self.digest.to_vec()),
-            Value::Bytes(content_hash(self.digest).to_vec()),
+            Value::Bytes(ruleset.content_hash.to_vec()),
             Value::Text(phase_name(state.phase).into()),
             Value::Text(self.selected_boss().id.clone()),
             Value::List(state.participants.iter().map(participant_value).collect()),
@@ -1981,33 +2078,6 @@ struct MatchOutcome {
     critical: bool,
 }
 
-fn unreachable_participant() -> Participant {
-    Participant {
-        account: String::new(),
-        pet_id: String::new(),
-        owned_pet_instance_id: None,
-        artifact_loadout_digest: None,
-        level: 1,
-        skill_levels: None,
-        hp: 1,
-        max_hp: 1,
-        attack: 1,
-        defense: 1,
-        crit_rate_bp: 0,
-        crit_damage_bp: 10_000,
-        mana: 0,
-        rage: 0,
-        shield: 0,
-        shield_turns: 0,
-        cooldowns: [0; 5],
-        statuses: [NO_STATUS; 4],
-        contribution_damage: 0,
-        contribution_healing: 0,
-        contribution_shielding: 0,
-        alive: true,
-    }
-}
-
 /// Native content hash bound into tickets and the match snapshot. It commits to
 /// the exact published configuration digest.
 pub fn content_hash(config_digest: [u8; 32]) -> [u8; 32] {
@@ -2016,6 +2086,17 @@ pub fn content_hash(config_digest: [u8; 32]) -> [u8; 32] {
         COOP_RULESET_VERSION,
         "aetheria.arena8-coop-native.v1",
         CONTRACT,
+        SEATS,
+    )
+}
+
+pub fn solo_content_hash(config_digest: [u8; 32]) -> [u8; 32] {
+    native_content_hash(
+        config_digest,
+        FUNCTIONAL_SOLO_RULESET_VERSION,
+        "aetheria.arena8-functional-native.v1",
+        "solo;functional-board-v1;independent-tile-effects",
+        1,
     )
 }
 
@@ -2024,6 +2105,7 @@ fn native_content_hash(
     version: u32,
     domain: &str,
     contract: &str,
+    seats: usize,
 ) -> [u8; 32] {
     aetheria_game_core::canonical::hash(
         domain,
@@ -2032,7 +2114,7 @@ fn native_content_hash(
             Value::Text(contract.into()),
             Value::Uint(version.into()),
             Value::Uint(u64::from(SIDE as u32)),
-            Value::Uint(u64::from(SEATS as u32)),
+            Value::Uint(seats as u64),
         ]),
     )
     .expect("bounded static adapter contract")

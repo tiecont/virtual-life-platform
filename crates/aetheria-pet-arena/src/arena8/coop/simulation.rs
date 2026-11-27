@@ -68,7 +68,7 @@ pub struct SimulationReport {
     pub casts_by_skill: BTreeMap<String, u64>,
     pub mana_spent: u64,
     pub rage_spent: u64,
-    pub contributions: [SeatContribution; SEATS],
+    pub contributions: Vec<SeatContribution>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -627,6 +627,34 @@ pub fn simulate_party(
     simulate_range(rules, policy, 1, seeds, party, None)
 }
 
+/// Compare one-seat play using the same visible-information policies as co-op.
+pub fn simulate_solo(
+    rules: &CoopRules,
+    policy: Policy,
+    seeds: u32,
+    seat: &SimulationSeat,
+) -> Result<SimulationReport, CoopError> {
+    if seeds == 0 || seeds > COMPARISON_MAX_SEEDS {
+        return Err(CoopError::InvalidSeat);
+    }
+    let input = SeatInput {
+        account: "simulation-seat-0".into(),
+        pet_id: seat.pet_id.clone(),
+        owned_pet_instance_id: "simulation-instance-0".into(),
+        level: seat.level,
+        artifact_power_pm: 0,
+    };
+    let mut entries = seat.artifacts.clone();
+    entries.sort_by_key(|item| item.slot.code());
+    let loadout = ArtifactLoadout {
+        digest: ArtifactLoadout::digest(rules.digest(), &input, &entries),
+        entries,
+    };
+    let mut initial = rules.allocate_solo(input, &loadout)?;
+    rules.bind_skill_levels(&mut initial, std::slice::from_ref(&seat.skill_levels))?;
+    run_samples(rules, &initial, policy, 1, seeds, None)
+}
+
 /// Offline-only analysis with an explicit, bounded seed range. The online
 /// Studio continues to use the existing simulation report and fixed seeds.
 pub fn analyze_party(
@@ -658,7 +686,7 @@ fn simulate_range(
     seed_start: u32,
     seeds: u32,
     party: Option<&[SimulationSeat; SEATS]>,
-    mut diagnostics: Option<&mut Diagnostics>,
+    diagnostics: Option<&mut Diagnostics>,
 ) -> Result<SimulationReport, CoopError> {
     if seed_start == 0
         || seeds == 0
@@ -706,6 +734,17 @@ fn simulate_range(
             &party.each_ref().map(|seat| seat.skill_levels.clone()),
         )?;
     }
+    run_samples(rules, &initial, policy, seed_start, seeds, diagnostics)
+}
+
+fn run_samples(
+    rules: &CoopRules,
+    initial: &CoopState,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    mut diagnostics: Option<&mut Diagnostics>,
+) -> Result<SimulationReport, CoopError> {
     let mut report = SimulationReport {
         boss_id: rules.selected_boss().id.clone(),
         content_digest: rules
@@ -733,17 +772,18 @@ fn simulate_range(
         rage_spent: 0,
         contributions: initial
             .participants
-            .each_ref()
+            .iter()
             .map(|participant| SeatContribution {
                 pet_id: participant.pet_id.clone(),
                 damage: 0,
                 healing: 0,
                 shielding: 0,
-            }),
+            })
+            .collect(),
     };
     let mut rounds = 0u64;
     for seed in u64::from(seed_start)..u64::from(seed_start) + u64::from(seeds) {
-        let sample = play(rules, &initial, policy, seed, diagnostics.as_deref_mut())?;
+        let sample = play(rules, initial, policy, seed, diagnostics.as_deref_mut())?;
         rounds += u64::from(sample.state.round_index);
         report.total_actions += sample.actions;
         report.phase_two_actions += sample.phase_two_actions;

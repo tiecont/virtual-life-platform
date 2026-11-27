@@ -8,7 +8,10 @@ use crate::features::{
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
-use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput, SkillLevelBinding};
+use aetheria_pet_arena::arena8::coop::{
+    ArtifactLoadout, COOP_RULESET_ID, FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID,
+    SEATS, SeatInput, SkillLevelBinding,
+};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -137,7 +140,11 @@ impl NativeRuntime {
         {
             return Err("Explicit native ruleset and scope required");
         }
-        if settings.ruleset != coordinated::domain::RULESET_ID && settings.coop.is_some() {
+        if !matches!(
+            settings.ruleset.as_str(),
+            COOP_RULESET_ID | FUNCTIONAL_SOLO_RULESET_ID
+        ) && settings.coop.is_some()
+        {
             return Err("Cooperative allocation is not valid for this ruleset");
         }
         match settings.ruleset.as_str() {
@@ -197,7 +204,49 @@ impl NativeRuntime {
                 };
                 Self::compose(settings, database, game, initial).await
             }
-            "arena8-coop-pve" => {
+            FUNCTIONAL_SOLO_RULESET_ID => {
+                if settings.pet.is_some()
+                    || settings.stage.is_some()
+                    || settings.arena8.is_some()
+                    || settings.movement
+                {
+                    return Err("Functional solo match requires a fixed one-seat allocation");
+                }
+                let allocation = settings
+                    .coop
+                    .as_ref()
+                    .ok_or("Functional solo allocation required")?;
+                let [player] = allocation.seats.as_slice() else {
+                    return Err("One functional solo seat required");
+                };
+                if player.account != settings.player
+                    || player.owned_pet_instance_id.is_nil()
+                    || player.artifact_power_pm.is_some()
+                {
+                    return Err("Invalid functional solo allocation");
+                }
+                let loadout = player
+                    .loadout
+                    .as_ref()
+                    .ok_or("Solo Artifact loadout required")?;
+                let game = coordinated::domain::Rules::load_solo(
+                    &bundle.ok_or("Published gameplay configuration required")?,
+                    SeatInput {
+                        account: player.account.to_string(),
+                        pet_id: player.pet_id.clone(),
+                        owned_pet_instance_id: player.owned_pet_instance_id.to_string(),
+                        level: player.level,
+                        artifact_power_pm: 0,
+                    },
+                    allocation.boss_id.clone(),
+                    loadout,
+                    player.skill_levels.clone(),
+                )
+                .map_err(|_| "Invalid functional solo configuration")?;
+                let initial = game.initial();
+                Self::compose(settings, database, game, initial).await
+            }
+            COOP_RULESET_ID => {
                 if settings.pet.is_some() || settings.stage.is_some() || settings.arena8.is_some() {
                     return Err("Cooperative match requires an explicit four-seat allocation");
                 }
@@ -261,10 +310,12 @@ impl NativeRuntime {
     {
         let contract = game.ruleset();
         let content = contract.content_hash;
-        let required_client_build = (contract.id
-            == aetheria_pet_arena::arena8::coop::COOP_RULESET_ID
-            && contract.version == aetheria_pet_arena::arena8::coop::FUNCTIONAL_RULESET_VERSION)
+        let required_client_build = (contract.id == FUNCTIONAL_SOLO_RULESET_ID
+            || (contract.id == COOP_RULESET_ID && contract.version == FUNCTIONAL_RULESET_VERSION))
             .then_some("unity-native-v2");
+        if required_client_build.is_some() && settings.movement {
+            return Err("Movement is unavailable in functional battles");
+        }
         let ruleset = settings.ruleset.clone();
         let config: Config = database
             .parse()

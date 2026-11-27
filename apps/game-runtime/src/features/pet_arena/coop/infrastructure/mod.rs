@@ -1,7 +1,9 @@
 //! Durable-state codec, membership and committed projection for `arena8-coop-pve`.
 use super::domain::Rules;
 use aetheria_persistence::{Completion, Error, Game};
-use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind};
+use aetheria_pet_arena::arena8::coop::{
+    CoopAction, CoopPhase, CoopState, FUNCTIONAL_SOLO_RULESET_ID, StatusKind,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -62,7 +64,7 @@ impl Game for Rules {
         Ok(Completion::Proposal(serde_json::json!({
             "configDigest": hex(&state.config_digest),
             "contentHash": hex(&ruleset.content_hash),
-            "kind": "coop.completed.v1",
+            "kind": if ruleset.id == FUNCTIONAL_SOLO_RULESET_ID { "solo.completed.v1" } else { "coop.completed.v1" },
             "outcome": outcome,
             "participants": participants,
             "round": state.round_index,

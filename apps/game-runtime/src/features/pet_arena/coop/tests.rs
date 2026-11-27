@@ -515,3 +515,94 @@ fn durable_skill_level_must_match_the_original_allocation() {
     );
     assert!(view["participants"][1].get("skillLevels").is_none());
 }
+
+#[test]
+fn solo_functional_runtime_projects_one_seat_and_commits_typed_completion() {
+    let bundle = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v1.candidate.json"
+    ));
+    let seats = seats();
+    let loadouts = bindings(bundle, &seats);
+    let boss_id = "cinder-terraces-warden";
+    let solo = Rules::load_solo(
+        bundle,
+        seats[0].clone(),
+        boss_id.into(),
+        &loadouts[0],
+        vec![],
+    )
+    .unwrap();
+    let coop = Rules::load(bundle, seats.clone(), boss_id.into(), Some(&loadouts)).unwrap();
+    let account = &seats[0].account;
+    let initial = solo.initial();
+    assert_ne!(solo.content_hash(), coop.content_hash());
+    assert_eq!(initial.participants.len(), 1);
+    assert_eq!(initial.boss.max_hp, 1700);
+    assert!(!solo.authorize(&initial, &seats[1].account, &CoopAction::Start));
+    assert!(solo.authorize(&initial, account, &CoopAction::Start));
+    assert!(coop.decode(&solo.encode(&initial).unwrap()).is_err());
+    assert!(solo.decode(&coop.encode(&coop.initial()).unwrap()).is_err());
+
+    let seed = SecretSeed::from_host_entropy([31; 32]);
+    let mut stream = seed
+        .stream(Value::Text("solo-functional-runtime".into()), 0)
+        .unwrap();
+    let mut playing = solo
+        .engine()
+        .reduce(&initial, CoopAction::Start, &mut stream)
+        .unwrap()
+        .state;
+    let value: serde_json::Value =
+        serde_json::from_slice(&solo.project(&playing, account).unwrap()).unwrap();
+    assert_eq!(value["ruleset"]["id"], "arena8-functional-pve");
+    assert_eq!(value["ruleset"]["version"], 1);
+    assert_eq!(value["you"], 0);
+    assert_eq!(value["participants"].as_array().unwrap().len(), 1);
+    assert_eq!(value["board"].as_array().unwrap().len(), 64);
+    assert!(
+        value["board"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|tile| tile.get("kind").is_some() && tile.get("element").is_none())
+    );
+    assert!(
+        value["abilities"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|skill| skill["kind"] == "fire-zone")
+    );
+    assert!(solo.project(&playing, &seats[1].account).is_err());
+    assert_eq!(
+        solo.decode(&solo.encode(&playing).unwrap()).unwrap(),
+        playing
+    );
+    let mut completed = None;
+    for _ in 0..26 {
+        let (first, second) = solo.engine().legal_swap(&playing).unwrap();
+        let decision = solo
+            .engine()
+            .reduce(&playing, CoopAction::Swap { first, second }, &mut stream)
+            .unwrap();
+        playing = decision.state;
+        if let Some(payload) = decision.settlement {
+            completed = Some(payload);
+            break;
+        }
+    }
+    assert!(completed.is_some());
+    let Completion::Proposal(proposal) = solo.completion(&playing).unwrap() else {
+        panic!("expected solo settlement proposal");
+    };
+    assert_eq!(proposal["kind"], "solo.completed.v1");
+    assert_eq!(proposal["ruleset"], "arena8-functional-pve");
+    assert_eq!(proposal["participants"].as_array().unwrap().len(), 1);
+    assert_eq!(proposal["participants"][0]["account"], account.as_str());
+    assert!(
+        solo.engine()
+            .reduce(&playing, CoopAction::Guard, &mut stream)
+            .is_err()
+    );
+}

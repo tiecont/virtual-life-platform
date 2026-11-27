@@ -313,6 +313,31 @@ pub struct BossConfig {
     /// does not spend it during combat.
     pub required_room_points: u32,
     pub reward_policy: Option<EncounterRewards>,
+    pub solo: Option<SoloBossConfig>,
+}
+
+/// Encounter values for the independently versioned one-seat ruleset.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SoloBossConfig {
+    pub max_hp: u32,
+    pub base_damage: u32,
+    pub per_round_damage: u32,
+    pub minimum_damage: u32,
+    pub max_rounds: u16,
+}
+
+impl SoloBossConfig {
+    fn to_value(&self) -> Value {
+        list([
+            Value::Text("solo".into()),
+            Value::Uint(self.max_hp.into()),
+            Value::Uint(self.base_damage.into()),
+            Value::Uint(self.per_round_damage.into()),
+            Value::Uint(self.minimum_damage.into()),
+            Value::Uint(self.max_rounds.into()),
+        ])
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -671,6 +696,15 @@ impl CoopConfig {
                 prerequisites.insert(map, required);
             }
             boss.validate(elements)?;
+            if let Some(solo) = &boss.solo {
+                if self.schema_version != FUNCTIONAL_SCHEMA_VERSION
+                    || !self.has_artifact_catalog()
+                    || !(1..=super::MAX_TURNS).contains(&solo.max_rounds)
+                {
+                    return Err(ConfigError::Boss);
+                }
+                boss.solo_profile(solo).validate(elements)?;
+            }
             if let Some(pet_ids) = boss
                 .reward_policy
                 .as_ref()
@@ -1381,6 +1415,15 @@ impl ElementProfile {
 }
 
 impl BossConfig {
+    pub(super) fn solo_profile(&self, solo: &SoloBossConfig) -> Self {
+        let mut profile = self.clone();
+        profile.max_hp = solo.max_hp;
+        profile.attack_model.base_damage = solo.base_damage;
+        profile.attack_model.per_round_damage = solo.per_round_damage;
+        profile.attack_model.minimum_damage = solo.minimum_damage;
+        profile
+    }
+
     fn validate(&self, elements: [&ElementProfile; 6]) -> Result<(), ConfigError> {
         let element = parse_element(&self.element)?;
         if self.id.is_empty()
@@ -1483,6 +1526,9 @@ impl BossConfig {
         if let Some(required) = &self.required_map_clear {
             // Append only when authored to preserve existing published digests.
             fields.push(Value::Text(required.clone()));
+        }
+        if let Some(solo) = &self.solo {
+            fields.push(solo.to_value());
         }
         Value::List(fields)
     }
