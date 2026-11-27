@@ -61,7 +61,7 @@ impl Game for Rules {
             .collect::<Vec<_>>();
         // Proposal keys serialize in sorted (BTreeMap) order; the platform
         // recomputes this canonical string for its hash check.
-        Ok(Completion::Proposal(serde_json::json!({
+        let mut proposal = serde_json::json!({
             "configDigest": hex(&state.config_digest),
             "contentHash": hex(&ruleset.content_hash),
             "kind": if ruleset.id == FUNCTIONAL_SOLO_RULESET_ID { "solo.completed.v1" } else { "coop.completed.v1" },
@@ -71,7 +71,11 @@ impl Game for Rules {
             "ruleset": ruleset.id,
             "rulesetVersion": ruleset.version,
             "turn": state.turn_index,
-        })))
+        });
+        if self.engine().regular_encounter() {
+            proposal["encounterId"] = self.engine().encounter_id().into();
+        }
+        Ok(Completion::Proposal(proposal))
     }
 
     fn encode(&self, state: &CoopState) -> aetheria_persistence::Result<Vec<u8>> {
@@ -198,8 +202,7 @@ impl Game for Rules {
                 }));
             }
             projection["abilities"] = serde_json::Value::Array(abilities);
-            projection["bossId"] =
-                serde_json::Value::String(self.engine().selected_boss().id.clone());
+            projection["bossId"] = self.engine().encounter_id().into();
         }
         serde_json::to_vec(&projection).map_err(|_| Error::Invalid)
     }

@@ -340,7 +340,7 @@ fn candidates(
             .pet(&state.participants[state.active_seat].pet_id)
             .and_then(|pet| pet.element().ok());
         let immune = actor_element
-            .zip(rules.selected_boss().element().ok())
+            .zip(rules.opponent_element().ok())
             .is_some_and(|(actor, boss)| rules.effectiveness(actor, boss) == 0);
         if immune {
             // Keep a legal last resort for custom kits with no support or board move.
@@ -436,7 +436,7 @@ fn play(
             diagnostics.immune_actor_turns += u64::from(
                 pet.element()
                     .ok()
-                    .zip(rules.selected_boss().element().ok())
+                    .zip(rules.opponent_element().ok())
                     .is_some_and(|(element, boss)| rules.effectiveness(element, boss) == 0),
             );
             let slots = [
@@ -748,7 +748,7 @@ fn run_samples(
     mut diagnostics: Option<&mut Diagnostics>,
 ) -> Result<SimulationReport, CoopError> {
     let mut report = SimulationReport {
-        boss_id: rules.selected_boss().id.clone(),
+        boss_id: rules.encounter_id().into(),
         content_digest: rules
             .digest()
             .iter()

@@ -314,6 +314,7 @@ pub struct BossConfig {
     pub required_room_points: u32,
     pub reward_policy: Option<EncounterRewards>,
     pub solo: Option<SoloBossConfig>,
+    pub regular: Option<RegularEncounterConfig>,
 }
 
 /// Encounter values for the independently versioned one-seat ruleset.
@@ -336,6 +337,82 @@ impl SoloBossConfig {
             Value::Uint(self.per_round_damage.into()),
             Value::Uint(self.minimum_damage.into()),
             Value::Uint(self.max_rounds.into()),
+        ])
+    }
+}
+
+/// A map's independent one-seat encounter with a single enemy phase.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RegularEncounterConfig {
+    pub id: String,
+    pub name: String,
+    pub element: String,
+    pub max_hp: u32,
+    pub defense: u32,
+    pub crit_rate_bp: u16,
+    pub crit_damage_bp: u16,
+    pub attack_model: BossAttackModel,
+    pub telegraph_turns: u8,
+    pub max_rounds: u16,
+    pub reward_policy: RegularRewardPolicy,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RegularRewardPolicy {
+    pub first_clear: EncounterPayout,
+    pub repeat_clear: EncounterPayout,
+    pub defeat: EncounterPayout,
+}
+
+impl RegularEncounterConfig {
+    fn validate(&self, parent: &BossConfig) -> Result<(), ConfigError> {
+        let map = parent.map_id.as_deref().ok_or(ConfigError::Boss)?;
+        if !stable_id(&self.id)
+            || self.id.strip_suffix("-regular") != Some(map)
+            || self.name.is_empty()
+            || self.name.len() > 128
+            || self.name.trim() != self.name
+            || self.element != parent.element
+            || self.max_hp == 0
+            || self.defense == 0
+            || self.crit_rate_bp > 10_000
+            || self.crit_damage_bp < 10_000
+            || !(1..=8).contains(&self.telegraph_turns)
+            || !(1..=super::MAX_TURNS).contains(&self.max_rounds)
+        {
+            return Err(ConfigError::Boss);
+        }
+        self.attack_model.validate()?;
+        for payout in [
+            &self.reward_policy.first_clear,
+            &self.reward_policy.repeat_clear,
+            &self.reward_policy.defeat,
+        ] {
+            payout.validate()?;
+        }
+        Ok(())
+    }
+
+    fn to_value(&self) -> Value {
+        list([
+            Value::Text("regular".into()),
+            Value::Text(self.id.clone()),
+            Value::Text(self.name.clone()),
+            Value::Text(self.element.clone()),
+            Value::Uint(self.max_hp.into()),
+            Value::Uint(self.defense.into()),
+            Value::Uint(self.crit_rate_bp.into()),
+            Value::Uint(self.crit_damage_bp.into()),
+            self.attack_model.to_value(),
+            Value::Uint(self.telegraph_turns.into()),
+            Value::Uint(self.max_rounds.into()),
+            list([
+                self.reward_policy.first_clear.to_value(),
+                self.reward_policy.repeat_clear.to_value(),
+                self.reward_policy.defeat.to_value(),
+            ]),
         ])
     }
 }
@@ -701,6 +778,15 @@ impl CoopConfig {
                     return Err(ConfigError::Boss);
                 }
                 boss.solo_profile(solo).validate(elements)?;
+            }
+            if let Some(regular) = &boss.regular {
+                if self.schema_version != FUNCTIONAL_SCHEMA_VERSION
+                    || !self.has_artifact_catalog()
+                    || !boss_ids.insert(&regular.id)
+                {
+                    return Err(ConfigError::Boss);
+                }
+                regular.validate(boss)?;
             }
             if let Some(pet_ids) = boss
                 .reward_policy
@@ -1526,6 +1612,9 @@ impl BossConfig {
         }
         if let Some(solo) = &self.solo {
             fields.push(solo.to_value());
+        }
+        if let Some(regular) = &self.regular {
+            fields.push(regular.to_value());
         }
         Value::List(fields)
     }

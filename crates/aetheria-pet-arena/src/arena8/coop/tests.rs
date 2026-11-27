@@ -1589,3 +1589,84 @@ fn functional_swaps_replay_and_mixed_snapshots_fail_closed() {
             .any(|marked| marked)
     );
 }
+
+#[test]
+fn regular_profile_requires_bounded_authored_policy_and_binds_payouts() {
+    let source: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
+    let parse = |bundle| CoopConfig::parse(&serde_json::to_vec(bundle).unwrap());
+    let valid = parse(&source).unwrap();
+    for (field, value) in [
+        ("id", serde_json::json!("tideglass-lagoon-regular")),
+        ("element", serde_json::json!("water")),
+        ("maxHp", serde_json::json!(0)),
+        ("maxRounds", serde_json::json!(0)),
+        ("rewardPolicy", serde_json::json!(null)),
+        ("phase", serde_json::json!({})),
+    ] {
+        let mut broken = source.clone();
+        broken["bosses"][0]["regular"][field] = value;
+        assert!(parse(&broken).is_err(), "{field}");
+    }
+    let mut broken = source.clone();
+    broken["bosses"][0]["regular"]["rewardPolicy"]["firstClear"]["coins"] = 1_000_001.into();
+    assert_eq!(parse(&broken), Err(ConfigError::Rewards));
+    let mut new_reward = source.clone();
+    new_reward["bosses"][0]["regular"]["rewardPolicy"]["firstClear"]["coins"] = 99.into();
+    assert_ne!(parse(&new_reward).unwrap().digest(), valid.digest());
+    let mut previous: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    previous["bosses"][0]["regular"] = source["bosses"][0]["regular"].clone();
+    assert!(
+        parse(&previous).is_err(),
+        "historical capability cannot opt in"
+    );
+}
+
+#[test]
+fn regular_encounter_uses_one_phase_and_cannot_restore_as_a_boss() {
+    for (regular_id, boss_id, expected_hp) in [
+        ("cinder-terraces-regular", "cinder-terraces-warden", 420),
+        ("tideglass-lagoon-regular", "tideglass-lagoon-warden", 480),
+    ] {
+        let regular = CoopRules::load_solo(functional_bundle(), regular_id.into()).unwrap();
+        let boss = CoopRules::load_solo(functional_bundle(), boss_id.into()).unwrap();
+        assert!(CoopRules::load(functional_bundle(), regular_id.into()).is_err());
+        let seat = seats()[0].clone();
+        let loadout = ArtifactLoadout {
+            digest: ArtifactLoadout::digest(regular.digest(), &seat, &[]),
+            entries: vec![],
+        };
+        let initial = regular.allocate_solo(seat, &loadout).unwrap();
+        assert_eq!(initial.boss_id.as_deref(), Some(regular_id));
+        assert_eq!(
+            (initial.boss.hp, initial.boss.max_hp),
+            (expected_hp, expected_hp)
+        );
+        assert!(boss.validate(&initial).is_err());
+        let mut playing = regular
+            .reduce(&initial, CoopAction::Start, &mut rng(0))
+            .unwrap()
+            .state;
+        assert!(
+            playing
+                .board
+                .iter()
+                .flatten()
+                .all(|tile| matches!(tile.identity, TileIdentity::Kind(_)))
+        );
+        let mut tampered = playing.clone();
+        tampered.boss.transformed = true;
+        tampered.boss.phase = 2;
+        assert!(regular.validate(&tampered).is_err());
+
+        let dealt = regular.damage_boss(&mut playing, expected_hp * 2).unwrap();
+        assert_eq!(dealt, expected_hp);
+        assert_eq!(playing.phase, CoopPhase::Won);
+        assert_eq!(playing.boss.phase, 1);
+        assert!(!playing.boss.transformed);
+        assert!(regular.validate(&playing).is_ok());
+        let Value::List(settlement) = regular.settlement(&playing) else {
+            panic!("expected canonical settlement")
+        };
+        assert_eq!(settlement[5], Value::Text(regular_id.into()));
+    }
+}

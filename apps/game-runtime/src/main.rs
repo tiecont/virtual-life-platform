@@ -49,7 +49,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if rules.functional_board() {
             receipt["rulesetVersion"] = ruleset.version.into();
         }
-        if config.bosses().iter().any(|boss| boss.solo.is_some()) {
+        if config
+            .bosses()
+            .iter()
+            .any(|boss| boss.solo.is_some() || boss.regular.is_some())
+        {
             receipt["soloContentHash"] = hex(&solo_content_hash(digest)).into();
         }
         println!("{receipt}");

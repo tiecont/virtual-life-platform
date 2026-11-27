@@ -597,6 +597,7 @@ fn solo_functional_runtime_projects_one_seat_and_commits_typed_completion() {
         panic!("expected solo settlement proposal");
     };
     assert_eq!(proposal["kind"], "solo.completed.v1");
+    assert!(proposal.get("encounterId").is_none());
     assert_eq!(proposal["ruleset"], "arena8-functional-pve");
     assert_eq!(proposal["participants"].as_array().unwrap().len(), 1);
     assert_eq!(proposal["participants"][0]["account"], account.as_str());
@@ -605,4 +606,60 @@ fn solo_functional_runtime_projects_one_seat_and_commits_typed_completion() {
             .reduce(&playing, CoopAction::Guard, &mut stream)
             .is_err()
     );
+}
+
+#[test]
+fn solo_regular_projection_and_settlement_bind_to_authored_encounter() {
+    let bundle = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v1.candidate.json"
+    ));
+    let seats = seats();
+    let loadouts = bindings(bundle, &seats);
+    let solo = |id: &str| {
+        Rules::load_solo(bundle, seats[0].clone(), id.into(), &loadouts[0], vec![]).unwrap()
+    };
+    let account = &seats[0].account;
+    let regular = solo("cinder-terraces-regular");
+    let boss = solo("cinder-terraces-warden");
+
+    let initial = regular.initial();
+    let view: serde_json::Value =
+        serde_json::from_slice(&regular.project(&initial, account).unwrap()).unwrap();
+    assert_eq!(view["bossId"], "cinder-terraces-regular");
+    assert_eq!(view["boss"]["maxHp"], 420);
+    assert!(boss.decode(&regular.encode(&initial).unwrap()).is_err());
+    assert!(regular.completion(&initial).is_err());
+
+    // Drive real accepted swaps to obtain a terminal proposal.
+    let entropy = SecretSeed::from_host_entropy([31; 32]);
+    let mut rng = entropy
+        .stream(Value::Text("functional-regular-match".into()), 0)
+        .unwrap();
+    let mut state = regular
+        .engine()
+        .reduce(&initial, CoopAction::Start, &mut rng)
+        .unwrap()
+        .state;
+    for _ in 0..15 {
+        let (first, second) = regular.engine().legal_swap(&state).unwrap();
+        state = regular
+            .engine()
+            .reduce(&state, CoopAction::Swap { first, second }, &mut rng)
+            .unwrap()
+            .state;
+        if state.phase.terminal() {
+            break;
+        }
+    }
+    assert!(state.phase.terminal());
+    assert_eq!(state.boss.phase, 1);
+    let Completion::Proposal(proposal) = regular.completion(&state).unwrap() else {
+        panic!("expected solo regular proposal")
+    };
+    assert_eq!(proposal["encounterId"], "cinder-terraces-regular");
+    assert_eq!(proposal["kind"], "solo.completed.v1");
+    assert_eq!(proposal["configDigest"], view["ruleset"]["configDigest"]);
+    assert_eq!(proposal["contentHash"], view["ruleset"]["contentHash"]);
+    assert_eq!(proposal["participants"].as_array().unwrap().len(), 1);
 }
