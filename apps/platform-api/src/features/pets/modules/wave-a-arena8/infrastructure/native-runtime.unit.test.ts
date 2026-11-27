@@ -1,3 +1,6 @@
+import {createHash} from 'node:crypto';
+import {bindArtifactLoadout} from '../../../../coop/modules/match/domain/loadout';
+import {selectNativeExecutable} from '../../../../../shared/common/native-executable';
 import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -68,6 +71,20 @@ describe('native Arena8 runtime configuration',()=>{
     expect(serialized).not.toContain('ticket');
   });
 
+  it('passes the bound one-seat loadout to the functional solo runtime',()=>{
+    const identity={account:REQUEST.accountId,ownedPetInstanceId:REQUEST.ownedPetId,petLevel:REQUEST.level,petId:REQUEST.petId};
+    const loadout=bindArtifactLoadout(CONTENT,identity,[]);
+    const functional={pin:{configVersion:4,configDigest:CONTENT,bossId:'cinder-terraces-warden',seat:{...identity,loadout}},bundle:{}};
+    const settings=nativeArena8Settings({...REQUEST,functional},options());
+    expect(settings).toMatchObject({ruleset:'arena8-functional-pve',movement:false,coop:{
+      bossId:functional.pin.bossId,seats:[{account:REQUEST.accountId,petId:REQUEST.petId,
+       ownedPetInstanceId:REQUEST.ownedPetId,level:REQUEST.level,loadout}],
+    }});
+    expect(settings).not.toHaveProperty('arena8');
+    expect(()=>nativeArena8Settings({...REQUEST,ownedPetId:REQUEST.matchId,functional},options()))
+      .toThrow(/identity mismatch/);
+  });
+
   it('rejects malformed keys and loadouts before writing a configuration',()=>{
     expect(()=>nativeArena8Settings(REQUEST,options({storageKey:'bad'})))
       .toThrow(/storage key/);
@@ -88,6 +105,15 @@ describe('local native Arena8 runtime adapter',()=>{
     keyId:'arena8-native-v1',origin:ORIGIN,storageKey:ENGINE,storageKeyId:'local-v1',
     certFile:'/run/aetheria/tls/server.pem',keyFile:'/run/aetheria/tls/server.key',
     ...overrides,
+  });
+
+  it('chooses a historical executable only under its exact pin',async()=>{
+    const currentBytes='#!/bin/sh\nexit 0\n',previousBytes='#!/bin/sh\nexit 1\n';
+    const [current,historical]=await Promise.all([script(currentBytes),script(previousBytes)]);
+    const previousHash=createHash('sha256').update(previousBytes).digest('hex');
+    await expect(selectNativeExecutable(current,historical,undefined)).resolves.toMatchObject({binary:current});
+    await expect(selectNativeExecutable(current,historical,previousHash)).resolves.toEqual({binary:historical,engineHash:previousHash});
+    await expect(selectNativeExecutable(current,historical,CONTENT)).rejects.toThrow(/engine unavailable/);
   });
 
   it('executes the built runtime to read the arena8-pve content hash',async()=>{
