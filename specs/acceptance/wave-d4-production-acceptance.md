@@ -16,6 +16,10 @@ The canonical backlog is [development-plan.json](../../config/development-plan.j
 
 ![Fire board before the glyph update](../../assets/review/wave-d4/combat/fire-board-after-reconnect-1024x768.webp)
 
+![Element silhouettes on the Linux player after reconnect, revision e19170e5](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp)
+
+Both combat frames use the same 1024×768 reconnect scenario with different match seeds. The newer capture shows six shapes and visible ×2 badges. A separate 800×500 test on this revision exposed an 11-pixel collision for ×64.
+
 ![Dawn Prism lighting baseline](../../assets/review/wave-d4/world/dawn-prism-sanctum-before-720p.webp)
 
 ## Integration and repository
@@ -102,7 +106,7 @@ Related tasks VL-179, VL-210.
 | E05 | Equipment and Skill Training visual quality improved. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E06 | Campaign and lobby presentation improved. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E07 | Combat board readability and visual quality improved. | IN_PROGRESS | e19170e5 · ElementTiles | Six shape glyphs and corner multiplier badges implemented. Verify a rendered build. |
-| E08 | Six elemental tiles are visually distinguishable. | IN_PROGRESS | e19170e5 · ElementTiles | Six shape glyphs and corner multiplier badges implemented. Verify a rendered build. |
+| E08 | Six elemental tiles are visually distinguishable. | PASS | e19170e5 · rendered Linux comparison | Flame, droplet, bolt, ghost, mountain and star silhouettes are visible in the retained reconnect frame. |
 | E09 | Active turn and resource state remain readable. | IN_PROGRESS | 663de837 · Gallery | Baseline 1024×768 captures. Still need complete screens and matched after views. |
 | E10 | Cascades and multiplier effects are visually satisfying. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E11 | Skill, damage, healing and shield feedback works. | NOT_RUN | — | Collect dedicated evidence for this condition. |
