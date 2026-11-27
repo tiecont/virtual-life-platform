@@ -149,10 +149,13 @@ namespace Aetheria.PetArena.Presentation
                 {
                     var prefix = view.Own.PetId + "-";
                     var name = ability.Id.StartsWith(prefix, StringComparison.Ordinal) ? ability.Id.Substring(prefix.Length) : ability.Id;
-                    label = name.Replace('-', ' ') + " · Lv " + view.Own.SkillLevels[Array.IndexOf(kinds, kind)] + " · " + ability.Mana + " MP / " + ability.Rage + " rage";
-                    if (ability.Cooldown > 0) label += " · cooldown " + ability.Cooldown;
+                    var title = name.Replace('-', ' ');
+                    title = title.Length == 0 ? label : char.ToUpperInvariant(title[0]) + title.Substring(1);
+                    label = title + "\nLv " + view.Own.SkillLevels[Array.IndexOf(kinds, kind)] + " · " +
+                        ability.Mana + " MP / " + ability.Rage + " rage";
+                    if (ability.Cooldown > 0) label += "\nCooldown " + ability.Cooldown;
                 }
-                var button = new Button(() => cast(action)) { text = label };
+                var button = new Button(() => cast(action)) { text = label, tooltip = label };
                 button.name = ActionPrefix + action;
                 button.SetEnabled(available.Contains(action));
                 actions.Add(button);

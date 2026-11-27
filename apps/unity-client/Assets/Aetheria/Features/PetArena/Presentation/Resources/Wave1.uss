@@ -188,7 +188,7 @@
 }
 .battle-actions {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     margin-top: 6px;
 }
@@ -208,6 +208,13 @@
 .battle-primary-action:hover {
     border-color: rgb(255, 218, 152);
     background-color: rgb(75, 52, 80);
+}
+.battle-actions Button {
+    flex-basis: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    font-size: 12px;
+    padding: 3px;
 }
 .battle-actions Button:disabled { opacity: 0.64; }
 .tile-fire { background-color: rgb(142, 58, 37); }

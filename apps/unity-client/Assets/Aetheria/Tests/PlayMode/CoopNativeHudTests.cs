@@ -159,6 +159,12 @@ namespace Aetheria.Tests
                     Assert.That(root.Q("coop-opponents").worldBound.xMin, Is.GreaterThan(board.worldBound.xMax));
                     Assert.That(board.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
                     Assert.That(actions.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
+                    Assert.That(actions.childCount, Is.EqualTo(4));
+                    foreach (var skill in actions.Children())
+                    {
+                        Assert.That(skill.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
+                        Assert.That(skill.worldBound.width, Is.GreaterThan(50));
+                    }
                 }
             }
             finally
