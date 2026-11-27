@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Aetheria.World.Presentation
 {
-    // Central Plaza hub: spawn pad, walkable plaza, modular props, two active
-    // arena portals and four explicit foundation-only map bindings. The shared
+    // Central Plaza hub: spawn pad, walkable plaza, modular props and six
+    // campaign portals. The shared
     // base owns locomotion, spawn handoff and portal interaction.
     public sealed class HubWorldController : WorldSceneControllerBase
     {

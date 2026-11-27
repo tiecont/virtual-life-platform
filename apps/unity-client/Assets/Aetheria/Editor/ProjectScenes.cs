@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 
 namespace Aetheria.Editor
@@ -10,13 +11,8 @@ namespace Aetheria.Editor
     public static class ProjectScenes
     {
         public static readonly string[] PlayerScenes =
-        {
-            ProjectBuild.Scene,
-            PetArenaMvpSceneBuilder.ScenePath,
-            WorldSceneBuilder.HubScenePath,
-            WorldSceneBuilder.CinderScenePath,
-            WorldSceneBuilder.TideglassScenePath,
-        };
+            new[] { ProjectBuild.Scene, PetArenaMvpSceneBuilder.ScenePath }
+                .Concat(WorldSceneBuilder.ScenePaths).ToArray();
 
         public static void ApplyEditorBuildSettings()
         {

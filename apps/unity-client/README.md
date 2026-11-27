@@ -72,28 +72,25 @@ credentials are committed here.
 
 ## Central Plaza and developer arenas
 
-Wave B adds a playable **Central Plaza** hub and two developer arena
-compositions: **Cinder Terraces** (Fire) and **Tideglass Lagoon** (Water). The
-three committed scenes are built from one reusable modular kit:
+Central Plaza connects to six developer arena compositions built from the shared
+modular world kit:
 
-- `Assets/Aetheria/Scenes/CentralPlaza.unity`
-- `Assets/Aetheria/Scenes/CinderTerraces.unity`
-- `Assets/Aetheria/Scenes/TideglassLagoon.unity`
+| Arena | Element |
+| --- | --- |
+| Cinder Terraces | Fire |
+| Tideglass Lagoon | Water |
+| Stormcoil Fields | Electric |
+| Lantern Necropolis | Ghost |
+| Ochre Labyrinth | Ground |
+| Dawn Prism Sanctum | Light |
 
-Open a scene and enter Play mode. WASD walks the local `CharacterController`
-inside authored bounds; **E** uses a portal or return gate; **M** toggles
-ambient movement (reduced motion is on by default). The hub has a spawn pad,
-walkable collision, a framed camera, modular props, two active arena portals and
-four **foundation-only** map bindings (Stormcoil Fields, Lantern Necropolis,
-Ochre Labyrinth, Dawn Prism Sanctum). Those four reuse the same kit and palette
-data but have no scene, no build entry and no claim of completion.
-
-Each arena composes an 8x8 developer board with 64 contrasting tiles, a raised
-plinth, a Pet and enemy presentation, a rendered return gate back to the matching
-hub spawn anchor, authored fog/lighting and bounded ambient movement. Geometry
-and materials are **intermediate developer primitives**, not production art and
-not a finished map. This work adds no combat, reward or movement authority; the
-Rust ruleset and existing Pet Arena PvE scene are unchanged.
+Open a scene and enter Play mode. WASD moves the local `CharacterController`
+inside authored bounds. **E** uses a portal or return gate, and **M** toggles
+ambient movement. Reduced motion is on by default. Each arena has an 8×8
+developer board, walkable collision, an entry spawn, a return anchor in Central
+Plaza and distinct lighting and environment dressing. The developer primitives
+are interim assets. In the cooperative player, the server still decides which
+encounters are available to the signed-in account.
 
 Rebuild the scenes and their URP materials after changing layout data:
 
@@ -110,8 +107,8 @@ node scripts/unity-validate.mjs tests
 node scripts/unity-validate.mjs world
 ```
 
-`world` builds the Linux development player, loads the hub and both arenas,
-walks the real portal/return flow, renders 1280x720 screenshots and writes
+`world` builds the Linux development player, drives portal and return interactions
+across all six arenas, renders 1280×720 screenshots and writes
 `facts.json` under the ignored `artifacts/unity/` run directory. It requires a
 real Linux graphics device and does not qualify Windows.
 

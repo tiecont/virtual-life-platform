@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 namespace Aetheria.World.Tests
 {
     // Scene-loading and presentation regressions for the Central Plaza hub and
-    // the two developer arenas. These tests run in the Editor and in a rendered
+    // the six developer arenas. These tests run in the Editor and in a rendered
     // Linux player; they never assert Windows qualification.
     public sealed class WorldSceneTests
     {
@@ -36,8 +36,8 @@ namespace Aetheria.World.Tests
             Assert.That(hub.Identity, Is.Not.Null);
             Assert.That(hub.Identity.Kind, Is.EqualTo(WorldLayoutKind.Hub));
             Assert.That(hub.Identity.ContentStage, Does.Contain("PLAYABLE"));
-            Assert.That(hub.ActivePortalCount, Is.EqualTo(2));
-            Assert.That(hub.FoundationMarkerCount, Is.EqualTo(4));
+            Assert.That(hub.ActivePortalCount, Is.EqualTo(6));
+            Assert.That(hub.FoundationMarkerCount, Is.Zero);
             Assert.That(hub.Player, Is.Not.Null);
             Assert.That(Camera.main, Is.Not.Null);
 
@@ -128,10 +128,10 @@ namespace Aetheria.World.Tests
         }
 
         [UnityTest]
-        public IEnumerator BothArenasRenderDistinctAtmospheresReadableBoardsAndAmbientMovement()
+        public IEnumerator AllArenasRenderDistinctAtmospheresReadableBoardsAndAmbientMovement()
         {
-            yield return AssertArenaScene(WorldMapCatalog.CinderTerraces.SceneName, WorldThemes.Fire);
-            yield return AssertArenaScene(WorldMapCatalog.TideglassLagoon.SceneName, WorldThemes.Water);
+            foreach (var map in WorldMapCatalog.PlayableArenas)
+                yield return AssertArenaScene(map.SceneName, map.Theme);
         }
 
         private static IEnumerator AssertArenaScene(string sceneName, WorldTheme theme)
@@ -221,25 +221,49 @@ namespace Aetheria.World.Tests
         }
 
         [UnityTest]
-        public IEnumerator FoundationMarkersStayInertWhileReusableBindingsExist()
+        public IEnumerator EveryCampaignPortalLoadsItsArenaAndReturnsToItsPlazaAnchor()
         {
             yield return SceneManager.LoadSceneAsync(WorldMapCatalog.CentralPlazaSceneName);
             yield return null;
-            var hub = Object.FindFirstObjectByType<HubWorldController>();
-            Assert.That(hub, Is.Not.Null);
-            hub.InputLocked = true;
-            foreach (var marker in hub.Portals.Where(portal => !portal.Interactable))
+            foreach (var map in WorldMapCatalog.PlayableArenas)
             {
-                Assert.That(marker.TargetScene, Is.Empty);
-                Assert.That(marker.Status, Does.Contain("FOUNDATION ONLY"));
-                hub.Player.Teleport(marker.transform.position + new Vector3(0f, .02f, -2f), 0f);
+                var hub = Object.FindFirstObjectByType<HubWorldController>();
+                Assert.That(hub, Is.Not.Null);
+                var portal = hub.Portals.Single(candidate => candidate.TargetScene == map.SceneName);
+                hub.Player.Teleport(portal.transform.position + new Vector3(0f, .02f, -2.1f), 0f);
                 yield return null;
-                Assert.That(hub.FindPortalInRange(), Is.EqualTo(marker));
-                Assert.That(hub.TryInteract(), Is.False,
-                    "Foundation-only map binding must not load a scene: " + marker.Label);
+                Assert.That(hub.FindPortalInRange(), Is.EqualTo(portal), map.Id);
+                Assert.That(hub.TryInteract(), Is.True, map.Id);
+                var entryId = portal.TargetSpawnId;
+                yield return WaitForScene(map.SceneName);
+
+                var arena = Object.FindFirstObjectByType<ArenaWorldSceneController>();
+                Assert.That(arena, Is.Not.Null, map.Id);
+                Assert.That(arena.MapId, Is.EqualTo(map.Id));
+                Assert.That(arena.BoardTileCount, Is.EqualTo(64), map.Id);
+                var spawn = arena.FindSpawnAnchor(entryId);
+                Assert.That(spawn, Is.Not.Null, map.Id);
+                Assert.That(Vector3.Distance(arena.Player.transform.position, spawn.position), Is.LessThan(.6f), map.Id);
+                Assert.That(Physics.Raycast(spawn.position + new Vector3(1.6f, 3f, 0f), Vector3.down, 6f),
+                    Is.True, "Missing walkable arena collider in " + map.Id);
+
+                var returnGate = arena.ReturnGate;
+                Assert.That(returnGate, Is.Not.Null, map.Id);
+                var returnId = returnGate.TargetSpawnId;
+                var approach = returnGate.transform.position + new Vector3(0f, 5f, -2.1f);
+                Assert.That(Physics.Raycast(approach, Vector3.down, out var footing, 7f), Is.True,
+                    "Missing walkable return approach in " + map.Id);
+                arena.Player.Teleport(footing.point + Vector3.up * .02f, 0f);
+                yield return null;
+                Assert.That(arena.FindPortalInRange(), Is.EqualTo(returnGate), map.Id);
+                Assert.That(arena.TryInteract(), Is.True, map.Id);
+                yield return WaitForScene(WorldMapCatalog.CentralPlazaSceneName);
+                hub = Object.FindFirstObjectByType<HubWorldController>();
+                Assert.That(hub, Is.Not.Null);
+                var hubSpawn = hub.FindSpawnAnchor(returnId);
+                Assert.That(hubSpawn, Is.Not.Null, map.Id);
+                Assert.That(Vector3.Distance(hub.Player.transform.position, hubSpawn.position), Is.LessThan(.6f), map.Id);
             }
-            Assert.That(WorldMapCatalog.FoundationMaps.Count, Is.EqualTo(4));
-            Assert.That(WorldSceneFlow.IsLoading, Is.False);
         }
 
         private static IEnumerator WaitForScene(string sceneName)

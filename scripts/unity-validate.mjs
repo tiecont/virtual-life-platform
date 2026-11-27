@@ -37,8 +37,8 @@ async function runPlayer(executable, args, timeoutMs) {
   });
 }
 
-// Renders the committed hub and two arena scenes from a real Linux development
-// player, walks the actual portal/return flow and verifies the captured PNGs.
+// Renders the committed hub and six arenas from a real Linux development
+// player, exercises portal interactions and verifies the captured PNGs.
 async function runWorldEvidence() {
   if (process.platform !== 'linux') throw Error('World render evidence requires a Linux workstation');
   await run(['-executeMethod', 'Aetheria.Editor.ProjectBuild.Linux', '-quit'], 'Linux');
@@ -57,8 +57,13 @@ async function runWorldEvidence() {
   if (facts.status !== 'ok') throw Error('World evidence capture reported failure: ' + facts.error);
   if (!facts.graphicsDeviceType || /Null/i.test(facts.graphicsDeviceType))
     throw Error('World evidence ran without a graphics device.');
-  const expected = ['01-central-plaza-spawn.png', '02-central-plaza-fire-portal.png',
-    '03-cinder-terraces-arena.png', '04-central-plaza-return.png', '05-tideglass-lagoon-arena.png'];
+  const arenas = [
+    ['cinder-terraces', 'CinderTerraces'], ['tideglass-lagoon', 'TideglassLagoon'],
+    ['stormcoil-fields', 'StormcoilFields'], ['lantern-necropolis', 'LanternNecropolis'],
+    ['ochre-labyrinth', 'OchreLabyrinth'], ['dawn-prism-sanctum', 'DawnPrismSanctum'],
+  ];
+  const expected = ['01-central-plaza-spawn.png', '02-central-plaza-fire-portal.png', '04-central-plaza-return.png',
+    ...arenas.map(([id]) => id + '-arena.png')];
   const byFile = new Map((facts.captures ?? []).map(capture => [capture.file, capture]));
   for (const name of expected) {
     const capture = byFile.get(name);
@@ -71,14 +76,15 @@ async function runWorldEvidence() {
     if (!capture.scene || capture.rendererCount < 50) throw Error('Rendered scene is empty: ' + name);
   }
   const scenes = new Set((facts.captures ?? []).map(capture => capture.scene));
-  for (const scene of ['CentralPlaza', 'CinderTerraces', 'TideglassLagoon'])
-    if (!scenes.has(scene)) throw Error('World evidence did not load ' + scene);
-  const boards = (facts.captures ?? []).filter(capture => capture.boardTileCount === 64);
-  if (boards.length < 2) throw Error('Both 8x8 arena boards must be rendered with 64 visible tiles.');
   const transitions = facts.transitions ?? '';
-  for (const transition of ['CentralPlaza -> CinderTerraces', 'CinderTerraces -> CentralPlaza',
-    'CentralPlaza -> TideglassLagoon'])
-    if (!transitions.includes(transition)) throw Error('World evidence missed transition: ' + transition);
+  if (!scenes.has('CentralPlaza')) throw Error('World evidence did not load Central Plaza.');
+  for (const [id, scene] of arenas) {
+    const capture = byFile.get(id + '-arena.png');
+    if (capture.scene !== scene || capture.boardTileCount !== 64)
+      throw Error('Expected a visible 64-tile arena in ' + scene);
+    for (const transition of ['CentralPlaza -> ' + scene, scene + ' -> CentralPlaza'])
+      if (!transitions.includes(transition)) throw Error('World evidence missed transition: ' + transition);
+  }
   report.worldEvidence = {
     graphicsDeviceType: facts.graphicsDeviceType,
     graphicsDeviceName: facts.graphicsDeviceName,

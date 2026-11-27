@@ -113,41 +113,51 @@ namespace Aetheria.World.Presentation
             yield return Settle(.8f);
             yield return Capture("01-central-plaza-spawn.png");
 
-            var hub = Find<HubWorldController>();
-            if (hub == null) throw new InvalidOperationException("Central Plaza has no hub controller.");
-            var fire = hub.FindPortal("fire-portal");
-            if (fire == null) throw new InvalidOperationException("Central Plaza has no fire portal.");
-            hub.Player.Teleport(fire.transform.position + new Vector3(0f, .02f, -2.4f), 0f);
-            hub.InputLocked = true;
-            yield return Settle(.3f);
-            yield return Capture("02-central-plaza-fire-portal.png");
-            transitions.Add(WorldMapCatalog.CentralPlazaSceneName + " -> " + fire.TargetScene);
-            if (!hub.TryInteract()) throw new InvalidOperationException("Fire portal interaction was rejected.");
-            yield return WaitForScene(fire.TargetScene);
-            yield return Settle(.9f);
+            foreach (var map in WorldMapCatalog.PlayableArenas)
+            {
+                var hub = Find<HubWorldController>();
+                if (hub == null) throw new InvalidOperationException("Central Plaza has no hub controller.");
+                hub.InputLocked = true;
+                WorldPortalGate portal = null;
+                foreach (var candidate in hub.Portals)
+                    if (candidate.TargetScene == map.SceneName) portal = candidate;
+                if (portal == null) throw new InvalidOperationException("Missing campaign portal: " + map.Id);
+                hub.Player.Teleport(portal.transform.position + new Vector3(0f, .02f, -2.1f), 0f);
+                yield return Settle(.3f);
+                if (map.Id == WorldMapCatalog.CinderTerracesId)
+                    yield return Capture("02-central-plaza-fire-portal.png");
+                if (hub.FindPortalInRange() != portal || !hub.TryInteract())
+                    throw new InvalidOperationException("Campaign portal interaction was rejected: " + map.Id);
+                yield return WaitForScene(map.SceneName);
+                transitions.Add(WorldMapCatalog.CentralPlazaSceneName + " -> " + map.SceneName);
+                yield return Settle(.9f);
 
-            var fireArena = Find<ArenaWorldSceneController>();
-            if (fireArena == null) throw new InvalidOperationException("Cinder Terraces has no arena controller.");
-            yield return Capture("03-cinder-terraces-arena.png");
-            transitions.Add(SceneManager.GetActiveScene().name + " -> " + WorldMapCatalog.CentralPlazaSceneName);
-            if (!fireArena.ReturnToHub()) throw new InvalidOperationException("Arena return gate was rejected.");
-            yield return WaitForScene(WorldMapCatalog.CentralPlazaSceneName);
-            yield return Settle(.8f);
-            yield return Capture("04-central-plaza-return.png");
+                var arena = Find<ArenaWorldSceneController>();
+                if (arena == null || arena.MapId != map.Id || arena.BoardTileCount != 64)
+                    throw new InvalidOperationException("Invalid arena composition: " + map.Id);
+                arena.InputLocked = true;
+                yield return Capture(map.Id + "-arena.png");
 
-            hub = Find<HubWorldController>();
-            if (hub == null) throw new InvalidOperationException("Central Plaza did not reload.");
-            var water = hub.FindPortal("water-portal");
-            if (water == null) throw new InvalidOperationException("Central Plaza has no water portal.");
-            hub.Player.Teleport(water.transform.position + new Vector3(0f, .02f, -2.4f), 0f);
-            hub.InputLocked = true;
-            transitions.Add(WorldMapCatalog.CentralPlazaSceneName + " -> " + water.TargetScene);
-            if (!hub.TryInteract()) throw new InvalidOperationException("Water portal interaction was rejected.");
-            yield return WaitForScene(water.TargetScene);
-            yield return Settle(.9f);
-            var waterArena = Find<ArenaWorldSceneController>();
-            if (waterArena == null) throw new InvalidOperationException("Tideglass Lagoon has no arena controller.");
-            yield return Capture("05-tideglass-lagoon-arena.png");
+                var returnGate = arena.ReturnGate;
+                if (returnGate == null) throw new InvalidOperationException("Missing return gate: " + map.Id);
+                var returnId = returnGate.TargetSpawnId;
+                var approach = returnGate.transform.position + new Vector3(0f, 5f, -2.1f);
+                if (!Physics.Raycast(approach, Vector3.down, out var footing, 7f))
+                    throw new InvalidOperationException("Missing walkable return approach: " + map.Id);
+                arena.Player.Teleport(footing.point + Vector3.up * .02f, 0f);
+                yield return Settle(.3f);
+                if (arena.FindPortalInRange() != returnGate || !arena.TryInteract())
+                    throw new InvalidOperationException("Arena return gate was rejected: " + map.Id);
+                yield return WaitForScene(WorldMapCatalog.CentralPlazaSceneName);
+                transitions.Add(map.SceneName + " -> " + WorldMapCatalog.CentralPlazaSceneName);
+                yield return Settle(.5f);
+
+                var returnedHub = Find<HubWorldController>();
+                var spawn = returnedHub != null ? returnedHub.FindSpawnAnchor(returnId) : null;
+                if (spawn == null || Vector3.Distance(returnedHub.Player.transform.position, spawn.position) > .6f)
+                    throw new InvalidOperationException("Incorrect Plaza return spawn: " + map.Id);
+                if (map.Id == WorldMapCatalog.CinderTerracesId) yield return Capture("04-central-plaza-return.png");
+            }
         }
 
         private static IEnumerator LoadScene(string sceneName)

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Aetheria.World.Domain
 {
     // Data-driven hub and arena compositions built from EnvironmentKit parts.
     // These are developer-quality compositions: modular primitives, element
-    // palettes and authored framing, explicitly intermediate rather than
-    // production art. Only Central Plaza, Cinder Terraces and Tideglass Lagoon
-    // are saved as scenes; the other four maps stay preview bindings.
+    // palettes and authored framing for Central Plaza and the six campaign arenas.
     public static class WorldLayouts
     {
         public const string HubSpawnId = "hub-spawn";
@@ -16,52 +15,31 @@ namespace Aetheria.World.Domain
         public const string CinderEntryId = "cinder-terraces-entry";
         public const string TideglassEntryId = "tideglass-lagoon-entry";
 
-        private static readonly WorldLayout HubLayout = BuildHub();
-        private static readonly WorldLayout CinderLayout = BuildArena(WorldMapCatalog.CinderTerraces, false);
-        private static readonly WorldLayout TideglassLayout = BuildArena(WorldMapCatalog.TideglassLagoon, false);
-        private static readonly Dictionary<string, WorldLayout> Previews = new Dictionary<string, WorldLayout>(StringComparer.Ordinal);
-
-        public static WorldLayout Hub => HubLayout;
-
-        public static WorldLayout CinderTerraces => CinderLayout;
-
-        public static WorldLayout TideglassLagoon => TideglassLayout;
+        public static WorldLayout Hub { get; } = BuildHub();
 
         public static IReadOnlyList<WorldLayout> PlayableArenas { get; } =
-            Array.AsReadOnly(new[] { CinderLayout, TideglassLayout });
+            Array.AsReadOnly(WorldMapCatalog.PlayableArenas.Select(BuildArena).ToArray());
 
         public static IReadOnlyList<WorldLayout> PlayableScenes { get; } =
-            Array.AsReadOnly(new[] { HubLayout, CinderLayout, TideglassLayout });
+            Array.AsReadOnly(new[] { Hub }.Concat(PlayableArenas).ToArray());
 
-        public static WorldLayout ForMap(string mapId)
-        {
-            if (string.Equals(mapId, WorldMapCatalog.CentralPlazaId, StringComparison.Ordinal)) return HubLayout;
-            if (string.Equals(mapId, WorldMapCatalog.CinderTerracesId, StringComparison.Ordinal)) return CinderLayout;
-            if (string.Equals(mapId, WorldMapCatalog.TideglassLagoonId, StringComparison.Ordinal)) return TideglassLayout;
-            if (string.Equals(mapId, WorldMapCatalog.StormcoilFields.Id, StringComparison.Ordinal))
-                return Preview(WorldMapCatalog.StormcoilFields);
-            if (string.Equals(mapId, WorldMapCatalog.LanternNecropolis.Id, StringComparison.Ordinal))
-                return Preview(WorldMapCatalog.LanternNecropolis);
-            if (string.Equals(mapId, WorldMapCatalog.OchreLabyrinth.Id, StringComparison.Ordinal))
-                return Preview(WorldMapCatalog.OchreLabyrinth);
-            if (string.Equals(mapId, WorldMapCatalog.DawnPrismSanctum.Id, StringComparison.Ordinal))
-                return Preview(WorldMapCatalog.DawnPrismSanctum);
-            return null;
-        }
+        public static WorldLayout CinderTerraces => ForMap(WorldMapCatalog.CinderTerracesId);
 
-        // Composes a themed arena from the same kit and board bindings without
-        // creating a scene, adding a build entry or claiming the map finished.
-        public static WorldLayout Preview(WorldMapDefinition map)
+        public static WorldLayout TideglassLagoon => ForMap(WorldMapCatalog.TideglassLagoonId);
+
+        public static WorldLayout ForMap(string mapId) =>
+            PlayableScenes.FirstOrDefault(layout => string.Equals(layout.MapId, mapId, StringComparison.Ordinal));
+
+        private static string EntryId(WorldMapDefinition map) => map.Id + "-entry";
+
+        private static string HubReturnId(WorldMapDefinition map)
         {
-            if (map == null) throw new ArgumentNullException(nameof(map));
-            if (map.Status != WorldMapStatus.FoundationOnly)
-                throw new InvalidOperationException("Only foundation maps are composed as previews: " + map.Id);
-            if (!Previews.TryGetValue(map.Id, out var layout))
+            switch (map.Element)
             {
-                layout = BuildArena(map, true);
-                Previews.Add(map.Id, layout);
+                case WorldMapElement.Fire: return HubFireReturnId;
+                case WorldMapElement.Water: return HubWaterReturnId;
+                default: return "hub-" + map.Id + "-return";
             }
-            return layout;
         }
 
         private static WorldLayout BuildHub()
@@ -124,25 +102,26 @@ namespace Aetheria.World.Domain
             Add(placements, "crate", "environment", new WorldPoint(-5.2f, .45f, -6.4f), 24f);
             Add(placements, "crate", "environment", new WorldPoint(5.2f, .45f, -6.4f), -24f);
 
-            var portals = new List<WorldPortalDefinition>
+            var portals = new[]
             {
-                new WorldPortalDefinition("fire-portal", "Cinder Terraces / Fire Arena",
-                    new WorldPoint(-8f, 0f, 7.4f), 0f, WorldMapElement.Fire, true,
-                    WorldMapCatalog.CinderTerraces.SceneName, CinderEntryId,
-                    "PLAYABLE ARENA", WorldElementPalette.SharedPortalKey(WorldMapElement.Fire)),
-                new WorldPortalDefinition("water-portal", "Tideglass Lagoon / Water Arena",
-                    new WorldPoint(8f, 0f, 7.4f), 0f, WorldMapElement.Water, true,
-                    WorldMapCatalog.TideglassLagoon.SceneName, TideglassEntryId,
-                    "PLAYABLE ARENA", WorldElementPalette.SharedPortalKey(WorldMapElement.Water)),
-                FoundationMarker(WorldMapCatalog.StormcoilFields, new WorldPoint(-9.6f, 0f, 12.2f)),
-                FoundationMarker(WorldMapCatalog.LanternNecropolis, new WorldPoint(-3.2f, 0f, 12.9f)),
-                FoundationMarker(WorldMapCatalog.OchreLabyrinth, new WorldPoint(3.2f, 0f, 12.9f)),
-                FoundationMarker(WorldMapCatalog.DawnPrismSanctum, new WorldPoint(9.6f, 0f, 12.2f))
+                HubPortal("fire-portal", WorldMapCatalog.CinderTerraces, new WorldPoint(-8f, 0f, 7.4f)),
+                HubPortal("water-portal", WorldMapCatalog.TideglassLagoon, new WorldPoint(8f, 0f, 7.4f)),
+                HubPortal("electric-portal", WorldMapCatalog.StormcoilFields, new WorldPoint(-10.2f, 0f, 12.2f)),
+                HubPortal("ghost-portal", WorldMapCatalog.LanternNecropolis, new WorldPoint(-3.4f, 0f, 12.2f)),
+                HubPortal("ground-portal", WorldMapCatalog.OchreLabyrinth, new WorldPoint(3.4f, 0f, 12.2f)),
+                HubPortal("light-portal", WorldMapCatalog.DawnPrismSanctum, new WorldPoint(10.2f, 0f, 12.2f))
+            };
+            foreach (var portal in portals) AddPortalArch(placements, portal);
+            var spawns = new List<WorldSpawnAnchor>
+            {
+                new WorldSpawnAnchor(HubSpawnId, new WorldPoint(0f, .02f, -8.5f), 0f)
             };
             foreach (var portal in portals)
             {
-                if (portal.Interactable) AddPortalArch(placements, portal);
-                else AddFoundationPlinth(placements, portal);
+                if (!WorldMapCatalog.TryGetByScene(portal.TargetScene, out var map))
+                    throw new InvalidOperationException("Portal does not have a registered destination: " + portal.Id);
+                spawns.Add(new WorldSpawnAnchor(HubReturnId(map),
+                    new WorldPoint(portal.Position.X, .02f, portal.Position.Z - 3.2f), 0f));
             }
 
             AddBoundary(placements, 13.9f);
@@ -156,12 +135,7 @@ namespace Aetheria.World.Domain
                 WorldMapCatalog.CentralPlazaSceneName,
                 new WorldPoint(-13.2f, 0f, -13.2f),
                 new WorldPoint(13.2f, 6f, 13.2f),
-                new[]
-                {
-                    new WorldSpawnAnchor(HubSpawnId, new WorldPoint(0f, .02f, -8.5f), 0f),
-                    new WorldSpawnAnchor(HubFireReturnId, new WorldPoint(-8f, .02f, 4.2f), 0f),
-                    new WorldSpawnAnchor(HubWaterReturnId, new WorldPoint(8f, .02f, 4.2f), 0f)
-                },
+                spawns,
                 HubSpawnId,
                 portals,
                 null,
@@ -173,7 +147,7 @@ namespace Aetheria.World.Domain
             return layout;
         }
 
-        private static WorldLayout BuildArena(WorldMapDefinition map, bool preview)
+        private static WorldLayout BuildArena(WorldMapDefinition map)
         {
             var placements = new List<WorldPropPlacement>();
             var board = new WorldBoardDefinition(
@@ -195,31 +169,26 @@ namespace Aetheria.World.Domain
             Add(placements, "spawn-glyph", "spawn", new WorldPoint(0f, .13f, -8.5f));
 
             var pet = new WorldActorDefinition("pet", "Icarus", new WorldPoint(-5.4f, 0f, .2f), 90f);
-            var enemyLabel = map.Element == WorldMapElement.Water ? "Tide Warden" : "Cinder Guard";
+            var enemyLabel = map.Element switch
+            {
+                WorldMapElement.Fire => "Cinder Guard",
+                WorldMapElement.Water => "Tide Warden",
+                WorldMapElement.Electric => "Stormcoil Warden",
+                WorldMapElement.Ghost => "Lantern Warden",
+                WorldMapElement.Ground => "Ochre Warden",
+                _ => "Prism Warden"
+            };
             var enemy = new WorldActorDefinition("enemy", enemyLabel, new WorldPoint(5.4f, 0f, .2f), -90f);
             AddActor(placements, pet, "actor-pet");
             AddActor(placements, enemy, "actor-enemy");
 
-            string portalMaterial = WorldElementPalette.SharedPortalKey(map.Element);
-            var portals = new List<WorldPortalDefinition>();
-            if (!preview)
-            {
-                var returnAnchor = map.Element == WorldMapElement.Water ? HubWaterReturnId : HubFireReturnId;
-                portals.Add(new WorldPortalDefinition(
-                    "return-gate",
-                    "Return to Central Plaza",
-                    new WorldPoint(0f, 0f, 11.4f),
-                    0f,
-                    map.Element,
-                    true,
-                    WorldMapCatalog.CentralPlazaSceneName,
-                    returnAnchor,
-                    "PLAYABLE HUB LINK",
-                    portalMaterial));
-                foreach (var portal in portals) AddPortalArch(placements, portal);
-            }
+            var returnGate = new WorldPortalDefinition(
+                "return-gate", "Return to Central Plaza", new WorldPoint(0f, 0f, 11.4f), 0f,
+                map.Element, true, WorldMapCatalog.CentralPlazaSceneName, HubReturnId(map),
+                "PLAYABLE HUB LINK", WorldElementPalette.SharedPortalKey(map.Element));
+            AddPortalArch(placements, returnGate);
 
-            var spawnId = map.Element == WorldMapElement.Water ? TideglassEntryId : CinderEntryId;
+            var spawnId = EntryId(map);
             var spawns = new[]
             {
                 new WorldSpawnAnchor(spawnId, new WorldPoint(0f, .02f, -8.5f), 0f)
@@ -255,20 +224,18 @@ namespace Aetheria.World.Domain
                 WorldLayoutKind.Arena,
                 map.Theme,
                 map.Element,
-                preview ? string.Empty : map.SceneName,
+                map.SceneName,
                 new WorldPoint(-13.2f, 0f, -13.2f),
                 new WorldPoint(13.2f, 8f, 13.2f),
                 spawns,
                 spawnId,
-                portals,
+                new[] { returnGate },
                 board,
                 new[] { pet, enemy },
                 new WorldCameraFrame(new WorldPoint(0f, 13f, -17.5f), new WorldPoint(0f, 1f, .5f), 48f),
                 placements,
-                preview
-                    ? "FOUNDATION ONLY / PREVIEW COMPOSITION / NO SCENE"
-                    : "PLAYABLE DEVELOPER ARENA / INTERMEDIATE PRIMITIVE COMPOSITION",
-                preview);
+                "PLAYABLE DEVELOPER ARENA / INTERMEDIATE PRIMITIVE COMPOSITION",
+                false);
             return layout;
         }
 
@@ -399,6 +366,16 @@ namespace Aetheria.World.Domain
             }
             Add(placements, "portal-surface", "environment", new WorldPoint(0f, .82f, 5.28f), 0f, 0f, 0f,
                 .18f, .02f, 7.7f, WorldMaterialKeys.PortalElectric);
+            // Two lanes of embedded conductors lead from the entry into the field.
+            for (var side = -1; side <= 1; side += 2)
+            {
+                Add(placements, "path-slab", "environment", new WorldPoint(side * 2.05f, .025f, -8.5f),
+                    0f, 0f, 0f, 1.3f, .05f, 5.1f);
+                Add(placements, "board-grid", "environment", new WorldPoint(side * 2.05f, .057f, -8.5f),
+                    90f, 0f, 0f, 4.8f, .006f, .10f, WorldMaterialKeys.PortalElectric);
+                Add(placements, "platform", "environment", new WorldPoint(side * 9.1f, .2f, 4.4f),
+                    side * 24f, 0f, 0f, 2.2f, .4f, 2.2f, WorldMaterialKeys.Metal);
+            }
         }
 
         private static void AddGhostDressing(List<WorldPropPlacement> placements)
@@ -416,6 +393,17 @@ namespace Aetheria.World.Domain
                 Add(placements, "dormant-glyph", "environment", new WorldPoint(point.X, 1.1f, point.Z), 0f, 0f, 0f,
                     .3f, 2.2f, .3f, WorldMaterialKeys.PortalGhost, index * .4f);
             }
+            // Low crypts form side aisles while the central approach stays open.
+            for (var side = -1; side <= 1; side += 2)
+            for (var row = 0; row < 3; row++)
+            {
+                var x = side * (8f + (row % 2) * 2f);
+                var z = -8.4f + row * 4.2f;
+                Add(placements, "platform", "environment", new WorldPoint(x, .28f, z), side * 12f,
+                    0f, 0f, 1.5f, .56f, 2.3f, WorldMaterialKeys.StoneDeep);
+                Add(placements, "plinth", "environment", new WorldPoint(x, .68f, z), side * 12f,
+                    0f, 0f, 1.7f, .26f, 2.5f);
+            }
         }
 
         private static void AddGroundDressing(List<WorldPropPlacement> placements)
@@ -424,6 +412,16 @@ namespace Aetheria.World.Domain
             Add(placements, "terrace-step", "environment", new WorldPoint(0f, .6f, 8.1f), 0f, 0f, 0f, 12f, .8f, 2f);
             Add(placements, "terrace-step", "environment", new WorldPoint(-9.6f, .2f, 0f), 90f, 0f, 0f, 10f, .4f, 2.4f);
             Add(placements, "terrace-step", "environment", new WorldPoint(9.6f, .2f, 0f), 90f, 0f, 0f, 10f, .4f, 2.4f);
+            // Offset stone walls give each outer approach a turn without blocking the board or return portal.
+            for (var side = -1; side <= 1; side += 2)
+            {
+                Add(placements, "rail", "environment", new WorldPoint(side * 8.5f, .6f, -7.4f),
+                    0f, 0f, 0f, 4.1f, 1.2f, .65f);
+                Add(placements, "rail", "environment", new WorldPoint(side * 11.1f, .6f, 3.4f),
+                    90f, 0f, 0f, 4.9f, 1.2f, .65f);
+                Add(placements, "rail", "environment", new WorldPoint(side * 8.8f, .6f, 9.3f),
+                    0f, 0f, 0f, 3.2f, 1.2f, .65f);
+            }
             for (var index = 0; index < 4; index++)
             {
                 var point = Polar(7.4f, 45f + index * 90f);
@@ -446,6 +444,17 @@ namespace Aetheria.World.Domain
             }
             Add(placements, "sigil-ring", "environment", new WorldPoint(0f, 5.4f, 0f), 0f, 0f, 0f,
                 6.2f, .02f, 6.2f, WorldMaterialKeys.PortalLight);
+            // A split colonnade frames the sanctuary; the raised prisms are decorative.
+            for (var side = -1; side <= 1; side += 2)
+            for (var row = 0; row < 3; row++)
+            {
+                var x = side * 8.9f;
+                var z = -7.2f + row * 5.7f;
+                Add(placements, "pillar-base", "environment", new WorldPoint(x, .15f, z));
+                Add(placements, "pillar", "environment", new WorldPoint(x, 1.6f, z), 0f, 0f, 0f, .42f, 1.6f, .42f);
+                Add(placements, "sigil-core", "environment", new WorldPoint(x, 3.4f, z),
+                    side * 24f, 35f, 20f, .48f, 1.05f, .48f, WorldMaterialKeys.PortalLight, row * .55f);
+            }
         }
 
         private static void AddAmbientMotes(List<WorldPropPlacement> placements, WorldMapElement element)
@@ -509,31 +518,10 @@ namespace Aetheria.World.Domain
             Add(placements, "portal-glyph", group, glyph, portal.Yaw, 0f, 0f, 0f, 0f, 0f, material);
         }
 
-        private static void AddFoundationPlinth(List<WorldPropPlacement> placements, WorldPortalDefinition portal)
-        {
-            var group = "portal:" + portal.Id;
-            Add(placements, "foundation-plinth", group, new WorldPoint(portal.Position.X, .2f, portal.Position.Z),
-                portal.Yaw, 0f, 0f, 3.6f, .4f, 1.2f);
-            var glyph = Offset(portal.Position, portal.Yaw, 0f, 1.3f, 0f);
-            Add(placements, "dormant-glyph", group, glyph, portal.Yaw);
-            var left = Offset(portal.Position, portal.Yaw, -.8f, .9f, 0f);
-            var right = Offset(portal.Position, portal.Yaw, .8f, .9f, 0f);
-            Add(placements, "arch-segment", group, left, portal.Yaw, 0f, 0f, .18f, 1.4f, .18f);
-            Add(placements, "arch-segment", group, right, portal.Yaw, 0f, 0f, .18f, 1.4f, .18f);
-        }
-
-        private static WorldPortalDefinition FoundationMarker(WorldMapDefinition map, WorldPoint position) =>
-            new WorldPortalDefinition(
-                "foundation-" + map.Id,
-                map.DisplayName + " / foundation only",
-                position,
-                0f,
-                map.Element,
-                false,
-                string.Empty,
-                string.Empty,
-                "FOUNDATION ONLY",
-                string.Empty);
+        private static WorldPortalDefinition HubPortal(string id, WorldMapDefinition map, WorldPoint position) =>
+            new WorldPortalDefinition(id, map.DisplayName + " / " + map.Element + " Arena", position,
+                0f, map.Element, true, map.SceneName, EntryId(map),
+                "PLAYABLE ARENA", WorldElementPalette.SharedPortalKey(map.Element));
 
         private static void Add(
             List<WorldPropPlacement> placements,
