@@ -41,10 +41,11 @@ publishable rights, or deployment permission.
    `STRUCTURAL_PREFLIGHT_PASS_NOT_ART_APPROVAL` proves structure only, never
    likeness, pose quality, ownership, or rights.
 
-## Priority-1 zero-cost reference concepts
+## Reference concept inputs
 
-When a deliberately non-authoritative concept proposal is useful, use the
-authenticated English Tripo Studio Image tab before considering paid generation.
+Use the [Gemini Pro production workflow](../../../specs/media/gemini-production.md) for optional clean plates, pose studies, reference gaps and cinematic keyframes. Preserve the approved H0 identity and each dependent H1–H4 gate.
+
+For the free Tripo alternative, use the authenticated English Tripo Studio Image tab.
 Select the exact model **`GPT Image 2.5`** and use the free image quota only.
 Before each submission, visibly verify the model and that the run has zero paid
 credit cost; use one submitted prompt per generated file so provenance and
