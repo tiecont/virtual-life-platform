@@ -10831,6 +10831,15 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "equippedWaterAcceptance": {
+          "sourceRevision": "07f3c4ec5aa8f1778b411f3f6cb4beafc37f67a9",
+          "buildBase": "745e775a6514f360a65753fd4b504e6d2ce500b5",
+          "packageManifestSha256": "7f20f81fa2cfd6c14e41c69a3414302b767a3c0aa5f097d7a8454a5d66d21d26",
+          "command": "Linux packaged guest UI with three authenticated socket clients, disposable PostgreSQL, API/runtime restart and receipt verification",
+          "exitCode": 0,
+          "result": "The uncommitted input patch in the build matches the recorded source revision. Fire resumed at version 3 with 64 matching tiles and 7 multipliers. Phase two at 27, victory at 29, four receipts of 333 AP, 144 coins, 105 Pet EXP and 7 materials. Plaza equipment and upgrade preceded a four-seat native Water allocation with Lv2 Emberglass Core pinned; equipped Coalwhisk showed 191 HP, unequipped same-level peer 186. Emberglass is the starter Core.",
+          "evidence": "artifacts/integrated-d3/packaged-fire-water-07f3c4ec.json"
+        },
         "packagedAcceptance": {
           "sourceRevision": "ef6cdb8dd18d98cfbb560761b360abf681af266d",
           "pullRequest": 86,
@@ -11140,6 +11149,14 @@
         "VL-184"
       ],
       "implementation": {
+        "firstClearRecruitment": {
+          "sourceRevision": "af9003e73a6a686e766854d157d90cebd680d071",
+          "integratedRevision": "450fcf9e63a510897cc2b874107bcc1c68e455db",
+          "command": "cargo test --locked --offline -p aetheria-pet-arena and disposable PostgreSQL co-op settlement, room, native and recovery tests",
+          "exitCode": 0,
+          "result": "17 database cases passed. On regular-first completion a qualifying cooperative Boss winner receives the first unowned species from the pinned map policy. Legacy bundle digests match. Boss-first completion through a later solo regular encounter requires a durable policy handoff.",
+          "evidence": "tests/integration/coop-settlement.test.ts"
+        },
         "integratedAcceptance": {
           "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
           "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts tests/integration/coop-settlement.test.ts --maxWorkers=1",
@@ -11297,6 +11314,13 @@
       ],
       "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
       "implementation": {
+        "compactHud": {
+          "sourceRevision": "b477cf8cf03e336d470955226c3757e0b56ea381",
+          "command": "Unity -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.CoopNativeHudTests",
+          "exitCode": 0,
+          "result": "2 passed, 0 failed or skipped. At 800×500 the last board row and footer stayed reachable, the committed turn stayed visible while scrolled, and the warning distinguished incoming base damage from actual HP lost.",
+          "evidence": "artifacts/integrated-d3/pinned-turn.xml"
+        },
         "roundHandoffRegression": {
           "sourceRevision": "40953260250a662fc8f3c56cf5b6a368236c5c60",
           "command": "cargo test --workspace --locked",
@@ -11354,6 +11378,13 @@
         "VL-208"
       ],
       "implementation": {
+        "waterTargetComparison": {
+          "sourceRevision": "266c69005fca97008ead82912ede72481b7c771b",
+          "command": "aetheria-game-runtime --compare-coop <candidate> 8 tideglass-lagoon-warden --party <level-60 starter party>",
+          "exitCode": 0,
+          "result": "Four policies used identical seeds 1–8. With Coalwhisk, two Dewskips and Clodkin the coordinated policy reached phase two 4/8 times versus 1/8 under highest-mana Boss targeting. With three Clodkins and a Dewskip, tactical reached phase two 6/8 under historical targeting. All 96 matches ended in defeat. Tactical policies prefer support over elemental attacks against an immune Boss. Neither targeting variant qualifies Water balance.",
+          "evidence": "artifacts/integrated-d3/{late-burst-candidate-water,pressure-water-candidate-water,ground-water}-immunity-study.json"
+        },
         "policyComparison": {
           "sourceRevision": "053c624972cda3fbf957887a9ec4d35ff3da3c43",
           "command": "aetheria-game-runtime --compare-coop <candidate> 25 cinder-terraces-warden --party <level-60 starter party>",
