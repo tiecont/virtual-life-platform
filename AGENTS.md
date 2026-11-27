@@ -77,6 +77,12 @@ one authorized Chrome debugging connection throughout a Gemini browser task.
 If Chrome asks for permission, preserve its consent boundary and continue
 independent production work. Reconcile the existing chat before resubmitting.
 
+## Gemini Pro for visual and audiovisual production
+
+The lead and every sub-agent use the owner's authorized Gemini Pro tab first for image and asset generation. Select **Gemini Neon High**, the owner's requested mode, when the tab offers it. Check the visible mode before submitting and record the provider and mode actually used. Build prompts from Aetheria's gentle anime-fantasy art direction, the asset's canonical identity, its in-game purpose and approved references. Apply this to 3D reference plates, functional gem art, battle backgrounds, character studies, intro and animation storyboards, music and audiovisual inputs supported by the tab.
+
+Reuse the existing authorized browser connection and reconcile outstanding results before submitting again. If the connection or requested mode is unavailable, retain the brief, report the limitation and continue independent work. Obtain owner direction before substituting ImageGen or another generation provider. Keep source artwork, generated references, runtime renders and owner acceptance separately attributable.
+
 ## Gameplay Configuration Authority
 
 PostgreSQL is the single source of truth for supported gameplay configuration

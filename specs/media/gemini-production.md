@@ -1,6 +1,6 @@
 # Gemini Pro production inputs
 
-Use the owner's existing Gemini Pro tab when an Aetheria production task needs an image, storyboard, video or music input. Start with a concrete gap in a named asset or playable scene. Check which creation tools the current account actually offers. Work within the included entitlement. If a tool asks for payment, account changes or renewed authentication, record the missing capability and continue independent local work.
+Select the owner-requested Gemini Neon High mode when it is available in the authorized tab. Verify the visible mode before submitting and record its actual label. If unavailable, preserve the brief and seek owner direction before using another generation provider. Use the owner's existing Gemini Pro tab when an Aetheria production task needs an image, storyboard, video or music input. Start with a concrete gap in a named asset or playable scene. Check which creation tools the current account actually offers. Work within the included entitlement. If a tool asks for payment, account changes or renewed authentication, record the missing capability and continue independent local work.
 
 ## Build a brief from Aetheria
 
