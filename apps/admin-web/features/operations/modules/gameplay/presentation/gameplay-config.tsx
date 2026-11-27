@@ -7,7 +7,7 @@ import {
 } from '@aetheria/contracts';
 import {SkillTrainingEditor} from './skill-training-editor';
 import {initialParty,SimulationParty} from './simulation-party';
-import {bundleDifferences} from './bundle-diff';
+import {bundleDifferences,type BundleDifference} from './bundle-diff';
 
 type Overview=ReturnType<typeof GameplayConfigOverviewSchema.parse>;
 type Version=ReturnType<typeof GameplayConfigVersionViewSchema.parse>;
@@ -111,7 +111,7 @@ function SimulationResults({result}:{result:SimulationResult}){
 // authored bundle; the Rust engine remains the authority that accepts or
 // rejects it, and the digest shown here is the engine's verdict.
 export default function GameplayConfig({request}:{request:Request}){
- const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[comparison,setComparison]=useState<string[]|null>(null);
+ const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[comparison,setComparison]=useState<BundleDifference[]|null>(null);
  const [simPolicy,setSimPolicy]=useState<GameplaySimulationPolicy|'all'>('tactical');
  const [party,setParty]=useState<GameplaySimulationParty|null>(null);
  const [simSeeds,setSimSeeds]=useState(12);
@@ -141,14 +141,14 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  async function open(version:number){
   const value=GameplayConfigVersionViewSchema.parse(await request('gameplay-config-version?ruleset='+RULESET+'&version='+version));
-  setParty(null);setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
+  setComparison(null);setParty(null);setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
  }
  async function refresh(version?:number){await work(async()=>{const current=await loadOverview();await open(version??current.active?.version??current.versions[0]?.version??0);});}
  useEffect(()=>{void work(async()=>{const current=await loadOverview();if(current.active)await open(current.active.version);else if(current.versions[0])await open(current.versions[0].version);});},[]);
  useEffect(()=>()=>simCancellation.current?.abort(),[]);
  function change(path:readonly string[],value:unknown){
   if(!bundle||selected?.state!=='DRAFT')return;
-  const next=write(bundle,path,value);setBundle(next);setJson(JSON.stringify(next,null,2));
+  const next=write(bundle,path,value);setComparison(null);setBundle(next);setJson(JSON.stringify(next,null,2));
  }
  async function createDraft(){
   if(!overview?.active)return;
@@ -220,7 +220,7 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  async function loadAudit(){await work(async()=>{setAudit(GameplayConfigAuditSchema.parse(await request('gameplay-config-audit?ruleset='+RULESET)));});}
  function applyJson(){
-  try{const parsed=JSON.parse(json) as GameplayBundle;if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Bundle must be a JSON object');setBundle(parsed);setMessage('Unsaved JSON applied to the editor. Save the draft to persist.');}
+  try{const parsed=JSON.parse(json) as GameplayBundle;if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Bundle must be a JSON object');setComparison(null);setBundle(parsed);setMessage('Unsaved JSON applied to the editor. Save the draft to persist.');}
   catch(error){setMessage(error instanceof Error?error.message:'Invalid JSON bundle');}
  }
  const editable=selected?.state==='DRAFT',activatable=selected?.state==='VALIDATED';
@@ -232,7 +232,10 @@ export default function GameplayConfig({request}:{request:Request}){
  {message?<p role="status" aria-live="polite">{message}</p>:null}
  <section className="aetheria-card"><h2>Active configuration</h2>{overview?.active?<dl className="metrics"><div><dt>Version</dt><dd>{overview.active.version}</dd></div><div><dt>State</dt><dd>{overview.active.state}</dd></div><div><dt>Engine</dt><dd>{overview.active.engineCapability}</dd></div><div><dt>Digest</dt><dd title={overview.active.contentDigest}>{overview.active.contentDigest.slice(0,16)}…</dd></div><div><dt>Published</dt><dd>{new Date(overview.active.publishedAt).toLocaleString()}</dd></div><div><dt>Active revision</dt><dd>{overview.active.revision}</dd></div></dl>:<p className="muted">No published gameplay configuration. Install the seed configuration through the reviewed migration/installation workflow before editing.</p>}</section>
  <section className="aetheria-card"><h2>Versions</h2><div className="audit"><table><caption>Draft and published gameplay configurations</caption><thead><tr><th>Version</th><th>State</th><th>Engine digest</th><th>Updated</th><th/></tr></thead><tbody>{(overview?.versions??[]).map(row=><tr key={row.version}><td>{row.version}</td><td>{row.state}</td><td>{row.contentDigest?row.contentDigest.slice(0,12)+'…':'—'}</td><td>{new Date(row.createdAt).toLocaleString()}</td><td><button type="button" className="text-button" disabled={busy} onClick={()=>void work(()=>open(row.version))}>Open</button>{row.publishedAt&&row.version!==overview?.active?.version?<button type="button" className="text-button" disabled={busy} onClick={()=>void rollback(row.version)}>Roll back</button>:null}</td></tr>)}</tbody></table>{!overview?.versions.length?<p className="muted">No versions yet.</p>:null}</div></section>
- {selected?<section className="aetheria-card"><h2>Version {selected.version} · {selected.state}</h2><p className="small muted">Author {selected.createdBy} · revision {selected.revision}{selected.contentDigest?' · engine digest '+selected.contentDigest:''}</p><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('save')}>Save draft</button><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('validate')}>Save and validate</button><button type="button" className="aetheria-button" disabled={busy||!activatable} onClick={()=>void publish()}>Publish validated version</button><button type="button" className="aetheria-button secondary" disabled={busy||!overview?.active} onClick={()=>void compareWithActive()}>Compare with active</button></p>{comparison?<div className="aetheria-card"><h3>Differences from active</h3>{comparison.length?<ul>{comparison.slice(0,40).map(path=><li key={path}><code>{path}</code></li>)}</ul>:<p className="muted">The selected bundle matches the active version.</p>}{comparison.length>40?<p className="small muted">Plus {comparison.length-40} more fields.</p>:null}</div>:null}
+ {selected?<section className="aetheria-card"><h2>Version {selected.version} · {selected.state}</h2><p className="small muted">Author {selected.createdBy} · revision {selected.revision}{selected.contentDigest?' · engine digest '+selected.contentDigest:''}</p><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('save')}>Save draft</button><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('validate')}>Save and validate</button><button type="button" className="aetheria-button" disabled={busy||!activatable} onClick={()=>void publish()}>Publish validated version</button><button type="button" className="aetheria-button secondary" disabled={busy||!overview?.active} onClick={()=>void compareWithActive()}>Compare with active</button></p>{comparison?<div className="aetheria-card"><h3>Differences from active</h3>{comparison.length?<div className="audit"><table><thead><tr><th>Field</th><th>Active</th><th>Selected</th></tr></thead>
+ <tbody>{comparison.map(({path,before,after})=><tr key={path}><th scope="row">{path}</th>
+ <td><code>{JSON.stringify(before)??'Absent'}</code></td><td><code>{JSON.stringify(after)??'Absent'}</code></td></tr>)}</tbody>
+ </table></div>:<p className="muted">The selected bundle matches the active version.</p>}</div>:null}
  <h3>Engine simulation</h3>
  <p className="small muted">Uses the saved version and the same Rust reducer as live matches. Seeds start at 1, and the simulation clock advances one second per action.</p>
  <SimulationParty bundle={selected.bundle} party={party??initialParty(selected.bundle)} onChange={setParty}/>

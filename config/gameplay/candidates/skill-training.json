@@ -1,0 +1,19 @@
+{
+  "baseSha256": "483c0bcaaaca12ad02225e179dee4b8e38b3f25715b300ee240add3f9cdd0b4e",
+  "contentRevision": 13,
+  "policies": {
+    "skill/damage": [{"materials": 2, "powerPm": 1100}, {"materials": 4, "powerPm": 1200}],
+    "signature/damage": [{"materials": 3, "powerPm": 1100}, {"materials": 5, "powerPm": 1200}],
+    "signature/chain-damage": [{"materials": 3, "powerPm": 550}, {"materials": 5, "powerPm": 600}],
+    "signature/heal": [{"materials": 2, "powerPm": 1100}, {"materials": 4, "powerPm": 1200}],
+    "signature/shield": [{"materials": 2, "powerPm": 1100}, {"materials": 4, "powerPm": 1200}],
+    "signature/debuff": [{"materials": 3, "powerPm": 1100}, {"materials": 5, "powerPm": 1200}],
+    "signature/curse": [{"materials": 3, "powerPm": 1100}, {"materials": 5, "powerPm": 1200}],
+    "signature/rage-transfer": [{"materials": 2, "powerPm": 1120}, {"materials": 4, "powerPm": 1240}],
+    "signature/mana-restore": [{"materials": 2, "powerPm": 1120}, {"materials": 4, "powerPm": 1240}],
+    "signature/cleanse": null,
+    "ultimate/damage": [{"materials": 4, "powerPm": 1080}, {"materials": 6, "powerPm": 1160}],
+    "guard/buff": null,
+    "fire-zone/damage-over-time": [{"materials": 4, "powerPm": 1080}, {"materials": 6, "powerPm": 1160}]
+  }
+}

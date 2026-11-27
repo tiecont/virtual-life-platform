@@ -29,7 +29,7 @@ export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBun
  const last=rows.at(-1)?.powerPm??Number(skill.powerPm);
  const materials=Number(materialInput),powerPm=Number(powerInput);
  const valid=Number.isInteger(materials)&&materials>=1&&materials<=1000000&&Number.isInteger(powerPm)&&powerPm>last&&powerPm<=10000;
- function save(next:Row[]){change(['skills',String(index),'upgradeLevels'],next.length?next:undefined);}
+ function save(next:Row[]){change(['skills',String(index),'upgradeLevels'],next.length?next:null);}
  function clearInput(){setMaterials('');setPower('');}
  return <details><summary>Skill training costs and levels</summary>
   <label>Training Pet<select aria-label="Training Pet" value={String(pet.id)} onChange={e=>{setPet(e.target.value);setSkill('');clearInput();}}>{pets.map(p=><option key={String(p.id)}>{String(p.id)}</option>)}</select></label>

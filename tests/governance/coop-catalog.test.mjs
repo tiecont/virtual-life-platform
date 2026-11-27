@@ -23,3 +23,24 @@ test('the cooperative seed carries the exact active canonical identities and met
   assert.deepEqual(entry.catalog,{name:pet.name,mapId:pet.mapId},pet.id);
  }
 });
+
+test('training candidate explicitly covers each owned ability and retains the starter paths',async()=>{
+ const {execFileSync}=await import('node:child_process');
+ const script=new URL('../../scripts/skill-training-candidate.mjs',import.meta.url);
+ const {fileURLToPath}=await import('node:url');
+ const bundle=JSON.parse(execFileSync(process.execPath,[fileURLToPath(script)],{encoding:'utf8'}));
+ const seed=await readJson('../../config/gameplay/arena8-coop-v2.seed.json');
+ const byId=new Map(bundle.skills.map(skill=>[skill.id,skill]));
+ assert.equal(byId.size,221);
+ for(const pet of seed.pets){
+  for(const id of [pet.guard,pet.skill,pet.signature,pet.ultimate,pet.fireZone].filter(Boolean)){
+   const skill=byId.get(id);
+   assert.ok(Object.hasOwn(skill,'upgradeLevels'),id);
+   if(skill.kind==='guard'||skill.effect.kind==='cleanse')assert.equal(skill.upgradeLevels,null,id);
+   else assert.equal(skill.upgradeLevels.length,2,id);
+  }
+ }
+ for(const skill of seed.skills.filter(skill=>skill.upgradeLevels)){
+  assert.deepEqual(byId.get(skill.id).upgradeLevels,skill.upgradeLevels,skill.id);
+ }
+});
