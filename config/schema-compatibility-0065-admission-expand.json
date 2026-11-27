@@ -6,7 +6,7 @@
   "metadataVersion": 1,
   "runtimeManifestSha256": "ee85fe18b3b9d81516d2ed58ae3ff430957f0564bbeb8114970651a1bf8349e7",
   "minimumDatabaseMigrations": 48,
-  "maximumDatabaseMigrations": 65,
+  "maximumDatabaseMigrations": 66,
   "reviewRef": "evidence:vl206-coop-recruitment-0065",
   "migrations": [
     {
@@ -250,12 +250,16 @@
       "checksum": "d72b39f6be41bf226d4f027d13e25a89432252a5c53f8bb79976ee6dea7146ea"
     },
     {
+      "name": "0061_coop_owned_instance_identity.sql",
+      "checksum": "ede1e96121ce318a6256fd578a6f1347368f0dbd56d24c361e5286d79757437a"
+    },
+    {
       "name": "0061_coop_settlement.sql",
       "checksum": "36247d3810e680bc5582dbe60f98aa3aaa35098bd18c46989ed08102aec443b6"
     },
     {
       "name": "0062_pet_owned_instance_identity.sql",
-      "checksum": "cc4905ff83767a6b36c4b0e943d778d13059c08220c18067b63618884e0a1db5"
+      "checksum": "78cdf958b3c3a60e1fdefdf0a7527307e20874acff1e8bba6f3ad4b1f4eb1365"
     },
     {
       "name": "0063_coop_encounter_receipts.sql",
