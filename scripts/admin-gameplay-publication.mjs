@@ -298,6 +298,10 @@ try{
   boss.requiredRoomPoints=fields.points;
   boss.rewardPolicy.defeat.materials=fields.materials;
   if(fields.priority)boss.attackModel.targetPriority=fields.priority;
+  if(solo&&label==='B'){
+   // The progression fixture needs a reachable win with two real Boss phases.
+   Object.assign(boss.solo,{maxHp:16,maxRounds:30,baseDamage:1,perRoundDamage:0,minimumDamage:1});
+  }
   if(functional)bundle.board.functionalTiles.manaPerTile=fields.manaYield;
   const {version,revision}=await operatorPost('draft',{parentVersion:active.version,bundle});
   const validated=await operatorPost('validate',{version,expectedRevision:revision});
@@ -766,23 +770,27 @@ try{
   const waterInput={...input,requestId:randomUUID(),mapId:'tideglass-lagoon',encounterId:'tideglass-lagoon-regular'};
   const locked=await post(host,'/v1/pets/wave-a/arena8/native/allocate',waterInput);
   assert.equal(locked.statusCode,403);
-  for(const firstClear of [true,false]){
-   const regularId='cinder-terraces-regular';
-   const regularInput={...input,requestId:randomUUID(),encounterId:regularId};
-   const admitted=await soloAdmission(regularInput);
-   const regular={input:regularInput,row:{match_id:admitted.matchId,content_hash:admitted.contentHash},version:B};
-   connections.push(regular);
-   let view=await native(regular,0,0,{kind:'start'});
+  async function winFireEncounter(encounterId){
+   const request={...input,requestId:randomUUID(),encounterId};
+   const admitted=await soloAdmission(request);
+   const match={input:request,row:{match_id:admitted.matchId,content_hash:admitted.contentHash},version:B};
+   connections.push(match);
+   let view=await native(match,0,0,{kind:'start'});
    assert.equal(view.committed,true,JSON.stringify(view));
-   assert.equal(view.state.bossId,regularId);
    assert.equal(view.state.ruleset.configDigest,B.digest);
    while(view.state.phase==='playing'){
-    assert.ok(view.version<20,'Regular fixture did not generate a Sword match');
+    assert.ok(view.version<32,'Fire fixture did not finish within its published turn budget');
     const action=pureSwap(view.state.board,'sword')?.action??legalSwap(view.state.board);
-    view=await native(regular,0,view.version,action);
+    view=await native(match,0,view.version,action);
     assert.equal(view.committed,true,JSON.stringify(view));
    }
    assert.equal(view.state.phase,'won');
+   return {admitted,view};
+  }
+  for(const firstClear of [true,false]){
+   const regularId='cinder-terraces-regular';
+   const {admitted,view}=await winFireEncounter(regularId);
+   assert.equal(view.state.bossId,regularId);
    const expected=B.bundle.bosses[0].regular.rewardPolicy[firstClear?'firstClear':'repeatClear'];
    const settlementUrl='/v1/pets/wave-a/arena8/native/matches/'+admitted.matchId+'/settle';
    const previousCoins=Number((await pool.query('SELECT coins FROM pet_wave_one_players WHERE account_id=$1',[host.accountId])).rows[0].coins);
@@ -799,10 +807,27 @@ try{
    const proposal=(await pool.query('SELECT proposal FROM game_native_settlements WHERE match_id=$1',[admitted.matchId])).rows[0].proposal;
    assert.equal(proposal.encounterId,regularId);
    assert.equal(proposal.configDigest,B.digest);
+   const stillLocked=await post(host,'/v1/pets/wave-a/arena8/native/allocate',{...waterInput,requestId:randomUUID()});
+   assert.equal(stillLocked.statusCode,403,JSON.stringify(stillLocked.json()));
    mark('functional solo regular win settled the exact encounter once',
     {encounterId:proposal.encounterId,configDigest:proposal.configDigest,canonicalVersion:view.version,
-     firstClear,coins:value.coins,exp:value.exp,nextMapLockedStatus:locked.statusCode});
+     firstClear,coins:value.coins,exp:value.exp,nextMapLockedStatus:stillLocked.statusCode});
   }
+  const {admitted:bossAdmission,view:won}=await winFireEncounter(input.encounterId);
+  const bossWin=await post(host,'/v1/pets/wave-a/arena8/native/matches/'+bossAdmission.matchId+'/settle',{requestId:randomUUID()});
+  assert.equal(bossWin.statusCode,200,JSON.stringify(bossWin.json()));
+  assert.equal(bossWin.json().won,true);
+  assert.equal(bossWin.json().firstClear,true);
+  const waterRequest={...waterInput,requestId:randomUUID()};
+  const water=await soloAdmission(waterRequest);
+  const waterMatch={input:waterRequest,row:{match_id:water.matchId,content_hash:water.contentHash},version:B};
+  connections.push(waterMatch);
+  const waterStart=await native(waterMatch,0,0,{kind:'start'});
+  assert.equal(waterStart.committed,true,JSON.stringify(waterStart));
+  assert.equal(waterStart.state.bossId,waterRequest.encounterId);
+  assert.equal(waterStart.state.ruleset.configDigest,B.digest);
+  mark('Fire regular and Boss victories unlocked an authenticated Water start through settlement',
+   {fireBossVersion:won.version,waterEncounter:waterStart.state.bossId,waterVersion:waterStart.version,configDigest:B.digest});
  }else{
  const first=await allocate(A,await prepareRoom(A,await checkGate(host,5250,A,true)));
  let firstStarted=await launch(first);
