@@ -40,7 +40,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0 # Historical evidence objects must survive current-tree cleanup.
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@v5 # v4
         with:
           version: 11.28.5
       - uses: actions/setup-node@v5 # v4
@@ -127,7 +127,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@v5 # v4
         with:
           version: 11.28.5
       - uses: actions/setup-node@v5 # v4
@@ -184,7 +184,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@v5 # v4
         with:
           version: 11.28.5
       - uses: actions/setup-node@v5 # v4
@@ -245,7 +245,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+      - uses: pnpm/action-setup@v5
         with:
           version: 11.28.5
       - uses: actions/setup-node@v5
