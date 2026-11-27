@@ -1593,7 +1593,8 @@ fn functional_swaps_replay_and_mixed_snapshots_fail_closed() {
 #[test]
 fn regular_profile_requires_bounded_authored_policy_and_binds_payouts() {
     let source: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
-    let parse = |bundle| CoopConfig::parse(&serde_json::to_vec(bundle).unwrap());
+    let parse =
+        |bundle: &serde_json::Value| CoopConfig::parse(&serde_json::to_vec(bundle).unwrap());
     let valid = parse(&source).unwrap();
     for (field, value) in [
         ("id", serde_json::json!("tideglass-lagoon-regular")),
