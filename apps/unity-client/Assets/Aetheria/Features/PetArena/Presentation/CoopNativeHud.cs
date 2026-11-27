@@ -105,7 +105,7 @@ namespace Aetheria.PetArena.Presentation
             finally { reading = false; }
         }
 
-        private void Refresh()
+        internal void Refresh()
         {
             var view = session?.State?.Coop;
             if (view == null) return;

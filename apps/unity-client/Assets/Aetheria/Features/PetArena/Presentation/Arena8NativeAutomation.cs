@@ -202,11 +202,17 @@ namespace Aetheria.PetArena.Presentation
             var encounter = map + (NativeArgument("-aetheria-arena8-functional-regular") ? "-regular" : "-boss");
             if (!UsesFunctionalBoard)
                 throw new InvalidOperationException("Enable the functional native campaign for this capture.");
-            await AllocateMatch(map, encounter);
+            var token = lifetime.Token;
+            await AllocateFunctional(map, encounter, automated: true);
             await CaptureNative("functional-solo-01-admitted.png");
 
-            var started = (await functionalSession.StartAsync(lifetime.Token)).Coop;
+            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
+            await functionalSession.StartAsync(token);
+            functionalHud.Refresh();
             await CaptureNative("functional-solo-02-playing.png");
+
+            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
+            var started = functionalSession.State.Coop;
             if (started.Board.Any(tile => tile?.Kind == null))
                 throw new InvalidOperationException("Expected a full committed functional board.");
             var identities = started.Board.Select(tile => tile.Kind).Distinct().ToList();
@@ -214,9 +220,10 @@ namespace Aetheria.PetArena.Presentation
             var moves = FindNativeSwaps(board);
             if (moves.Count == 0) throw new InvalidOperationException("No legal swap on the committed board.");
             var move = moves[0];
-            var swapped = (await functionalSession.SwapAsync(move.first, move.second, lifetime.Token)).Coop;
+            var swapped = (await functionalSession.SwapAsync(move.first, move.second, token)).Coop;
             if (swapped.Version <= started.Version)
                 throw new InvalidOperationException("The native swap did not advance the committed version.");
+            functionalHud.Refresh();
             await CaptureNative("functional-solo-03-committed-swap.png");
 
             nativeFacts.status = "ok";

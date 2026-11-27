@@ -15,7 +15,7 @@ namespace Aetheria.PetArena.Presentation
         private bool UsesFunctionalBoard =>
             nativeMode && Environment.GetEnvironmentVariable(FunctionalBoardVariable) == "1";
 
-        private async Task AllocateFunctional(string map, string encounter)
+        private async Task AllocateFunctional(string map, string encounter, bool automated = false)
         {
             if (api == null || state?.FindPet(selectedPet) == null)
                 throw new InvalidOperationException("Choose an owned Pet first.");
@@ -42,6 +42,8 @@ namespace Aetheria.PetArena.Presentation
                 matchId = admission.MatchIdText;
                 var document = GetComponent<UIDocument>();
                 functionalHud = gameObject.AddComponent<CoopNativeHud>();
+                // Capture drives the same admitted session and renders each receipt explicitly.
+                functionalHud.enabled = !automated;
                 functionalHud.Attach(document);
                 stage?.PresentFixedNativeBattle(map);
                 functionalHud.Bind(session, ReturnFromFunctionalBattle, "Return to roster", requireSettlement: true);
