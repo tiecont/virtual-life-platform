@@ -178,7 +178,9 @@ export class Arena8Service {
           WHERE match_id=$1 AND settlement_id=$2 AND effect_type='game.settlement.v1' AND delivered_at IS NULL`,[matchId,settlementId]);
         const finalized=await client.query(`UPDATE game_native_matches SET status='FINISHED',updated_at=clock_timestamp()
           WHERE id=$1 AND status='SETTLING' AND state_version=$2`,[matchId,stateVersion]);
-        if(outbox.rowCount!==1||finalized.rowCount!==1)throw conflict('Functional solo settlement changed');
+        const released=await client.query(`UPDATE platform_native_arena8_matches SET status='CLOSED',updated_at=clock_timestamp()
+          WHERE match_id=$1 AND account_id=$2 AND functional_config_version IS NOT NULL AND status='ACTIVE'`,[matchId,accountId]);
+        if(outbox.rowCount!==1||finalized.rowCount!==1||released.rowCount!==1)throw conflict('Functional solo settlement changed');
       }else if(won){
         const reward=firstClear?firstClearReward(mapIndex):replayReward(mapIndex);
         exp=reward.exp;coins=reward.coins;
