@@ -265,7 +265,8 @@ try{
  async function publish(label){
   const fields=variants[label];
   const created=await clickMutation('New draft from active','draft');
-  await expect(page.getByRole('heading',{name:'Version '+created.version+' · DRAFT',exact:true})).toBeVisible();
+  await expect(page.locator('h2').filter({hasText:new RegExp('^Version '+created.version+'\\s*·\\s*DRAFT$')})).toBeVisible();
+  await expect(button('Save and validate')).toBeEnabled();
   await expect(button('Publish validated version')).toBeDisabled();
   const bossOption='Cinder Terraces Warden · cinder-terraces';
   await page.getByRole('combobox',{name:'Boss',exact:true}).selectOption({label:bossOption});
@@ -302,7 +303,7 @@ try{
   await page.screenshot({path:join(artifact,'browser-'+label.toLowerCase()+'-priority.png'),timeout:10000});
   const verdict=await clickMutation('Save and validate','validate');
   await expect(priority()).toHaveValue(fields.priority);
-  await expect(page.getByRole('heading',{name:'Version '+created.version+' · VALIDATED',exact:true})).toBeVisible();
+  await expect(page.locator('h2').filter({hasText:new RegExp('^Version '+created.version+'\\s*·\\s*VALIDATED$')})).toBeVisible();
   await expect(page.getByText('Engine validated:',{exact:false})).toBeVisible();
   if(label==='B'){
    const requests=[];
@@ -729,6 +730,7 @@ try{
  facts.failure={name:error.name,message:String(error.message).slice(0,1200)};
  facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,5);
  process.exitCode=1;
+ if(page)facts.headings=await page.locator('h1,h2,h3').allTextContents().catch(()=>[]);
  if(page)await page.screenshot({path:join(artifact,'browser-failure.png')}).catch(()=>{});
 }finally{
  for(const match of connections)for(const connection of match.connections?.values()??[])connection.ws.terminate();
