@@ -1,4 +1,8 @@
+using System;
+using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.Profiling;
+using Debug = UnityEngine.Debug;
 
 namespace Aetheria.World.Presentation
 {
@@ -7,6 +11,9 @@ namespace Aetheria.World.Presentation
     [RequireComponent(typeof(Camera))]
     public sealed class FixedBattleCamera : MonoBehaviour
     {
+        private static readonly bool ProfileBackdrop = Debug.isDebugBuild &&
+            Array.IndexOf(Environment.GetCommandLineArgs(), "-aetheria-profile-battle-backdrop") >= 0;
+
         private Camera view;
         private Transform pet, enemy, backdrop;
         private Vector3 petAnchor, enemyAnchor;
@@ -39,14 +46,24 @@ namespace Aetheria.World.Presentation
             view.clearFlags = CameraClearFlags.SolidColor;
             view.backgroundColor = new Color(.09f, .07f, .13f);
 
-            var asset = Resources.Load<Sprite>("BattleBackdrops/" + mapId);
-            if (asset == null)
+            var resourcePath = "BattleBackdrops/" + mapId;
+            var loadStarted = ProfileBackdrop ? Stopwatch.GetTimestamp() : 0;
+            var asset = Resources.Load<Sprite>(resourcePath);
+            var texture = asset == null ? Resources.Load<Texture2D>(resourcePath) : null;
+            if (ProfileBackdrop)
             {
-                var texture = Resources.Load<Texture2D>("BattleBackdrops/" + mapId);
-                if (texture != null)
-                    backdropSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                        new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
+                var requestMs = (Stopwatch.GetTimestamp() - loadStarted) * 1000d / Stopwatch.Frequency;
+                var measuredTexture = asset != null ? asset.texture : texture;
+                var textureDetails = measuredTexture == null
+                    ? "found=false"
+                    : $"found=true dimensions={measuredTexture.width}x{measuredTexture.height} format={measuredTexture.format} " +
+                      $"mips={measuredTexture.mipmapCount} unityRuntimeBytes={Profiler.GetRuntimeMemorySizeLong(measuredTexture)}";
+                Debug.Log(FormattableString.Invariant(
+                    $"[Aetheria Battle Backdrop] map={mapId} requestMs={requestMs:F3} {textureDetails}"));
             }
+            if (asset == null && texture != null)
+                backdropSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
             if (asset != null || backdropSprite != null)
             {
                 var plate = new GameObject("Battle backdrop");
