@@ -1,6 +1,8 @@
 import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {CoopEncounterCatalogSchema} from '@aetheria/contracts';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -59,12 +61,13 @@ async function deleteAccount(owner:Account,requestId=randomUUID()){
 type FixtureBinding={version:number;digest:string;contentHash:string};
 async function fixture(
  accounts:Account[],outcome:'won'|'lost',binding:FixtureBinding={version:1,digest,contentHash},participatingSeats:readonly number[]=[],
+ encounter={bossId:baseBundle.boss.id,requiredPoints:baseBundle.boss.requiredRoomPoints},
 ){
  const roomId=randomUUID(),matchId=randomUUID(),bootId=randomUUID(),worldId='native:coop-'+matchId;
  const settlementId=randomUUID();
  const actions=[accounts[0]!,...participatingSeats.map(seat=>accounts[seat]!)];
  const stateVersion=actions.length;
- await pool.query("INSERT INTO coop_rooms(id,ruleset,boss_id,host_account_id,config_version,config_digest,required_points,status,revision) VALUES($1,'arena8-coop-pve','cinder-terraces-warden',$2,$3,$4,5000,'OPEN',3)",[roomId,accounts[0]!.accountId,binding.version,binding.digest]);
+ await pool.query("INSERT INTO coop_rooms(id,ruleset,boss_id,host_account_id,config_version,config_digest,required_points,status,revision) VALUES($1,'arena8-coop-pve',$2,$3,$4,$5,$6,'OPEN',3)",[roomId,encounter.bossId,accounts[0]!.accountId,binding.version,binding.digest,encounter.requiredPoints]);
  for(const [index,account] of accounts.entries())
   await pool.query('INSERT INTO coop_room_seats(room_id,seat,account_id,pet_id,pet_level,ready) VALUES($1,$2,$3,$4,1,true)',[roomId,index,account.accountId,account.petId]);
  await pool.query("UPDATE coop_rooms SET status='LOCKED',revision=revision+1 WHERE id=$1",[roomId]);
@@ -87,12 +90,14 @@ async function fixture(
  return {roomId,matchId,settlementId};
 }
 
-async function regularWin(account:Account){
+// Fixture the terminal Rust journal. The native settlement route
+// verifies it and writes the rewards, encounter and campaign state.
+async function regularWin(account:Account,mapId='cinder-terraces'){
  const matchId=randomUUID(),worldId='native:arena8-'+matchId,bootId=randomUUID();
  await pool.query(
   `INSERT INTO platform_native_arena8_matches(match_id,account_id,request_id,fingerprint,world_id,boot_id,content_hash,pet_id,map_id,encounter_id,level,artifacts,status)
-   VALUES($1,$2,$3,$4,$5,$6,$4,$7,'cinder-terraces','cinder-terraces-regular',1,'[]','CLOSED')`,
-  [matchId,account.accountId,randomUUID(),contentHash,worldId,bootId,account.petId],
+   VALUES($1,$2,$3,$4,$5,$6,$4,$7,$8,$9,1,'[]','CLOSED')`,
+  [matchId,account.accountId,randomUUID(),contentHash,worldId,bootId,account.petId,mapId,mapId+'-regular'],
  );
  await pool.query(
   `INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,protocol_version,
@@ -118,17 +123,24 @@ async function regularWin(account:Account){
  });
 }
 
-async function publishRecruitment(recruitmentPetIds:string[]):Promise<FixtureBinding>{
- const store=new GameplayConfigStore(),tx=await pool.connect(),actor='system:test-installation';
- const bundle={
-  schemaVersion:2,rewards:baseBundle.rewards,
-  bosses:[{...baseBundle.boss,mapId:'cinder-terraces',rewardPolicy:{
-   recruitmentPetIds,minimumActions:{victory:1,defeat:0},
-   firstClear:{achievementPoints:250,coins:120,exp:90,materials:5},
-   repeatClear:{achievementPoints:250,coins:120,exp:90,materials:1},
-   defeat:{achievementPoints:25,coins:0,exp:0,materials:0},
-  }}],
+function fixtureRewardPolicy(recruitmentPetIds:readonly string[]){
+ return {
+  recruitmentPetIds,minimumActions:{victory:1,defeat:0},
+  firstClear:{achievementPoints:250,coins:120,exp:90,materials:5},
+  repeatClear:{achievementPoints:250,coins:120,exp:90,materials:1},
+  defeat:{achievementPoints:25,coins:0,exp:0,materials:0},
  };
+}
+
+function publishRecruitment(recruitmentPetIds:string[]){
+ return publishSettlementFixture([{
+  ...baseBundle.boss,mapId:'cinder-terraces',rewardPolicy:fixtureRewardPolicy(recruitmentPetIds),
+ }]);
+}
+
+async function publishSettlementFixture(bosses:readonly Record<string,unknown>[]):Promise<FixtureBinding>{
+ const store=new GameplayConfigStore(),tx=await pool.connect(),actor='system:test-installation';
+ const bundle={schemaVersion:2,rewards:baseBundle.rewards,bosses};
  // Match-terminal fixtures isolate Nest settlement; engine tests validate real bundles.
  const digest=canonicalProposalHash(bundle).toString('hex');
  const contentHash=canonicalProposalHash({digest}).toString('hex');
@@ -351,5 +363,86 @@ describe('cooperative settlement',()=>{
   for(const row of rewards)expect(row).toMatchObject({achievement_points:25,coins:0,exp:0});
   const pet=(await pool.query('SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',[accounts[0]!.accountId,accounts[0]!.petId])).rows[0];
   expect(pet).toEqual({level:1,exp:0});
+ });
+ it('persists six paired campaign clears, recruits and hosting unlocks through terminal settlement',async()=>{
+  const readJson=(path:string)=>JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8'));
+  const prerequisites=readJson('../fixtures/coop-campaign-prerequisites.json') as Record<string,string|null>;
+  const {maps}=readJson('../../specs/pet-arena/mvp-wave1-43-pets.json') as {
+   maps:{id:string;name:string;regularPetIds:string[]}[];
+  };
+  expect(maps).toHaveLength(6);
+  expect(Object.keys(prerequisites)).toEqual(maps.map(map=>map.id));
+  const bosses=maps.map(map=>({
+   ...baseBundle.boss,id:map.id+'-warden',name:map.name+' Warden',mapId:map.id,
+   ...(prerequisites[map.id]?{requiredMapClear:prerequisites[map.id]}:{}),
+   // A zero fixture threshold isolates prerequisite behavior from achievement progression.
+   requiredRoomPoints:0,rewardPolicy:fixtureRewardPolicy(map.regularPetIds.slice(0,2)),
+  }));
+  const binding=await publishSettlementFixture(bosses);
+  const accounts=await Promise.all(['pet-v3-fire-icarus','fire-coalwhisk','water-dewskip','ground-clodkin']
+   .map((pet,index)=>guest('Campaign seat '+index,pet)));
+  const host=accounts[0]!;
+  const readCatalog=async()=>{
+   const response=await server.http.inject({url:'/v1/coop/encounters',headers:{cookie:host.cookie}});
+   expect(response.statusCode,response.body).toBe(200);
+   return CoopEncounterCatalogSchema.parse(response.json());
+  };
+  const readState=async()=>{
+   const response=await server.http.inject({url:'/v1/pets/wave1/state',headers:{cookie:host.cookie}});
+   expect(response.statusCode,response.body).toBe(200);
+   return response.json();
+  };
+  for(const [index,map] of maps.entries()){
+   const boss=bosses[index]!;
+   const before=await readCatalog();
+   expect(before.configVersion).toBe(binding.version);
+   expect(before.encounters.filter(encounter=>encounter.eligible).map(encounter=>encounter.mapId))
+    .toEqual(maps.slice(0,index+1).map(entry=>entry.id));
+
+   const regularSettle=await regularWin(host,map.id);
+   const settleRegular=async()=>{
+    const response=await regularSettle();
+    expect(response.statusCode,response.body).toBe(200);
+    const receipt=response.json();
+    expect(receipt).toMatchObject({won:true,firstClear:true});
+    return receipt;
+   };
+   const settleBoss=async()=>{
+    const terminal=await fixture(accounts,'won',binding,[0,1,2,3],{
+     bossId:boss.id,requiredPoints:boss.requiredRoomPoints,
+    });
+    await new CoopSettlement(pool).drain();
+    const receipt=await server.http.inject({url:'/v1/coop/rooms/'+terminal.roomId+'/reward',headers:{cookie:host.cookie}});
+    expect(receipt.statusCode,receipt.body).toBe(200);
+    expect(receipt.json()).toMatchObject({matchId:terminal.matchId,outcome:'won',firstClear:true,materials:5});
+    await pool.query("UPDATE coop_rooms SET status='CLOSED',revision=revision+1 WHERE id=$1",[terminal.roomId]);
+   };
+
+   // Alternate the order across maps. Completing only one encounter must not
+   // advance either the campaign state or the cooperative hosting catalog.
+   const regularFirst=index%2===0;
+   if(regularFirst)await settleRegular();
+   else await settleBoss();
+   expect((await readState()).campaign.nextMapId).toBe(map.id);
+   expect((await readCatalog()).encounters.map(encounter=>encounter.eligible))
+    .toEqual(before.encounters.map(encounter=>encounter.eligible));
+
+   if(regularFirst)await settleBoss();
+   else await settleRegular();
+   const state=await readState();
+   expect(state.campaign).toEqual({
+    clearedMaps:maps.slice(0,index+1).map(entry=>entry.id),nextMapId:maps[index+1]?.id??null,
+   });
+   for(const petId of boss.rewardPolicy.recruitmentPetIds){
+    expect(state.pets.filter((pet:{petId:string})=>pet.petId===petId)).toEqual([
+     expect.objectContaining({petId,ownedPetInstanceId:expect.stringMatching(/^[a-f0-9-]{36}$/i),level:1}),
+    ]);
+   }
+   const updated=await readCatalog();
+   expect(updated.encounters.filter(encounter=>encounter.eligible).map(encounter=>encounter.mapId))
+    .toEqual(maps.slice(0,index+2).map(entry=>entry.id));
+   const next=updated.encounters[index+1];
+   if(next)expect(next.prerequisite).toMatchObject({mapId:map.id,cleared:true});
+  }
  });
 });
