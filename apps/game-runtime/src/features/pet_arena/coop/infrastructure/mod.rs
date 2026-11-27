@@ -1,25 +1,13 @@
 //! Durable-state codec, membership and committed projection for `arena8-coop-pve`.
 use super::domain::Rules;
 use aetheria_persistence::{Completion, Error, Game};
-use aetheria_pet_arena::arena8::Element;
-use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind, Tile};
+use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Snapshot {
     state: CoopState,
-}
-
-fn element_name(element: Element) -> &'static str {
-    match element {
-        Element::Fire => "fire",
-        Element::Water => "water",
-        Element::Electric => "electric",
-        Element::Ghost => "ghost",
-        Element::Ground => "ground",
-        Element::Light => "light",
-    }
 }
 
 fn phase_name(phase: CoopPhase) -> &'static str {
@@ -36,16 +24,6 @@ fn status_name(kind: StatusKind) -> &'static str {
         StatusKind::AttackBuff => "attack-buff",
         StatusKind::DefenseBuff => "defense-buff",
         StatusKind::Vulnerability => "vulnerability",
-    }
-}
-
-fn tile(tile: &Option<Tile>) -> serde_json::Value {
-    match tile {
-        Some(tile) => serde_json::json!({
-            "element": element_name(tile.element),
-            "multiplier": tile.multiplier,
-        }),
-        None => serde_json::Value::Null,
     }
 }
 
@@ -186,7 +164,7 @@ impl Game for Rules {
                 "dotTurns": state.boss.dot_turns,
                 "transformed": state.boss.transformed,
             },
-            "board": state.board.iter().map(tile).collect::<Vec<_>>(),
+            "board": state.board.iter().map(|tile| serde_json::json!(tile)).collect::<Vec<_>>(),
             "participants": participants,
             "pending": state.pending.as_ref().map(|pending| serde_json::json!({
                 "targets": pending.targets,

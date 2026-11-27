@@ -9,7 +9,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 use super::config::EffectKind;
-use super::{CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput};
+use super::{
+    CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput, TileIdentity,
+    TileKind,
+};
 
 const LOGICAL_ACTION_MS: u64 = 1_000;
 pub const COMPARISON_MAX_SEEDS: u32 = 25;
@@ -158,23 +161,74 @@ fn visible_swap(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, boo
             let mut multiplier = false;
             for (matched, tile) in super::matched_cells(&board).into_iter().zip(board) {
                 if let Some(tile) = tile.filter(|_| matched) {
-                    let element_weight = if tile.element == own {
-                        rules.config().damage.own_tile_weight_pm
-                    } else {
-                        1000
+                    let config = rules.config();
+                    weight += match tile.identity {
+                        TileIdentity::Element(element) => {
+                            let element_weight = if element == own {
+                                config.damage.own_tile_weight_pm
+                            } else {
+                                1000
+                            };
+                            u64::from(config.multiplier.damage_weight(tile.multiplier).ok()?)
+                                * u64::from(element_weight)
+                        }
+                        TileIdentity::Kind(kind) => {
+                            let policy = config.board.functional_tiles.as_ref()?;
+                            let actor = &state.participants[state.active_seat];
+                            let unit =
+                                u64::from(config.multiplier.resource_weight(tile.multiplier).ok()?);
+                            // Rank visible combat opportunities by damage, usable
+                            // recovery/protection and missing resources. These
+                            // are policy preferences, never reducer rules.
+                            match kind {
+                                TileKind::Sword => {
+                                    u64::from(
+                                        config.multiplier.damage_weight(tile.multiplier).ok()?,
+                                    ) * u64::from(policy.sword_contribution_pm)
+                                }
+                                TileKind::Mana => {
+                                    unit * 50
+                                        * u64::from(
+                                            policy
+                                                .mana_per_tile
+                                                .min(config.resources.mana_cap - actor.mana),
+                                        )
+                                }
+                                TileKind::Rage => {
+                                    unit * 50
+                                        * u64::from(
+                                            policy
+                                                .rage_per_tile
+                                                .min(config.resources.rage_cap - actor.rage),
+                                        )
+                                }
+                                TileKind::Heart => {
+                                    unit * 100
+                                        * u64::from(
+                                            policy.heart.amount.min(actor.max_hp - actor.hp),
+                                        )
+                                }
+                                TileKind::Shield => unit * 100 * u64::from(policy.shield.amount),
+                                TileKind::Special => {
+                                    let super::functional::SpecialPolicy::ResourceCombo {
+                                        mana,
+                                        rage,
+                                    } = policy.special;
+                                    unit * 50
+                                        * (u64::from(
+                                            mana.min(config.resources.mana_cap - actor.mana),
+                                        ) + u64::from(
+                                            rage.min(config.resources.rage_cap - actor.rage),
+                                        ))
+                                }
+                            }
+                        }
                     };
-                    weight += u64::from(
-                        rules
-                            .config()
-                            .multiplier
-                            .damage_weight(tile.multiplier)
-                            .ok()?,
-                    ) * u64::from(element_weight);
                     count += 1;
                     multiplier |= tile.multiplier > 1;
                 }
             }
-            if weight > best_weight {
+            if count > 0 && (best.is_none() || weight > best_weight) {
                 best_weight = weight;
                 best = Some((
                     CoopAction::Swap {

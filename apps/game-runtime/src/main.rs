@@ -33,18 +33,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rules = CoopRules::load(&bytes, boss_id)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let digest = rules.digest();
-        let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
+        let ruleset = rules.ruleset();
         let hex = |bytes: &[u8]| {
             bytes
                 .iter()
                 .map(|byte| format!("{byte:02x}"))
                 .collect::<String>()
         };
-        println!(
-            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\",\"contentHash\":\"{}\"}}",
-            hex(&digest),
-            hex(&content)
-        );
+        let mut receipt = serde_json::json!({
+            "engineCapability": config.engine_capability,
+            "digest": hex(&digest),
+            "contentHash": hex(&ruleset.content_hash),
+        });
+        if rules.functional_board() {
+            receipt["rulesetVersion"] = ruleset.version.into();
+        }
+        println!("{receipt}");
         return Ok(());
     }
     if let [flag, ruleset] = args.as_slice()

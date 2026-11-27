@@ -80,6 +80,7 @@ pub struct Options {
     pub enabled: bool,
     pub origins: Vec<String>,
     pub content_hash: [u8; 32],
+    pub required_client_build: Option<&'static str>,
     pub runtime_boot_id: [u8; 16],
     pub connections: usize,
 }
@@ -90,6 +91,7 @@ impl Default for Options {
             enabled: false,
             origins: Vec::new(),
             content_hash: [0; 32],
+            required_client_build: None,
             runtime_boot_id: [0; 16],
             connections: 32,
         }
@@ -389,7 +391,12 @@ async fn connection(mut socket: WebSocket, state: Arc<Gateway>, _permit: OwnedSe
             }
             Lookup::Fresh | Lookup::Repeat(_) => match &frame.body {
                 Some(client_envelope::Body::Hello(hello)) => {
-                    if hello.content_hash.as_slice() != state.options.content_hash {
+                    if hello.content_hash.as_slice() != state.options.content_hash
+                        || state
+                            .options
+                            .required_client_build
+                            .is_some_and(|build| hello.client_build != build)
+                    {
                         break;
                     }
                     let admitted =

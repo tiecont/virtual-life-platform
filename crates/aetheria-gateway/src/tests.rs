@@ -77,6 +77,7 @@ fn options() -> Options {
         enabled: true,
         origins: vec!["https://gateway.test".into()],
         content_hash: [0x22; 32],
+        required_client_build: None,
         runtime_boot_id: [0x33; 16],
         connections: 2,
     }
@@ -94,8 +95,12 @@ impl Drop for Server {
 }
 impl Server {
     async fn open() -> Self {
+        Self::open_with(options()).await
+    }
+
+    async fn open_with(options: Options) -> Self {
         let fixture = Arc::new(Fixture::default());
-        let router = router(options(), Arc::new(FixtureAdmission(Arc::clone(&fixture)))).unwrap();
+        let router = router(options, Arc::new(FixtureAdmission(Arc::clone(&fixture)))).unwrap();
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let address = format!("ws://{}/rt/v1", listener.local_addr().unwrap());
         let (stop, stopped) = oneshot::channel();
@@ -451,5 +456,38 @@ async fn unauthenticated_idle_socket_is_closed_and_traffic_budget_is_bounded() {
     assert_eq!(server.fixture.snapshots.load(Ordering::SeqCst), 2);
     drop(idle);
     drop(flood);
+    server.close().await;
+}
+
+#[tokio::test]
+async fn incompatible_client_build_is_rejected_before_consuming_a_ticket() {
+    let options = Options {
+        required_client_build: Some("unity-native-v2"),
+        ..options()
+    };
+    let server = Server::open_with(options).await;
+    let mut previous = server.client().await;
+    previous
+        .send(tungstenite::Message::Binary(hello("first", 1, 1).into()))
+        .await
+        .unwrap();
+    closed_without_data(&mut previous).await;
+
+    let mut current = server.client().await;
+    let message = frame(
+        1,
+        1,
+        client_envelope::Body::Hello(public::Hello {
+            ticket: "first".into(),
+            client_build: "unity-native-v2".into(),
+            content_hash: vec![0x22; 32],
+            platform_label: None,
+        }),
+    );
+    let reply =
+        public::ServerEnvelope::decode(exchange(&mut current, message).await.as_slice()).unwrap();
+    assert!(matches!(reply.body, Some(server_envelope::Body::Hello(_))));
+    current.close(None).await.unwrap();
+    drop(current);
     server.close().await;
 }
