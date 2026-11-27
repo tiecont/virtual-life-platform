@@ -55,3 +55,35 @@ ALTER TABLE pet_wave_one_party
 -- Add unique constraint to party for instance ID
 ALTER TABLE pet_wave_one_party
   ADD CONSTRAINT pet_wave_one_party_account_instance UNIQUE (account_id, owned_pet_instance_id);
+
+-- Add trigger to auto-generate owned_pet_instance_id on INSERT if not provided
+CREATE OR REPLACE FUNCTION pet_wave_one_owned_ensure_instance_id()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.owned_pet_instance_id IS NULL THEN
+    NEW.owned_pet_instance_id := md5(NEW.account_id || ':' || NEW.pet_id || ':v1')::uuid;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS pet_wave_one_owned_instance_id_bi ON pet_wave_one_owned;
+CREATE TRIGGER pet_wave_one_owned_instance_id_bi
+  BEFORE INSERT ON pet_wave_one_owned
+  FOR EACH ROW EXECUTE FUNCTION pet_wave_one_owned_ensure_instance_id();
+
+-- Add trigger for party table
+CREATE OR REPLACE FUNCTION pet_wave_one_party_ensure_instance_id()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.owned_pet_instance_id IS NULL THEN
+    NEW.owned_pet_instance_id := md5(NEW.account_id || ':' || NEW.pet_id || ':v1')::uuid;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS pet_wave_one_party_instance_id_bi ON pet_wave_one_party;
+CREATE TRIGGER pet_wave_one_party_instance_id_bi
+  BEFORE INSERT ON pet_wave_one_party
+  FOR EACH ROW EXECUTE FUNCTION pet_wave_one_party_ensure_instance_id();
