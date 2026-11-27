@@ -307,12 +307,25 @@ describe('Wave A Artifact durable loop',()=>{
     const played=await post(app,'/v1/pets/wave1/campaign/play',{requestId:randomUUID(),mapId:MAP_IDS[0],petId:STARTER,actions:POLICY},visitor);
     expect(played.statusCode).toBe(200);
     expect((played.json() as {result:{won:boolean;firstClear:boolean}}).result).toMatchObject({won:true,firstClear:true});
-    const available=(await state(app,visitor)).pve.available;
+    const before=await state(app,visitor);
+    const starter=before.inventory.find(item=>item.definitionId==='core-emberglass')!;
+    const available=before.pve.available;
     expect(available).toEqual([{mapId:MAP_IDS[0],definitionId:'core-amberlattice',materials:60}]);
     const claimed=await claim(visitor);
     expect(claimed.statusCode).toBe(200);
     expect(claimed.json()).toMatchObject({grant:{mapId:MAP_IDS[0],definitionId:'core-amberlattice'}});
     expect((await claim(visitor)).statusCode).toBe(409);
+    // Use the first clear's 60 materials on the eligible starter Core. Amber
+    // Lattice stays in inventory until Coalwhisk reaches its published rank gate.
+    const trained=await upgrade(visitor,starter.artifactId);
+    expect(trained.statusCode).toBe(200);
+    expect(trained.json()).toMatchObject({spent:60,upgradeLevel:2,state:{materials:before.materials}});
+    expect((await equip(visitor,STARTER,starter.artifactId)).statusCode).toBe(200);
+    const loadout=await snapshot(visitor,STARTER);
+    expect(loadout.statusCode).toBe(200);
+    expect(loadout.json()).toMatchObject({snapshot:{loadout:{petId:STARTER,entries:[
+      {slot:'core',definitionId:'core-emberglass',upgradeLevel:2,modifiers:{hp:5,attack:2,defense:0}},
+    ]}}});
   });
 
   it('9 replays receipts without double grants and rejects conflicting request ids',async()=>{
