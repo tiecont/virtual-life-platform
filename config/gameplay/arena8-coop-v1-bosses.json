@@ -15,7 +15,7 @@
       "critRateBp": 1200,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
@@ -47,7 +47,7 @@
       "critRateBp": 1000,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
@@ -79,7 +79,7 @@
       "critRateBp": 3000,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
@@ -111,7 +111,7 @@
       "critRateBp": 2500,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
@@ -143,7 +143,7 @@
       "critRateBp": 1500,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
@@ -175,7 +175,7 @@
       "critRateBp": 2000,
       "critDamageBp": 15000,
       "phase": {
-        "thresholdBp": 5000,
+        "thresholdBp": 3500,
         "maxGrowthBp": 5000,
         "currentBp": 10000,
         "phase2AttackPm": 1250,
