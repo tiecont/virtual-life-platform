@@ -276,6 +276,24 @@ namespace Aetheria.Tests.EditMode
         }
 
         [Test]
+        public void DevelopmentLibraryResolvesImportedCombatCuesAndEnvironmentLoops()
+        {
+            var library = AssetDatabase.LoadAssetAtPath<ArenaAudioLibrary>(LibraryPath);
+            foreach (var cue in new[] { ArenaAudioCue.TileMatch, ArenaAudioCue.BossWarning,
+                ArenaAudioCue.Impact, ArenaAudioCue.Victory, ArenaAudioCue.Defeat })
+            {
+                Assert.That(library.TryGetCue(cue, out var clip, out _, out _), Is.True, cue.ToString());
+                Assert.That(AssetDatabase.GetAssetPath(clip), Does.EndWith(".ogg"));
+                Assert.That(clip.samples, Is.GreaterThan(0));
+            }
+            foreach (var map in new[] { ArenaAmbience.Fire, ArenaAmbience.Water })
+            {
+                Assert.That(library.TryGetAmbience(map, out var clip, out _), Is.True, map.ToString());
+                Assert.That(clip.length, Is.GreaterThan(3f));
+            }
+        }
+
+        [Test]
         public void IntegrationPrefabWiresMixerLibraryAndBothDirectors()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);

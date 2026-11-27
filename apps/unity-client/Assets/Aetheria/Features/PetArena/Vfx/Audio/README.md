@@ -11,9 +11,7 @@ owned by the scene agent.
   child groups. Each bus exposes one `<Bus>Volume` parameter in decibels
   (Master/Music/Ambient/SFX/Voice/UI). Mute is the conventional -80 dB value
   because Unity mixers expose gain, not a boolean mute.
-- `ArenaAudioLibrary.asset` — one override row per event. Every clip slot is
-  empty until licensed or owner-approved media arrives, so generated
-  placeholders run. Drop an approved clip into a row to replace it.
+- `ArenaAudioLibrary.asset` binds seven original development clips in `Development/`. Tile matching, Boss warnings and impacts use SFX, terminal stingers use UI, and Cinder and Tideglass loops use Ambient. The remaining slots use generated placeholders. These recordings are local procedural development media pending artistic review.
 - `Resources/ArenaPresentation.prefab` — `ArenaAudioDirector`,
   `ArenaVfxDirector` and `ArenaPresentationBridge`, wired to the mixer and
   library. Add the prefab to a scene; do not add audio code to gameplay owners.

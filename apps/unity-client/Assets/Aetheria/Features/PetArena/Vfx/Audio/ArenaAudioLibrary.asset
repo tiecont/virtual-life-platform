@@ -30,7 +30,7 @@ MonoBehaviour:
     volume: 0.55
     pitch: {x: 1, y: 1}
   - cue: 5
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 7b17bffc95bba9e76bdc1079915ef7d5, type: 3}
     volume: 0.8
     pitch: {x: 1, y: 1}
   - cue: 6
@@ -46,7 +46,7 @@ MonoBehaviour:
     volume: 0.8
     pitch: {x: 1, y: 1}
   - cue: 9
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 79896c77bdc890219968c4dcf8e8d6f4, type: 3}
     volume: 0.8
     pitch: {x: 1, y: 1}
   - cue: 10
@@ -62,7 +62,7 @@ MonoBehaviour:
     volume: 0.95
     pitch: {x: 1, y: 1}
   - cue: 13
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 5d5ac2c0fdf9d125b81aecbfb0154f8d, type: 3}
     volume: 0.8
     pitch: {x: 1, y: 1}
   - cue: 14
@@ -98,11 +98,11 @@ MonoBehaviour:
     volume: 0.8
     pitch: {x: 1, y: 1}
   - cue: 22
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 8c15d1941cb66f2e490650b70c510f9d, type: 3}
     volume: 0.9
     pitch: {x: 1, y: 1}
   - cue: 23
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: eef0670b1468719a6aad10f7d4e4170e, type: 3}
     volume: 0.85
     pitch: {x: 1, y: 1}
   - cue: 24
@@ -122,10 +122,10 @@ MonoBehaviour:
     clip: {fileID: 0}
     volume: 0.32
   - ambience: 2
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: dc54f91b647d2cf0c89ea818f7c8c8bf, type: 3}
     volume: 0.4
   - ambience: 3
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 2d42870e2139845f7b3bde48106848ee, type: 3}
     volume: 0.36
   music:
   - score: 1
