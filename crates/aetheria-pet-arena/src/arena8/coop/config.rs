@@ -10,7 +10,7 @@
 //! MVP elements and the minimum match run) lives in the engine. Everything an
 //! author tunes lives here.
 
-use super::loadout::ArtifactCatalog;
+use super::{functional::FunctionalTiles, loadout::ArtifactCatalog};
 use crate::arena8::{
     Element,
     binding::{IDENTITIES, RosterState},
@@ -25,6 +25,8 @@ use std::collections::{BTreeMap, BTreeSet};
 pub const ENGINE_CAPABILITY: &str = "arena8-coop-v1";
 /// Supported bundle schema version.
 pub const CONFIG_SCHEMA_VERSION: u32 = 2;
+pub const FUNCTIONAL_SCHEMA_VERSION: u32 = 3;
+pub const FUNCTIONAL_ENGINE_CAPABILITY: &str = "arena8-coop-v2";
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
@@ -110,7 +112,9 @@ impl RewardsConfig {
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BoardConfig {
+    #[serde(default)]
     pub spawn_weights: Vec<SpawnWeight>,
+    pub functional_tiles: Option<FunctionalTiles>,
     pub dead_board_policy: DeadBoardPolicy,
     pub generation_attempts: u16,
     pub initial_board_policy: Option<InitialBoardPolicy>,
@@ -492,6 +496,7 @@ pub enum ConfigError {
     DuplicateElement,
     Effectiveness,
     SpawnWeights,
+    FunctionalTiles,
     Party,
     Resources,
     Damage,
@@ -520,6 +525,7 @@ impl ConfigError {
             Self::DuplicateElement => "gameplay configuration repeats an element",
             Self::Effectiveness => "gameplay elemental matrix is incomplete or invalid",
             Self::SpawnWeights => "gameplay board spawn weights are invalid",
+            Self::FunctionalTiles => "functional tile identities or policies are invalid",
             Self::Party => "gameplay party structure is invalid",
             Self::Resources => "gameplay resource configuration is invalid",
             Self::Damage => "gameplay damage configuration is invalid",
@@ -562,10 +568,17 @@ impl CoopConfig {
 
     /// Full semantic validation of the configuration graph.
     pub fn validate(&self) -> Result<(), ConfigError> {
-        if !matches!(
-            self.schema_version,
-            HISTORICAL_SCHEMA_VERSION | CONFIG_SCHEMA_VERSION
-        ) || self.engine_capability != ENGINE_CAPABILITY
+        let capability_matches = match self.schema_version {
+            HISTORICAL_SCHEMA_VERSION | CONFIG_SCHEMA_VERSION => {
+                self.engine_capability == ENGINE_CAPABILITY && self.board.functional_tiles.is_none()
+            }
+            FUNCTIONAL_SCHEMA_VERSION => {
+                self.engine_capability == FUNCTIONAL_ENGINE_CAPABILITY
+                    && self.board.functional_tiles.is_some()
+            }
+            _ => false,
+        };
+        if !capability_matches
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -580,12 +593,24 @@ impl CoopConfig {
             return Err(ConfigError::Identity);
         }
         self.board.validate()?;
+        if let Some(functional) = &self.board.functional_tiles {
+            functional.validate(&self.resources)?;
+            if self.resources.mana_per_tile != 0
+                || self.resources.mana_own_bonus != 0
+                || self.resources.rage_per_tile != 0
+                || self.damage.own_tile_weight_pm != 1_000
+                || self.board.initial_board_policy != Some(InitialBoardPolicy::Constructive)
+                || self.board.generation_attempts > 256
+            {
+                return Err(ConfigError::FunctionalTiles);
+            }
+        }
         self.party.validate()?;
         self.resources.validate()?;
         self.damage.validate()?;
         match (&self.artifacts, self.damage.artifact_scale_pm) {
             (None, Some(_)) => {} // Previously published scalar-based bundles.
-            (Some(artifacts), None) if self.schema_version == CONFIG_SCHEMA_VERSION => {
+            (Some(artifacts), None) if self.versioned_roster() => {
                 artifacts.validate()?;
             }
             _ => return Err(ConfigError::Artifact),
@@ -607,9 +632,12 @@ impl CoopConfig {
             return Err(ConfigError::Effectiveness);
         }
         self.multiplier.validate()?;
+        if self.board.functional_tiles.is_some() {
+            self.multiplier.validate_functional()?;
+        }
         let bosses = match (self.schema_version, &self.boss, &self.bosses) {
             (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
-            (CONFIG_SCHEMA_VERSION, None, Some(bosses))
+            (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, None, Some(bosses))
                 if !bosses.is_empty() && bosses.len() <= 6 =>
             {
                 bosses
@@ -622,7 +650,11 @@ impl CoopConfig {
         for boss in bosses {
             match (self.schema_version, boss.map_id.as_deref()) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
-                (CONFIG_SCHEMA_VERSION, Some(map)) if stable_id(map) && map_ids.insert(map) => (),
+                (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, Some(map))
+                    if stable_id(map) && map_ids.insert(map) =>
+                {
+                    ()
+                }
                 _ => return Err(ConfigError::Boss),
             }
             if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
@@ -696,6 +728,10 @@ impl CoopConfig {
             fields.push(Value::Text("boss-defeat-first".into()));
         }
         Value::List(fields)
+    }
+
+    pub(super) fn versioned_roster(&self) -> bool {
+        self.schema_version != HISTORICAL_SCHEMA_VERSION
     }
 
     pub fn has_artifact_catalog(&self) -> bool {
@@ -862,7 +898,7 @@ impl CoopConfig {
             }
             match (self.schema_version, &pet.catalog) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
-                (CONFIG_SCHEMA_VERSION, Some(catalog))
+                (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, Some(catalog))
                     if catalog.name.trim() == catalog.name
                         && !catalog.name.is_empty()
                         && catalog.name.len() <= 128
@@ -925,6 +961,13 @@ impl CoopConfig {
 
 impl BoardConfig {
     fn validate(&self) -> Result<(), ConfigError> {
+        if self.functional_tiles.is_some() {
+            return if self.spawn_weights.is_empty() && self.generation_attempts > 0 {
+                Ok(())
+            } else {
+                Err(ConfigError::SpawnWeights)
+            };
+        }
         if self.spawn_weights.len() != 6 {
             return Err(ConfigError::SpawnWeights);
         }
@@ -945,8 +988,11 @@ impl BoardConfig {
         Ok(())
     }
 
-    /// Weighted element spawn table in canonical element order.
+    /// Weighted spawn table in the canonical order for the bundle's board capability.
     pub fn spawn_table(&self) -> Result<([u32; 6], u32), ConfigError> {
+        if let Some(functional) = &self.functional_tiles {
+            return functional.spawn_table();
+        }
         let mut table = [0u32; 6];
         for weight in &self.spawn_weights {
             table[parse_element(&weight.element)?.index()] = weight.weight;
@@ -979,6 +1025,9 @@ impl BoardConfig {
         ];
         if let Some(InitialBoardPolicy::Constructive) = self.initial_board_policy {
             fields.push(Value::Text("constructive".into()));
+        }
+        if let Some(functional) = &self.functional_tiles {
+            fields.push(functional.to_value());
         }
         Value::List(fields)
     }
@@ -1129,20 +1178,43 @@ impl MultiplierConfig {
         Ok(())
     }
 
+    fn validate_functional(&self) -> Result<(), ConfigError> {
+        let mut previous = (0, 0);
+        for (tier, weights) in self.weights() {
+            if (tier == 1 && weights != (1_000, 1_000))
+                || weights.0 <= previous.0
+                || weights.1 <= previous.1
+                || weights.1 > 100_000
+            {
+                return Err(ConfigError::MultiplierSchedule);
+            }
+            previous = weights;
+        }
+        for stage in &self.schedule {
+            self.weight_budget(stage.from)?;
+        }
+        Ok(())
+    }
+
     /// Authored damage contribution of an existing tile multiplier.
     pub fn damage_weight(&self, multiplier: u8) -> Result<u32, ConfigError> {
-        self.weights()
-            .get(&multiplier)
-            .map(|weights| weights.0)
+        self.configured_tier(multiplier)
+            .map(|tier| tier.damage_weight_pm)
             .ok_or(ConfigError::MultiplierSchedule)
     }
 
     /// Authored resource contribution of an existing tile multiplier.
     pub fn resource_weight(&self, multiplier: u8) -> Result<u32, ConfigError> {
-        self.weights()
-            .get(&multiplier)
-            .map(|weights| weights.1)
+        self.configured_tier(multiplier)
+            .map(|tier| tier.resource_weight_pm)
             .ok_or(ConfigError::MultiplierSchedule)
+    }
+
+    fn configured_tier(&self, multiplier: u8) -> Option<&MultiplierTier> {
+        self.schedule
+            .iter()
+            .flat_map(|stage| &stage.tiers)
+            .find(|tier| tier.multiplier == multiplier)
     }
 
     fn weights(&self) -> BTreeMap<u8, (u32, u32)> {

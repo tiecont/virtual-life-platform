@@ -14,6 +14,7 @@
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
 pub mod config;
+mod functional;
 mod loadout;
 mod opening_board;
 pub mod simulation;
@@ -50,11 +51,13 @@ mod board_cells {
 }
 
 pub use config::{ConfigError, CoopConfig};
+pub use functional::{FunctionalTiles, TileKind};
 pub use loadout::{ArtifactLoadout, EquippedArtifact};
 
 /// Stable identifier of the cooperative ruleset family.
 pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
 pub const COOP_RULESET_VERSION: u32 = 1;
+pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
 /// Structural engine capability: the board is 8x8 and the party has 4 seats.
 pub const SEATS: usize = 4;
 pub const SIDE: usize = 8;
@@ -81,10 +84,72 @@ impl CoopPhase {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TileIdentity {
+    Element(Element),
+    Kind(TileKind),
+}
+
+impl TileIdentity {
+    const fn index(self) -> usize {
+        match self {
+            Self::Element(element) => element.index(),
+            Self::Kind(kind) => kind.index(),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(from = "TileWire")]
 pub struct Tile {
-    pub element: Element,
+    #[serde(flatten)]
+    pub identity: TileIdentity,
     pub multiplier: u8,
+}
+
+// Two strict wire variants preserve historical snapshots while rejecting
+// missing, unknown, or mixed identities.
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum TileWire {
+    Historical(LegacyTileWire),
+    Functional(FunctionalTileWire),
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyTileWire {
+    element: Element,
+    multiplier: u8,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FunctionalTileWire {
+    kind: TileKind,
+    multiplier: u8,
+}
+
+impl From<TileWire> for Tile {
+    fn from(wire: TileWire) -> Self {
+        match wire {
+            TileWire::Historical(tile) => Self::legacy(tile.element, tile.multiplier),
+            TileWire::Functional(tile) => Self {
+                identity: TileIdentity::Kind(tile.kind),
+                multiplier: tile.multiplier,
+            },
+        }
+    }
+}
+
+impl Tile {
+    pub const fn legacy(element: Element, multiplier: u8) -> Self {
+        Self {
+            identity: TileIdentity::Element(element),
+            multiplier,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -264,6 +329,7 @@ pub struct CoopRules {
     digest: [u8; 32],
     spawn_table: [u32; 6],
     spawn_total: u32,
+    board_tiers: u64,
     effectiveness: [[u16; 6]; 6],
     selected_boss_id: String,
 }
@@ -348,12 +414,19 @@ impl CoopRules {
             effectiveness[attacker.index()] = profile.effectiveness_table()?;
             debug_assert_eq!(index, attacker.index());
         }
+        let board_tiers = config
+            .multiplier
+            .schedule
+            .iter()
+            .flat_map(|stage| &stage.tiers)
+            .fold(0u64, |mask, tier| mask | (1 << (tier.multiplier - 1)));
         let digest = config.digest();
         Ok(Self {
             config,
             digest,
             spawn_table,
             spawn_total,
+            board_tiers,
             effectiveness,
             selected_boss_id: boss_id,
         })
@@ -378,10 +451,27 @@ impl CoopRules {
     pub fn ruleset(&self) -> Ruleset {
         Ruleset {
             id: COOP_RULESET_ID.into(),
-            version: COOP_RULESET_VERSION,
-            content_hash: crate::arena8::coop::content_hash(self.digest),
+            version: if self.functional_board() {
+                FUNCTIONAL_RULESET_VERSION
+            } else {
+                COOP_RULESET_VERSION
+            },
+            content_hash: if self.functional_board() {
+                native_content_hash(
+                    self.digest,
+                    FUNCTIONAL_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v2",
+                    "functional-board-v1;independent-tile-effects",
+                )
+            } else {
+                content_hash(self.digest)
+            },
             rng_version: RNG_VERSION,
         }
+    }
+
+    pub fn functional_board(&self) -> bool {
+        self.config.board.functional_tiles.is_some()
     }
 
     pub fn effectiveness(&self, attacker: Element, defender: Element) -> u16 {
@@ -440,8 +530,7 @@ impl CoopRules {
         let boss_config = self.selected_boss();
         let state = CoopState {
             config_digest: self.digest,
-            boss_id: (self.config.schema_version == config::CONFIG_SCHEMA_VERSION)
-                .then(|| boss_config.id.clone()),
+            boss_id: (self.config.versioned_roster()).then(|| boss_config.id.clone()),
             participants,
             boss: Boss {
                 hp: boss_config.max_hp,
@@ -589,7 +678,7 @@ impl CoopRules {
         Ok(Participant {
             account: seat.account,
             pet_id: seat.pet_id,
-            owned_pet_instance_id: (self.config.schema_version == config::CONFIG_SCHEMA_VERSION)
+            owned_pet_instance_id: (self.config.versioned_roster())
                 .then_some(seat.owned_pet_instance_id),
             artifact_loadout_digest: loadout.map(|loadout| loadout.digest.clone()),
             level: seat.level,
@@ -618,7 +707,7 @@ impl CoopRules {
     }
 
     pub fn validate(&self, state: &CoopState) -> Result<(), CoreError> {
-        let versioned = self.config.schema_version == config::CONFIG_SCHEMA_VERSION;
+        let versioned = self.config.versioned_roster();
         let expected_boss = versioned.then_some(self.selected_boss().id.as_str());
         if state.config_digest != self.digest
             || state.boss.curse.is_some_and(|curse| {
@@ -665,11 +754,23 @@ impl CoopRules {
         if state.boss.max_hp == 0 || state.boss.hp > state.boss.max_hp {
             return Err(CoreError::InvalidState);
         }
-        if state
-            .board
-            .iter()
-            .flatten()
-            .any(|tile| tile.multiplier == 0 || !(1..=CELLS as u8).contains(&tile.multiplier))
+        if state.board.iter().flatten().any(|tile| {
+            !(1..=CELLS as u8).contains(&tile.multiplier)
+                || matches!(tile.identity, TileIdentity::Kind(_)) != self.functional_board()
+                || (self.functional_board()
+                    && (self.board_tiers & (1 << (tile.multiplier - 1))) == 0)
+        }) {
+            return Err(CoreError::InvalidState);
+        }
+        if self.functional_board()
+            && ((state.phase == CoopPhase::Ready && state.board.iter().any(Option::is_some))
+                || (state.phase == CoopPhase::Playing
+                    && (state.board.iter().any(Option::is_none)
+                        || matched_cells(&state.board).into_iter().any(|marked| marked)))
+                || state.participants.iter().any(|seat| {
+                    seat.mana > self.config.resources.mana_cap
+                        || seat.rage > self.config.resources.rage_cap
+                }))
         {
             return Err(CoreError::InvalidState);
         }
@@ -689,6 +790,9 @@ impl CoopRules {
         action: CoopAction,
         rng: &mut TurnRng,
     ) -> Result<Decision<CoopState>, CoreError> {
+        if self.functional_board() || state.config_digest != self.digest {
+            self.validate(state)?;
+        }
         let mut next = state.clone();
         let mut events = Vec::new();
         match action {
@@ -700,8 +804,7 @@ impl CoopRules {
                 match self.config.board.initial_board_policy {
                     None => self.fill_board(&mut next, rng)?,
                     Some(config::InitialBoardPolicy::Constructive) => {
-                        next.board =
-                            opening_board::construct(self.spawn_table, self.spawn_total, rng)?;
+                        next.board = self.construct_board(rng)?;
                     }
                 }
                 next.phase = CoopPhase::Playing;
@@ -720,7 +823,7 @@ impl CoopRules {
                 }
                 let mut board = next.board;
                 board.swap(first, second);
-                if !matched_cells(&board).iter().any(|matched| *matched) {
+                if !self.swap_has_match(&board, first, second) {
                     // Rejected before any mutation and before any entropy use.
                     return Err(CoreError::InvalidAction);
                 }
@@ -1261,7 +1364,11 @@ impl CoopRules {
             if !matched.iter().any(|matched| *matched) {
                 return Ok(());
             }
-            let outcome = self.score_match(state, seat, &matched, rng)?;
+            let outcome = if self.functional_board() {
+                self.score_functional_match(state, seat, &matched, rng, events)?
+            } else {
+                self.score_match(state, seat, &matched, rng)?
+            };
             events.push(event("match", Some(seat as u8), u64::from(outcome.damage)));
             if outcome.critical {
                 events.push(event("critical", Some(seat as u8), 0));
@@ -1274,8 +1381,16 @@ impl CoopRules {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
                 // the authored dead-board procedure restores a playable board.
+                let remaining = if self.functional_board() {
+                    matched_cells(&state.board)
+                } else {
+                    matched
+                };
+                if self.functional_board() && !remaining.iter().any(|marked| *marked) {
+                    return Ok(());
+                }
                 events.push(event("cascade-cap", Some(seat as u8), u64::from(max)));
-                for (index, is_matched) in matched.iter().enumerate() {
+                for (index, is_matched) in remaining.iter().enumerate() {
                     if *is_matched {
                         state.board[index] = None;
                     }
@@ -1297,11 +1412,7 @@ impl CoopRules {
         matched: &[bool; CELLS],
         rng: &mut TurnRng,
     ) -> Result<MatchOutcome, CoreError> {
-        let element = self
-            .config
-            .pet(&state.participants[seat_index].pet_id)
-            .and_then(|pet| pet.element().ok())
-            .ok_or(CoreError::InvalidState)?;
+        let element = self.actor_element(state, seat_index)?;
         let own_weight = u64::from(self.config.damage.own_tile_weight_pm);
         let mut contribution = 0u64;
         let mut mana = 0u32;
@@ -1312,7 +1423,7 @@ impl CoopRules {
                 continue;
             }
             let tile = state.board[index].ok_or(CoreError::InvalidState)?;
-            let own = tile.element == element;
+            let own = tile.identity == TileIdentity::Element(element);
             let weight = if own { own_weight } else { 1_000 };
             let damage_weight = u64::from(
                 self.config
@@ -1358,6 +1469,34 @@ impl CoopRules {
         if tiles == 0 {
             return Err(CoreError::InvalidState);
         }
+        let outcome = self.resolve_normal_attack(state, seat_index, contribution, rng)?;
+        let seat = &mut state.participants[seat_index];
+        seat.mana = seat
+            .mana
+            .saturating_add(u16::try_from(mana).unwrap_or(u16::MAX))
+            .min(self.config.resources.mana_cap);
+        seat.rage = seat
+            .rage
+            .saturating_add(u16::try_from(rage).unwrap_or(u16::MAX))
+            .min(self.config.resources.rage_cap);
+        Ok(outcome)
+    }
+
+    fn actor_element(&self, state: &CoopState, seat_index: usize) -> Result<Element, CoreError> {
+        self.config
+            .pet(&state.participants[seat_index].pet_id)
+            .and_then(|pet| pet.element().ok())
+            .ok_or(CoreError::InvalidState)
+    }
+
+    fn resolve_normal_attack(
+        &self,
+        state: &mut CoopState,
+        seat_index: usize,
+        contribution: u64,
+        rng: &mut TurnRng,
+    ) -> Result<MatchOutcome, CoreError> {
+        let element = self.actor_element(state, seat_index)?;
         let participant = &state.participants[seat_index];
         let base = u64::from(participant.attack)
             .checked_mul(u64::from(self.config.damage.attack_scale_pm))
@@ -1399,14 +1538,6 @@ impl CoopRules {
         let dealt = self.damage_boss(state, damage)?;
         let seat = &mut state.participants[seat_index];
         seat.contribution_damage = seat.contribution_damage.saturating_add(u64::from(dealt));
-        seat.mana = seat
-            .mana
-            .saturating_add(u16::try_from(mana).unwrap_or(u16::MAX))
-            .min(self.config.resources.mana_cap);
-        seat.rage = seat
-            .rage
-            .saturating_add(u16::try_from(rage).unwrap_or(u16::MAX))
-            .min(self.config.resources.rage_cap);
         Ok(MatchOutcome {
             damage: dealt,
             critical,
@@ -1449,7 +1580,9 @@ impl CoopRules {
             }
         }
         state.board = next;
-        if self.legal_swap(state).is_none() {
+        let still_matching =
+            self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
+        if !still_matching && self.legal_swap(state).is_none() {
             self.dead_board(state, rng)?;
         }
         Ok(())
@@ -1457,6 +1590,10 @@ impl CoopRules {
 
     fn dead_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
         match self.config.board.dead_board_policy {
+            config::DeadBoardPolicy::Regenerate if self.functional_board() => {
+                state.board = self.construct_board(rng)?;
+                Ok(())
+            }
             config::DeadBoardPolicy::Regenerate => {
                 self.fill_board(state, rng)?;
                 Ok(())
@@ -1473,8 +1610,25 @@ impl CoopRules {
                         return Ok(());
                     }
                 }
-                Err(CoreError::InvalidState)
+                if self.functional_board() {
+                    state.board = self.construct_board(rng)?;
+                    Ok(())
+                } else {
+                    Err(CoreError::InvalidState)
+                }
             }
+        }
+    }
+
+    fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {
+        opening_board::construct(self.identities(), self.spawn_table, self.spawn_total, rng)
+    }
+
+    fn identities(&self) -> [TileIdentity; 6] {
+        if self.functional_board() {
+            TileKind::ALL.map(TileIdentity::Kind)
+        } else {
+            crate::arena8::ELEMENTS.map(TileIdentity::Element)
         }
     }
 
@@ -1486,7 +1640,7 @@ impl CoopRules {
                 // refill draws the escalating multiplier distribution.
                 let roll = rng.below(self.spawn_total)?;
                 state.board[index] = Some(Tile {
-                    element: spawn_element(self.spawn_table, roll),
+                    identity: spawn_identity(self.identities(), self.spawn_table, roll),
                     multiplier: 1,
                 });
             }
@@ -1509,7 +1663,7 @@ impl CoopRules {
     fn spawn_tile(&self, state: &CoopState, rng: &mut TurnRng) -> Result<Tile, CoreError> {
         let clock = self.escalation_clock(state);
         let roll = rng.below(self.spawn_total)?;
-        let element = spawn_element(self.spawn_table, roll);
+        let identity = spawn_identity(self.identities(), self.spawn_table, roll);
         let budget = self
             .config
             .multiplier
@@ -1522,7 +1676,7 @@ impl CoopRules {
             .tier_for(clock, tier_roll)
             .map_err(|_| CoreError::InvalidState)?;
         Ok(Tile {
-            element,
+            identity,
             multiplier: tier.multiplier,
         })
     }
@@ -1547,7 +1701,17 @@ impl CoopRules {
         }
         let mut board = state.board;
         board.swap(first, second);
-        matched_cells(&board).iter().any(|matched| *matched)
+        self.swap_has_match(&board, first, second)
+    }
+
+    fn swap_has_match(&self, board: &[Option<Tile>; CELLS], first: usize, second: usize) -> bool {
+        let matches = matched_cells(board);
+        if self.functional_board() {
+            let identity = |index: usize| board[index].map(|tile| tile.identity);
+            identity(first) != identity(second) && (matches[first] || matches[second])
+        } else {
+            matches.into_iter().any(|matched| matched)
+        }
     }
 
     fn complete_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
@@ -1847,12 +2011,26 @@ fn unreachable_participant() -> Participant {
 /// Native content hash bound into tickets and the match snapshot. It commits to
 /// the exact published configuration digest.
 pub fn content_hash(config_digest: [u8; 32]) -> [u8; 32] {
-    aetheria_game_core::canonical::hash(
+    native_content_hash(
+        config_digest,
+        COOP_RULESET_VERSION,
         "aetheria.arena8-coop-native.v1",
+        CONTRACT,
+    )
+}
+
+fn native_content_hash(
+    config_digest: [u8; 32],
+    version: u32,
+    domain: &str,
+    contract: &str,
+) -> [u8; 32] {
+    aetheria_game_core::canonical::hash(
+        domain,
         &list([
             Value::Bytes(config_digest.to_vec()),
-            Value::Text(CONTRACT.into()),
-            Value::Uint(COOP_RULESET_VERSION.into()),
+            Value::Text(contract.into()),
+            Value::Uint(version.into()),
             Value::Uint(u64::from(SIDE as u32)),
             Value::Uint(u64::from(SEATS as u32)),
         ]),
@@ -1869,28 +2047,28 @@ pub(crate) fn adjacent(first: usize, second: usize) -> bool {
     (r1 == r2 && c1.abs_diff(c2) == 1) || (c1 == c2 && r1.abs_diff(r2) == 1)
 }
 
-/// Match detection compares element identity only, so Fire x1, x2 and x3 form a
-/// single Fire match. Each cell is counted at most once.
+/// Match detection uses tile identity. Multipliers do not affect run membership.
+/// Each cell is counted at most once.
 pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     let mut matched = [false; CELLS];
-    let element = |index: usize| board[index].map(|tile| tile.element);
+    let identity = |index: usize| board[index].map(|tile| tile.identity);
     for row in 0..SIDE {
         for column in 0..SIDE {
             let index = row * SIDE + column;
-            let Some(current) = element(index) else {
+            let Some(current) = identity(index) else {
                 continue;
             };
             if column + 2 < SIDE
-                && element(index + 1) == Some(current)
-                && element(index + 2) == Some(current)
+                && identity(index + 1) == Some(current)
+                && identity(index + 2) == Some(current)
             {
                 matched[index] = true;
                 matched[index + 1] = true;
                 matched[index + 2] = true;
             }
             if row + 2 < SIDE
-                && element(index + SIDE) == Some(current)
-                && element(index + 2 * SIDE) == Some(current)
+                && identity(index + SIDE) == Some(current)
+                && identity(index + 2 * SIDE) == Some(current)
             {
                 matched[index] = true;
                 matched[index + SIDE] = true;
@@ -1901,18 +2079,15 @@ pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     matched
 }
 
-fn spawn_element(table: [u32; 6], roll: u32) -> Element {
+fn spawn_identity(identities: [TileIdentity; 6], table: [u32; 6], roll: u32) -> TileIdentity {
     let mut point = roll;
-    for element in crate::arena8::ELEMENTS {
-        let weight = table[element.index()];
+    for (identity, weight) in identities.into_iter().zip(table) {
         if point < weight {
-            return element;
+            return identity;
         }
         point -= weight;
     }
-    // Structural fallback only: a validated bundle always totals more than the
-    // roll, so this branch is unreachable and carries no balance meaning.
-    Element::Fire
+    unreachable!("validated spawn table totals exceed every roll")
 }
 
 fn participant_value(seat: &Participant) -> Value {
@@ -1976,7 +2151,10 @@ fn board_value(board: &[Option<Tile>; CELLS]) -> Value {
             .iter()
             .map(|cell| match cell {
                 Some(tile) => list([
-                    Value::Uint(tile.element.index() as u64),
+                    match tile.identity {
+                        TileIdentity::Element(element) => Value::Uint(element.index() as u64),
+                        TileIdentity::Kind(kind) => Value::Text(kind.name().into()),
+                    },
                     Value::Uint(u64::from(tile.multiplier)),
                 ]),
                 None => Value::Null,

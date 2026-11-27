@@ -1,0 +1,5911 @@
+{
+  "schemaVersion": 3,
+  "engineCapability": "arena8-coop-v2",
+  "configId": "arena8-coop-functional-candidate",
+  "contentRevision": 1,
+  "board": {
+    "deadBoardPolicy": "regenerate",
+    "generationAttempts": 64,
+    "initialBoardPolicy": "constructive",
+    "functionalTiles": {
+      "spawnWeights": [
+        {
+          "kind": "sword",
+          "weight": 2200
+        },
+        {
+          "kind": "mana",
+          "weight": 1850
+        },
+        {
+          "kind": "rage",
+          "weight": 1850
+        },
+        {
+          "kind": "heart",
+          "weight": 1500
+        },
+        {
+          "kind": "shield",
+          "weight": 1500
+        },
+        {
+          "kind": "special",
+          "weight": 1100
+        }
+      ],
+      "swordContributionPm": 2500,
+      "manaPerTile": 12,
+      "ragePerTile": 10,
+      "heart": {
+        "amount": 12,
+        "target": "lowest-hp-ally"
+      },
+      "shield": {
+        "amount": 15,
+        "target": "self",
+        "shieldCapPm": 300,
+        "durationTurns": 2
+      },
+      "special": {
+        "kind": "resource-combo",
+        "mana": 7,
+        "rage": 6
+      }
+    }
+  },
+  "party": {
+    "seats": 4,
+    "maxRounds": 40,
+    "maxCascades": 8,
+    "turnTimeoutMs": 60000
+  },
+  "resources": {
+    "manaCap": 100,
+    "rageCap": 100,
+    "manaPerTile": 0,
+    "manaOwnBonus": 0,
+    "ragePerTile": 0,
+    "ragePerGuard": 10,
+    "ragePerDamageTaken": 5
+  },
+  "damage": {
+    "attackScalePm": 1000,
+    "contributionScalePm": 60,
+    "ownTileWeightPm": 1000,
+    "defenseDivisor": 8,
+    "critRollBasis": 10000
+  },
+  "artifacts": [
+    {
+      "id": "core-emberglass",
+      "slot": "core",
+      "requiredPetLevel": 1,
+      "modifiers": {
+        "hp": 4,
+        "attack": 2,
+        "defense": 0,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 0,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "core-amberlattice",
+      "slot": "core",
+      "requiredPetLevel": 10,
+      "modifiers": {
+        "hp": 6,
+        "attack": 3,
+        "defense": 1,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 0,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-mistquill",
+      "slot": "rune",
+      "requiredPetLevel": 10,
+      "modifiers": {
+        "hp": 0,
+        "attack": 4,
+        "defense": 0,
+        "speed": 2
+      },
+      "perLevel": {
+        "hp": 0,
+        "attack": 1,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "aegis-bastionplate",
+      "slot": "aegis",
+      "requiredPetLevel": 20,
+      "modifiers": {
+        "hp": 8,
+        "attack": 0,
+        "defense": 5,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 2,
+        "attack": 0,
+        "defense": 1,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-whisperknot",
+      "slot": "rune",
+      "requiredPetLevel": 20,
+      "modifiers": {
+        "hp": 0,
+        "attack": 6,
+        "defense": 0,
+        "speed": 3
+      },
+      "perLevel": {
+        "hp": 0,
+        "attack": 1,
+        "defense": 0,
+        "speed": 1
+      }
+    },
+    {
+      "id": "core-prismheart",
+      "slot": "core",
+      "requiredPetLevel": 40,
+      "modifiers": {
+        "hp": 12,
+        "attack": 6,
+        "defense": 3,
+        "speed": 0
+      },
+      "perLevel": {
+        "hp": 2,
+        "attack": 1,
+        "defense": 0,
+        "speed": 0
+      }
+    },
+    {
+      "id": "rune-temporal-seal",
+      "slot": "rune",
+      "requiredPetLevel": 60,
+      "modifiers": {
+        "hp": 8,
+        "attack": 10,
+        "defense": 0,
+        "speed": 6
+      },
+      "perLevel": {
+        "hp": 1,
+        "attack": 2,
+        "defense": 0,
+        "speed": 1
+      }
+    }
+  ],
+  "elements": [
+    {
+      "element": "fire",
+      "maxHp": 300,
+      "attack": 30,
+      "defense": 12,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "hpGrowth": 20,
+      "attackGrowth": 3,
+      "defenseGrowth": 2,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 0
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 500
+        },
+        {
+          "element": "light",
+          "permille": 1500
+        }
+      ]
+    },
+    {
+      "element": "water",
+      "maxHp": 340,
+      "attack": 24,
+      "defense": 16,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "hpGrowth": 24,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1500
+        },
+        {
+          "element": "water",
+          "permille": 0
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 1500
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "element": "electric",
+      "maxHp": 260,
+      "attack": 34,
+      "defense": 10,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "hpGrowth": 18,
+      "attackGrowth": 4,
+      "defenseGrowth": 1,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1500
+        },
+        {
+          "element": "electric",
+          "permille": 0
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 0
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ]
+    },
+    {
+      "element": "ghost",
+      "maxHp": 280,
+      "attack": 28,
+      "defense": 12,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "hpGrowth": 19,
+      "attackGrowth": 3,
+      "defenseGrowth": 2,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 0
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 500
+        }
+      ]
+    },
+    {
+      "element": "ground",
+      "maxHp": 420,
+      "attack": 22,
+      "defense": 24,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "hpGrowth": 30,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1500
+        },
+        {
+          "element": "water",
+          "permille": 500
+        },
+        {
+          "element": "electric",
+          "permille": 1500
+        },
+        {
+          "element": "ghost",
+          "permille": 1000
+        },
+        {
+          "element": "ground",
+          "permille": 0
+        },
+        {
+          "element": "light",
+          "permille": 1000
+        }
+      ],
+      "bossCritDamageBonusBp": 5500
+    },
+    {
+      "element": "light",
+      "maxHp": 320,
+      "attack": 26,
+      "defense": 18,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "hpGrowth": 22,
+      "attackGrowth": 2,
+      "defenseGrowth": 3,
+      "effectiveness": [
+        {
+          "element": "fire",
+          "permille": 1000
+        },
+        {
+          "element": "water",
+          "permille": 1000
+        },
+        {
+          "element": "electric",
+          "permille": 1000
+        },
+        {
+          "element": "ghost",
+          "permille": 1500
+        },
+        {
+          "element": "ground",
+          "permille": 1000
+        },
+        {
+          "element": "light",
+          "permille": 0
+        }
+      ]
+    }
+  ],
+  "multiplier": {
+    "clockUnit": "turn",
+    "schedule": [
+      {
+        "from": 0,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 1000,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          }
+        ]
+      },
+      {
+        "from": 12,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 800,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 200,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          }
+        ]
+      },
+      {
+        "from": 17,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 650,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 100,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          }
+        ]
+      },
+      {
+        "from": 22,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 550,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 150,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 50,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          }
+        ]
+      },
+      {
+        "from": 27,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 450,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 180,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 90,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 30,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          }
+        ]
+      },
+      {
+        "from": 32,
+        "tiers": [
+          {
+            "multiplier": 1,
+            "weight": 350,
+            "damageWeightPm": 1000,
+            "resourceWeightPm": 1000
+          },
+          {
+            "multiplier": 2,
+            "weight": 250,
+            "damageWeightPm": 2000,
+            "resourceWeightPm": 1500
+          },
+          {
+            "multiplier": 3,
+            "weight": 200,
+            "damageWeightPm": 3000,
+            "resourceWeightPm": 2000
+          },
+          {
+            "multiplier": 4,
+            "weight": 120,
+            "damageWeightPm": 4000,
+            "resourceWeightPm": 2500
+          },
+          {
+            "multiplier": 5,
+            "weight": 60,
+            "damageWeightPm": 5000,
+            "resourceWeightPm": 3000
+          },
+          {
+            "multiplier": 6,
+            "weight": 20,
+            "damageWeightPm": 6000,
+            "resourceWeightPm": 3500
+          }
+        ]
+      }
+    ]
+  },
+  "skills": [
+    {
+      "id": "pet-v3-fire-icarus-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ],
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v3-fire-icarus-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 3,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 160,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v3-fire-icarus-ember-phoenix-ascendant",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v3-fire-icarus-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v3-fire-icarus-fire-zone",
+      "kind": "fire-zone",
+      "manaCost": 30,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "damage-over-time",
+        "target": "boss",
+        "value": 60,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-fire-cindrelis-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-fire-cindrelis-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "pet-v31-fire-cindrelis-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-fire-cindrelis-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell-tidal-mending",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ],
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "allies",
+        "value": 48,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion-volt-thunder-chain",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 500,
+      "critEligible": true,
+      "effect": {
+        "kind": "chain-damage",
+        "target": "boss",
+        "value": 155,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "hits": 2
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "curse",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune-dawn-cleanse",
+      "kind": "signature",
+      "manaCost": 16,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "cleanse",
+        "target": "allies",
+        "value": 1,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-pyrecrown-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-pyrecrown-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-pyrecrown-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-pyrecrown-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-lagoonarch-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-lagoonarch-mana-current",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 22,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-lagoonarch-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-lagoonarch-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-stormdiadem-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-stormdiadem-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-stormdiadem-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-stormdiadem-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-faultwarden-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-faultwarden-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-faultwarden-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-faultwarden-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-lanternwake-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-lanternwake-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "ghost-lanternwake-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-lanternwake-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnarchon-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnarchon-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "light-dawnarchon-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnarchon-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-coalwhisk-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ],
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-coalwhisk-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-coalwhisk-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-coalwhisk-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-emberloom-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-emberloom-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-emberloom-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-emberloom-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-kilnback-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-kilnback-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-kilnback-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-kilnback-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-flarequill-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-flarequill-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-flarequill-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-flarequill-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-scorchveil-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-scorchveil-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "fire-scorchveil-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "fire-scorchveil-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-dewskip-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-dewskip-springwell",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 80,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "water-dewskip-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-dewskip-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-ripplefin-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-ripplefin-mana-current",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 22,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-ripplefin-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-ripplefin-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-foamcurl-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-foamcurl-foam-salve",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "lowest-ally",
+        "value": 115,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "water-foamcurl-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-foamcurl-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-tideweft-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-tideweft-woven-current",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "allies",
+        "value": 38,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "water-tideweft-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-tideweft-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-abyssail-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-abyssail-mana-current",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 22,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-abyssail-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "water-abyssail-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-zipspool-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-zipspool-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-zipspool-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-zipspool-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-copperkip-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-copperkip-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-copperkip-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-copperkip-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-arcshell-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-arcshell-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-arcshell-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-arcshell-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-pulsecrest-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-pulsecrest-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-pulsecrest-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-pulsecrest-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-thundrel-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-thundrel-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-thundrel-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "electric-thundrel-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-clodkin-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-clodkin-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-clodkin-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-clodkin-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-burrowick-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-burrowick-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-burrowick-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-burrowick-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-dunebraid-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-dunebraid-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-dunebraid-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-dunebraid-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-siltmaw-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-siltmaw-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-siltmaw-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-siltmaw-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-terracrest-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-terracrest-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-terracrest-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ground-terracrest-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-wickrift-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-wickrift-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "curse",
+        "target": "boss",
+        "value": 450,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-wickrift-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-wickrift-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-shroudlet-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-shroudlet-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "ghost-shroudlet-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-shroudlet-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-bellshade-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-bellshade-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "curse",
+        "target": "boss",
+        "value": 160,
+        "durationTurns": 6,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-bellshade-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-bellshade-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-echowisp-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-echowisp-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "ghost-echowisp-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-echowisp-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-veilrelic-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-veilrelic-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "ghost-veilrelic-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "ghost-veilrelic-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-gleamlet-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-gleamlet-dawn-cleanse",
+      "kind": "signature",
+      "manaCost": 16,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "cleanse",
+        "target": "allies",
+        "value": 1,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-gleamlet-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-gleamlet-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnpurl-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnpurl-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "light-dawnpurl-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-dawnpurl-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-raymantle-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-raymantle-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "light-raymantle-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-raymantle-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-solweft-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-solweft-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "light-solweft-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-solweft-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-prismhalo-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-prismhalo-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "light-prismhalo-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "light-prismhalo-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-fire-ignivar-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-fire-ignivar-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "dragon-fire-ignivar-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-fire-ignivar-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-water-tidecoil-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-water-tidecoil-mana-current",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 22,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "mana-restore",
+        "target": "lowest-mana-ally",
+        "value": 26,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-water-tidecoil-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-water-tidecoil-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-electric-voltrazik-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-electric-voltrazik-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-electric-voltrazik-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-electric-voltrazik-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ghost-hollowmaw-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ghost-hollowmaw-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "curse",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 4,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ghost-hollowmaw-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ghost-hollowmaw-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ground-terradrake-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ground-terradrake-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ground-terradrake-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-ground-terradrake-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-light-auroryx-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-light-auroryx-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "dragon-light-auroryx-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "dragon-light-auroryx-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-fire-cinderquill-ember-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-fire-cinderquill-ember-solar-flare",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "bird-fire-cinderquill-blazing-descent",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-fire-cinderquill-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-water-tidewren-tide-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-water-tidewren-rain-song",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "allies",
+        "value": 45,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "bird-water-tidewren-tide-deep-current",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-water-tidewren-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-electric-arcswift-volt-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-electric-arcswift-voltage-transfer",
+      "kind": "signature",
+      "manaCost": 12,
+      "rageCost": 0,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "rage-transfer",
+        "target": "lowest-rage-ally",
+        "value": 25,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-electric-arcswift-volt-storm-crown",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-electric-arcswift-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ghost-pallidrone-shade-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ghost-pallidrone-shade-phantom-grasp",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "bird-ghost-pallidrone-shade-void-walker",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ghost-pallidrone-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ground-dustrunner-stone-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ground-dustrunner-stone-fault-line",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 250,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ground-dustrunner-stone-continental-slam",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-ground-dustrunner-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-light-prismkite-ray-lance",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 90,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-light-prismkite-ray-prism-burst",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 150,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "bird-light-prismkite-ray-dawn-prism",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 300,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "bird-light-prismkite-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    }
+  ],
+  "pets": [
+    {
+      "id": "pet-v3-fire-icarus",
+      "element": "fire",
+      "rarity": "limited-s",
+      "powerClass": "s",
+      "maxHp": 210,
+      "attack": 26,
+      "defense": 14,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "pet-v3-fire-icarus-ember-lance",
+      "signature": "pet-v3-fire-icarus-ember-solar-flare",
+      "ultimate": "pet-v3-fire-icarus-ember-phoenix-ascendant",
+      "guard": "pet-v3-fire-icarus-guard",
+      "fireZone": "pet-v3-fire-icarus-fire-zone",
+      "catalog": {
+        "name": "Icarus",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "pet-v31-fire-cindrelis",
+      "element": "fire",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 240,
+      "attack": 24,
+      "defense": 20,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "pet-v31-fire-cindrelis-ember-lance",
+      "signature": "pet-v31-fire-cindrelis-ember-solar-flare",
+      "ultimate": "pet-v31-fire-cindrelis-blazing-descent",
+      "guard": "pet-v31-fire-cindrelis-guard",
+      "catalog": {
+        "name": "Cindrelis",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 30
+      }
+    },
+    {
+      "id": "pet-v31-water-marivell",
+      "element": "water",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 250,
+      "attack": 22,
+      "defense": 18,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "pet-v31-water-marivell-tide-lance",
+      "signature": "pet-v31-water-marivell-tidal-mending",
+      "ultimate": "pet-v31-water-marivell-tide-deep-current",
+      "guard": "pet-v31-water-marivell-guard",
+      "catalog": {
+        "name": "Marivell",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "pet-v31-electric-quorion",
+      "element": "electric",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 200,
+      "attack": 28,
+      "defense": 12,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "pet-v31-electric-quorion-volt-lance",
+      "signature": "pet-v31-electric-quorion-volt-thunder-chain",
+      "ultimate": "pet-v31-electric-quorion-volt-storm-crown",
+      "guard": "pet-v31-electric-quorion-guard",
+      "catalog": {
+        "name": "Quorion",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 20
+      }
+    },
+    {
+      "id": "pet-v31-ghost-vesperyn",
+      "element": "ghost",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 215,
+      "attack": 25,
+      "defense": 15,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "pet-v31-ghost-vesperyn-shade-lance",
+      "signature": "pet-v31-ghost-vesperyn-shade-phantom-grasp",
+      "ultimate": "pet-v31-ghost-vesperyn-shade-void-walker",
+      "guard": "pet-v31-ghost-vesperyn-guard",
+      "catalog": {
+        "name": "Vesperyn",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": -15
+      }
+    },
+    {
+      "id": "pet-v31-ground-gravorn",
+      "element": "ground",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 300,
+      "attack": 20,
+      "defense": 24,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "pet-v31-ground-gravorn-stone-lance",
+      "signature": "pet-v31-ground-gravorn-stone-fault-line",
+      "ultimate": "pet-v31-ground-gravorn-stone-continental-slam",
+      "guard": "pet-v31-ground-gravorn-guard",
+      "catalog": {
+        "name": "Gravorn",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -10
+      }
+    },
+    {
+      "id": "pet-v31-light-aurelune",
+      "element": "light",
+      "rarity": "standard-s",
+      "powerClass": "a",
+      "maxHp": 235,
+      "attack": 23,
+      "defense": 16,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "pet-v31-light-aurelune-ray-lance",
+      "signature": "pet-v31-light-aurelune-dawn-cleanse",
+      "ultimate": "pet-v31-light-aurelune-ray-dawn-prism",
+      "guard": "pet-v31-light-aurelune-guard",
+      "catalog": {
+        "name": "Aurelune",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 25
+      }
+    },
+    {
+      "id": "fire-pyrecrown",
+      "element": "fire",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 315,
+      "attack": 29,
+      "defense": 20,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-pyrecrown-ember-lance",
+      "signature": "fire-pyrecrown-ember-solar-flare",
+      "ultimate": "fire-pyrecrown-blazing-descent",
+      "guard": "fire-pyrecrown-guard",
+      "catalog": {
+        "name": "Pyrecrown",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 20
+      }
+    },
+    {
+      "id": "water-lagoonarch",
+      "element": "water",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 330,
+      "attack": 26,
+      "defense": 23,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-lagoonarch-tide-lance",
+      "signature": "water-lagoonarch-mana-current",
+      "ultimate": "water-lagoonarch-tide-deep-current",
+      "guard": "water-lagoonarch-guard",
+      "catalog": {
+        "name": "Lagoonarch",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "electric-stormdiadem",
+      "element": "electric",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 295,
+      "attack": 31,
+      "defense": 17,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-stormdiadem-volt-lance",
+      "signature": "electric-stormdiadem-voltage-transfer",
+      "ultimate": "electric-stormdiadem-volt-storm-crown",
+      "guard": "electric-stormdiadem-guard",
+      "catalog": {
+        "name": "Stormdiadem",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -15
+      }
+    },
+    {
+      "id": "ground-faultwarden",
+      "element": "ground",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 355,
+      "attack": 24,
+      "defense": 27,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-faultwarden-stone-lance",
+      "signature": "ground-faultwarden-stone-fault-line",
+      "ultimate": "ground-faultwarden-stone-continental-slam",
+      "guard": "ground-faultwarden-guard",
+      "catalog": {
+        "name": "Faultwarden",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "ghost-lanternwake",
+      "element": "ghost",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 305,
+      "attack": 28,
+      "defense": 19,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-lanternwake-shade-lance",
+      "signature": "ghost-lanternwake-shade-phantom-grasp",
+      "ultimate": "ghost-lanternwake-shade-void-walker",
+      "guard": "ghost-lanternwake-guard",
+      "catalog": {
+        "name": "Lanternwake",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 10
+      }
+    },
+    {
+      "id": "light-dawnarchon",
+      "element": "light",
+      "rarity": "map-legendary",
+      "powerClass": "s",
+      "maxHp": 320,
+      "attack": 27,
+      "defense": 22,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-dawnarchon-ray-lance",
+      "signature": "light-dawnarchon-ray-prism-burst",
+      "ultimate": "light-dawnarchon-ray-dawn-prism",
+      "guard": "light-dawnarchon-guard",
+      "catalog": {
+        "name": "Dawnarchon",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": -20
+      }
+    },
+    {
+      "id": "fire-coalwhisk",
+      "element": "fire",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 180,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-coalwhisk-ember-lance",
+      "signature": "fire-coalwhisk-ember-solar-flare",
+      "ultimate": "fire-coalwhisk-blazing-descent",
+      "guard": "fire-coalwhisk-guard",
+      "catalog": {
+        "name": "Coalwhisk",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "fire-emberloom",
+      "element": "fire",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 188,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-emberloom-ember-lance",
+      "signature": "fire-emberloom-ember-solar-flare",
+      "ultimate": "fire-emberloom-blazing-descent",
+      "guard": "fire-emberloom-guard",
+      "catalog": {
+        "name": "Emberloom",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "fire-kilnback",
+      "element": "fire",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 196,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-kilnback-ember-lance",
+      "signature": "fire-kilnback-ember-solar-flare",
+      "ultimate": "fire-kilnback-blazing-descent",
+      "guard": "fire-kilnback-guard",
+      "catalog": {
+        "name": "Kilnback",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "fire-flarequill",
+      "element": "fire",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 220,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-flarequill-ember-lance",
+      "signature": "fire-flarequill-ember-solar-flare",
+      "ultimate": "fire-flarequill-blazing-descent",
+      "guard": "fire-flarequill-guard",
+      "catalog": {
+        "name": "Flarequill",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "fire-scorchveil",
+      "element": "fire",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 235,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "fire-scorchveil-ember-lance",
+      "signature": "fire-scorchveil-ember-solar-flare",
+      "ultimate": "fire-scorchveil-blazing-descent",
+      "guard": "fire-scorchveil-guard",
+      "catalog": {
+        "name": "Scorchveil",
+        "mapId": "cinder-terraces"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "water-dewskip",
+      "element": "water",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 190,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-dewskip-tide-lance",
+      "signature": "water-dewskip-springwell",
+      "ultimate": "water-dewskip-tide-deep-current",
+      "guard": "water-dewskip-guard",
+      "catalog": {
+        "name": "Dewskip",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "water-ripplefin",
+      "element": "water",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 198,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-ripplefin-tide-lance",
+      "signature": "water-ripplefin-mana-current",
+      "ultimate": "water-ripplefin-tide-deep-current",
+      "guard": "water-ripplefin-guard",
+      "catalog": {
+        "name": "Ripplefin",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "water-foamcurl",
+      "element": "water",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 206,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-foamcurl-tide-lance",
+      "signature": "water-foamcurl-foam-salve",
+      "ultimate": "water-foamcurl-tide-deep-current",
+      "guard": "water-foamcurl-guard",
+      "catalog": {
+        "name": "Foamcurl",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "water-tideweft",
+      "element": "water",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 230,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-tideweft-tide-lance",
+      "signature": "water-tideweft-woven-current",
+      "ultimate": "water-tideweft-tide-deep-current",
+      "guard": "water-tideweft-guard",
+      "catalog": {
+        "name": "Tideweft",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "water-abyssail",
+      "element": "water",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 245,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "water-abyssail-tide-lance",
+      "signature": "water-abyssail-mana-current",
+      "ultimate": "water-abyssail-tide-deep-current",
+      "guard": "water-abyssail-guard",
+      "catalog": {
+        "name": "Abyssail",
+        "mapId": "tideglass-lagoon"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "electric-zipspool",
+      "element": "electric",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 170,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-zipspool-volt-lance",
+      "signature": "electric-zipspool-voltage-transfer",
+      "ultimate": "electric-zipspool-volt-storm-crown",
+      "guard": "electric-zipspool-guard",
+      "catalog": {
+        "name": "Zipspool",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "electric-copperkip",
+      "element": "electric",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 178,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-copperkip-volt-lance",
+      "signature": "electric-copperkip-voltage-transfer",
+      "ultimate": "electric-copperkip-volt-storm-crown",
+      "guard": "electric-copperkip-guard",
+      "catalog": {
+        "name": "Copperkip",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "electric-arcshell",
+      "element": "electric",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 186,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-arcshell-volt-lance",
+      "signature": "electric-arcshell-voltage-transfer",
+      "ultimate": "electric-arcshell-volt-storm-crown",
+      "guard": "electric-arcshell-guard",
+      "catalog": {
+        "name": "Arcshell",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "electric-pulsecrest",
+      "element": "electric",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 210,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-pulsecrest-volt-lance",
+      "signature": "electric-pulsecrest-voltage-transfer",
+      "ultimate": "electric-pulsecrest-volt-storm-crown",
+      "guard": "electric-pulsecrest-guard",
+      "catalog": {
+        "name": "Pulsecrest",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "electric-thundrel",
+      "element": "electric",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 225,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "electric-thundrel-volt-lance",
+      "signature": "electric-thundrel-voltage-transfer",
+      "ultimate": "electric-thundrel-volt-storm-crown",
+      "guard": "electric-thundrel-guard",
+      "catalog": {
+        "name": "Thundrel",
+        "mapId": "stormcoil-fields"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "ground-clodkin",
+      "element": "ground",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 200,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-clodkin-stone-lance",
+      "signature": "ground-clodkin-stone-fault-line",
+      "ultimate": "ground-clodkin-stone-continental-slam",
+      "guard": "ground-clodkin-guard",
+      "catalog": {
+        "name": "Clodkin",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "ground-burrowick",
+      "element": "ground",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 208,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-burrowick-stone-lance",
+      "signature": "ground-burrowick-stone-fault-line",
+      "ultimate": "ground-burrowick-stone-continental-slam",
+      "guard": "ground-burrowick-guard",
+      "catalog": {
+        "name": "Burrowick",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "ground-dunebraid",
+      "element": "ground",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 216,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-dunebraid-stone-lance",
+      "signature": "ground-dunebraid-stone-fault-line",
+      "ultimate": "ground-dunebraid-stone-continental-slam",
+      "guard": "ground-dunebraid-guard",
+      "catalog": {
+        "name": "Dunebraid",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "ground-siltmaw",
+      "element": "ground",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 240,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-siltmaw-stone-lance",
+      "signature": "ground-siltmaw-stone-fault-line",
+      "ultimate": "ground-siltmaw-stone-continental-slam",
+      "guard": "ground-siltmaw-guard",
+      "catalog": {
+        "name": "Siltmaw",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "ground-terracrest",
+      "element": "ground",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 255,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "ground-terracrest-stone-lance",
+      "signature": "ground-terracrest-stone-fault-line",
+      "ultimate": "ground-terracrest-stone-continental-slam",
+      "guard": "ground-terracrest-guard",
+      "catalog": {
+        "name": "Terracrest",
+        "mapId": "ochre-labyrinth"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "ghost-wickrift",
+      "element": "ghost",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 185,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-wickrift-shade-lance",
+      "signature": "ghost-wickrift-shade-phantom-grasp",
+      "ultimate": "ghost-wickrift-shade-void-walker",
+      "guard": "ghost-wickrift-guard",
+      "catalog": {
+        "name": "Wickrift",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "ghost-shroudlet",
+      "element": "ghost",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 193,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-shroudlet-shade-lance",
+      "signature": "ghost-shroudlet-shade-phantom-grasp",
+      "ultimate": "ghost-shroudlet-shade-void-walker",
+      "guard": "ghost-shroudlet-guard",
+      "catalog": {
+        "name": "Shroudlet",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "ghost-bellshade",
+      "element": "ghost",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 201,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-bellshade-shade-lance",
+      "signature": "ghost-bellshade-shade-phantom-grasp",
+      "ultimate": "ghost-bellshade-shade-void-walker",
+      "guard": "ghost-bellshade-guard",
+      "catalog": {
+        "name": "Bellshade",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "ghost-echowisp",
+      "element": "ghost",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 225,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-echowisp-shade-lance",
+      "signature": "ghost-echowisp-shade-phantom-grasp",
+      "ultimate": "ghost-echowisp-shade-void-walker",
+      "guard": "ghost-echowisp-guard",
+      "catalog": {
+        "name": "Echowisp",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "ghost-veilrelic",
+      "element": "ghost",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 240,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "ghost-veilrelic-shade-lance",
+      "signature": "ghost-veilrelic-shade-phantom-grasp",
+      "ultimate": "ghost-veilrelic-shade-void-walker",
+      "guard": "ghost-veilrelic-guard",
+      "catalog": {
+        "name": "Veilrelic",
+        "mapId": "lantern-necropolis"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "light-gleamlet",
+      "element": "light",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 175,
+      "attack": 18,
+      "defense": 10,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-gleamlet-ray-lance",
+      "signature": "light-gleamlet-dawn-cleanse",
+      "ultimate": "light-gleamlet-ray-dawn-prism",
+      "guard": "light-gleamlet-guard",
+      "catalog": {
+        "name": "Gleamlet",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "light-dawnpurl",
+      "element": "light",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 183,
+      "attack": 19,
+      "defense": 11,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-dawnpurl-ray-lance",
+      "signature": "light-dawnpurl-ray-prism-burst",
+      "ultimate": "light-dawnpurl-ray-dawn-prism",
+      "guard": "light-dawnpurl-guard",
+      "catalog": {
+        "name": "Dawnpurl",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 100,
+        "defenseBp": 90,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "light-raymantle",
+      "element": "light",
+      "rarity": "map-regular",
+      "powerClass": "b",
+      "maxHp": 191,
+      "attack": 20,
+      "defense": 12,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-raymantle-ray-lance",
+      "signature": "light-raymantle-ray-prism-burst",
+      "ultimate": "light-raymantle-ray-dawn-prism",
+      "guard": "light-raymantle-guard",
+      "catalog": {
+        "name": "Raymantle",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "light-solweft",
+      "element": "light",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 215,
+      "attack": 23,
+      "defense": 14,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-solweft-ray-lance",
+      "signature": "light-solweft-ray-prism-burst",
+      "ultimate": "light-solweft-ray-dawn-prism",
+      "guard": "light-solweft-guard",
+      "catalog": {
+        "name": "Solweft",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 80,
+        "attackBp": 150,
+        "defenseBp": 50,
+        "biasPm": 45
+      }
+    },
+    {
+      "id": "light-prismhalo",
+      "element": "light",
+      "rarity": "map-regular",
+      "powerClass": "a",
+      "maxHp": 230,
+      "attack": 24,
+      "defense": 15,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "light-prismhalo-ray-lance",
+      "signature": "light-prismhalo-ray-prism-burst",
+      "ultimate": "light-prismhalo-ray-dawn-prism",
+      "guard": "light-prismhalo-guard",
+      "catalog": {
+        "name": "Prismhalo",
+        "mapId": "dawn-prism-sanctum"
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 60,
+        "defenseBp": 130,
+        "biasPm": -30
+      }
+    },
+    {
+      "id": "dragon-fire-ignivar",
+      "element": "fire",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 340,
+      "attack": 30,
+      "defense": 24,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "dragon-fire-ignivar-ember-lance",
+      "signature": "dragon-fire-ignivar-ember-solar-flare",
+      "ultimate": "dragon-fire-ignivar-blazing-descent",
+      "guard": "dragon-fire-ignivar-guard",
+      "catalog": {
+        "name": "Ignivar",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "dragon-water-tidecoil",
+      "element": "water",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 350,
+      "attack": 28,
+      "defense": 26,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "dragon-water-tidecoil-tide-lance",
+      "signature": "dragon-water-tidecoil-mana-current",
+      "ultimate": "dragon-water-tidecoil-tide-deep-current",
+      "guard": "dragon-water-tidecoil-guard",
+      "catalog": {
+        "name": "Tidecoil",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": -15
+      }
+    },
+    {
+      "id": "dragon-electric-voltrazik",
+      "element": "electric",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 320,
+      "attack": 33,
+      "defense": 21,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "dragon-electric-voltrazik-volt-lance",
+      "signature": "dragon-electric-voltrazik-voltage-transfer",
+      "ultimate": "dragon-electric-voltrazik-volt-storm-crown",
+      "guard": "dragon-electric-voltrazik-guard",
+      "catalog": {
+        "name": "Voltrazik",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 20
+      }
+    },
+    {
+      "id": "dragon-ghost-hollowmaw",
+      "element": "ghost",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 300,
+      "attack": 34,
+      "defense": 22,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "dragon-ghost-hollowmaw-shade-lance",
+      "signature": "dragon-ghost-hollowmaw-shade-phantom-grasp",
+      "ultimate": "dragon-ghost-hollowmaw-shade-void-walker",
+      "guard": "dragon-ghost-hollowmaw-guard",
+      "catalog": {
+        "name": "Hollowmaw",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 35
+      }
+    },
+    {
+      "id": "dragon-ground-terradrake",
+      "element": "ground",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 370,
+      "attack": 26,
+      "defense": 28,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "dragon-ground-terradrake-stone-lance",
+      "signature": "dragon-ground-terradrake-stone-fault-line",
+      "ultimate": "dragon-ground-terradrake-stone-continental-slam",
+      "guard": "dragon-ground-terradrake-guard",
+      "catalog": {
+        "name": "Terradrake",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": -25
+      }
+    },
+    {
+      "id": "dragon-light-auroryx",
+      "element": "light",
+      "rarity": "family-exploration",
+      "powerClass": "s",
+      "maxHp": 335,
+      "attack": 29,
+      "defense": 25,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "dragon-light-auroryx-ray-lance",
+      "signature": "dragon-light-auroryx-ray-prism-burst",
+      "ultimate": "dragon-light-auroryx-ray-dawn-prism",
+      "guard": "dragon-light-auroryx-guard",
+      "catalog": {
+        "name": "Auroryx",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "dragon",
+        "healthBp": 140,
+        "attackBp": 120,
+        "defenseBp": 100,
+        "biasPm": 10
+      }
+    },
+    {
+      "id": "bird-fire-cinderquill",
+      "element": "fire",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 195,
+      "attack": 29,
+      "defense": 11,
+      "critRateBp": 2000,
+      "critDamageBp": 18000,
+      "skill": "bird-fire-cinderquill-ember-lance",
+      "signature": "bird-fire-cinderquill-ember-solar-flare",
+      "ultimate": "bird-fire-cinderquill-blazing-descent",
+      "guard": "bird-fire-cinderquill-guard",
+      "catalog": {
+        "name": "Cinderquill",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 0
+      }
+    },
+    {
+      "id": "bird-water-tidewren",
+      "element": "water",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 205,
+      "attack": 27,
+      "defense": 12,
+      "critRateBp": 1200,
+      "critDamageBp": 17000,
+      "skill": "bird-water-tidewren-tide-lance",
+      "signature": "bird-water-tidewren-rain-song",
+      "ultimate": "bird-water-tidewren-tide-deep-current",
+      "guard": "bird-water-tidewren-guard",
+      "catalog": {
+        "name": "Tidewren",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 15
+      }
+    },
+    {
+      "id": "bird-electric-arcswift",
+      "element": "electric",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 180,
+      "attack": 32,
+      "defense": 9,
+      "critRateBp": 3000,
+      "critDamageBp": 20000,
+      "skill": "bird-electric-arcswift-volt-lance",
+      "signature": "bird-electric-arcswift-voltage-transfer",
+      "ultimate": "bird-electric-arcswift-volt-storm-crown",
+      "guard": "bird-electric-arcswift-guard",
+      "catalog": {
+        "name": "Arcswift",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": -20
+      }
+    },
+    {
+      "id": "bird-ghost-pallidrone",
+      "element": "ghost",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 190,
+      "attack": 30,
+      "defense": 10,
+      "critRateBp": 1800,
+      "critDamageBp": 19000,
+      "skill": "bird-ghost-pallidrone-shade-lance",
+      "signature": "bird-ghost-pallidrone-shade-phantom-grasp",
+      "ultimate": "bird-ghost-pallidrone-shade-void-walker",
+      "guard": "bird-ghost-pallidrone-guard",
+      "catalog": {
+        "name": "Pallidrone",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 30
+      }
+    },
+    {
+      "id": "bird-ground-dustrunner",
+      "element": "ground",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 210,
+      "attack": 26,
+      "defense": 13,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "skill": "bird-ground-dustrunner-stone-lance",
+      "signature": "bird-ground-dustrunner-stone-fault-line",
+      "ultimate": "bird-ground-dustrunner-stone-continental-slam",
+      "guard": "bird-ground-dustrunner-guard",
+      "catalog": {
+        "name": "Dustrunner",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": -10
+      }
+    },
+    {
+      "id": "bird-light-prismkite",
+      "element": "light",
+      "rarity": "family-exploration",
+      "powerClass": "a",
+      "maxHp": 200,
+      "attack": 28,
+      "defense": 11,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "skill": "bird-light-prismkite-ray-lance",
+      "signature": "bird-light-prismkite-ray-prism-burst",
+      "ultimate": "bird-light-prismkite-ray-dawn-prism",
+      "guard": "bird-light-prismkite-guard",
+      "catalog": {
+        "name": "Prismkite",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 100,
+        "attackBp": 160,
+        "defenseBp": 60,
+        "biasPm": 20
+      }
+    }
+  ],
+  "rewards": {
+    "clearAchievementPoints": 250,
+    "clearCoins": 120,
+    "clearExp": 90,
+    "lossAchievementPoints": 25,
+    "lossCoins": 0,
+    "lossExp": 0
+  },
+  "bosses": [
+    {
+      "id": "cinder-terraces-warden",
+      "name": "Cinder Terraces Warden",
+      "element": "fire",
+      "maxHp": 12000,
+      "attack": 120,
+      "defense": 60,
+      "critRateBp": 1200,
+      "critDamageBp": 18000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 180,
+        "perRoundDamage": 12,
+        "defenseDivisor": 8,
+        "minimumDamage": 5
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "cinder-terraces",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    },
+    {
+      "id": "tideglass-lagoon-warden",
+      "name": "Tideglass Lagoon Warden",
+      "element": "water",
+      "maxHp": 13500,
+      "attack": 110,
+      "defense": 70,
+      "critRateBp": 1000,
+      "critDamageBp": 17000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1200,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 170,
+        "perRoundDamage": 10,
+        "defenseDivisor": 8,
+        "minimumDamage": 5
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "tideglass-lagoon",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    },
+    {
+      "id": "stormcoil-fields-warden",
+      "name": "Stormcoil Fields Warden",
+      "element": "electric",
+      "maxHp": 11000,
+      "attack": 135,
+      "defense": 50,
+      "critRateBp": 2500,
+      "critDamageBp": 20000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 8000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1300,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 200,
+        "perRoundDamage": 15,
+        "defenseDivisor": 8,
+        "minimumDamage": 5
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "stormcoil-fields",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    },
+    {
+      "id": "lantern-necropolis-warden",
+      "name": "Lantern Necropolis Warden",
+      "element": "ghost",
+      "maxHp": 12500,
+      "attack": 115,
+      "defense": 65,
+      "critRateBp": 1500,
+      "critDamageBp": 19000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 175,
+        "perRoundDamage": 12,
+        "defenseDivisor": 8,
+        "minimumDamage": 5,
+        "vulnerability": {
+          "valuePm": 350,
+          "durationTurns": 3
+        }
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "lantern-necropolis",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    },
+    {
+      "id": "ochre-labyrinth-warden",
+      "name": "Ochre Labyrinth Warden",
+      "element": "ground",
+      "maxHp": 15000,
+      "attack": 100,
+      "defense": 85,
+      "critRateBp": 800,
+      "critDamageBp": 24000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1150,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 160,
+        "perRoundDamage": 8,
+        "defenseDivisor": 8,
+        "minimumDamage": 5
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "ochre-labyrinth",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    },
+    {
+      "id": "dawn-prism-sanctum-warden",
+      "name": "Dawn Prism Sanctum Warden",
+      "element": "light",
+      "maxHp": 13000,
+      "attack": 125,
+      "defense": 75,
+      "critRateBp": 1500,
+      "critDamageBp": 16000,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 185,
+        "perRoundDamage": 13,
+        "defenseDivisor": 8,
+        "minimumDamage": 5
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 5000,
+      "mapId": "dawn-prism-sanctum",
+      "rewardPolicy": {
+        "firstClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 5
+        },
+        "repeatClear": {
+          "achievementPoints": 250,
+          "coins": 120,
+          "exp": 90,
+          "materials": 1
+        },
+        "defeat": {
+          "achievementPoints": 25,
+          "coins": 0,
+          "exp": 0,
+          "materials": 0
+        }
+      }
+    }
+  ],
+  "terminalOutcomePolicy": "boss-defeat-first"
+}

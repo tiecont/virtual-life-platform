@@ -74,10 +74,7 @@ fn digest(state: &CoopState) -> [u8; 32] {
 }
 
 fn flat(element: Element, multiplier: u8) -> Tile {
-    Tile {
-        element,
-        multiplier,
-    }
+    Tile::legacy(element, multiplier)
 }
 
 /// A 6-periodic diagonal board with no three-in-a-row and no multiplier tiles.
@@ -1343,4 +1340,252 @@ fn constructive_openings_are_explicit_and_bind_to_the_match_digest() {
         assert_ne!(first.next.state.config_digest, historical.digest());
         assert!(candidate.legal_swap(&first.next.state).is_some());
     }
+}
+
+fn functional_bundle() -> &'static [u8] {
+    include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v1.candidate.json"
+    ))
+}
+
+fn functional_rules() -> CoopRules {
+    CoopRules::load(functional_bundle(), "cinder-terraces-warden".into()).unwrap()
+}
+
+#[test]
+fn functional_candidate_requires_separate_typed_identities_and_progressive_weights() {
+    let mutate = |path: &str, value: serde_json::Value| {
+        let mut candidate: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
+        *candidate.pointer_mut(path).unwrap() = value;
+        CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap())
+    };
+    for (path, value) in [
+        ("/schemaVersion", serde_json::json!(2)),
+        ("/engineCapability", serde_json::json!("arena8-coop-v1")),
+        ("/resources/manaOwnBonus", serde_json::json!(1)),
+        (
+            "/board/functionalTiles/spawnWeights/1/kind",
+            serde_json::json!("sword"),
+        ),
+        (
+            "/board/functionalTiles/spawnWeights/1/kind",
+            serde_json::json!("water"),
+        ),
+        (
+            "/board/functionalTiles/spawnWeights/1/weight",
+            serde_json::json!(u32::MAX),
+        ),
+        ("/board/functionalTiles/manaPerTile", serde_json::json!(101)),
+        (
+            "/board/functionalTiles/heart/target",
+            serde_json::json!("boss"),
+        ),
+        (
+            "/board/functionalTiles/shield/shieldCapPm",
+            serde_json::json!(1001),
+        ),
+        (
+            "/board/functionalTiles/special/kind",
+            serde_json::json!("random-board-damage"),
+        ),
+        (
+            "/multiplier/schedule/0/tiers/0/resourceWeightPm",
+            serde_json::json!(0),
+        ),
+    ] {
+        assert!(mutate(path, value).is_err(), "{path}");
+    }
+    assert_ne!(functional_rules().digest(), rules().digest());
+}
+
+#[test]
+fn functional_tile_effects_scale_only_their_authored_function() {
+    let rules = functional_rules();
+    let policy = rules.config().board.functional_tiles.as_ref().unwrap();
+    for kind in TileKind::ALL {
+        let mut state = rules.allocate(seats()).unwrap();
+        state.participants[0].crit_rate_bp = 0;
+        state.participants[1].hp = 10;
+        let hp = state.boss.hp;
+        for (index, multiplier) in [1, 2, 1].into_iter().enumerate() {
+            state.board[index] = Some(Tile {
+                identity: TileIdentity::Kind(kind),
+                multiplier,
+            });
+        }
+        let matched = matched_cells(&state.board);
+        let mut events = Vec::new();
+        let mut stream = rng(0);
+        let outcome = rules
+            .score_functional_match(&mut state, 0, &matched, &mut stream, &mut events)
+            .unwrap();
+
+        let actor = &state.participants[0];
+        assert_eq!(
+            actor.mana,
+            match kind {
+                TileKind::Mana => 42,
+                TileKind::Special => 24,
+                _ => 0,
+            },
+            "{kind:?}"
+        );
+        assert_eq!(
+            actor.rage,
+            match kind {
+                TileKind::Rage => 35,
+                TileKind::Special => 21,
+                _ => 0,
+            },
+            "{kind:?}"
+        );
+        assert_eq!(actor.shield, if kind == TileKind::Shield { 52 } else { 0 });
+        assert_eq!(
+            actor.shield_turns,
+            if kind == TileKind::Shield { 2 } else { 0 }
+        );
+        assert_eq!(actor.contribution_shielding, u64::from(actor.shield));
+        assert_eq!(
+            state.participants[1].hp,
+            if kind == TileKind::Heart { 52 } else { 10 }
+        );
+        assert_eq!(
+            actor.contribution_healing,
+            u64::from(state.participants[1].hp - 10)
+        );
+        if kind == TileKind::Sword {
+            let boss = rules.selected_boss();
+            let authored_contribution = (2 + 2) * policy.sword_contribution_pm;
+            let authored_bonus =
+                authored_contribution * rules.config().damage.contribution_scale_pm / 1_000;
+            let raw = actor.attack + authored_bonus
+                - boss.defense / rules.config().damage.defense_divisor;
+            let elemental = raw
+                * u32::from(rules.effectiveness(Element::Fire, boss.element().unwrap()))
+                / 1_000;
+            assert_eq!(outcome.damage, elemental);
+            assert_eq!(hp - state.boss.hp, elemental);
+        } else {
+            assert_eq!(outcome.damage, 0);
+            assert_eq!(hp, state.boss.hp);
+            assert_eq!(stream.cursor(), 0, "utility effects consume no crit draw");
+        }
+        assert!(state.board.iter().all(Option::is_none));
+    }
+}
+
+#[test]
+fn functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity() {
+    let rules = functional_rules();
+    let policy = rules.config().board.functional_tiles.as_ref().unwrap();
+    let mut state = rules.allocate(seats()).unwrap();
+    let seat = &mut state.participants[0];
+    seat.mana = 99;
+    seat.rage = 98;
+    seat.hp = seat.max_hp - 5;
+    let shield_cap = seat.max_hp * u32::from(policy.shield.shield_cap_pm) / 1_000;
+    seat.shield = shield_cap - 1;
+    for (index, kind) in [TileKind::Special, TileKind::Shield, TileKind::Heart]
+        .into_iter()
+        .enumerate()
+    {
+        for column in 0..3 {
+            state.board[index * SIDE + column] = Some(Tile {
+                identity: TileIdentity::Kind(kind),
+                multiplier: 6,
+            });
+        }
+    }
+    let matched = matched_cells(&state.board);
+    let mut events = Vec::new();
+    rules
+        .score_functional_match(&mut state, 0, &matched, &mut rng(0), &mut events)
+        .unwrap();
+    let seat = &state.participants[0];
+    assert_eq!(
+        (seat.mana, seat.rage, seat.hp, seat.shield),
+        (100, 100, seat.max_hp, shield_cap)
+    );
+    assert_eq!(seat.contribution_shielding, 1);
+    assert_eq!(seat.contribution_healing, 5);
+}
+
+#[test]
+fn functional_swaps_replay_and_mixed_snapshots_fail_closed() {
+    let functional = functional_rules();
+    let legacy = rules();
+    let initial = functional.allocate(seats()).unwrap();
+    let mut stream = rng(0);
+    let first = functional
+        .reduce(&initial, CoopAction::Start, &mut stream)
+        .unwrap()
+        .state;
+    let original_cursor = stream.cursor();
+    let playing: CoopState = serde_json::from_slice(&serde_json::to_vec(&first).unwrap()).unwrap();
+    assert_eq!(state_digest(&playing), state_digest(&first));
+    assert_eq!(functional.ruleset().version, FUNCTIONAL_RULESET_VERSION);
+    assert_eq!(legacy.ruleset().version, COOP_RULESET_VERSION);
+    assert_ne!(
+        functional.ruleset().content_hash,
+        content_hash(functional.digest())
+    );
+    assert!(legacy.validate(&playing).is_err());
+
+    let mut mixed = playing.clone();
+    mixed.board[0] = Some(Tile::legacy(Element::Fire, 1));
+    assert!(functional.validate(&mixed).is_err());
+    assert!(
+        functional
+            .reduce(
+                &mixed,
+                CoopAction::Swap {
+                    first: 0,
+                    second: 1
+                },
+                &mut stream
+            )
+            .is_err()
+    );
+    assert_eq!(stream.cursor(), original_cursor);
+    let mixed_tile = br#"{"element":"fire","kind":"sword","multiplier":1}"#;
+    assert!(serde_json::from_slice::<Tile>(mixed_tile).is_err());
+    let previous_tile = br#"{"element":"water","multiplier":2}"#;
+    let previous = serde_json::from_slice::<Tile>(previous_tile).unwrap();
+    assert_eq!(serde_json::to_vec(&previous).unwrap(), previous_tile);
+    let next_tile = br#"{"kind":"mana","multiplier":2}"#;
+    let next = serde_json::from_slice::<Tile>(next_tile).unwrap();
+    assert_eq!(serde_json::to_vec(&next).unwrap(), next_tile);
+
+    assert!(
+        functional
+            .reduce(
+                &playing,
+                CoopAction::Swap {
+                    first: 0,
+                    second: 9
+                },
+                &mut stream
+            )
+            .is_err()
+    );
+    assert_eq!(stream.cursor(), original_cursor);
+    let (first, second) = functional.legal_swap(&playing).unwrap();
+    let action = CoopAction::Swap { first, second };
+    let committed = functional.reduce(&playing, action, &mut stream).unwrap();
+    let mut replay_rng = rng(original_cursor);
+    let replayed = functional
+        .reduce(&playing, action, &mut replay_rng)
+        .unwrap();
+    assert_eq!(
+        state_digest(&committed.state),
+        state_digest(&replayed.state)
+    );
+    assert_eq!(committed.events, replayed.events);
+    assert_eq!(stream.cursor(), replay_rng.cursor());
+    assert!(
+        !matched_cells(&committed.state.board)
+            .into_iter()
+            .any(|marked| marked)
+    );
 }

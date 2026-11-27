@@ -259,7 +259,12 @@ impl NativeRuntime {
         G::State: Send + Sync,
         G::Action: Send + Sync + 'static,
     {
-        let content = game.ruleset().content_hash;
+        let contract = game.ruleset();
+        let content = contract.content_hash;
+        let required_client_build = (contract.id
+            == aetheria_pet_arena::arena8::coop::COOP_RULESET_ID
+            && contract.version == aetheria_pet_arena::arena8::coop::FUNCTIONAL_RULESET_VERSION)
+            .then_some("unity-native-v2");
         let ruleset = settings.ruleset.clone();
         let config: Config = database
             .parse()
@@ -338,6 +343,7 @@ impl NativeRuntime {
                 enabled: true,
                 origins: vec![settings.origin],
                 content_hash: content,
+                required_client_build,
                 runtime_boot_id: *settings.boot.as_bytes(),
                 connections: 32,
             },

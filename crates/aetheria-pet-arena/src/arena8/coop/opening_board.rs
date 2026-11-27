@@ -1,18 +1,20 @@
-use super::{CELLS, SIDE, Tile, spawn_element};
+use super::{CELLS, SIDE, Tile, TileIdentity, spawn_identity};
 use aetheria_game_core::{Error, TurnRng};
 
 /// Create a full board with no existing matches and at least one legal swap.
 /// The opening motif has two equal tiles beside a distinct one, with a third
 /// matching tile beside the distinct one. Its location and orientation are randomized.
 pub(super) fn construct(
+    identities: [TileIdentity; 6],
     spawn_table: [u32; 6],
     spawn_total: u32,
     rng: &mut TurnRng,
 ) -> Result<[Option<Tile>; CELLS], Error> {
-    let a = spawn_element(spawn_table, rng.below(spawn_total)?);
+    let a = spawn_identity(identities, spawn_table, rng.below(spawn_total)?);
     let mut alternatives = spawn_table;
     alternatives[a.index()] = 0;
-    let b = spawn_element(
+    let b = spawn_identity(
+        identities,
         alternatives,
         rng.below(spawn_total - spawn_table[a.index()])?,
     );
@@ -32,9 +34,9 @@ pub(super) fn construct(
     //
     // Swapping B with A below it creates a row of three A tiles.
     let mut board = [None; CELLS];
-    for (dy, dx, element) in [(0, 0, a), (0, 1, a), (0, 2, b), (1, 2, a)] {
+    for (dy, dx, identity) in [(0, 0, a), (0, 1, a), (0, 2, b), (1, 2, a)] {
         board[index(row + dy, col + dx)] = Some(Tile {
-            element,
+            identity,
             multiplier: 1,
         });
     }
@@ -50,7 +52,7 @@ pub(super) fn construct(
         // authored weights are positive, so this sum is always nonzero.
         let roll = rng.below(allowed.iter().sum())?;
         board[index] = Some(Tile {
-            element: spawn_element(allowed, roll),
+            identity: spawn_identity(identities, allowed, roll),
             multiplier: 1,
         });
     }
@@ -66,8 +68,8 @@ fn exclude_triples(
 ) {
     let mut exclude_equal_pair = |left: usize, right: usize| {
         if let (Some(left), Some(right)) = (board[left], board[right]) {
-            if left.element == right.element {
-                allowed[left.element.index()] = 0;
+            if left.identity == right.identity {
+                allowed[left.identity.index()] = 0;
             }
         }
     };

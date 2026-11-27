@@ -64,6 +64,7 @@ async fn main() {
             enabled: true,
             origins: vec![fixture.origin],
             content_hash: hex(&fixture.content),
+            required_client_build: None,
             runtime_boot_id: hex(&fixture.boot.replace('-', "")),
             connections: 4,
         },
