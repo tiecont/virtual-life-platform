@@ -53,6 +53,15 @@ pub struct CoopConfig {
     pub skills: Vec<SkillConfig>,
     pub pets: Vec<PetConfig>,
     pub rewards: RewardsConfig,
+    pub(super) terminal_outcome_policy: Option<TerminalOutcomePolicy>,
+}
+
+/// Opt-in turn ordering for new bundles. An omitted policy preserves replay
+/// behavior for configurations published before this capability.
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub(super) enum TerminalOutcomePolicy {
+    BossDefeatFirst,
 }
 
 /// Settlement rewards authored per clear and per loss. The engine validates and
@@ -557,6 +566,8 @@ impl CoopConfig {
                 .bytes()
                 .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'.')
             || self.content_revision == 0
+            || (self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && self.terminal_outcome_policy.is_some())
         {
             return Err(ConfigError::Identity);
         }
@@ -672,6 +683,9 @@ impl CoopConfig {
         ];
         if let Some(artifacts) = &self.artifacts {
             fields.push(artifacts.to_value());
+        }
+        if let Some(TerminalOutcomePolicy::BossDefeatFirst) = self.terminal_outcome_policy {
+            fields.push(Value::Text("boss-defeat-first".into()));
         }
         Value::List(fields)
     }

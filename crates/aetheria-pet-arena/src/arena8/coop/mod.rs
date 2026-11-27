@@ -1547,7 +1547,17 @@ impl CoopRules {
 
     fn complete_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
         state.turn_index = state.turn_index.saturating_add(1);
-        self.tick_dot(state, events);
+        let boss_defeat_first = self.config.terminal_outcome_policy
+            == Some(config::TerminalOutcomePolicy::BossDefeatFirst);
+        if !boss_defeat_first || !state.phase.terminal() {
+            self.tick_dot(state, events);
+        }
+        if boss_defeat_first && state.phase.terminal() {
+            // A defeat by the player's action or by the final DoT tick
+            // cancels the Boss's queued attack before it can deal damage.
+            state.pending = None;
+            return;
+        }
         if let Some(active) = state.boss.curse.as_mut() {
             active.turns -= 1;
             if active.turns == 0 {

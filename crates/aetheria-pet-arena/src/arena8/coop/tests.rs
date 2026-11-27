@@ -1093,3 +1093,131 @@ fn authored_boss_pressure_targets_living_mana_leaders_at_impact() {
     candidate["bosses"][0]["attackModel"]["targetPriority"] = "unsupported".into();
     assert!(CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap()).is_err());
 }
+
+#[test]
+fn terminal_outcome_policy_is_digest_bound_and_requires_schema_two() {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["terminalOutcomePolicy"] = serde_json::Value::Null;
+    let parse = |value: &serde_json::Value| CoopConfig::parse(&serde_json::to_vec(value).unwrap());
+    assert_eq!(parse(&candidate).unwrap().digest(), rules().digest());
+
+    candidate["terminalOutcomePolicy"] = "boss-defeat-first".into();
+    assert_ne!(parse(&candidate).unwrap().digest(), rules().digest());
+    candidate["terminalOutcomePolicy"] = "unknown".into();
+    assert!(matches!(parse(&candidate), Err(ConfigError::Malformed)));
+
+    let mut historical: serde_json::Value = serde_json::from_slice(include_bytes!(
+        "../../../../../config/gameplay/arena8-coop-v1.seed.json"
+    ))
+    .unwrap();
+    historical["terminalOutcomePolicy"] = "boss-defeat-first".into();
+    assert!(matches!(parse(&historical), Err(ConfigError::Identity)));
+}
+
+fn boss_defeat_first_rules() -> CoopRules {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["terminalOutcomePolicy"] = "boss-defeat-first".into();
+    CoopRules::load(
+        &serde_json::to_vec(&candidate).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap()
+}
+
+fn reduce_against_due_telegraph(
+    rules: &CoopRules,
+    action: CoopAction,
+    boss_hp: u32,
+) -> Decision<CoopState> {
+    let mut rng = rng(0);
+    let mut state = rules
+        .reduce(
+            &rules.allocate(seats()).unwrap(),
+            CoopAction::Start,
+            &mut rng,
+        )
+        .unwrap()
+        .state;
+    rules.transform(&mut state).unwrap();
+    state.boss.hp = boss_hp;
+    state.boss.dot_damage = 1;
+    state.boss.dot_turns = 2;
+    for (index, seat) in state.participants.iter_mut().enumerate() {
+        seat.alive = index < 2;
+        seat.hp = u32::from(seat.alive);
+    }
+    state.participants[0].mana = rules.config.resources.mana_cap;
+    state.participants[0].crit_rate_bp = 0;
+    rules.boss_turn(&mut state, &mut rng, &mut Vec::new());
+    assert!(matches!(
+        state.pending,
+        Some(PendingAttack {
+            remaining: 1,
+            targets: 2,
+            ..
+        })
+    ));
+    rules.reduce(&state, action, &mut rng).unwrap()
+}
+
+#[test]
+fn terminal_policy_direct_boss_defeat_cancels_a_due_telegraph_before_dot() {
+    let historical = reduce_against_due_telegraph(&rules(), CoopAction::Skill, 1);
+    assert_eq!(historical.state.phase, CoopPhase::Lost);
+    assert_eq!(historical.state.boss.hp, 0);
+    assert!(historical.events.contains(&event("boss-dot", None, 0)));
+    assert!(historical.state.participants.iter().all(|seat| !seat.alive));
+
+    let configured = boss_defeat_first_rules();
+    let finished = reduce_against_due_telegraph(&configured, CoopAction::Skill, 1);
+    assert_eq!(finished.state.phase, CoopPhase::Won);
+    assert_eq!(finished.state.boss.hp, 0);
+    assert_eq!(finished.state.pending, None);
+    assert_eq!(finished.state.boss.dot_turns, 2);
+    assert_eq!(finished.state.turn_index, 1);
+    assert_eq!(finished.state.participants[0].hp, 1);
+    assert_eq!(finished.state.participants[1].hp, 1);
+    assert_eq!(finished.events, [event("boss-damage", Some(0), 1)]);
+    assert_eq!(
+        finished.settlement,
+        Some(configured.settlement(&finished.state))
+    );
+}
+
+#[test]
+fn terminal_policy_lethal_dot_cancels_a_due_telegraph() {
+    let historical = reduce_against_due_telegraph(&rules(), CoopAction::Guard, 1);
+    assert_eq!(historical.state.phase, CoopPhase::Lost);
+    assert_eq!(historical.state.boss.hp, 0);
+    assert!(historical.events.contains(&event("boss-dot", None, 1)));
+    assert!(historical.state.participants.iter().all(|seat| !seat.alive));
+
+    let configured = boss_defeat_first_rules();
+    let finished = reduce_against_due_telegraph(&configured, CoopAction::Guard, 1);
+    assert_eq!(finished.state.phase, CoopPhase::Won);
+    assert_eq!(finished.state.boss.hp, 0);
+    assert_eq!(finished.state.pending, None);
+    assert_eq!(finished.state.boss.dot_turns, 1);
+    assert_eq!(finished.state.turn_index, 1);
+    assert_eq!(finished.state.participants[0].hp, 1);
+    assert_eq!(finished.state.participants[1].hp, 1);
+    assert_eq!(finished.events.last(), Some(&event("boss-dot", None, 1)));
+    assert_eq!(
+        finished.settlement,
+        Some(configured.settlement(&finished.state))
+    );
+}
+
+#[test]
+fn terminal_policy_resolves_due_telegraph_when_the_boss_survives() {
+    let configured = boss_defeat_first_rules();
+    let finished = reduce_against_due_telegraph(&configured, CoopAction::Guard, 2);
+    assert_eq!(finished.state.phase, CoopPhase::Lost);
+    assert_eq!(finished.state.boss.hp, 1);
+    assert_eq!(finished.state.pending, None);
+    assert!(finished.state.participants.iter().all(|seat| !seat.alive));
+    assert_eq!(
+        finished.settlement,
+        Some(configured.settlement(&finished.state))
+    );
+}
