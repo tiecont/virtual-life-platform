@@ -305,7 +305,15 @@ export default function GameplayConfig({request}:{request:Request}){
   </fieldset>;
  })}</details>:null}
  <h3>Combat resources</h3><fieldset disabled={!editable} className="fields">{(['manaCap','rageCap','manaPerTile','manaOwnBonus','ragePerTile','ragePerGuard','ragePerDamageTaken'] as const).map((key,index)=><Num key={key} label={['Mana cap','Rage cap','Mana per tile','Matching-element mana bonus','Rage per tile','Rage from guard','Rage from incoming damage'][index]} value={read(bundle,['resources',key])} onChange={value=>change(['resources',key],value)}/>)}</fieldset>
- <h3>Party and board</h3><div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
+ <h3>Party and board</h3>
+ {bundle?.schemaVersion===2&&<label>Opening board generation
+  <select className="aetheria-field" disabled={!editable} value={String(read(bundle,['board','initialBoardPolicy'])??'')}
+   onChange={event=>change(['board','initialBoardPolicy'],event.target.value||undefined)}>
+   <option value="">Sample boards up to the generation limit</option>
+   <option value="constructive">Build a stable board with a legal swap</option>
+  </select>
+ </label>}
+ <div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
  <h3>Boss phase configuration</h3>{bossCatalog.length?<label>Boss<select className="aetheria-field" value={bossPath[1]} onChange={event=>setBossIndex(Number(event.target.value))}>{bossCatalog.map((value,index)=>{
   const id=display(value,'id'),name=display(value,'name'),map=display(value,'mapId');
   return <option key={index} value={index}>{name==='—'?id:name}{map==='—'?'':' · '+map}</option>;
