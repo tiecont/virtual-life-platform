@@ -50,6 +50,7 @@
       "stages": {
         "combatBound": 55,
         "bindingVerified": 55,
+        "levelOneCastVerified": 55,
         "combatVerified": 0,
         "conceptApproved": 0,
         "modelProduced": 0,
@@ -70,7 +71,8 @@
       "basis": {
         "canonicalIdentities": "crates/aetheria-pet-arena binding IDENTITY_COUNT = 55 ACTIVE + 6 CANDIDATE",
         "combatBound": "every active identity binds; arena8_binding.rs every_active_identity_binds_and_every_candidate_stays_gated",
-        "combatVerified": "0 identities have a claimed full battle-verification result. All 55 are bindingVerified (snapshot/allocation construction); actual battle simulation across families/levels/loadouts is Wave C2 work, and owner playtesting remains M5.",
+        "levelOneCastVerified": "catalog_conformance executes 221 abilities across all 55 active kits using fixture-provided resources and statuses, with all 11 effect families observed.",
+        "combatVerified": "Per-identity full battle qualification across levels and loadouts remains open. Owner playtesting remains M5.",
         "artStages": "no owner-accepted production model/rig/animation/render exists; all PetVisualAsset rights remain PENDING_REVIEW; Icarus assets are developer substitutes"
       }
     },
@@ -11518,6 +11520,11 @@
         "VL-208"
       ],
       "implementation": {
+        "constructiveOpeningHoldout": {
+          "sourceRevision": "b4039d6b135b050b70cc62f2d3716afacbeecb34",
+          "command": "cargo build --offline --locked -p aetheria-pet-arena --example arena8_coop_balance, then arena8_coop_balance BUNDLE PARTY 101 18 BOSS",
+          "result": "Three offline bundles, three party/Boss combinations and four policies completed all 648 simulations. Constructive shared-pressure gave Water Ground-heavy Lv40 0/0/10/9 victories and Water starter Lv20 0/0/0/1. Fire Lv10 won 0/0/1/0. Constructive resource-burst completed historical failed seed 114. Tests change opening policy and digest and do not establish published odds."
+        },
         "localIntegrationReview": {
           "sourceRevision": "d46c592d2025797ba6f794103014f34ead1d10cb",
           "command": "Rust fixed-seed diagnostics with holdout seeds 101 to 118",
