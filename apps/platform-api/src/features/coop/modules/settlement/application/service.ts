@@ -28,6 +28,7 @@ const EncounterSchema=z.object({
  id:pet,mapId:pet,
  rewardPolicy:z.strictObject({
   minimumActions:z.strictObject({victory:minimumActions,defeat:minimumActions}).nullish(),
+  recruitmentPetIds:z.array(pet).nonempty().nullish(),
   firstClear:PayoutSchema,repeatClear:PayoutSchema,defeat:PayoutSchema,
  }).nullish(),
 });
@@ -138,8 +139,11 @@ export class CoopSettlement{
   for(const [seatIndex,seat] of allocation.seats.entries()){
    if(seat.account===erasingAccount)continue;
    const active=(!qualified||qualified.has(seat.account))&&await this.store.accountActive(db,seat.account);
-   const firstClear=active&&policy&&encounter&&outcome==='won'&&await this.store.clearBoss(db,seat.account,encounter.mapId);
-   const payout=firstClear?policy.firstClear:defaultPayout;
+   let firstClear=false;
+   if(active&&policy&&encounter&&outcome==='won'){
+    firstClear=await this.store.clearBoss(db,seat.account,encounter.mapId,policy.recruitmentPetIds);
+   }
+   const payout=firstClear?policy?.firstClear:defaultPayout;
    const awardPoints=active?(payout?.achievementPoints??points):0;
    const awardCoins=active?(payout?.coins??coins):0,awardExp=active?(payout?.exp??exp):0;
    if(active&&payout)await this.store.materials(db,seat.account,payout.materials);
@@ -152,7 +156,7 @@ export class CoopSettlement{
    }
    await this.store.award(db,{
     settlementId:event.settlementId,accountId:seat.account,seat:seatIndex,outcome,
-    firstClear:Boolean(firstClear),materials:active?(payout?.materials??0):0,
+    firstClear,materials:active?(payout?.materials??0):0,
     points:awardPoints,coins:awardCoins,exp:awardExp,petId:seat.petId,ownedPetInstanceId:seat.ownedPetInstanceId,
     petLevel:level,petExp,currentLevel:level,currentExp:petExp,
    });

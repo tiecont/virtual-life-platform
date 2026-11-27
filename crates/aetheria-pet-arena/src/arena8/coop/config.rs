@@ -11,7 +11,11 @@
 //! author tunes lives here.
 
 use super::loadout::ArtifactCatalog;
-use crate::arena8::Element;
+use crate::arena8::{
+    Element,
+    binding::{IDENTITIES, RosterState},
+};
+use crate::wave1_mvp::{FEATURED_LIMITED_ID, MAPS, STANDARD_POOL};
 use aetheria_game_core::Value;
 use aetheria_game_core::canonical::{hash, list};
 use serde::Deserialize;
@@ -252,6 +256,8 @@ impl EncounterPayout {
 pub struct EncounterRewards {
     /// Successful combat commands per seat, excluding the initial Start command.
     pub minimum_actions: Option<ParticipationThreshold>,
+    /// Eligible species in canonical recruitment order, if authored.
+    pub recruitment_pet_ids: Option<Vec<String>>,
     pub first_clear: EncounterPayout,
     pub repeat_clear: EncounterPayout,
     pub defeat: EncounterPayout,
@@ -614,6 +620,13 @@ impl CoopConfig {
                 prerequisites.insert(map, required);
             }
             boss.validate(elements)?;
+            if let Some(pet_ids) = boss
+                .reward_policy
+                .as_ref()
+                .and_then(|policy| policy.recruitment_pet_ids.as_deref())
+            {
+                self.validate_recruitment(boss, pet_ids)?;
+            }
         }
         for &map in prerequisites.keys() {
             let mut visited = BTreeSet::new();
@@ -729,6 +742,68 @@ impl CoopConfig {
             }
         }
         Ok(skills)
+    }
+
+    fn validate_recruitment(
+        &self,
+        boss: &BossConfig,
+        pet_ids: &[String],
+    ) -> Result<(), ConfigError> {
+        let map = MAPS
+            .iter()
+            .find(|map| Some(map.id) == boss.map_id.as_deref())
+            .ok_or(ConfigError::Rewards)?;
+        if pet_ids.is_empty() {
+            return Err(ConfigError::Rewards);
+        }
+        let mut previous = None;
+        for pet_id in pet_ids {
+            let pet = self
+                .pets
+                .iter()
+                .find(|pet| pet.id == *pet_id)
+                .ok_or(ConfigError::Rewards)?;
+            let (index, identity) = IDENTITIES
+                .iter()
+                .enumerate()
+                .find(|(_, identity)| identity.id == pet_id)
+                .ok_or(ConfigError::Rewards)?;
+            let legendary = matches!(
+                identity.id,
+                "fire-pyrecrown"
+                    | "water-lagoonarch"
+                    | "electric-stormdiadem"
+                    | "ground-faultwarden"
+                    | "ghost-lanternwake"
+                    | "light-dawnarchon"
+            );
+            let rarity = if legendary {
+                "map-legendary"
+            } else {
+                "map-regular"
+            };
+            // Match the Wave 1 catalog preference: regulars in roster order,
+            // then the map Legendary. The published order pins the selection.
+            let priority = (legendary, index);
+            if identity.roster_state != RosterState::Active
+                || identity.family != "core"
+                || identity.id == FEATURED_LIMITED_ID
+                || STANDARD_POOL.contains(&identity.id)
+                || identity.element.index() != map.element.index()
+                || pet.element()? != identity.element
+                || pet.rarity != rarity
+                || pet
+                    .catalog
+                    .as_ref()
+                    .and_then(|catalog| catalog.map_id.as_deref())
+                    != Some(map.id)
+                || previous.is_some_and(|prior| prior >= priority)
+            {
+                return Err(ConfigError::Rewards);
+            }
+            previous = Some(priority);
+        }
+        Ok(())
     }
 
     fn pets_validate(
@@ -1301,6 +1376,9 @@ impl BossConfig {
                     Value::Uint(u64::from(limits.victory)),
                     Value::Uint(u64::from(limits.defeat)),
                 ]));
+            }
+            if let Some(pet_ids) = &p.recruitment_pet_ids {
+                payouts.push(list(pet_ids.iter().cloned().map(Value::Text)));
             }
             fields.push(Value::List(payouts));
         }

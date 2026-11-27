@@ -50,6 +50,34 @@ function encounterOptions(bundle:GameplayBundle|undefined){
   return [{id,label:[typeof name==='string'?name:id,map].filter(Boolean).join(' · ')}];
  });
 }
+function RecruitmentEditor({bundle,bossPath,editable,change}:{
+ bundle:GameplayBundle|null;bossPath:readonly string[];editable:boolean;
+ change:(path:readonly string[],value:unknown)=>void;
+}){
+ const mapId=read(bundle,[...bossPath,'mapId']);
+ const pets=Array.isArray(bundle?.pets)&&typeof mapId==='string'?bundle.pets:[];
+ const candidates=pets.flatMap(pet=>{
+  const id=read(pet,['id']),name=read(pet,['catalog','name']),rarity=read(pet,['rarity']);
+  if(typeof id!=='string'||read(pet,['catalog','mapId'])!==mapId||
+    (rarity!=='map-regular'&&rarity!=='map-legendary'))return [];
+  return [{id,name:typeof name==='string'?name:id,legendary:rarity==='map-legendary'}];
+ }).sort((a,b)=>Number(a.legendary)-Number(b.legendary));
+ if(!candidates.length)return null;
+ const path=[...bossPath,'rewardPolicy','recruitmentPetIds'];
+ const configured=read(bundle,path);
+ const selected=new Set(Array.isArray(configured)?configured:[]);
+ return <fieldset disabled={!editable}><legend>First map clear recruitment</legend>
+  <p className="small muted">The first selected Pet the participant does not own is granted after both map encounters are cleared. Regular Pets take priority.</p>
+  <div className="fields">{candidates.map(({id,name,legendary})=><label key={id}>
+   <input type="checkbox" checked={selected.has(id)} onChange={event=>{
+    if(event.target.checked)selected.add(id);else selected.delete(id);
+    const ordered=candidates.filter(pet=>selected.has(pet.id)).map(pet=>pet.id);
+    change(path,ordered.length?ordered:undefined);
+   }}/> {name}{legendary?' (Legendary)':''}
+  </label>)}</div>
+ </fieldset>;
+}
+
 function SimulationResults({result}:{result:SimulationResult}){
  const reports:EngineGameplaySimulationReport[]='reports' in result?result.reports:[result];
  const digest=reports[0]?.contentDigest;
@@ -305,6 +333,7 @@ export default function GameplayConfig({request}:{request:Request}){
  })}
  <h3>Multiplier schedule</h3><p className="small muted">Each refill rolls from the current stage. A tier’s probability is its weight divided by the total weight for that stage.</p><div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead><tbody>{(Array.isArray(schedule)?schedule as unknown[]:[]).map((stage,index)=>{const row=stage as Record<string,unknown>,tiers=Array.isArray(row.tiers)?row.tiers as Record<string,unknown>[]:[];return <tr key={index}><td><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row.from==='number'?row.from as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'from'],next);}}/></td><td>{tiers.map((tier,tierIndex)=><label key={tierIndex} className="small">x{String(tier.multiplier)} · {((Number(tier.weight)/Math.max(1,tiers.reduce((sum,item)=>sum+Number(item.weight),0)))*100).toFixed(2)}% <input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof tier.weight==='number'?tier.weight as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'tiers',String(tierIndex),'weight'],next);}}/></label>)}</td></tr>;})}</tbody></table></div>
  <h3>Settlement rewards</h3>
+ {read(bundle,[...bossPath,'rewardPolicy'])?<RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>:null}
  {read(bundle,[...bossPath,'rewardPolicy'])?<fieldset disabled={!editable}><legend>Minimum committed combat actions per participant</legend>
  <p className="small muted">Healing, guarding and board moves count. Starting the battle does not. Zero includes all seated participants.</p>
  {(['victory','defeat'] as const).map(outcome=>{

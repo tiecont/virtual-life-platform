@@ -138,6 +138,71 @@ fn candidate_seed_validates_and_is_stable() {
 }
 
 #[test]
+fn recruitment_policy_validates_and_changes_the_pinned_digest() {
+    let seed = include_bytes!("../../../config/gameplay/arena8-coop-v2.seed.json");
+    let boss_id = "cinder-terraces-warden";
+    let historical = CoopRules::load(seed, boss_id.into()).unwrap();
+    let mut bundle: serde_json::Value = serde_json::from_slice(seed).unwrap();
+    let policy = &mut bundle["bosses"][0]["rewardPolicy"];
+    policy["recruitmentPetIds"] =
+        serde_json::json!(["fire-coalwhisk", "fire-emberloom", "fire-pyrecrown"]);
+    let authored = CoopRules::load(&serde_json::to_vec(&bundle).unwrap(), boss_id.into()).unwrap();
+    assert_ne!(authored.digest(), historical.digest());
+
+    bundle["bosses"][0]["rewardPolicy"]["recruitmentPetIds"] =
+        serde_json::json!(["fire-emberloom", "fire-pyrecrown"]);
+    let different = CoopRules::load(&serde_json::to_vec(&bundle).unwrap(), boss_id.into()).unwrap();
+    assert_ne!(authored.digest(), different.digest());
+}
+
+#[test]
+fn recruitment_policy_rejects_ineligible_and_reordered_species() {
+    let seed = include_bytes!("../../../config/gameplay/arena8-coop-v2.seed.json");
+    let mut bundle: serde_json::Value = serde_json::from_slice(seed).unwrap();
+    for ids in [
+        &[][..],
+        &["nonexistent-species"],
+        &["pet-v3-fire-icarus"],
+        &["pet-v31-fire-cindrelis"],
+        &["dragon-fire-ignivar"],
+        &["water-dewskip"],
+        &["fire-coalwhisk", "fire-coalwhisk"],
+        &["fire-emberloom", "fire-coalwhisk"],
+        &["fire-pyrecrown", "fire-coalwhisk"],
+    ] {
+        bundle["bosses"][0]["rewardPolicy"]["recruitmentPetIds"] = serde_json::json!(ids);
+        assert!(
+            matches!(
+                CoopRules::load(
+                    &serde_json::to_vec(&bundle).unwrap(),
+                    "cinder-terraces-warden".into()
+                ),
+                Err(ConfigError::Rewards)
+            ),
+            "accepted invalid recruitment list {ids:?}"
+        );
+    }
+
+    // The authoritative identity and map still govern if draft metadata is spoofed.
+    bundle["bosses"][0]["rewardPolicy"]["recruitmentPetIds"] =
+        serde_json::json!(["fire-pyrecrown"]);
+    let pet = bundle["pets"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|pet| pet["id"] == "fire-pyrecrown")
+        .unwrap();
+    pet["rarity"] = serde_json::json!("map-regular");
+    assert!(matches!(
+        CoopRules::load(
+            &serde_json::to_vec(&bundle).unwrap(),
+            "cinder-terraces-warden".into()
+        ),
+        Err(ConfigError::Rewards)
+    ));
+}
+
+#[test]
 fn absent_configuration_fails_closed() {
     assert!(CoopRules::load(b"", "cinder-terraces-boss".to_string()).is_err());
     assert!(CoopRules::load(b"not-json", "cinder-terraces-boss".to_string()).is_err());

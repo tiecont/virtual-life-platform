@@ -99,16 +99,30 @@ export class CoopSettlementStore{
  async accountActive(tx:Queryable,accountId:string):Promise<boolean>{
   return (await tx.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'",[accountId])).rowCount===1;
  }
- async clearBoss(tx:Queryable,accountId:string,mapId:string):Promise<boolean>{
+ async clearBoss(tx:Queryable,accountId:string,mapId:string,recruitmentPetIds:readonly string[]|null|undefined):Promise<boolean>{
+  // Serialize with the Wave 1 ownership and campaign writers before checking
+  // the encounter pair and choosing the first unowned species.
+  await tx.query('SELECT 1 FROM pet_wave_one_players WHERE account_id=$1 FOR UPDATE',[accountId]);
   const first=await tx.query(
    `INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id)
     VALUES ($1,$2,$2 || '-boss') ON CONFLICT DO NOTHING RETURNING encounter_id`,[accountId,mapId]);
-  if(first.rowCount){
-   await tx.query(
+  if(first.rowCount||recruitmentPetIds){
+   const clear=await tx.query(
     `INSERT INTO pet_wave_one_map_clears(account_id,map_id)
      SELECT $1,$2 WHERE EXISTS(SELECT 1 FROM pet_wave_one_encounters
       WHERE account_id=$1 AND map_id=$2 AND encounter_id=$2 || '-regular')
-     ON CONFLICT DO NOTHING`,[accountId,mapId]);
+     ON CONFLICT DO NOTHING RETURNING map_id`,[accountId,mapId]);
+   // The canonical map milestone requires both encounter receipts. Only the
+   // transaction creating that milestone can grant the pinned recruit.
+   if(clear.rowCount&&recruitmentPetIds){
+    await tx.query(
+     `INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source)
+      SELECT $1,candidate.pet_id,1,0,'campaign'
+      FROM unnest($2::text[]) WITH ORDINALITY AS candidate(pet_id,priority)
+      WHERE NOT EXISTS(SELECT 1 FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=candidate.pet_id)
+      ORDER BY candidate.priority LIMIT 1
+      ON CONFLICT (account_id,pet_id) DO NOTHING`,[accountId,recruitmentPetIds]);
+   }
   }
   return first.rowCount===1;
  }
