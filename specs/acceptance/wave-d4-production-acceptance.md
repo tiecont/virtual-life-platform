@@ -10,15 +10,15 @@ The canonical backlog is [development-plan.json](../../config/development-plan.j
 | Admin | `artifacts/wave-d4-session/admin-skill-publication.json` |
 | Balance / Performance | `artifacts/wave-d4-measures/{balance-summary.json,performance-summary.json}` |
 | Character | `artifacts/wave-d4-art/icarus-H1-R3/gates/H1/` |
-| Media / Local stage receipt | `artifacts/wave-d4-media/{original-score-r1,opening-animatic-r1,private-art-stage-receipt-r1.json}` |
+| Media / Local stage receipt | `artifacts/wave-d4-media/{original-score-r1,opening-animatic-r2,private-art-stage-receipt-r2.json}` |
 | Gemini workflow | [Production inputs and prompt handoffs](../media/gemini-production.md) |
 | Gallery | [Guest and equipment](../../assets/review/wave-d4/baseline/), [combat](../../assets/review/wave-d4/combat/), [six maps](../../assets/review/wave-d4/world/) |
 
 ![Fire board before the glyph update](../../assets/review/wave-d4/combat/fire-board-after-reconnect-1024x768.webp)
 
-![Element silhouettes on the Linux player after reconnect, revision e19170e5](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp)
+![Element silhouettes on the Linux player after reconnect, revision d032a3b9](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp)
 
-Both combat frames use the same 1024×768 reconnect scenario with different match seeds. The newer capture shows six shapes and visible ×2 badges. A separate 800×500 test on this revision exposed an 11-pixel collision for ×64.
+Both combat frames use the same 1024×768 reconnect scenario with different match seeds. The newer capture shows six shapes and visible ×2 badges. An earlier 800×500 test exposed an 11-pixel collision for ×64. After adjusting multiplied glyphs, the same assertion passed on 85c85729. Direct Editor tests returned 79 EditMode and 36 PlayMode passes, with two explicit service skips.
 
 ![Dawn Prism lighting baseline](../../assets/review/wave-d4/world/dawn-prism-sanctum-before-720p.webp)
 
@@ -105,8 +105,8 @@ Related tasks VL-179, VL-210.
 | E04 | Pet collection and detail presentation improved. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E05 | Equipment and Skill Training visual quality improved. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E06 | Campaign and lobby presentation improved. | NOT_RUN | — | Collect dedicated evidence for this condition. |
-| E07 | Combat board readability and visual quality improved. | IN_PROGRESS | e19170e5 · ElementTiles | Six shape glyphs and corner multiplier badges implemented. Verify a rendered build. |
-| E08 | Six elemental tiles are visually distinguishable. | PASS | e19170e5 · rendered Linux comparison | Flame, droplet, bolt, ghost, mountain and star silhouettes are visible in the retained reconnect frame. |
+| E07 | Combat board readability and visual quality improved. | IN_PROGRESS | e19170e5 · ElementTiles | Six shapes separate from corner multiplier badges in the Linux capture. Disabled-seat contrast, use of screen width and scroll-dependent actions need review. |
+| E08 | Six elemental tiles are visually distinguishable. | PASS | d032a3b9 · rendered Linux comparison | Flame, droplet, bolt, ghost, mountain and star silhouettes are visible in the retained reconnect frame. |
 | E09 | Active turn and resource state remain readable. | IN_PROGRESS | 663de837 · Gallery | Baseline 1024×768 captures. Still need complete screens and matched after views. |
 | E10 | Cascades and multiplier effects are visually satisfying. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | E11 | Skill, damage, healing and shield feedback works. | NOT_RUN | — | Collect dedicated evidence for this condition. |
@@ -164,7 +164,7 @@ Related tasks VL-184, VL-187.
 | --- | --- | --- | --- | --- |
 | H01 | Actual Gemini session capability inspected. | PASS | 3d23e0be · Gemini workflow | Authenticated tab exposed Create image, video and music. Tideglass brief submitted; output retrieval is unverified. |
 | H02 | Authorized generation workflow established. | PASS | 3d23e0be · Gemini workflow | Authenticated tab exposed Create image, video and music. Tideglass brief submitted; output retrieval is unverified. |
-| H03 | Opening cinematic candidate produced. | IN_PROGRESS | d2a911c7 · Media | Local still-frame opening animatic with original score; full cinematic and review remain open. |
+| H03 | Opening cinematic candidate produced. | IN_PROGRESS | 8df1f478 · Media | 25.6 s, 720p, 30 fps local animatic. Final title remains legible against the dimmed Dawn shot. Rig animation, final cinematic and rights review remain open. |
 | H04 | Icarus introduction candidate produced where references are authorized. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | H05 | Icarus skill showcase candidate produced. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | H06 | Fire cinematic candidate produced. | NOT_RUN | — | Collect dedicated evidence for this condition. |
@@ -249,16 +249,16 @@ Related tasks VL-178, VL-182.
 | L01 | Public-safe visual evidence directory established. | PASS | 663de837 · Gallery | 15 curated WebP baseline frames, 821278 bytes total; redacted room and guest identifiers. |
 | L02 | Narrow review-image Git policy established if needed. | PASS | 663de837 · Gallery | 15 curated WebP baseline frames, 821278 bytes total; redacted room and guest identifiers. |
 | L03 | Acceptance Markdown renders relative image links. | PASS | 663de837 · Gallery | 15 curated WebP baseline frames, 821278 bytes total; redacted room and guest identifiers. |
-| L04 | Production originals kept outside Git. | PASS | d2a911c7 · Media | Local editable originals and masters retained privately. |
-| L05 | Authorized source images delivered to private cloud. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L06 | Authorized VRM/GLB/FBX/Blender assets delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L07 | Authorized cinematic and music files delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L08 | Authorized build and test packages delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
+| L04 | Production originals kept outside Git. | PASS | 8df1f478 · Media | Local editable originals and masters retained privately. |
+| L05 | Authorized source images delivered to private cloud. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L06 | Authorized VRM/GLB/FBX/Blender assets delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L07 | Authorized cinematic and music files delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L08 | Authorized build and test packages delivered. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
 | L09 | Versioned manifests maintained. | NOT_RUN | — | Collect dedicated evidence for this condition. |
-| L10 | Uploaded object existence verified. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L11 | Retrieved asset SHA-256 verified. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L12 | Private access configuration verified. | NOT_RUN | Local stage receipt | 9 files staged, 31481102 bytes. No verified private cloud upload or retrieval. |
-| L13 | Local originals preserved. | PASS | d2a911c7 · Media | Local editable originals and masters retained privately. |
+| L10 | Uploaded object existence verified. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L11 | Retrieved asset SHA-256 verified. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L12 | Private access configuration verified. | NOT_RUN | Local stage receipt | 9 files staged, 31259568 bytes. No verified private cloud upload or retrieval. |
+| L13 | Local originals preserved. | PASS | 8df1f478 · Media | Local editable originals and masters retained privately. |
 | L14 | No credentials, signed URLs or restricted evidence committed. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 
 ## Final product review
@@ -270,7 +270,7 @@ Related tasks VL-199, VL-212, VL-214.
 | M01 | Integrated executable available for owner review. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
 | M02 | Actual gameplay screenshot gallery available. | PASS | 663de837 · Gallery | 15 curated WebP baseline frames, 821278 bytes total; redacted room and guest identifiers. |
 | M03 | Character review package available. | OWNER_REVIEW_REQUIRED | 89db72d3 · Character | H1 R3 is ready for owner face and hair review. |
-| M04 | Cinematic and music review references available. | PASS | d2a911c7 · Media | Local opening MP4 and eight audio auditions retained. |
+| M04 | Cinematic and music review references available. | PASS | 8df1f478 · Media | Local opening MP4 and eight audio auditions retained. |
 | M05 | Performance comparison available. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | M06 | Security verification summary available. | NOT_RUN | — | Collect dedicated evidence for this condition. |
 | M07 | Remaining visual and gameplay defects prioritized. | PASS | 663de837 · Gallery | Tile labels collided, board used half the window, actions required scrolling. Dawn highlights clip. |
