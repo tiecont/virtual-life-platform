@@ -11236,6 +11236,17 @@
         "VL-184"
       ],
       "implementation": {
+        "renderedDeveloperCampaign": {
+          "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
+          "buildManifestSha256": "af785007136fc786a51e3a718ae62f6bfcf14d14c9898376a4e5cf0ae8f611a0",
+          "command": "Packaged Linux world capture with -aetheria-world-capture on private Gamescope",
+          "result": "Validated nine 1280x720 screenshots with OpenGLCore, 64 tiles in each of the six arenas, and all twelve Plaza portal transitions."
+        },
+        "persistentNativeSettlement": {
+          "sourceRevision": "76394de547f418bc27fd2fbe68eaf337849e8a3c",
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts",
+          "result": "8/8 passed. All six maps advance only after both encounters, in either order. Fresh state and eligibility reads expose persistent clears and newly recruited Pets. Test fixtures supplied terminal proposals and zeroed the room points threshold."
+        },
         "localIntegrationReview": {
           "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
           "command": "node scripts/unity-validate.mjs tests",
