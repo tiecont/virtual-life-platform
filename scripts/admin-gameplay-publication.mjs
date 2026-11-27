@@ -228,7 +228,16 @@ try{
   await materialInput.fill(String(fields.materials));
   await expect(materialInput).toHaveValue(String(fields.materials));
   console.log('priority and host threshold edited for '+label);
+  const trainingSkill='water-dewskip-tide-lance';
+  const trainingLevels=[{materials:17,powerPm:1150}];
   if(label==='B'){
+   await page.getByText('Skill training costs and levels',{exact:true}).click();
+   await page.getByLabel('Training Pet',{exact:true}).selectOption('water-dewskip');
+   await page.getByLabel('Training skill',{exact:true}).selectOption(trainingSkill);
+   await control('New level material cost',trainingLevels[0].materials);
+   await control('New level power (‰)',trainingLevels[0].powerPm);
+   await button('Add level 2').click();
+   await expect(page.getByText('Maximum skill level 2',{exact:false})).toBeVisible();
    await button('Compare with active').click();
    await expect(page.getByRole('heading',{name:'Differences from active',exact:true})).toBeVisible();
    await expect(page.getByText('bosses[0: cinder-terraces-warden].attackModel.targetPriority',{exact:true})).toBeVisible();
@@ -271,6 +280,13 @@ try{
   assert.equal(row.state,'PUBLISHED');
   const read=await readVersion(created.version,fields.priority);
   assert.deepEqual(read.bundle,row.bundle);
+  const persistedSkill=read.bundle.skills.find(skill=>skill.id===trainingSkill);
+  assert.ok(persistedSkill);
+  if(label==='B'){
+   assert.deepEqual(persistedSkill.upgradeLevels,trainingLevels);
+   mark('operator authored and published a per-skill upgrade through the training editor',
+    {version:created.version,digest:verdict.contentDigest,skill:trainingSkill,levels:persistedSkill.upgradeLevels});
+  }else assert.equal(persistedSkill.upgradeLevels??null,null);
   assert.equal(read.contentDigest,verdict.contentDigest);
   if(fields.priority){
    const historical=globalThis.structuredClone(row.bundle);
