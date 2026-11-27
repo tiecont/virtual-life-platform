@@ -98,3 +98,20 @@
 .tile-ground { background-color: rgb(105, 78, 55); }
 .tile-light { background-color: rgb(56, 111, 91); }
 .coop-selected { border-width: 3px; border-color: white; }
+
+.training-list {
+    min-height: 0;
+    flex-shrink: 1;
+}
+.training-card {
+    margin-top: 6px;
+    padding: 8px;
+    background-color: rgb(28, 40, 57);
+    border-left-width: 2px;
+    border-left-color: rgb(147, 122, 83);
+}
+.arena-panel .training-name {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 217, 148);
+}

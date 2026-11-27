@@ -34,18 +34,27 @@ namespace Aetheria.PetArena.Presentation
         private void Render()
         {
             Clear();
-            Add(new Label(pet.name + " skills") { name = "coop-skill-title" });
+            var title = new Label(pet.name + " skills") { name = "coop-skill-title" };
+            title.AddToClassList("arena-title");
+            Add(title);
             if (progression != null)
             {
                 Add(new Label(progression.materials + " Artifact materials") { name = "coop-skill-materials" });
                 var skills = new ScrollView();
+                skills.AddToClassList("training-list");
                 foreach (var skill in progression.skills)
                 {
                     var name = SkillName(skill.skillId);
-                    var level = name + " · Lv " + skill.level + " / " + skill.maxLevel;
+                    var card = new VisualElement();
+                    card.AddToClassList("training-card");
+                    skills.Add(card);
+                    var heading = new Label(name);
+                    heading.AddToClassList("training-name");
+                    card.Add(heading);
+                    var level = "Level " + skill.level + " / " + skill.maxLevel;
                     if (skill.effectiveLevel != skill.level)
-                        level = name + " · Owned Lv " + skill.level + " · Active Lv " + skill.effectiveLevel;
-                    skills.Add(new Label(level) { name = "coop-skill-level-" + skill.skillId });
+                        level = "Owned Lv " + skill.level + " · Active Lv " + skill.effectiveLevel;
+                    card.Add(new Label(level) { name = "coop-skill-level-" + skill.skillId });
                     if (!(skill.nextMaterialCost is int cost)) continue;
                     var upgrade = new Button(() => _ = UpgradeAsync(skill))
                     {
@@ -53,7 +62,9 @@ namespace Aetheria.PetArena.Presentation
                         text = "Upgrade to Lv " + (skill.level + 1) + " · " + cost + " materials"
                     };
                     upgrade.SetEnabled(!busy && pendingSkill == null && progression.materials >= cost);
-                    skills.Add(upgrade);
+                    card.Add(upgrade);
+                    if (progression.materials < cost)
+                        card.Add(new Label((cost - progression.materials) + " more materials needed"));
                 }
                 Add(skills);
             }
