@@ -10836,11 +10836,17 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "The historical elemental Linux journey on d032a3b9 passed with Fire victory at v31 and four award rows. Exercise corrected functional encounters in a packaged build. Hosted CI remains open.",
+      "remaining": "Verify corrected four-seat packaged combat with recovery and settlement, natural Fire-to-Water progression, and hosted CI.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "functionalRegularPackage": {
+          "sourceRevision": "d203f179",
+          "command": "Direct Linux Editor build and private Gamescope solo start/swap with authenticated Nest and Rust WSS.",
+          "result": "Fire regular 1280x720 and Water regular 1920x1080 each showed 64 tiles, 4 abilities, state v2, exact encounter, published config and receipts [1,2]. Water used a disposable account with both Fire clears preloaded.",
+          "evidence": "artifacts/wave-d4-session/native-functional-regular-d203f179"
+        },
         "integratedLinuxReview": {
           "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
           "command": "bash scripts/packaged-coop/run.sh <linux-build-receipt> artifacts/rust/target/debug/aetheria-game-runtime <tessdata>",
@@ -11112,8 +11118,14 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Reconcile D3 task dependencies and green hosted CI on the integrated revision.",
+      "remaining": "Complete integrated security verification and green hosted CI.",
       "implementation": {
+        "historicalFunctionalSettlement": {
+          "sourceRevision": "9ab5beac",
+          "command": "admin-gameplay-publication.mjs --direct with historical and current binaries, then --solo. PostgreSQL 18.7 with private loopback TLS.",
+          "result": "30 historical/current scenarios and 8 solo scenarios passed. Old matches retained digest and award values across restart and rollback. Reviewed independently by authority worker.",
+          "evidence": "artifacts/wave-d4-session/functional-authority/historical-two-binary-9ab5beac.json"
+        },
         "integratedLinuxReview": {
           "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
@@ -11558,13 +11570,19 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "The first functional co-op candidate at d79dcb43 lost 192/192 simulations. Three unpublished Fire/Water variants won 26, 92 and 46 of 192 respectively. Run held-out seeds and examine starter loadouts before selecting a balance candidate.",
+      "remaining": "Review Water win rates, average duration and party composition with owner before selecting or publishing a candidate.",
       "qualificationDependencies": [
         "VL-206",
         "VL-207",
         "VL-208"
       ],
       "implementation": {
+        "functionalWaterHoldout": {
+          "sourceRevision": "44bc7fab",
+          "command": "scripts/coop-balance-study.py --stage confirmation --bundles functional-b tideglass-endurance tideglass-vitality (functional candidate, seeds 801-812). Rust arena8_coop_balance Water-only repeat on seeds 1001-1024.",
+          "result": "1728 initial battles and 576 held-out Water battles across four policies, all resolved. Tactical level-20 starters won 0/24 with reference, 6/24 with reduced attack pressure, and 6/24 with reduced boss HP. Ground level 40 won 12/24, 24/24 and 16/24. Phase and multiplier parameters preserved.",
+          "evidence": "artifacts/wave-d4-session/functional-board/tideglass-comparison/fresh-water-holdout.json"
+        },
         "productionReview": {
           "sourceRevision": "eb980abb",
           "observed": "Seeds 301\u2013324 across four configurations, six Bosses and four policies completed 2304 simulations. Shared-pressure Fire victories were 0/0/6/3. The other five Bosses had no wins with these level 20 starter parties. Natural access to the tested progression remains unqualified.",
