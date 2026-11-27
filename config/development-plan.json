@@ -35,6 +35,7 @@
     }
   ],
   "mvpProgram": {
+    "criticalPath": ["M0", "M1", "M2", "M3", "M4", "M5", "M6"],
     "schemaVersion": 1,
     "wave": "Wave D3",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
@@ -11091,8 +11092,14 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Confirm hosted checks on the integrated source.",
+      "remaining": "Native and hosted checks passed. Reconcile the outstanding owned-instance, catalog and packaged progression dependencies.",
       "implementation": {
+        "november27Verification": {
+          "sourceRevision": "89db72d3ca693ea07fd6f5a0267cfe75b1c13fe5",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
+          "exitCode": 0,
+          "result": "Authenticated four-seat Fire victory and Water defeat recovered at v5. Repeat drains preserved rewards. PR86 hosted all 17 checks passed at 0289d4e3. Fixtures supplied points and encounter tuning."
+        },
         "integratedAcceptance": {
           "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:4489",
@@ -11217,6 +11224,12 @@
         "VL-184"
       ],
       "implementation": {
+        "november27Verification": {
+          "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
+          "command": "cargo test --locked -p aetheria-pet-arena --test arena8 six_campaign_regular_encounters_resolve_and_replay -- --nocapture; aetheria-game-runtime --simulate-coop <v2 seed> tactical 2 <each Boss>",
+          "exitCode": 0,
+          "result": "All six regulars resolved and reproduced the replay digest. Lv1 Icarus won the first four and lost the last two. All six cooperative Bosses reached defeat on both seeds. This exercises engine execution; end-to-end campaign progression remains open."
+        },
         "regularLastRecruitment": {
           "sourceRevision": "63322a8759d70d819799aa37ef0a2b3b4dccc281",
           "integratedRevision": "5ccce14d8c6a53a5fad4bd3364a5ce7bf2bfd235",
@@ -11271,6 +11284,12 @@
       ],
       "remaining": "Verify earned gear and a trained skill through packaged interactions and subsequent combat.",
       "implementation": {
+        "november27Verification": {
+          "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
+          "command": "node scripts/skill-training-candidate.mjs; aetheria-game-runtime --check-gameplay-config <rendered candidate>; vitest run --project integration tests/integration/pet-artifacts-wave-a.test.ts tests/integration/pet-arena-wave1-durable.test.ts",
+          "exitCode": 0,
+          "result": "Rust digest fc6c02247940eba9a8341960f685b0050138114c4e9420bc28d30ee3c0b464ad. 164 trainable skills, 55 fixed guards and two fixed cleanses. 30 DB cases passed, including unassisted guest Fire clear, claim and equip of upgraded starter Core. Candidate pending owner review."
+        },
         "integrationCheckpoint": {
           "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
           "pullRequest": 86,
@@ -11303,6 +11322,12 @@
       ],
       "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
       "implementation": {
+        "november27Verification": {
+          "sourceRevision": "ec85a778ba164f4a60c3758ac42c46110edf4194",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs",
+          "exitCode": 0,
+          "result": "Chromium published A/B, rolled back and compared a Boss by ID and field. Across three four-seat Rust matches after restarts the pinned defeat award paid 1, 3, then 1 material per account."
+        },
         "targetPriorityBrowserAcceptance": {
           "sourceRevision": "60048a0005cbd5a3c0c0b936474997c5f7b17eca",
           "command": "Independent Chromium Admin A/B driver, isolated PostgreSQL, Rust runtime, rollback and native impact check",
@@ -11468,6 +11493,12 @@
         "VL-208"
       ],
       "implementation": {
+        "november27Verification": {
+          "sourceRevision": "aa730cc2c46c7a9e131af1692d40f9d3da775e2f",
+          "command": "cargo test --locked -p aetheria-pet-arena --test catalog_conformance",
+          "exitCode": 0,
+          "result": "All 55 active Lv1 Pets cast their 221 skills; all 11 effects observed, Icarus-only FIRE_ZONE. Resources and statuses provided by the cast fixture."
+        },
         "waterTargetComparison": {
           "sourceRevision": "266c69005fca97008ead82912ede72481b7c771b",
           "command": "aetheria-game-runtime --compare-coop <candidate> 8 tideglass-lagoon-warden --party <level-60 starter party>",
