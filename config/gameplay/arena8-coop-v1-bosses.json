@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "engineCapability": "arena8-coop-v1",
+  "configId": "arena8-coop-v1-bosses",
+  "contentRevision": 1,
+  "bosses": [
+    {
+      "id": "cinder-terraces-warden",
+      "mapId": "cinder-terraces",
+      "name": "Cinder Terraces Warden",
+      "element": "fire",
+      "maxHp": 12000,
+      "attack": 120,
+      "defense": 60,
+      "critRateBp": 1200,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 180,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    },
+    {
+      "id": "tideglass-lagoon-warden",
+      "mapId": "tideglass-lagoon",
+      "name": "Tideglass Lagoon Warden",
+      "element": "water",
+      "maxHp": 13000,
+      "attack": 115,
+      "defense": 70,
+      "critRateBp": 1000,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 170,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    },
+    {
+      "id": "stormcoil-fields-warden",
+      "mapId": "stormcoil-fields",
+      "name": "Stormcoil Fields Warden",
+      "element": "electric",
+      "maxHp": 11500,
+      "attack": 130,
+      "defense": 50,
+      "critRateBp": 3000,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 190,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    },
+    {
+      "id": "lantern-necropolis-warden",
+      "mapId": "lantern-necropolis",
+      "name": "Lantern Necropolis Warden",
+      "element": "ghost",
+      "maxHp": 12500,
+      "attack": 100,
+      "defense": 55,
+      "critRateBp": 2500,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 165,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    },
+    {
+      "id": "ochre-labyrinth-warden",
+      "mapId": "ochre-labyrinth",
+      "name": "Ochre Labyrinth Warden",
+      "element": "ground",
+      "maxHp": 14000,
+      "attack": 95,
+      "defense": 65,
+      "critRateBp": 1500,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 150,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    },
+    {
+      "id": "dawn-prism-sanctum-warden",
+      "mapId": "dawn-prism-sanctum",
+      "name": "Dawn Prism Sanctum Warden",
+      "element": "light",
+      "maxHp": 11000,
+      "attack": 125,
+      "defense": 45,
+      "critRateBp": 2000,
+      "critDamageBp": 15000,
+      "phase": {
+        "thresholdBp": 5000,
+        "maxGrowthBp": 5000,
+        "currentBp": 10000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      },
+      "attackModel": {
+        "baseDamage": 175,
+        "perRoundDamage": 0,
+        "defenseDivisor": 8,
+        "minimumDamage": 1,
+        "vulnerability": {
+          "valuePm": 1500,
+          "durationTurns": 2
+        },
+        "targetPriority": "highest-mana"
+      },
+      "telegraphTurns": 2,
+      "requiredRoomPoints": 0
+    }
+  ]
+}
