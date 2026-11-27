@@ -76,7 +76,7 @@ try{
  stage='strict-old';await stop();await start(old);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations'));await stop();
  stage='old-runtime-rollback';for(const previousPolicyRef of previousPolicyRefs){await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();}
  await start(old,true);await ready(200);await sameUser(cookie,account);await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy);assert.deepEqual(await readNative(),frozen);
- facts.scenarios.push('Strict archived47 and frozen50/53/54/55/61/62/63/64 expansion policies refuse undeclared65; explicit exact-prefix65 policy allows old runtime rollback without down migration or touching native ciphertext');
+ facts.scenarios.push('Strict archived47 and frozen50/53/54/55/61/62/63/64/65 expansion policies refuse undeclared66; explicit exact-prefix66 policy allows old runtime rollback without down migration or touching native ciphertext');
  stage='checksum-negatives';
  for(const name of [Object.keys(before)[0],'0048_native_game_storage.sql',Object.keys(after).at(-1)]){
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1',[name,'0'.repeat(64)]);await ready(503);
@@ -92,7 +92,7 @@ try{
  ) AS data`,[legacyId])).rows[0].data,legacy);
  const stored=await readNative(),decipher=createDecipheriv('aes-256-gcm',key,stored.snapshot_nonce);decipher.setAAD(aad);decipher.setAuthTag(stored.snapshot_tag);assert.deepEqual(Buffer.concat([decipher.update(stored.sealed_snapshot),decipher.final()]),secret);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
- facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current65 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
+ facts.scenarios.push('Original/native-storage/tail checksum and unknown migration fail closed; current66 roll-forward preserves every old47 checksum, legacy match, participant and receipt journals, identity and native AEAD fixture roundtrip');
  facts.migrations={previous:47,current:65,oldPrefixUnchanged:true,frozenNegativeMigrations:64,concurrentMigrators:2};facts.nativeCiphertextSha256=sha(ciphertext);facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{

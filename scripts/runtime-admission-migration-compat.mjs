@@ -12,7 +12,7 @@ const execute=promisify(execFile),root=process.cwd(),revision='aca14de0c50fe5d80
 const directory=resolve('artifacts/desktop-first/vl013/migration-'+randomUUID().slice(0,8)),source=directory+'/source';
 const require=createRequire(import.meta.url),sha=value=>createHash('sha256').update(value).digest('hex');
 const previousPolicyRefs=['config/schema-compatibility-0048-admission-expand.json','config/schema-compatibility-0048-pet-acquisition-expand.json','config/schema-compatibility-0048-private-art-expand.json','config/schema-compatibility-0048-wave1-expand.json', 'config/schema-compatibility-0061-admission-expand.json','config/schema-compatibility-0062-admission-expand.json', 'config/schema-compatibility-0063-admission-expand.json', 'config/schema-compatibility-0064-admission-expand.json', 'config/schema-compatibility-0065-admission-expand.json'],policyRef='config/schema-compatibility-0066-admission-expand.json';
-const facts={taskId:'VL-013',scope:'Actual archived48 Nest runtime on additive66 disposable PG; no production, runtime-role or TLS qualification',previousRevision:revision,commands:[],scenarios:[],startedAt:new Date().toISOString()};
+const facts={taskId:'VL-013',scope:'Actual archived48 Nest runtime on additive66 disposable PG; no production, runtime-role or TLS qualification',previousRevision:revision,currentRevision:(await execute('git',['rev-parse','HEAD'])).stdout.trim(),commands:[],scenarios:[],startedAt:new Date().toISOString()};
 await mkdir(source,{recursive:true,mode:0o700});
 async function run(bin,args,cwd=root){
  const log='build-'+facts.commands.length+'.log';
@@ -72,7 +72,7 @@ try{
  stage='runtime-rollback';for(const previousPolicyRef of previousPolicyRefs){await start(old,true,previousPolicyRef);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',JSON.parse(await readFile(previousPolicyRef))));await stop();}
  await start(old,true);await ready(200);await sameIdentity(cookie,account);await old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy);
  assert.deepEqual((await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data,frozen);
- facts.scenarios.push('Strict old48 and frozen50/53/54/55/61/62/63/64 expansion policies reject undeclared65; explicit exact-prefix65 policy permits runtime rollback without destructive down migration or altering closed world');
+ facts.scenarios.push('Strict old48 and frozen50/53/54/55/61/62/63/64/65 expansion policies reject undeclared66; explicit exact-prefix66 policy permits runtime rollback without destructive down migration or altering closed world');
  stage='negative-checks';
  for(const name of [Object.keys(before)[0],Object.keys(after).at(-1)]){
   await pool.query('UPDATE city_schema_migrations SET checksum=$2 WHERE name=$1',[name,'0'.repeat(64)]);await ready(503);await assert.rejects(old.migrate(pool,source+'/apps/platform-api/dist/db/migrations',policy));
@@ -84,7 +84,7 @@ try{
  assert.deepEqual((await pool.query("SELECT jsonb_agg(to_jsonb(m) ORDER BY id) AS data FROM game_native_matches m")).rows[0].data,native);
  assert.deepEqual((await pool.query('SELECT to_jsonb(w) AS data FROM platform_native_worlds w WHERE world_id=$1',[world])).rows[0].data,frozen);
  const rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;assert.deepEqual(Object.fromEntries(rows.map(r=>[r.name,r.checksum])),after);
- facts.scenarios.push('Prefix/tail checksum and unknown future migration fail closed; current65 roll-forward preserves identity, old game rows and closed-world bytes');
+ facts.scenarios.push('Prefix/tail checksum and unknown future migration fail closed; current66 roll-forward preserves identity, old game rows and closed-world bytes');
  facts.migrations={previous:48,current:65,oldPrefixUnchanged:true,frozenNegativeMigrations:64,concurrentMigrators:2};facts.result='PASS';
 }catch(error){facts.result='FAIL';facts.failedStage=stage;facts.failureKind=error.name;facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);process.exitCode=1;}
 finally{
