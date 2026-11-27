@@ -10829,11 +10829,17 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Run the matching Linux binary and runtime from login through recovery, settlement and the next equipped allocation.",
+      "remaining": "Local packaged journey passed. Confirm hosted CI for integrated code and the remaining D3 dependencies.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "integratedLinuxReview": {
+          "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
+          "command": "bash scripts/packaged-coop/run.sh <linux-build-receipt> artifacts/rust/target/debug/aetheria-game-runtime <tessdata>",
+          "exitCode": 0,
+          "result": "PASS run-lzi0bXka. One Linux guest and three separate native sockets executed swap, skill, signature, ultimate and guard. Re-admission at version 3 preserved all 64 cells including five multipliers. Fire transformed at v25 and ended in victory at v29. All four first-clear payouts persisted. Guest returned to Plaza, spent 60 materials upgrading Emberglass to Lv2 and entered Water with 5 additional HP. Linux package manifest SHA-256 d72c7169c7a6570aad302ae01522bda4b9c342773b4809cff3bdcf6ecb3b55ba. Reduced difficulty and three partner fixtures."
+        },
         "localIntegrationReview": {
           "sourceRevision": "c81a3c9c98bea5115ca8a32e9fc67dd4f268612a",
           "command": "Linux packaged private-display run 6DMHg5Hy and CoopNativeHudTests",
@@ -11099,8 +11105,14 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Native and hosted checks passed. Reconcile the outstanding owned-instance, catalog and packaged progression dependencies.",
+      "remaining": "Reconcile D3 task dependencies and green hosted CI on the integrated revision.",
       "implementation": {
+        "integratedLinuxReview": {
+          "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
+          "exitCode": 0,
+          "result": "PASS: 23 recorded scenarios with a fresh build of the Rust runtime and restricted Docker PG. Four authenticated seats, alternate config publication, pinned restart, Fire victory, Water defeat and exactly-once settlement."
+        },
         "november27Verification": {
           "sourceRevision": "89db72d3ca693ea07fd6f5a0267cfe75b1c13fe5",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
@@ -11353,8 +11365,14 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
+      "remaining": "Complete the remaining acquisition policy editors and version-pinned acquisition simulation.",
       "implementation": {
+        "integratedLinuxReview": {
+          "sourceRevision": "b2a35703bc74512f8803bcaf61749cacab74b6b2",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs",
+          "exitCode": 0,
+          "result": "PASS: 34 recorded browser/native scenarios. Browser authored Water Dewskip Tide Lance level two at 17 materials and 1150 permille. Engine digest df9df4ef8043c7fe235f5b8e8e727f008c1e026340dbf46dbe11f594a11f4382 persisted, with subsequent native reward isolation and rollback to A. Disposable values only."
+        },
         "localIntegrationReview": {
           "sourceRevision": "33734b784935c744c6b17687f9ca7378b5d17a90",
           "command": "Headless Chromium Admin publication and rollback driver, run-UkKv6q",
