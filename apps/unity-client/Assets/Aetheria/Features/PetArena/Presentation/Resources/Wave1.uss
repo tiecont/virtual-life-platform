@@ -113,10 +113,10 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .coop-tile-multiplied .coop-element-icon {
-    width: 26px;
-    height: 26px;
-    left: 6px;
-    top: 10px;
+    width: 20px;
+    height: 20px;
+    left: 0;
+    top: 14px;
 }
 .coop-world .coop-tile-multiplier {
     position: absolute;
