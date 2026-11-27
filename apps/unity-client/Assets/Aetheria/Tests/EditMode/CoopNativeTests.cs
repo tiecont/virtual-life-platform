@@ -198,6 +198,11 @@ namespace Aetheria.Tests
             Assert.That(blocked.Q<Button>("coop-action-guard").enabledSelf, Is.False);
             Assert.That(blocked.Q<Button>("coop-cell-0").enabledSelf, Is.False);
 
+            var pending = CoopNativePresentation.Build(view, _ => { }, _ => { }, inputAvailable: false);
+            Assert.That(pending.Q("coop-board").enabledSelf, Is.True);
+            Assert.That(pending.Q<Button>("coop-cell-0").enabledSelf, Is.False);
+            Assert.That(pending.Q<Button>("coop-action-skill").enabledSelf, Is.False);
+
             var terminal = Coop(version: 2, phase: "lost", reward: "\"GRANTED\"");
             var over = CoopNativePresentation.Build(terminal, index => selected = index, _ => { });
             Assert.That(over.Q<Button>("coop-action-guard").enabledSelf, Is.False);
