@@ -11374,7 +11374,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Functional Admin authoring is integrated at 691b12c7. Prove comparative publication, historical rollback and pinned recovery, then complete acquisition policy editors.",
+      "remaining": "Real Chromium operator publication, rollback, pinned restart recovery and audited Mana yields passed 34 scenarios on 834198e3. Complete the remaining acquisition policy editors and verify the combined integration before merge.",
       "implementation": {
         "integratedLinuxReview": {
           "sourceRevision": "b2a35703bc74512f8803bcaf61749cacab74b6b2",
