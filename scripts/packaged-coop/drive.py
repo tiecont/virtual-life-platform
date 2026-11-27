@@ -69,17 +69,26 @@ def word_button(image, words, box):
     return None
 
 def action_button(image, word, board_y):
-    # Search only below the board so a participant or status cannot match.
-    position = word_button(image, {word}, (0, board_y + 410, 1000, 724))
-    if position is None:
-        return None
-    x, y = position
+    # An enabled action has a light gray background. Locate each action box
+    # below the board, then read its label on its own line.
+    runs = {}
     with Image.open(image) as frame:
-        pixel = frame.convert('RGB').getpixel((x, y - 12))
-    # Inactive controls expose the same labels against a dark gray background.
-    if min(pixel) < 120 or max(pixel) - min(pixel) > 30:
-        return None
-    return position
+        pixels = frame.convert('RGB').load()
+        for y in range(board_y + 410, 724):
+            row = []
+            for x in range(1000):
+                rgb = pixels[x, y]
+                row.append(min(rgb) >= 120 and max(rgb) - min(rgb) <= 30)
+            for run in re.finditer(rb'\x01{80,}', bytes(row)):
+                runs.setdefault(run.span(), []).append(y)
+    for (left, right), rows in runs.items():
+        top, bottom = rows[0], rows[-1] + 1
+        if len(rows) < 4 or not 25 <= bottom - top <= 52:
+            continue
+        label = ocr(image, (left, top, right, bottom), '7').lower()
+        if re.search(r'\b' + re.escape(word) + r'\b', label):
+            return ((left + right) // 2, (top + bottom) // 2)
+    return None
 
 def status_button(image):
     return word_button(image,{'reconnect','retry'},(600,732,900,761))
