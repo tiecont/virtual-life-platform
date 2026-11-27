@@ -349,7 +349,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
         store:new CoopMatchStore(db),admission,
         issuer:new RuntimeTicketIssuer(identity,keyId,keys.privateKey,admission.admission),
         runtime:new LocalNativeCoopRuntime({
-          binary,databaseUrl,role,caFile,storageKey,storageKeyId,
+          binary,historicalBinary:config.LOCAL_COOP_HISTORICAL_RUNTIME_BINARY,databaseUrl,role,caFile,storageKey,storageKeyId,
           publicKey:keys.publicKey.export({format:'jwk'}).x!,keyId,origin:httpsOrigin,
           certFile,keyFile,
         }),

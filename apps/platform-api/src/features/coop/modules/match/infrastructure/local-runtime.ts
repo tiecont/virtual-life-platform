@@ -14,7 +14,7 @@ const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const LISTEN_TIMEOUT_MS=15000,READY_TIMEOUT_MS=10000,STOP_TIMEOUT_MS=3000;
 
 export type LocalNativeCoopRuntimeOptions=Readonly<{
- binary:string;databaseUrl:string;role:string;caFile:string;
+ binary:string;historicalBinary?:string;databaseUrl:string;role:string;caFile:string;
  publicKey:string;keyId:string;origin:string;
  storageKey:string;storageKeyId:string;certFile:string;keyFile:string;
 }>;
@@ -59,6 +59,8 @@ function nativeSeats(seats:readonly CoopSeat[]){
 // creates no second ticket authority, transport or balance source.
 export class LocalNativeCoopRuntime implements CoopRuntimePort{
  constructor(private readonly options:LocalNativeCoopRuntimeOptions){
+  if(!options.binary.startsWith('/')||(options.historicalBinary!==undefined&&!options.historicalBinary.startsWith('/')))
+   throw new Error('Cooperative runtime executable paths must be absolute');
   if(!LABEL.test(options.role))throw new Error('Cooperative native database role is invalid');
   if(!LABEL.test(options.keyId)||!LABEL.test(options.storageKeyId))throw new Error('Cooperative native key labels are invalid');
   if(!/^[A-Za-z0-9_-]{43}$/.test(options.publicKey))throw new Error('Cooperative native ticket key is invalid');
@@ -70,13 +72,25 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
     !['127.0.0.1','localhost','[::1]'].includes(database.hostname)||database.search||database.hash)
    throw new Error('Cooperative native database URL is invalid');
  }
+ private async selectBinary(pinnedHash?:string){
+  if(pinnedHash!==undefined&&!/^[a-f0-9]{64}$/.test(pinnedHash))throw new Error('Invalid cooperative runtime engine pin');
+  const historical=this.options.historicalBinary;
+  const candidates=pinnedHash&&historical?[this.options.binary,historical]:[this.options.binary];
+  for(const binary of candidates){
+   try{
+    await access(binary,constants.X_OK);
+    const engineHash=createHash('sha256').update(await readFile(binary)).digest('hex');
+    if(pinnedHash===undefined||engineHash===pinnedHash)return {binary,engineHash};
+   }catch{/* Try the separately configured historical executable during recovery. */}
+  }
+  throw new Error('Pinned cooperative runtime engine unavailable');
+ }
  async start(request:CoopRuntimeRequest):Promise<CoopRuntimeHandle>{
   if(request.seats.length!==4)throw new Error('Cooperative native allocation requires four seats');
   if(!request.seats.every(seat=>UUID.test(seat.account)&&seat.petLevel>=1&&seat.petLevel<=60))
    throw new Error('Cooperative native allocation is invalid');
-  await access(this.options.binary,constants.X_OK).catch(()=>{throw new Error('Cooperative native runtime binary unavailable');});
+  const {binary,engineHash}=await this.selectBinary(request.engineHash);
   await access(this.options.caFile,constants.R_OK).catch(()=>{throw new Error('Cooperative native runtime CA unavailable');});
-  const engineHash=createHash('sha256').update(await readFile(this.options.binary)).digest('hex');
   const hexBytes=(value:string)=>Array.from(Buffer.from(value,'hex'));
   const settings={
    schemaVersion:1,ruleset:'arena8-coop-pve',movement:false,
@@ -92,7 +106,7 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
   const settingsFile=join(directory,'runtime.json'),bundleFile=join(directory,'bundle.json');
   await writeFile(settingsFile,JSON.stringify(settings),{mode:0o600});
   await writeFile(bundleFile,JSON.stringify(request.bundle),{mode:0o600});
-  const child=spawn(this.options.binary,[],{
+  const child=spawn(binary,[],{
    env:{
     PATH:process.env.PATH??'',
     AETHERIA_RUNTIME_BIND:'127.0.0.1:0',

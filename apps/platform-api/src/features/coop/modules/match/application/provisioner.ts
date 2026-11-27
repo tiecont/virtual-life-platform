@@ -15,6 +15,7 @@ export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED'
 export type CoopAllocationRecord=Readonly<{
  matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
  configVersion:number;configDigest:string;contentHash:string;
+ engineHash?:string;
  seats:readonly CoopSeat[];status:CoopAllocationStatus;generation:number;
 }>;
 export type CoopMatchStorePort=Readonly<{
@@ -35,7 +36,7 @@ export type CoopAdmissionPort=Readonly<{
 export type CoopIssuerPort=Readonly<{issue(credential:string,scope:RuntimeScope):Promise<Readonly<{ticket:string;expiresAt:string}>>}>;
 export type CoopRuntimeRequest=Readonly<{
  matchId:string;bootId:string;worldId:string;origin:string;bossId:string;
- configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];
+ configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];engineHash?:string;
 }>;
 export type CoopRuntimeHandle=Readonly<{port:number;stop():Promise<void>;onExit(listener:()=>void):void}>;
 export type CoopRuntimePort=Readonly<{start(request:CoopRuntimeRequest):Promise<CoopRuntimeHandle>}>;
@@ -236,7 +237,7 @@ export class CoopMatchProvisioner{
     generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
     handle=await this.options.runtime.start({
      matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
-     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,
+     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,engineHash:record.engineHash,
     });
     lease=this.lease(scope,generation,()=>{
      const current=this.active.get(record.matchId);

@@ -4,6 +4,19 @@ import {z} from 'zod';
 // values. The engine validator returns the capability and canonical digest.
 export const GameplayRulesetSchema=z.enum(['arena8-coop-pve']);
 export type GameplayRuleset=z.infer<typeof GameplayRulesetSchema>;
+export const CoopEngineCapability={
+ elemental:'arena8-coop-v1',
+ functional:'arena8-coop-v2',
+} as const;
+export const CoopRulesetVersionSchema=z.union([z.literal(1),z.literal(2)]);
+export type CoopRulesetVersion=z.infer<typeof CoopRulesetVersionSchema>;
+export function coopRulesetVersionForCapability(value:unknown):CoopRulesetVersion|undefined{
+ switch(value){
+  case CoopEngineCapability.elemental:return 1;
+  case CoopEngineCapability.functional:return 2;
+  default:return undefined;
+ }
+}
 export const GameplayConfigStateSchema=z.enum(['DRAFT','VALIDATED','PUBLISHED','SUPERSEDED','RETIRED']);
 export type GameplayConfigState=z.infer<typeof GameplayConfigStateSchema>;
 const hash=z.string().regex(/^[a-f0-9]{64}$/),version=z.number().int().positive().max(9007199254740991),revision=z.number().int().positive().max(9007199254740991),requestId=z.uuid().transform(value=>value.toLowerCase()),capability=z.string().regex(/^[a-z0-9][a-z0-9-]{2,63}$/),actor=z.string().min(1).max(256),count=z.number().int().min(0).max(1_000_000);
