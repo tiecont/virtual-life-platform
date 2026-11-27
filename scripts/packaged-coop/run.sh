@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 umask 077
+# Only Gamescope's child should receive a display. Local tools fail if auth is needed.
+unset DISPLAY WAYLAND_DISPLAY SSH_AUTH_SOCK
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
+export GIT_TERMINAL_PROMPT=0 GH_PROMPT_DISABLED=1 GIT_ASKPASS=/bin/false
+export SSH_ASKPASS=/bin/false SSH_ASKPASS_REQUIRE=never
+export GIT_SSH_COMMAND='ssh -oBatchMode=yes'
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=''
 driver_dir="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 if [[ ${1:-} != "--inside-disposable-db" ]]; then
   if [[ $# != 3 ]]; then
@@ -44,7 +51,6 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
 fi
 
 shift
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null
 export PACKAGED_QA_RUN="$1" PACKAGED_QA_ENGINE="$2" PACKAGED_QA_REVISION="$3" PACKAGED_QA_TESSDATA="$5"
 qa_player="$4"
 qa_backend_pid=''
