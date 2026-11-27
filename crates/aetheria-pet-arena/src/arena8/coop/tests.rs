@@ -182,6 +182,13 @@ fn configuration_fails_closed_when_missing_or_invalid() {
     let mut effect = source.clone();
     effect["skills"][0]["effect"]["kind"] = serde_json::json!("execute-script");
     assert!(matches!(rejected(&effect), Err(ConfigError::Malformed)));
+    let mut oversized_tier = source.clone();
+    oversized_tier["multiplier"]["schedule"][2]["tiers"][2]["multiplier"] =
+        serde_json::json!(CELLS + 1);
+    assert!(matches!(
+        rejected(&oversized_tier),
+        Err(ConfigError::MultiplierSchedule)
+    ));
     // A multiplier that silently changes meaning between stages is rejected.
     let mut multiplier = source.clone();
     multiplier["multiplier"]["schedule"][2]["tiers"][2]["damageWeightPm"] = serde_json::json!(9000);

@@ -55,6 +55,21 @@ namespace Aetheria.Tests
         }
 
         [Test]
+        public void PublishedMultiplierAndWideCombatValuesRemainPlayable()
+        {
+            var view = Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":6")
+                .Replace("\"maxHp\":5000", "\"maxHp\":4000000000")
+                .Replace("\"damage\":0", "\"damage\":18446744073709551615")
+                .Replace("\"mana\":0", "\"mana\":50000"));
+            Assert.That(CoopNativePresentation.CellText(view.Board[0]), Is.EqualTo("Fire ×6"));
+            Assert.That(view.BossState.MaxHealth, Is.EqualTo(4000000000u));
+            Assert.That(view.Own.Contribution.Damage, Is.EqualTo(ulong.MaxValue));
+            Assert.That(view.Own.Mana, Is.EqualTo(50000));
+            Assert.Throws<FormatException>(() => Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":65")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => json.Replace("\"hp\":400", "\"hp\":-1")));
+        }
+
+        [Test]
         public void TerminalProjectionCarriesTheRewardState()
         {
             var view = Coop(phase: "won", reward: "\"REWARD_PENDING\"", bossHealth: 0);
@@ -165,7 +180,7 @@ namespace Aetheria.Tests
 
         private static CoopNativeView Coop(ulong version = 0, string phase = "ready", string reward = "null",
             int bossHealth = 5000, int you = 0, int seats = 4, int board = 64, string extra = "",
-            int activeSeat = -1, int[] cooldowns = null)
+            int activeSeat = -1, int[] cooldowns = null, Func<string, string> customize = null)
         {
             var boardJson = new StringBuilder();
             for (var index = 0; index < board; index += 1)
@@ -196,7 +211,7 @@ namespace Aetheria.Tests
                 + "\"participants\":[" + seatsJson + "],"
                 + "\"pending\":null},"
                 + "\"epoch\":1,\"reward\":" + reward + "}";
-            return CoopNativeView.Decode(version, Encoding.UTF8.GetBytes(json));
+            return CoopNativeView.Decode(version, Encoding.UTF8.GetBytes(customize == null ? json : customize(json)));
         }
     }
 }

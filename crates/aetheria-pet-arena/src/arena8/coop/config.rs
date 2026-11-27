@@ -1071,7 +1071,7 @@ impl MultiplierConfig {
             let mut seen = BTreeSet::new();
             let mut total = 0u64;
             for tier in &stage.tiers {
-                if tier.multiplier == 0
+                if !(1..=super::CELLS as u8).contains(&tier.multiplier)
                     || tier.weight == 0
                     || !seen.insert(tier.multiplier)
                     || tier.damage_weight_pm > 100_000

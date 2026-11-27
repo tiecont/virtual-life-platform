@@ -109,8 +109,8 @@ namespace Aetheria.PetArena.Presentation
                     {
                         var now = view.Participants[seat];
                         var prior = previous.Participants[seat];
-                        var healed = now.Contribution.Healing - prior.Contribution.Healing;
-                        var shielded = now.Contribution.Shielding - prior.Contribution.Shielding;
+                        var healed = now.Contribution.Healing - Math.Min(now.Contribution.Healing, prior.Contribution.Healing);
+                        var shielded = now.Contribution.Shielding - Math.Min(now.Contribution.Shielding, prior.Contribution.Shielding);
                         if (healed > 0) feedback = now.PetId + " restored " + healed + " HP";
                         else if (shielded > 0) feedback = now.PetId + " granted " + shielded + " shield";
                     }
