@@ -56,7 +56,7 @@ namespace Aetheria.PetArena.Presentation
         private Task AllocateMatch(string map, string encounter)
         {
             if (!nativeMode) return Allocate(map, encounter);
-            return UsesFunctionalBoard(encounter) ? AllocateFunctional(map, encounter) : AllocateNative(map, encounter);
+            return UsesFunctionalBoard ? AllocateFunctional(map, encounter) : AllocateNative(map, encounter);
         }
 
         private async Task AllocateNative(string map, string encounter)

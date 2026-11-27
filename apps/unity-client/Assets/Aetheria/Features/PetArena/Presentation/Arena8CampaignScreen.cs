@@ -244,7 +244,7 @@ namespace Aetheria.PetArena.Presentation
 
             var map = selectedMap;
             var encounter = map + (boss ? "-boss" : "-regular");
-            var label = UsesFunctionalBoard(encounter) ? "Enter functional Boss battle" : "Enter authoritative match";
+            var label = UsesFunctionalBoard ? "Enter functional battle" : "Enter authoritative match";
             Button(label, () => Run(() => AllocateMatch(map, encounter), "Allocating match"),
                 enabled: map != null && ChapterOpen(map));
             if (!string.IsNullOrEmpty(notice)) content.Add(Label(notice));

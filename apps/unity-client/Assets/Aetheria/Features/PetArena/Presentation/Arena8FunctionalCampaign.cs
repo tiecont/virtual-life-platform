@@ -12,9 +12,8 @@ namespace Aetheria.PetArena.Presentation
         private CoopNativePlaySession functionalSession;
         private CoopNativeHud functionalHud;
 
-        private bool UsesFunctionalBoard(string encounter) =>
-            nativeMode && encounter != null && encounter.EndsWith("-boss", StringComparison.Ordinal) &&
-            Environment.GetEnvironmentVariable(FunctionalBoardVariable) == "1";
+        private bool UsesFunctionalBoard =>
+            nativeMode && Environment.GetEnvironmentVariable(FunctionalBoardVariable) == "1";
 
         private async Task AllocateFunctional(string map, string encounter)
         {

@@ -198,9 +198,9 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task CaptureFunctionalBattleTurn()
         {
-            const string map = "cinder-terraces";
-            const string encounter = "cinder-terraces-boss";
-            if (!UsesFunctionalBoard(encounter))
+            var map = NativeArgument("-aetheria-arena8-functional-water") ? "tideglass-lagoon" : "cinder-terraces";
+            var encounter = map + (NativeArgument("-aetheria-arena8-functional-regular") ? "-regular" : "-boss");
+            if (!UsesFunctionalBoard)
                 throw new InvalidOperationException("Enable the functional native campaign for this capture.");
             await AllocateMatch(map, encounter);
             await CaptureNative("functional-solo-01-admitted.png");
