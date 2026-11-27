@@ -349,7 +349,7 @@ fn only_a_terminal_state_completes_the_match() {
 fn historical_allocation_retains_the_legacy_snapshot_shape() {
     let bundle = std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../config/gameplay/arena8-coop-v1.seed.json"
+        "/../../tests/fixtures/arena8-coop-v1-legacy.seed.json"
     ))
     .unwrap();
     let historic_pets = ["icarus", "coralline", "volt", "terran"];

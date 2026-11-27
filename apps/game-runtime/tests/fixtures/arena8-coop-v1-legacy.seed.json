@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "engineCapability": "arena8-coop-v1",
+  "configId": "arena8-coop-v1",
+  "contentRevision": 1,
+  "board": {
+    "spawnWeights": [
+      { "element": "fire", "weight": 1700 },
+      { "element": "water", "weight": 1700 },
+      { "element": "electric", "weight": 1700 },
+      { "element": "ghost", "weight": 1700 },
+      { "element": "ground", "weight": 1600 },
+      { "element": "light", "weight": 1600 }
+    ],
+    "deadBoardPolicy": "regenerate",
+    "generationAttempts": 64
+  },
+  "party": {
+    "seats": 4,
+    "maxRounds": 40,
+    "maxCascades": 8,
+    "turnTimeoutMs": 60000
+  },
+  "resources": {
+    "manaCap": 100,
+    "rageCap": 100,
+    "manaPerTile": 4,
+    "manaOwnBonus": 2,
+    "ragePerTile": 3,
+    "ragePerGuard": 10,
+    "ragePerDamageTaken": 5
+  },
+  "damage": {
+    "attackScalePm": 1000,
+    "contributionScalePm": 60,
+    "ownTileWeightPm": 1500,
+    "defenseDivisor": 8,
+    "critRollBasis": 10000,
+    "artifactScalePm": 0
+  },
+  "pets": [
+    {
+      "id": "icarus",
+      "element": "fire",
+      "baseStats": { "maxHp": 300, "attack": 25, "defense": 15 },
+      "levelGrowth": { "hp": 20, "attack": 2, "defense": 2 },
+      "effectiveness": [
+        { "element": "fire", "permille": 0 },
+        { "element": "water", "permille": 500 },
+        { "element": "electric", "permille": 1000 },
+        { "element": "ghost", "permille": 1000 },
+        { "element": "ground", "permille": 1000 },
+        { "element": "light", "permille": 1000 }
+      ]
+    },
+    {
+      "id": "coralline",
+      "element": "water",
+      "baseStats": { "maxHp": 320, "attack": 22, "defense": 20 },
+      "levelGrowth": { "hp": 22, "attack": 2, "defense": 3 },
+      "effectiveness": [
+        { "element": "fire", "permille": 1250 },
+        { "element": "water", "permille": 0 },
+        { "element": "electric", "permille": 1000 },
+        { "element": "ghost", "permille": 1000 },
+        { "element": "ground", "permille": 1000 },
+        { "element": "light", "permille": 1000 }
+      ]
+    },
+    {
+      "id": "volt",
+      "element": "electric",
+      "baseStats": { "maxHp": 280, "attack": 28, "defense": 14 },
+      "levelGrowth": { "hp": 18, "attack": 3, "defense": 2 },
+      "effectiveness": [
+        { "element": "fire", "permille": 1000 },
+        { "element": "water", "permille": 1500 },
+        { "element": "electric", "permille": 0 },
+        { "element": "ghost", "permille": 1000 },
+        { "element": "ground", "permille": 1000 },
+        { "element": "light", "permille": 1000 }
+      ]
+    },
+    {
+      "id": "terran",
+      "element": "ground",
+      "baseStats": { "maxHp": 340, "attack": 20, "defense": 22 },
+      "levelGrowth": { "hp": 24, "attack": 2, "defense": 3 },
+      "effectiveness": [
+        { "element": "fire", "permille": 1000 },
+        { "element": "water", "permille": 1000 },
+        { "element": "electric", "permille": 1000 },
+        { "element": "ghost", "permille": 1000 },
+        { "element": "ground", "permille": 0 },
+        { "element": "light", "permille": 1000 }
+      ]
+    }
+  ],
+  "bosses": [
+    {
+      "id": "cinder-terraces-warden",
+      "name": "Cinder Terraces Warden",
+      "element": "fire",
+      "baseStats": { "maxHp": 15000, "attack": 80, "defense": 55 },
+      "levelGrowth": { "hp": 500, "attack": 5, "defense": 3 },
+      "phases": [
+        { "hpThresholdPct": 100, "attackModel": "single" },
+        { "hpThresholdPct": 60, "attackModel": "aoe" },
+        { "hpThresholdPct": 30, "attackModel": "combo" }
+      ],
+      "effectiveness": [
+        { "element": "fire", "permille": 0 },
+        { "element": "water", "permille": 1500 },
+        { "element": "electric", "permille": 1000 },
+        { "element": "ghost", "permille": 1000 },
+        { "element": "ground", "permille": 1000 },
+        { "element": "light", "permille": 1000 }
+      ],
+      "attackPatterns": {
+        "single": { "kind": "damage", "target": "random", "value": 120, "durationTurns": 0, "stackingPm": 1000 },
+        "aoe": { "kind": "damage", "target": "all", "value": 80, "durationTurns": 0, "stackingPm": 1000 },
+        "combo": { "kind": "damage", "target": "random", "value": 100, "durationTurns": 1, "stackingPm": 1500 }
+      },
+      "thresholdBp": 3500
+    }
+  ],
+  "multiplier": {
+    "clockUnit": "turn",
+    "schedule": [
+      {
+        "from": 0,
+        "tiers": [
+          { "multiplier": 1, "weight": 1000, "damageWeightPm": 1000, "resourceWeightPm": 1000 }
+        ]
+      }
+    ]
+  }
+}
