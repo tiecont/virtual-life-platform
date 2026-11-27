@@ -51,6 +51,32 @@ Keep authentication, authorization, privacy, consent, moderation and release gat
 Source implementation and green CI do not authorize production deployment,
 purchases, signing, media licensing, destructive migrations or public dating.
 
+## Noninteractive Linux desktop sessions
+
+For the lead and all workers, launch Unity through the installed Editor binary
+matching `apps/unity-client/ProjectSettings/ProjectVersion.txt`. On this host the
+Editor is under `$HOME/Unity/Hub/Editor/<version>/Editor/Unity`. For Editor tests
+and Linux builds, set `UNITY_EDITOR` to that executable and run the repository
+validation script. It starts the Editor directly in batch mode. The Unity CLI's
+Auth Broker path has triggered a desktop password prompt via `systemd-creds`
+on this workstation. Skip the CLI and Hub launcher for these operations.
+
+```sh
+version=$(awk '/^m_EditorVersion:/{print $2; exit}' apps/unity-client/ProjectSettings/ProjectVersion.txt)
+env -u DISPLAY -u WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null \
+  UNITY_EDITOR="$HOME/Unity/Hub/Editor/$version/Editor/Unity" \
+  node scripts/unity-validate.mjs tests </dev/null
+```
+
+Use a private compositor for rendered player tests. If the installed Editor
+cannot use its existing license headlessly, record that failure and continue
+independent work. Leave system credential stores and license settings intact.
+For Git operations that might authenticate, disable terminal prompting,
+graphical askpass and the desktop credential helper for that invocation. Reuse
+one authorized Chrome debugging connection throughout a Gemini browser task.
+If Chrome asks for permission, preserve its consent boundary and continue
+independent production work. Reconcile the existing chat before resubmitting.
+
 ## Gameplay Configuration Authority
 
 PostgreSQL is the single source of truth for supported gameplay configuration
