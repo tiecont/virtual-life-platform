@@ -6,7 +6,7 @@ type Row={materials:number;powerPm:number};
 export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBundle;editable:boolean;change:(path:string[],value:unknown)=>void}) {
  const [petSelection,setPet]=useState(''),[skillSelection,setSkill]=useState('');
  const [materialInput,setMaterials]=useState(''),[powerInput,setPower]=useState('');
- if(bundle.schemaVersion!==2||!Array.isArray(bundle.skills)||!Array.isArray(bundle.pets))return null;
+ if((bundle.schemaVersion!==2&&bundle.schemaVersion!==3)||!Array.isArray(bundle.skills)||!Array.isArray(bundle.pets))return null;
  const pets=bundle.pets as Record<string,unknown>[],skills=bundle.skills as Record<string,unknown>[];
  const pet=pets.find(p=>p.id===petSelection)??pets[0];
  if(!pet)return null;
