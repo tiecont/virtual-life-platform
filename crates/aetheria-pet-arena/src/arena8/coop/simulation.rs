@@ -53,6 +53,7 @@ pub struct SimulationReport {
     pub losses: u32,
     pub unresolved: u32,
     pub phase_two_reached: u32,
+    pub phase_two_actions: u64,
     pub total_actions: u64,
     pub average_rounds_milli: u64,
     pub average_actions_milli: u64,
@@ -77,6 +78,7 @@ pub struct SeatContribution {
 }
 
 struct Sample {
+    phase_two_actions: u64,
     state: CoopState,
     actions: u64,
     multiplier_seen: bool,
@@ -317,6 +319,7 @@ fn play(
     let mut checkpoint = begin(rules, match_id, initial.clone(), &secret, clock)?;
     let mut prng = SplitMix(seed ^ 0xA5A5_5A5A_1234_5678);
     let mut actions = 0u64;
+    let mut phase_two_actions = 0;
     let mut multiplier_seen = false;
     let mut swaps_using_visible_multiplier = 0;
     let mut player_criticals = 0;
@@ -352,6 +355,7 @@ fn play(
             let Ok(transition) = result else {
                 continue;
             };
+            phase_two_actions += u64::from(checkpoint.state.boss.transformed);
             multiplier_seen |= transition
                 .next
                 .state
@@ -383,6 +387,7 @@ fn play(
         }
     }
     Ok(Sample {
+        phase_two_actions,
         state: checkpoint.state,
         actions,
         multiplier_seen,
@@ -483,6 +488,7 @@ pub fn simulate_party(
         losses: 0,
         unresolved: 0,
         phase_two_reached: 0,
+        phase_two_actions: 0,
         total_actions: 0,
         average_rounds_milli: 0,
         average_actions_milli: 0,
@@ -509,6 +515,7 @@ pub fn simulate_party(
         let sample = play(rules, &initial, policy, seed)?;
         rounds += u64::from(sample.state.round_index);
         report.total_actions += sample.actions;
+        report.phase_two_actions += sample.phase_two_actions;
         report.phase_two_reached += u32::from(sample.state.boss.transformed);
         report.matches_with_multiplier += u32::from(sample.multiplier_seen);
         report.swaps_using_visible_multiplier += sample.swaps_using_visible_multiplier;

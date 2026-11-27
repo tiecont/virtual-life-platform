@@ -226,7 +226,7 @@ for a single run or 1–25 per comparison row. Pass `--party <file.json>` after 
 specified Pets with their levels, Skill Levels and Artifact loadouts. With no
 party argument the harness uses the first four authored Pets in seat order,
 cycling through shorter catalogs, at level 1 with zero Artifact power. Each row reports the selected boss and the engine's
-canonical bundle digest. Multiplier occurrence counts matches where a
+canonical bundle digest. Phase two actions count accepted actions that began after transformation. The Studio average divides that count by the matches that reached phase two. Multiplier occurrence counts matches where a
 multiplier tile appeared on a committed board. Duration uses one simulated
 second per accepted action. Contribution totals are summed across seeds per
 seat. These runs measure the supplied party and automated policies.

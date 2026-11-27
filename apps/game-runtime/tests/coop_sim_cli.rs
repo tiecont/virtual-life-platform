@@ -47,6 +47,11 @@ fn compares_both_selected_encounters_through_the_same_reducer() {
         {
             assert_eq!(row["bossId"], boss);
             assert_eq!(row["seeds"], 4);
+            let phase_actions = row["phaseTwoActions"].as_u64().unwrap();
+            assert!(phase_actions <= row["totalActions"].as_u64().unwrap());
+            if row["phaseTwoReached"] == 0 {
+                assert_eq!(phase_actions, 0);
+            }
             assert_eq!(row["policy"], policy);
             assert_eq!(row["contributions"].as_array().unwrap().len(), 4);
         }

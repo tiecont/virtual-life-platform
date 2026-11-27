@@ -25,7 +25,9 @@ function readReport(input:unknown,policy:GameplaySimulationPolicy,seeds:number,b
  const report=parsed.data;
  if(report.policy!==policy||report.seeds!==seeds||(bossId!==undefined&&report.bossId!==bossId))
   throw new GameplaySimulatorUnavailableError('Engine simulator returned a mismatched report');
- if(report.wins+report.losses+report.unresolved!==seeds||report.phaseTwoReached>seeds||report.matchesWithMultiplier>seeds)
+ const phaseActions=report.phaseTwoActions??0;
+ if(report.wins+report.losses+report.unresolved!==seeds||report.phaseTwoReached>seeds||report.matchesWithMultiplier>seeds
+   ||phaseActions>report.totalActions||(report.phaseTwoReached===0&&phaseActions>0))
   throw new GameplaySimulatorUnavailableError('Engine simulator returned an inconsistent report');
  return report;
 }
