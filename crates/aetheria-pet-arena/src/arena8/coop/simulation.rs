@@ -361,7 +361,9 @@ fn prioritize_support(rules: &CoopRules, state: &CoopState, out: &mut Vec<CoopAc
     let low_health = |seat: &super::Participant| u64::from(seat.hp) * 2 < u64::from(seat.max_hp);
     let living = state.participants.iter().filter(|seat| seat.alive).count();
     if state.pending.is_some_and(|pending| {
-        pending.remaining <= 1 && (low_health(active) || usize::from(pending.targets) >= living)
+        pending.remaining <= 1
+            && (low_health(active)
+                || (rules.seat_count() != 1 && usize::from(pending.targets) >= living))
     }) {
         out.push(CoopAction::Guard);
     }

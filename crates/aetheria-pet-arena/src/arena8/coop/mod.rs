@@ -1,8 +1,8 @@
-//! Versioned four-seat cooperative Arena8 Boss ruleset.
+//! Versioned Arena8 Boss rulesets for cooperative and functional solo play.
 //!
-//! This module is separate from the frozen solo `arena8-pve` reducer. It models
-//! one shared board, four authenticated seats, deterministic seat order, two
-//! Boss phases, progressive multiplier tiles and a typed effect system.
+//! This module runs four-seat and one-seat matches using the same board,
+//! deterministic turn order, two Boss phases and typed effects. The original
+//! `arena8-pve` solo reducer retains its historical behavior.
 //!
 //! Every authored number comes from [`config::CoopConfig`], which PostgreSQL
 //! owns and Admin publishes. This file contains algorithms, structural bounds

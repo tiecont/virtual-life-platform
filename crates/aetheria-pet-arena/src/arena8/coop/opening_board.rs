@@ -67,10 +67,10 @@ fn exclude_triples(
     allowed: &mut [u32; 6],
 ) {
     let mut exclude_equal_pair = |left: usize, right: usize| {
-        if let (Some(left), Some(right)) = (board[left], board[right]) {
-            if left.identity == right.identity {
-                allowed[left.identity.index()] = 0;
-            }
+        if let (Some(left), Some(right)) = (board[left], board[right])
+            && left.identity == right.identity
+        {
+            allowed[left.identity.index()] = 0;
         }
     };
     if position >= 2 {

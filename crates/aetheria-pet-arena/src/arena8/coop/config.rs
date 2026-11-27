@@ -676,10 +676,7 @@ impl CoopConfig {
             match (self.schema_version, boss.map_id.as_deref()) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
                 (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, Some(map))
-                    if stable_id(map) && map_ids.insert(map) =>
-                {
-                    ()
-                }
+                    if stable_id(map) && map_ids.insert(map) => {}
                 _ => return Err(ConfigError::Boss),
             }
             if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {

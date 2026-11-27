@@ -1299,7 +1299,7 @@ fn constructive_openings_are_explicit_and_bind_to_the_match_digest() {
 
     let ready_to_start = |rules: &CoopRules, seed: u64| {
         let mut entropy = [0u8; 32];
-        for bytes in entropy.chunks_exact_mut(8) {
+        for bytes in entropy.as_chunks_mut::<8>().0 {
             bytes.copy_from_slice(&seed.to_le_bytes());
         }
         let secret = SecretSeed::from_host_entropy(entropy);
