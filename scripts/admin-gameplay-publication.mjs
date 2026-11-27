@@ -287,7 +287,7 @@ try{
   console.log('priority and host threshold edited for '+label);
   const trainingSkill='water-dewskip-tide-lance';
   const trainingLevels=[{materials:17,powerPm:1150}];
-  if(label==='B'){
+  if(label==='B'&&!functional){
    await page.getByText('Skill training costs and levels',{exact:true}).click();
    await page.getByLabel('Training Pet',{exact:true}).selectOption('water-dewskip');
    await page.getByLabel('Training skill',{exact:true}).selectOption(trainingSkill);
@@ -300,13 +300,18 @@ try{
    await expect(page.getByText('bosses[0: cinder-terraces-warden].attackModel.targetPriority',{exact:true})).toBeVisible();
    await page.getByRole('heading',{name:'Differences from active',exact:true}).locator('..').screenshot({path:join(artifact,'browser-b-difference.png')});
   }
-  await priority().scrollIntoViewIfNeeded();
-  await page.screenshot({path:join(artifact,'browser-'+label.toLowerCase()+'-priority.png'),timeout:10000});
+  if(functional){
+   const controls=page.getByRole('group',{name:'Yield per matched tile',exact:true});
+   await controls.screenshot({path:join(artifact,'browser-'+label.toLowerCase()+'-functional-yields.png'),timeout:15000});
+  }else{
+   await priority().scrollIntoViewIfNeeded();
+   await page.screenshot({path:join(artifact,'browser-'+label.toLowerCase()+'-priority.png'),timeout:10000});
+  }
   const verdict=await clickMutation('Save and validate','validate');
   await expect(priority()).toHaveValue(fields.priority);
   await expect(page.locator('h2').filter({hasText:new RegExp('^Version '+created.version+'\\s*·\\s*VALIDATED$')})).toBeVisible();
   await expect(page.getByText('Engine validated:',{exact:false})).toBeVisible();
-  if(label==='B'){
+  if(label==='B'&&!functional){
    const requests=[];
    const collect=request=>{
     if(new URL(request.url()).pathname==='/api/admin/gameplay-config-simulate')requests.push(request.postDataJSON());
@@ -339,7 +344,7 @@ try{
   assert.deepEqual(read.bundle,row.bundle);
   const persistedSkill=read.bundle.skills.find(skill=>skill.id===trainingSkill);
   assert.ok(persistedSkill);
-  if(label==='B'){
+  if(label==='B'&&!functional){
    assert.deepEqual(persistedSkill.upgradeLevels,trainingLevels);
    mark('operator authored and published a per-skill upgrade through the training editor',
     {version:created.version,digest:verdict.contentDigest,skill:trainingSkill,levels:persistedSkill.upgradeLevels});
