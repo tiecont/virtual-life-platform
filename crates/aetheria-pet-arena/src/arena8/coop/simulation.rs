@@ -70,6 +70,41 @@ pub struct SimulationReport {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AnalysisReport {
+    pub seed_start: u32,
+    #[serde(flatten)]
+    pub report: SimulationReport,
+    pub diagnostics: Diagnostics,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Diagnostics {
+    pub team_wipes: u32,
+    pub round_limit_defeats: u32,
+    pub other_defeats: u32,
+    pub first_damage_turns_sum: u64,
+    pub matches_with_damage: u32,
+    pub transformation_turns_sum: u64,
+    pub terminal_boss_hp_sum: u64,
+    pub surviving_seats_sum: u64,
+    pub damage_taken_by_seat: [u64; SEATS],
+    pub attacks_received_by_seat: [u64; SEATS],
+    pub terminal_mana_sum: u64,
+    pub terminal_rage_sum: u64,
+    pub ability_checks_blocked_by_resources: u64,
+    pub ability_checks_blocked_by_cooldown: u64,
+    pub ability_checks_ready: u64,
+    pub immune_actor_turns: u64,
+    pub guards: u64,
+    pub healing_capacity: u64,
+    pub mana_at_defeat: u64,
+    pub rage_at_defeat: u64,
+    pub survivals_by_seat: [u32; SEATS],
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SeatContribution {
     pub pet_id: String,
     pub damage: u64,
@@ -303,6 +338,7 @@ fn play(
     initial: &CoopState,
     policy: Policy,
     seed: u64,
+    mut diagnostics: Option<&mut Diagnostics>,
 ) -> Result<Sample, CoopError> {
     let mut entropy = [0u8; 32];
     for (index, byte) in seed.to_le_bytes().iter().cycle().take(32).enumerate() {
@@ -326,9 +362,46 @@ fn play(
     let mut casts_by_skill = BTreeMap::new();
     let mut mana_spent = 0;
     let mut rage_spent = 0;
+    let mut first_damage_turn = None;
+    let mut round_limit = false;
     for step in 0..=super::MAX_TURNS {
         if checkpoint.state.phase.terminal() {
             break;
+        }
+        let state = &checkpoint.state;
+        if state.phase == CoopPhase::Playing
+            && let Some(diagnostics) = diagnostics.as_deref_mut()
+        {
+            let seat = &state.participants[state.active_seat];
+            let pet = rules
+                .config()
+                .pet(&seat.pet_id)
+                .ok_or(CoopError::InvalidSeat)?;
+            diagnostics.immune_actor_turns += u64::from(
+                pet.element()
+                    .ok()
+                    .zip(rules.selected_boss().element().ok())
+                    .is_some_and(|(element, boss)| rules.effectiveness(element, boss) == 0),
+            );
+            let slots = [
+                CoopAction::Guard,
+                CoopAction::Skill,
+                CoopAction::Signature,
+                CoopAction::Ultimate,
+                CoopAction::FireZone,
+            ];
+            for (slot, skill_id) in pet.skill_ids().iter().enumerate().skip(1) {
+                let Some(skill) = skill_id.and_then(|id| rules.config().skill(id)) else {
+                    continue;
+                };
+                if seat.cooldowns[slot] > 0 {
+                    diagnostics.ability_checks_blocked_by_cooldown += 1;
+                } else if seat.mana < skill.mana_cost || seat.rage < skill.rage_cost {
+                    diagnostics.ability_checks_blocked_by_resources += 1;
+                } else if rules.prepare_ability(state, slots[slot]).is_ok() {
+                    diagnostics.ability_checks_ready += 1;
+                }
+            }
         }
         let version = checkpoint.version;
         let candidates = candidates(rules, &checkpoint.state, policy, &mut prng);
@@ -374,9 +447,46 @@ fn play(
                 *casts_by_skill.entry(cast.skill.id.clone()).or_default() += 1;
                 mana_spent += u64::from(cast.skill.mana_cost);
                 rage_spent += u64::from(cast.skill.rage_cost);
+                if cast.skill.effect.kind == EffectKind::Heal
+                    && let Some(diagnostics) = diagnostics.as_deref_mut()
+                {
+                    let targets = rules.targets(state, state.active_seat, cast.skill.effect.target);
+                    let per_target = super::scale_effect(cast.skill.effect.value, cast.power_pm)?;
+                    diagnostics.healing_capacity += u64::from(per_target) * targets.len() as u64;
+                }
             }
             player_criticals += transition.events.iter().filter(|event| matches!(event,
                 aetheria_game_core::Value::List(fields) if matches!(fields.first(),Some(aetheria_game_core::Value::Text(kind)) if kind=="critical"))).count() as u64;
+            if let Some(diagnostics) = diagnostics.as_deref_mut() {
+                let next = &transition.next.state;
+                if first_damage_turn.is_none()
+                    && next
+                        .participants
+                        .iter()
+                        .any(|seat| seat.contribution_damage > 0)
+                {
+                    first_damage_turn = Some(next.turn_index);
+                }
+                if !state.boss.transformed && next.boss.transformed {
+                    diagnostics.transformation_turns_sum += u64::from(next.turn_index);
+                }
+                diagnostics.guards += u64::from(matches!(action, CoopAction::Guard));
+                for event in &transition.events {
+                    let aetheria_game_core::Value::List(fields) = event else {
+                        continue;
+                    };
+                    use aetheria_game_core::Value::{Text, Uint};
+                    match fields.as_slice() {
+                        [Text(kind), Uint(seat), Uint(taken)] if kind == "boss-attack" => {
+                            let seat = *seat as usize;
+                            diagnostics.attacks_received_by_seat[seat] += 1;
+                            diagnostics.damage_taken_by_seat[seat] += taken;
+                        }
+                        [Text(kind), _, _] if kind == "round-limit" => round_limit = true,
+                        _ => {}
+                    }
+                }
+            }
             checkpoint = transition.next;
             accepted = true;
             actions += 1;
@@ -384,6 +494,33 @@ fn play(
         }
         if !accepted {
             break;
+        }
+    }
+    if let Some(diagnostics) = diagnostics {
+        if let Some(turn) = first_damage_turn {
+            diagnostics.matches_with_damage += 1;
+            diagnostics.first_damage_turns_sum += u64::from(turn);
+        }
+        let final_state = &checkpoint.state;
+        if final_state.phase == CoopPhase::Lost {
+            if round_limit {
+                diagnostics.round_limit_defeats += 1;
+            } else if final_state.participants.iter().all(|seat| !seat.alive) {
+                diagnostics.team_wipes += 1;
+            } else {
+                diagnostics.other_defeats += 1;
+            }
+        }
+        diagnostics.terminal_boss_hp_sum += u64::from(final_state.boss.hp);
+        for (index, seat) in final_state.participants.iter().enumerate() {
+            diagnostics.surviving_seats_sum += u64::from(seat.alive);
+            diagnostics.survivals_by_seat[index] += u32::from(seat.alive);
+            diagnostics.terminal_mana_sum += u64::from(seat.mana);
+            diagnostics.terminal_rage_sum += u64::from(seat.rage);
+            if final_state.phase == CoopPhase::Lost {
+                diagnostics.mana_at_defeat += u64::from(seat.mana);
+                diagnostics.rage_at_defeat += u64::from(seat.rage);
+            }
         }
     }
     Ok(Sample {
@@ -433,7 +570,47 @@ pub fn simulate_party(
     seeds: u32,
     party: Option<&[SimulationSeat; SEATS]>,
 ) -> Result<SimulationReport, CoopError> {
-    if seeds == 0 || seeds > 1_000 {
+    simulate_range(rules, policy, 1, seeds, party, None)
+}
+
+/// Offline-only analysis with an explicit, bounded seed range. The online
+/// Studio continues to use the existing simulation report and fixed seeds.
+pub fn analyze_party(
+    rules: &CoopRules,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    party: Option<&[SimulationSeat; SEATS]>,
+) -> Result<AnalysisReport, CoopError> {
+    let mut diagnostics = Diagnostics::default();
+    let report = simulate_range(
+        rules,
+        policy,
+        seed_start,
+        seeds,
+        party,
+        Some(&mut diagnostics),
+    )?;
+    Ok(AnalysisReport {
+        seed_start,
+        report,
+        diagnostics,
+    })
+}
+
+fn simulate_range(
+    rules: &CoopRules,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    party: Option<&[SimulationSeat; SEATS]>,
+    mut diagnostics: Option<&mut Diagnostics>,
+) -> Result<SimulationReport, CoopError> {
+    if seed_start == 0
+        || seeds == 0
+        || (diagnostics.is_some() && seeds > COMPARISON_MAX_SEEDS)
+        || seeds > 1_000
+    {
         return Err(CoopError::InvalidSeat);
     }
     let pets = &rules.config().pets;
@@ -511,8 +688,8 @@ pub fn simulate_party(
             }),
     };
     let mut rounds = 0u64;
-    for seed in 1..=u64::from(seeds) {
-        let sample = play(rules, &initial, policy, seed)?;
+    for seed in u64::from(seed_start)..u64::from(seed_start) + u64::from(seeds) {
+        let sample = play(rules, &initial, policy, seed, diagnostics.as_deref_mut())?;
         rounds += u64::from(sample.state.round_index);
         report.total_actions += sample.actions;
         report.phase_two_actions += sample.phase_two_actions;
