@@ -2,8 +2,6 @@
 -- This migration is additive and preserves all existing data.
 -- Each owned pet instance gets a unique UUID for cross-system tracking.
 
-BEGIN;
-
 -- Add the new column as nullable first
 ALTER TABLE pet_wave_one_owned
   ADD COLUMN owned_pet_instance_id uuid;
@@ -14,11 +12,17 @@ UPDATE pet_wave_one_owned
 SET owned_pet_instance_id = md5(account_id || ':' || pet_id || ':v1')::uuid
 WHERE owned_pet_instance_id IS NULL;
 
+-- Disable seat guard trigger before UPDATE (rooms may be LOCKED/STARTED)
+ALTER TABLE coop_room_seats DISABLE TRIGGER coop_room_seat_guard;
+
 -- Sync cooperative room seats to the correct instance IDs
 UPDATE coop_room_seats crs
 SET owned_pet_instance_id = o.owned_pet_instance_id
 FROM pet_wave_one_owned o
 WHERE crs.account_id = o.account_id AND crs.pet_id = o.pet_id;
+
+-- Re-enable seat guard trigger
+ALTER TABLE coop_room_seats ENABLE TRIGGER coop_room_seat_guard;
 
 -- Now make it NOT NULL since all existing rows have been backfilled
 ALTER TABLE pet_wave_one_owned
@@ -51,5 +55,3 @@ ALTER TABLE pet_wave_one_party
 -- Add unique constraint to party for instance ID
 ALTER TABLE pet_wave_one_party
   ADD CONSTRAINT pet_wave_one_party_account_instance UNIQUE (account_id, owned_pet_instance_id);
-
-COMMIT;
