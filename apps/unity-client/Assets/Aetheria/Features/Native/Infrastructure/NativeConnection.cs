@@ -106,7 +106,12 @@ namespace Aetheria.Networking
                 principal = ticket.Principal;
                 socket = sockets(); socket.Options.AddSubProtocol("vl.native.v1");
                 socket.Options.SetRequestHeader("Origin", origin);
-                await socket.ConnectAsync(endpoint, token).ConfigureAwait(false);
+                try { await socket.ConnectAsync(endpoint, token).ConfigureAwait(false); }
+                catch (WebSocketException failure)
+                {
+                    TraceTransportFailure("opening WebSocket", failure);
+                    throw new NativeFailure(Failure.Transport);
+                }
                 if (socket.SubProtocol != "vl.native.v1") throw new NativeFailure(Failure.Protocol);
                 sequence = 0;
                 var response = await Exchange(new ClientEnvelope { Hello = new Hello {
@@ -229,7 +234,12 @@ namespace Aetheria.Networking
             do {
                 if (count == buffer.Length) throw new NativeFailure(Failure.Protocol);
                 received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer, count, buffer.Length - count), token).ConfigureAwait(false);
-                if (received.MessageType != WebSocketMessageType.Binary) throw new NativeFailure(Failure.Transport);
+                if (received.MessageType != WebSocketMessageType.Binary)
+                {
+                    System.Console.Error.WriteLine("Native transport interrupted by " + received.MessageType +
+                        " frame (close " + received.CloseStatus + ")");
+                    throw new NativeFailure(Failure.Transport);
+                }
                 count += received.Count;
             } while (!received.EndOfMessage);
             ServerEnvelope result;
@@ -258,9 +268,29 @@ namespace Aetheria.Networking
                     throw new NativeFailure(Failure.Timeout);
                 }
                 catch (NativeFailure) { Close(); if (!disposed) State = ConnectionState.Faulted; throw; }
-                catch (Exception) { Close(); if (!disposed) State = ConnectionState.Faulted; throw new NativeFailure(Failure.Transport); }
+                catch (Exception failure)
+                {
+                    TraceTransportFailure("exchanging native frame", failure);
+                    Close(); if (!disposed) State = ConnectionState.Faulted;
+                    throw new NativeFailure(Failure.Transport);
+                }
                 finally { if (disposed) { Close(); principal = null; State = ConnectionState.Disposed; } operation.Release(); }
             }
+        }
+
+        private static void TraceTransportFailure(string operationName, Exception failure)
+        {
+            // Transport exception messages may include endpoints or request metadata.
+            // Record exception types and protocol status codes only.
+            var reason = new System.Text.StringBuilder();
+            for (var depth = 0; failure != null && depth < 6; depth++, failure = failure.InnerException)
+            {
+                if (depth != 0) reason.Append(" / ");
+                reason.Append(failure.GetType().Name);
+                if (failure is WebSocketException socketError) reason.Append(':').Append(socketError.WebSocketErrorCode);
+                if (failure is System.Net.WebException webError) reason.Append(':').Append(webError.Status);
+            }
+            System.Console.Error.WriteLine("Native transport failed " + operationName + " · " + reason);
         }
 
         private void Close() { socket?.Abort(); socket?.Dispose(); socket = null; Snapshot = null; sent.Clear(); order.Clear(); }
