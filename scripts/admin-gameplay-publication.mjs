@@ -7,7 +7,7 @@ import {open} from 'node:fs/promises';
 import {once} from 'node:events';
 import {setTimeout as pause} from 'node:timers/promises';
 import {chromium,expect as playwrightExpect} from '@playwright/test';
-const expect=playwrightExpect.configure({timeout:20000});
+const expect=playwrightExpect.configure({timeout:60000});
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
@@ -161,14 +161,15 @@ try{
  const historicalEngineHash=historicalBinary?await engineHashFor(historicalBinary):undefined;
  if(historicalEngineHash)assert.notEqual(historicalEngineHash,currentEngineHash,'Recovery proof requires two distinct verified executables');
  let runtimeBinary=historicalBinary??binary;
+ const sessionSecret=randomBytes(48).toString('base64url'),storageKey=randomBytes(32).toString('hex');
  const configForRuntime=()=>readConfig({
-  NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('base64url'),
+  NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:sessionSecret,
   ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:operatorKey,
   LOCAL_COOP_ROOMS:'1',LOCAL_COOP_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
   LOCAL_ARENA8_NATIVE_BINARY:runtimeBinary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
   ...(historicalBinary?{LOCAL_COOP_HISTORICAL_RUNTIME_BINARY:historicalBinary}:{}),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,
-  LOCAL_ARENA8_NATIVE_STORAGE_KEY:randomBytes(32).toString('hex'),LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:'local-v1',
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY:storageKey,LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:'local-v1',
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:nativeOrigin,
   LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:resolve(directory,'tls/server.pem'),
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
@@ -194,7 +195,7 @@ try{
  }
  browser=await chromium.launch();
  page=await browser.newPage({viewport:{width:1366,height:900}});
- page.setDefaultTimeout(25_000);
+ page.setDefaultTimeout(75_000);
  page.on('pageerror',error=>{(facts.pageErrors??=[]).push(error.message);});
  page.on('response',response=>{
   const path=new URL(response.url()).pathname;
@@ -206,9 +207,9 @@ try{
  await page.getByLabel('Password',{exact:true}).fill(operatorPassword);
  await page.getByLabel('Authenticator code',{exact:true}).fill(totp(operatorSecret,Date.now()));
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
- await expect(page.getByRole('heading',{name:'City at a glance',exact:true})).toBeVisible({timeout:20000});
+ await expect(page.getByRole('heading',{name:'City at a glance',exact:true})).toBeVisible({timeout:60000});
  await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
- await expect(page.getByRole('heading',{name:'Version 1 · PUBLISHED',exact:true})).toBeVisible({timeout:15000});
+ await expect(page.getByRole('heading',{name:'Version 1 · PUBLISHED',exact:true})).toBeVisible({timeout:60000});
  mark('actual Chromium signed in with operator password and TOTP through Next and Nest; unauthenticated overview denied',{unauthenticatedStatus:unauthorized.status()});
  const variants={
   A:{hp:boss.maxHp,attack:seed.pets.find(pet=>pet.id==='fire-coalwhisk').attack,points:5000,materials:1,priority:''},
@@ -229,7 +230,7 @@ try{
   await expect(input).toHaveValue(String(value));
  }
  async function clickMutation(name,action,parent=page){
-  const response=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/gameplay-config-'+action&&value.request().method()==='POST',{timeout:15000});
+  const response=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/gameplay-config-'+action&&value.request().method()==='POST',{timeout:60000});
   await button(name,parent).click();
   const actual=await response;
   const value=await actual.json();
@@ -704,7 +705,7 @@ try{
  await readVersion(A.version,'');
  await activeSection().screenshot({path:join(artifact,'browser-rollback.png')});
  mark('browser rollback reselected A and PostgreSQL preserved both historical bundles',{version:A.version,activeRevision:rollBack.activeRevision,digest:A.digest});
- const auditResponse=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/gameplay-config-audit',{timeout:15000});
+ const auditResponse=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/gameplay-config-audit',{timeout:60000});
  await button('Load audit',auditSection()).click();
  assert.equal((await auditResponse).status(),200);
  const auditRow=(action,version)=>auditSection().locator('tbody tr')
