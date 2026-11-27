@@ -11149,6 +11149,14 @@
         "VL-184"
       ],
       "implementation": {
+        "regularLastRecruitment": {
+          "sourceRevision": "63322a8759d70d819799aa37ef0a2b3b4dccc281",
+          "integratedRevision": "5ccce14d8c6a53a5fad4bd3364a5ce7bf2bfd235",
+          "command": "PostgreSQL cooperative settlement, native, recovery, rooms and Wave 1 integration tests; archived native and admission migration compatibility",
+          "exitCode": 0,
+          "result": "42 database cases passed. Migration 0065 pins the authored list on the first Boss receipt. Regular-last and Boss-last settlement preserve recruitment through publication replacement, concurrent claims and host erasure. Archived prefixes 47 and 48 upgraded to 65; frozen 56 prefix retained.",
+          "evidence": "tests/integration/coop-settlement.test.ts"
+        },
         "firstClearRecruitment": {
           "sourceRevision": "af9003e73a6a686e766854d157d90cebd680d071",
           "integratedRevision": "450fcf9e63a510897cc2b874107bcc1c68e455db",
@@ -11227,6 +11235,13 @@
       ],
       "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
       "implementation": {
+        "targetPriorityBrowserAcceptance": {
+          "sourceRevision": "60048a0005cbd5a3c0c0b936474997c5f7b17eca",
+          "command": "Independent Chromium Admin A/B driver, isolated PostgreSQL, Rust runtime, rollback and native impact check",
+          "exitCode": 0,
+          "result": "35 scenarios passed. On matching divergent health/mana rankings, publication A hit seat 0 after restart, B hit seat 1 with highest mana, and the next post-rollback allocation again hit seat 0. Each committed impact changed exactly one target.",
+          "evidence": "artifacts/admin-ab-target-priority/facts.json"
+        },
         "browserPublicationAcceptance": {
           "sourceRevision": "b0243209ecf22d62d67d94fe5d276c444adf6bf1",
           "command": "node scripts/with-test-db.mjs node --import tsx artifacts/admin-ab-participation/accept.mjs",
