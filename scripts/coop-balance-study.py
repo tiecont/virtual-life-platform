@@ -121,15 +121,24 @@ def main():
     if not binary.is_file():
         parser.error(f"build the Rust example, or set --binary: {binary}")
     base = json.loads(args.baseline.read_text())
+    capability = base.get("engineCapability")
+    if capability not in ("arena8-coop-v1", "arena8-coop-v2"):
+        parser.error("unsupported engine capability in study input")
+    functional = capability == "arena8-coop-v2"
+    selected = args.bundles or (["baseline"] if functional else
+                                ["baseline", "lower-pressure", "resource-burst", "shared-pressure"])
+    if functional and any(name != "baseline" for name in selected):
+        parser.error("elemental-board variants cannot be applied to a functional-board bundle")
     bundles = {"baseline": args.baseline.resolve()}
     for name, patch in (("lower-pressure", lower_pressure), ("resource-burst", resource_burst),
                         ("shared-pressure", shared_pressure)):
+        if name not in selected:
+            continue
         bundle = copy.deepcopy(base)
         patch(bundle)
         bundles[name] = prefix / f"{name}.json"
         dump(bundles[name], bundle)
-    if args.bundles:
-        bundles = {name: path for name, path in bundles.items() if name in args.bundles}
+    bundles = {name: path for name, path in bundles.items() if name in selected}
     if args.stage == "progression":
         scenarios = [("starters", level, gear)
                      for level in (1, 5, 10, 20, 40, 60)
@@ -152,7 +161,7 @@ def main():
         stem = f"{args.stage}-{name}-{level}-{gear}"
         party_path = prefix / "parties" / f"{stem}.json"
         command = [binary, bundles[bundle], party_path, str(args.seed_start), str(args.seed_count), *BOSSES]
-        value = {"bundle": bundle, "party": name, "level": level, "gear": gear,
+        value = {"bundle": bundle, "engineCapability": capability, "party": name, "level": level, "gear": gear,
                  "seedStart": args.seed_start, "seedCount": args.seed_count,
                  "command": list(map(str, command)), "rows": json.loads(subprocess.check_output(command))}
         dump(prefix / f"{stem}-{bundle}.json", value)
