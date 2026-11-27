@@ -62,7 +62,7 @@ def main():
     graph.append(f"[{left}]fade=t=in:st=0:d=0.8,"
                  f"drawbox=x=0:y=0:w=iw:h=ih:color=0x141016@0.68:t=fill:enable='{ending}',"
                  f"drawbox=x=iw*0.44:y=ih*0.57:w=iw*0.12:h=1:color=0xe7c9a0:t=fill:enable='{ending}',"
-                 f"{text('AETHERIA', 64, 'h*0.36', ending)},
+                 f"{text('AETHERIA', 64, 'h*0.36', ending)},"
                  f"{text('S O U L B O U N D', 26, 'h*0.49', ending)},"
                  f"fade=t=out:st={DURATION - 1.1:.1f}:d=1.1,format=yuv420p[out]")
     cmd = ["ffmpeg", "-nostdin", "-v", "error", "-filter_complex_threads", "2"]
