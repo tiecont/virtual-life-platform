@@ -128,3 +128,30 @@ fn tactical_policy_uses_support_while_the_boss_is_immune_to_its_attacks() {
             .contains_key("fire-coalwhisk-ember-lance")
     );
 }
+
+#[test]
+fn offline_seed_ranges_preserve_existing_reports_and_classify_defeats() {
+    use aetheria_pet_arena::arena8::coop::simulation::analyze_party;
+
+    let rules = rules();
+    let baseline = simulate(&rules, Policy::Tactical, 4).unwrap();
+    let first = analyze_party(&rules, Policy::Tactical, 1, 4, None).unwrap();
+    let holdout = analyze_party(&rules, Policy::Tactical, 101, 4, None).unwrap();
+
+    assert_eq!(first.report, baseline);
+    assert_eq!(first.seed_start, 1);
+    assert_eq!(holdout.seed_start, 101);
+    assert_ne!(first.report, holdout.report);
+    assert_eq!(
+        holdout,
+        analyze_party(&rules, Policy::Tactical, 101, 4, None).unwrap()
+    );
+    let diagnostics = holdout.diagnostics;
+    assert_eq!(
+        diagnostics.team_wipes + diagnostics.round_limit_defeats + diagnostics.other_defeats,
+        holdout.report.losses
+    );
+    assert!(diagnostics.matches_with_damage > 0);
+    assert!(analyze_party(&rules, Policy::Tactical, 0, 4, None).is_err());
+    assert!(analyze_party(&rules, Policy::Tactical, 1, 26, None).is_err());
+}
