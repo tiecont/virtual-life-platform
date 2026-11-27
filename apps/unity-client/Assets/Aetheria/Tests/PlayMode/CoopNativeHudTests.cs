@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Aetheria.PetArena.Infrastructure;
@@ -138,7 +139,7 @@ namespace Aetheria.Tests
                 hud.Attach(document);
                 hud.Bind(null, () => { });
                 var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(
-                    elements: new[] { "fire", "water", "electric", "ghost", "ground", "light" })));
+                    elements: new[] { "fire", "water", "electric", "ghost", "ground", "light" }, withAbilities: true)));
 
                 foreach (var (width, height) in new[] { (1280, 720), (1920, 1080) })
                 {
@@ -160,10 +161,11 @@ namespace Aetheria.Tests
                     Assert.That(board.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
                     Assert.That(actions.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                     Assert.That(actions.childCount, Is.EqualTo(4));
-                    foreach (var skill in actions.Children())
+                    foreach (var skill in actions.Children().OfType<Button>())
                     {
                         Assert.That(skill.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                         Assert.That(skill.worldBound.width, Is.GreaterThan(50));
+                        Assert.That(skill.text, Does.Contain("\nLv 1"));
                     }
                 }
             }
@@ -262,7 +264,8 @@ namespace Aetheria.Tests
         }
 
         private static string Projection(string pending = "null", int health = 400,
-            int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2)
+            int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2,
+            bool withAbilities = false)
         {
             elements ??= new[] { "fire" };
             var board = new System.Text.StringBuilder();
@@ -288,11 +291,21 @@ namespace Aetheria.Tests
                     .Append(",\"statuses\":[],\"contribution\":{\"damage\":0,\"healing\":0,\"shielding\":0}")
                     .Append(",\"alive\":true}");
             }
+            var abilities = "";
+            if (withAbilities)
+            {
+                var kinds = new[] { "guard", "skill", "signature", "ultimate" };
+                var ids = new[] { "guard", "ember-lance", "ember-solar-flare", "blazing-descent" };
+                abilities = ",\"bossId\":\"cinder-terraces-warden\",\"abilities\":[" +
+                    string.Join(",", kinds.Select((kind, position) =>
+                        "{\"kind\":\"" + kind + "\",\"id\":\"icarus-" + ids[position] +
+                        "\",\"mana\":180,\"rage\":160,\"cooldown\":5,\"ready\":false}")) + "]";
+            }
             return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":1," +
                 "\"contentHash\":\"" + new string('a', 64) + "\",\"configDigest\":\"" + new string('b', 64) + "\"}," +
                 "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":" + round + "," +
                 "\"boss\":{\"hp\":5000,\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false}," +
-                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + "}," +
+                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + abilities + "}," +
                 "\"epoch\":1,\"reward\":null}";
         }
     }
