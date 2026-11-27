@@ -328,6 +328,24 @@ describe('Wave A Artifact durable loop',()=>{
     ]}}});
   });
 
+  it('repairs a historical solo-first wallet once when inventory opens concurrently',async()=>{
+    const visitor=await guest();
+    await initializePets(visitor);
+    await addClear(visitor,MAP_IDS[0]);
+    const reward=await claim(visitor);
+    expect(reward.statusCode).toBe(200);
+    // Reproduce the persisted pre-fix layout with its genuine PvE receipt.
+    await pool.query("DELETE FROM pet_artifact_owned WHERE account_id=$1 AND acquired_from='starter'",[visitor.accountId]);
+    await pool.query('UPDATE pet_artifact_players SET materials=60 WHERE account_id=$1',[visitor.accountId]);
+    const reads=await Promise.all([state(app,visitor),state(app,visitor)]);
+    for(const view of reads){
+      expect(view.materials).toBe(210);
+      expect(view.inventory.map(item=>item.definitionId).sort()).toEqual(['core-amberlattice','core-emberglass']);
+      expect(view.pve.claims).toHaveLength(1);
+    }
+    expect(reads[0]).toEqual(reads[1]);
+  });
+
   it('9 replays receipts without double grants and rejects conflicting request ids',async()=>{
     const visitor=await guest();
     await initializePets(visitor);

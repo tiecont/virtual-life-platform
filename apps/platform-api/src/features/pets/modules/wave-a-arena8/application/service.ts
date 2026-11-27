@@ -3,6 +3,7 @@ import type {Pool} from 'pg';
 import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
+import {initializeArtifactInventory} from '../../wave-a-artifacts/infrastructure/store';
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
 import {levelIncrement} from '../../wave1/domain/progression';
 import {recordArena8MapClear} from '../../wave1/infrastructure/store';
@@ -175,10 +176,7 @@ export class Arena8Service {
         const artifactReward=PVE_ARTIFACT_REWARDS.find(value=>value.mapId===mapId);
         if(artifactReward){
           materials=firstClear?artifactReward.materials:5;
-          await client.query(
-            `INSERT INTO pet_artifact_players(account_id,materials)
-             VALUES($1,0) ON CONFLICT(account_id) DO NOTHING`,[accountId],
-          );
+          await initializeArtifactInventory(client,accountId);
           await client.query(
             'UPDATE pet_artifact_players SET materials=materials+$2,revision=revision+1,updated_at=clock_timestamp() WHERE account_id=$1',
             [accountId,materials],

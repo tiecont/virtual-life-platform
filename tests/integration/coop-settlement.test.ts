@@ -7,6 +7,7 @@ import {readConfig} from '../../apps/platform-api/src/shared/config/environment'
 import {installGameplayConfig} from '../../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config';
 import {GameplayConfigStore} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/version-store';
 import type {GameplayBundleValidator} from '../../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator';
+import {STARTING_MATERIALS,STARTER_ARTIFACT_DEFINITION_ID} from '../../apps/platform-api/src/features/pets/modules/wave-a-artifacts/domain/catalog';
 import {CoopSettlement,canonicalProposalHash} from '../../apps/platform-api/src/features/coop/modules/settlement/application/service';
 
 const origin='http://127.0.0.1:3300',ruleset='arena8-coop-pve';
@@ -249,6 +250,11 @@ describe('cooperative settlement',()=>{
   const beforeBoss=await regularSettle();
   expect(beforeBoss.statusCode,beforeBoss.body).toBe(200);
   expect(beforeBoss.json()).toMatchObject({firstClear:true,recruitedPetId:'fire-coalwhisk',clearedMaps:[]});
+
+  const inventory=await pool.query('SELECT definition_id FROM pet_artifact_owned WHERE account_id=$1 AND acquired_from=$2',[regularFirst.accountId,'starter']);
+  expect(inventory.rows).toEqual([{definition_id:STARTER_ARTIFACT_DEFINITION_ID}]);
+  const wallet=await pool.query('SELECT materials FROM pet_artifact_players WHERE account_id=$1',[regularFirst.accountId]);
+  expect(wallet.rows[0]?.materials).toBe(STARTING_MATERIALS+beforeBoss.json().materials);
 
   const pinned=await publishRecruitment(['fire-coalwhisk','fire-emberloom']);
   const accounts=[host,regularFirst,bossFirst,peer];
