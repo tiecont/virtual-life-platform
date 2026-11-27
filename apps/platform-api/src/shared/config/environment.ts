@@ -87,8 +87,8 @@ const Env = z.object({
         ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_SUPERVISOR_URL'],message:'Expected an exact loopback HTTP supervisor URL'});
     }
   }
-  if(env.LOCAL_COOP_HISTORICAL_RUNTIME_BINARY&&env.LOCAL_COOP_NATIVE!=='1')
-    ctx.addIssue({code:'custom',path:['LOCAL_COOP_HISTORICAL_RUNTIME_BINARY'],message:'A historical executable requires the local cooperative runtime'});
+  if(env.LOCAL_COOP_HISTORICAL_RUNTIME_BINARY&&env.LOCAL_COOP_NATIVE!=='1'&&env.LOCAL_ARENA8_NATIVE!=='1')
+    ctx.addIssue({code:'custom',path:['LOCAL_COOP_HISTORICAL_RUNTIME_BINARY'],message:'A historical executable requires a local Arena8 runtime'});
   if(env.LOCAL_COOP_NATIVE==='1'&&env.LOCAL_COOP_ROOMS!=='1')ctx.addIssue({code:'custom',path:['LOCAL_COOP_NATIVE'],message:'Cooperative native matches require cooperative rooms'});
   if(env.LOCAL_ARENA8_NATIVE==='1'||env.LOCAL_COOP_NATIVE==='1'){
     if(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)

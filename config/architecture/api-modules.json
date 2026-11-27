@@ -26,6 +26,7 @@
       "features/pets/modules/wave-a-arena8/application/allocation",
       "features/pets/modules/wave-a-arena8/application/native-provisioner",
       "features/pets/modules/wave-a-arena8/infrastructure/native-match-store",
+      "features/pets/modules/wave-a-arena8/infrastructure/functional-allocation",
       "features/pets/modules/wave-a-arena8/infrastructure/native-runtime",
       "features/pets/modules/wave-a-arena8/infrastructure/native-tls-bridge",
       "features/pets/modules/wave-a-arena8/presentation/http",
@@ -55,6 +56,7 @@
         "features/coop/modules/rooms/infrastructure/store",
         "features/coop/modules/rooms/presentation/http",
         "features/coop/modules/match/application/provisioner",
+        "features/coop/modules/match/domain/loadout",
         "features/coop/modules/match/infrastructure/match-store",
         "features/coop/modules/match/infrastructure/local-runtime",
         "features/coop/modules/settlement/application/service",
@@ -107,6 +109,7 @@
       "responsibility": "Domain errors, proxy and request log utilities",
       "currentPublicEntryFiles": [
         "shared/common/errors",
+        "shared/common/native-executable",
         "shared/common/http-errors",
         "shared/common/proxy",
         "shared/common/request-log",

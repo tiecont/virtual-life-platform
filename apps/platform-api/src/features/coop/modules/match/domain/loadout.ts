@@ -14,13 +14,15 @@ const seatIdentity=z.strictObject({
  skillLevels:z.array(CoopSkillLevelBindingSchema).max(5).refine(levels=>new Set(levels.map(entry=>entry.skillId)).size===levels.length).readonly().optional(),
  account:uuid,petId:stableId,ownedPetInstanceId:uuid,petLevel:z.number().int().min(1).max(60),
 });
-const seats=z.array(z.union([
+const allocatedSeat=z.union([
  seatIdentity.extend({loadout}).readonly(),
  seatIdentity.extend({artifactPowerPm:z.number().int().min(1000).max(5000)}).readonly(),
-])).length(4).readonly();
+]);
+const seats=z.array(allocatedSeat).length(4).readonly();
 
 type SeatIdentity=z.infer<typeof seatIdentity>;
-export type CoopSeat=z.infer<typeof seats>[number];
+export type CoopSeat=z.infer<typeof allocatedSeat>;
+export type ArtifactSeat=Extract<CoopSeat,{loadout:unknown}>;
 type EquippedArtifact=z.infer<typeof artifact>;
 
 function loadoutDigest(configDigest:string,seat:SeatIdentity,entries:readonly EquippedArtifact[]){
@@ -35,6 +37,21 @@ export function bindArtifactLoadout(configDigest:string,seat:SeatIdentity,equipp
  return Object.freeze({entries,digest:loadoutDigest(configDigest,seat,entries)});
 }
 
+function validateArtifactLoadout(seat:ArtifactSeat,configDigest:string){
+ const {entries,digest}=seat.loadout;
+ if(digest!==loadoutDigest(configDigest,seat,entries)
+   ||new Set(entries.map(entry=>entry.artifactId)).size!==entries.length
+   ||entries.some((entry,i)=>i>0&&slots.indexOf(entries[i-1]!.slot)>=slots.indexOf(entry.slot)))
+  throw new Error('Native allocation Artifact loadout is invalid');
+}
+
+export function readArtifactSeat(value:unknown,configDigest:string):ArtifactSeat{
+ const seat=allocatedSeat.parse(value);
+ if(!('loadout' in seat))throw new Error('Typed Artifact loadout is required');
+ validateArtifactLoadout(seat,configDigest);
+ return seat;
+}
+
 export function readAllocationSeats(value:unknown,configDigest:string):readonly CoopSeat[]{
  const roster=seats.parse(value);
  const accounts=new Set(roster.map(seat=>seat.account));
@@ -42,12 +59,6 @@ export function readAllocationSeats(value:unknown,configDigest:string):readonly 
  const typed=roster.filter(seat=>'loadout' in seat);
  if(accounts.size!==roster.length||instances.size!==roster.length
    ||(typed.length!==0&&typed.length!==roster.length))throw new Error('Cooperative allocation seats are invalid');
- for(const seat of typed){
-  const {entries,digest}=seat.loadout;
-  if(digest!==loadoutDigest(configDigest,seat,entries)
-    ||new Set(entries.map(entry=>entry.artifactId)).size!==entries.length
-    ||entries.some((entry,i)=>i>0&&slots.indexOf(entries[i-1]!.slot)>=slots.indexOf(entry.slot)))
-   throw new Error('Cooperative allocation Artifact loadout is invalid');
- }
+ for(const seat of typed)validateArtifactLoadout(seat,configDigest);
  return roster;
 }

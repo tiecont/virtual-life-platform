@@ -123,6 +123,7 @@ import {registerArena8} from './features/pets/modules/wave-a-arena8/presentation
 import {Arena8Service} from './features/pets/modules/wave-a-arena8/application/service';
 import {readOwnedArena8Allocation} from './features/pets/modules/wave-a-arena8/application/allocation';
 import {ARENA8_NATIVE_TICKET_KEY_ID,NativeArena8Provisioner} from './features/pets/modules/wave-a-arena8/application/native-provisioner';
+import {FunctionalSoloAllocation} from './features/pets/modules/wave-a-arena8/infrastructure/functional-allocation';
 import {NativeArena8MatchStore} from './features/pets/modules/wave-a-arena8/infrastructure/native-match-store';
 import {LocalNativeArena8Runtime} from './features/pets/modules/wave-a-arena8/infrastructure/native-runtime';
 import {registerNativeArena8} from './features/pets/modules/wave-a-arena8/presentation/native-http';
@@ -380,12 +381,14 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     const provisioner=new NativeArena8Provisioner({
       ownership:(account,input)=>readOwnedArena8Allocation(db,account,input),
       matches:new NativeArena8MatchStore(db),
+      ...(gameplayValidator?{functional:new FunctionalSoloAllocation(db,coopSkills,gameplayValidator)}:{}),
       admission,
       issuer:new RuntimeTicketIssuer(
         identity,ARENA8_NATIVE_TICKET_KEY_ID,keys.privateKey,admission.admission,
       ),
       runtime:new LocalNativeArena8Runtime({
-        binary:native.binary,databaseUrl:native.databaseUrl,role:native.role,
+        binary:native.binary,historicalBinary:config.LOCAL_COOP_HISTORICAL_RUNTIME_BINARY,
+        databaseUrl:native.databaseUrl,role:native.role,
         caFile:native.caFile,publicKey:keys.publicKey.export({format:'jwk'}).x!,
         keyId:ARENA8_NATIVE_TICKET_KEY_ID,origin:native.httpsOrigin,
         storageKey:native.storageKey,storageKeyId:native.storageKeyId,
@@ -393,6 +396,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
       }),
       httpsOrigin:native.httpsOrigin,
     });
+    await provisioner.recover();
     registerNativeArena8(http,config,identity,provisioner,
       new Arena8Service(db,'http://127.0.0.1:1','native-settlement-only'.padEnd(32,'x')),
       true,options.now);

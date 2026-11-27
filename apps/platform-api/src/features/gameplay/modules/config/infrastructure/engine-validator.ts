@@ -8,7 +8,7 @@ import {CoopEngineCapability,type GameplayBundle,type GameplayRuleset} from '@ae
 const execute=promisify(execFile);
 const HEX=/^[a-f0-9]{64}$/,LIMIT=1048576,TIMEOUT_MS=10000,OUTPUT_LIMIT=16384;
 
-export type GameplayBundleValidation=Readonly<{digest:string;engineCapability:string;contentHash:string}>;
+export type GameplayBundleValidation=Readonly<{digest:string;engineCapability:string;contentHash:string;soloContentHash?:string}>;
 export interface GameplayBundleValidator{validate(ruleset:GameplayRuleset,bundle:GameplayBundle):Promise<GameplayBundleValidation>;}
 /** The engine rejected the authored bundle: a content defect, not an outage. */
 export class InvalidGameplayBundleError extends Error{constructor(message='Gameplay configuration rejected by the engine'){super(message);this.name='InvalidGameplayBundleError';}}
@@ -54,7 +54,10 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
     throw new GameplayValidatorUnavailableError('Engine validator version does not match the bundle schema');
    if(typeof digest!=='string'||!HEX.test(digest))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid digest');
    if(typeof contentHash!=='string'||!HEX.test(contentHash))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid content hash');
-   return Object.freeze({digest,engineCapability:capability,contentHash});
+   const soloContentHash=verdict.soloContentHash;
+   if(soloContentHash!==undefined&&(schema!==3||typeof soloContentHash!=='string'||!HEX.test(soloContentHash)))
+    throw new GameplayValidatorUnavailableError('Engine validator returned an invalid solo content hash');
+   return Object.freeze({digest,engineCapability:capability,contentHash,...(soloContentHash===undefined?{}:{soloContentHash})});
   }finally{await rm(directory,{recursive:true,force:true}).catch(()=>{/* Private candidate cleanup is best effort after an error. */});}
  }
 }

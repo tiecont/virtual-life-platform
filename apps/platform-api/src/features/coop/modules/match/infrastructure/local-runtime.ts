@@ -1,9 +1,9 @@
 import {spawn} from 'node:child_process';
-import {createHash} from 'node:crypto';
 import {constants} from 'node:fs';
-import {access,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {access,mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {selectNativeExecutable} from '../../../../../shared/common/native-executable';
 import {startNativeTlsBridge} from '../../../../pets/modules/wave-a-arena8/infrastructure/native-tls-bridge';
 import type {
  CoopRuntimeHandle,CoopRuntimePort,CoopRuntimeRequest,CoopSeat,
@@ -72,24 +72,11 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
     !['127.0.0.1','localhost','[::1]'].includes(database.hostname)||database.search||database.hash)
    throw new Error('Cooperative native database URL is invalid');
  }
- private async selectBinary(pinnedHash?:string){
-  if(pinnedHash!==undefined&&!/^[a-f0-9]{64}$/.test(pinnedHash))throw new Error('Invalid cooperative runtime engine pin');
-  const historical=this.options.historicalBinary;
-  const candidates=pinnedHash&&historical?[this.options.binary,historical]:[this.options.binary];
-  for(const binary of candidates){
-   try{
-    await access(binary,constants.X_OK);
-    const engineHash=createHash('sha256').update(await readFile(binary)).digest('hex');
-    if(pinnedHash===undefined||engineHash===pinnedHash)return {binary,engineHash};
-   }catch{/* Try the separately configured historical executable during recovery. */}
-  }
-  throw new Error('Pinned cooperative runtime engine unavailable');
- }
  async start(request:CoopRuntimeRequest):Promise<CoopRuntimeHandle>{
   if(request.seats.length!==4)throw new Error('Cooperative native allocation requires four seats');
   if(!request.seats.every(seat=>UUID.test(seat.account)&&seat.petLevel>=1&&seat.petLevel<=60))
    throw new Error('Cooperative native allocation is invalid');
-  const {binary,engineHash}=await this.selectBinary(request.engineHash);
+  const {binary,engineHash}=await selectNativeExecutable(this.options.binary,this.options.historicalBinary,request.engineHash);
   await access(this.options.caFile,constants.R_OK).catch(()=>{throw new Error('Cooperative native runtime CA unavailable');});
   const hexBytes=(value:string)=>Array.from(Buffer.from(value,'hex'));
   const settings={
