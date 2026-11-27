@@ -42,6 +42,109 @@ function Num({label,value,onChange,step=1,min=0,max}:{label:string;value:unknown
  return <label>{label}<input className="aetheria-field" type="number" step={step} min={min} max={max} value={number} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=min&&(max===undefined||next<=max))onChange(next);}}/></label>;
 }
 
+const functionalTileLabels={
+ sword:'Sword',mana:'Mana',rage:'Rage',heart:'Heart',shield:'Shield',special:'Special',
+};
+const functionalTargets=[
+ ['self','Acting Pet'],
+ ['lowest-hp-ally','Living ally with lowest HP percentage'],
+ ['all-allies','All living allies'],
+] as const;
+
+function FunctionalBoardEditor({bundle,editable,change}:{
+ bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
+}){
+ const path=['board','functionalTiles'];
+ const tiles=read(bundle,[...path,'spawnWeights']);
+ const weightTotal=Array.isArray(tiles)?tiles.reduce((sum,row)=>sum+Number(read(row,['weight'])??0),0):0;
+ const manaCap=read(bundle,['resources','manaCap']),rageCap=read(bundle,['resources','rageCap']);
+ const manaBound={min:1,max:typeof manaCap==='number'?manaCap:undefined};
+ const rageBound={min:1,max:typeof rageCap==='number'?rageCap:undefined};
+ const number=(label:string,field:string[],options?:{min?:number;max?:number})=>{
+  const value=read(bundle,[...path,...field]);
+  return typeof value==='number'
+   ? <Num label={label} value={value} {...options} onChange={next=>change([...path,...field],next)}/>
+   : null;
+ };
+ const target=(kind:'heart'|'shield')=>{
+  const value=read(bundle,[...path,kind,'target']);
+  return typeof value==='string'&&<label>{functionalTileLabels[kind]} target
+   <select className="aetheria-field" value={value} onChange={event=>change([...path,kind,'target'],event.target.value)}>
+    {functionalTargets.map(([id,label])=><option key={id} value={id}>{label}</option>)}
+   </select>
+  </label>;
+ };
+ return <section>
+  <h3>Functional board tiles</h3>
+  <p className="small muted">All Pets use the same six gem kinds. Sword uses the acting Pet’s elemental attack. Utility gems apply their configured effect.</p>
+  <fieldset disabled={!editable}>
+   <legend>Spawn weights</legend>
+   <p className="small muted">Each kind’s base spawn chance is its weight divided by the sum of the six weights.</p>
+   <div className="fields">{Array.isArray(tiles)&&tiles.map((row,index)=>{
+    const kind=read(row,['kind']),weight=read(row,['weight']);
+    if(typeof kind!=='string'||!Object.hasOwn(functionalTileLabels,kind)||typeof weight!=='number')return null;
+    const name=functionalTileLabels[kind as keyof typeof functionalTileLabels];
+    const probability=weightTotal>0?(100*weight/weightTotal).toFixed(2)+'%':'—';
+    return <div key={kind}>
+     {number(name+' spawn weight',['spawnWeights',String(index),'weight'],{min:1})}
+     <span className="small muted">{probability}</span>
+    </div>;
+   })}</div>
+  </fieldset>
+  <fieldset disabled={!editable}>
+   <legend>Yield per matched tile</legend>
+   <div className="fields">
+    {number('Sword attack contribution (‰)',['swordContributionPm'],{min:1,max:10000})}
+    {number('Mana from Mana',['manaPerTile'],manaBound)}
+    {number('Rage from Rage',['ragePerTile'],rageBound)}
+    {number('HP from Heart',['heart','amount'],{min:1,max:100000})}
+    {target('heart')}
+    {number('Barrier from Shield',['shield','amount'],{min:1,max:100000})}
+    {target('shield')}
+    {number('Barrier cap relative to target max HP (‰)',['shield','shieldCapPm'],{min:1,max:1000})}
+    {number('Barrier duration (turns)',['shield','durationTurns'],{min:1,max:32})}
+    {read(bundle,[...path,'special','kind'])==='resource-combo'&&<>
+     {number('Mana from Special',['special','mana'],manaBound)}
+     {number('Rage from Special',['special','rage'],rageBound)}
+    </>}
+   </div>
+  </fieldset>
+ </section>;
+}
+
+function MultiplierFactors({schedule,editable,change}:{
+ schedule:unknown;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
+}){
+ if(!Array.isArray(schedule))return null;
+ const stages:unknown[]=schedule;
+ const tiers=new Map<number,unknown>();
+ for(const stage of stages){
+  const rows=read(stage,['tiers']);
+  if(!Array.isArray(rows))continue;
+  for(const tier of rows){
+   const multiplier=read(tier,['multiplier']);
+   if(typeof multiplier==='number'&&!tiers.has(multiplier))tiers.set(multiplier,tier);
+  }
+ }
+ function update(multiplier:number,key:string,value:number){
+  if(!Number.isSafeInteger(value))return;
+  change(['multiplier','schedule'],stages.map(stage=>{
+   if(!stage||typeof stage!=='object'||Array.isArray(stage))return stage;
+   const rows=read(stage,['tiers']);
+   if(!Array.isArray(rows))return stage;
+   return {...stage,tiers:rows.map(tier=>read(tier,['multiplier'])===multiplier?{...tier,[key]:value}:tier)};
+  }));
+ }
+ return <fieldset disabled={!editable}>
+  <legend>Effects per multiplier tier</legend>
+  <div className="fields">{[...tiers.entries()].sort(([left],[right])=>left-right).map(([multiplier,tier])=><div key={multiplier}>
+   {([['damageWeightPm','attack',100000],['resourceWeightPm','utility',4294967295]] as const).map(([key,purpose,max])=>
+    <Num key={key} label={'×'+multiplier+' '+purpose+' factor (‰)'} value={read(tier,[key])} max={max}
+     onChange={next=>update(multiplier,key,next)}/>)}
+  </div>)}</div>
+ </fieldset>;
+}
+
 function encounterOptions(bundle:GameplayBundle|undefined){
  const bosses=Array.isArray(bundle?.bosses)?bundle.bosses:[bundle?.boss];
  return bosses.flatMap(boss=>{
@@ -233,6 +336,8 @@ export default function GameplayConfig({request}:{request:Request}){
   catch(error){setMessage(error instanceof Error?error.message:'Invalid JSON bundle');}
  }
  const editable=selected?.state==='DRAFT',activatable=selected?.state==='VALIDATED';
+ const functional=bundle?.schemaVersion===3;
+ const expanded=functional||bundle?.schemaVersion===2;
  const schedule=read(bundle,['multiplier','schedule']);
  const artifactCatalog=Array.isArray(bundle?.artifacts)?bundle.artifacts:[];
  const bossCatalog=Array.isArray(bundle?.bosses)?bundle.bosses:[];
@@ -278,7 +383,7 @@ export default function GameplayConfig({request}:{request:Request}){
   <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>
   <div><dt>Content revision</dt><dd>{display(bundle,'contentRevision')}</dd></div>
  </dl>
- {bundle?.schemaVersion===2&&<label>When the Boss reaches zero HP
+ {expanded&&<label>When the Boss reaches zero HP
   <select className="aetheria-field" disabled={!editable} value={String(bundle.terminalOutcomePolicy??'')}
    onChange={event=>change(['terminalOutcomePolicy'],event.target.value||undefined)}>
    <option value="">Resolve remaining end-of-turn effects</option>
@@ -320,9 +425,15 @@ export default function GameplayConfig({request}:{request:Request}){
    {['modifiers','perLevel'].map(group=><div key={group} className="fields">{['hp','attack','defense'].map(stat=><Num key={stat} label={(group==='modifiers'?'Base ':'Per upgrade ')+stat} value={read(artifact,[group,stat])} onChange={value=>change([...path,group,stat],value)}/>)}</div>)}
   </fieldset>;
  })}</details>:null}
- <h3>Combat resources</h3><fieldset disabled={!editable} className="fields">{(['manaCap','rageCap','manaPerTile','manaOwnBonus','ragePerTile','ragePerGuard','ragePerDamageTaken'] as const).map((key,index)=><Num key={key} label={['Mana cap','Rage cap','Mana per tile','Matching-element mana bonus','Rage per tile','Rage from guard','Rage from incoming damage'][index]} value={read(bundle,['resources',key])} onChange={value=>change(['resources',key],value)}/>)}</fieldset>
+ <h3>Combat resources</h3><fieldset disabled={!editable} className="fields">{([
+  ['manaCap','Mana cap'],['rageCap','Rage cap'],
+  ...(!functional?[
+   ['manaPerTile','Mana per tile'],['manaOwnBonus','Matching-element mana bonus'],['ragePerTile','Rage per tile'],
+  ]:[]),
+  ['ragePerGuard','Rage from guard'],['ragePerDamageTaken','Rage from incoming damage'],
+ ] as [string,string][]).map(([key,label])=><Num key={key} label={label} value={read(bundle,['resources',key])} onChange={value=>change(['resources',key],value)}/>)}</fieldset>
  <h3>Party and board</h3>
- {bundle?.schemaVersion===2&&<label>Opening board generation
+ {expanded&&<label>Opening board generation
   <select className="aetheria-field" disabled={!editable} value={String(read(bundle,['board','initialBoardPolicy'])??'')}
    onChange={event=>change(['board','initialBoardPolicy'],event.target.value||undefined)}>
    <option value="">Sample boards up to the generation limit</option>
@@ -330,6 +441,7 @@ export default function GameplayConfig({request}:{request:Request}){
   </select>
  </label>}
  <div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
+ {functional&&bundle&&<FunctionalBoardEditor bundle={bundle} editable={editable} change={change}/>}
  <h3>Boss phase configuration</h3>{bossCatalog.length?<label>Boss<select className="aetheria-field" value={bossPath[1]} onChange={event=>setBossIndex(Number(event.target.value))}>{bossCatalog.map((value,index)=>{
   const id=display(value,'id'),name=display(value,'name'),map=display(value,'mapId');
   return <option key={index} value={index}>{name==='—'?id:name}{map==='—'?'':' · '+map}</option>;
@@ -345,7 +457,7 @@ export default function GameplayConfig({request}:{request:Request}){
    })}
   </select>
  </label>}
- {bundle?.schemaVersion===2&&<label>Boss attack target priority
+ {expanded&&<label>Boss attack target priority
   <select className="aetheria-field" disabled={!editable} value={String(read(bundle,[...bossPath,'attackModel','targetPriority'])??'')}
    onChange={event=>change([...bossPath,'attackModel','targetPriority'],event.target.value||undefined)}>
    <option value="">Lowest remaining HP percentage</option>
@@ -353,7 +465,7 @@ export default function GameplayConfig({request}:{request:Request}){
   </select>
  </label>}
  <div className="fields"><Num label="Achievement Points to host" value={read(bundle,[...bossPath,'requiredRoomPoints'])} onChange={value=>change([...bossPath,'requiredRoomPoints'],value)}/><Num label="Boss max HP" value={read(bundle,[...bossPath,'maxHp'])} onChange={value=>change([...bossPath,'maxHp'],value)}/>{(['baseDamage','perRoundDamage','minimumDamage','defenseDivisor'] as const).map((key,i)=><Num key={key} label={['Boss base damage','Additional damage per round','Minimum incoming damage','Party defense divisor'][i]} min={key==='perRoundDamage'?0:1} value={read(bundle,[...bossPath,'attackModel',key])} onChange={value=>change([...bossPath,'attackModel',key],value)}/>)}<Num label="Boss defense" value={read(bundle,[...bossPath,'defense'])} onChange={value=>change([...bossPath,'defense'],value)}/><Num label="Critical rate (bp)" value={read(bundle,[...bossPath,'critRateBp'])} onChange={value=>change([...bossPath,'critRateBp'],value)}/><Num label="Critical damage (bp)" value={read(bundle,[...bossPath,'critDamageBp'])} onChange={value=>change([...bossPath,'critDamageBp'],value)}/><Num label="Telegraph turns" value={read(bundle,[...bossPath,'telegraphTurns'])} onChange={value=>change([...bossPath,'telegraphTurns'],value)}/><Num label="Phase threshold (bp)" value={read(bundle,[...bossPath,'phase','thresholdBp'])} onChange={value=>change([...bossPath,'phase','thresholdBp'],value)}/><Num label="Phase max HP growth (bp)" value={read(bundle,[...bossPath,'phase','maxGrowthBp'])} onChange={value=>change([...bossPath,'phase','maxGrowthBp'],value)}/><Num label="Phase two current HP (bp)" value={read(bundle,[...bossPath,'phase','currentBp'])} onChange={value=>change([...bossPath,'phase','currentBp'],value)}/><Num label="Phase two attack (pm)" value={read(bundle,[...bossPath,'phase','phase2AttackPm'])} onChange={value=>change([...bossPath,'phase','phase2AttackPm'],value)}/><Num label="Attack targets" value={read(bundle,[...bossPath,'phase','attackTargets'])} onChange={value=>change([...bossPath,'phase','attackTargets'],value)}/></div>
- <h3>Elemental matchups</h3>
+ <h3>Pet elements and effectiveness</h3>
  <p className="small muted">Damage against each defending element. 100% is normal damage and 0% is immunity.</p>
  {Array.isArray(bundle?.elements)&&bundle.elements.map((profile,i)=>{
   const defenderRows=read(profile,['effectiveness']);
@@ -362,7 +474,28 @@ export default function GameplayConfig({request}:{request:Request}){
    {read(profile,['bossCritDamageBonusBp'])!==undefined&&<Num label="Bonus critical damage against Bosses (%)" min={0.01} max={100} step={0.01} value={Number(read(profile,['bossCritDamageBonusBp']))/100} onChange={n=>change(['elements',String(i),'bossCritDamageBonusBp'],Math.round(n*100))}/>}
   </div></fieldset>;
  })}
- <h3>Multiplier schedule</h3><p className="small muted">Each refill rolls from the current stage. A tier’s probability is its weight divided by the total weight for that stage.</p><div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead><tbody>{(Array.isArray(schedule)?schedule as unknown[]:[]).map((stage,index)=>{const row=stage as Record<string,unknown>,tiers=Array.isArray(row.tiers)?row.tiers as Record<string,unknown>[]:[];return <tr key={index}><td><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row.from==='number'?row.from as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'from'],next);}}/></td><td>{tiers.map((tier,tierIndex)=><label key={tierIndex} className="small">x{String(tier.multiplier)} · {((Number(tier.weight)/Math.max(1,tiers.reduce((sum,item)=>sum+Number(item.weight),0)))*100).toFixed(2)}% <input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof tier.weight==='number'?tier.weight as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'tiers',String(tierIndex),'weight'],next);}}/></label>)}</td></tr>;})}</tbody></table></div>
+ <h3>Multiplier schedule</h3>
+ <p className="small muted">Each refill rolls from the current stage. A tier’s probability is its weight divided by the total weight for that stage.</p>
+ {functional&&<p className="small muted">Sword uses the attack factor. Mana, Rage, Heart, Shield and Special use the utility factor. A factor applies to the same tier wherever it appears.</p>}
+ <div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead>
+ <tbody>{Array.isArray(schedule)&&schedule.map((stage,index)=>{
+  const path=['multiplier','schedule',String(index)],tiers=read(stage,['tiers']);
+  if(!Array.isArray(tiers))return null;
+  const weightTotal=tiers.reduce((sum,tier)=>sum+Number(read(tier,['weight'])??0),0);
+  return <tr key={index}>
+   <td><fieldset disabled={!editable||index===0}><Num label={'Stage '+(index+1)+' start '+String(read(bundle,['multiplier','clockUnit'])??'turn')} value={read(stage,['from'])} onChange={next=>change([...path,'from'],next)}/></fieldset></td>
+   <td><fieldset disabled={!editable} className="fields">{tiers.map((tier,tierIndex)=>{
+    const multiplier=read(tier,['multiplier']),weight=read(tier,['weight']);
+    const probability=weightTotal>0?(100*Number(weight)/weightTotal).toFixed(2)+'%':'—';
+    return <div key={tierIndex}>
+     <Num label={'Stage '+(index+1)+' ×'+String(multiplier)+' weight'} value={weight} min={1}
+      onChange={next=>change([...path,'tiers',String(tierIndex),'weight'],next)}/>
+     <span className="small muted">{probability}</span>
+    </div>;
+   })}</fieldset></td>
+  </tr>;
+ })}</tbody></table></div>
+ {functional&&<MultiplierFactors schedule={schedule} editable={editable} change={change}/>}
  <h3>Settlement rewards</h3>
  {read(bundle,[...bossPath,'rewardPolicy'])?<RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>:null}
  {read(bundle,[...bossPath,'rewardPolicy'])?<fieldset disabled={!editable}><legend>Minimum committed combat actions per participant</legend>
@@ -378,7 +511,7 @@ export default function GameplayConfig({request}:{request:Request}){
   const path=[...bossPath,'rewardPolicy',kind,key];return <Num key={key} label={['Achievement Points','Coins','Pet EXP','Artifact materials'][j]} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
  })}</div></fieldset>)}</div>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
 
- <h3>Skills</h3>{bundle&&<SkillTrainingEditor key={selected.version} bundle={bundle} editable={editable} change={change}/>}<div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
+ <h3>Skill configuration</h3>{bundle&&<SkillTrainingEditor key={selected.version} bundle={bundle} editable={editable} change={change}/>}<div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
  </div>
  <h3>Raw bundle (advanced)</h3><textarea className="aetheria-field" rows={14} value={json} onChange={event=>setJson(event.target.value)} disabled={!editable} /><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={applyJson}>Apply JSON to editor</button></p>
  </section>:null}

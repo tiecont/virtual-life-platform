@@ -3,10 +3,9 @@ import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
-import type {GameplayBundle,GameplayRuleset} from '@aetheria/contracts';
+import {CoopEngineCapability,type GameplayBundle,type GameplayRuleset} from '@aetheria/contracts';
 
 const execute=promisify(execFile);
-const CAPABILITY:Readonly<Record<GameplayRuleset,string>>={'arena8-coop-pve':'arena8-coop-v1'};
 const HEX=/^[a-f0-9]{64}$/,LIMIT=1048576,TIMEOUT_MS=10000,OUTPUT_LIMIT=16384;
 
 export type GameplayBundleValidation=Readonly<{digest:string;engineCapability:string;contentHash:string}>;
@@ -24,6 +23,10 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
   if(typeof binary!=='string'||!binary.startsWith('/')||binary.length>4096)throw new Error('Gameplay validator binary must be an absolute path');
  }
  async validate(ruleset:GameplayRuleset,bundle:GameplayBundle):Promise<GameplayBundleValidation>{
+  if(ruleset!=='arena8-coop-pve')throw new InvalidGameplayBundleError();
+  const schema=bundle.schemaVersion;
+  if(schema!==1&&schema!==2&&schema!==3)throw new InvalidGameplayBundleError();
+  const expectedCapability=schema===3?CoopEngineCapability.functional:CoopEngineCapability.elemental;
   const bytes=JSON.stringify(bundle);
   if(typeof bytes!=='string'||Buffer.byteLength(bytes)<2||Buffer.byteLength(bytes)>LIMIT)throw new InvalidGameplayBundleError('Gameplay bundle size is outside the supported bound');
   const directory=await mkdtemp(join(tmpdir(),'aetheria-gameplay-config-'));
@@ -43,7 +46,12 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
    try{parsed=JSON.parse(stdout);}catch{throw new GameplayValidatorUnavailableError('Engine validator returned an invalid verdict');}
    if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid verdict');
    const verdict=parsed as Record<string,unknown>,digest=verdict.digest,capability=verdict.engineCapability,contentHash=verdict.contentHash;
-   if(typeof capability!=='string'||capability!==CAPABILITY[ruleset])throw new GameplayValidatorUnavailableError('Engine validator capability does not match the ruleset');
+   if(typeof capability!=='string'||capability!==expectedCapability)throw new GameplayValidatorUnavailableError('Engine validator capability does not match the ruleset');
+   const expectedRulesetVersion=schema===3?2:1;
+   const version=verdict.rulesetVersion;
+   // Older validators emit no version for their v1 capability.
+   if(version!==expectedRulesetVersion&&!(expectedRulesetVersion===1&&version===undefined))
+    throw new GameplayValidatorUnavailableError('Engine validator version does not match the bundle schema');
    if(typeof digest!=='string'||!HEX.test(digest))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid digest');
    if(typeof contentHash!=='string'||!HEX.test(contentHash))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid content hash');
    return Object.freeze({digest,engineCapability:capability,contentHash});

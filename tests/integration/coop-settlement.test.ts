@@ -62,6 +62,7 @@ type FixtureBinding={version:number;digest:string;contentHash:string};
 async function fixture(
  accounts:Account[],outcome:'won'|'lost',binding:FixtureBinding={version:1,digest,contentHash},participatingSeats:readonly number[]=[],
  encounter={bossId:baseBundle.boss.id,requiredPoints:baseBundle.boss.requiredRoomPoints},
+ versions={native:1,proposal:1},
 ){
  const roomId=randomUUID(),matchId=randomUUID(),bootId=randomUUID(),worldId='native:coop-'+matchId;
  const settlementId=randomUUID();
@@ -74,7 +75,7 @@ async function fixture(
  await pool.query("UPDATE coop_rooms SET status='STARTED',revision=revision+1 WHERE id=$1",[roomId]);
  const seats=accounts.map(account=>({account:account.accountId,petId:account.petId,petLevel:1,artifactPowerPm:1000}));
  await pool.query("INSERT INTO coop_allocations(match_id,room_id,ruleset,config_version,config_digest,content_hash,world_id,boot_id,generation,seats,status) VALUES($1,$2,'arena8-coop-pve',$3,$4,$5,$6,$7,1,$8::jsonb,'ACTIVE')",[matchId,roomId,binding.version,binding.digest,binding.contentHash,worldId,bootId,JSON.stringify(seats)]);
- await pool.query("INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,protocol_version,canonical_version,rng_version,owner_boot_id,epoch,state_version,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot) VALUES($1,$2,'arena8-coop-pve',1,decode($3,'hex'),$4,1,1,1,$5,1,1,0,0,0,'SETTLING',$6,$7,'fixture-key',$8,$9,$10)",[matchId,worldId,binding.contentHash,randomBytes(32),bootId,randomBytes(32),randomBytes(32),randomBytes(12),randomBytes(16),Buffer.from('sealed')]);
+ await pool.query("INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,protocol_version,canonical_version,rng_version,owner_boot_id,epoch,state_version,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot) VALUES($1,$2,'arena8-coop-pve',$11,decode($3,'hex'),$4,1,1,1,$5,1,1,0,0,0,'SETTLING',$6,$7,'fixture-key',$8,$9,$10)",[matchId,worldId,binding.contentHash,randomBytes(32),bootId,randomBytes(32),randomBytes(32),randomBytes(12),randomBytes(16),Buffer.from('sealed'),versions.native]);
  for(const [index,account] of actions.entries()){
   const version=index+1;
   if(version>1)await pool.query('UPDATE game_native_matches SET state_version=$2 WHERE id=$1',[matchId,version]);
@@ -83,7 +84,7 @@ async function fixture(
  const proposal={
   configDigest:binding.digest,contentHash:binding.contentHash,kind:'coop.completed.v1',outcome,
   participants:accounts.map(account=>({account:account.accountId,alive:true,damage:1_000_001,healing:2_000_000,petId:account.petId,shielding:3_000_000})),
-  round:6,ruleset:'arena8-coop-pve',rulesetVersion:1,turn:14,
+  round:6,ruleset:'arena8-coop-pve',rulesetVersion:versions.proposal,turn:14,
  };
  await pool.query('INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1,$2,1,$3,$4,$5::jsonb)',[matchId,stateVersion,settlementId,canonicalProposalHash(proposal),JSON.stringify(proposal)]);
  await pool.query("INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1,$2,$3,'game.settlement.v1')",[randomUUID(),matchId,settlementId]);
@@ -138,9 +139,9 @@ function publishRecruitment(recruitmentPetIds:string[]){
  }]);
 }
 
-async function publishSettlementFixture(bosses:readonly Record<string,unknown>[]):Promise<FixtureBinding>{
+async function publishSettlementFixture(bosses:readonly Record<string,unknown>[],functional=false):Promise<FixtureBinding>{
  const store=new GameplayConfigStore(),tx=await pool.connect(),actor='system:test-installation';
- const bundle={schemaVersion:2,rewards:baseBundle.rewards,bosses};
+ const bundle={schemaVersion:functional?3:2,rewards:baseBundle.rewards,bosses};
  // Match-terminal fixtures isolate Nest settlement; engine tests validate real bundles.
  const digest=canonicalProposalHash(bundle).toString('hex');
  const contentHash=canonicalProposalHash({digest}).toString('hex');
@@ -148,7 +149,7 @@ async function publishSettlementFixture(bosses:readonly Record<string,unknown>[]
   await tx.query('BEGIN');
   const active=(await store.active(tx,ruleset,true))!,version=await store.nextVersion(tx,ruleset);
   const draft=await store.insertDraft(tx,{ruleset,version,parentVersion:active.version,bundle,actor});
-  const validated=(await store.markValidated(tx,{ruleset,version,expectedRevision:draft.revision,digest,engineCapability:'arena8-coop-v1',actor}))!;
+  const validated=(await store.markValidated(tx,{ruleset,version,expectedRevision:draft.revision,digest,engineCapability:functional?'arena8-coop-v2':'arena8-coop-v1',actor}))!;
   await store.markPublished(tx,{ruleset,version,expectedRevision:validated.revision,actor});
   await store.setActive(tx,{ruleset,version,expectedRevision:active.revision,actor});
   await store.supersede(tx,{ruleset,version:active.version,actor});
@@ -445,4 +446,27 @@ describe('cooperative settlement',()=>{
    if(next)expect(next.prerequisite).toMatchObject({mapId:map.id,cleared:true});
   }
  });
+ it('settles a functional match once and rejects mismatches with either pinned version',async()=>{
+  const accounts=await Promise.all(pets.map((pet,index)=>guest('Versioned seat '+index,pet)));
+  const pinned=await publishSettlementFixture([{...baseBundle.boss,mapId:'cinder-terraces'}],true);
+  const matched=await fixture(accounts,'lost',pinned,[],undefined,{native:2,proposal:2});
+  const settlement=new CoopSettlement(pool);
+  await settlement.drain();
+  await settlement.drain();
+  const rewardsFor=(settlementId:string)=>pool.query('SELECT 1 FROM coop_settlement_rewards WHERE settlement_id=$1',[settlementId]);
+  expect((await rewardsFor(matched.settlementId)).rowCount).toBe(4);
+
+  for(const [binding,versions] of [
+   [pinned,{native:2,proposal:1}],
+   [{version:1,digest,contentHash},{native:2,proposal:2}],
+  ] as const){
+   const mismatched=await fixture(accounts,'lost',binding,[],undefined,versions);
+   await expect(settlement.drain()).rejects.toThrow('Cooperative settlement ruleset version mismatch');
+   expect((await rewardsFor(mismatched.settlementId)).rowCount).toBe(0);
+   const outbox=await pool.query('SELECT delivered_at FROM game_native_outbox WHERE settlement_id=$1',[mismatched.settlementId]);
+   expect(outbox.rows[0]?.delivered_at).toBeNull();
+   await pool.query("UPDATE game_native_outbox SET available_at=clock_timestamp()+interval '1 hour' WHERE settlement_id=$1",[mismatched.settlementId]);
+  }
+ });
+
 });

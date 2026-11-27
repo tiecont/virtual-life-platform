@@ -1,6 +1,7 @@
 import {createHash,timingSafeEqual} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {z} from 'zod';
+import {CoopRulesetVersionSchema,coopRulesetVersionForCapability} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore} from '../../rooms/infrastructure/store';
 import {lockAccounts,tryLockAccounts} from '../../../../identity/modules/accounts/application/account-locks';
@@ -14,7 +15,7 @@ const ParticipantSchema=z.strictObject({account:z.uuid(),petId:pet,alive:z.boole
 export const CoopSettlementProposalSchema=z.strictObject({
  configDigest:hash,contentHash:hash,kind:z.literal('coop.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.array(ParticipantSchema).length(4),round:z.number().int().min(0).max(65535),
- ruleset:z.literal('arena8-coop-pve'),rulesetVersion:z.literal(1),turn:z.number().int().min(0).max(65535),
+ ruleset:z.literal('arena8-coop-pve'),rulesetVersion:CoopRulesetVersionSchema,turn:z.number().int().min(0).max(65535),
 });
 const RewardsSchema=z.strictObject({
  clearAchievementPoints:count,clearCoins:count,clearExp:count,
@@ -105,6 +106,9 @@ export class CoopSettlement{
   const parsed=CoopSettlementProposalSchema.safeParse(event.proposal);
   if(!parsed.success)throw new Error('Cooperative settlement proposal invalid');
   const proposal=parsed.data;
+  if(proposal.rulesetVersion!==allocation.rulesetVersion||
+     proposal.rulesetVersion!==coopRulesetVersionForCapability(allocation.engineCapability))
+   throw new Error('Cooperative settlement ruleset version mismatch');
   if(proposal.contentHash!==allocation.contentHash||proposal.configDigest!==allocation.configDigest)
    throw new Error('Cooperative settlement configuration mismatch');
   if(event.proposalHash.length!==32||!timingSafeEqual(canonicalProposalHash(event.proposal),event.proposalHash))

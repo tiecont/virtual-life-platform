@@ -10,7 +10,7 @@ import {chromium,expect as playwrightExpect} from '@playwright/test';
 const expect=playwrightExpect.configure({timeout:20000});
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
@@ -33,13 +33,13 @@ const bytesField=(field,bytes)=>Buffer.concat([tag(field,2),varint(bytes.length)
 const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
-function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,'coop-process-v1'),bytesField(3,contentHash)]);}
+function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,functional?'unity-native-v2':'coop-process-v1'),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
 // Search only the committed board. A stable board has no existing matches, so
 // any three aligned elements after the trial swap constitute a legal move.
 function legalSwap(board){
- const elements=board.map(tile=>tile.element);
+ const elements=board.map(tile=>tile.kind??tile.element);
  const matches=()=>elements.some((value,index)=>
   (index%8<6&&value===elements[index+1]&&value===elements[index+2])||
   (index<48&&value===elements[index+8]&&value===elements[index+16]));
@@ -54,12 +54,44 @@ function legalSwap(board){
  throw Error('Committed board has no legal swap');
 }
 
+// Use the committed tile kinds to find an opening swap whose first batch is
+// all Mana. Subsequent authoritative cascade gains can only increase Mana.
+function manaSwap(board){
+ const kinds=board.map(tile=>tile.kind);
+ function firstBatch(){
+  const matched=new Set();
+  for(let index=0;index<kinds.length;index++){
+   const kind=kinds[index];
+   for(const step of [1,8]){
+    if(step===1?index%8>=6:index>=48)continue;
+    if(kind===kinds[index+step]&&kind===kinds[index+step*2]){
+     matched.add(index);matched.add(index+step);matched.add(index+step*2);
+    }
+   }
+  }
+  return matched.size>0&&[...matched].every(index=>kinds[index]==='mana')?matched.size:0;
+ }
+ for(let first=0;first<kinds.length;first++){
+  for(const second of [first%8<7?first+1:-1,first<56?first+8:-1]){
+   if(second<0||kinds[first]===kinds[second])continue;
+   [kinds[first],kinds[second]]=[kinds[second],kinds[first]];
+   const matched=firstBatch();
+   [kinds[first],kinds[second]]=[kinds[second],kinds[first]];
+   if(matched>0)return {action:{kind:'swap',first,second},matched};
+  }
+ }
+}
+const functional=process.argv.includes('--functional');
+const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
+const historicalBinary=historicalArg?.slice('--historical-binary='.length);
+assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
+ 'Historical recovery proof requires an absolute prior binary and the elemental fixture');
 const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,'run-'));
-const facts={result:'FAIL',revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,functional?'functional-':'run-'));
+const facts={result:'FAIL',board:functional?'functional':'elemental',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -102,7 +134,8 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seed=JSON.parse(await readFile('config/gameplay/arena8-coop-v2.seed.json','utf8'));
+ const seedPath=functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seed=JSON.parse(await readFile(seedPath,'utf8'));
  // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
  seed.party.maxRounds=2;
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
@@ -110,18 +143,30 @@ try{
  boss.attackModel.baseDamage=1;
  boss.attackModel.perRoundDamage=0;
  boss.attackModel.minimumDamage=1;
- seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
+ if(functional){
+  // Keep the test segment on a known ×1 utility factor and make an eligible
+  // committed Mana match common even though the host chooses a fresh seed.
+  seed.multiplier.schedule=seed.multiplier.schedule.slice(0,1);
+  seed.multiplier.schedule[0].tiers=[{multiplier:1,weight:1,damageWeightPm:1000,resourceWeightPm:1000}];
+  for(const row of seed.board.functionalTiles.spawnWeights)row.weight=row.kind==='mana'?5:1;
+ }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  const validator=new EngineGameplayBundleValidator(binary);
  const installed=await installGameplayConfig(pool,ruleset,seed,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
  const operatorPassword='synthetic-local-ab-operator-only',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
  const bootstrapTime=Date.now()-60000;
  await new OperatorService(pool,operatorKey,()=>bootstrapTime).bootstrap({password:operatorPassword,totpSecret:operatorSecret,code:totp(operatorSecret,bootstrapTime)});
- const config=readConfig({
+ const engineHashFor=async file=>createHash('sha256').update(await readFile(file)).digest('hex');
+ const currentEngineHash=await engineHashFor(binary);
+ const historicalEngineHash=historicalBinary?await engineHashFor(historicalBinary):undefined;
+ if(historicalEngineHash)assert.notEqual(historicalEngineHash,currentEngineHash,'Recovery proof requires two distinct verified executables');
+ let runtimeBinary=historicalBinary??binary;
+ const configForRuntime=()=>readConfig({
   NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:randomBytes(48).toString('base64url'),
   ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:operatorKey,
   LOCAL_COOP_ROOMS:'1',LOCAL_COOP_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
-  LOCAL_ARENA8_NATIVE_BINARY:binary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
+  LOCAL_ARENA8_NATIVE_BINARY:runtimeBinary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
+  ...(historicalBinary?{LOCAL_COOP_HISTORICAL_RUNTIME_BINARY:historicalBinary}:{}),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,
   LOCAL_ARENA8_NATIVE_STORAGE_KEY:randomBytes(32).toString('hex'),LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:'local-v1',
   LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:nativeOrigin,
@@ -129,7 +174,7 @@ try{
   LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:resolve(directory,'tls/server.key'),
  });
  async function startApi(){
-  app=await createApp(config,pool,false,{});
+  app=await createApp(configForRuntime(),pool,false,{});
   await app.app.listen(apiPort,'127.0.0.1');
  }
  await startApi();
@@ -169,6 +214,10 @@ try{
   A:{hp:boss.maxHp,attack:seed.pets.find(pet=>pet.id==='fire-coalwhisk').attack,points:5000,materials:1,priority:''},
   B:{hp:boss.maxHp,attack:seed.pets.find(pet=>pet.id==='fire-coalwhisk').attack,points:5500,materials:3,priority:'highest-mana'},
  };
+ if(functional){
+  variants.A.manaYield=1;
+  variants.B.manaYield=seed.resources.manaCap;
+ }
  const configurations={};
  const activeSection=()=>page.locator('section').filter({has:page.getByRole('heading',{name:'Active configuration',exact:true})}).last();
  const auditSection=()=>page.locator('section').filter({has:page.getByRole('heading',{name:'Publication audit',exact:true})}).last();
@@ -211,6 +260,7 @@ try{
   points:bundle.bosses[0].requiredRoomPoints,
   materials:bundle.bosses[0].rewardPolicy.defeat.materials,
   priority:bundle.bosses[0].attackModel.targetPriority??'',
+  ...(functional?{manaYield:bundle.board.functionalTiles.manaPerTile}:{}),
  });
  async function publish(label){
   const fields=variants[label];
@@ -224,6 +274,11 @@ try{
   await priority().selectOption(fields.priority);
   await expect(priority()).toHaveValue(fields.priority);
   await control('Achievement Points to host',fields.points);
+  if(functional){
+   await expect(page.getByRole('heading',{name:'Functional board tiles',exact:true})).toBeVisible();
+   await expect(page.getByLabel('Matching-element mana bonus',{exact:true})).toHaveCount(0);
+   await control('Mana from Mana',fields.manaYield);
+  }
   const materialInput=page.getByRole('group',{name:'Defeat',exact:true}).getByLabel('Artifact materials',{exact:true});
   await materialInput.fill(String(fields.materials));
   await expect(materialInput).toHaveValue(String(fields.materials));
@@ -470,6 +525,11 @@ try{
   assert.equal(response.committed,true,JSON.stringify(response));
   assert.equal(response.state.phase,'playing');
   assert.equal(response.state.board.length,64);
+  assert.equal(response.state.ruleset.version,functional?2:1);
+  if(functional){
+   const kinds=new Set(seed.board.functionalTiles.spawnWeights.map(row=>row.kind));
+   assert.ok(response.state.board.every(tile=>kinds.has(tile.kind)&&!Object.hasOwn(tile,'element')));
+  }
   assert.equal(response.state.participants.length,4);
   assert.equal(response.state.boss.maxHp,match.version.fields.hp);
   assert.equal(response.state.participants[0].attack,match.version.fields.attack);
@@ -478,6 +538,9 @@ try{
   const room=await get(host,'/v1/coop/rooms/'+match.room.roomId);
   assert.equal(room.statusCode,200);
   assert.equal(room.json().requiredPoints,match.version.fields.points);
+  const persisted=(await pool.query("SELECT encode(engine_hash,'hex') AS engine_hash FROM game_native_matches WHERE id=$1",[match.row.match_id])).rows[0];
+  match.engineHash=persisted?.engine_hash;
+  assert.equal(match.engineHash,runtimeBinary===historicalBinary?historicalEngineHash:currentEngineHash);
   mark('live native projection executed the Admin boss HP and Pet ATK',{matchId:match.row.match_id,version:response.version,bossHp:response.state.boss.maxHp,petAttack:response.state.participants[0].attack,roomRequiredPoints:room.json().requiredPoints});
   return response;
  }
@@ -490,17 +553,52 @@ try{
   assert.equal(allocation.config_version,match.version.version);
   assert.equal(allocation.config_digest,match.version.digest);
   assert.equal(allocation.content_hash,match.version.hash);
-  mark(stage,{matchId:match.row.match_id,version:match.version.version,digest:allocation.config_digest,generation:allocation.generation,canonicalVersion:result.version});
+  const persisted=(await pool.query("SELECT encode(engine_hash,'hex') AS engine_hash FROM game_native_matches WHERE id=$1",[match.row.match_id])).rows[0];
+  assert.equal(persisted?.engine_hash,match.engineHash);
+  mark(stage,{matchId:match.row.match_id,version:match.version.version,digest:allocation.config_digest,generation:allocation.generation,
+   canonicalVersion:result.version,engineHash:match.engineHash});
+
   return result;
  }
  async function restart(){
   for(const match of connections)closeMatch(match);
   await app.app.close();
+  if(runtimeBinary===historicalBinary){
+   runtimeBinary=binary;
+   mark('the next API process is configured with a different current executable and the trusted historical candidate',{
+    historicalEngineHash,currentEngineHash,
+   });
+  }
   await startApi();
   const recovered=(await pool.query('SELECT match_id,status,generation FROM coop_allocations ORDER BY created_at')).rows;
   mark('Nest restarted and reconciled durable allocation rows',recovered);
  }
+ async function functionalBehavior(match,response){
+  for(let attempt=0;attempt<4;attempt++){
+   const seat=response.state.activeSeat,before=response.state.participants[seat].mana;
+   const found=manaSwap(response.state.board);
+   if(found&&before===0){
+    const after=await native(match,seat,response.version,found.action);
+    if(after.committed){
+     const observed=after.state.participants[seat].mana;
+     const yieldPerTile=match.version.fields.manaYield,cap=match.version.bundle.resources.manaCap;
+     assert.ok(observed>=Math.min(cap,found.matched*yieldPerTile));
+     if(yieldPerTile===cap)assert.equal(observed,cap);
+     else assert.ok(observed<cap,'A must remain below the cap to distinguish it from B');
+     mark('committed Mana swap executed the published functional yield in the live Rust process',{
+      configVersion:match.version.version,digest:match.version.digest,canonicalVersion:after.version,
+      matchedInitially:found.matched,manaPerTile:yieldPerTile,manaBefore:before,manaAfter:observed,manaCap:cap,
+     });
+     return after;
+    }
+   }
+   response=await native(match,seat,response.version,legalSwap(response.state.board));
+   assert.equal(response.committed,true,JSON.stringify(response));
+  }
+  throw Error('No pure Mana swap was observed on a fresh seat');
+ }
  async function behavior(match,response){
+  if(functional)return functionalBehavior(match,response);
   async function guard(value){
    const result=await native(match,value.state.activeSeat,value.version,{kind:'guard'});
    assert.equal(result.committed,true,JSON.stringify(result));
