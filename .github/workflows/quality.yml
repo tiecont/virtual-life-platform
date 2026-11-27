@@ -19,14 +19,14 @@ jobs:
     outputs:
       images: ${{ steps.plan.outputs.images }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -40,19 +40,19 @@ jobs:
     outputs:
       groups: ${{ steps.browser-plan.outputs.groups }}
     steps:
-      - uses: actions/checkout@v5 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0 # Historical evidence objects must survive current-tree cleanup.
-      - uses: pnpm/action-setup@v5 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
       - name: Restore Next.js incremental build cache
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             apps/portal-web/.next/cache
@@ -61,7 +61,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-next-core-
       - name: Restore prepared legacy API baselines
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: artifacts/legacy-runtime
           key: ${{ runner.os }}-legacy-runtime-${{ hashFiles('integrations/legacy-snapshots/**','scripts/prepare-deadline-baseline.mjs','scripts/prepare-maid-baseline.mjs','.node-version') }}
@@ -90,7 +90,7 @@ jobs:
           mkdir -p artifacts/ci/core
           set -o pipefail
           pnpm check:core 2>&1 | tee artifacts/ci/core/check.log
-      - uses: actions/upload-artifact@v5 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: core-evidence
@@ -127,20 +127,20 @@ jobs:
       # four workers. Two keeps the same tests below that infrastructure limit.
       VITEST_MAX_WORKERS: '2'
     steps:
-      - uses: actions/checkout@v5 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@v5 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Restore prepared legacy API baselines
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: artifacts/legacy-runtime
           key: ${{ runner.os }}-legacy-runtime-${{ hashFiles('integrations/legacy-snapshots/**','scripts/prepare-deadline-baseline.mjs','scripts/prepare-maid-baseline.mjs','.node-version') }}
@@ -163,7 +163,7 @@ jobs:
             --reporter=json \
             --outputFile="artifacts/ci/integration/shard-${{ matrix.shard }}.json" \
             2>&1 | tee "artifacts/ci/integration/shard-${{ matrix.shard }}.log"
-      - uses: actions/upload-artifact@v5 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: integration-report-${{ matrix.shard }}
@@ -184,26 +184,26 @@ jobs:
     env:
       CI_BROWSER_GROUP: ${{ matrix.group }}
     steps:
-      - uses: actions/checkout@v5 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@v5 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
       - name: Restore pinned Playwright browser and font cache
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: artifacts/ci-browser
           key: ${{ runner.os }}-playwright-1.64.1-${{ hashFiles('package.json','scripts/prepare-ci-browser.mjs') }}
           restore-keys: |
             ${{ runner.os }}-playwright-1.64.1-
       - name: Restore Next.js incremental build cache
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             apps/portal-web/.next/cache
@@ -213,7 +213,7 @@ jobs:
             ${{ runner.os }}-next-browser-${{ matrix.group }}-
             ${{ runner.os }}-next-browser-
       - name: Restore prepared legacy API baselines
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: artifacts/legacy-runtime
           key: ${{ runner.os }}-legacy-runtime-${{ hashFiles('integrations/legacy-snapshots/**','scripts/prepare-deadline-baseline.mjs','scripts/prepare-maid-baseline.mjs','.node-version') }}
@@ -227,7 +227,7 @@ jobs:
       - run: node scripts/prepare-ci-browser.mjs
       # Each spec/device still gets a disposable DB/API;never combine IP budgets.
       - run: pnpm ci:browser "$CI_BROWSER_GROUP"
-      - uses: actions/upload-artifact@v5 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: browser-${{ matrix.group }}-evidence
@@ -245,19 +245,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
       - name: Restore pinned Playwright browser and font cache
-        uses: actions/cache@v5
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: artifacts/ci-browser
           key: ${{ runner.os }}-playwright-1.64.1-${{ hashFiles('package.json','scripts/prepare-ci-browser.mjs') }}
@@ -272,7 +272,7 @@ jobs:
         run: node scripts/local-compose-smoke.mjs --bundle artifacts/release-bundle/bundle.json
       - name: Preserve image failure summaries
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: image-failure-summaries-${{ github.sha }}-${{ github.run_attempt }}
           path: |
@@ -282,13 +282,13 @@ jobs:
             artifacts/image-*/smoke/commands.json
           if-no-files-found: warn
           retention-days: 7
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: verified-image-metadata-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/release-bundle/metadata/
           if-no-files-found: error
           retention-days: 90
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: runtime-images-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/release-bundle/
@@ -304,13 +304,13 @@ jobs:
     env:
       CI_NEEDS_JSON: ${{ toJSON(needs) }}
     steps:
-      - uses: actions/checkout@v5 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
-      - uses: actions/download-artifact@v5 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: integration-report-*
           path: artifacts/ci/integration-reports
