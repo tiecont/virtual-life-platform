@@ -15,6 +15,7 @@
 
 pub mod config;
 mod loadout;
+mod opening_board;
 pub mod simulation;
 
 use crate::arena8::Element;
@@ -695,10 +696,14 @@ impl CoopRules {
                 if next.phase != CoopPhase::Ready {
                     return Err(CoreError::InvalidAction);
                 }
-                // The initial board is generated only here, from the host's
-                // server-owned stream. It has no unresolved matches and at
-                // least one legal swap (or the authored dead-board policy).
-                self.fill_board(&mut next, rng)?;
+                // Historical bundles keep their original reducer and RNG stream.
+                match self.config.board.initial_board_policy {
+                    None => self.fill_board(&mut next, rng)?,
+                    Some(config::InitialBoardPolicy::Constructive) => {
+                        next.board =
+                            opening_board::construct(self.spawn_table, self.spawn_total, rng)?;
+                    }
+                }
                 next.phase = CoopPhase::Playing;
                 next.active_seat = next.next_alive(0).ok_or(CoreError::InvalidState)?;
                 events.push(event("started", None, u64::from(next.boss.hp)));

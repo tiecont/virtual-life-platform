@@ -113,6 +113,7 @@ pub struct BoardConfig {
     pub spawn_weights: Vec<SpawnWeight>,
     pub dead_board_policy: DeadBoardPolicy,
     pub generation_attempts: u16,
+    pub initial_board_policy: Option<InitialBoardPolicy>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -120,6 +121,12 @@ pub struct BoardConfig {
 pub struct SpawnWeight {
     pub element: String,
     pub weight: u32,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum InitialBoardPolicy {
+    Constructive,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -567,7 +574,8 @@ impl CoopConfig {
                 .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'.')
             || self.content_revision == 0
             || (self.schema_version == HISTORICAL_SCHEMA_VERSION
-                && self.terminal_outcome_policy.is_some())
+                && (self.terminal_outcome_policy.is_some()
+                    || self.board.initial_board_policy.is_some()))
         {
             return Err(ConfigError::Identity);
         }
@@ -954,7 +962,7 @@ impl BoardConfig {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::List(
                 self.spawn_weights
                     .iter()
@@ -968,7 +976,11 @@ impl BoardConfig {
             ),
             Value::Text(dead_board_name(self.dead_board_policy).into()),
             Value::Uint(u64::from(self.generation_attempts)),
-        ])
+        ];
+        if let Some(InitialBoardPolicy::Constructive) = self.initial_board_policy {
+            fields.push(Value::Text("constructive".into()));
+        }
+        Value::List(fields)
     }
 }
 
