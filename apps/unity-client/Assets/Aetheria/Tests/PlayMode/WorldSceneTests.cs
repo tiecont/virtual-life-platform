@@ -128,6 +128,37 @@ namespace Aetheria.World.Tests
         }
 
         [UnityTest]
+        public IEnumerator FireBattleHidesWorldControlsAndKeepsFixedFraming()
+        {
+            yield return SceneManager.LoadSceneAsync(WorldMapCatalog.CinderTerraces.SceneName);
+            var arena = Object.FindFirstObjectByType<ArenaWorldSceneController>();
+            var camera = arena.CameraRig.Camera;
+            camera.aspect = 16f / 9f;
+
+            arena.EnterBattlePresentation();
+            var position = camera.transform.position;
+            var rotation = camera.transform.rotation;
+            Assert.That(arena.InputLocked, Is.True);
+            Assert.That(arena.Player.gameObject.activeInHierarchy, Is.False);
+            Assert.That(arena.BoardRoot.gameObject.activeInHierarchy, Is.False);
+            Assert.That(arena.ReturnGate.Interact(), Is.False);
+            Assert.That(camera.orthographic, Is.True);
+            Assert.That(camera.WorldToViewportPoint(arena.PetActor.position).x, Is.InRange(.13f, .17f));
+            Assert.That(camera.WorldToViewportPoint(arena.EnemyActor.position).x, Is.InRange(.83f, .87f));
+            Assert.That(camera.GetComponent<FixedBattleCamera>().HasBackdrop, Is.True);
+
+            camera.aspect = 4f / 3f;
+            arena.EnterBattlePresentation();
+            yield return null;
+            yield return null;
+            Assert.That(camera.transform.position, Is.EqualTo(position));
+            Assert.That(camera.transform.rotation, Is.EqualTo(rotation));
+            Assert.That(camera.GetComponents<FixedBattleCamera>().Length, Is.EqualTo(1));
+            Assert.That(camera.WorldToViewportPoint(arena.PetActor.position).x, Is.InRange(.13f, .17f));
+            Assert.That(camera.WorldToViewportPoint(arena.EnemyActor.position).x, Is.InRange(.83f, .87f));
+        }
+
+        [UnityTest]
         public IEnumerator AllArenasRenderDistinctAtmospheresReadableBoardsAndAmbientMovement()
         {
             foreach (var map in WorldMapCatalog.PlayableArenas)

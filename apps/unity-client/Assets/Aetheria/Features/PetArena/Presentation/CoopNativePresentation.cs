@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Aetheria.Networking;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Aetheria.PetArena.Presentation
@@ -23,33 +24,50 @@ namespace Aetheria.PetArena.Presentation
             if (cast == null) throw new ArgumentNullException(nameof(cast));
             var root = new VisualElement { name = "coop-hud" };
             root.AddToClassList("coop-panel");
+            if (view.IsFunctionalBoard)
+            {
+                var states = Resources.Load<StyleSheet>("FunctionalTiles/FunctionalGemStates");
+                if (states != null) root.styleSheets.Add(states);
+            }
             root.Add(Label(TurnName, CoopNativePresenter.TurnLabel(view)));
-            root.Add(new ProgressBar { name = BossName + "-meter", lowValue = 0, highValue = view.BossState.MaxHealth, value = view.BossState.Health });
-            root.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
+            var stage = BattleScreenLayout.Stage();
+            root.Add(stage);
+            var opponents = BattleScreenLayout.Side("coop-opponents", "battle-enemy-side");
+            var enemy = new VisualElement();
+            enemy.AddToClassList("battle-combatant");
+            var bossMeter = new ProgressBar
+            {
+                name = BossName + "-meter", lowValue = 0,
+                highValue = view.BossState.MaxHealth, value = view.BossState.Health
+            };
+            enemy.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
+            enemy.Add(bossMeter);
             if (view.BossState.ArmorBreakPm > 1000)
-                root.Add(Label("coop-boss-vulnerability", "Boss damage taken ×" + (view.BossState.ArmorBreakPm / 1000f).ToString("0.###")));
+                enemy.Add(Label("coop-boss-vulnerability", "Boss damage taken ×" + (view.BossState.ArmorBreakPm / 1000f).ToString("0.###")));
             if (view.BossState.DotTurns > 0)
-                root.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
+                enemy.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
 
             var pending = view.PendingAttack;
             if (pending != null)
             {
                 var targets = pending.Targets == 1 ? "1 target" : pending.Targets + " targets";
                 var turns = pending.Remaining == 1 ? "1 turn" : pending.Remaining + " turns";
-                root.Add(Label("coop-telegraph", $"Incoming in {turns} · {targets} · {pending.Damage} base damage each"));
+                enemy.Add(Label("coop-telegraph", $"Incoming in {turns} · {targets} · {pending.Damage} base damage each"));
             }
-            var seats = new VisualElement { name = "coop-seats" };
-            seats.style.flexDirection = FlexDirection.Row;
+            opponents.Add(enemy);
+            stage.Add(opponents);
+            var seats = BattleScreenLayout.Side("coop-seats", "battle-player-side");
             for (var seat = 0; seat < view.Participants.Count; seat += 1)
             {
                 var panel = new VisualElement { name = SeatPrefix + seat };
                 panel.AddToClassList("coop-member");
+                panel.AddToClassList("battle-combatant");
                 if (seat == view.ActiveSeat) panel.AddToClassList("coop-active-member");
                 panel.Add(Label("coop-seat-label-" + seat, CoopNativePresenter.SeatLabel(view, seat)));
                 var own = view.Participants[seat];
                 panel.Add(Label("coop-seat-resources-" + seat,
-                    "HP " + own.Health + "/" + own.MaxHealth + " · mana " + own.Mana + " · rage " + own.Rage +
-                    " · shield " + own.Shield));
+                    "Mana " + own.Mana + " · Rage " + own.Rage +
+                    (own.Shield > 0 ? " · Shield " + own.Shield : "")));
                 panel.Add(Label("coop-seat-contribution-" + seat,
                     "dmg " + own.Contribution.Damage + " · heal " + own.Contribution.Healing +
                     " · shield " + own.Contribution.Shielding));
@@ -57,10 +75,11 @@ namespace Aetheria.PetArena.Presentation
                     panel.Add(Label("coop-effect-" + seat, status.Kind + " · " + status.Turns + " turns"));
                 seats.Add(panel);
             }
-            root.Add(seats);
+            stage.Add(seats);
 
-            var board = new VisualElement { name = "coop-board" };
-            board.AddToClassList("coop-board");
+            var center = BattleScreenLayout.Center("coop-board");
+            var board = center[0];
+            stage.Insert(0, center);
             for (var index = 0; index < view.Board.Count; index += 1)
             {
                 var cell = index;
@@ -75,29 +94,50 @@ namespace Aetheria.PetArena.Presentation
                 button.AddToClassList("coop-tile");
                 if (tile != null)
                 {
-                    button.AddToClassList("tile-" + tile.Element);
-                    button.AddToClassList("coop-element-tile");
-                    var icon = new VisualElement { name = "coop-element-icon", pickingMode = PickingMode.Ignore };
-                    icon.AddToClassList("coop-element-icon");
+                    var icon = new VisualElement { pickingMode = PickingMode.Ignore };
+                    if (tile.Kind == null)
+                    {
+                        button.AddToClassList("tile-" + tile.Element);
+                        button.AddToClassList("coop-element-tile");
+                        icon.name = "coop-element-icon";
+                        icon.AddToClassList("coop-element-icon");
+                    }
+                    else
+                    {
+                        var sprite = FunctionalGemArt.Get(tile.Kind);
+                        if (sprite != null)
+                        {
+                            button.AddToClassList("coop-functional-tile");
+                            button.AddToClassList("functional-gem-cell");
+                            icon.AddToClassList("functional-gem-art");
+                            icon.name = "coop-functional-icon";
+                            icon.AddToClassList("coop-functional-icon");
+                            icon.style.backgroundImage = new StyleBackground(sprite);
+                        }
+                    }
                     button.Add(icon);
                     if (tile.Multiplier > 1)
                     {
                         button.AddToClassList("coop-tile-multiplied");
                         var badge = new Label("×" + tile.Multiplier) { name = "coop-tile-multiplier", pickingMode = PickingMode.Ignore };
                         badge.AddToClassList("coop-tile-multiplier");
+                        if (tile.Kind != null) badge.AddToClassList("functional-gem-multiplier");
                         button.Add(badge);
                     }
                 }
-                if (cell == selected) button.AddToClassList("coop-selected");
+                if (cell == selected)
+                {
+                    button.AddToClassList("coop-selected");
+                    if (tile?.Kind != null) button.AddToClassList("functional-gem-selected");
+                }
                 button.SetEnabled(CoopNativePresenter.CanAct(view));
-                board.Add(button);
+                BattleScreenLayout.AddCell(board, button, index);
             }
-            root.Add(board);
+
 
             var actions = new VisualElement { name = "coop-actions" };
-            actions.style.flexDirection = FlexDirection.Row;
+            actions.AddToClassList("battle-actions");
             var available = CoopNativePresenter.AvailableActions(view);
-            actions.style.flexWrap = Wrap.Wrap;
             var kinds = view.Abilities.Count == 0 ? new[] { "guard", "skill", "signature", "ultimate" } :
                 view.Abilities.Select(ability => ability.Kind).ToArray();
             foreach (var kind in kinds)
@@ -117,12 +157,17 @@ namespace Aetheria.PetArena.Presentation
                 button.SetEnabled(available.Contains(action));
                 actions.Add(button);
             }
-            root.Add(actions);
+            center.Add(actions);
             return root;
         }
 
-        public static string CellText(CoopNativeView.Tile tile) =>
-            tile == null ? "·" : ElementName(tile.Element) + (tile.Multiplier > 1 ? " ×" + tile.Multiplier : "");
+        public static string CellText(CoopNativeView.Tile tile)
+        {
+            if (tile == null) return "·";
+            var name = tile.Kind == null ? ElementName(tile.Element) :
+                char.ToUpperInvariant(tile.Kind[0]) + tile.Kind.Substring(1);
+            return name + (tile.Multiplier > 1 ? " ×" + tile.Multiplier : "");
+        }
 
         public static string ActionName(string kind)
         {

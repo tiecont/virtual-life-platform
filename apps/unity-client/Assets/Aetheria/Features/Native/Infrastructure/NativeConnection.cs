@@ -110,7 +110,7 @@ namespace Aetheria.Networking
                 if (socket.SubProtocol != "vl.native.v1") throw new NativeFailure(Failure.Protocol);
                 sequence = 0;
                 var response = await Exchange(new ClientEnvelope { Hello = new Hello {
-                    Ticket = ticket.Value, ClientBuild = "unity-native-v1", ContentHash = content
+                    Ticket = ticket.Value, ClientBuild = "unity-native-v2", ContentHash = content
                 } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
                 if (response.BodyCase != ServerEnvelope.BodyOneofCase.Hello || response.Hello.StateSchemaVersion != 1 ||
                     !response.Hello.ContentHash.Equals(content) || !response.Hello.RuntimeBootId.Equals(boot) ||

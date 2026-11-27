@@ -4,6 +4,7 @@ using Aetheria.PetArena.Domain;
 using Aetheria.PetArena.Vfx;
 using Aetheria.Pets.Presentation;
 using Aetheria.RemoteContent;
+using Aetheria.World.Presentation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +30,9 @@ namespace Aetheria.PetArena.Presentation
         };
 
         private ArenaBattle battle;
+        private Transform developerBoard;
+        private FixedBattleCamera fixedCamera;
+        private string fixedMap;
         private Transform playerRoot;
         private Transform enemyRoot;
         private Renderer enemyRenderer;
@@ -95,6 +99,17 @@ namespace Aetheria.PetArena.Presentation
                 campaignEnemyColor = Color.white;
                 gameObject.AddComponent<Wave1CampaignScreen>().Initialize(this, wave1Origin);
             }
+        }
+
+        public void PresentFixedNativeBattle(string mapId)
+        {
+            if (fixedMap == mapId) return;
+            var camera = Camera.main;
+            if (camera == null) return;
+            if (developerBoard != null) developerBoard.gameObject.SetActive(false);
+            if (fixedCamera == null) fixedCamera = camera.gameObject.AddComponent<FixedBattleCamera>();
+            fixedCamera.Frame(transform.TransformPoint(3.5f, 2f, 3.5f), playerRoot, enemyRoot, mapId);
+            fixedMap = mapId;
         }
 
         public void PresentCampaignPet(ArenaElement element, int level)
@@ -238,7 +253,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void BuildBoard()
         {
-            var board = new GameObject("8x8 Arena Board").transform;
+            var board = developerBoard = new GameObject("8x8 Arena Board").transform;
             board.SetParent(transform, false);
             var center = (ArenaBattle.BoardSize - 1) * .5f;
             for (var row = 0; row < ArenaBattle.BoardSize; row++)

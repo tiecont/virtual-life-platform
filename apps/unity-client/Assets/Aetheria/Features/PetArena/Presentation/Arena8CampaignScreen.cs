@@ -19,6 +19,7 @@ namespace Aetheria.PetArena.Presentation
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private readonly HashSet<string> renderedReceipts = new HashSet<string>();
         private Wave1LocalApi api;
+        private PetArenaMvpController stage;
         private PanelSettings panel;
         private VisualElement root, board;
         private ScrollView content;
@@ -36,6 +37,7 @@ namespace Aetheria.PetArena.Presentation
 
         public void Initialize(PetArenaMvpController arena, string origin)
         {
+            stage = arena;
             webOrigin = Environment.GetEnvironmentVariable("AETHERIA_WAVE1_WEB_ORIGIN") ?? "http://127.0.0.1:3300";
             ArenaPresentationKit.Ensure(gameObject).PlayBgm(ArenaBgm.Lobby);
             BuildDocument();
@@ -113,9 +115,14 @@ namespace Aetheria.PetArena.Presentation
         private void Draw()
         {
             root.Clear();
+            if (nativeMode && nativeView?.Terminal == false)
+            {
+                DrawNativeCombat();
+                FocusFirst();
+                return;
+            }
             var panelElement = new VisualElement();
             panelElement.AddToClassList("arena-panel");
-            if (nativeMode && nativeView?.Terminal == false) panelElement.style.width = 620;
             panelElement.style.paddingLeft = 24;
             panelElement.style.paddingRight = 24;
             panelElement.style.paddingTop = 18;
@@ -149,7 +156,6 @@ namespace Aetheria.PetArena.Presentation
             }
             if (!loadedSession) DrawSession();
             else if (state == null) content.Add(Label("Loading the persisted roster and campaign…"));
-            else if (nativeMode && nativeView != null && !nativeView.Terminal) DrawNativeCombat();
             else if (nativeMode && nativeView != null) DrawNativeTerminal();
             else if (!nativeMode && view != null && !view.terminal) DrawCombat();
             else if (!nativeMode && view != null) DrawTerminal();

@@ -179,7 +179,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 var oldTile = before.Board[index];
                 var newTile = after.Board[index];
-                if (oldTile?.Element != newTile?.Element || oldTile?.Multiplier != newTile?.Multiplier)
+                if (oldTile?.Identity != newTile?.Identity || oldTile?.Multiplier != newTile?.Multiplier)
                     return true;
             }
             return false;
@@ -196,6 +196,8 @@ namespace Aetheria.PetArena.Presentation
                 target.Clear();
                 body = new ScrollView { name = "coop-hud-scroll" };
                 body.AddToClassList("coop-hud-scroll");
+                body.contentViewport.RegisterCallback<GeometryChangedEvent>(change =>
+                    BattleScreenLayout.Size(body, change.newRect.size));
                 target.Add(body);
             }
             else
@@ -212,8 +214,10 @@ namespace Aetheria.PetArena.Presentation
                 presentation.Q("coop-actions").SetEnabled(false);
             }
             var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
+            turn.AddToClassList("battle-turn");
             target.Insert(0, turn);
             body.Add(presentation);
+            BattleScreenLayout.Size(body, body.contentViewport.contentRect.size);
             if (submitting) target.Add(new Label("Sending action…") { name = "coop-network" });
             else if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)
@@ -228,6 +232,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 var start = new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" };
                 start.SetEnabled(CanSubmit);
+                start.AddToClassList("battle-primary-action");
                 target.Add(start);
             }
             if (returnToHub != null || session != null) target.Add(BuildFooter());

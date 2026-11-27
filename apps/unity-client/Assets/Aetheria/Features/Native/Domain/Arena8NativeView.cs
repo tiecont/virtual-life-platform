@@ -40,6 +40,7 @@ namespace Aetheria.Networking
         public int Turn { get; }
         public IReadOnlyList<int> Board { get; }
         public int Health { get; }
+        public int EffectiveHealth { get; }
         public int EnemyHealth { get; }
         public int EnemyShield { get; }
         public int Mana { get; }
@@ -74,7 +75,7 @@ namespace Aetheria.Networking
         {
             Version = version; Epoch = fields.Epoch; Reward = fields.Reward; Phase = fields.Phase;
             Turn = fields.Turn; Board = Array.AsReadOnly(fields.Board);
-            Health = fields.Health; EnemyHealth = fields.EnemyHealth; EnemyShield = fields.EnemyShield;
+            Health = fields.Health; EffectiveHealth = fields.EffectiveHealth; EnemyHealth = fields.EnemyHealth; EnemyShield = fields.EnemyShield;
             Mana = fields.Mana; Rage = fields.Rage; Cooldown = fields.Cooldown; FireZoneTurns = fields.FireZoneTurns;
             Skills = Array.AsReadOnly(fields.Skills);
             PetId = fields.PetId; PetName = fields.PetName; PetFamily = fields.PetFamily;

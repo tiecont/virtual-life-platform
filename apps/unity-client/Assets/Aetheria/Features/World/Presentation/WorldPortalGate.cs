@@ -46,7 +46,7 @@ namespace Aetheria.World.Presentation
 
         public bool Interact()
         {
-            if (!interactable || string.IsNullOrEmpty(targetScene)) return false;
+            if (!isActiveAndEnabled || !interactable || string.IsNullOrEmpty(targetScene)) return false;
             return WorldSceneFlow.Load(targetScene, targetSpawnId);
         }
     }

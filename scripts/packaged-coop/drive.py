@@ -6,12 +6,18 @@ from time import monotonic, sleep
 import json
 import sys
 from io import BytesIO
+from shutil import copyfile
 import re
 
 root = Path(__file__).resolve().parent
-styles=Path('apps/unity-client/Assets/Aetheria/Features/PetArena/Presentation/Resources/Wave1.uss').read_text()
 output = Path(environ['PACKAGED_QA_RUN'])
 environ['PACKAGED_QA_RUN'] = str(output.absolute())
+screen_width, screen_height = map(int, environ.get('PACKAGED_QA_SIZE', '1024x768').split('x'))
+screen_middle = screen_width // 2
+
+
+def center_band(top, bottom, half_width=170):
+    return (screen_middle - half_width, top, screen_middle + half_width, bottom)
 
 def capture(name):
     run([root / 'capture.sh', name], check=True)
@@ -35,17 +41,39 @@ def expect(name, predicate, timeout=16):
         sleep(.12)
     raise RuntimeError(f'{name} timed out: {read(name)}')
 
-def board_top(filename):
-    pixels=Image.open(filename).convert('RGB').load()
-    palette={(142,58,37)} | {
-        tuple(map(int, text.split(',')))
-        for text in re.findall(r'background-color: rgb\(([\d ,]+)\);', styles.split('.tile-fire')[1].split('.coop-selected')[0])
-    }
-    for y in range(80,391):
-        colors=sum(pixels[15+column*64,y] in palette for column in range(8))
-        if colors >= 6:
-            return y-1
-    raise RuntimeError(f'No visible colored board tile in {filename}')
+def board_bounds(filename):
+    # The frame has the same color for both rulesets. Scan its upper edge on
+    # the captured player window so positions follow the actual viewport.
+    with Image.open(filename) as image:
+        width, height = image.size
+        pixels = image.convert('RGB').load()
+        center = width // 2
+        for y in range(32, min(height, 240)):
+            def is_edge(x):
+                return pixels[x, y] == (178, 123, 76)
+            if not is_edge(center) or not is_edge(center - 100) or not is_edge(center + 100):
+                continue
+            left, right = center, center
+            while left > 0 and is_edge(left - 1):
+                left -= 1
+            while right < width - 1 and is_edge(right + 1):
+                right += 1
+            if right - left < 290:
+                continue
+            # Borders have 8px rounded corners. Four pixels of uncertainty at
+            # the edge leave all eight click centers inside their buttons.
+            side = right - left + 13
+            return (left - 6, y, side)
+    raise RuntimeError(f'No centered battle grid in {filename}')
+
+
+def cell_center(bounds, index):
+    left, top, side = bounds
+    cell_size = (side - 12) / 8
+    return (
+        round(left + 6 + (index % 8 + .5) * cell_size),
+        round(top + 6 + (index // 8 + .5) * cell_size),
+    )
 
 def ocr(image, box, mode='7', fmt=None):
     data=BytesIO()
@@ -68,39 +96,47 @@ def word_button(image, words, box):
             return box[0]+(x+width//2)//2, box[1]+(y+height//2)//2
     return None
 
-def action_button(image, word, board_y):
-    # An enabled action has a light gray background. Locate each action box
-    # below the board, then read its label on its own line.
+def action_button(image, word, board):
+    # Search the enabled skill frames below the grid, then OCR each frame
+    # independently. A disabled or unrelated button cannot satisfy the match.
     runs = {}
+    left, top, side = board
     with Image.open(image) as frame:
         pixels = frame.convert('RGB').load()
-        for y in range(board_y + 410, 724):
-            row = []
-            for x in range(1000):
-                rgb = pixels[x, y]
-                row.append(min(rgb) >= 120 and max(rgb) - min(rgb) <= 30)
-            for run in re.finditer(rb'\x01{80,}', bytes(row)):
-                runs.setdefault(run.span(), []).append(y)
+        start = max(0, left - 15)
+        end = min(frame.width, left + side + 15)
+        for y in range(top + side, min(frame.height - 35, top + side + 111)):
+            row = bytes(pixels[x, y] in {(43, 34, 57), (75, 52, 80)} for x in range(start, end))
+            for match in re.finditer(rb'\x01{45,}', row):
+                begin, stop = match.span()
+                runs.setdefault((start + begin, start + stop), []).append(y)
     for (left, right), rows in runs.items():
         top, bottom = rows[0], rows[-1] + 1
-        if len(rows) < 4 or not 25 <= bottom - top <= 52:
+        if len(rows) < 8 or not 23 <= bottom - top <= 65:
             continue
-        label = ocr(image, (left, top, right, bottom), '7').lower()
+        label = ocr(image, (left, top, right, bottom), '6').lower()
         if re.search(r'\b' + re.escape(word) + r'\b', label):
             return ((left + right) // 2, (top + bottom) // 2)
     return None
 
+
 def status_button(image):
-    return word_button(image,{'reconnect','retry'},(600,732,900,761))
+    return word_button(image, {'reconnect', 'retry'}, (screen_middle + 30, screen_height - 37, screen_width - 10, screen_height))
+
 
 def live_turn(image):
-    heard=ocr(image,(0,0,350,28)).lower()
-    match=re.search(r'turn\s+(\d+).*?seat\s+(\d+)',heard)
-    return tuple(map(int,match.groups())) if match else None
+    with Image.open(image) as frame:
+        middle = frame.width // 2
+    heard = ocr(image, (middle - 200, 0, middle + 200, 28)).lower()
+    match = re.search(r'turn\s+(\d+).*?seat\s+(\d+)', heard)
+    return tuple(map(int, match.groups())) if match else None
 
 def pending(data):
     state=data['state']
     return state['phase'] in ['won','lost'] or state['phase']=='playing' and state['activeSeat']==0
+
+ability_labels = {'guard': 'guard', 'skill': 'lance', 'signature': 'flare', 'ultimate': 'descent'}
+
 
 def play(current):
     state=current['state']
@@ -126,27 +162,19 @@ def play(current):
             sleep(.45)
             continue
         try:
-            top=board_top(image)
+            board = board_bounds(image)
         except RuntimeError:
-            run(['python3',root / 'x11.py','scroll','up'], check=True)
             sleep(.4)
             continue
-        print(f'UI action turn={turn} version={current["version"]} action={action} top={top}', flush=True)
-        from shutil import copyfile
-        copyfile(image,output/f'player-turn-{turn:02d}-{action}.png')
-        if action=='swap':
-            for i,tile in enumerate([current['move']['first'],current['move']['second']]):
-                click(39+(tile%8)*64,top+23+(tile//8)*52)
+        print(f'UI action turn={turn} version={current["version"]} action={action} board={board}', flush=True)
+        copyfile(image, output / f'player-turn-{turn:02d}-{action}.png')
+        if action == 'swap':
+            for tile in (current['move']['first'], current['move']['second']):
+                click(*cell_center(board, tile))
                 sleep(.42)
         else:
-            coords=word_button(image,{action,{'guard':'guard','skill':'lance','signature':'flare','ultimate':'descent'}[action]},(0,595,1024,744))
-            if not coords and action=='ultimate':
-                coords=word_button(image,{'descent'},(12,690,277,728))
-            if not coords:
-                run(['python3',root / 'x11.py','scroll','down'], check=True)
-                image=capture(f'player-turn-{turn:02d}-actions-{attempt+1}')
-                coords=word_button(image,{action,{'guard':'guard','skill':'lance','signature':'flare','ultimate':'descent'}[action]},(0,420,1023,726))
-            if not coords:
+            coords = action_button(image, ability_labels[action], board)
+            if coords is None:
                 continue
             click(*coords)
         try:
@@ -156,11 +184,8 @@ def play(current):
             sleep(.35)
     else:
         raise RuntimeError(f'Player command did not commit for turn {turn}')
-    run(['python3',root / 'x11.py','scroll','up'], check=True)
     print(f'Committed version {result["version"]}, turn {result["state"]["turn"]}',flush=True)
 
-
-from shutil import copyfile
 
 def wait_for(shot, condition, tries=24):
     for _ in range(tries):
@@ -179,10 +204,10 @@ def text(shot, phrase, box, tries=24):
 def key(symbol, duration):
     run(['python3', root/'x11.py', 'key', symbol, str(duration)], check=True)
 
-head = (0, 0, 1024, 400)
-collection = (855, 705, 1024, 768)
+head = (0, 0, screen_width, 400)
+collection = (screen_width - 175, screen_height - 65, screen_width, screen_height)
 plaza_back = (30, 430, 400, 495)
-lobby_buttons = (350, 185, 660, 520)
+lobby_buttons = center_band(185, 520)
 
 def room_ready(map_name, filename):
     box = (0, 180, 300, 265)
@@ -195,10 +220,10 @@ def room_ready(map_name, filename):
         sleep(.4)
     else:
         raise RuntimeError(f'{map_name} room did not render four seats')
-    click(*label(filename, 'ready', (350, 265, 660, 319)))
+    click(*label(filename, 'ready', center_band(265, 319)))
     for attempt in range(18):
         img = capture(map_name + '-room-ready')
-        start = word_button(img, {'start'}, (350, 315, 660, 360))
+        start = word_button(img, {'start'}, center_band(315, 360))
         if start and min(Image.open(img).convert('RGB').getpixel((40, start[1]))) >= 130:
             click(*start)
             return
@@ -207,8 +232,8 @@ def room_ready(map_name, filename):
 
 stage = sys.argv[1]
 if stage == 'fire':
-    label('01-guest-login','guest',(452,74,574,116))
-    click(511,96)
+    label('01-guest-login','guest',center_band(74,116,65))
+    click(screen_middle,96)
     collection_button=label('02-plaza','collection',collection)
     click(*collection_button)
     close_collection=label('02b-guest-owned-collection','back',plaza_back)
@@ -216,25 +241,25 @@ if stage == 'fire':
     sleep(.45)
     for symbol, duration in [('a',1.88),('w',3.8),('e',.14)]:
         key(symbol,duration)
-    select=label('03-fire-portal','coalwhisk',(160,30,950,125))
+    select=label('03-fire-portal','coalwhisk',center_band(30,125,430))
     click(*select)
-    click(*label('03b-fire-owned-options','dewskip',(160,65,950,275)))
-    click(*label('03c-dewskip-chosen','dewskip',(160,40,950,125)))
-    click(*label('03d-coalwhisk-option','coalwhisk',(160,65,950,275)))
+    click(*label('03b-fire-owned-options','dewskip',center_band(65,275,430)))
+    click(*label('03c-dewskip-chosen','dewskip',center_band(40,125,430)))
+    click(*label('03d-coalwhisk-option','coalwhisk',center_band(65,275,430)))
     click(*label('03e-coalwhisk-chosen','create',head))
     expect('room-id-json',lambda data:data.get('roomId'),timeout=12)
     room_ready('fire','04-four-seats-ready')
 elif stage == 'water':
     expect('reward-facts', lambda facts: facts['count']==4, timeout=30)
     def reward(img):
-        observed = ocr(img, (0,650,1020,730), '6').lower()
+        observed = ocr(img, (0, screen_height - 119, screen_width, screen_height - 31), '6').lower()
         if 'rewards received' in observed:
             return True
         if 'settlement' in observed:
-            click(510,703)
+            click(screen_middle, screen_height - 65)
         return False
     wait_for('12-visible-four-seat-reward', reward)
-    click(255,747)
+    click(screen_width // 4, screen_height - 20)
     click(*label('13-plaza-after-fire-clear','collection',collection))
     click(*label('14-plaza-collection','artifacts',(35,87,395,152)))
     text('15-plaza-gear-before-equip','unequipped',(35,485,395,548))
@@ -256,7 +281,7 @@ elif stage == 'water':
     room_ready('water','20-water-four-seats-ready')
     facts=expect('water-allocation-facts',lambda facts:facts['seats']==4,timeout=30)
     print('Water allocation', facts, flush=True)
-    text('21-water-equipped-native-hud','start battle',(275,645,730,734),tries=28)
+    text('21-water-equipped-native-hud','start battle',center_band(screen_height - 115, screen_height - 18),tries=28)
     (output/'water-hud-observed').touch()
 
 elif stage=='first':
@@ -269,7 +294,7 @@ elif stage=='first':
             click(*recover)
             sleep(1.1)
             continue
-        started=word_button(image,{'battle'},(380,685,640,725))
+        started=word_button(image,{'battle'},center_band(screen_height - 115, screen_height - 18))
         if started:
             click(*started)
             try:
@@ -315,7 +340,6 @@ elif stage=='recover':
             click(*recover)
             clicked=True
         elif clicked and live_turn(image)==target and not status_button(image):
-            from shutil import copyfile
             copyfile(image,output/'09-same-multiplier-board-after-reconnect.png')
             break
         sleep(.35)
@@ -324,11 +348,6 @@ elif stage=='recover':
     (output/'go').touch()
 
 elif stage=='resume':
-    def scroll(direction):
-        run(['python3', root / 'x11.py', 'scroll', direction], check=True)
-
-    names = {'guard': 'guard', 'skill': 'lance', 'signature': 'flare', 'ultimate': 'descent'}
-
     while True:
         gate = expect('live-state', lambda f: f['state']['phase'] in ('won', 'lost') or
                       f['state']['phase'] == 'playing' and f['state']['activeSeat'] == 0, timeout=40)
@@ -342,8 +361,6 @@ elif stage=='resume':
             break
         action = gate['playerAction']
         for attempt in range(24):
-            scroll('up')
-            sleep(.35)
             shot = capture(f'resumed-turn-{turn:02d}-attempt-{attempt+1}')
             if recover := status_button(shot):
                 print(f"Reconnect before turn {turn}", flush=True)
@@ -354,50 +371,29 @@ elif stage=='resume':
                 sleep(.4)
                 continue
             try:
-                top = board_top(shot)
+                board = board_bounds(shot)
             except RuntimeError:
+                sleep(.3)
                 continue
             if action == 'swap':
                 copyfile(shot, output / f'resumed-turn-{turn:02d}-{action}.png')
                 for index in (gate['move']['first'], gate['move']['second']):
-                    click(39 + (index % 8) * 64, top + 23 + (index // 8) * 52)
+                    click(*cell_center(board, index))
                     sleep(.42)
             else:
-                original_top = top
-                if turn == 4:
-                    copyfile(shot, output/'10a-release-turn-before-scroll.png')
-                if turn == 4 or top + 493 >= 725:
-                    scroll('down')
-                    sleep(.4)
-                    shot = capture(f'resumed-turn-{turn:02d}-controls')
-                    if recover := status_button(shot):
-                        print(f'Reconnect after scrolling turn {turn}', flush=True)
-                        click(*recover)
-                        sleep(1)
-                        continue
-                    try:
-                        top = board_top(shot)
-                    except RuntimeError:
-                        continue
-                if turn == 4 and not (output/'10b-release-turn-after-scroll.png').exists():
-                    if top >= original_top or live_turn(shot) != (turn, 0):
-                        continue
-                    copyfile(shot,output/'10b-release-turn-after-scroll.png')
-                    print('Sticky turn',turn,'row moved from',original_top,'to',top,flush=True)
-                position = action_button(shot, names[action], top)
+                position = action_button(shot, ability_labels[action], board)
                 if position is None:
                     continue
-                # UI Toolkit scrolling can continue after wheel input. Verify
-                # the same labeled button in a second frame before clicking.
+                # Use a second frame to confirm the action is still available.
                 sleep(.25)
                 settled_shot = capture(f'resumed-turn-{turn:02d}-settled-{attempt+1}')
                 if live_turn(settled_shot) != (turn, 0) or status_button(settled_shot):
                     continue
                 try:
-                    settled_top = board_top(settled_shot)
+                    settled_board = board_bounds(settled_shot)
                 except RuntimeError:
                     continue
-                if action_button(settled_shot, names[action], settled_top) != position:
+                if action_button(settled_shot, ability_labels[action], settled_board) != position:
                     continue
                 copyfile(settled_shot, output / f'resumed-turn-{turn:02d}-{action}.png')
                 click(*position)
@@ -406,7 +402,6 @@ elif stage=='resume':
                 later = expect('live-state', lambda f: f['version'] > gate['version'], timeout=3)
                 print('Canonical receipt', later['version'], later['state']['boss']['hp'], later['state']['boss']['phase'], flush=True)
                 if later['state']['boss']['phase'] > state['boss']['phase']:
-                    scroll('up')
                     capture('11-boss-transformation')
                 break
             except RuntimeError:

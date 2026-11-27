@@ -12,6 +12,10 @@ namespace Aetheria.Networking
     // and submits bounded intents, never damage, rewards or seat outcomes.
     public sealed class CoopNativeView
     {
+        public const string Ruleset = "arena8-coop-pve";
+        public const string FunctionalSoloRuleset = "arena8-functional-pve";
+        public const int ElementalVersion = 1;
+        public const int FunctionalVersion = 2;
         public const int Seats = 4;
         public const int Side = 8;
         public const int Cells = Side * Side;
@@ -27,13 +31,22 @@ namespace Aetheria.Networking
         public const string Ultimate = "ultimate";
         public const string FireZone = "fire-zone";
         private static readonly string[] Elements = { "fire", "water", "electric", "ghost", "ground", "light" };
+        private static readonly string[] TileKinds = { "sword", "mana", "rage", "heart", "shield", "special" };
         private static readonly string[] Statuses = { "attack-buff", "defense-buff", "vulnerability" };
 
         public sealed class Tile
         {
             public string Element { get; }
+            public string Kind { get; }
+            public string Identity => Kind ?? Element;
             public int Multiplier { get; }
-            internal Tile(string element, int multiplier) { Element = element; Multiplier = multiplier; }
+
+            internal Tile(string identity, int multiplier, bool functional)
+            {
+                Element = functional ? null : identity;
+                Kind = functional ? identity : null;
+                Multiplier = multiplier;
+            }
         }
 
         public sealed class Status
@@ -141,6 +154,7 @@ namespace Aetheria.Networking
         public string RulesetId { get; }
         public int RulesetVersion { get; }
         public string ContentHash { get; }
+        public bool IsFunctionalBoard => RulesetVersion == FunctionalVersion || RulesetId == FunctionalSoloRuleset;
         public string ConfigDigest { get; }
         public int You { get; }
         public string Phase { get; }
@@ -183,13 +197,16 @@ namespace Aetheria.Networking
             var fields = new Fields { Epoch = epoch, Reward = reward };
             var ruleset = play.Element("ruleset");
             ProjectionJson.ObjectFields(ruleset, "id", "version", "contentHash", "configDigest");
-            fields.RulesetId = Text(ruleset.Element("id"), 1, 64);
-            fields.RulesetVersion = Bounded(ruleset.Element("version"), 1, 1_000_000);
+            fields.RulesetId = Token(ruleset.Element("id"), Ruleset, FunctionalSoloRuleset);
+            var solo = fields.RulesetId == FunctionalSoloRuleset;
+            var seatCount = solo ? 1 : Seats;
+            fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion,
+                solo ? ElementalVersion : FunctionalVersion);
             fields.ContentHash = Hex(ruleset.Element("contentHash"));
             fields.ConfigDigest = Hex(ruleset.Element("configDigest"));
-            fields.You = Bounded(play.Element("you"), 0, Seats - 1);
+            fields.You = Bounded(play.Element("you"), 0, seatCount - 1);
             fields.Phase = Token(play.Element("phase"), "ready", "playing", "won", "lost");
-            fields.ActiveSeat = Bounded(play.Element("activeSeat"), 0, Seats - 1);
+            fields.ActiveSeat = Bounded(play.Element("activeSeat"), 0, seatCount - 1);
             fields.Turn = Bounded(play.Element("turn"), 0, fields.Phase == "lost" ? MaxTurn + 1 : MaxTurn);
             fields.Round = Bounded(play.Element("round"), 1, fields.Phase == "lost" ? MaxRound + 1 : MaxRound);
             if (play.Element("abilities") != null)
@@ -201,9 +218,9 @@ namespace Aetheria.Networking
                 fields.BossId = Text(play.Element("bossId"), 3, 64);
             }
             fields.Boss = ReadBoss(play.Element("boss"));
-            fields.Board = ReadBoard(play.Element("board"));
-            fields.Participants = ReadParticipants(play.Element("participants"));
-            fields.Pending = ReadPending(play.Element("pending"));
+            fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion == FunctionalVersion);
+            fields.Participants = ReadParticipants(play.Element("participants"), seatCount);
+            fields.Pending = ReadPending(play.Element("pending"), seatCount);
             return new CoopNativeView(version, epoch, reward, fields);
         }
 
@@ -220,11 +237,13 @@ namespace Aetheria.Networking
                 ProjectionJson.Boolean(boss.Element("transformed")));
         }
 
-        private static Tile[] ReadBoard(XElement board)
+        private static Tile[] ReadBoard(XElement board, bool functional)
         {
             var items = ProjectionJson.Array(board, Cells);
             if (items.Length != Cells) throw new FormatException("Invalid coop board size");
             var tiles = new Tile[Cells];
+            var field = functional ? "kind" : "element";
+            var identities = functional ? TileKinds : Elements;
             for (var index = 0; index < items.Length; index += 1)
             {
                 var item = items[index];
@@ -233,24 +252,25 @@ namespace Aetheria.Networking
                     if (ProjectionJson.Scalar(item, "null").Length != 0) throw new FormatException("Invalid coop tile");
                     continue;
                 }
-                ProjectionJson.ObjectFields(item, "element", "multiplier");
-                tiles[index] = new Tile(Token(item.Element("element"), Elements), Bounded(item.Element("multiplier"), 1, Cells));
+                ProjectionJson.ObjectFields(item, field, "multiplier");
+                tiles[index] = new Tile(Token(item.Element(field), identities),
+                    Bounded(item.Element("multiplier"), 1, Cells), functional);
             }
             return tiles;
         }
 
-        private static Participant[] ReadParticipants(XElement participants)
+        private static Participant[] ReadParticipants(XElement participants, int seatCount)
         {
-            var items = ProjectionJson.Array(participants, Seats);
-            if (items.Length != Seats) throw new FormatException("Invalid coop participant count");
-            var seats = new Participant[Seats];
+            var items = ProjectionJson.Array(participants, seatCount);
+            if (items.Length != seatCount) throw new FormatException("Invalid coop participant count");
+            var seats = new Participant[seatCount];
             for (var index = 0; index < items.Length; index += 1)
             {
                 var seat = items[index];
                 ProjectionJson.ObjectFields(seat, "seat", "petId", "level", "hp", "maxHp", "attack", "defense",
                     "critRateBp", "critDamageBp", "mana", "rage", "shield", "shieldTurns", "cooldowns",
                     "statuses", "contribution", "alive", "skillLevels");
-                if (Bounded(seat.Element("seat"), 0, Seats - 1) != index) throw new FormatException("Invalid coop seat");
+                if (Bounded(seat.Element("seat"), 0, seatCount - 1) != index) throw new FormatException("Invalid coop seat");
                 var maxHealth = CombatValue(seat.Element("maxHp"), 1);
                 var health = CombatValue(seat.Element("hp"), 0);
                 if (health > maxHealth) throw new FormatException("Seat health exceeds its maximum");
@@ -285,7 +305,7 @@ namespace Aetheria.Networking
                 Bounded(status.Element("value"), -100_000, 100_000), Bounded(status.Element("turns"), 0, 100));
         }
 
-        private static Pending ReadPending(XElement pending)
+        private static Pending ReadPending(XElement pending, int seatCount)
         {
             if (pending == null || ProjectionJson.Type(pending) == "null")
             {
@@ -294,7 +314,7 @@ namespace Aetheria.Networking
                 return null;
             }
             ProjectionJson.ObjectFields(pending, "targets", "remaining", "damage");
-            return new Pending(Bounded(pending.Element("targets"), 1, Seats),
+            return new Pending(Bounded(pending.Element("targets"), 1, seatCount),
                 Bounded(pending.Element("remaining"), 0, 10), CombatValue(pending.Element("damage"), 0));
         }
 
@@ -306,7 +326,7 @@ namespace Aetheria.Networking
             var otherRow = second / Side;
             var otherCol = second % Side;
             if (Math.Abs(row - otherRow) + Math.Abs(col - otherCol) != 1) return false;
-            return Board[first] != null && Board[second] != null && Board[first].Element != Board[second].Element;
+            return Board[first] != null && Board[second] != null && Board[first].Identity != Board[second].Identity;
         }
 
         public int Cooldown(int slot) => slot < 0 || slot >= Own.Cooldowns.Count ? MaxCooldown : Own.Cooldowns[slot];

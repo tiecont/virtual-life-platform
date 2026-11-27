@@ -55,6 +55,55 @@ namespace Aetheria.Tests
         }
 
         [Test]
+        public void FunctionalProjectionUsesOnlyFunctionalTileKinds()
+        {
+            string Functional(string json) => json
+                .Replace("\"version\":1", "\"version\":2")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"");
+
+            var functional = Coop(customize: Functional, phase: "playing");
+            Assert.That(functional.RulesetVersion, Is.EqualTo(CoopNativeView.FunctionalVersion));
+            Assert.That(functional.Board[0].Element, Is.Null);
+            Assert.That(functional.Board[0].Kind, Is.EqualTo("sword"));
+            Assert.That(functional.CanSwap(0, 1), Is.True);
+            var root = CoopNativePresentation.Build(functional, _ => { }, _ => { }, 0);
+            Assert.That(root.Q<Button>("coop-cell-0").tooltip, Is.EqualTo("Sword ×2"));
+            Assert.That(root.Q("coop-cell-0").Q("coop-functional-icon"), Is.Not.Null);
+            Assert.That(root.Q("coop-cell-0").Q("coop-element-icon"), Is.Null);
+
+            Assert.Throws<FormatException>(() => Coop(customize: json => json
+                .Replace("\"version\":1", "\"version\":2")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"version\":2", "\"version\":1")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"water\"")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"mana\",\"element\":\"water\"")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"version\":2", "\"version\":3")));
+        }
+
+        [Test]
+        public void FunctionalSoloProjectionRequiresOneSeat()
+        {
+            string Solo(string json) => json
+                .Replace("\"arena8-coop-pve\"", "\"arena8-functional-pve\"")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"");
+
+            var solo = Coop(seats: 1, customize: Solo, phase: "playing");
+            Assert.That(solo.IsFunctionalBoard, Is.True);
+            Assert.That(solo.Participants.Count, Is.EqualTo(1));
+            Assert.That(solo.CanSwap(0, 1), Is.True);
+            Assert.That(CoopNativePresentation.Build(solo, _ => { }, _ => { }).Q("coop-seats").childCount,
+                Is.EqualTo(1));
+            Assert.Throws<FormatException>(() => Coop(customize: Solo));
+            Assert.Throws<FormatException>(() => Coop(seats: 1));
+            Assert.Throws<FormatException>(() => Coop(seats: 1, you: 1, customize: Solo));
+        }
+
+        [Test]
         public void PublishedMultiplierAndWideCombatValuesRemainPlayable()
         {
             var view = Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":6")

@@ -122,6 +122,53 @@ namespace Aetheria.Tests
         }
 
         [UnityTest]
+        public IEnumerator DesktopResolutionsKeepEightRowsCenteredBetweenCombatants()
+        {
+            var go = new GameObject("battle-layout-test");
+            var settings = ScriptableObject.CreateInstance<PanelSettings>();
+            try
+            {
+                settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("Wave1Theme");
+                var document = go.AddComponent<UIDocument>();
+                document.panelSettings = settings;
+                var root = document.rootVisualElement;
+                root.styleSheets.Add(Resources.Load<StyleSheet>("Wave1"));
+                root.AddToClassList("coop-world");
+                var hud = go.AddComponent<CoopNativeHud>();
+                hud.Attach(document);
+                hud.Bind(null, () => { });
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(
+                    elements: new[] { "fire", "water", "electric", "ghost", "ground", "light" })));
+
+                foreach (var (width, height) in new[] { (1280, 720), (1920, 1080) })
+                {
+                    root.style.width = width;
+                    root.style.height = height;
+                    hud.Render(view);
+                    yield return null;
+                    yield return null;
+
+                    var board = root.Q("coop-board");
+                    var actions = root.Q("coop-actions");
+                    Assert.That(board.worldBound.center.x, Is.EqualTo(root.worldBound.center.x).Within(2f));
+                    Assert.That(board.worldBound.width, Is.EqualTo(board.worldBound.height).Within(1f));
+                    Assert.That(board.childCount, Is.EqualTo(8));
+                    foreach (var row in board.Children())
+                        Assert.That(row.childCount, Is.EqualTo(8));
+                    Assert.That(root.Q("coop-seats").worldBound.xMax, Is.LessThan(board.worldBound.xMin));
+                    Assert.That(root.Q("coop-opponents").worldBound.xMin, Is.GreaterThan(board.worldBound.xMax));
+                    Assert.That(board.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
+                    Assert.That(actions.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(settings);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator LateReceiptFromPreviousRoomCannotReplaceCurrentReward()
         {
             var go = new GameObject("coop-receipt-test");

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Aetheria.Networking;
 using Aetheria.PetArena.Infrastructure;
 using Aetheria.World.Domain;
+using Aetheria.World.Presentation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -300,6 +301,7 @@ namespace Aetheria.PetArena.Presentation
                 throw;
             }
             session = admitted;
+            FindFirstObjectByType<ArenaWorldSceneController>()?.EnterBattlePresentation();
             var hud = GetComponent<CoopNativeHud>();
             if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
             hud.Attach(document);

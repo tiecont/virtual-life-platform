@@ -75,62 +75,137 @@
     padding-left: 6px;
     white-space: normal;
 }
-.coop-panel {
-    background-color: rgba(16, 24, 38, 0.95);
-    padding: 6px;
-}
-.coop-world #coop-seats { flex-wrap: wrap; }
-.coop-member { flex-grow: 1; flex-basis: 22%; min-width: 130px; }
-.coop-active-member { border-top-width: 3px; border-top-color: rgb(255, 206, 104); }
+.coop-panel { flex-grow: 1; }
 .coop-hud-scroll { flex-grow: 1; min-height: 0; }
 .coop-footer { flex-direction: row; flex-shrink: 0; }
 .coop-footer-button { flex-basis: 0; flex-grow: 1; }
 .coop-footer-hidden { visibility: hidden; }
-.coop-world #coop-turn, .coop-world #coop-boss, .coop-world #coop-telegraph {
-    color: rgb(255, 217, 148);
+
+.battle-stage {
+    position: relative;
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 12px;
+}
+.battle-stage Label,
+.coop-world .battle-stage Label {
+    background-color: transparent;
+    color: rgb(245, 234, 213);
+    white-space: normal;
+}
+.battle-turn,
+.coop-world .battle-turn {
+    min-height: 28px;
+    padding-top: 4px;
+    background-color: rgba(20, 16, 28, 0.94);
+    color: rgb(255, 218, 152);
     -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
-.coop-board {
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 520px;
-}
-.coop-tile {
-    width: 58px;
-    height: 48px;
-    margin-right: 2px;
-    margin-bottom: 2px;
-    color: white;
-    -unity-font-style: bold;
-}
-.coop-tile.coop-element-tile { color: rgba(0, 0, 0, 0); }
-.coop-element-icon {
+.battle-side {
     position: absolute;
-    width: 29px;
-    height: 29px;
-    left: 13px;
-    top: 8px;
+    top: 14px;
+    width: 21%;
+    max-width: 350px;
+    min-width: 0;
+}
+.battle-player-side { left: 2%; }
+.battle-enemy-side { right: 2%; }
+.battle-combatant {
+    min-width: 0;
+    margin-bottom: 5px;
+    padding: 7px 9px;
+    background-color: rgba(21, 19, 35, 0.94);
+    border-left-width: 2px;
+    border-left-color: rgb(156, 121, 196);
+    border-top-right-radius: 11px;
+    border-bottom-right-radius: 11px;
+}
+.battle-enemy-side .battle-combatant { border-left-color: rgb(214, 137, 81); }
+.coop-active-member { border-left-width: 3px; border-left-color: rgb(255, 206, 104); }
+.battle-stage #coop-boss,
+.battle-stage #coop-telegraph { color: rgb(255, 217, 148); -unity-font-style: bold; }
+.battle-compact .battle-combatant { padding: 3px 2px; }
+.battle-compact .battle-side { width: 21%; font-size: 11px; }
+
+.battle-center { width: 52%; }
+.battle-board {
+    padding: 5px;
+    background-color: rgba(17, 16, 29, 0.97);
+    border-width: 1px;
+    border-color: rgb(178, 123, 76);
+    border-radius: 8px;
+}
+.battle-board-row { flex-direction: row; flex-grow: 1; flex-basis: 0; min-height: 0; }
+.battle-cell {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin: 2px;
+    padding: 0;
+    color: rgb(255, 242, 218);
+    -unity-font-style: bold;
+    border-width: 1px;
+    border-color: rgb(46, 35, 54);
+    border-radius: 5px;
+}
+.battle-cell:disabled { opacity: 0.7; }
+.battle-telegraph-cell { border-color: rgb(250, 165, 75); border-width: 2px; }
+.coop-tile.coop-element-tile,
+.coop-tile.coop-functional-tile { color: rgba(0, 0, 0, 0); }
+.coop-functional-tile { background-color: rgb(35, 29, 47); }
+.coop-element-icon, .coop-functional-icon {
+    position: absolute;
+    left: 11%;
+    top: 11%;
+    width: 78%;
+    height: 78%;
     -unity-background-scale-mode: scale-to-fit;
 }
-.coop-tile-multiplied .coop-element-icon {
-    width: 20px;
-    height: 20px;
+.coop-tile-multiplied .coop-element-icon,
+.coop-tile-multiplied .coop-functional-icon {
     left: 0;
-    top: 14px;
+    top: 31%;
+    width: 32%;
+    height: 55%;
 }
-.coop-world .coop-tile-multiplier {
+.battle-stage .coop-tile-multiplier {
     position: absolute;
     top: 0;
     right: 0;
     color: rgb(255, 235, 175);
     background-color: rgb(37, 32, 41);
     border-bottom-left-radius: 5px;
-    padding-left: 3px;
-    padding-right: 3px;
+    padding-left: 2px;
+    padding-right: 2px;
     font-size: 12px;
     -unity-font-style: bold;
     white-space: nowrap;
 }
+.battle-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 6px;
+}
+.battle-actions Button, .battle-primary-action {
+    flex-grow: 1;
+    min-height: 33px;
+    margin: 3px 2px;
+    border-color: rgb(153, 113, 92);
+    border-radius: 5px;
+    background-color: rgb(43, 34, 57);
+    color: rgb(251, 232, 194);
+    -unity-font-style: bold;
+    white-space: normal;
+}
+.battle-actions Button:enabled:hover,
+.battle-actions Button:enabled:focus,
+.battle-primary-action:hover {
+    border-color: rgb(255, 218, 152);
+    background-color: rgb(75, 52, 80);
+}
+.battle-actions Button:disabled { opacity: 0.64; }
 .tile-fire { background-color: rgb(142, 58, 37); }
 .tile-water { background-color: rgb(35, 93, 134); }
 .tile-electric { background-color: rgb(130, 93, 24); }

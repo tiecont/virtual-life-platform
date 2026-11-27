@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Aetheria.Networking;
 using UnityEngine.UIElements;
 
@@ -16,21 +17,24 @@ namespace Aetheria.PetArena.Presentation
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             if (select == null) throw new ArgumentNullException(nameof(select));
-            var board = new VisualElement();
-            board.style.flexDirection = FlexDirection.Row;
-            board.style.flexWrap = Wrap.Wrap;
-            board.style.width = 520;
+            var board = new VisualElement { name = "arena8-native-board" };
             for (var index = 0; index < view.Board.Count; index++)
             {
                 var cell = index;
                 var button = new Button(() => select(cell)) { text = ElementName(view.Board[cell]) };
                 button.name = CellNamePrefix + cell;
-                button.style.width = 58;
-                button.style.height = 48;
-                button.style.marginRight = 2;
-                button.style.marginBottom = 2;
+                var identity = ElementName(view.Board[cell]).ToLowerInvariant();
+                button.tooltip = button.text;
+                button.AddToClassList("coop-tile");
+                button.AddToClassList("tile-" + identity);
+                button.AddToClassList("coop-element-tile");
+                var icon = new VisualElement { pickingMode = PickingMode.Ignore };
+                icon.AddToClassList("coop-element-icon");
+                button.Add(icon);
+                if (view.TelegraphCells.Contains(cell)) button.AddToClassList("battle-telegraph-cell");
                 if (cell == selected) button.style.borderBottomWidth = 4;
-                board.Add(button);
+                if (view.Phase != "playing") button.SetEnabled(false);
+                BattleScreenLayout.AddCell(board, button, cell);
             }
             return board;
         }
@@ -40,6 +44,7 @@ namespace Aetheria.PetArena.Presentation
             if (view == null) throw new ArgumentNullException(nameof(view));
             if (cast == null) throw new ArgumentNullException(nameof(cast));
             var hud = new VisualElement();
+            hud.AddToClassList("battle-actions");
             foreach (var id in view.Skills)
             {
                 var skill = id;
