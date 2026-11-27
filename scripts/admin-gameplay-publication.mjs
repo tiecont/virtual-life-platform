@@ -141,7 +141,7 @@ try{
  const deadline=Date.now()+120000;
  for(;;){
   assert.equal(nextProcess.exitCode,null,'Next exited early; see next.log');
-  const response=await fetch(adminOrigin+'/admin',{signal:AbortSignal.timeout(20000)}).catch(()=>null);
+  const response=await fetch(adminOrigin+'/admin',{signal:globalThis.AbortSignal.timeout(20000)}).catch(()=>null);
   if(response?.ok){await response.body.cancel();break;}
   await response?.body?.cancel();
   assert.ok(Date.now()<deadline,'Next did not become ready; see next.log');
@@ -254,7 +254,7 @@ try{
   assert.deepEqual(read.bundle,row.bundle);
   assert.equal(read.contentDigest,verdict.contentDigest);
   if(fields.priority){
-   const historical=structuredClone(row.bundle);
+   const historical=globalThis.structuredClone(row.bundle);
    delete historical.bosses[0].attackModel.targetPriority;
    const historicalDigest=(await validator.validate(ruleset,historical)).digest;
    assert.notEqual(checked.digest,historicalDigest);
