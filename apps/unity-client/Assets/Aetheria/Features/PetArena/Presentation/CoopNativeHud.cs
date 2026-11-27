@@ -25,7 +25,7 @@ namespace Aetheria.PetArena.Presentation
         private CoopLobbyClient.Reward reward;
         private string rewardNotice, feedback;
         private CoopNativeView previous;
-        private ArenaPresentationKit effects;
+        private ArenaAudioDirector battleAudio;
         public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) { loadReward = loader; Refresh(); }
 
         private ulong renderedVersion = ulong.MaxValue;
@@ -44,16 +44,25 @@ namespace Aetheria.PetArena.Presentation
             leaving = false;
             if (admitted != null && Application.isPlaying)
             {
-                effects = ArenaPresentationKit.Ensure(gameObject);
-                effects.SetReducedMotion(true);
-                effects.PlayBgm(ArenaBgm.Battle);
+                if (battleAudio == null)
+                {
+                    var prefab = Resources.Load<GameObject>("ArenaPresentation");
+                    if (prefab != null)
+                        battleAudio = Instantiate(prefab, transform).GetComponent<ArenaAudioDirector>();
+                }
+                battleAudio?.StopAll();
             }
-            else if (effects != null) effects.StopAll();
+            else if (battleAudio != null) battleAudio.StopAll();
             session = admitted;
             returnToHub = returnAction;
             selected = -1;
             renderedVersion = ulong.MaxValue;
             Refresh();
+        }
+
+        private void OnDestroy()
+        {
+            if (battleAudio != null) Destroy(battleAudio.gameObject);
         }
 
         private void Update()
@@ -96,12 +105,13 @@ namespace Aetheria.PetArena.Presentation
                 if (view.Terminal)
                 {
                     feedback = view.Phase == "won" ? "Victory" : "Defeat";
-                    effects?.PlaySfx(view.Phase == "won" ? ArenaSfx.Victory : ArenaSfx.Defeat);
+                    battleAudio?.SetCombatScore(ArenaCombatScore.None);
+                    battleAudio?.Play(view.Phase == "won" ? ArenaAudioCue.Victory : ArenaAudioCue.Defeat);
                 }
                 else if (view.BossState.Phase > previous.BossState.Phase)
                 {
                     feedback = "The Boss transformed";
-                    effects?.PlaySfx(ArenaSfx.Ultimate);
+                    battleAudio?.Play(ArenaAudioCue.BossWarning);
                 }
                 else
                 {
@@ -114,14 +124,37 @@ namespace Aetheria.PetArena.Presentation
                         if (healed > 0) feedback = now.PetId + " restored " + healed + " HP";
                         else if (shielded > 0) feedback = now.PetId + " granted " + shielded + " shield";
                     }
-                    if (feedback != null) effects?.PlaySfx(ArenaSfx.Skill);
-                    else if (view.BossState.Health < previous.BossState.Health) effects?.PlaySfx(ArenaSfx.Attack);
+                    if (BoardChanged(previous, view)) battleAudio?.Play(ArenaAudioCue.TileMatch);
+                    if (previous.PendingAttack == null && view.PendingAttack != null)
+                        battleAudio?.Play(ArenaAudioCue.BossWarning);
+                    else if (previous.PendingAttack != null && view.PendingAttack == null)
+                        battleAudio?.Play(ArenaAudioCue.Impact);
+                    else if (feedback != null) battleAudio?.Play(ArenaAudioCue.UiConfirm);
+                    else if (view.BossState.Health < previous.BossState.Health) battleAudio?.Play(ArenaAudioCue.Attack);
                 }
+            }
+            if (previous == null && !view.Terminal && battleAudio != null)
+            {
+                battleAudio.SetCombatScore(ArenaCombatScore.Boss);
+                if (view.BossId == "cinder-terraces-warden") battleAudio.SetAmbience(ArenaAmbience.Fire);
+                else if (view.BossId == "tideglass-lagoon-warden") battleAudio.SetAmbience(ArenaAmbience.Water);
             }
             previous = view;
             renderedReconnect = session.RequiresReconnect;
             renderedVersion = view.Version;
             Render(view);
+        }
+
+        private static bool BoardChanged(CoopNativeView before, CoopNativeView after)
+        {
+            for (int index = 0; index < after.Board.Count; index++)
+            {
+                var oldTile = before.Board[index];
+                var newTile = after.Board[index];
+                if (oldTile?.Element != newTile?.Element || oldTile?.Multiplier != newTile?.Multiplier)
+                    return true;
+            }
+            return false;
         }
 
         public void Render(CoopNativeView view)
