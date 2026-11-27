@@ -26,13 +26,20 @@ const bytesField=(field,bytes)=>Buffer.concat([tag(field,2),varint(bytes.length)
 const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
-function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,'coop-process-v1'),bytesField(3,contentHash)]);}
+const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
+assert.ok(['functional','elemental'].includes(boardMode),'Choose functional or historical elemental board');
+const isFunctional=boardMode==='functional';
+function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,isFunctional?'unity-native-v2':'coop-process-v1'),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
 // Search only the committed board. A stable board has no existing matches, so
 // any three aligned elements after the trial swap constitute a legal move.
 function legalSwap(board){
- const elements=board.map(tile=>tile.element);
+ const elements=board.map(tile=>{
+  const identity=isFunctional?tile.kind:tile.element;
+  assert.equal(typeof identity,'string','Missing versioned tile identity');
+  return identity;
+ });
  const matches=()=>elements.some((value,index)=>
   (index%8<6&&value===elements[index+1]&&value===elements[index+2])||
   (index<48&&value===elements[index+8]&&value===elements[index+16]));
@@ -84,7 +91,7 @@ try{
  const validator=new EngineGameplayBundleValidator(binary);
  const installation=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  console.log('Installed seed configuration',installation.version,installation.digest);
- const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-v2.seed.json','utf8'));
+ const bundle=JSON.parse(await readFile(isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json','utf8'));
  bundle.contentRevision=4;
  const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
  const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
@@ -105,9 +112,9 @@ try{
  fire.defense=1;
  bundle.party.maxRounds=32;
  for(const skill of bundle.skills){
-  if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=1;
-  if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=1;
-  if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=1;
+  if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=isFunctional?0:1;
+  if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=isFunctional?0:1;
+  if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=isFunctional?0:1;
  }
  const verdict=await validator.validate('arena8-coop-pve',bundle);
  await writeFile(join(root,'test-publication.json'),JSON.stringify(bundle,null,2)+'\n');
@@ -370,8 +377,8 @@ try{
    facts.scenarios.push('every-independently-authenticated-fire-seat-committed-a-legal-intent');
    for(const action of localTurnActions.values())assert.ok(actionProof.some(entry=>entry.expectedCtrl===action),'Missing player action '+action);
  }finally{for(const c of connections)if(c)c.ws.close();}
- const match=(await pool.query("SELECT ruleset_id,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches WHERE id=$1",[allocation.match_id])).rows[0];
- assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.content_hash,allocation.content_hash);
+ const match=(await pool.query("SELECT ruleset_id,ruleset_version,status,encode(content_hash,'hex') AS content_hash FROM game_native_matches WHERE id=$1",[allocation.match_id])).rows[0];
+ assert.equal(match.ruleset_id,'arena8-coop-pve');assert.equal(match.ruleset_version,isFunctional?2:1);assert.equal(match.content_hash,allocation.content_hash);
  assert.equal(match.status,'SETTLING');
  await json('terminal.json',{matchId:allocation.match_id,roomId:room.roomId});
  await waitForFile('settle');

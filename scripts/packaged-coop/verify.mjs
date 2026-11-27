@@ -10,6 +10,14 @@ const before=await read('before-restart'),after=await read('after-restart'),rene
 assert.equal(before.version,after.version);
 assert.deepEqual(after.state,before.state);
 assert.equal(before.state.board.length,64);
+const version=before.state.ruleset.version;
+assert.ok(version===1||version===2);
+const field=version===2?'kind':'element';
+const vocabulary=version===2?['sword','mana','rage','heart','shield','special']:['fire','water','electric','ghost','ground','light'];
+for(const {state} of states.filter(s=>s.state.phase==='playing')){
+ assert.equal(state.ruleset.version,version);
+ assert.ok(state.board.every(tile=>tile&&vocabulary.includes(tile[field])&&!Object.hasOwn(tile,version===2?'element':'kind')), 'Invalid board contract');
+}
 const multipliers=before.state.board.filter(tile=>tile.multiplier>1).length;
 assert.ok(multipliers>0);
 assert.ok(renewed.hostTickets>after.hostTickets);
@@ -52,6 +60,6 @@ assert.ok(outcome);
 const report=JSON.parse(outcome.slice('reward rows verified '.length));
 assert.equal(report.result,'PASS');
 assert.ok(report.scenarios.includes('packaged-player-consumed-a-native-admission-in-the-equipped-water-allocation'));
-console.log(JSON.stringify({result:'PASS',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
+console.log(JSON.stringify({result:'PASS',boardContract:version===2?'functional':'elemental',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
  resumedGeneration:after.generation,extraHostAdmissions:renewed.hostTickets-after.hostTickets,actions:need,
  transformedVersion:transformed.version,fireWonVersion:states.at(-1).version,rewardRows:rewards.count,water},null,2));
