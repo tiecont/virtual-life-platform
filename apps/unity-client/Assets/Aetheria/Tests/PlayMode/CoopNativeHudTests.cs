@@ -23,7 +23,7 @@ namespace Aetheria.Tests
                 document.panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
                 var hud = go.AddComponent<CoopNativeHud>();
                 hud.Attach(document);
-                var bytes = System.Text.Encoding.UTF8.GetBytes(Projection());
+                var bytes = System.Text.Encoding.UTF8.GetBytes(Projection("{\"targets\":2,\"remaining\":1,\"damage\":84}"));
                 var view = CoopNativeView.Decode(3, bytes);
                 hud.Bind(null, () => { });
                 hud.Render(view);
@@ -31,6 +31,7 @@ namespace Aetheria.Tests
                 Assert.That(root, Is.Not.Null);
                 Assert.That(root.Q("coop-hud"), Is.Not.Null);
                 Assert.That(root.Q<Label>("coop-boss").text, Does.Contain("Boss 5000/5000"));
+                Assert.That(root.Q<Label>("coop-telegraph").text, Is.EqualTo("Incoming in 1 turn · 2 targets · 84 base damage each"));
                 var footer = root.Q("coop-footer");
                 var recover = footer.Q<Button>("coop-reconnect");
                 Assert.That(footer[0].name, Is.EqualTo("coop-return"));
@@ -76,6 +77,7 @@ namespace Aetheria.Tests
 
                 scroll.ScrollTo(lastCell);
                 yield return null;
+                Assert.That(root.Q<Label>("coop-turn").worldBound.yMax, Is.LessThanOrEqualTo(scroll.worldBound.yMin + 1));
                 Assert.That(scroll.scrollOffset.y, Is.GreaterThan(0));
                 Assert.That(lastCell.worldBound.yMax, Is.LessThanOrEqualTo(scroll.contentViewport.worldBound.yMax + 1));
 
@@ -91,7 +93,7 @@ namespace Aetheria.Tests
             }
         }
 
-        private static string Projection()
+        private static string Projection(string pending = "null")
         {
             var board = new System.Text.StringBuilder();
             for (var index = 0; index < 64; index += 1)
@@ -115,7 +117,7 @@ namespace Aetheria.Tests
                 "\"contentHash\":\"" + new string('a', 64) + "\",\"configDigest\":\"" + new string('b', 64) + "\"}," +
                 "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":1," +
                 "\"boss\":{\"hp\":5000,\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false}," +
-                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":null}," +
+                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + "}," +
                 "\"epoch\":1,\"reward\":null}";
         }
     }

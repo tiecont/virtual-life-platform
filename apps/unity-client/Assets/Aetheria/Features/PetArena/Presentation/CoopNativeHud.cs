@@ -138,7 +138,8 @@ namespace Aetheria.PetArena.Presentation
             else
             {
                 body.Clear();
-                while (target.childCount > 1) target.RemoveAt(1);
+                for (var index = target.childCount - 1; index >= 0; index--)
+                    if (target[index] != body) target.RemoveAt(index);
             }
 
             var presentation = CoopNativePresentation.Build(view, Select, Cast, selected);
@@ -147,6 +148,8 @@ namespace Aetheria.PetArena.Presentation
                 presentation.Q("coop-board").SetEnabled(false);
                 presentation.Q("coop-actions").SetEnabled(false);
             }
+            var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
+            target.Insert(0, turn);
             body.Add(presentation);
             if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)

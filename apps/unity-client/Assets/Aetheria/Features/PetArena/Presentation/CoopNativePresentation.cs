@@ -31,8 +31,13 @@ namespace Aetheria.PetArena.Presentation
             if (view.BossState.DotTurns > 0)
                 root.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
 
-            if (view.PendingAttack != null)
-                root.Add(Label("coop-telegraph", "Incoming attack · " + view.PendingAttack.Targets + " targets · " + view.PendingAttack.Remaining + " turns"));
+            var pending = view.PendingAttack;
+            if (pending != null)
+            {
+                var targets = pending.Targets == 1 ? "1 target" : pending.Targets + " targets";
+                var turns = pending.Remaining == 1 ? "1 turn" : pending.Remaining + " turns";
+                root.Add(Label("coop-telegraph", $"Incoming in {turns} · {targets} · {pending.Damage} base damage each"));
+            }
             var seats = new VisualElement { name = "coop-seats" };
             seats.style.flexDirection = FlexDirection.Row;
             for (var seat = 0; seat < view.Participants.Count; seat += 1)
