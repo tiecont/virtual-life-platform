@@ -10236,11 +10236,16 @@
         "No unlicensed media is committed or represented as production",
         "Mixer groups, persisted volumes and event hooks remain intact"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner media licence approval per OD-10"
       ],
       "implementation": {
+        "productionReview": {
+          "sourceRevision": "d1435d44",
+          "observed": "Eight locally composed cue masters and Ogg derivatives passed technical probing. Opening animatic uses four real scene stills with local score. Commercial clearance, owner listening review and runtime integration remain open.",
+          "evidence": "artifacts/wave-d4-media/original-score-r1/technical-verification.json"
+        },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
       },
@@ -11478,6 +11483,11 @@
       ],
       "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
       "implementation": {
+        "productionReview": {
+          "sourceRevision": "e19170e5",
+          "observed": "Six elemental glyphs with separate multiplier badges integrated. Prior 1024x768 board is preserved for matched visual review.",
+          "evidence": "specs/acceptance/wave-d4-production-acceptance.md"
+        },
         "publishedMultiplierProjection": {
           "sourceRevision": "a4bbd16df1d45794775df393e41acae93944eabd",
           "command": "Unity EditMode Aetheria.Tests.CoopNativeTests and cargo test --locked -p aetheria-pet-arena --lib",
@@ -11549,6 +11559,11 @@
         "VL-208"
       ],
       "implementation": {
+        "productionReview": {
+          "sourceRevision": "eb980abb",
+          "observed": "Seeds 301\u2013324 across four configurations, six Bosses and four policies completed 2304 simulations. Shared-pressure Fire victories were 0/0/6/3. The other five Bosses had no wins with these level 20 starter parties. Natural access to the tested progression remains unqualified.",
+          "evidence": "artifacts/wave-d4-measures/balance-summary.json"
+        },
         "constructiveOpeningHoldout": {
           "sourceRevision": "b4039d6b135b050b70cc62f2d3716afacbeecb34",
           "command": "cargo build --offline --locked -p aetheria-pet-arena --example arena8_coop_balance, then arena8_coop_balance BUNDLE PARTY 101 18 BOSS",
