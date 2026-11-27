@@ -2,7 +2,7 @@ import {beforeAll,afterAll,describe,it,expect} from 'vitest';
 import {Pool} from 'pg';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {CoopEncounterCatalogSchema} from '@aetheria/contracts';
+import {CoopEncounterCatalogSchema,GameplayConfigVersionViewSchema} from '@aetheria/contracts';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
@@ -230,6 +230,12 @@ describe('cooperative rooms and achievement eligibility',()=>{
    if(prerequisite)boss.requiredMapClear=prerequisite;
   }
   const version=await publish(candidate);
+  const operatorVersion=await server.http.inject({url:'/v1/operator/gameplay-config-version?ruleset='+ruleset+'&version='+version,headers:operatorHeaders});
+  const view=GameplayConfigVersionViewSchema.parse(operatorVersion.json());
+  expect(view.bundle).toEqual(candidate);
+  expect(view.catalogReference).toHaveLength(55);
+  expect(view.catalogReference?.filter(p=>p.starter).map(p=>p.id).sort()).toEqual(['fire-coalwhisk','ground-clodkin','water-dewskip']);
+  expect(view.catalogReference?.find(p=>p.id==='pet-v31-fire-cindrelis')).toMatchObject({catalogRank:'S',sourceCategory:'standard_gacha'});
   const host=await eligibleHost(),guestWithoutProgress=await eligibleHost();
   const readCatalog=async(auth:Auth)=>{
    const response=await get(auth,url);

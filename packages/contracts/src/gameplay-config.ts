@@ -19,7 +19,14 @@ export const GameplayConfigVersionSchema=z.strictObject({
  parentVersion:version.nullable(),createdBy:actor,updatedBy:actor,
  createdAt:z.iso.datetime(),validatedAt:z.iso.datetime().nullable(),publishedAt:z.iso.datetime().nullable(),
 });
-export const GameplayConfigVersionViewSchema=GameplayConfigVersionSchema.extend({bundle:GameplayBundleSchema});
+const catalogReference=z.strictObject({
+ id:z.string().min(1).max(64),catalogRank:z.enum(['S','A','B']).nullable(),starter:z.boolean(),
+ sourceCategory:z.string().min(1),acquisitionAuthority:z.string().min(1),
+ gameplayReady:z.boolean(),modelStatus:z.string().min(1),
+});
+export const GameplayConfigVersionViewSchema=GameplayConfigVersionSchema.extend({
+ bundle:GameplayBundleSchema,catalogReference:z.array(catalogReference).optional(),
+});
 export const GameplayConfigActiveSchema=z.strictObject({
  version,revision,state:GameplayConfigStateSchema,contentDigest:hash,engineCapability:capability,publishedAt:z.iso.datetime(),updatedBy:actor,updatedAt:z.iso.datetime(),
 });

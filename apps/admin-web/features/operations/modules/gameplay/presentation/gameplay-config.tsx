@@ -242,6 +242,14 @@ export default function GameplayConfig({request}:{request:Request}){
   return <tr key={index}><td>{name}</td><td>{id}</td><td>{display(pet,'element')}</td><td>{display(pet,'rarity')}</td><td>{display(pet,'powerClass')}</td>
    {['maxHp','attack','defense'].map(key=><td key={key}><input aria-label={name+' '+key} className="aetheria-field" type="number" min={0} disabled={!editable} value={display(pet,key)} onChange={event=>{const n=event.target.valueAsNumber;if(Number.isSafeInteger(n)&&n>=0)change(['pets',String(index),key],n);}} /></td>)}</tr>;
  })}</tbody></table></div>
+ {selected.catalogReference&&<details><summary>Canonical acquisition and production status</summary><div className="audit"><table>
+  <caption>Current roster reference</caption>
+  <thead><tr><th>Pet ID</th><th>Catalog rank</th><th>Starter</th><th>Acquisition source</th><th>Acquisition decision</th><th>Catalog gameplay readiness</th><th>Model status</th></tr></thead>
+  <tbody>{selected.catalogReference.filter(pet=>pet.id.includes(petSearch.trim().toLowerCase())).map(pet=><tr key={pet.id}>
+   <td>{pet.id}</td><td>{pet.catalogRank??'Unassigned'}</td><td>{pet.starter?'Yes':'No'}</td><td>{pet.sourceCategory.replaceAll('_',' ')}</td>
+   <td>{pet.acquisitionAuthority.toLowerCase().replaceAll('_',' ')}</td><td>{pet.gameplayReady?'Ready':'Pending'}</td><td>{pet.modelStatus.toLowerCase().replaceAll('_',' ')}</td>
+  </tr>)}</tbody>
+ </table></div></details>}
  <div>
  {Array.isArray(bundle?.pets)&&bundle.pets.some(pet=>read(pet,['growth']))?<details><summary>Per-Pet growth</summary>
  <p>Rates are basis points per Pet level. A rate of 100 adds 1% of the base stat per level before the growth adjustment.</p>
