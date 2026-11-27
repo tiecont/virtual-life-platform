@@ -2,7 +2,7 @@
 use super::domain::Rules;
 use aetheria_persistence::{Completion, Error, Game};
 use aetheria_pet_arena::arena8::Element;
-use aetheria_pet_arena::arena8::coop::{CoopPhase, CoopState, StatusKind, Tile};
+use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind, Tile};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -130,7 +130,7 @@ impl Game for Rules {
             .iter()
             .enumerate()
             .map(|(index, participant)| {
-                serde_json::json!({
+                let mut view = serde_json::json!({
                     "seat": index,
                     "petId": participant.pet_id,
                     "level": participant.level,
@@ -156,10 +156,14 @@ impl Game for Rules {
                         "shielding": participant.contribution_shielding,
                     },
                     "alive": participant.alive,
-                })
+                });
+                if let Some(levels) = participant.upgraded_skill_levels() {
+                    view["skillLevels"] = serde_json::json!(levels);
+                }
+                view
             })
             .collect::<Vec<_>>();
-        let projection = serde_json::json!({
+        let mut projection = serde_json::json!({
             "schemaVersion": 1,
             "ruleset": {
                 "id": ruleset.id,
@@ -177,7 +181,7 @@ impl Game for Rules {
                 "maxHp": state.boss.max_hp,
                 "phase": state.boss.phase,
                 "shield": state.boss.shield,
-                "armorBreakPm": state.boss.armor_break_pm,
+                "armorBreakPm": state.boss.incoming_damage_pm(),
                 "dotDamage": state.boss.dot_damage,
                 "dotTurns": state.boss.dot_turns,
                 "transformed": state.boss.transformed,
@@ -190,6 +194,33 @@ impl Game for Rules {
                 "damage": pending.damage,
             })),
         });
+        // Older bundles retain the historical projection exactly. New local
+        // catalog matches present the caller's own published abilities.
+        let config = self.engine().config();
+        if config.has_artifact_catalog() {
+            let own = &state.participants[seat];
+            let pet = config.pet(&own.pet_id).ok_or(Error::Integrity)?;
+            let slots = [
+                ("guard", CoopAction::Guard),
+                ("skill", CoopAction::Skill),
+                ("signature", CoopAction::Signature),
+                ("ultimate", CoopAction::Ultimate),
+                ("fire-zone", CoopAction::FireZone),
+            ];
+            let mut abilities = Vec::new();
+            for (slot, ((kind, action), id)) in slots.into_iter().zip(pet.skill_ids()).enumerate() {
+                let Some(id) = id else { continue };
+                let skill = config.skill(id).ok_or(Error::Integrity)?;
+                abilities.push(serde_json::json!({
+                    "kind": kind, "id": id, "mana": skill.mana_cost, "rage": skill.rage_cost,
+                    "cooldown": own.cooldowns[slot],
+                    "ready": self.engine().ability_ready(state, seat, action),
+                }));
+            }
+            projection["abilities"] = serde_json::Value::Array(abilities);
+            projection["bossId"] =
+                serde_json::Value::String(self.engine().selected_boss().id.clone());
+        }
         serde_json::to_vec(&projection).map_err(|_| Error::Invalid)
     }
 }

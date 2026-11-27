@@ -19,7 +19,14 @@ export const GameplayConfigVersionSchema=z.strictObject({
  parentVersion:version.nullable(),createdBy:actor,updatedBy:actor,
  createdAt:z.iso.datetime(),validatedAt:z.iso.datetime().nullable(),publishedAt:z.iso.datetime().nullable(),
 });
-export const GameplayConfigVersionViewSchema=GameplayConfigVersionSchema.extend({bundle:GameplayBundleSchema});
+const catalogReference=z.strictObject({
+ id:z.string().min(1).max(64),catalogRank:z.enum(['S','A','B']).nullable(),starter:z.boolean(),
+ sourceCategory:z.string().min(1),acquisitionAuthority:z.string().min(1),
+ gameplayReady:z.boolean(),modelStatus:z.string().min(1),
+});
+export const GameplayConfigVersionViewSchema=GameplayConfigVersionSchema.extend({
+ bundle:GameplayBundleSchema,catalogReference:z.array(catalogReference).optional(),
+});
 export const GameplayConfigActiveSchema=z.strictObject({
  version,revision,state:GameplayConfigStateSchema,contentDigest:hash,engineCapability:capability,publishedAt:z.iso.datetime(),updatedBy:actor,updatedAt:z.iso.datetime(),
 });
@@ -36,14 +43,40 @@ export const GameplayConfigPublishResultSchema=z.strictObject({ruleset:GameplayR
 export const GameplayConfigRollbackResultSchema=z.strictObject({ruleset:GameplayRulesetSchema,version,contentDigest:hash,publishedAt:z.iso.datetime(),activeRevision:revision});
 export const GameplayConfigMutationSchema=z.strictObject({ruleset:GameplayRulesetSchema,version,revision});
 export const GameplaySimulationPolicySchema=z.enum(['random','basic','tactical','coordinated']);
-export const GameplaySimulationRequestSchema=z.strictObject({
- requestId,ruleset:GameplayRulesetSchema,version,policy:GameplaySimulationPolicySchema,seeds:z.number().int().min(1).max(200),
+export type GameplaySimulationPolicy=z.infer<typeof GameplaySimulationPolicySchema>;
+const bossId=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/);
+const bossIds=z.array(bossId).min(1).max(2).refine(ids=>new Set(ids).size===ids.length);
+const simulationVersion={ruleset:GameplayRulesetSchema,version};
+export const GameplaySimulationSeedsSchema=z.number().int().min(1).max(200);
+export const GameplayComparisonSeedsSchema=z.number().int().min(1).max(25);
+export const GameplaySimulationPartySchema=z.array(z.strictObject({
+ petId:bossId,level:z.int().min(1).max(100),
+ artifacts:z.array(z.strictObject({slot:z.enum(['core','aegis','rune']),artifactId:z.uuid(),definitionId:bossId,upgradeLevel:z.int().min(1).max(5)})).max(3),
+ skillLevels:z.array(z.strictObject({skillId:bossId,level:z.int().min(1).max(255)})).max(5),
+})).length(4);
+export type GameplaySimulationParty=z.infer<typeof GameplaySimulationPartySchema>;
+export const GameplaySimulationRequestSchema=z.union([
+ z.strictObject({requestId,...simulationVersion,policy:GameplaySimulationPolicySchema,seeds:GameplaySimulationSeedsSchema,bossId:bossId.optional(),party:GameplaySimulationPartySchema.optional()}),
+ z.strictObject({requestId,...simulationVersion,seeds:GameplayComparisonSeedsSchema,bossIds,party:GameplaySimulationPartySchema.optional()}),
+]);
+const simulationMetric=z.number().int().min(0).max(1_000_000_000);
+const contribution=z.strictObject({
+ petId:z.string().min(1).max(64),damage:z.int().nonnegative(),healing:z.int().nonnegative(),shielding:z.int().nonnegative(),
 });
-export const GameplaySimulationReportSchema=z.strictObject({
- ruleset:GameplayRulesetSchema,version,policy:GameplaySimulationPolicySchema,seeds:z.number().int().min(1).max(200),
- wins:count,losses:count,unresolved:count,phaseTwoReached:count,totalActions:z.number().int().min(0).max(1_000_000_000),
- averageRoundsMilli:z.number().int().min(0).max(1_000_000_000),averageActionsMilli:z.number().int().min(0).max(1_000_000_000),
+export const EngineGameplaySimulationReportSchema=z.strictObject({
+ bossId,contentDigest:hash,policy:GameplaySimulationPolicySchema,seeds:GameplaySimulationSeedsSchema,
+ wins:count,losses:count,unresolved:count,phaseTwoReached:count,phaseTwoActions:simulationMetric.optional(),totalActions:simulationMetric,
+ averageRoundsMilli:simulationMetric,averageActionsMilli:simulationMetric,
+ swapsUsingVisibleMultiplier:z.int().nonnegative().optional(),playerCriticals:z.int().nonnegative().optional(),abilityCasts:z.int().nonnegative().optional(),manaSpent:z.int().nonnegative().optional(),rageSpent:z.int().nonnegative().optional(),
+ castsBySkill:z.record(z.string().min(1).max(64),z.int().positive()).optional(),
+ averageLogicalDurationMs:simulationMetric,matchesWithMultiplier:count,contributions:z.array(contribution).length(4),
 });
+export type EngineGameplaySimulationReport=z.infer<typeof EngineGameplaySimulationReportSchema>;
+export const GameplaySimulationReportSchema=EngineGameplaySimulationReportSchema.extend(simulationVersion);
+export const GameplaySimulationComparisonSchema=z.strictObject({
+ ...simulationVersion,seeds:GameplayComparisonSeedsSchema,reports:z.array(EngineGameplaySimulationReportSchema).min(4).max(8),
+});
+export const GameplaySimulationResultSchema=z.union([GameplaySimulationReportSchema,GameplaySimulationComparisonSchema]);
 export const GameplayConfigAuditSchema=z.strictObject({events:z.array(z.strictObject({
  sequence:z.string().regex(/^[0-9]+$/),ruleset:GameplayRulesetSchema,version,action:z.enum(['create','update','validate','publish','rollback','retire','seed']),
  actor,fromState:GameplayConfigStateSchema.nullable(),toState:GameplayConfigStateSchema.nullable(),occurredAt:z.iso.datetime(),previousHash:hash,eventHash:hash,

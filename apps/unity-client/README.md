@@ -275,6 +275,27 @@ SDK. Record signing, install/update, input, graphics and crash acceptance
 with build hashes on the related Windows tasks.
 [Windows build requirements](https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility)
 
+## Local cooperative player
+
+Build the existing Linux player with the local Unity validation runner. Launch
+it with `AETHERIA_COOP_API` set to the loopback Nest API and
+`AETHERIA_ARENA8_NATIVE_CA` set to the local TLS bridge's public CA file.
+Enable the existing local Pet collection and cooperative routes for that API
+and publish a validated cooperative bundle with the Fire and Water map
+bindings. Keep the publication and all accounts in a disposable environment.
+
+The player opens Central Plaza and offers guest login. Walk to the Fire or
+Water portal and interact to open that arena's lobby. Select an owned Pet,
+create a room or join by room UUID, and ready each account. The host starts
+the room once all four seats are ready. Other seats can refresh the room to
+enter the match. A returning guest can resume the saved account and use the
+existing room UUID to obtain a fresh admission. Published room eligibility
+still applies to the host.
+
+`node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs`
+exercises the native process with its own test-only publication and accounts.
+Packaged and four-human acceptance are recorded separately in the backlog.
+
 ## Play Pet Arena on Linux
 
 From the repository root, with Docker available, Node/pnpm/Rust pinned as above

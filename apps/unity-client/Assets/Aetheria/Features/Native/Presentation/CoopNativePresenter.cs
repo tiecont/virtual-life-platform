@@ -16,7 +16,7 @@ namespace Aetheria.Networking
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             var boss = view.BossState;
-            return "Boss " + boss.Health.ToString(CultureInfo.InvariantCulture) + "/" +
+            return (view.BossId == null ? "Boss " : view.BossId + " · ") + boss.Health.ToString(CultureInfo.InvariantCulture) + "/" +
                 boss.MaxHealth.ToString(CultureInfo.InvariantCulture) + " · phase " +
                 boss.Phase.ToString(CultureInfo.InvariantCulture) +
                 (boss.Shield > 0 ? " · shield " + boss.Shield.ToString(CultureInfo.InvariantCulture) : "");
@@ -45,12 +45,15 @@ namespace Aetheria.Networking
         public static bool CanAct(CoopNativeView view) =>
             view != null && !view.Terminal && view.Phase == "playing" && view.ActiveSeat == view.You && view.Own.Alive;
 
-        // Fire Zone is only offered when a future projection states the capability;
-        // the current contract has no capability field, so the UI does not invent one.
         public static IReadOnlyList<string> AvailableActions(CoopNativeView view)
         {
             if (!CanAct(view)) return Array.Empty<string>();
             var actions = new List<string>();
+            if (view.Abilities.Count > 0)
+            {
+                foreach (var ability in view.Abilities) if (ability.Ready) actions.Add(ability.Kind);
+                return actions;
+            }
             for (var index = 0; index < ActionOrder.Length; index += 1)
                 if (view.Cooldown(ActionSlots[index]) == 0) actions.Add(ActionOrder[index]);
             return actions;

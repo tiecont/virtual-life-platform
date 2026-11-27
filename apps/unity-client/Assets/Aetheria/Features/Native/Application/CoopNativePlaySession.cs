@@ -25,13 +25,14 @@ namespace Aetheria.Networking
             }
             catch (FormatException error)
             {
-                System.Console.Error.WriteLine("Coop native projection rejected: " + error.Message + " · " +
-                    System.Text.Encoding.UTF8.GetString(bytes, 0, Math.Min(bytes.Length, 1200)));
+                System.Console.Error.WriteLine("Coop native projection rejected: " + error.Message);
                 throw new NativeFailure(Failure.Protocol);
             }
         }
 
         public Task<PlayState> ConnectAsync(CancellationToken cancellation = default) => ConnectTransportAsync(cancellation);
+
+        public Task<PlayState> RefreshAsync(CancellationToken cancellation = default) => RefreshTransportAsync(cancellation);
 
         public override Task<PlayState> AdvanceAsync(CancellationToken cancellation = default) => StartAsync(cancellation);
         public Task<PlayState> StartAsync(CancellationToken cancellation = default) => Intent(CoopNativeIntent.Start, -1, -1, 0, cancellation);

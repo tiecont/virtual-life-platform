@@ -10,7 +10,7 @@ const installSeal=(purpose:string,value:unknown)=>createHash('sha256').update('g
 // Explicit, idempotent installation of a reviewed seed bundle. The bundle is
 // engine-validated before it becomes a draft; publication reuses the same
 // lifecycle and audit journal as operator publication. Re-running with an
-// already-active digest is a no-op.
+// active publication is a no-op. Only an operator may replace it.
 export async function installGameplayConfig(
  pool:Pool,ruleset:GameplayRuleset,bundle:GameplayBundle,validator:GameplayBundleValidator,actor='system:installation',
 ):Promise<GameplayInstallation>{
@@ -24,21 +24,21 @@ export async function installGameplayConfig(
   const active=await store.active(client,ruleset,true);
   let current:GameplayVersion|undefined;
   if(active)current=await store.read(client,ruleset,active.version);
-  if(current&&current.contentDigest===verdict.digest&&current.engineCapability===verdict.engineCapability){
+  if(active){
+   if(!current?.contentDigest||!current.engineCapability)throw new Error('Active gameplay configuration is invalid');
    await client.query('COMMIT');
-   return Object.freeze({created:false,version:current.version,digest:verdict.digest,engineCapability:verdict.engineCapability});
+   return Object.freeze({created:false,version:current.version,digest:current.contentDigest,engineCapability:current.engineCapability});
   }
   const version=await store.nextVersion(client,ruleset);
   const request=installSeal('gameplay-config-request',{actor,action:'seed',ruleset,version,digest:verdict.digest});
-  const created=await store.insertDraft(client,{ruleset,version,parentVersion:active?.version??null,bundle,actor});
+  const created=await store.insertDraft(client,{ruleset,version,parentVersion:null,bundle,actor});
   await store.appendEvent(client,{ruleset,version,action:'seed',actor,fingerprint:request,fromState:null,toState:'DRAFT',detail:{digest:verdict.digest},seal:installSeal});
   const validated=await store.markValidated(client,{ruleset,version,expectedRevision:created.revision,digest:verdict.digest,engineCapability:verdict.engineCapability,actor});
   if(!validated)throw new Error('Installation draft could not be validated');
   await store.appendEvent(client,{ruleset,version,action:'validate',actor,fingerprint:installSeal('gameplay-config-validate',{actor,version,digest:verdict.digest}),fromState:'DRAFT',toState:'VALIDATED',detail:{digest:verdict.digest},seal:installSeal});
-  if(active)await store.supersede(client,{ruleset,version:active.version,actor});
   const released=await store.markPublished(client,{ruleset,version,expectedRevision:validated.revision,actor});
   if(!released)throw new Error('Installation draft could not be published');
-  const activeRevision=await store.setActive(client,{ruleset,version,expectedRevision:active?.revision??null,actor});
+  const activeRevision=await store.setActive(client,{ruleset,version,expectedRevision:null,actor});
   if(activeRevision===undefined)throw new Error('Installation could not select the active configuration');
   await store.appendEvent(client,{ruleset,version,action:'publish',actor,fingerprint:installSeal('gameplay-config-publish',{actor,version,digest:verdict.digest}),fromState:'VALIDATED',toState:'PUBLISHED',detail:{digest:verdict.digest,activeRevision},seal:installSeal});
   await client.query('COMMIT');

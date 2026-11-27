@@ -10516,17 +10516,32 @@
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "change": "The existing operator console has a Gameplay configuration workspace with typed party/board, Boss phase, elemental profile, multiplier schedule, skill and settlement-reward editors, raw-bundle editing, engine validation, publication, rollback, audit and a draft-versus-active field comparison. Draft and update routes now accept the real 1.2 MiB bundle bound instead of 8 KiB, so the reviewed seed can be authored. The real-process proof publishes a draft through this operator path and verifies a new native allocation pins the Admin digest and content hash.",
         "commands": [
-          { "command": "pnpm --filter @aetheria/admin-web typecheck", "exitCode": 0 },
-          { "command": "pnpm exec vitest run apps/admin-web/server/proxy.unit.test.ts", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts", "exitCode": 0 }
+          {
+            "command": "pnpm --filter @aetheria/admin-web typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm exec vitest run apps/admin-web/server/proxy.unit.test.ts",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/gameplay-config.test.ts",
+            "exitCode": 0
+          }
         ],
         "remaining": "Pet, progression and campaign editors are absent; no browser-level operator acceptance has run. Admin simulation is tracked in VL-197.",
-        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea",
+        "integrationCheckpoint": {
+          "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
+          "pullRequest": 86,
+          "observed": "Browser A/B passed: both matches restored pinned projections after restart, retry of the same locked B room succeeded, rollback restored A."
+        }
       },
       "workstream": "D3-A",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
-      ]
+      ],
+      "remaining": "Confirm integrated hosted checks and exercise remaining editor fields."
     },
     {
       "id": "VL-193",
@@ -10630,21 +10645,48 @@
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "change": "The cooperative engine emits a bounded coop.completed.v1 proposal with outcome, configuration/content identity, round/turn and per-seat committed contribution. Reward values (clear/loss Achievement Points, coins, Pet EXP) are authored in the validated bundle and bound into its digest. A new settlement consumer verifies the canonical proposal hash, allocation identity and roster, then pays every active seat once: Achievement Point ledger, coins, Pet EXP curve, reward journal, inbox, outbox delivery, allocation SETTLED and match FINISHED. The durable worker drains it as an explicit opt-in consumer (COOP_SETTLEMENT_ENABLED=1), so restricted reward workers never open cooperative tables. The real-process script now reaches a terminal loss through four WebSocket seats and drains this consumer, verifying four loss payouts, SETTLED, FINISHED and delivered outbox.",
         "commands": [
-          { "command": "cargo test -p aetheria-pet-arena", "exitCode": 0 },
-          { "command": "cargo test -p aetheria-game-runtime", "exitCode": 0 },
-          { "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-persistence --all-targets -- -D warnings", "exitCode": 0 },
-          { "command": "pnpm --filter @aetheria/platform-api typecheck", "exitCode": 0 },
-          { "command": "node scripts/verify-architecture.mjs", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts", "exitCode": 0 },
-          { "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs", "exitCode": 0 }
+          {
+            "command": "cargo test -p aetheria-pet-arena",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo test -p aetheria-game-runtime",
+            "exitCode": 0
+          },
+          {
+            "command": "cargo clippy -p aetheria-game-runtime -p aetheria-pet-arena -p aetheria-persistence --all-targets -- -D warnings",
+            "exitCode": 0
+          },
+          {
+            "command": "pnpm --filter @aetheria/platform-api typecheck",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/verify-architecture.mjs",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts",
+            "exitCode": 0
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0
+          }
         ],
         "remaining": "Reconnect-before-request and concurrent-worker acceptance, contribution-based eligibility policy, coop-only worker boot policy and Unity reward presentation remain.",
-        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
+        "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea",
+        "integrationCheckpoint": {
+          "sourceRevision": "30b0eee4dc504c72d2c23502df39eed9c287727b",
+          "pullRequest": 86,
+          "observed": "Real native win and loss paid four seats exactly once; PostgreSQL regression also accepts contribution totals over one million."
+        }
       },
       "workstream": "D3-A",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
-      ]
+      ],
+      "remaining": "Exercise receipt recovery and earned progression in the packaged candidate."
     },
     {
       "id": "VL-196",
@@ -10784,11 +10826,20 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Exercise visible multiplier and skill usage, verify packaged restart/reconnect against the exact committed board, and repeat on the integrated release candidate. Human and production-balance qualification remain independent.",
+      "remaining": "Run the matching Linux binary and runtime from login through recovery, settlement and the next equipped allocation.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "equippedWaterAcceptance": {
+          "sourceRevision": "07f3c4ec5aa8f1778b411f3f6cb4beafc37f67a9",
+          "buildBase": "745e775a6514f360a65753fd4b504e6d2ce500b5",
+          "packageManifestSha256": "7f20f81fa2cfd6c14e41c69a3414302b767a3c0aa5f097d7a8454a5d66d21d26",
+          "command": "Linux packaged guest UI with three authenticated socket clients, disposable PostgreSQL, API/runtime restart and receipt verification",
+          "exitCode": 0,
+          "result": "The uncommitted input patch in the build matches the recorded source revision. Fire resumed at version 3 with 64 matching tiles and 7 multipliers. Phase two at 27, victory at 29, four receipts of 333 AP, 144 coins, 105 Pet EXP and 7 materials. Plaza equipment and upgrade preceded a four-seat native Water allocation with Lv2 Emberglass Core pinned; equipped Coalwhisk showed 191 HP, unequipped same-level peer 186. Emberglass is the starter Core.",
+          "evidence": "artifacts/integrated-d3/packaged-fire-water-07f3c4ec.json"
+        },
         "packagedAcceptance": {
           "sourceRevision": "ef6cdb8dd18d98cfbb560761b360abf681af266d",
           "pullRequest": 86,
@@ -10807,7 +10858,12 @@
             "command": "UNITY_EDITOR=<pinned 6000.3.14f1 Editor> node scripts/unity-validate.mjs linux",
             "exitCode": 0
           }
-        ]
+        ],
+        "integrationCheckpoint": {
+          "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
+          "pullRequest": 86,
+          "observed": "Linux player compiled. Earlier packaged Fire win returned to Plaza and opened Water; a separate packaged restart preserved the version-three multiplier board."
+        }
       }
     },
     {
@@ -10832,12 +10888,12 @@
       ],
       "remaining": "Confirm current hosted checks before merge. Original runtime binary qualification is tracked separately from the successful database expansion and historical schema decoding.",
       "implementation": {
-        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
         "pullRequest": 86,
-        "change": "Kept the existing settlement migration and policies. Added exact 0062 prefix policies and UUID backfill, fixed build and native settings composition.",
+        "change": "Kept the existing settlement migration and policies. Added exact 0062 prefix policies and UUID backfill, fixed build and native settings composition. Then removed the artifact catalog from the historical schema-1 seed so the engine accepts it, dropped an unnecessary pnpm setup that broke the pinned toolchain contract, and replaced md5-derived pet instance ids with an immutable aetheria_pet_instance_id() function that pins the RFC version and variant nibbles with explicitly cast seeds.",
         "previousSourceRevision": "a94e368e103f7d3222e405d5a2d547c811a83a64",
         "reviewMode": "SINGLE_AGENT_AUDIT",
-        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "availableAt": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
         "commands": [
           {
             "command": "pnpm game:migration:compat",
@@ -10859,6 +10915,30 @@
             "exitCode": 0,
             "sourceRevision": "098379930a7d4bc3945f71fe6021632c8713a4ae",
             "result": "Focused disposable proof seeded a frozen four-seat PR84 allocation and an unselected seat. Migration 0062 backfilled four real ownership IDs, left the unselected ID null, retained all 61 prior checksums and original allocation JSON, and preserved the roster freeze."
+          },
+          {
+            "command": "node scripts/verify-ci.mjs",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "Workflow, pin, browser-coverage and toolchain contracts pass with four pinned pnpm setups and six .node-version readers."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "Twenty-three scenarios pass, including the admin draft/validate/publish path that previously returned 422, Fire and Water rooms on one published bundle, restart recovery and worker settlement."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=1/4",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "215 tests pass; pet-artifacts-wave-a no longer returns 503 from Wave One state."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration --shard=2/4",
+            "exitCode": 0,
+            "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
+            "result": "174 tests pass with the prepared legacy API baselines."
           }
         ]
       }
@@ -10887,11 +10967,23 @@
       ],
       "remaining": "Validate awarded instances and saved guest re-admission through the packaged player. Exact historical runtime binary compatibility review remains open.",
       "implementation": {
-        "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
+        "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
-        "change": "Added server-owned durable instance IDs to collection, room seats, frozen allocations and progression lookup. Native snapshots bind the selected identity for the versioned configuration.",
-        "availableAt": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6"
+        "change": "Added server-owned durable instance IDs to collection, room seats, frozen allocations and progression lookup. Native snapshots bind the selected identity for the versioned configuration. Deterministic instance ids are now minted by the shared immutable aetheria_pet_instance_id() SQL function, which pins the RFC 4122 version and variant nibbles, so contracts that validate UUID shape accept every generated id instead of rejecting roughly three of four as INVALID_REQUEST.",
+        "availableAt": "1e169c80976670fca45ca693b5eca4e44115e178",
+        "commands": [
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
+            "exitCode": 0,
+            "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178"
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena",
+            "exitCode": 0,
+            "sourceRevision": "1e169c80976670fca45ca693b5eca4e44115e178"
+          }
+        ]
       }
     },
     {
@@ -10967,8 +11059,15 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Native Fire victory and Water loss passed with independent scoped seats and disposable test balance. Repeat exact-source hosted checks and qualify persistent progression and display in the packaged flow.",
+      "remaining": "Confirm hosted checks on the integrated source.",
       "implementation": {
+        "integratedAcceptance": {
+          "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:4489",
+          "exitCode": 0,
+          "result": "Four WSS seats recovered version five. Fire won in six turns; Water lost in 24. Committed guards qualified for Water rewards; Start and rejected turns gave no participation credit. Earned equipment and an independent skill upgrade applied to the subsequent allocation.",
+          "evidence": "artifacts/integrated-d3/participation-final.log"
+        },
         "localAcceptance": {
           "sourceRevision": "49de4dcc7a44a606c47b37a9aac2fb1b430a8996",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs",
@@ -10987,7 +11086,12 @@
             "exitCode": 0,
             "sourceRevision": "5fcdbb4a692bf1db854fe482cd12734e747fcd1a"
           }
-        ]
+        ],
+        "integrationCheckpoint": {
+          "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
+          "pullRequest": 86,
+          "observed": "Local native-coop-process on PostgreSQL passed Fire in six turns and Water defeat in 24, restored version five, and bound upgraded gear and skill levels in a later match."
+        }
       }
     },
     {
@@ -11004,14 +11108,28 @@
         "Icarus passes independent blink, smile, shout and frown deformation checks, modular turnaround, authored rig and URP review at H1 through H4.",
         "Reusable profiles document skeleton, deformation, animation, import budgets and technical admission with sample Unity results."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner H1 face/hair, H2 modular turnaround, H3 rig/poses and H4 Unity URP approval before dependent stages."
       ],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Prepare authorized intake and validate existing samples. Stop the affected character at each H gate until its receipt names the approved evidence."
+      "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
+      "implementation": {
+        "reviewImportVerification": {
+          "sourceRevision": "fe9ae1f0ee4fdd4fefa56fded7abcaaee2b75864",
+          "command": "UNITY_EDITOR=<6000.3.14f1> node scripts/unity-validate.mjs tests",
+          "exitCode": 0,
+          "result": "Fresh Unity import recovered the existing VRM, wings and bow. All 75 EditMode cases passed; ordinary PlayMode reported 20 passed and 2 disposable-database cases skipped. Reviewed VRM has zero morph bindings. Owner H1 R3 receipt is pending.",
+          "evidence": "artifacts/vl204/clean-source/artifacts/unity/2026-11-26T23-40-50-379Z-aced7f91/result.json"
+        },
+        "integrationCheckpoint": {
+          "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
+          "pullRequest": 86,
+          "observed": "Rendered existing Icarus face, expressions, topology and hair views for the H1 review under artifacts/h1-review."
+        }
+      }
     },
     {
       "id": "VL-205",
@@ -11054,18 +11172,48 @@
         "Publish and clear all six maps through authored regular encounters and the correct Boss with persistent unlock/recruitment state.",
         "Match enrollment, rewards and unlocks remain pinned to the published version across restart."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner encounter design and balance approval before a production publication."
       ],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Build encounter authority and progression independently of art; pair with the Unity map to qualify it.",
+      "remaining": "Complete six regular routes and recruitment through packaged play.",
       "qualificationDependencies": [
         "VL-183",
         "VL-184"
-      ]
+      ],
+      "implementation": {
+        "regularLastRecruitment": {
+          "sourceRevision": "63322a8759d70d819799aa37ef0a2b3b4dccc281",
+          "integratedRevision": "5ccce14d8c6a53a5fad4bd3364a5ce7bf2bfd235",
+          "command": "PostgreSQL cooperative settlement, native, recovery, rooms and Wave 1 integration tests; archived native and admission migration compatibility",
+          "exitCode": 0,
+          "result": "42 database cases passed. Migration 0065 pins the authored list on the first Boss receipt. Regular-last and Boss-last settlement preserve recruitment through publication replacement, concurrent claims and host erasure. Archived prefixes 47 and 48 upgraded to 65; frozen 56 prefix retained.",
+          "evidence": "tests/integration/coop-settlement.test.ts"
+        },
+        "firstClearRecruitment": {
+          "sourceRevision": "af9003e73a6a686e766854d157d90cebd680d071",
+          "integratedRevision": "450fcf9e63a510897cc2b874107bcc1c68e455db",
+          "command": "cargo test --locked --offline -p aetheria-pet-arena and disposable PostgreSQL co-op settlement, room, native and recovery tests",
+          "exitCode": 0,
+          "result": "17 database cases passed. On regular-first completion a qualifying cooperative Boss winner receives the first unowned species from the pinned map policy. Legacy bundle digests match. Boss-first completion through a later solo regular encounter requires a durable policy handoff.",
+          "evidence": "tests/integration/coop-settlement.test.ts"
+        },
+        "integratedAcceptance": {
+          "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-rooms.test.ts tests/integration/coop-settlement.test.ts --maxWorkers=1",
+          "exitCode": 0,
+          "result": "10 passed, 0 failed or skipped. Published six-map availability resolved achievement thresholds, prerequisites, encounter IDs and recruitment. Existing rooms retained pins.",
+          "evidence": "artifacts/integrated-d3/rooms-settlement-5977.json"
+        },
+        "integrationCheckpoint": {
+          "sourceRevision": "097b750230ce8743ec4cf6274139b9126f2b39e0",
+          "pullRequest": 86,
+          "observed": "Engine checks authored map prerequisites and cycles. Host eligibility reads durable map clears and points. Joining and existing room pins remain valid."
+        }
+      }
     },
     {
       "id": "VL-207",
@@ -11084,12 +11232,19 @@
         "Core, Aegis and Rune equip/upgrade affect only later pinned allocations and change observable native results.",
         "A Skill Level upgrade consumes authored resources exactly once and does not gate authored Lv1 skill access. Cross-account requests fail."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Connect account/instance and skill progress to published configuration, receipts and Unity comparison."
+      "remaining": "Verify earned gear and a trained skill through packaged interactions and subsequent combat.",
+      "implementation": {
+        "integrationCheckpoint": {
+          "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
+          "pullRequest": 86,
+          "observed": "Owned gear and per-instance skill upgrades persist, bind to the next native match and survive restart. The Plaza exposes equipment and training."
+        }
+      }
     },
     {
       "id": "VL-208",
@@ -11107,14 +11262,35 @@
         "Edit canonical metadata, encounters, Skill Level, Artifacts, economy, progression, reward and acquisition fields with typed engine approval.",
         "Preview changes and run test-only acquisition with pinned versions and idempotency. Preserve six gated candidates and approved rarities."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner approves rarity, acquisition and production economy; purchases stay gated."
       ],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Implement typed editor and transaction paths in existing modules."
+      "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
+      "implementation": {
+        "targetPriorityBrowserAcceptance": {
+          "sourceRevision": "60048a0005cbd5a3c0c0b936474997c5f7b17eca",
+          "command": "Independent Chromium Admin A/B driver, isolated PostgreSQL, Rust runtime, rollback and native impact check",
+          "exitCode": 0,
+          "result": "35 scenarios passed. On matching divergent health/mana rankings, publication A hit seat 0 after restart, B hit seat 1 with highest mana, and the next post-rollback allocation again hit seat 0. Each committed impact changed exactly one target.",
+          "evidence": "artifacts/admin-ab-target-priority/facts.json"
+        },
+        "browserPublicationAcceptance": {
+          "sourceRevision": "b0243209ecf22d62d67d94fe5d276c444adf6bf1",
+          "command": "node scripts/with-test-db.mjs node --import tsx artifacts/admin-ab-participation/accept.mjs",
+          "exitCode": 0,
+          "result": "28 real Chromium/Nest/Rust/PostgreSQL scenarios passed. Published versions 2 and 3, verified changed Fire HP, Coalwhisk ATK and skill cost, multiplier weights and host AP threshold. Selected skill effect magnitude, Water prerequisite and Fire participation persisted. Restarted A with B active and B after rollback, then allocated A again.",
+          "evidence": "artifacts/admin-ab-participation/facts.json"
+        },
+        "integrationCheckpoint": {
+          "sourceRevision": "051892a3a4f00f4eeb09188c6f6fa4d5a586d057",
+          "pullRequest": 86,
+          "observed": "Studio edits skill level caps, material costs and per-level power as well as growth, Artifact modifiers, resources and tile weights."
+        }
+      }
     },
     {
       "id": "VL-209",
@@ -11140,6 +11316,13 @@
       ],
       "remaining": "Fire and Water portal navigation, guest collection, Fire host and return were exercised on ef6cdb8d (VL-199). Verify packaged guest joining a room, threshold messaging after publication and final integrated build.",
       "implementation": {
+        "integratedAcceptance": {
+          "sourceRevision": "67087f6db73c50e55b632ecddac4f9eecfde41ef",
+          "command": "Unity 6000.3.14f1 -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.CoopCampaignScreenTests",
+          "exitCode": 0,
+          "result": "9 passed, 0 failed or skipped on the campaign screen. Missing availability disables hosting, host requirements are shown separately, and a configured map without a local scene stays inaccessible.",
+          "evidence": "artifacts/integrated-d3/campaign-67087.xml"
+        },
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
@@ -11180,8 +11363,29 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Exercise reconnect, terminal reward presentation and return to Central Plaza in the packaged path. Confirm disabled Fire Zone and legitimate enablement for the intended Pet.",
+      "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
       "implementation": {
+        "publishedMultiplierProjection": {
+          "sourceRevision": "a4bbd16df1d45794775df393e41acae93944eabd",
+          "command": "Unity EditMode Aetheria.Tests.CoopNativeTests and cargo test --locked -p aetheria-pet-arena --lib",
+          "exitCode": 0,
+          "result": "10 Unity and 58 Rust tests passed without failures or skips. Unity now displays the authored x6 tier and accepts combat values using the wire integer ranges. Publication rejects tiers beyond the 64-cell engine limit.",
+          "evidence": "artifacts/integrated-d3/coop-x6-final.xml"
+        },
+        "compactHud": {
+          "sourceRevision": "b477cf8cf03e336d470955226c3757e0b56ea381",
+          "command": "Unity -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.CoopNativeHudTests",
+          "exitCode": 0,
+          "result": "2 passed, 0 failed or skipped. At 800×500 the last board row and footer stayed reachable, the committed turn stayed visible while scrolled, and the warning distinguished incoming base damage from actual HP lost.",
+          "evidence": "artifacts/integrated-d3/pinned-turn.xml"
+        },
+        "roundHandoffRegression": {
+          "sourceRevision": "40953260250a662fc8f3c56cf5b6a368236c5c60",
+          "command": "cargo test --workspace --locked",
+          "exitCode": 0,
+          "result": "Immediate round-opening Boss hit previously left a defeated participant active. Regression failed before fix and passed after, 217 Rust workspace tests passed, no failures or skips.",
+          "evidence": "artifacts/integrated-d3/boss-round-fixed.log"
+        },
         "sourceRevision": "424e4b42db54b042fb3d0ebe6d3ee9c7fd987ac6",
         "reviewMode": "SINGLE_AGENT_AUDIT",
         "pullRequest": 86,
@@ -11193,7 +11397,12 @@
             "exitCode": 0,
             "sourceRevision": "2c1e7999b5e4303cfe3773327a91797a3c4905ba"
           }
-        ]
+        ],
+        "integrationCheckpoint": {
+          "sourceRevision": "10987ed06879ccca1dc3e23f38e3c673abe42406",
+          "pullRequest": 86,
+          "observed": "The HUD uses reducer readiness for utility actions, shows committed Boss vulnerability, skill costs and cooldowns."
+        }
       }
     },
     {
@@ -11213,19 +11422,40 @@
         "Analytical and Monte Carlo gacha checks reproduce published distributions. Duplicate/retry/farming tests bound rewards and Achievement Points.",
         "Record proposed changes and approval by digest."
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner balance and economy approval before candidate publication."
       ],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Add cancellable simulation metrics, compare designs and test economy edge cases.",
+      "remaining": "Confirm candidates on larger seed sets; evaluate Boss pressure and attainable progression before owner review.",
       "qualificationDependencies": [
         "VL-206",
         "VL-207",
         "VL-208"
-      ]
+      ],
+      "implementation": {
+        "waterTargetComparison": {
+          "sourceRevision": "266c69005fca97008ead82912ede72481b7c771b",
+          "command": "aetheria-game-runtime --compare-coop <candidate> 8 tideglass-lagoon-warden --party <level-60 starter party>",
+          "exitCode": 0,
+          "result": "Four policies used identical seeds 1–8. With Coalwhisk, two Dewskips and Clodkin the coordinated policy reached phase two 4/8 times versus 1/8 under highest-mana Boss targeting. With three Clodkins and a Dewskip, tactical reached phase two 6/8 under historical targeting. All 96 matches ended in defeat. Tactical policies prefer support over elemental attacks against an immune Boss. Neither targeting variant qualifies Water balance.",
+          "evidence": "artifacts/integrated-d3/{late-burst-candidate-water,pressure-water-candidate-water,ground-water}-immunity-study.json"
+        },
+        "policyComparison": {
+          "sourceRevision": "053c624972cda3fbf957887a9ec4d35ff3da3c43",
+          "command": "aetheria-game-runtime --compare-coop <candidate> 25 cinder-terraces-warden --party <level-60 starter party>",
+          "exitCode": 0,
+          "result": "Four policies used seeds 1–25 with Coalwhisk, Dewskip, Clodkin, Dewskip, no gear or training. Fire uses base damage 90, +4 per round and telegraph 3. Increasing only tier 2–6 damage weights from 2000–6000 to 3000/5000/7000/9000/11000 changed random/basic/tactical/coordinated wins from 0/0/1/0 to 0/5/8/5. Baseline and candidate each resolved all 100 trials. Exploratory design candidate pending owner review; early progression and Water viability remain open.",
+          "evidence": "artifacts/integrated-d3/confirm-late-burst-fire.json"
+        },
+        "integrationCheckpoint": {
+          "sourceRevision": "37679d72695146e9f9d218a4cbf561f889a4307e",
+          "pullRequest": 86,
+          "observed": "Four policies ran the same six seeds for both bosses across six level-10 compositions and loadouts. All 288 lost. Ground reached phase two 14 times and Water/Light used 86 multiplier swaps."
+        }
+      }
     },
     {
       "id": "VL-212",

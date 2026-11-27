@@ -50,8 +50,12 @@ namespace Aetheria.Editor.Tests
                 Assert.That(wingsSocket.gameObject.activeSelf, Is.False, "Wings must default OFF.");
                 Assert.That(TriangleCount(wings.gameObject), Is.EqualTo(26133));
                 Assert.That(TriangleCount(bow.gameObject), Is.EqualTo(10489));
-                Assert.That(wings.GetComponentsInChildren<Renderer>(true), Is.Not.Empty);
-                Assert.That(bow.GetComponentsInChildren<Renderer>(true), Is.Not.Empty);
+                AssertTexturedMaterials(wings.GetComponentsInChildren<Renderer>(true), "Universal Render Pipeline/Lit");
+                AssertTexturedMaterials(bow.GetComponentsInChildren<Renderer>(true), "Universal Render Pipeline/Lit");
+
+                var face = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Single(renderer => Array.Exists(renderer.sharedMaterials, material => material != null && material.name == "Material_head"));
+                AssertTexturedMaterials(new[] { face }, "VRM10/Universal Render Pipeline/MToon10");
 
                 Transform top = bowSocket.Find("Socket_BowString_Top");
                 Transform bottom = bowSocket.Find("Socket_BowString_Bottom");
@@ -142,6 +146,20 @@ namespace Aetheria.Editor.Tests
             root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(renderer => renderer.sharedMesh != null)
                 .Sum(renderer => renderer.sharedMesh.triangles.Length / 3);
+
+        private static void AssertTexturedMaterials(Renderer[] renderers, string shader)
+        {
+            var materials = renderers.SelectMany(renderer => renderer.sharedMaterials).Distinct().ToArray();
+            Assert.That(materials, Is.Not.Empty);
+            foreach (var material in materials)
+            {
+                Assert.That(material, Is.Not.Null);
+                Assert.That(material.shader.name, Is.EqualTo(shader));
+                Assert.That(material.mainTexture, Is.Not.Null);
+                Assert.That(material.mainTexture.width, Is.EqualTo(4096));
+                Assert.That(material.mainTexture.height, Is.EqualTo(4096));
+            }
+        }
 
         private static void Build(GameObject source, string output) =>
             typeof(IcarusPrefabSetupEditor).GetMethod("Build", BindingFlags.Static | BindingFlags.NonPublic)

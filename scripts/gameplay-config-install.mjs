@@ -4,7 +4,7 @@ import {createRequire} from 'node:module';
 import {Pool} from 'pg';
 
 const require=createRequire(import.meta.url);
-const bundlePath=process.argv[2]??'config/gameplay/arena8-coop-v1.seed.json';
+const bundlePath=process.argv[2]??'config/gameplay/arena8-coop-v2.seed.json';
 const binary=process.env.GAMEPLAY_CONFIG_VALIDATOR_BINARY,database=process.env.DATABASE_URL;
 if(!database||!/^postgres(ql)?:\/\//.test(database))throw Error('DATABASE_URL is required for gameplay configuration installation');
 if(!binary||!binary.startsWith('/'))throw Error('GAMEPLAY_CONFIG_VALIDATOR_BINARY must be an absolute path to aetheria-game-runtime');

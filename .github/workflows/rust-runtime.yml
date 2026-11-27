@@ -76,10 +76,10 @@ jobs:
         run: node --import tsx scripts/game-journal-restore-smoke.mjs
       - name: Preserve journal restore failure summary
         if: ${{ failure() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: journal-restore-evidence-${{ github.sha }}-${{ github.run_attempt }}
-          path: artifacts/lantern-lodge/n15-04/**/facts.json
+          path: artifacts/lantern-lodge/n15-04/facts.json
           if-no-files-found: warn
           retention-days: 7
       - name: Restore pinned Playwright browser and font cache
@@ -111,6 +111,7 @@ jobs:
           set -euo pipefail
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena
           node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena-loss
+          node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs
       - name: Check standalone Unity protocol adapter and real C# to Rust interoperability
         shell: bash
         run: |

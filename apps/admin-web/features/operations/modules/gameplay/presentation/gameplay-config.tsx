@@ -3,46 +3,131 @@ import {useEffect,useRef,useState} from 'react';
 import {
  GameplayConfigAuditSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
- GameplaySimulationReportSchema,type GameplayBundle,
+ GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
 } from '@aetheria/contracts';
+import {SkillTrainingEditor} from './skill-training-editor';
+import {initialParty,SimulationParty} from './simulation-party';
 import {bundleDifferences} from './bundle-diff';
 
 type Overview=ReturnType<typeof GameplayConfigOverviewSchema.parse>;
 type Version=ReturnType<typeof GameplayConfigVersionViewSchema.parse>;
 type Audit=ReturnType<typeof GameplayConfigAuditSchema.parse>;
-type Request=(action:string,body?:unknown)=>Promise<unknown>;
+type Request=(action:string,body?:unknown,signal?:AbortSignal)=>Promise<unknown>;
+type SimulationResult=ReturnType<typeof GameplaySimulationResultSchema.parse>;
 const RULESET='arena8-coop-pve';
 
 function read(source:unknown,path:readonly string[]):unknown{
  let current=source;
  for(const key of path){
-  if(!current||typeof current!=='object'||Array.isArray(current))return undefined;
-  current=(current as Record<string,unknown>)[key];
+  if(!current||typeof current!=='object')return undefined;
+  current=Array.isArray(current)?current[Number(key)]:(current as Record<string,unknown>)[key];
  }
  return current;
 }
+function display(source:unknown,...path:string[]){
+ const value=read(source,path);
+ return typeof value==='string'||typeof value==='number'?String(value):'—';
+}
 function write(source:GameplayBundle,path:readonly string[],value:unknown):GameplayBundle{
  const copy=structuredClone(source) as Record<string,unknown>;
- let current=copy;
- for(const key of path.slice(0,-1)){
-  const next=current[key];
-  if(!next||typeof next!=='object'||Array.isArray(next))return source;
-  current=next as Record<string,unknown>;
- }
- current[path[path.length-1]!]=value;
+ const parent=read(copy,path.slice(0,-1));
+ if(!parent||typeof parent!=='object'||Array.isArray(parent))return source;
+ const key=path[path.length-1]!;
+ if(value===undefined)delete (parent as Record<string,unknown>)[key];
+ else (parent as Record<string,unknown>)[key]=value;
  return copy;
 }
-function Num({label,value,onChange,step=1}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number}){
+function Num({label,value,onChange,step=1,min=0,max}:{label:string;value:unknown;onChange:(value:number)=>void;step?:number;min?:number;max?:number}){
  const number=typeof value==='number'?value:0;
- return <label>{label}<input className="aetheria-field" type="number" step={step} min={0} value={number} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)onChange(next);}}/></label>;
+ return <label>{label}<input className="aetheria-field" type="number" step={step} min={min} max={max} value={number} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=min&&(max===undefined||next<=max))onChange(next);}}/></label>;
+}
+
+function encounterOptions(bundle:GameplayBundle|undefined){
+ const bosses=Array.isArray(bundle?.bosses)?bundle.bosses:[bundle?.boss];
+ return bosses.flatMap(boss=>{
+  const id=read(boss,['id']),name=read(boss,['name']),map=read(boss,['mapId']);
+  if(typeof id!=='string')return [];
+  return [{id,label:[typeof name==='string'?name:id,map].filter(Boolean).join(' · ')}];
+ });
+}
+function RecruitmentEditor({bundle,bossPath,editable,change}:{
+ bundle:GameplayBundle|null;bossPath:readonly string[];editable:boolean;
+ change:(path:readonly string[],value:unknown)=>void;
+}){
+ const mapId=read(bundle,[...bossPath,'mapId']);
+ const pets=Array.isArray(bundle?.pets)&&typeof mapId==='string'?bundle.pets:[];
+ const candidates=pets.flatMap(pet=>{
+  const id=read(pet,['id']),name=read(pet,['catalog','name']),rarity=read(pet,['rarity']);
+  if(typeof id!=='string'||read(pet,['catalog','mapId'])!==mapId||
+    (rarity!=='map-regular'&&rarity!=='map-legendary'))return [];
+  return [{id,name:typeof name==='string'?name:id,legendary:rarity==='map-legendary'}];
+ }).sort((a,b)=>Number(a.legendary)-Number(b.legendary));
+ if(!candidates.length)return null;
+ const path=[...bossPath,'rewardPolicy','recruitmentPetIds'];
+ const configured=read(bundle,path);
+ const selected=new Set(Array.isArray(configured)?configured:[]);
+ return <fieldset disabled={!editable}><legend>First map clear recruitment</legend>
+  <p className="small muted">The first selected Pet the participant does not own is granted after both map encounters are cleared. Regular Pets take priority.</p>
+  <div className="fields">{candidates.map(({id,name,legendary})=><label key={id}>
+   <input type="checkbox" checked={selected.has(id)} onChange={event=>{
+    if(event.target.checked)selected.add(id);else selected.delete(id);
+    const ordered=candidates.filter(pet=>selected.has(pet.id)).map(pet=>pet.id);
+    change(path,ordered.length?ordered:undefined);
+   }}/> {name}{legendary?' (Legendary)':''}
+  </label>)}</div>
+ </fieldset>;
+}
+
+function SimulationResults({result}:{result:SimulationResult}){
+ const reports:EngineGameplaySimulationReport[]='reports' in result?result.reports:[result];
+ const digest=reports[0]?.contentDigest;
+ return <>
+  <p className="small muted">Version {result.version} · {result.seeds} seeds per row · <code title={digest}>{digest?.slice(0,16)}</code></p>
+  <div className="audit simulation-results" tabIndex={0} role="region" aria-label="Cooperative simulation results"><table>
+   <caption>Cooperative simulation results</caption>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Win rate</th><th>Wins</th><th>Losses</th><th>Unresolved</th><th>Phase two reached</th><th>Avg. actions after transformation</th><th>Multiplier seen</th><th>Multiplier swaps</th><th>Critical hits</th><th>Casts</th><th>Mana spent</th><th>Rage spent</th><th>Avg. rounds</th><th>Avg. actions</th><th>Avg. simulated time</th></tr></thead>
+   <tbody>{reports.map(row=><tr key={row.bossId+':'+row.policy}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{(row.wins/row.seeds*100).toFixed(1)}%</td>
+    <td>{row.wins}</td><td>{row.losses}</td><td>{row.unresolved}</td><td>{row.phaseTwoReached}</td><td>{row.phaseTwoReached>0&&row.phaseTwoActions!==undefined?(row.phaseTwoActions/row.phaseTwoReached).toFixed(1):"—"}</td><td>{row.matchesWithMultiplier}</td>
+    <td>{row.swapsUsingVisibleMultiplier??"—"}</td><td>{row.playerCriticals??"—"}</td><td>{row.abilityCasts??"—"}</td><td>{row.manaSpent??"—"}</td><td>{row.rageSpent??"—"}</td><td>{(row.averageRoundsMilli/1000).toFixed(2)}</td><td>{(row.averageActionsMilli/1000).toFixed(2)}</td><td>{(row.averageLogicalDurationMs/1000).toFixed(2)} s</td>
+   </tr>)}</tbody>
+  </table></div>
+  {reports.some(row=>row.castsBySkill)&&<details><summary>Committed casts by skill</summary><div className="audit"><table>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Skill</th><th>Casts</th></tr></thead>
+   <tbody>{reports.flatMap(row=>Object.entries(row.castsBySkill??{}).map(([id,casts])=><tr key={row.bossId+':'+row.policy+':'+id}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{id}</td><td>{casts}</td>
+   </tr>))}</tbody>
+  </table></div></details>}
+  <details><summary>Contribution totals by seat</summary><div className="audit"><table>
+   <thead><tr><th>Encounter</th><th>Policy</th><th>Seat</th><th>Pet</th><th>Damage</th><th>Healing</th><th>Shielding</th></tr></thead>
+   <tbody>{reports.flatMap(row=>row.contributions.map((seat,index)=><tr key={row.bossId+':'+row.policy+':'+index}>
+    <td>{row.bossId}</td><td>{row.policy}</td><td>{index+1}</td><td>{seat.petId}</td><td>{seat.damage}</td><td>{seat.healing}</td><td>{seat.shielding}</td>
+   </tr>))}</tbody>
+  </table></div></details>
+ </>;
 }
 
 // Operator-only Gameplay Configuration workspace. The typed fields edit the
 // authored bundle; the Rust engine remains the authority that accepts or
 // rejects it, and the digest shown here is the engine's verdict.
 export default function GameplayConfig({request}:{request:Request}){
- const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[simPolicy,setSimPolicy]=useState<'random'|'basic'|'tactical'|'coordinated'>('tactical'),[simSeeds,setSimSeeds]=useState(12),[simReport,setSimReport]=useState<ReturnType<typeof GameplaySimulationReportSchema.parse>|null>(null),[comparison,setComparison]=useState<string[]|null>(null);
+ const [overview,setOverview]=useState<Overview|null>(null),[selected,setSelected]=useState<Version|null>(null),[bundle,setBundle]=useState<GameplayBundle|null>(null),[json,setJson]=useState(''),[audit,setAudit]=useState<Audit|null>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[comparison,setComparison]=useState<string[]|null>(null);
+ const [simPolicy,setSimPolicy]=useState<GameplaySimulationPolicy|'all'>('tactical');
+ const [party,setParty]=useState<GameplaySimulationParty|null>(null);
+ const [simSeeds,setSimSeeds]=useState(12);
+ const [simReport,setSimReport]=useState<SimulationResult|null>(null);
+ const [simBossId,setSimBossId]=useState('');
+ const [simOtherBossId,setSimOtherBossId]=useState('');
+ const [simRunning,setSimRunning]=useState(false);
+ const simCancellation=useRef<AbortController|null>(null);
+ const [petSearch,setPetSearch]=useState('');
+ const [bossIndex,setBossIndex]=useState(0);
  const lock=useRef(false);
+ const encounters=encounterOptions(selected?.bundle);
+ const encounter=encounters.find(option=>option.id===simBossId)??encounters[0];
+ const otherEncounters=encounters.filter(option=>option.id!==encounter?.id);
+ const otherEncounter=otherEncounters.find(option=>option.id===simOtherBossId);
+ const seedLimit=simPolicy==='all'?25:200;
 
  async function work(run:()=>Promise<unknown>){
   if(lock.current)return;lock.current=true;setBusy(true);setMessage('');
@@ -56,12 +141,13 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  async function open(version:number){
   const value=GameplayConfigVersionViewSchema.parse(await request('gameplay-config-version?ruleset='+RULESET+'&version='+version));
-  setSelected(value);setBundle(value.bundle);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
+  setParty(null);setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
  }
  async function refresh(version?:number){await work(async()=>{const current=await loadOverview();await open(version??current.active?.version??current.versions[0]?.version??0);});}
  useEffect(()=>{void work(async()=>{const current=await loadOverview();if(current.active)await open(current.active.version);else if(current.versions[0])await open(current.versions[0].version);});},[]);
+ useEffect(()=>()=>simCancellation.current?.abort(),[]);
  function change(path:readonly string[],value:unknown){
-  if(!bundle)return;
+  if(!bundle||selected?.state!=='DRAFT')return;
   const next=write(bundle,path,value);setBundle(next);setJson(JSON.stringify(next,null,2));
  }
  async function createDraft(){
@@ -99,11 +185,28 @@ export default function GameplayConfig({request}:{request:Request}){
   });
  }
  async function runSimulation(){
-  if(!selected)return;
+  if(!selected||!encounter)return;
   await work(async()=>{
-   const report=GameplaySimulationReportSchema.parse(await request('gameplay-config-simulate',{requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,policy:simPolicy,seeds:simSeeds}));
-   setSimReport(report);
-   setMessage('Simulation complete: '+report.wins+' wins / '+report.losses+' losses / '+report.unresolved+' unresolved across '+report.seeds+' seeds.');
+   const cancellation=new AbortController();
+   simCancellation.current=cancellation;
+   setSimRunning(true);
+   setSimReport(null);
+   const input={requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,seeds:simSeeds,...(party?{party}:{})};
+   const settings=simPolicy==='all'
+    ? {bossIds:otherEncounter?[encounter.id,otherEncounter.id]:[encounter.id]}
+    : {policy:simPolicy,bossId:encounter.id};
+   try{
+    const result=await request('gameplay-config-simulate',{...input,...settings},cancellation.signal);
+    cancellation.signal.throwIfAborted();
+    setSimReport(GameplaySimulationResultSchema.parse(result));
+    setMessage('Simulation complete.');
+   }catch(error){
+    if(!cancellation.signal.aborted)throw error;
+    setMessage('Simulation cancelled.');
+   }finally{
+    simCancellation.current=null;
+    setSimRunning(false);
+   }
   });
  }
  async function compareWithActive(){
@@ -122,18 +225,137 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  const editable=selected?.state==='DRAFT',activatable=selected?.state==='VALIDATED';
  const schedule=read(bundle,['multiplier','schedule']);
+ const artifactCatalog=Array.isArray(bundle?.artifacts)?bundle.artifacts:[];
+ const bossCatalog=Array.isArray(bundle?.bosses)?bundle.bosses:[];
+ const bossPath=bossCatalog.length?['bosses',String(Math.min(bossIndex,bossCatalog.length-1))]:['boss'];
  return <><div className="page-heading"><div><p className="eyebrow">Gameplay configuration</p><h1 tabIndex={-1}>Authoritative balance</h1><p className="muted">Drafts are validated by the Rust engine and published atomically to PostgreSQL. Active matches keep their pinned version.</p></div><div><button type="button" className="aetheria-button secondary" disabled={busy} onClick={()=>void refresh(selected?.version)}>{busy?'Refreshing…':'Refresh'}</button>{overview?.active?<button type="button" className="aetheria-button" disabled={busy} onClick={()=>void createDraft()}>New draft from active</button>:null}</div></div>
  {message?<p role="status" aria-live="polite">{message}</p>:null}
  <section className="aetheria-card"><h2>Active configuration</h2>{overview?.active?<dl className="metrics"><div><dt>Version</dt><dd>{overview.active.version}</dd></div><div><dt>State</dt><dd>{overview.active.state}</dd></div><div><dt>Engine</dt><dd>{overview.active.engineCapability}</dd></div><div><dt>Digest</dt><dd title={overview.active.contentDigest}>{overview.active.contentDigest.slice(0,16)}…</dd></div><div><dt>Published</dt><dd>{new Date(overview.active.publishedAt).toLocaleString()}</dd></div><div><dt>Active revision</dt><dd>{overview.active.revision}</dd></div></dl>:<p className="muted">No published gameplay configuration. Install the seed configuration through the reviewed migration/installation workflow before editing.</p>}</section>
  <section className="aetheria-card"><h2>Versions</h2><div className="audit"><table><caption>Draft and published gameplay configurations</caption><thead><tr><th>Version</th><th>State</th><th>Engine digest</th><th>Updated</th><th/></tr></thead><tbody>{(overview?.versions??[]).map(row=><tr key={row.version}><td>{row.version}</td><td>{row.state}</td><td>{row.contentDigest?row.contentDigest.slice(0,12)+'…':'—'}</td><td>{new Date(row.createdAt).toLocaleString()}</td><td><button type="button" className="text-button" disabled={busy} onClick={()=>void work(()=>open(row.version))}>Open</button>{row.publishedAt&&row.version!==overview?.active?.version?<button type="button" className="text-button" disabled={busy} onClick={()=>void rollback(row.version)}>Roll back</button>:null}</td></tr>)}</tbody></table>{!overview?.versions.length?<p className="muted">No versions yet.</p>:null}</div></section>
  {selected?<section className="aetheria-card"><h2>Version {selected.version} · {selected.state}</h2><p className="small muted">Author {selected.createdBy} · revision {selected.revision}{selected.contentDigest?' · engine digest '+selected.contentDigest:''}</p><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('save')}>Save draft</button><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={()=>void saveDraft('validate')}>Save and validate</button><button type="button" className="aetheria-button" disabled={busy||!activatable} onClick={()=>void publish()}>Publish validated version</button><button type="button" className="aetheria-button secondary" disabled={busy||!overview?.active} onClick={()=>void compareWithActive()}>Compare with active</button></p>{comparison?<div className="aetheria-card"><h3>Differences from active</h3>{comparison.length?<ul>{comparison.slice(0,40).map(path=><li key={path}><code>{path}</code></li>)}</ul>:<p className="muted">The selected bundle matches the active version.</p>}{comparison.length>40?<p className="small muted">Plus {comparison.length-40} more fields.</p>:null}</div>:null}
- <h3>Engine simulation</h3><p className="small muted">Runs the same Rust reducer with public-information policies on the authored bundle; it never mutates progression.</p><div className="fields"><label>Policy<select className="aetheria-field" value={simPolicy} onChange={event=>setSimPolicy(event.target.value as typeof simPolicy)}><option value="tactical">Tactical</option><option value="coordinated">Coordinated</option><option value="basic">Basic</option><option value="random">Random</option></select></label><Num label="Seeds (1-200)" value={simSeeds} onChange={value=>setSimSeeds(value)}/><button type="button" className="aetheria-button secondary" disabled={busy} onClick={()=>void runSimulation()}>Run simulation</button></div>{simReport?<dl className="metrics"><div><dt>Wins</dt><dd>{simReport.wins}</dd></div><div><dt>Losses</dt><dd>{simReport.losses}</dd></div><div><dt>Unresolved</dt><dd>{simReport.unresolved}</dd></div><div><dt>Phase two</dt><dd>{simReport.phaseTwoReached}</dd></div><div><dt>Average rounds</dt><dd>{(simReport.averageRoundsMilli/1000).toFixed(2)}</dd></div><div><dt>Average actions</dt><dd>{(simReport.averageActionsMilli/1000).toFixed(2)}</dd></div><div><dt>Total actions</dt><dd>{simReport.totalActions}</dd></div></dl>:null}
- <h3>Party and board</h3><div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Turn timeout (ms)" value={read(bundle,['party','turnTimeoutMs'])} step={1000} onChange={value=>change(['party','turnTimeoutMs'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
- <h3>Boss phase configuration</h3><div className="fields"><Num label="Boss max HP" value={read(bundle,['boss','maxHp'])} onChange={value=>change(['boss','maxHp'],value)}/><Num label="Boss attack" value={read(bundle,['boss','attack'])} onChange={value=>change(['boss','attack'],value)}/><Num label="Boss defense" value={read(bundle,['boss','defense'])} onChange={value=>change(['boss','defense'],value)}/><Num label="Critical rate (bp)" value={read(bundle,['boss','critRateBp'])} onChange={value=>change(['boss','critRateBp'],value)}/><Num label="Critical damage (bp)" value={read(bundle,['boss','critDamageBp'])} onChange={value=>change(['boss','critDamageBp'],value)}/><Num label="Telegraph turns" value={read(bundle,['boss','telegraphTurns'])} onChange={value=>change(['boss','telegraphTurns'],value)}/><Num label="Phase threshold (bp)" value={read(bundle,['boss','phase','thresholdBp'])} onChange={value=>change(['boss','phase','thresholdBp'],value)}/><Num label="Phase max HP growth (bp)" value={read(bundle,['boss','phase','maxGrowthBp'])} onChange={value=>change(['boss','phase','maxGrowthBp'],value)}/><Num label="Phase two current HP (bp)" value={read(bundle,['boss','phase','currentBp'])} onChange={value=>change(['boss','phase','currentBp'],value)}/><Num label="Phase two attack (pm)" value={read(bundle,['boss','phase','phase2AttackPm'])} onChange={value=>change(['boss','phase','phase2AttackPm'],value)}/><Num label="Attack targets" value={read(bundle,['boss','phase','attackTargets'])} onChange={value=>change(['boss','phase','attackTargets'],value)}/></div>
- <h3>Elemental stat profiles</h3><div className="audit"><table><thead><tr><th>Element</th><th>HP</th><th>ATK</th><th>DEF</th><th>Crit rate</th><th>Crit damage</th></tr></thead><tbody>{(Array.isArray(read(bundle,['elements']))?read(bundle,['elements']) as unknown[]:[]).map((element,index)=>{const row=element as Record<string,unknown>;return <tr key={String(row.element)}><td>{String(row.element)}</td>{['maxHp','attack','defense','critRateBp','critDamageBp'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['elements',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
- <h3>Multiplier schedule</h3><p className="small muted">Stage boundaries and tier weights are authored values; the engine derives the roll. Values are permille weights within the stage.</p><div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead><tbody>{(Array.isArray(schedule)?schedule as unknown[]:[]).map((stage,index)=>{const row=stage as Record<string,unknown>,tiers=Array.isArray(row.tiers)?row.tiers as Record<string,unknown>[]:[];return <tr key={index}><td><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row.from==='number'?row.from as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'from'],next);}}/></td><td>{tiers.map((tier,tierIndex)=><label key={tierIndex} className="small">x{String(tier.multiplier)} <input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof tier.weight==='number'?tier.weight as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'tiers',String(tierIndex),'weight'],next);}}/></label>)}</td></tr>;})}</tbody></table></div>
- <h3>Settlement rewards</h3><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div>
- <h3>Skills</h3><div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
+ <h3>Engine simulation</h3>
+ <p className="small muted">Uses the saved version and the same Rust reducer as live matches. Seeds start at 1, and the simulation clock advances one second per action.</p>
+ <SimulationParty bundle={selected.bundle} party={party??initialParty(selected.bundle)} onChange={setParty}/>
+ <div className="fields">
+  <label>Encounter<select className="aetheria-field" value={encounter?.id??''} disabled={busy||!encounter} onChange={event=>setSimBossId(event.target.value)}>
+   {encounters.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}
+  </select></label>
+  <label>Policy<select className="aetheria-field" value={simPolicy} disabled={busy} onChange={event=>{
+   const value=event.target.value as typeof simPolicy;
+   setSimPolicy(value);
+   if(value==='all')setSimSeeds(current=>Math.min(current,25));
+  }}>
+   {GameplaySimulationPolicySchema.options.map(policy=><option key={policy} value={policy}>{policy}</option>)}
+   <option value="all">Compare all policies</option>
+  </select></label>
+  {simPolicy==='all'&&otherEncounters.length>0?<label>Compare with<select className="aetheria-field" value={otherEncounter?.id??''} disabled={busy} onChange={event=>setSimOtherBossId(event.target.value)}>
+   <option value="">One encounter</option>
+   {otherEncounters.map(option=><option key={option.id} value={option.id}>{option.label}</option>)}
+  </select></label>:null}
+  <Num label={'Seeds (1–'+seedLimit+')'} value={simSeeds} min={1} max={seedLimit} onChange={setSimSeeds}/>
+  <button type="button" className="aetheria-button secondary" disabled={busy||!encounter||!Number.isInteger(simSeeds)||simSeeds<1||simSeeds>seedLimit} onClick={()=>void runSimulation()}>Run simulation</button>
+  {simRunning?<button type="button" className="text-button" onClick={()=>simCancellation.current?.abort()}>Cancel simulation</button>:null}
+ </div>
+ {simReport?<SimulationResults result={simReport}/>:null}
+ <dl className="metrics">
+  <div><dt>Publication record schema</dt><dd>{selected.schemaVersion}</dd></div>
+  <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>
+  <div><dt>Content revision</dt><dd>{display(bundle,'contentRevision')}</dd></div>
+ </dl>
+ {bundle?.schemaVersion===2&&<label>When the Boss reaches zero HP
+  <select className="aetheria-field" disabled={!editable} value={String(bundle.terminalOutcomePolicy??'')}
+   onChange={event=>change(['terminalOutcomePolicy'],event.target.value||undefined)}>
+   <option value="">Resolve remaining end-of-turn effects</option>
+   <option value="boss-defeat-first">Finish the battle immediately</option>
+  </select>
+ </label>}
+ <h3>Pet catalog</h3><label>Find a Pet<input type="search" className="aetheria-field" value={petSearch} onChange={event=>setPetSearch(event.target.value)} /></label>
+ <div className="audit"><table><thead><tr><th>Name</th><th>Pet ID</th><th>Element</th><th>Rarity</th><th>Power class</th><th>HP</th><th>Attack</th><th>Defense</th></tr></thead>
+ <tbody>{(Array.isArray(bundle?.pets)?bundle.pets:[]).map((pet,index)=>{
+  const name=display(pet,'catalog','name'),id=display(pet,'id');
+  if(!(name+' '+id).toLowerCase().includes(petSearch.trim().toLowerCase()))return null;
+  return <tr key={index}><td>{name}</td><td>{id}</td><td>{display(pet,'element')}</td><td>{display(pet,'rarity')}</td><td>{display(pet,'powerClass')}</td>
+   {['maxHp','attack','defense'].map(key=><td key={key}><input aria-label={name+' '+key} className="aetheria-field" type="number" min={0} disabled={!editable} value={display(pet,key)} onChange={event=>{const n=event.target.valueAsNumber;if(Number.isSafeInteger(n)&&n>=0)change(['pets',String(index),key],n);}} /></td>)}</tr>;
+ })}</tbody></table></div>
+ {selected.catalogReference&&<details><summary>Canonical acquisition and production status</summary><div className="audit"><table>
+  <caption>Current roster reference</caption>
+  <thead><tr><th>Pet ID</th><th>Catalog rank</th><th>Starter</th><th>Acquisition source</th><th>Acquisition decision</th><th>Catalog gameplay readiness</th><th>Model status</th></tr></thead>
+  <tbody>{selected.catalogReference.filter(pet=>pet.id.includes(petSearch.trim().toLowerCase())).map(pet=><tr key={pet.id}>
+   <td>{pet.id}</td><td>{pet.catalogRank??'Unassigned'}</td><td>{pet.starter?'Yes':'No'}</td><td>{pet.sourceCategory.replaceAll('_',' ')}</td>
+   <td>{pet.acquisitionAuthority.toLowerCase().replaceAll('_',' ')}</td><td>{pet.gameplayReady?'Ready':'Pending'}</td><td>{pet.modelStatus.toLowerCase().replaceAll('_',' ')}</td>
+  </tr>)}</tbody>
+ </table></div></details>}
+ <div>
+ {Array.isArray(bundle?.pets)&&bundle.pets.some(pet=>read(pet,['growth']))?<details><summary>Per-Pet growth</summary>
+ <p>Rates are basis points per Pet level. A rate of 100 adds 1% of the base stat per level before the growth adjustment.</p>
+ {bundle.pets.map((pet,index)=>{
+  const growth=read(pet,['growth']),name=display(pet,'catalog','name'),id=display(pet,'id');
+  if(!growth||!(name+' '+id).toLowerCase().includes(petSearch.trim().toLowerCase()))return null;
+  const path=['pets',String(index),'growth'];
+  return <fieldset key={id} disabled={!editable}><legend>{name} · {display(growth,'curve')}</legend><div className="fields">
+   {(['healthBp','attackBp','defenseBp','biasPm'] as const).map((key,field)=><Num key={key} label={['HP growth (bp)','Attack growth (bp)','Defense growth (bp)','Growth adjustment (permille)'][field]} value={read(growth,[key])} min={key==='biasPm'?-100:0} max={key==='biasPm'?100:250} onChange={value=>change([...path,key],value)}/>)}
+  </div></fieldset>;
+ })}</details>:null}
+ {artifactCatalog.length?<details><summary>Cooperative Artifact definitions</summary>
+ {artifactCatalog.map((artifact,index)=>{
+  const path=['artifacts',String(index)];
+  return <fieldset key={display(artifact,'id')} disabled={!editable}><legend>{display(artifact,'id')} · {display(artifact,'slot')}</legend>
+   <Num label="Minimum Pet level" value={read(artifact,['requiredPetLevel'])} min={1} max={60} onChange={value=>change([...path,'requiredPetLevel'],value)}/>
+   {['modifiers','perLevel'].map(group=><div key={group} className="fields">{['hp','attack','defense'].map(stat=><Num key={stat} label={(group==='modifiers'?'Base ':'Per upgrade ')+stat} value={read(artifact,[group,stat])} onChange={value=>change([...path,group,stat],value)}/>)}</div>)}
+  </fieldset>;
+ })}</details>:null}
+ <h3>Combat resources</h3><fieldset disabled={!editable} className="fields">{(['manaCap','rageCap','manaPerTile','manaOwnBonus','ragePerTile','ragePerGuard','ragePerDamageTaken'] as const).map((key,index)=><Num key={key} label={['Mana cap','Rage cap','Mana per tile','Matching-element mana bonus','Rage per tile','Rage from guard','Rage from incoming damage'][index]} value={read(bundle,['resources',key])} onChange={value=>change(['resources',key],value)}/>)}</fieldset>
+ <h3>Party and board</h3><div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
+ <h3>Boss phase configuration</h3>{bossCatalog.length?<label>Boss<select className="aetheria-field" value={bossPath[1]} onChange={event=>setBossIndex(Number(event.target.value))}>{bossCatalog.map((value,index)=>{
+  const id=display(value,'id'),name=display(value,'name'),map=display(value,'mapId');
+  return <option key={index} value={index}>{name==='—'?id:name}{map==='—'?'':' · '+map}</option>;
+ })}</select></label>:null}
+ {bossCatalog.length>0&&typeof read(bundle,[...bossPath,'mapId'])==='string'&&<label>Map clear required to host
+  <select className="aetheria-field" disabled={!editable} value={String(read(bundle,[...bossPath,'requiredMapClear'])??'')}
+   onChange={event=>change([...bossPath,'requiredMapClear'],event.target.value||undefined)}>
+   <option value="">No prior map clear</option>
+   {bossCatalog.flatMap(other=>{
+    const mapId=read(other,['mapId']);
+    if(typeof mapId!=='string'||mapId===read(bundle,[...bossPath,'mapId']))return [];
+    return [<option key={mapId} value={mapId}>{mapId}</option>];
+   })}
+  </select>
+ </label>}
+ {bundle?.schemaVersion===2&&<label>Boss attack target priority
+  <select className="aetheria-field" disabled={!editable} value={String(read(bundle,[...bossPath,'attackModel','targetPriority'])??'')}
+   onChange={event=>change([...bossPath,'attackModel','targetPriority'],event.target.value||undefined)}>
+   <option value="">Lowest remaining HP percentage</option>
+   <option value="highest-mana">Highest current mana</option>
+  </select>
+ </label>}
+ <div className="fields"><Num label="Achievement Points to host" value={read(bundle,[...bossPath,'requiredRoomPoints'])} onChange={value=>change([...bossPath,'requiredRoomPoints'],value)}/><Num label="Boss max HP" value={read(bundle,[...bossPath,'maxHp'])} onChange={value=>change([...bossPath,'maxHp'],value)}/>{(['baseDamage','perRoundDamage','minimumDamage','defenseDivisor'] as const).map((key,i)=><Num key={key} label={['Boss base damage','Additional damage per round','Minimum incoming damage','Party defense divisor'][i]} min={key==='perRoundDamage'?0:1} value={read(bundle,[...bossPath,'attackModel',key])} onChange={value=>change([...bossPath,'attackModel',key],value)}/>)}<Num label="Boss defense" value={read(bundle,[...bossPath,'defense'])} onChange={value=>change([...bossPath,'defense'],value)}/><Num label="Critical rate (bp)" value={read(bundle,[...bossPath,'critRateBp'])} onChange={value=>change([...bossPath,'critRateBp'],value)}/><Num label="Critical damage (bp)" value={read(bundle,[...bossPath,'critDamageBp'])} onChange={value=>change([...bossPath,'critDamageBp'],value)}/><Num label="Telegraph turns" value={read(bundle,[...bossPath,'telegraphTurns'])} onChange={value=>change([...bossPath,'telegraphTurns'],value)}/><Num label="Phase threshold (bp)" value={read(bundle,[...bossPath,'phase','thresholdBp'])} onChange={value=>change([...bossPath,'phase','thresholdBp'],value)}/><Num label="Phase max HP growth (bp)" value={read(bundle,[...bossPath,'phase','maxGrowthBp'])} onChange={value=>change([...bossPath,'phase','maxGrowthBp'],value)}/><Num label="Phase two current HP (bp)" value={read(bundle,[...bossPath,'phase','currentBp'])} onChange={value=>change([...bossPath,'phase','currentBp'],value)}/><Num label="Phase two attack (pm)" value={read(bundle,[...bossPath,'phase','phase2AttackPm'])} onChange={value=>change([...bossPath,'phase','phase2AttackPm'],value)}/><Num label="Attack targets" value={read(bundle,[...bossPath,'phase','attackTargets'])} onChange={value=>change([...bossPath,'phase','attackTargets'],value)}/></div>
+ <h3>Elemental matchups</h3>
+ <p className="small muted">Damage against each defending element. 100% is normal damage and 0% is immunity.</p>
+ {Array.isArray(bundle?.elements)&&bundle.elements.map((profile,i)=>{
+  const defenderRows=read(profile,['effectiveness']);
+  return <fieldset key={i} disabled={!editable}><legend>{display(profile,'element')} attack</legend><div className="fields">
+   {Array.isArray(defenderRows)&&defenderRows.map((row,j)=><Num key={j} label={'Against '+display(row,'element')+' (%)'} min={0} max={300} step={0.1} value={Number(read(row,['permille']))/10} onChange={n=>change(['elements',String(i),'effectiveness',String(j),'permille'],Math.round(n*10))}/>)}
+   {read(profile,['bossCritDamageBonusBp'])!==undefined&&<Num label="Bonus critical damage against Bosses (%)" min={0.01} max={100} step={0.01} value={Number(read(profile,['bossCritDamageBonusBp']))/100} onChange={n=>change(['elements',String(i),'bossCritDamageBonusBp'],Math.round(n*100))}/>}
+  </div></fieldset>;
+ })}
+ <h3>Multiplier schedule</h3><p className="small muted">Each refill rolls from the current stage. A tier’s probability is its weight divided by the total weight for that stage.</p><div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead><tbody>{(Array.isArray(schedule)?schedule as unknown[]:[]).map((stage,index)=>{const row=stage as Record<string,unknown>,tiers=Array.isArray(row.tiers)?row.tiers as Record<string,unknown>[]:[];return <tr key={index}><td><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row.from==='number'?row.from as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'from'],next);}}/></td><td>{tiers.map((tier,tierIndex)=><label key={tierIndex} className="small">x{String(tier.multiplier)} · {((Number(tier.weight)/Math.max(1,tiers.reduce((sum,item)=>sum+Number(item.weight),0)))*100).toFixed(2)}% <input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof tier.weight==='number'?tier.weight as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['multiplier','schedule',String(index),'tiers',String(tierIndex),'weight'],next);}}/></label>)}</td></tr>;})}</tbody></table></div>
+ <h3>Settlement rewards</h3>
+ {read(bundle,[...bossPath,'rewardPolicy'])?<RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>:null}
+ {read(bundle,[...bossPath,'rewardPolicy'])?<fieldset disabled={!editable}><legend>Minimum committed combat actions per participant</legend>
+ <p className="small muted">Healing, guarding and board moves count. Starting the battle does not. Zero includes all seated participants.</p>
+ {(['victory','defeat'] as const).map(outcome=>{
+  const path=[...bossPath,'rewardPolicy','minimumActions'];
+  const values=read(bundle,path) as Record<string,number>|undefined;
+  return <Num key={outcome} label={outcome==='victory'?'Victory actions':'Defeat actions'} min={0} max={4096} value={values?.[outcome]??0} onChange={value=>{
+   if(Number.isInteger(value))change(path,{victory:0,defeat:0,...values,[outcome]:value});
+  }}/>;
+ })}</fieldset>:null}
+ {read(bundle,[...bossPath,'rewardPolicy'])?<div>{(['firstClear','repeatClear','defeat'] as const).map((kind,i)=><fieldset key={kind}><legend>{['First Boss victory','Repeat Boss victory','Defeat'][i]}</legend><div className="fields">{(['achievementPoints','coins','exp','materials'] as const).map((key,j)=>{
+  const path=[...bossPath,'rewardPolicy',kind,key];return <Num key={key} label={['Achievement Points','Coins','Pet EXP','Artifact materials'][j]} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
+ })}</div></fieldset>)}</div>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
+
+ <h3>Skills</h3>{bundle&&<SkillTrainingEditor key={selected.version} bundle={bundle} editable={editable} change={change}/>}<div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
+ </div>
  <h3>Raw bundle (advanced)</h3><textarea className="aetheria-field" rows={14} value={json} onChange={event=>setJson(event.target.value)} disabled={!editable} /><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={applyJson}>Apply JSON to editor</button></p>
  </section>:null}
  <section className="aetheria-card"><h2>Publication audit</h2><button type="button" className="aetheria-button secondary" disabled={busy} onClick={()=>void loadAudit()}>Load audit</button>{audit?<div className="audit"><table><thead><tr><th>Seq</th><th>Action</th><th>Version</th><th>Actor</th><th>When</th></tr></thead><tbody>{audit.events.map(event=><tr key={event.sequence}><td>{event.sequence}</td><td>{event.action}</td><td>{event.version}</td><td>{event.actor}</td><td>{new Date(event.occurredAt).toLocaleString()}</td></tr>)}</tbody></table></div>:null}</section>

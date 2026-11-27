@@ -17,6 +17,7 @@ import {
   replayMap,
   replayReward,
   resolvePulls,
+  STARTER_PET_IDS,
   WAVE1_PET_BY_ID,
   WAVE1_PETS,
   WAVE1_PET_INDEX,
@@ -28,6 +29,16 @@ import {
 import {evolutionPreview, MAPS, type CoreElement, type Stats} from '../domain/manifest';
 import {Wave1Store, type Wave1Transaction} from '../infrastructure/store';
 
+import {WAVE_A_ACTIVE_PETS} from '../domain/wave-a-catalog';
+
+// Current production catalog annotations are outside the immutable combat bundle.
+const starterIds:ReadonlySet<string>=new Set(STARTER_PET_IDS);
+export const canonicalCatalogReference=WAVE_A_ACTIVE_PETS.map(pet=>({
+ id:pet.id,catalogRank:pet.catalogRank,starter:starterIds.has(pet.id),
+ sourceCategory:pet.sourceCategory,acquisitionAuthority:pet.acquisitionAuthority,
+ gameplayReady:pet.runtime.gameplayReady,modelStatus:pet.runtime.modelStatus,
+}));
+
 export type Wave1Entropy={int(maxExclusive:number):number};
 export type PartyInput={petIds:string[]};
 export type CampaignInput={mapId:string;petId:string;actions:string[];bossActions?:string[]};
@@ -36,7 +47,7 @@ export type GachaInput={count:1|10};
 export type Wave1PetView=Readonly<{
   petId:string;name:string;element:CoreElement;rank:Wave1PetRank;
   level:number;exp:number;expToNext:number;stage:number;unlocks:string[];
-  stats:Stats;duplicateExp:number;
+  stats:Stats;duplicateExp:number;ownedPetInstanceId:string;
 }>;
 export type Wave1GachaHistoryView=Readonly<{
   seq:number;petId:string|null;featured:boolean;duplicate:boolean;pityBefore:number;createdAt:string;
@@ -244,7 +255,7 @@ export class Wave1Service {
       return {
         petId:row.petId,name:catalog.name,element:catalog.element,rank:catalog.rank,
         level:row.level,exp:row.exp,expToNext:expToNext(row.level),stage:view.stage,
-        unlocks:view.unlocks,stats:view.stats,duplicateExp:row.duplicateExp,
+        unlocks:view.unlocks,stats:view.stats,duplicateExp:row.duplicateExp,ownedPetInstanceId:row.ownedPetInstanceId,
       };
     }).sort((left,right)=>(WAVE1_PET_INDEX.get(left.petId)??0)-(WAVE1_PET_INDEX.get(right.petId)??0));
     const cleared=new Set(clears.map(row=>row.mapId));

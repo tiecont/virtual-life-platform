@@ -5,7 +5,7 @@ export type Wave1PlayerRow=Readonly<{
   coins:number;revision:number;gachaMisses:number;gachaGuaranteed:boolean;gachaRevision:number;
 }>;
 export type Wave1OwnedRow=Readonly<{
-  petId:string;level:number;exp:number;duplicateExp:number;
+  petId:string;ownedPetInstanceId:string;level:number;exp:number;duplicateExp:number;
   source:'starter'|'gacha'|'campaign';acquiredAt:Date;
 }>;
 export type Wave1ClearRow=Readonly<{mapId:string;replays:number;clearedAt:Date}>;
@@ -15,9 +15,37 @@ export type Wave1GachaRow=Readonly<{
 export type Wave1ReceiptRow=Readonly<{fingerprint:string;response:unknown}>;
 
 const PLAYER_COLUMNS=`coins,revision,gacha_misses AS "gachaMisses",gacha_guaranteed AS "gachaGuaranteed",gacha_revision AS "gachaRevision"`;
-const OWNED_COLUMNS=`pet_id AS "petId",level,exp,duplicate_exp AS "duplicateExp",source,acquired_at AS "acquiredAt"`;
+const OWNED_COLUMNS=`pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanceId",level,exp,duplicate_exp AS "duplicateExp",source,acquired_at AS "acquiredAt"`;
 const CLEAR_COLUMNS=`map_id AS "mapId",replays,cleared_at AS "clearedAt"`;
 const GACHA_COLUMNS=`seq,pet_id AS "petId",featured,duplicate,pity_before AS "pityBefore",created_at AS "createdAt"`;
+
+// Call while holding the Wave 1 player lock, after recording the completed
+// encounter. Only the transaction inserting the map clear can grant its
+// first missing Pet from the cooperative Boss receipt's pinned order.
+export async function recordArena8MapClear(db:Pick<PoolClient,'query'>,accountId:string,mapId:string):Promise<string|null>{
+  const grant=await db.query<{pet_id:string}>(
+    `WITH first_clear AS (
+       INSERT INTO pet_wave_one_map_clears(account_id,map_id)
+       SELECT $1,$2 WHERE (
+         SELECT count(*) FROM pet_wave_one_encounters
+         WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($2 || '-regular',$2 || '-boss')
+       )=2
+       ON CONFLICT DO NOTHING RETURNING account_id,map_id
+     )
+     INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source)
+     SELECT clear.account_id,candidate.pet_id,aetheria_pet_instance_id(clear.account_id::text || ':' || candidate.pet_id || ':v1'),1,0,'campaign'
+     FROM first_clear clear
+     JOIN pet_wave_one_encounters boss ON boss.account_id=clear.account_id
+       AND boss.map_id=clear.map_id AND boss.encounter_id=clear.map_id || '-boss'
+     CROSS JOIN LATERAL unnest(boss.coop_recruitment_pet_ids) WITH ORDINALITY AS candidate(pet_id,priority)
+     WHERE NOT EXISTS(
+       SELECT 1 FROM pet_wave_one_owned WHERE account_id=clear.account_id AND pet_id=candidate.pet_id
+     )
+     ORDER BY candidate.priority LIMIT 1
+     ON CONFLICT (account_id,pet_id) DO NOTHING RETURNING pet_id`,[accountId,mapId],
+  );
+  return grant.rows[0]?.pet_id??null;
+}
 
 // One transaction owner for Wave 1 state. The account player row is locked
 // before any command work, so idempotency, wallet and Pet updates serialize.
@@ -34,10 +62,10 @@ export class Wave1Store {
       );
       if((created.rowCount??0)>0){
         for(const petId of STARTER_PET_IDS){
-          await client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,'starter')",[accountId,petId]);
+          await client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1::uuid,$2::text,aetheria_pet_instance_id($1::uuid::text || ':' || $2::text || ':v1'),1,0,'starter')",[accountId,petId]);
         }
         for(const [slot,petId] of STARTER_PET_IDS.entries()){
-          await client.query('INSERT INTO pet_wave_one_party(account_id,slot,pet_id) VALUES($1,$2,$3)',[accountId,slot,petId]);
+          await client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1::uuid,$2,$3::text,aetheria_pet_instance_id($1::uuid::text || ':' || $3::text || ':v1'))",[accountId,slot,petId]);
         }
       }
       await client.query(`SELECT ${PLAYER_COLUMNS} FROM pet_wave_one_players WHERE account_id=$1 FOR UPDATE`,[accountId]);
@@ -54,7 +82,7 @@ export class Wave1Store {
     const player=(await db.query<Wave1PlayerRow>(`SELECT ${PLAYER_COLUMNS} FROM pet_wave_one_players WHERE account_id=$1 FOR SHARE`,[accountId])).rows[0];
     if(!player)return {schemaVersion:1,initialized:false};
     const pets=(await db.query<Wave1OwnedRow>(`SELECT ${OWNED_COLUMNS} FROM pet_wave_one_owned WHERE account_id=$1 ORDER BY acquired_at,pet_id`,[accountId])).rows;
-    const party=(await db.query<{petId:string}>('SELECT pet_id AS "petId" FROM pet_wave_one_party WHERE account_id=$1 ORDER BY slot',[accountId])).rows;
+    const party=(await db.query<{petId:string;ownedPetInstanceId:string}>('SELECT pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanceId" FROM pet_wave_one_party WHERE account_id=$1 ORDER BY slot',[accountId])).rows;
     const clears=(await db.query<Wave1ClearRow>(`SELECT ${CLEAR_COLUMNS} FROM pet_wave_one_map_clears WHERE account_id=$1 ORDER BY cleared_at`,[accountId])).rows;
     const gacha=(await db.query<Wave1GachaRow>(`SELECT ${GACHA_COLUMNS} FROM pet_wave_one_gacha_history WHERE account_id=$1 ORDER BY seq`,[accountId])).rows;
     return {
@@ -82,7 +110,7 @@ export class Wave1Transaction {
   }
 
   async party():Promise<string[]>{
-    return (await this.client.query<{petId:string}>('SELECT pet_id AS "petId" FROM pet_wave_one_party WHERE account_id=$1 ORDER BY slot',[this.accountId])).rows.map(row=>row.petId);
+    return (await this.client.query<{petId:string}>('SELECT pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanceId" FROM pet_wave_one_party WHERE account_id=$1 ORDER BY slot',[this.accountId])).rows.map(row=>row.petId);
   }
 
   async clears():Promise<Wave1ClearRow[]>{
@@ -104,12 +132,12 @@ export class Wave1Transaction {
   async replaceParty(petIds:readonly string[]):Promise<void>{
     await this.client.query('DELETE FROM pet_wave_one_party WHERE account_id=$1',[this.accountId]);
     for(const [slot,petId] of petIds.entries()){
-      await this.client.query('INSERT INTO pet_wave_one_party(account_id,slot,pet_id) VALUES($1,$2,$3)',[this.accountId,slot,petId]);
+      await this.client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1::uuid,$2,$3::text,aetheria_pet_instance_id($1::uuid::text || ':' || $3::text || ':v1'))",[this.accountId,slot,petId]);
     }
   }
 
   async insertOwned(petId:string,source:'starter'|'gacha'|'campaign'):Promise<void>{
-    await this.client.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3)',[this.accountId,petId,source]);
+    await this.client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1::uuid,$2::text,aetheria_pet_instance_id($1::uuid::text || ':' || $2::text || ':v1'),1,0,$3)",[this.accountId,petId,source]);
   }
 
   async setProgress(petId:string,level:number,exp:number,duplicateExpDelta:number):Promise<void>{

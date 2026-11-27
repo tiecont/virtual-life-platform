@@ -1,7 +1,10 @@
 using System;
 using System.Globalization;
 using Aetheria.Networking;
-using UnityEngine;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace Aetheria.PetArena.Infrastructure
 {
@@ -13,14 +16,15 @@ namespace Aetheria.PetArena.Infrastructure
         public const int MaxTicketLength = 8192;
         private static readonly TimeSpan MaximumLifetime = TimeSpan.FromSeconds(31);
 
-        [Serializable]
+        [DataContract]
         private sealed class Payload
         {
-            public string roomId, matchId, bootId, accountId, wssUrl, httpsOrigin, ticket, expiresAt, contentHash;
-            public int seat;
+            [DataMember(IsRequired = true)] public string roomId, bossId, matchId, bootId, accountId, wssUrl, httpsOrigin, ticket, expiresAt, contentHash;
+            [DataMember(IsRequired = true)] public int seat;
         }
 
         public Guid RoomId { get; }
+        public string BossId { get; }
         public Guid MatchId { get; }
         public Guid BootId { get; }
         public Guid AccountId { get; }
@@ -34,6 +38,7 @@ namespace Aetheria.PetArena.Infrastructure
         private CoopNativeAdmission(Payload payload)
         {
             RoomId = Guid.Parse(payload.roomId);
+            BossId = payload.bossId;
             MatchId = Guid.Parse(payload.matchId);
             BootId = Guid.Parse(payload.bootId);
             AccountId = Guid.Parse(payload.accountId);
@@ -49,15 +54,19 @@ namespace Aetheria.PetArena.Infrastructure
         {
             if (string.IsNullOrWhiteSpace(json) || json.Length > 16384) throw new FormatException("Invalid coop admission");
             Payload payload;
-            try { payload = JsonUtility.FromJson<Payload>(json); }
-            catch (Exception error) { throw new FormatException("Invalid coop admission", error); }
-            if (payload == null || payload.seat < 0 || payload.seat > 3 ||
+            try
+            {
+                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                payload = (Payload)new DataContractJsonSerializer(typeof(Payload)).ReadObject(stream);
+            }
+            catch (SerializationException error) { throw new FormatException("Invalid coop admission", error); }
+            if (payload == null || string.IsNullOrEmpty(payload.bossId) || !System.Text.RegularExpressions.Regex.IsMatch(payload.bossId, @"\A[a-z][a-z0-9-]{2,63}\z") || payload.seat < 0 || payload.seat > 3 ||
                 !Guid.TryParse(payload.roomId, out var room) || room == Guid.Empty ||
                 !Guid.TryParse(payload.matchId, out var match) || match == Guid.Empty ||
                 !Guid.TryParse(payload.bootId, out var boot) || boot == Guid.Empty ||
                 !Guid.TryParse(payload.accountId, out var account) || account == Guid.Empty ||
                 !Uri.TryCreate(payload.wssUrl, UriKind.Absolute, out var wss) || wss.Scheme != "wss" ||
-                wss.AbsolutePath != "/rt/v1" || wss.Query.Length != 0 || wss.UserInfo.Length != 0 ||
+                wss.AbsolutePath != "/rt/v1" || wss.Query.Length != 0 || wss.Fragment.Length != 0 || wss.UserInfo.Length != 0 ||
                 !Uri.TryCreate(payload.httpsOrigin, UriKind.Absolute, out var https) || https.Scheme != "https" ||
                 https.AbsoluteUri.TrimEnd('/') != https.GetLeftPart(UriPartial.Authority) || https.UserInfo.Length != 0 ||
                 wss.Authority != https.Authority ||
@@ -81,7 +90,8 @@ namespace Aetheria.PetArena.Infrastructure
                     return new AdmissionTicket(Ticket, AccountId.ToString(), ExpiresAt);
                 if (renew == null) throw new NativeFailure(Failure.Authentication);
                 var next = await renew(cancellation).ConfigureAwait(false);
-                if (next.MatchId != MatchId || next.BootId != BootId || next.AccountId != AccountId ||
+                if (next.RoomId != RoomId || next.BossId != BossId || next.WssOrigin != WssOrigin || next.HttpsOrigin != HttpsOrigin ||
+                    next.MatchId != MatchId || next.BootId != BootId || next.AccountId != AccountId ||
                     next.Seat != Seat || next.ContentHash.Length != ContentHash.Length)
                     throw new NativeFailure(Failure.Scope);
                 for (var index = 0; index < ContentHash.Length; index += 1)

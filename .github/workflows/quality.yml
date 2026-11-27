@@ -23,6 +23,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+      # artifact-plan.mjs reads git history only: it needs Node, not pnpm.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
@@ -36,14 +37,14 @@ jobs:
     outputs:
       groups: ${{ steps.browser-plan.outputs.groups }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0 # Historical evidence objects must survive current-tree cleanup.
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -86,7 +87,7 @@ jobs:
           mkdir -p artifacts/ci/core
           set -o pipefail
           pnpm check:core 2>&1 | tee artifacts/ci/core/check.log
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: core-evidence
@@ -111,6 +112,8 @@ jobs:
           POSTGRES_USER: aetheria_soulbound_test
           POSTGRES_PASSWORD: ci_ephemeral_only
           POSTGRES_DB: aetheria_soulbound_test
+          # Concurrent isolated schema migrations hold locks on their relation indexes.
+          POSTGRES_INITDB_ARGS: "--set=max_locks_per_transaction=256"
         ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U aetheria_soulbound_test -d aetheria_soulbound_test"
@@ -121,14 +124,14 @@ jobs:
       # four workers. Two keeps the same tests below that infrastructure limit.
       VITEST_MAX_WORKERS: '2'
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -157,7 +160,7 @@ jobs:
             --reporter=json \
             --outputFile="artifacts/ci/integration/shard-${{ matrix.shard }}.json" \
             2>&1 | tee "artifacts/ci/integration/shard-${{ matrix.shard }}.log"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: integration-report-${{ matrix.shard }}
@@ -178,14 +181,14 @@ jobs:
     env:
       CI_BROWSER_GROUP: ${{ matrix.group }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
           version: 11.28.5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -221,7 +224,7 @@ jobs:
       - run: node scripts/prepare-ci-browser.mjs
       # Each spec/device still gets a disposable DB/API;never combine IP budgets.
       - run: pnpm ci:browser "$CI_BROWSER_GROUP"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() }}
         with:
           name: browser-${{ matrix.group }}-evidence
@@ -298,13 +301,13 @@ jobs:
     env:
       CI_NEEDS_JSON: ${{ toJSON(needs) }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: integration-report-*
           path: artifacts/ci/integration-reports

@@ -22,6 +22,7 @@ namespace Aetheria.PetArena.Presentation
         private PanelSettings panel;
         private VisualElement root, board;
         private ScrollView content;
+        private Wave1Manifest chapterManifest;
         private Wave1State state;
         private WaveAArtifactState artifacts;
         private Arena8View view;
@@ -31,7 +32,7 @@ namespace Aetheria.PetArena.Presentation
         private string settlementText = "";
         private string webOrigin;
         private int selectedCell = -1;
-        private bool busy, boss, loadedSession, waterUnlocked;
+        private bool busy, boss, loadedSession;
 
         public void Initialize(PetArenaMvpController arena, string origin)
         {
@@ -114,6 +115,7 @@ namespace Aetheria.PetArena.Presentation
             root.Clear();
             var panelElement = new VisualElement();
             panelElement.AddToClassList("arena-panel");
+            if (nativeMode && nativeView?.Terminal == false) panelElement.style.width = 620;
             panelElement.style.paddingLeft = 24;
             panelElement.style.paddingRight = 24;
             panelElement.style.paddingTop = 18;
@@ -123,7 +125,7 @@ namespace Aetheria.PetArena.Presentation
             panelElement.Add(Label("Arena8 · authoritative 8×8", "arena-title"));
             var transport = nativeMode ? "native arena8.view.v1" : "HTTP compatibility bridge";
             var meta = state == null ? "Local authoritative campaign · " + transport :
-                state.wallet.coins + " coins · " + (waterUnlocked ? "Water unlocked" : "Fire chapter") + " · " + transport;
+                state.wallet.coins + " coins · " + state.campaign.clearedMaps.Length + " chapters cleared · " + transport;
             panelElement.Add(Label(meta, "arena-meta"));
             if (!string.IsNullOrEmpty(notice)) panelElement.Add(Label(notice, "arena-notice"));
 
@@ -171,16 +173,26 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task LoadLobby()
         {
+            chapterManifest ??= await api.Get<Wave1Manifest>("/manifest", lifetime.Token);
+            if (chapterManifest?.maps == null || chapterManifest.maps.Length == 0)
+                throw new InvalidOperationException("Campaign chapters are unavailable.");
             state = await api.GetWave1State(lifetime.Token);
             artifacts = await api.GetArtifactState(lifetime.Token);
             DisposeNative();
             view = null;
             matchId = null;
-            waterUnlocked = state.campaign.clearedMaps.Contains("cinder-terraces");
+            if (!chapterManifest.maps.Any(map => map.id == selectedMap && ChapterOpen(map.id)))
+            {
+                selectedMap = chapterManifest.maps.FirstOrDefault(map => ChapterOpen(map.id))?.id;
+                boss = false;
+            }
             if (state.FindPet(selectedPet) == null)
                 selectedPet = state.pets.FirstOrDefault()?.petId;
             DrawLobby();
         }
+
+        private bool ChapterOpen(string id) =>
+            state.campaign.nextMapId == id || state.campaign.clearedMaps.Contains(id);
 
         private void DrawLobby()
         {
@@ -193,14 +205,17 @@ namespace Aetheria.PetArena.Presentation
             }
 
             content.Add(Label("2 · Choose a chapter", "arena-title"));
-            Button("Cinder Terraces · Fire" + (selectedMap == "cinder-terraces" ? " (selected)" : ""),
-                () => { selectedMap = "cinder-terraces"; boss = false; Draw(); });
-            Button("Cinder Terraces · Boss",
-                () => { selectedMap = "cinder-terraces"; boss = true; Draw(); });
-            Button("Tideglass Lagoon · Water" + (waterUnlocked ? "" : " · LOCKED"),
-                () => { selectedMap = "tideglass-lagoon"; boss = false; Draw(); }, enabled: waterUnlocked);
-            Button("Tideglass Lagoon · Boss",
-                () => { selectedMap = "tideglass-lagoon"; boss = true; Draw(); }, enabled: waterUnlocked);
+            foreach (var chapter in chapterManifest.maps)
+            {
+                var open = ChapterOpen(chapter.id);
+                foreach (var bossEncounter in new[] { false, true })
+                {
+                    var selected = chapter.id == selectedMap && bossEncounter == boss;
+                    Button(chapter.name + (bossEncounter ? " · Boss" : " · Regular") +
+                        (open ? (selected ? " · selected" : "") : " · Locked"),
+                        () => { selectedMap = chapter.id; boss = bossEncounter; Draw(); }, enabled: open);
+                }
+            }
 
             content.Add(Label("3 · Artifact loadout (optional)", "arena-title"));
             var petArtifact = artifacts?.FindPet(selectedPet);
@@ -208,7 +223,7 @@ namespace Aetheria.PetArena.Presentation
                 "Equipped: core=" + (petArtifact.slots.core ?? "—") +
                 " aegis=" + (petArtifact.slots.aegis ?? "—") +
                 " rune=" + (petArtifact.slots.rune ?? "—") + " · materials=" + artifacts.materials));
-            var candidate = artifacts?.inventory?.FirstOrDefault(item => item.equipped == null);
+            var candidate = artifacts?.inventory?.FirstOrDefault(item => item.Equipment == null);
             if (candidate != null)
                 Button("Equip " + candidate.name + " (" + candidate.slot + ")", () => Run(async () =>
                 {
@@ -222,7 +237,7 @@ namespace Aetheria.PetArena.Presentation
 
             var map = selectedMap;
             var encounter = map + (boss ? "-boss" : "-regular");
-            Button("Enter authoritative match", () => Run(() => AllocateMatch(map, encounter), "Allocating match"));
+            Button("Enter authoritative match", () => Run(() => AllocateMatch(map, encounter), "Allocating match"), enabled: map != null && ChapterOpen(map));
             if (!string.IsNullOrEmpty(notice)) content.Add(Label(notice));
         }
 

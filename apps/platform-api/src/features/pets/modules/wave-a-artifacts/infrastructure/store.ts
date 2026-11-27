@@ -22,6 +22,19 @@ const SNAPSHOT_COLUMNS=`snapshot_id AS "snapshotId",pet_id AS "petId",pet_level 
 const CLAIM_COLUMNS=`map_id AS "mapId",artifact_id AS "artifactId",materials,claimed_at AS "claimedAt"`;
 const RECENT_SNAPSHOTS=10;
 
+export async function initializeArtifactInventory(client:Pick<PoolClient,'query'>,accountId:string):Promise<void>{
+  const created=await client.query(
+    'INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2) ON CONFLICT(account_id) DO NOTHING RETURNING account_id',
+    [accountId,STARTING_MATERIALS],
+  );
+  if((created.rowCount??0)>0){
+    await client.query(
+      "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
+      [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
+    );
+  }
+}
+
 // One transaction owner for Wave A artifact state. The account artifact row is
 // locked before any command work, so receipts, materials, equipment and
 // snapshots serialize per account. Pet ownership and level are read from the
@@ -33,16 +46,7 @@ export class ArtifactStore {
     const client=await this.pool.connect();
     try{
       await client.query('BEGIN');
-      const created=await client.query(
-        'INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2) ON CONFLICT(account_id) DO NOTHING RETURNING account_id',
-        [accountId,STARTING_MATERIALS],
-      );
-      if((created.rowCount??0)>0){
-        await client.query(
-          "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
-          [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
-        );
-      }
+      await initializeArtifactInventory(client,accountId);
       await client.query(`SELECT ${PLAYER_COLUMNS} FROM pet_artifact_players WHERE account_id=$1 FOR UPDATE`,[accountId]);
       const value=await work(new ArtifactTransaction(client,accountId));
       await client.query('COMMIT');
@@ -191,4 +195,31 @@ export class ArtifactTransaction {
     if(!row)throw new Error('Wave A artifact revision update failed');
     return row.revision;
   }
+}
+
+// The whole roster is read in one PostgreSQL statement snapshot. Recheck the
+// owned Pet identity and join equipped rows to inventory by account as well as
+// Artifact id. A different account's copy of a species cannot contribute gear.
+export async function readOwnedArtifactLoadouts(
+  db:Pick<PoolClient,'query'>,
+  pets:readonly Readonly<{account:string;petId:string;ownedPetInstanceId:string}>[],
+){
+  return (await db.query<{
+    account:string;petId:string;ownedPetInstanceId:string;petLevel:number;
+    entries:readonly {slot:ArtifactSlot;artifactId:string;definitionId:string;upgradeLevel:number}[];
+  }>(`
+    SELECT owned.account_id AS account,owned.pet_id AS "petId",owned.owned_pet_instance_id AS "ownedPetInstanceId",
+           owned.level AS "petLevel",COALESCE(gear.entries,'[]'::jsonb) AS entries
+    FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS seat(pet,position)
+    JOIN pet_wave_one_owned owned ON owned.account_id=(seat.pet->>'account')::uuid
+     AND owned.pet_id=seat.pet->>'petId' AND owned.owned_pet_instance_id=(seat.pet->>'ownedPetInstanceId')::uuid
+    LEFT JOIN LATERAL (
+      SELECT jsonb_agg(jsonb_build_object('slot',equipped.slot,'artifactId',item.artifact_id,
+             'definitionId',item.definition_id,'upgradeLevel',item.upgrade_level)) AS entries
+      FROM pet_artifact_loadouts equipped
+      JOIN pet_artifact_owned item ON item.account_id=equipped.account_id AND item.artifact_id=equipped.artifact_id
+      WHERE equipped.account_id=owned.account_id AND equipped.pet_id=owned.pet_id
+    ) gear ON true
+    ORDER BY seat.position
+  `,[JSON.stringify(pets)])).rows;
 }

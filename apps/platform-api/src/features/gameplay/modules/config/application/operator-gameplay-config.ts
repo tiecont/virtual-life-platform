@@ -2,14 +2,15 @@ import {
  GameplayConfigAuditSchema,GameplayConfigCreateSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigPublishSchema,GameplayConfigRollbackResultSchema,
  GameplayConfigRollbackSchema,GameplayConfigUpdateSchema,GameplayConfigValidateSchema,GameplayConfigValidationSchema,
- GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,type GameplayBundle,type GameplayRuleset,
+ GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationComparisonSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,type GameplayBundle,type GameplayRuleset,
 } from '@aetheria/contracts';
 import type {PoolClient} from 'pg';
+import {canonicalCatalogReference} from '../../../../pets/modules/wave1/application/service';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {GameplayConfigStore,type GameplayVersion,type GameplayVersionSummary} from '../infrastructure/version-store';
 import {GameplayValidatorUnavailableError,InvalidGameplayBundleError,type GameplayBundleValidator} from '../infrastructure/engine-validator';
-import {GameplaySimulationError,GameplaySimulatorUnavailableError,type GameplaySimulator} from '../infrastructure/engine-simulator';
+import {GameplaySimulationError,type GameplaySimulator} from '../infrastructure/engine-simulator';
 
 const missing=()=>new DomainError('NOT_FOUND',404,'Gameplay configuration version not found');
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
@@ -22,6 +23,7 @@ const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
 });
 const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
+ ...(row.bundle.schemaVersion===2?{catalogReference:canonicalCatalogReference}:{}),
 });
 
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,
@@ -171,23 +173,25 @@ export class OperatorGameplayConfig{
    return result;
   });
  }
- async simulate(token:string,csrf:unknown,input:unknown){
+ async simulate(token:string,csrf:unknown,input:unknown,signal?:AbortSignal){
   this.assertSupported();
   const value=GameplaySimulationRequestSchema.parse(input);
   if(!this.simulator)throw simulationUnavailable();
   const row=await this.operator!.controlWrite(token,csrf,async tx=>this.store.read(tx,value.ruleset,value.version));
   if(!row)throw missing();
   if(!['DRAFT','VALIDATED','PUBLISHED','SUPERSEDED'].includes(row.state))throw conflict('Retired gameplay configuration cannot be simulated');
-  let metrics;
-  try{metrics=await this.simulator.simulate(row.bundle,value.policy,value.seeds);}
-  catch(error){
-   if(error instanceof GameplaySimulationError)throw new DomainError('INVALID_REQUEST',422,'The engine rejected this gameplay configuration');
-   if(error instanceof GameplaySimulatorUnavailableError)throw simulationUnavailable();
+  const metadata={ruleset:value.ruleset,version:value.version};
+  try{
+   if('bossIds' in value){
+    const reports=await this.simulator.compare(row.bundle,value.bossIds,value.seeds,signal,...(value.party?[value.party]:[]));
+    return GameplaySimulationComparisonSchema.parse({...metadata,seeds:value.seeds,reports});
+   }
+   const report=await this.simulator.simulate(row.bundle,value.policy,value.seeds,value.bossId,signal,...(value.party?[value.party]:[]));
+   return GameplaySimulationReportSchema.parse({...metadata,...report});
+  }catch(error){
+   if(error instanceof GameplaySimulationError)throw new DomainError('INVALID_REQUEST',422,'The engine rejected the gameplay configuration or encounter');
    throw simulationUnavailable();
   }
-  return GameplaySimulationReportSchema.parse({
-   ruleset:value.ruleset,version:value.version,policy:value.policy,seeds:value.seeds,...metrics,
-  });
  }
  private async replay(tx:PoolClient,fingerprint:string,_action:string):Promise<Record<string,unknown>|undefined>{
   const prior=await this.store.eventByFingerprint(tx,fingerprint);

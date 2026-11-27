@@ -54,6 +54,13 @@ namespace Aetheria.Tests
             Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2", "\"seat\":4")));
         }
 
+        [Test]
+        public void RequiresAnExplicitSeatIncludingForTheHost()
+        {
+            Assert.That(CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2", "\"seat\":0")).Seat, Is.Zero);
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(AdmissionJson().Replace("\"seat\":2,", "")));
+        }
+
         private static string RoomJson() => "{\"roomId\":\"" + RoomId + "\",\"ruleset\":\"arena8-coop-pve\"," +
             "\"bossId\":\"cinder-terraces-warden\",\"status\":\"OPEN\",\"revision\":1,\"configVersion\":2," +
             "\"requiredPoints\":5000,\"createdAt\":\"2026-01-01T00:00:00Z\",\"you\":{\"seat\":0,\"isHost\":true}," +
@@ -61,7 +68,7 @@ namespace Aetheria.Tests
             "\"canJoin\":true,\"canStart\":false}";
 
         private static string AdmissionJson(string room = RoomId) => "{\"roomId\":\"" + room + "\"," +
-            "\"matchId\":\"22222222-2222-4222-8222-222222222222\",\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
+            "\"bossId\":\"cinder-terraces-warden\",\"matchId\":\"22222222-2222-4222-8222-222222222222\",\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
             "\"accountId\":\"" + AccountId + "\",\"seat\":2,\"wssUrl\":\"wss://127.0.0.1:4443/rt/v1\"," +
             "\"httpsOrigin\":\"https://127.0.0.1:4443\",\"ticket\":\"ticket.payload.signature\"," +
             "\"expiresAt\":\"" + DateTimeOffset.UtcNow.AddSeconds(10).ToString("O") + "\",\"contentHash\":\"" + new string('a', 64) + "\"}";

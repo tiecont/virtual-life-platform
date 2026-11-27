@@ -56,3 +56,45 @@
     height: 22px;
     margin-bottom: 6px;
 }
+
+.coop-hub-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    flex-direction: row;
+}
+.coop-campaign-map {
+    margin-bottom: 10px;
+}
+.coop-campaign-map-name {
+    -unity-font-style: bold;
+}
+.coop-world Label {
+    background-color: rgba(15, 23, 38, 0.94);
+    color: rgb(242, 236, 217);
+    padding-left: 6px;
+    white-space: normal;
+}
+.coop-panel {
+    background-color: rgba(16, 24, 38, 0.95);
+    padding: 6px;
+}
+.coop-world #coop-seats { flex-wrap: wrap; }
+.coop-member { flex-grow: 1; flex-basis: 22%; min-width: 130px; }
+.coop-active-member { border-top-width: 3px; border-top-color: rgb(255, 206, 104); }
+.coop-hud-scroll { flex-grow: 1; min-height: 0; }
+.coop-footer { flex-direction: row; flex-shrink: 0; }
+.coop-footer-button { flex-basis: 0; flex-grow: 1; }
+.coop-footer-hidden { visibility: hidden; }
+.coop-world #coop-turn, .coop-world #coop-boss, .coop-world #coop-telegraph {
+    color: rgb(255, 217, 148);
+    -unity-font-style: bold;
+}
+.coop-world #coop-board Button { color: white; -unity-font-style: bold; }
+.tile-fire { background-color: rgb(142, 58, 37); }
+.tile-water { background-color: rgb(35, 93, 134); }
+.tile-electric { background-color: rgb(130, 93, 24); }
+.tile-ghost { background-color: rgb(89, 60, 126); }
+.tile-ground { background-color: rgb(105, 78, 55); }
+.tile-light { background-color: rgb(56, 111, 91); }
+.coop-selected { border-width: 3px; border-color: white; }

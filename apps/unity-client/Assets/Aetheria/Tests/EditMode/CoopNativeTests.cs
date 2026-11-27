@@ -17,6 +17,17 @@ namespace Aetheria.Tests
         private const string Digest = "101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f";
 
         [Test]
+        public void ArtifactInventoryDecodesNullableEquipment()
+        {
+            var state = UnityEngine.JsonUtility.FromJson<WaveAArtifactState>(
+                "{\"inventory\":[{\"equipped\":null},{\"equipped\":{\"petId\":\"fire-coalwhisk\",\"slot\":\"core\"}}]}");
+
+            Assert.That(state.inventory[0].Equipment, Is.Null);
+            Assert.That(state.inventory[1].Equipment.petId, Is.EqualTo("fire-coalwhisk"));
+            Assert.That(state.inventory[1].Equipment.slot, Is.EqualTo("core"));
+        }
+
+        [Test]
         public void ReadyProjectionDecodesParticipantsAndBoard()
         {
             var view = Coop(version: 7);
@@ -41,6 +52,21 @@ namespace Aetheria.Tests
             Assert.That(view.RulesetId, Is.EqualTo("arena8-coop-pve"));
             Assert.That(view.CanSwap(0, 1), Is.True);
             Assert.That(view.CanSwap(0, 9), Is.False);
+        }
+
+        [Test]
+        public void PublishedMultiplierAndWideCombatValuesRemainPlayable()
+        {
+            var view = Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":6")
+                .Replace("\"maxHp\":5000", "\"maxHp\":4000000000")
+                .Replace("\"damage\":0", "\"damage\":18446744073709551615")
+                .Replace("\"mana\":0", "\"mana\":50000"));
+            Assert.That(CoopNativePresentation.CellText(view.Board[0]), Is.EqualTo("Fire ×6"));
+            Assert.That(view.BossState.MaxHealth, Is.EqualTo(4000000000u));
+            Assert.That(view.Own.Contribution.Damage, Is.EqualTo(ulong.MaxValue));
+            Assert.That(view.Own.Mana, Is.EqualTo(50000));
+            Assert.Throws<FormatException>(() => Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":65")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => json.Replace("\"hp\":400", "\"hp\":-1")));
         }
 
         [Test]
@@ -97,7 +123,7 @@ namespace Aetheria.Tests
         {
             var expiry = (expires ?? DateTimeOffset.UtcNow.AddSeconds(10)).ToUniversalTime().ToString("O");
             return "{\"roomId\":\"11111111-1111-4111-8111-111111111111\"," +
-                "\"matchId\":\"22222222-2222-4222-8222-222222222222\"," +
+                "\"bossId\":\"cinder-terraces-warden\",\"matchId\":\"22222222-2222-4222-8222-222222222222\"," +
                 "\"bootId\":\"33333333-3333-4333-8333-333333333333\"," +
                 "\"accountId\":\"44444444-4444-4444-8444-444444444444\"," +
                 "\"seat\":" + seat + ",\"wssUrl\":\"wss://127.0.0.1:4443" + path + "\"," +
@@ -154,7 +180,7 @@ namespace Aetheria.Tests
 
         private static CoopNativeView Coop(ulong version = 0, string phase = "ready", string reward = "null",
             int bossHealth = 5000, int you = 0, int seats = 4, int board = 64, string extra = "",
-            int activeSeat = -1, int[] cooldowns = null)
+            int activeSeat = -1, int[] cooldowns = null, Func<string, string> customize = null)
         {
             var boardJson = new StringBuilder();
             for (var index = 0; index < board; index += 1)
@@ -185,7 +211,7 @@ namespace Aetheria.Tests
                 + "\"participants\":[" + seatsJson + "],"
                 + "\"pending\":null},"
                 + "\"epoch\":1,\"reward\":" + reward + "}";
-            return CoopNativeView.Decode(version, Encoding.UTF8.GetBytes(json));
+            return CoopNativeView.Decode(version, Encoding.UTF8.GetBytes(customize == null ? json : customize(json)));
         }
     }
 }

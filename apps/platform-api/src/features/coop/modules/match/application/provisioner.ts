@@ -1,17 +1,19 @@
+import type {CoopAdmissionView} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
 import {DomainError} from '../../../../../shared/common/errors';
+import {readAllocationSeats,type CoopSeat} from '../domain/loadout';
+export type {CoopSeat} from '../domain/loadout';
 
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const PET=/^[a-z][a-z0-9-]{2,63}$/;
 const WORLD=/^native:[a-z0-9][a-z0-9._-]{0,63}$/;
-const SEATS=4,CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
+const CAPACITY=4,HEARTBEAT_MS=2000,WSS_PATH='/rt/v1';
 
-export type CoopSeat=Readonly<{account:string;petId:string;petLevel:number;artifactPowerPm:number}>;
 export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED';
 export type CoopAllocationRecord=Readonly<{
- matchId:string;roomId:string;worldId:string;bootId:string;
+ matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
  configVersion:number;configDigest:string;contentHash:string;
  seats:readonly CoopSeat[];status:CoopAllocationStatus;generation:number;
 }>;
@@ -32,7 +34,7 @@ export type CoopAdmissionPort=Readonly<{
 }>;
 export type CoopIssuerPort=Readonly<{issue(credential:string,scope:RuntimeScope):Promise<Readonly<{ticket:string;expiresAt:string}>>}>;
 export type CoopRuntimeRequest=Readonly<{
- matchId:string;bootId:string;worldId:string;origin:string;
+ matchId:string;bootId:string;worldId:string;origin:string;bossId:string;
  configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];
 }>;
 export type CoopRuntimeHandle=Readonly<{port:number;stop():Promise<void>;onExit(listener:()=>void):void}>;
@@ -44,14 +46,11 @@ export type CoopProvisionerOptions=Readonly<{
  id?:()=>string;
 }>;
 export type CoopStartInput=Readonly<{
- roomId:string;configVersion:number;configDigest:string;
- bundle:Record<string,unknown>;seats:readonly CoopSeat[];
+ roomId:string;bossId:string;configVersion:number;configDigest:string;
+ bundle:Record<string,unknown>;readSeats:()=>Promise<readonly CoopSeat[]>;
 }>;
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
-export type CoopAdmissionView=Readonly<{
- roomId:string;matchId:string;bootId:string;accountId:string;seat:number;wssUrl:string;httpsOrigin:string;
- ticket:string;expiresAt:string;contentHash:string;
-}>;
+export type {CoopAdmissionView} from '@aetheria/contracts';
 type Lease={timer:ReturnType<typeof setInterval>;stop:()=>void};
 type ActiveMatch={record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
 
@@ -62,13 +61,6 @@ const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
 function scopeFor(record:Pick<CoopAllocationRecord,'worldId'|'bootId'|'contentHash'>):RuntimeScope{
  return Object.freeze({worldId:record.worldId,runtimeBootId:record.bootId,contentHash:record.contentHash,protocolVersion:1 as const});
 }
-function seatsValid(seats:readonly CoopSeat[]){
- if(seats.length!==SEATS)return false;
- const accounts=new Set(seats.map(seat=>seat.account)),pets=new Set(seats.map(seat=>seat.petId));
- return accounts.size===SEATS&&pets.size===SEATS&&seats.every(seat=>
-  UUID.test(seat.account)&&PET.test(seat.petId)&&Number.isInteger(seat.petLevel)&&seat.petLevel>=1&&seat.petLevel<=60&&
-  Number.isInteger(seat.artifactPowerPm)&&seat.artifactPowerPm>=1_000&&seat.artifactPowerPm<=5_000);
-}
 
 // One authoritative cooperative match per room. The published bundle and the
 // frozen four-seat roster are provisioned through the existing ticket,
@@ -78,6 +70,7 @@ export class CoopMatchProvisioner{
  private readonly id:()=>string;
  private readonly origin:string;
  private closing=false;
+ private startingRoom:string|undefined;
 
  constructor(private readonly options:CoopProvisionerOptions){
   const origin=new URL(options.httpsOrigin);
@@ -88,48 +81,78 @@ export class CoopMatchProvisioner{
  }
 
  private lease(scope:RuntimeScope,generation:number,onFailure:()=>void):Lease{
-  let stopped=false,failed=false;
+  let stopped=false,pending=false;
   const timer=setInterval(()=>{
-   if(stopped||failed)return;
+   if(stopped||pending)return;
+   pending=true;
    void this.options.admission.heartbeat(scope,generation).catch(()=>{
-    failed=true;onFailure();
-   });
+    if(!stopped){stopped=true;clearInterval(timer);onFailure();}
+   }).finally(()=>{pending=false;});
   },HEARTBEAT_MS);
   timer.unref?.();
   return {timer,stop:()=>{stopped=true;clearInterval(timer);}};
  }
  private async abandon(record:CoopAllocationRecord,generation:number){
   const active=this.active.get(record.matchId);
-  active?.lease.stop();
-  await active?.handle.stop().catch(()=>{});
+  if(!active||active.generation!==generation||active.stopped||this.closing)return;
+  active.stopped=true;
+  active.lease.stop();
+  await active.handle.stop().catch(()=>{});
+  const disabled=await this.options.admission.configure(active.scope,generation,false,0).catch(()=>0);
+  if(disabled>0)await this.options.store.recovered(record.matchId,disabled).catch(()=>{});
   this.active.delete(record.matchId);
-  if(generation>0)
-   await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>{});
-  await this.options.store.fail(record.matchId).catch(()=>{});
+ }
+
+ private async releaseSettledRuntimes(){
+  for(const active of this.active.values()){
+   const current=await this.options.store.findByRoom(active.record.roomId);
+   if(current?.status!=='SETTLED')continue;
+   active.stopped=true;
+   active.lease.stop();
+   await active.handle.stop();
+   this.active.delete(active.record.matchId);
+   await this.options.admission.configure(active.scope,active.generation,false,0).catch(()=>{});
+  }
  }
 
  async start(input:CoopStartInput):Promise<CoopStartResult>{
   if(this.closing)throw unavailable();
-  if(!UUID.test(input.roomId)||!seatsValid(input.seats))throw conflict('Cooperative allocation is invalid');
+  if(!UUID.test(input.roomId)||!PET.test(input.bossId))throw conflict('Cooperative allocation is invalid');
   const prior=await this.options.store.findByRoom(input.roomId);
   if(prior){
    const current=this.active.get(prior.matchId);
    if(prior.status==='ACTIVE'&&current&&!current.stopped&&!current.exited)
     return Object.freeze({matchId:prior.matchId,worldId:prior.worldId,bootId:prior.bootId,contentHash:prior.contentHash,generation:current.generation});
    if(prior.status==='STARTING')throw conflict('Cooperative allocation is still starting');
-   if(prior.status==='ACTIVE')throw unavailable('Cooperative native match recovery is not implemented');
+   if(prior.status==='ACTIVE')throw unavailable('Cooperative native match awaits recovery');
    throw conflict('Cooperative allocation is no longer active');
   }
+  if(this.startingRoom)throw conflict('Another cooperative allocation is starting');
+  this.startingRoom=input.roomId;
+  try{
+   await this.releaseSettledRuntimes();
+   if(this.active.size>0)throw conflict('Cooperative runtime is busy. Retry after the current battle settles.');
+   return await this.startRoom(input);
+  }finally{this.startingRoom=undefined;}
+ }
+
+ private async startRoom(input:CoopStartInput):Promise<CoopStartResult>{
   let verdict;
   try{verdict=await this.options.validator.validate('arena8-coop-pve',input.bundle);}
   catch{throw unavailable('Published cooperative configuration is invalid');}
   if(verdict.digest!==input.configDigest)throw unavailable('Published cooperative configuration does not match its digest');
+  const selected=await input.readSeats();
+  let seats;
+  try{seats=readAllocationSeats(selected,input.configDigest);}
+  catch{throw conflict('Cooperative allocation is invalid');}
+  if(('loadout' in seats[0]!)!==Array.isArray(input.bundle.artifacts))
+   throw conflict('Cooperative allocation does not match the published Artifact configuration');
   const matchId=this.id(),bootId=this.id(),worldId='native:coop-'+matchId;
   if(!WORLD.test(worldId))throw unavailable();
   const record:CoopAllocationRecord=Object.freeze({
-   matchId,roomId:input.roomId,worldId,bootId,configVersion:input.configVersion,
+   matchId,roomId:input.roomId,worldId,bootId,bossId:input.bossId,configVersion:input.configVersion,
    configDigest:input.configDigest,contentHash:verdict.contentHash,
-   seats:Object.freeze(input.seats.map(seat=>Object.freeze({...seat}))),status:'STARTING',generation:0,
+   seats,status:'STARTING',generation:0,
   });
   try{await this.options.store.create(record);}
   catch{throw conflict('Cooperative room already has an allocation');}
@@ -144,7 +167,7 @@ export class CoopMatchProvisioner{
    for(let attempt=0;attempt<3;attempt++){
     try{
      handle=await this.options.runtime.start(Object.freeze({
-      matchId,bootId,worldId,origin:this.origin,configDigest:input.configDigest,
+      matchId,bootId,worldId,origin:this.origin,bossId:record.bossId,configDigest:input.configDigest,
       bundle:input.bundle,seats:record.seats,
      }));
      startError=undefined;break;
@@ -179,7 +202,7 @@ export class CoopMatchProvisioner{
   const record=await this.options.store.findByRoom(roomId);
   if(!record||record.status!=='ACTIVE')throw conflict('Cooperative match is not active');
   const current=this.active.get(record.matchId);
-  if(!current||current.stopped||current.exited)throw unavailable('Cooperative native match recovery is not implemented');
+  if(!current||current.stopped||current.exited)throw unavailable('Cooperative native match awaits recovery');
   let allocated;
   try{allocated=await this.options.admission.allocate(credential,current.scope);}
   catch{throw unavailable('Cooperative native admission is unavailable');}
@@ -189,7 +212,7 @@ export class CoopMatchProvisioner{
   try{issued=await this.options.issuer.issue(credential,current.scope);}
   catch{throw unavailable('Cooperative native admission is unavailable');}
   return Object.freeze({
-   roomId,matchId:record.matchId,bootId:record.bootId,accountId:allocated.accountId,seat,
+   roomId,bossId:record.bossId,matchId:record.matchId,bootId:record.bootId,accountId:allocated.accountId,seat,
    wssUrl:'wss:'+this.origin.slice('https:'.length)+WSS_PATH,
    httpsOrigin:this.origin,ticket:issued.ticket,expiresAt:issued.expiresAt,
    contentHash:record.contentHash,
@@ -202,7 +225,7 @@ export class CoopMatchProvisioner{
   let recovered=0,failed=0;
   for(const record of records){
    if(this.active.has(record.matchId)){recovered+=1;continue;}
-   let generation=0;
+   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined;
    try{
     const bundle=await this.options.loadBundle(record);
     if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
@@ -211,13 +234,11 @@ export class CoopMatchProvisioner{
      throw unavailable('Pinned cooperative configuration no longer matches the allocation');
     const scope=scopeFor(record);
     generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
-    let handle:CoopRuntimeHandle|undefined;
-    try{handle=await this.options.runtime.start({
+    handle=await this.options.runtime.start({
      matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
-     configDigest:record.configDigest,bundle,seats:record.seats,
-    });}catch{handle=undefined;}
-    if(!handle)throw unavailable();
-    const lease=this.lease(scope,generation,()=>{
+     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,
+    });
+    lease=this.lease(scope,generation,()=>{
      const current=this.active.get(record.matchId);
      if(current)void this.abandon(current.record,current.generation);
     });
@@ -231,7 +252,12 @@ export class CoopMatchProvisioner{
     recovered+=1;
    }catch{
     failed+=1;
-    if(generation>0)await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>{});
+    lease?.stop();
+    await handle?.stop().catch(()=>{});
+    if(generation>0){
+     const disabled=await this.options.admission.configure(scopeFor(record),generation,false,0).catch(()=>0);
+     if(disabled>0)await this.options.store.recovered(record.matchId,disabled).catch(()=>{});
+    }
     // Never mark a durable ACTIVE allocation FAILED merely because recovery
     // could not reacquire it; admission stays closed until an operator resolves it.
    }

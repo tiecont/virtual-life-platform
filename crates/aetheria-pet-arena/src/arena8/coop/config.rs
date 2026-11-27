@@ -10,7 +10,12 @@
 //! MVP elements and the minimum match run) lives in the engine. Everything an
 //! author tunes lives here.
 
-use crate::arena8::Element;
+use super::loadout::ArtifactCatalog;
+use crate::arena8::{
+    Element,
+    binding::{IDENTITIES, RosterState},
+};
+use crate::wave1_mvp::{FEATURED_LIMITED_ID, MAPS, STANDARD_POOL};
 use aetheria_game_core::Value;
 use aetheria_game_core::canonical::{hash, list};
 use serde::Deserialize;
@@ -19,9 +24,12 @@ use std::collections::{BTreeMap, BTreeSet};
 /// Engine capability a bundle must declare compatibility with.
 pub const ENGINE_CAPABILITY: &str = "arena8-coop-v1";
 /// Supported bundle schema version.
-pub const CONFIG_SCHEMA_VERSION: u32 = 1;
+pub const CONFIG_SCHEMA_VERSION: u32 = 2;
+const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
+/// Structural maximum independent of the cap authored for an individual skill.
+pub const MAX_SKILL_LEVEL: u8 = 10;
 /// Canonical domain separation for the bundle digest.
 pub const DIGEST_DOMAIN: &str = "aetheria.arena8-coop.config.v1";
 
@@ -36,12 +44,24 @@ pub struct CoopConfig {
     pub party: PartyConfig,
     pub resources: ResourceConfig,
     pub damage: DamageConfig,
+    pub(super) artifacts: Option<ArtifactCatalog>,
     pub elements: Vec<ElementProfile>,
     pub multiplier: MultiplierConfig,
-    pub boss: BossConfig,
+    boss: Option<BossConfig>,
+    #[serde(default)]
+    bosses: Option<Vec<BossConfig>>,
     pub skills: Vec<SkillConfig>,
     pub pets: Vec<PetConfig>,
     pub rewards: RewardsConfig,
+    pub(super) terminal_outcome_policy: Option<TerminalOutcomePolicy>,
+}
+
+/// Opt-in turn ordering for new bundles. An omitted policy preserves replay
+/// behavior for configurations published before this capability.
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub(super) enum TerminalOutcomePolicy {
+    BossDefeatFirst,
 }
 
 /// Settlement rewards authored per clear and per loss. The engine validates and
@@ -141,7 +161,7 @@ pub struct DamageConfig {
     pub own_tile_weight_pm: u32,
     pub defense_divisor: u32,
     pub crit_roll_basis: u32,
-    pub artifact_scale_pm: u32,
+    pub(super) artifact_scale_pm: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -153,6 +173,8 @@ pub struct ElementProfile {
     pub defense: u32,
     pub crit_rate_bp: u16,
     pub crit_damage_bp: u16,
+    /// Additive critical damage in basis points when attacking the encounter Boss.
+    pub boss_crit_damage_bonus_bp: Option<u16>,
     pub hp_growth: u32,
     pub attack_growth: u32,
     pub defense_growth: u32,
@@ -202,8 +224,69 @@ pub struct MultiplierTier {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EncounterPayout {
+    pub achievement_points: u32,
+    pub coins: u32,
+    pub exp: u32,
+    pub materials: u32,
+}
+
+impl EncounterPayout {
+    fn to_value(&self) -> Value {
+        list(
+            [
+                self.achievement_points,
+                self.coins,
+                self.exp,
+                self.materials,
+            ]
+            .map(|v| Value::Uint(u64::from(v))),
+        )
+    }
+
+    fn validate(&self) -> Result<(), ConfigError> {
+        if [
+            self.achievement_points,
+            self.coins,
+            self.exp,
+            self.materials,
+        ]
+        .into_iter()
+        .any(|v| v > 1_000_000)
+        {
+            return Err(ConfigError::Rewards);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EncounterRewards {
+    /// Successful combat commands per seat, excluding the initial Start command.
+    pub minimum_actions: Option<ParticipationThreshold>,
+    /// Eligible species in canonical recruitment order, if authored.
+    pub recruitment_pet_ids: Option<Vec<String>>,
+    pub first_clear: EncounterPayout,
+    pub repeat_clear: EncounterPayout,
+    pub defeat: EncounterPayout,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ParticipationThreshold {
+    pub victory: u16,
+    pub defeat: u16,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BossConfig {
     pub id: String,
+    pub map_id: Option<String>,
+    /// Published campaign clear required to host a room for this Boss.
+    /// Nest enforces it before room creation.
+    pub required_map_clear: Option<String>,
     pub name: String,
     pub element: String,
     pub max_hp: u32,
@@ -218,6 +301,7 @@ pub struct BossConfig {
     /// Authored and published; the engine carries it into the content digest but
     /// does not spend it during combat.
     pub required_room_points: u32,
+    pub reward_policy: Option<EncounterRewards>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -250,6 +334,22 @@ pub struct BossAttackModel {
     pub per_round_damage: u32,
     pub defense_divisor: u32,
     pub minimum_damage: u32,
+    pub vulnerability: Option<BossVulnerability>,
+    pub target_priority: Option<BossTargetPriority>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum BossTargetPriority {
+    HighestMana,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BossVulnerability {
+    /// Bonus incoming damage in permille after the attack that applies it.
+    pub value_pm: u16,
+    pub duration_turns: u8,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -273,6 +373,14 @@ pub struct SkillConfig {
     pub power_pm: u32,
     pub crit_eligible: bool,
     pub effect: EffectConfig,
+    pub upgrade_levels: Option<Vec<SkillUpgrade>>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SkillUpgrade {
+    pub materials: u32,
+    pub power_pm: u32,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -284,6 +392,15 @@ pub struct EffectConfig {
     pub duration_turns: u8,
     /// Multiplier applied per matching source stack (1000 = no stacking).
     pub stacking_pm: u16,
+    pub contribution: Option<SupportContribution>,
+    /// Number of damage packets in a chain cast against the Boss.
+    pub hits: Option<u8>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum SupportContribution {
+    Caster,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -295,6 +412,11 @@ pub enum EffectKind {
     Shield,
     Buff,
     Debuff,
+    RageTransfer,
+    ManaRestore,
+    Cleanse,
+    ChainDamage,
+    Curse,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -304,6 +426,8 @@ pub enum EffectTarget {
     SelfActor,
     Allies,
     LowestAlly,
+    LowestRageAlly,
+    LowestManaAlly,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -313,6 +437,8 @@ pub struct PetConfig {
     pub element: String,
     pub rarity: String,
     pub power_class: String,
+    pub catalog: Option<PetCatalog>,
+    pub growth: Option<PetGrowth>,
     pub max_hp: u32,
     pub attack: u32,
     pub defense: u32,
@@ -324,6 +450,31 @@ pub struct PetConfig {
     pub guard: String,
     #[serde(default)]
     pub fire_zone: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PetCatalog {
+    pub name: String,
+    pub map_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PetGrowth {
+    pub curve: String,
+    pub health_bp: u16,
+    pub attack_bp: u16,
+    pub defense_bp: u16,
+    pub bias_pm: i16,
+}
+
+impl PetGrowth {
+    pub fn stat(&self, base: u32, rate: u16, steps: u32) -> Result<u32, ConfigError> {
+        let factor = u64::try_from(1000 + i32::from(self.bias_pm)).map_err(|_| ConfigError::Pet)?;
+        let increase = u64::from(base) * u64::from(rate) * u64::from(steps) * factor / 10_000_000;
+        u32::try_from(u64::from(base) + increase).map_err(|_| ConfigError::Arithmetic)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -350,6 +501,7 @@ pub enum ConfigError {
     MissingReference,
     Arithmetic,
     Rewards,
+    Artifact,
 }
 
 impl ConfigError {
@@ -377,9 +529,18 @@ impl ConfigError {
             Self::MissingReference => "gameplay configuration references a missing skill",
             Self::Arithmetic => "gameplay configuration numeric bounds are unsafe",
             Self::Rewards => "gameplay reward configuration is outside the supported range",
+            Self::Artifact => "gameplay Artifact configuration or loadout is invalid",
         }
     }
 }
+
+impl std::fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message())
+    }
+}
+
+impl std::error::Error for ConfigError {}
 
 impl CoopConfig {
     /// Parse an authoritative bundle. Unknown or missing fields are rejected.
@@ -394,8 +555,10 @@ impl CoopConfig {
 
     /// Full semantic validation of the configuration graph.
     pub fn validate(&self) -> Result<(), ConfigError> {
-        if self.schema_version != CONFIG_SCHEMA_VERSION
-            || self.engine_capability != ENGINE_CAPABILITY
+        if !matches!(
+            self.schema_version,
+            HISTORICAL_SCHEMA_VERSION | CONFIG_SCHEMA_VERSION
+        ) || self.engine_capability != ENGINE_CAPABILITY
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -403,6 +566,8 @@ impl CoopConfig {
                 .bytes()
                 .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'.')
             || self.content_revision == 0
+            || (self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && self.terminal_outcome_policy.is_some())
         {
             return Err(ConfigError::Identity);
         }
@@ -410,9 +575,21 @@ impl CoopConfig {
         self.party.validate()?;
         self.resources.validate()?;
         self.damage.validate()?;
+        match (&self.artifacts, self.damage.artifact_scale_pm) {
+            (None, Some(_)) => {} // Previously published scalar-based bundles.
+            (Some(artifacts), None) if self.schema_version == CONFIG_SCHEMA_VERSION => {
+                artifacts.validate()?;
+            }
+            _ => return Err(ConfigError::Artifact),
+        }
         let elements = self.element_index()?;
         let mut immunity = false;
         for profile in &self.elements {
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && profile.boss_crit_damage_bonus_bp.is_some()
+            {
+                return Err(ConfigError::ElementSet);
+            }
             profile.validate()?;
             // The MVP matrix intentionally carries at least one immunity across
             // the whole attacker/defender graph, not one per attacker row.
@@ -422,7 +599,56 @@ impl CoopConfig {
             return Err(ConfigError::Effectiveness);
         }
         self.multiplier.validate()?;
-        self.boss.validate(elements)?;
+        let bosses = match (self.schema_version, &self.boss, &self.bosses) {
+            (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
+            (CONFIG_SCHEMA_VERSION, None, Some(bosses))
+                if !bosses.is_empty() && bosses.len() <= 6 =>
+            {
+                bosses
+            }
+            _ => return Err(ConfigError::Boss),
+        };
+        let mut boss_ids = BTreeSet::new();
+        let mut map_ids = BTreeSet::new();
+        let mut prerequisites = BTreeMap::new();
+        for boss in bosses {
+            match (self.schema_version, boss.map_id.as_deref()) {
+                (HISTORICAL_SCHEMA_VERSION, None) => (),
+                (CONFIG_SCHEMA_VERSION, Some(map)) if stable_id(map) && map_ids.insert(map) => (),
+                _ => return Err(ConfigError::Boss),
+            }
+            if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
+                return Err(ConfigError::Boss);
+            }
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && (boss.attack_model.vulnerability.is_some()
+                    || boss.attack_model.target_priority.is_some())
+            {
+                return Err(ConfigError::Boss);
+            }
+            if let Some(required) = boss.required_map_clear.as_deref() {
+                let map = boss.map_id.as_deref().ok_or(ConfigError::Boss)?;
+                prerequisites.insert(map, required);
+            }
+            boss.validate(elements)?;
+            if let Some(pet_ids) = boss
+                .reward_policy
+                .as_ref()
+                .and_then(|policy| policy.recruitment_pet_ids.as_deref())
+            {
+                self.validate_recruitment(boss, pet_ids)?;
+            }
+        }
+        for &map in prerequisites.keys() {
+            let mut visited = BTreeSet::new();
+            let mut current = map;
+            while let Some(&required) = prerequisites.get(current) {
+                if !map_ids.contains(required) || !visited.insert(current) {
+                    return Err(ConfigError::Boss);
+                }
+                current = required;
+            }
+        }
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
         self.rewards.validate()?;
@@ -436,7 +662,7 @@ impl CoopConfig {
 
     /// Canonical value used for the digest.
     pub fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Uint(u64::from(self.schema_version)),
             Value::Text(self.engine_capability.clone()),
             Value::Text(self.config_id.clone()),
@@ -447,11 +673,32 @@ impl CoopConfig {
             self.damage.to_value(),
             Value::List(self.elements.iter().map(ElementProfile::to_value).collect()),
             self.multiplier.to_value(),
-            self.boss.to_value(),
+            match &self.boss {
+                Some(boss) => boss.to_value(),
+                None => Value::List(self.bosses().iter().map(BossConfig::to_value).collect()),
+            },
             Value::List(self.skills.iter().map(SkillConfig::to_value).collect()),
             Value::List(self.pets.iter().map(PetConfig::to_value).collect()),
             self.rewards.to_value(),
-        ])
+        ];
+        if let Some(artifacts) = &self.artifacts {
+            fields.push(artifacts.to_value());
+        }
+        if let Some(TerminalOutcomePolicy::BossDefeatFirst) = self.terminal_outcome_policy {
+            fields.push(Value::Text("boss-defeat-first".into()));
+        }
+        Value::List(fields)
+    }
+
+    pub fn has_artifact_catalog(&self) -> bool {
+        self.artifacts.is_some()
+    }
+
+    pub fn bosses(&self) -> &[BossConfig] {
+        self.boss.as_ref().map_or_else(
+            || self.bosses.as_deref().unwrap_or_default(),
+            std::slice::from_ref,
+        )
     }
 
     /// Element profiles in canonical element order.
@@ -495,12 +742,82 @@ impl CoopConfig {
             if skill.id.is_empty() || skill.id.len() > 64 {
                 return Err(ConfigError::Skill);
             }
-            skill.validate()?;
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                && (skill.effect.contribution.is_some() || skill.effect.kind.is_extended())
+            {
+                return Err(ConfigError::Skill);
+            }
+            if self.schema_version == HISTORICAL_SCHEMA_VERSION && skill.upgrade_levels.is_some() {
+                return Err(ConfigError::Skill);
+            }
+            skill.validate(&self.resources)?;
             if skills.insert(skill.id.as_str(), skill).is_some() {
                 return Err(ConfigError::DuplicateSkill);
             }
         }
         Ok(skills)
+    }
+
+    fn validate_recruitment(
+        &self,
+        boss: &BossConfig,
+        pet_ids: &[String],
+    ) -> Result<(), ConfigError> {
+        let map = MAPS
+            .iter()
+            .find(|map| Some(map.id) == boss.map_id.as_deref())
+            .ok_or(ConfigError::Rewards)?;
+        if pet_ids.is_empty() {
+            return Err(ConfigError::Rewards);
+        }
+        let mut previous = None;
+        for pet_id in pet_ids {
+            let pet = self
+                .pets
+                .iter()
+                .find(|pet| pet.id == *pet_id)
+                .ok_or(ConfigError::Rewards)?;
+            let (index, identity) = IDENTITIES
+                .iter()
+                .enumerate()
+                .find(|(_, identity)| identity.id == pet_id)
+                .ok_or(ConfigError::Rewards)?;
+            let legendary = matches!(
+                identity.id,
+                "fire-pyrecrown"
+                    | "water-lagoonarch"
+                    | "electric-stormdiadem"
+                    | "ground-faultwarden"
+                    | "ghost-lanternwake"
+                    | "light-dawnarchon"
+            );
+            let rarity = if legendary {
+                "map-legendary"
+            } else {
+                "map-regular"
+            };
+            // Match the Wave 1 catalog preference: regulars in roster order,
+            // then the map Legendary. The published order pins the selection.
+            let priority = (legendary, index);
+            if identity.roster_state != RosterState::Active
+                || identity.family != "core"
+                || identity.id == FEATURED_LIMITED_ID
+                || STANDARD_POOL.contains(&identity.id)
+                || identity.element.index() != map.element.index()
+                || pet.element()? != identity.element
+                || pet.rarity != rarity
+                || pet
+                    .catalog
+                    .as_ref()
+                    .and_then(|catalog| catalog.map_id.as_deref())
+                    != Some(map.id)
+                || previous.is_some_and(|prior| prior >= priority)
+            {
+                return Err(ConfigError::Rewards);
+            }
+            previous = Some(priority);
+        }
+        Ok(())
     }
 
     fn pets_validate(
@@ -512,9 +829,49 @@ impl CoopConfig {
             return Err(ConfigError::MissingPet);
         }
         let mut seen = BTreeSet::new();
+        let individual_growth = self.pets.iter().any(|pet| pet.growth.is_some());
         for pet in &self.pets {
+            if individual_growth {
+                let growth = pet.growth.as_ref().ok_or(ConfigError::Pet)?;
+                if self.schema_version == HISTORICAL_SCHEMA_VERSION
+                    || !matches!(
+                        growth.curve.as_str(),
+                        "steady" | "focused" | "bulwark" | "dragon" | "agile"
+                    )
+                    || growth.bias_pm.unsigned_abs() > 100
+                    || [growth.health_bp, growth.attack_bp, growth.defense_bp]
+                        .iter()
+                        .any(|&rate| rate > 250)
+                {
+                    return Err(ConfigError::Pet);
+                }
+                growth.stat(pet.max_hp, growth.health_bp, 99)?;
+                growth.stat(pet.attack, growth.attack_bp, 99)?;
+                growth.stat(pet.defense, growth.defense_bp, 99)?;
+            }
             if pet.id.is_empty() || pet.id.len() > 64 || pet.max_hp == 0 || pet.attack == 0 {
                 return Err(ConfigError::Pet);
+            }
+            match (self.schema_version, &pet.catalog) {
+                (HISTORICAL_SCHEMA_VERSION, None) => (),
+                (CONFIG_SCHEMA_VERSION, Some(catalog))
+                    if catalog.name.trim() == catalog.name
+                        && !catalog.name.is_empty()
+                        && catalog.name.len() <= 128
+                        && catalog.map_id.as_deref().is_none_or(stable_id)
+                        && matches!(pet.power_class.as_str(), "s" | "a" | "b")
+                        && matches!(
+                            pet.rarity.as_str(),
+                            "limited-s"
+                                | "standard-s"
+                                | "map-legendary"
+                                | "map-regular"
+                                | "family-exploration"
+                        )
+                        && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
+                            identity.roster_state == crate::arena8::binding::RosterState::Candidate
+                        }) => {}
+                _ => return Err(ConfigError::Pet),
             }
             if pet.crit_rate_bp > 10_000 || pet.crit_damage_bp == 0 {
                 return Err(ConfigError::Pet);
@@ -524,6 +881,11 @@ impl CoopConfig {
             }
             let element = parse_element(&pet.element)?;
             let profile = elements[element.index()];
+            if profile.boss_crit_damage_bonus_bp.is_some_and(|bonus| {
+                pet.crit_damage_bp < 10_000 || pet.crit_damage_bp.checked_add(bonus).is_none()
+            }) {
+                return Err(ConfigError::Pet);
+            }
             // A Pet keeps its individual identity but must stay within the
             // authored elemental budget envelope.
             if pet.max_hp > profile.max_hp.saturating_mul(4)
@@ -532,15 +894,21 @@ impl CoopConfig {
             {
                 return Err(ConfigError::PetBudget);
             }
-            for binding in [&pet.skill, &pet.signature, &pet.ultimate, &pet.guard] {
-                if !skills.contains_key(binding.as_str()) {
-                    return Err(ConfigError::MissingReference);
+            for (binding, kind) in [
+                (Some(&pet.skill), SkillKind::Skill),
+                (Some(&pet.signature), SkillKind::Signature),
+                (Some(&pet.ultimate), SkillKind::Ultimate),
+                (Some(&pet.guard), SkillKind::Guard),
+                (pet.fire_zone.as_ref(), SkillKind::FireZone),
+            ] {
+                if let Some(binding) = binding {
+                    let skill = skills
+                        .get(binding.as_str())
+                        .ok_or(ConfigError::MissingReference)?;
+                    if skill.effect.kind.is_extended() && skill.kind != kind {
+                        return Err(ConfigError::Skill);
+                    }
                 }
-            }
-            if let Some(id) = &pet.fire_zone
-                && !skills.contains_key(id.as_str())
-            {
-                return Err(ConfigError::MissingReference);
             }
         }
         Ok(())
@@ -664,7 +1032,7 @@ impl DamageConfig {
             || self.defense_divisor == 0
             || self.crit_roll_basis == 0
             || !(10_000..=1_000_000).contains(&self.crit_roll_basis)
-            || self.artifact_scale_pm == 0
+            || self.artifact_scale_pm == Some(0)
         {
             return Err(ConfigError::Damage);
         }
@@ -678,7 +1046,8 @@ impl DamageConfig {
             Value::Uint(u64::from(self.own_tile_weight_pm)),
             Value::Uint(u64::from(self.defense_divisor)),
             Value::Uint(u64::from(self.crit_roll_basis)),
-            Value::Uint(u64::from(self.artifact_scale_pm)),
+            self.artifact_scale_pm
+                .map_or(Value::Null, |scale| Value::Uint(u64::from(scale))),
         ])
     }
 }
@@ -702,7 +1071,7 @@ impl MultiplierConfig {
             let mut seen = BTreeSet::new();
             let mut total = 0u64;
             for tier in &stage.tiers {
-                if tier.multiplier == 0
+                if !(1..=super::CELLS as u8).contains(&tier.multiplier)
                     || tier.weight == 0
                     || !seen.insert(tier.multiplier)
                     || tier.damage_weight_pm > 100_000
@@ -887,6 +1256,9 @@ impl ElementProfile {
             || self.crit_rate_bp > 10_000
             || self.crit_damage_bp < 10_000
             || self.crit_damage_bp > 40_000
+            || self
+                .boss_crit_damage_bonus_bp
+                .is_some_and(|bonus| !(1..=10_000).contains(&bonus))
         {
             return Err(ConfigError::ElementSet);
         }
@@ -895,7 +1267,7 @@ impl ElementProfile {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.element.clone()),
             Value::Uint(u64::from(self.max_hp)),
             Value::Uint(u64::from(self.attack)),
@@ -916,7 +1288,11 @@ impl ElementProfile {
                     })
                     .collect(),
             ),
-        ])
+        ];
+        if let Some(bonus) = self.boss_crit_damage_bonus_bp {
+            fields.push(Value::Uint(u64::from(bonus)));
+        }
+        Value::List(fields)
     }
 }
 
@@ -937,7 +1313,22 @@ impl BossConfig {
         {
             return Err(ConfigError::Boss);
         }
+        if let Some(policy) = &self.reward_policy {
+            if self.map_id.is_none()
+                || policy.minimum_actions.as_ref().is_some_and(|limits| {
+                    limits.victory > super::MAX_TURNS || limits.defeat > super::MAX_TURNS
+                })
+            {
+                return Err(ConfigError::Rewards);
+            }
+            for payout in [&policy.first_clear, &policy.repeat_clear, &policy.defeat] {
+                payout.validate()?;
+            }
+        }
         self.phase.validate()?;
+        if self.phase2_current_hp()? == 0 {
+            return Err(ConfigError::BossPhase);
+        }
         self.attack_model.validate()?;
         Ok(())
     }
@@ -971,7 +1362,7 @@ impl BossConfig {
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(self.name.clone()),
             Value::Text(self.element.clone()),
@@ -984,8 +1375,41 @@ impl BossConfig {
             self.attack_model.to_value(),
             Value::Uint(u64::from(self.telegraph_turns)),
             Value::Uint(u64::from(self.required_room_points)),
-        ])
+        ];
+        if let Some(map_id) = &self.map_id {
+            fields.push(Value::Text(map_id.clone()));
+        }
+        if let Some(p) = &self.reward_policy {
+            let mut payouts = vec![
+                p.first_clear.to_value(),
+                p.repeat_clear.to_value(),
+                p.defeat.to_value(),
+            ];
+            if let Some(limits) = &p.minimum_actions {
+                payouts.push(list([
+                    Value::Uint(u64::from(limits.victory)),
+                    Value::Uint(u64::from(limits.defeat)),
+                ]));
+            }
+            if let Some(pet_ids) = &p.recruitment_pet_ids {
+                payouts.push(list(pet_ids.iter().cloned().map(Value::Text)));
+            }
+            fields.push(Value::List(payouts));
+        }
+        if let Some(required) = &self.required_map_clear {
+            // Append only when authored to preserve existing published digests.
+            fields.push(Value::Text(required.clone()));
+        }
+        Value::List(fields)
     }
+}
+
+pub(super) fn stable_id(value: &str) -> bool {
+    (3..=64).contains(&value.len())
+        && value.as_bytes()[0].is_ascii_lowercase()
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
 }
 
 impl PhaseConfig {
@@ -1026,21 +1450,38 @@ impl BossAttackModel {
         if self.base_damage == 0 || self.defense_divisor == 0 || self.minimum_damage == 0 {
             return Err(ConfigError::Boss);
         }
+        if self.vulnerability.is_some_and(|status| {
+            !(1..=9_000).contains(&status.value_pm) || !(2..=32).contains(&status.duration_turns)
+        }) {
+            return Err(ConfigError::Boss);
+        }
         Ok(())
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Uint(u64::from(self.base_damage)),
             Value::Uint(u64::from(self.per_round_damage)),
             Value::Uint(u64::from(self.defense_divisor)),
             Value::Uint(u64::from(self.minimum_damage)),
-        ])
+        ];
+        if let Some(status) = self.vulnerability {
+            fields.push(list([
+                Value::Uint(u64::from(status.value_pm)),
+                Value::Uint(u64::from(status.duration_turns)),
+            ]));
+        }
+        if let Some(priority) = self.target_priority {
+            fields.push(Value::Text(match priority {
+                BossTargetPriority::HighestMana => "highest-mana".into(),
+            }));
+        }
+        Value::List(fields)
     }
 }
 
 impl SkillConfig {
-    fn validate(&self) -> Result<(), ConfigError> {
+    fn validate(&self, resources: &ResourceConfig) -> Result<(), ConfigError> {
         if self.id.is_empty()
             || self.id.len() > 64
             || self.power_pm == 0
@@ -1050,11 +1491,90 @@ impl SkillConfig {
         {
             return Err(ConfigError::Skill);
         }
-        self.effect.validate()
+        if let Some(upgrades) = &self.upgrade_levels {
+            if upgrades.is_empty() || upgrades.len() >= usize::from(MAX_SKILL_LEVEL) {
+                return Err(ConfigError::Skill);
+            }
+            let mut previous = self.power_pm;
+            for upgrade in upgrades {
+                if !(1..=1_000_000).contains(&upgrade.materials)
+                    || upgrade.power_pm <= previous
+                    || upgrade.power_pm > 10_000
+                {
+                    return Err(ConfigError::Skill);
+                }
+                previous = upgrade.power_pm;
+            }
+        }
+        self.effect.validate()?;
+        if !self.effect.kind.is_extended() {
+            return Ok(());
+        }
+        if matches!(self.kind, SkillKind::Guard | SkillKind::FireZone)
+            || self.mana_cost > resources.mana_cap
+            || self.rage_cost > resources.rage_cap
+            || self.crit_eligible && self.effect.kind != EffectKind::ChainDamage
+        {
+            return Err(ConfigError::Skill);
+        }
+        for power in std::iter::once(self.power_pm).chain(
+            self.upgrade_levels
+                .iter()
+                .flatten()
+                .map(|upgrade| upgrade.power_pm),
+        ) {
+            self.validate_utility_power(resources, power)?;
+        }
+        Ok(())
+    }
+
+    fn validate_utility_power(
+        &self,
+        resources: &ResourceConfig,
+        power: u32,
+    ) -> Result<(), ConfigError> {
+        let scaled_value = u64::from(self.effect.value) * u64::from(power) / 1_000;
+        match self.effect.kind {
+            EffectKind::RageTransfer
+                if !(1..=u64::from(resources.rage_cap)).contains(&scaled_value)
+                    || self.rage_cost == resources.rage_cap =>
+            {
+                Err(ConfigError::Skill)
+            }
+            EffectKind::ManaRestore
+                if !(1..=u64::from(resources.mana_cap)).contains(&scaled_value) =>
+            {
+                Err(ConfigError::Skill)
+            }
+            EffectKind::Curse if !(1..=9_000).contains(&scaled_value) => Err(ConfigError::Skill),
+            EffectKind::Cleanse if power != 1_000 => Err(ConfigError::Skill),
+            EffectKind::ChainDamage if !(1..=u64::from(u32::MAX)).contains(&scaled_value) => {
+                Err(ConfigError::Skill)
+            }
+            _ => Ok(()),
+        }
+    }
+
+    pub fn max_level(&self) -> u8 {
+        self.upgrade_levels
+            .as_ref()
+            .map_or(1, |levels| 1 + levels.len() as u8)
+    }
+
+    pub fn power_at(&self, level: u8) -> Option<u32> {
+        match level {
+            0 => None,
+            1 => Some(self.power_pm),
+            level => self
+                .upgrade_levels
+                .as_ref()?
+                .get(usize::from(level) - 2)
+                .map(|upgrade| upgrade.power_pm),
+        }
     }
 
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(skill_kind_name(self.kind).into()),
             Value::Uint(u64::from(self.mana_cost)),
@@ -1062,33 +1582,45 @@ impl SkillConfig {
             Value::Uint(u64::from(self.cooldown_turns)),
             Value::Uint(u64::from(self.power_pm)),
             Value::Bool(self.crit_eligible),
-            list([
-                Value::Text(effect_kind_name(self.effect.kind).into()),
-                Value::Text(effect_target_name(self.effect.target).into()),
-                Value::Uint(u64::from(self.effect.value)),
-                Value::Uint(u64::from(self.effect.duration_turns)),
-                Value::Uint(u64::from(self.effect.stacking_pm)),
-            ]),
-        ])
+            self.effect.to_value(),
+        ];
+        if self.effect.contribution.is_some() {
+            fields.push(Value::Text("caster".into()));
+        }
+        if let Some(upgrades) = &self.upgrade_levels {
+            fields.push(list(upgrades.iter().map(|upgrade| {
+                list([
+                    Value::Uint(u64::from(upgrade.materials)),
+                    Value::Uint(u64::from(upgrade.power_pm)),
+                ])
+            })));
+        }
+        Value::List(fields)
     }
 }
 
 impl EffectConfig {
     fn validate(&self) -> Result<(), ConfigError> {
-        match self.kind {
-            EffectKind::Buff | EffectKind::Debuff => {
-                if self.duration_turns == 0 || self.value == 0 {
-                    return Err(ConfigError::Skill);
-                }
-            }
-            EffectKind::Damage
-            | EffectKind::DamageOverTime
-            | EffectKind::Heal
-            | EffectKind::Shield => {
-                if self.value == 0 {
-                    return Err(ConfigError::Skill);
-                }
-            }
+        if self.value == 0
+            || self.contribution.is_some()
+                && (!matches!(self.kind, EffectKind::Heal | EffectKind::Shield)
+                    || matches!(self.target, EffectTarget::Boss))
+        {
+            return Err(ConfigError::Skill);
+        }
+        if self.kind.is_extended() {
+            return self.validate_extended();
+        }
+        if self.hits.is_some()
+            || matches!(
+                self.target,
+                EffectTarget::LowestRageAlly | EffectTarget::LowestManaAlly
+            )
+        {
+            return Err(ConfigError::Skill);
+        }
+        if matches!(self.kind, EffectKind::Buff | EffectKind::Debuff) && self.duration_turns == 0 {
+            return Err(ConfigError::Skill);
         }
         if matches!(self.kind, EffectKind::Damage | EffectKind::DamageOverTime)
             && !matches!(self.target, EffectTarget::Boss)
@@ -1097,6 +1629,61 @@ impl EffectConfig {
         }
         Ok(())
     }
+
+    fn validate_extended(&self) -> Result<(), ConfigError> {
+        if self.kind == EffectKind::Curse {
+            return if self.target == EffectTarget::Boss
+                && self.hits.is_none()
+                && (1..=32).contains(&self.duration_turns)
+                && self.stacking_pm == 1000
+            {
+                Ok(())
+            } else {
+                Err(ConfigError::Skill)
+            };
+        }
+        if self.duration_turns != 0 || self.stacking_pm != 1_000 {
+            return Err(ConfigError::Skill);
+        }
+        match (self.kind, self.target, self.hits) {
+            (EffectKind::RageTransfer, EffectTarget::LowestRageAlly, None)
+            | (EffectKind::ManaRestore, EffectTarget::LowestManaAlly, None)
+            | (EffectKind::ChainDamage, EffectTarget::Boss, Some(2..=8)) => Ok(()),
+            (EffectKind::Cleanse, EffectTarget::Allies | EffectTarget::SelfActor, None)
+                if self.value == 1 =>
+            {
+                Ok(())
+            }
+            _ => Err(ConfigError::Skill),
+        }
+    }
+
+    fn to_value(&self) -> Value {
+        let mut fields = vec![
+            Value::Text(effect_kind_name(self.kind).into()),
+            Value::Text(effect_target_name(self.target).into()),
+            Value::Uint(u64::from(self.value)),
+            Value::Uint(u64::from(self.duration_turns)),
+            Value::Uint(u64::from(self.stacking_pm)),
+        ];
+        if let Some(hits) = self.hits {
+            fields.push(Value::Uint(u64::from(hits)));
+        }
+        Value::List(fields)
+    }
+}
+
+impl EffectKind {
+    fn is_extended(self) -> bool {
+        matches!(
+            self,
+            Self::RageTransfer
+                | Self::ManaRestore
+                | Self::Cleanse
+                | Self::ChainDamage
+                | Self::Curse
+        )
+    }
 }
 
 impl PetConfig {
@@ -1104,8 +1691,18 @@ impl PetConfig {
         parse_element(&self.element)
     }
 
+    pub fn skill_ids(&self) -> [Option<&str>; 5] {
+        [
+            Some(&self.guard),
+            Some(&self.skill),
+            Some(&self.signature),
+            Some(&self.ultimate),
+            self.fire_zone.as_deref(),
+        ]
+    }
+
     fn to_value(&self) -> Value {
-        list([
+        let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(self.element.clone()),
             Value::Text(self.rarity.clone()),
@@ -1120,7 +1717,26 @@ impl PetConfig {
             Value::Text(self.ultimate.clone()),
             Value::Text(self.guard.clone()),
             Value::Text(self.fire_zone.clone().unwrap_or_default()),
-        ])
+        ];
+        if let Some(catalog) = &self.catalog {
+            fields.push(list([
+                Value::Text(catalog.name.clone()),
+                catalog
+                    .map_id
+                    .as_ref()
+                    .map_or(Value::Null, |id| Value::Text(id.clone())),
+            ]));
+        }
+        if let Some(growth) = &self.growth {
+            fields.push(list([
+                Value::Text(growth.curve.clone()),
+                Value::Uint(u64::from(growth.health_bp)),
+                Value::Uint(u64::from(growth.attack_bp)),
+                Value::Uint(u64::from(growth.defense_bp)),
+                Value::Int(i64::from(growth.bias_pm)),
+            ]));
+        }
+        Value::List(fields)
     }
 }
 
@@ -1161,6 +1777,11 @@ const fn effect_kind_name(kind: EffectKind) -> &'static str {
         EffectKind::Shield => "shield",
         EffectKind::Buff => "buff",
         EffectKind::Debuff => "debuff",
+        EffectKind::RageTransfer => "rage-transfer",
+        EffectKind::ManaRestore => "mana-restore",
+        EffectKind::Cleanse => "cleanse",
+        EffectKind::ChainDamage => "chain-damage",
+        EffectKind::Curse => "curse",
     }
 }
 
@@ -1170,5 +1791,7 @@ const fn effect_target_name(target: EffectTarget) -> &'static str {
         EffectTarget::SelfActor => "self-actor",
         EffectTarget::Allies => "allies",
         EffectTarget::LowestAlly => "lowest-ally",
+        EffectTarget::LowestRageAlly => "lowest-rage-ally",
+        EffectTarget::LowestManaAlly => "lowest-mana-ally",
     }
 }

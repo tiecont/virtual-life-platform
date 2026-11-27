@@ -123,7 +123,7 @@ namespace Aetheria.PetArena.Presentation
 
                 artifacts = await api.GetArtifactState(lifetime.Token);
                 var reward = artifacts.inventory?.FirstOrDefault(item => item.acquiredMapId == "cinder-terraces")
-                    ?? artifacts.inventory?.FirstOrDefault(item => item.equipped == null);
+                    ?? artifacts.inventory?.FirstOrDefault(item => item.Equipment == null);
                 if (reward != null)
                 {
                     await api.EquipArtifact(new WaveAArtifactEquipRequest
@@ -206,10 +206,7 @@ namespace Aetheria.PetArena.Presentation
             await CaptureNative(prefix + "-terminal.png");
             if (nativeView == null || !nativeView.Terminal)
                 throw new InvalidOperationException("Native match did not terminate");
-            var settlement = await api.SettleArena8Native(matchId, new Arena8SettleRequest
-            {
-                requestId = NewRequestId(),
-            }, lifetime.Token);
+            var settlement = await SettleNativeBattle();
             state = await api.GetWave1State(lifetime.Token);
             artifacts = await api.GetArtifactState(lifetime.Token);
             DisposeNative();

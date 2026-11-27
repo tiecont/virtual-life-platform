@@ -15,4 +15,5 @@
 
 .system-metrics dd.metric-state{font-size:1rem;letter-spacing:0;overflow-wrap:normal}
 
+.simulation-results table{width:max-content;min-width:100%;table-layout:auto}.simulation-results th,.simulation-results td{white-space:nowrap;overflow-wrap:normal;word-break:normal}
 }

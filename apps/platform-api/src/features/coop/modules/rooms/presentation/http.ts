@@ -1,7 +1,7 @@
 import type {FastifyInstance,FastifyRequest} from 'fastify';
 import {z} from 'zod';
 import {
- CoopAdmissionCommandSchema,CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,
+ CoopBossIdSchema,CoopAdmissionCommandSchema,CoopCreateRoomSchema,CoopJoinRoomSchema,CoopReadySchema,CoopRoomCommandSchema,CoopRoomParamsSchema,CoopSelectPetSchema,CoopSkillPetParamsSchema,CoopSkillUpgradeSchema,
 } from '@aetheria/contracts';
 import type {Config} from '../../../../../shared/config/environment';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
@@ -10,10 +10,11 @@ import {WindowLimiter} from '../../../../identity/modules/accounts/domain/limits
 import {DomainError} from '../../../../../shared/common/errors';
 import {apiErrorHandler} from '../../../../../shared/common/http-errors';
 import type {CoopRoomService} from '../application/service';
+import type {CoopSkillService} from '../../skills/application/service';
 
 // Authenticated cooperative room routes. Default-off; the composition enables
 // them only for a local/test runtime, alongside the existing native previews.
-export function registerCoopRooms(http:FastifyInstance,config:Config,identity:IdentityService,rooms:CoopRoomService,now=Date.now){
+export function registerCoopRooms(http:FastifyInstance,config:Config,identity:IdentityService,rooms:CoopRoomService,skills:CoopSkillService,now=Date.now){
  if(config.NODE_ENV==='production')throw new Error('Cooperative rooms are local/test only');
  const limits=new WindowLimiter(now),accounts=new WeakMap<FastifyRequest,string>();
  const token=(req:FastifyRequest)=>readSessionToken(req,config)!;
@@ -30,17 +31,34 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    if(!limits.take('coop-ip:'+req.ip,300))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
   api.addHook('preHandler',async req=>{
-   z.strictObject({}).parse(req.query);
+   if(req.routeOptions.url!=='/v1/coop/eligibility')z.strictObject({}).parse(req.query);
    const credential=token(req);
    const context=await identity.authenticate(credential);
    accounts.set(req,context.accountId);
    if(!limits.take('coop-session:'+identity.hash(credential),180))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
-  api.get('/coop/eligibility',req=>rooms.eligibility(account(req)));
+  api.get('/coop/pets/:ownedPetInstanceId/skills',req=>{
+   const {ownedPetInstanceId}=CoopSkillPetParamsSchema.parse(req.params);
+   return skills.progression(account(req),ownedPetInstanceId);
+  });
+  api.post('/coop/pets/:ownedPetInstanceId/skill-upgrades',req=>{
+   write(req);
+   const {ownedPetInstanceId}=CoopSkillPetParamsSchema.parse(req.params);
+   return skills.upgrade(account(req),ownedPetInstanceId,CoopSkillUpgradeSchema.parse(req.body));
+  });
+  api.get('/coop/eligibility',req=>{
+   const {bossId,mapId}=z.strictObject({bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional()}).parse(req.query);
+   return rooms.eligibility(account(req),bossId,mapId);
+  });
+  api.get('/coop/encounters',req=>rooms.encounters(account(req)));
   api.post('/coop/rooms',req=>{
    write(req);
    const body=CoopCreateRoomSchema.parse(req.body);
    return rooms.create(account(req),body.requestId,body);
+  });
+  api.get('/coop/rooms/:roomId/reward',req=>{
+   const {roomId}=CoopRoomParamsSchema.parse(req.params);
+   return rooms.reward(account(req),roomId);
   });
   api.get('/coop/rooms/:roomId',req=>{
    const {roomId}=CoopRoomParamsSchema.parse(req.params);
@@ -50,7 +68,7 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    write(req);
    const {roomId}=CoopRoomParamsSchema.parse(req.params);
    const body=CoopJoinRoomSchema.parse(req.body);
-   return rooms.join(account(req),body.requestId,roomId);
+   return rooms.join(account(req),body.requestId,roomId,body.mapId);
   });
   api.post('/coop/rooms/:roomId/leave',req=>{
    write(req);

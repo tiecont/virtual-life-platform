@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading;
+using Aetheria.PetArena.Infrastructure;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -46,7 +48,8 @@ namespace Aetheria.Tests.PlayMode
             Assert.That(HasText("+500 EXP"), Is.True);
             Assert.That(HasText("Recruited Emberloom"), Is.True);
             yield return Press("reward-evolution");
-            Assert.That(HasText("Coalwhisk · Fire · Lv 10 · Stage 0"), Is.True);
+            Assert.That(HasText("Coalwhisk · Fire · Lv 10"), Is.True);
+            yield return AssertCommittedStage("fire-coalwhisk", 0);
             yield return Press("evolution-back");
             yield return Press("open-gacha");
             yield return Press("pull-ten");
@@ -67,12 +70,25 @@ namespace Aetheria.Tests.PlayMode
             Assert.That(root.Q<Button>("party-pet-v3-fire-icarus").text, Does.StartWith("4. "));
             yield return Press("open-evolution");
             yield return Press("evolution-pet-v3-fire-icarus");
-            Assert.That(HasText("Icarus · Fire · Lv 22 · Stage 1"), Is.True);
-            Assert.That(HasText("Lv 20 · Second skill & map 2 ✓"), Is.True);
+            Assert.That(HasText("Icarus · Fire · Lv 22"), Is.True);
+            Assert.That(HasText("Lv 20 · Power skill & Artifact B eligibility ✓"), Is.True);
+            yield return AssertCommittedStage("pet-v3-fire-icarus", 1);
             yield return Press("evolution-back");
             yield return Press("choose-map");
             Assert.That(root.Q<Button>("map-cinder-terraces").text, Does.EndWith("Replay"));
             Assert.That(root.Q<Button>("map-tideglass-lagoon").enabledSelf, Is.True);
+        }
+
+        private static IEnumerator AssertCommittedStage(string petId, int expectedStage)
+        {
+            using var api = new Wave1LocalApi(Environment.GetEnvironmentVariable("AETHERIA_WAVE1_API"),
+                Environment.GetEnvironmentVariable("AETHERIA_WAVE1_WEB_ORIGIN"), Application.persistentDataPath);
+            Assert.That(api.LoadSession(), Is.True, "The campaign saved its authenticated session.");
+            var request = api.GetWave1State(CancellationToken.None);
+            yield return WaitFor(() => request.IsCompleted, "committed Pet progression");
+            var pet = request.GetAwaiter().GetResult().FindPet(petId);
+            Assert.That(pet, Is.Not.Null, petId);
+            Assert.That(pet.stage, Is.EqualTo(expectedStage), petId);
         }
 
         private IEnumerator Press(string name)

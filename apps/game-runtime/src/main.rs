@@ -1,4 +1,8 @@
 use aetheria_game_runtime::{Config, probe, router};
+use aetheria_pet_arena::arena8::coop::simulation::{
+    COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
+};
+use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules};
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -12,14 +16,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             enabled.as_deref()
         },
     )?;
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
     // Authoritative bundle validation for Admin publication. The Nest control
     // plane never re-implements the schema or the digest: it asks the engine.
     if let [flag, path] = args.as_slice()
         && flag == "--check-gameplay-config"
     {
         let bytes = std::fs::read(path)?;
-        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
+        // For validation, use the first boss in the config
+        let config = CoopConfig::parse(&bytes)?;
+        let boss_id = config
+            .bosses()
+            .first()
+            .map(|b| b.id.clone())
+            .unwrap_or_default();
+        let rules = CoopRules::load(&bytes, boss_id)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let digest = rules.digest();
         let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
@@ -54,20 +65,66 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
         return Ok(());
     }
-    if let [flag, path, policy, seeds] = args.as_slice()
-        && flag == "--simulate-coop"
+    let mut party: Option<[SimulationSeat; 4]> = None;
+    if args
+        .first()
+        .is_some_and(|flag| matches!(flag.as_str(), "--simulate-coop" | "--compare-coop"))
+        && args.len() >= 4
+        && args[args.len() - 2] == "--party"
     {
-        let policy = aetheria_pet_arena::arena8::coop::simulation::Policy::parse(policy)
-            .ok_or("Unknown cooperative simulation policy")?;
-        let seeds: u32 = seeds
-            .parse()
-            .map_err(|_| "Invalid cooperative simulation seed count")?;
+        let path = args.pop().unwrap();
+        args.pop();
+        party = Some(serde_json::from_slice(&std::fs::read(path)?)?);
+    }
+    if let [flag, path, policy, seeds, boss @ ..] = args.as_slice()
+        && flag == "--simulate-coop"
+        && boss.len() <= 1
+    {
+        let policy = Policy::parse(policy).ok_or("Unknown cooperative simulation policy")?;
+        let seeds = simulation_seeds(seeds)?;
         let bytes = std::fs::read(path)?;
-        let rules = aetheria_pet_arena::arena8::coop::CoopRules::load(&bytes)
-            .map_err(|_| "Invalid cooperative gameplay configuration")?;
-        let report = aetheria_pet_arena::arena8::coop::simulation::simulate(&rules, policy, seeds)
-            .map_err(|_| "Cooperative simulation rejected")?;
+        let boss_id = if let Some(boss_id) = boss.first() {
+            boss_id.clone()
+        } else {
+            let config = CoopConfig::parse(&bytes)?;
+            config
+                .bosses()
+                .first()
+                .ok_or("No cooperative encounter")?
+                .id
+                .clone()
+        };
+        let rules = simulation_rules(&bytes, boss_id)?;
+        let report = simulate_party(&rules, policy, seeds, party.as_ref())
+            .map_err(|error| error.message())?;
         println!("{}", serde_json::to_string(&report)?);
+        return Ok(());
+    }
+    if let [flag, path, seeds, bosses @ ..] = args.as_slice()
+        && flag == "--compare-coop"
+    {
+        let seeds = simulation_seeds(seeds)?;
+        if seeds == 0 || seeds > COMPARISON_MAX_SEEDS {
+            return Err("Cooperative comparison seed count is outside the bound".into());
+        }
+        if bosses.is_empty()
+            || bosses.len() > COMPARISON_MAX_BOSSES
+            || (bosses.len() == 2 && bosses[0] == bosses[1])
+        {
+            return Err("Cooperative comparison requires one or two distinct encounters".into());
+        }
+        let bytes = std::fs::read(path)?;
+        let mut reports = Vec::with_capacity(bosses.len() * POLICIES.len());
+        for boss in bosses {
+            let rules = simulation_rules(&bytes, boss.clone())?;
+            for policy in POLICIES {
+                reports.push(
+                    simulate_party(&rules, policy, seeds, party.as_ref())
+                        .map_err(|error| error.message())?,
+                );
+            }
+        }
+        println!("{}", serde_json::to_string(&reports)?);
         return Ok(());
     }
     if args == ["--healthcheck"] {
@@ -110,6 +167,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_graceful_shutdown(shutdown())
         .await?;
     Ok(())
+}
+
+fn simulation_seeds(value: &str) -> Result<u32, &'static str> {
+    value
+        .parse()
+        .map_err(|_| "Invalid cooperative simulation seed count")
+}
+
+fn simulation_rules(bytes: &[u8], boss_id: String) -> Result<CoopRules, &'static str> {
+    CoopRules::load(bytes, boss_id)
+        .map_err(|_| "Invalid cooperative gameplay configuration or encounter")
 }
 
 async fn shutdown() {

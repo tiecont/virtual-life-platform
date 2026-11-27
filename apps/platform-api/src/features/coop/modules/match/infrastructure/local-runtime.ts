@@ -50,7 +50,7 @@ async function waitForReady(port:number,timeoutMs:number){
  throw new Error('Cooperative native runtime readiness timed out');
 }
 function nativeSeats(seats:readonly CoopSeat[]){
- return seats.map(seat=>({account:seat.account,petId:seat.petId,level:seat.petLevel,artifactPowerPm:seat.artifactPowerPm}));
+ return seats.map(({petLevel,...seat})=>({...seat,level:petLevel}));
 }
 
 // Local-only process adapter for the configuration-bound cooperative ruleset.
@@ -86,7 +86,7 @@ export class LocalNativeCoopRuntime implements CoopRuntimePort{
    activeStorageKey:this.options.storageKeyId,
    storageKeys:{[this.options.storageKeyId]:hexBytes(this.options.storageKey)},
    engineHash:hexBytes(engineHash),
-   coop:{seats:nativeSeats(request.seats)},
+   coop:{bossId:request.bossId,seats:nativeSeats(request.seats)},
   };
   const directory=await mkdtemp(join(tmpdir(),'aetheria-coop-native-'));
   const settingsFile=join(directory,'runtime.json'),bundleFile=join(directory,'bundle.json');

@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 import type {Pool} from 'pg';
 import {DomainError} from '../../../../../shared/common/errors';
+import {WAVE1_PETS} from '../../wave1/domain/catalog';
 import {MAPS} from '../../wave1/domain/manifest';
 
 export type AllocateInput=Readonly<{petId:string;mapId:string;encounterId:string}>;
@@ -17,6 +18,19 @@ export const unavailable=(message:string)=>new DomainError('WORLD_UNAVAILABLE',5
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAP_IDS:ReadonlySet<string>=new Set(MAPS.map(map=>map.id));
+
+export function arena8CampaignMap(mapId:string){
+  const map=MAPS.find(candidate=>candidate.id===mapId);
+  if(!map)return undefined;
+  const pets=WAVE1_PETS.filter(pet=>pet.mapId===mapId);
+  return {
+    mapName:map.name,regularEncounterId:map.id+'-'+map.regular.id,bossEncounterId:map.id+'-'+map.boss.id,
+    recruitment:{
+      regularPetIds:pets.filter(pet=>pet.category==='map_regular').map(pet=>pet.id),
+      legendaryPetId:pets.find(pet=>pet.category==='map_legendary')?.id??null,
+    },
+  };
+}
 
 export function assertUuid(value:string,label:string){
   if(!UUID.test(value))throw invalid(label+' must be a UUID');

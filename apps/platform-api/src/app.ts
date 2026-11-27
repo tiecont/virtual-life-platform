@@ -9,6 +9,8 @@ import {EngineGameplayBundleValidator,type GameplayBundleValidator} from './feat
 import {EngineGameplaySimulator,type GameplaySimulator} from './features/gameplay/modules/config/infrastructure/engine-simulator';
 import {OperatorGameplayConfig} from './features/gameplay/modules/config/application/operator-gameplay-config';
 import {registerGameplayConfig} from './features/gameplay/modules/config/presentation/operator-http';
+import {CoopSettlement} from './features/coop/modules/settlement/application/service';
+import {CoopSkillService} from './features/coop/modules/skills/application/service';
 import {CoopRoomService} from './features/coop/modules/rooms/application/service';
 import {registerCoopRooms} from './features/coop/modules/rooms/presentation/http';
 import {CoopMatchProvisioner} from './features/coop/modules/match/application/provisioner';
@@ -325,6 +327,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
     registerArtifacts(http,config,identity,artifacts,true,options.now);
     identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
   }
+  const coopSettlement=new CoopSettlement(db);
+  identity.registerDeletionOwner('coopSettlement',(account,transaction)=>coopSettlement.settleBeforeErasure(account,transaction));
+  const coopSkills=new CoopSkillService(db);
+  identity.registerExportOwner('coopSkillLevels',(account,transaction)=>coopSkills.exportAccount(transaction,account));
   if(config.LOCAL_COOP_ROOMS==='1'){
     let provisioner:CoopMatchProvisioner|undefined=options.coopProvisioner,ownedProvisioner=false;
     if(!provisioner&&config.LOCAL_COOP_NATIVE==='1'){
@@ -353,8 +359,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
       ownedProvisioner=true;
     }
     if(provisioner)await provisioner.recover();
-    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),provisioner);
-    registerCoopRooms(http,config,identity,coopRooms,options.now);
+    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner);
+    registerCoopRooms(http,config,identity,coopRooms,coopSkills,options.now);
     if(ownedProvisioner&&provisioner){
       const owned=provisioner;
       http.addHook('preClose',async()=>{await owned.close();});

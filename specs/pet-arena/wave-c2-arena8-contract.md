@@ -169,3 +169,18 @@ publishes.
   Unity cooperative presentation.
 - These are tracked as Wave D2 backlog tasks; nothing here is a public release
   or production balance approval.
+
+### Wave D4 cooperative recruitment
+
+A schema v2 Boss reward policy may publish `recruitmentPetIds`. The engine
+accepts a nonempty list of active Pets from that Boss's canonical Wave 1 map.
+Regular Pets follow roster order and precede the map Legendary. The ordered
+list is part of the immutable bundle digest.
+
+The first qualifying cooperative Boss victory records the participant's pinned
+list with the Boss encounter. The regular and Boss encounters together complete
+the map in either order. The settlement that records the first map clear grants
+the first unowned species in the pinned list as a level-one campaign Pet, after
+any solo encounter recruit. The clear, ownership and settlement commit together.
+The Pet is available in the participant's Wave 1 inventory. An omitted list
+skips the cooperative recruitment grant.

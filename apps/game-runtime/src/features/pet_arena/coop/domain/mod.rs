@@ -1,7 +1,8 @@
 //! Configuration-bound cooperative domain adapter.
 use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
 use aetheria_pet_arena::arena8::coop::{
-    ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    ArtifactLoadout, ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    SkillLevelBinding,
 };
 use std::sync::Arc;
 
@@ -11,34 +12,69 @@ pub const MAX_SEAT_POWER_PM: u16 = 5_000;
 
 pub struct Rules {
     engine: Arc<CoopRules>,
-    seats: [SeatInput; SEATS],
+    initial: CoopState,
 }
 
 impl Rules {
     /// Bind the published bundle and the server-authored seat allocation.
     /// Missing, malformed, incompatible or mismatched input fails closed.
-    pub fn load(bundle: &[u8], seats: [SeatInput; SEATS]) -> Result<Self, ConfigError> {
+    #[cfg(test)]
+    pub fn load(
+        bundle: &[u8],
+        seats: [SeatInput; SEATS],
+        boss_id: String,
+        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+    ) -> Result<Self, ConfigError> {
+        Self::load_with_skill_levels(
+            bundle,
+            seats,
+            boss_id,
+            loadouts,
+            &std::array::from_fn(|_| Vec::new()),
+        )
+    }
+
+    pub fn load_with_skill_levels(
+        bundle: &[u8],
+        seats: [SeatInput; SEATS],
+        boss_id: String,
+        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+        skill_levels: &[Vec<SkillLevelBinding>; SEATS],
+    ) -> Result<Self, ConfigError> {
         let mut accounts = std::collections::BTreeSet::new();
-        let mut pets = std::collections::BTreeSet::new();
+        let mut owned_pets = std::collections::BTreeSet::new();
         for seat in &seats {
             if seat.account.is_empty()
                 || !accounts.insert(seat.account.clone())
-                || !pets.insert(seat.pet_id.clone())
+                || seat.owned_pet_instance_id.is_empty()
+                || !owned_pets.insert(seat.owned_pet_instance_id.clone())
                 || !(1..=60).contains(&seat.level)
                 || seat.artifact_power_pm > MAX_SEAT_POWER_PM
             {
                 return Err(ConfigError::Party);
             }
         }
-        let engine = CoopRules::load(bundle)?;
+        let engine = CoopRules::load(bundle, boss_id)?;
+        let mut initial = match loadouts {
+            Some(loadouts) => engine.allocate_with_loadouts(seats, loadouts),
+            None if !engine.config().has_artifact_catalog() => engine.allocate(seats),
+            None => return Err(ConfigError::Artifact),
+        }
+        .map_err(|error| match error {
+            CoopError::Config(error) => error,
+            _ => ConfigError::Party,
+        })?;
+        engine
+            .bind_skill_levels(&mut initial, skill_levels)
+            .map_err(|_| ConfigError::Skill)?;
         Ok(Self {
             engine: Arc::new(engine),
-            seats,
+            initial,
         })
     }
 
-    pub fn initial(&self) -> Result<CoopState, CoopError> {
-        self.engine.allocate(self.seats.clone())
+    pub fn initial(&self) -> CoopState {
+        self.initial.clone()
     }
 
     pub fn engine(&self) -> &CoopRules {
@@ -56,10 +92,16 @@ impl Rules {
         if state.config_digest != self.engine.digest() {
             return Err(Error::InvalidState);
         }
-        for (seat, participant) in self.seats.iter().zip(state.participants.iter()) {
+        for (seat, participant) in self.initial.participants.iter().zip(&state.participants) {
             if participant.account != seat.account
                 || participant.pet_id != seat.pet_id
+                || participant.upgraded_skill_levels() != seat.upgraded_skill_levels()
                 || participant.level != seat.level
+                || participant.owned_pet_instance_id != seat.owned_pet_instance_id
+                || participant.artifact_loadout_digest != seat.artifact_loadout_digest
+                || (seat.artifact_loadout_digest.is_some()
+                    && (participant.max_hp, participant.attack, participant.defense)
+                        != (seat.max_hp, seat.attack, seat.defense))
             {
                 return Err(Error::InvalidState);
             }

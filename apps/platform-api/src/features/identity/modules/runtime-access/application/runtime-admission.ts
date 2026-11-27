@@ -66,7 +66,11 @@ export class RuntimeAdmissionStore {
    if(!actor)throw new RuntimeTicketError();const at=await this.clock(db),destination=await this.currentWorld(db,target,at);
    await this.permits(db,actor.accountId,target.worldId,at);
    const prior=(await db.query<Admission>('SELECT * FROM platform_native_admissions WHERE account_id=$1 FOR UPDATE',[actor.accountId])).rows[0];
-   if(prior?.allowed&&prior.valid_until>at&&prior.world_id!==target.worldId)throw new RuntimeTicketError();
+   if(prior?.allowed&&prior.valid_until>at&&prior.world_id!==target.worldId){
+    const previous=(await db.query<World>('SELECT * FROM platform_native_worlds WHERE world_id=$1',[prior.world_id])).rows[0];
+    if(previous?.enabled&&previous.generation===prior.world_generation&&previous.lease_until>at)
+     throw new RuntimeTicketError();
+   }
    const occupied=(await db.query<{n:number}>('SELECT count(*)::int AS n FROM platform_native_admissions WHERE world_id=$1 AND allowed AND valid_until>$2 AND account_id<>$3',[target.worldId,at,actor.accountId])).rows[0].n;
    if(occupied>=destination.capacity)throw new RuntimeTicketError();
    const generation=next(prior?.generation),validUntilMs=Math.min(at.getTime()+30000,actor.expiresAt,destination.lease_until.getTime());

@@ -39,6 +39,8 @@ namespace Aetheria.PetArena.Infrastructure
         public WaveAArtifactModifiers modifiers;
         public WaveAArtifactEquipped equipped;
         public string acquiredFrom, acquiredMapId, acquiredAt;
+
+        public WaveAArtifactEquipped Equipment => string.IsNullOrEmpty(equipped?.petId) ? null : equipped;
     }
 
     [Serializable]
