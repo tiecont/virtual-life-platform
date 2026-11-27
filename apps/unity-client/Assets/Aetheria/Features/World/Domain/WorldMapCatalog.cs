@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Aetheria.World.Domain
 {
@@ -60,8 +61,7 @@ namespace Aetheria.World.Domain
     }
 
     // One source of truth for map identity, element, palette and content stage.
-    // Only Cinder Terraces and Tideglass Lagoon have scene compositions; the
-    // remaining four maps stay explicit foundation bindings.
+    // The campaign scenes use developer compositions while production art is reviewed.
     public static class WorldMapCatalog
     {
         public const string CentralPlazaId = "central-plaza";
@@ -100,37 +100,37 @@ namespace Aetheria.World.Domain
             "stormcoil-fields",
             "Stormcoil Fields",
             WorldMapElement.Electric,
-            WorldMapStatus.FoundationOnly,
-            string.Empty,
+            WorldMapStatus.Playable,
+            "StormcoilFields",
             WorldThemes.Stormcoil,
-            "FOUNDATION ONLY / NO SCENE");
+            "PLAYABLE ELECTRIC ARENA / DEVELOPER COMPOSITION");
 
         public static readonly WorldMapDefinition LanternNecropolis = new WorldMapDefinition(
             "lantern-necropolis",
             "Lantern Necropolis",
             WorldMapElement.Ghost,
-            WorldMapStatus.FoundationOnly,
-            string.Empty,
+            WorldMapStatus.Playable,
+            "LanternNecropolis",
             WorldThemes.Lantern,
-            "FOUNDATION ONLY / NO SCENE");
+            "PLAYABLE GHOST ARENA / DEVELOPER COMPOSITION");
 
         public static readonly WorldMapDefinition OchreLabyrinth = new WorldMapDefinition(
             "ochre-labyrinth",
             "Ochre Labyrinth",
             WorldMapElement.Ground,
-            WorldMapStatus.FoundationOnly,
-            string.Empty,
+            WorldMapStatus.Playable,
+            "OchreLabyrinth",
             WorldThemes.Ochre,
-            "FOUNDATION ONLY / NO SCENE");
+            "PLAYABLE GROUND ARENA / DEVELOPER COMPOSITION");
 
         public static readonly WorldMapDefinition DawnPrismSanctum = new WorldMapDefinition(
             "dawn-prism-sanctum",
             "Dawn Prism Sanctum",
             WorldMapElement.Light,
-            WorldMapStatus.FoundationOnly,
-            string.Empty,
+            WorldMapStatus.Playable,
+            "DawnPrismSanctum",
             WorldThemes.DawnPrism,
-            "FOUNDATION ONLY / NO SCENE");
+            "PLAYABLE LIGHT ARENA / DEVELOPER COMPOSITION");
 
         public static IReadOnlyList<WorldMapDefinition> Maps { get; } = Array.AsReadOnly(new[]
         {
@@ -142,37 +142,14 @@ namespace Aetheria.World.Domain
             DawnPrismSanctum
         });
 
-        public static IReadOnlyList<WorldMapDefinition> PlayableArenas { get; } = Array.AsReadOnly(new[]
-        {
-            CinderTerraces,
-            TideglassLagoon
-        });
+        public static IReadOnlyList<WorldMapDefinition> AllWithHub { get; } =
+            Array.AsReadOnly(new[] { Hub }.Concat(Maps).ToArray());
 
-        public static IReadOnlyList<WorldMapDefinition> FoundationMaps { get; } = Array.AsReadOnly(new[]
-        {
-            StormcoilFields,
-            LanternNecropolis,
-            OchreLabyrinth,
-            DawnPrismSanctum
-        });
+        public static IReadOnlyList<WorldMapDefinition> PlayableArenas { get; } =
+            Array.AsReadOnly(Maps.Where(map => map.IsPlayable).ToArray());
 
-        public static IReadOnlyList<string> WorldSceneNames { get; } = Array.AsReadOnly(new[]
-        {
-            CentralPlazaSceneName,
-            CinderTerraces.SceneName,
-            TideglassLagoon.SceneName
-        });
-
-        public static IReadOnlyList<WorldMapDefinition> AllWithHub { get; } = Array.AsReadOnly(new[]
-        {
-            Hub,
-            CinderTerraces,
-            TideglassLagoon,
-            StormcoilFields,
-            LanternNecropolis,
-            OchreLabyrinth,
-            DawnPrismSanctum
-        });
+        public static IReadOnlyList<string> WorldSceneNames { get; } =
+            Array.AsReadOnly(AllWithHub.Where(map => map.IsPlayable).Select(map => map.SceneName).ToArray());
 
         public static bool TryGet(string id, out WorldMapDefinition definition)
         {

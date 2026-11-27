@@ -20,6 +20,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Aetheria/Scenes/TideglassLagoon.unity
     guid: 2027559f3288beb8eadd4e5053889142
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/StormcoilFields.unity
+    guid: 546368ef1da01d40e9a4e8e5d7c122b1
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/LanternNecropolis.unity
+    guid: fd411df62b428ff9d81304df08a1db14
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/OchreLabyrinth.unity
+    guid: e8ef1db6baa610688ae0dd0c38ec0e6f
+  - enabled: 1
+    path: Assets/Aetheria/Scenes/DawnPrismSanctum.unity
+    guid: b380c766cb38ce1838af88f91e22247b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: f7ba367b49b1d206f9ef013446e74364, type: 2}
   m_UseUCBPForAssetBundles: 0

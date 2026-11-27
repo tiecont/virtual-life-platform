@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Aetheria.World.Presentation
 {
     // Shared offline presentation controller for the Central Plaza hub and the
-    // two developer arenas. It owns local locomotion, portal interaction, the
+    // campaign arenas. It owns local locomotion, portal interaction, the
     // spawned anchor handoff and accessibility toggles. It never owns combat
     // authority, rewards or board rules.
     public abstract class WorldSceneControllerBase : MonoBehaviour

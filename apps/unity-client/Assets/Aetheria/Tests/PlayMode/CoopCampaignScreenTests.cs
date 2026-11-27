@@ -50,16 +50,27 @@ namespace Aetheria.Tests
             });
         }
 
-        [Test]
-        public void DistinguishesAnEligibleBossFromALocalPlayableEntrance()
+        [TestCase("stormcoil-fields")]
+        [TestCase("lantern-necropolis")]
+        [TestCase("ochre-labyrinth")]
+        [TestCase("dawn-prism-sanctum")]
+        public void ExtendedArenaLobbyFollowsPublishedHostingEligibility(string mapId)
         {
-            var encounter = LockedEncounter.Replace("tideglass-lagoon", "stormcoil-fields")
-                .Replace("\"cleared\":false", "\"cleared\":true").Replace("\"eligible\":false", "\"eligible\":true");
-            WithLobby(CoopCampaignCatalog.Decode(CatalogJson(5000, encounter)), WorldMapCatalog.StormcoilFields, true, root =>
+            Assert.That(WorldMapCatalog.TryGet(mapId, out var map), Is.True);
+            Assert.That(map.IsPlayable, Is.True);
+            var locked = LockedEncounter.Replace("tideglass-lagoon", mapId);
+            var eligible = locked.Replace("\"cleared\":false", "\"cleared\":true")
+                .Replace("\"eligible\":false", "\"eligible\":true");
+            WithLobby(CoopCampaignCatalog.Decode(CatalogJson(5000, locked)), map, true, root =>
+            {
+                Assert.That(root.Q<Label>("coop-availability-map-lock").text, Is.EqualTo("Clear Cinder Terraces first."));
+                Assert.That(root.Q<Button>("coop-create").enabledSelf, Is.False);
+            });
+            WithLobby(CoopCampaignCatalog.Decode(CatalogJson(5000, eligible)), map, true, root =>
             {
                 Assert.That(root.Q<Label>("coop-availability-status").text, Is.EqualTo("Hosting requirements met."));
-                Assert.That(root.Q<Label>("coop-availability-scene").text, Is.EqualTo("This map has no local developer scene."));
-                Assert.That(root.Q<Button>("coop-create").enabledSelf, Is.False);
+                Assert.That(root.Q<Label>("coop-availability-scene"), Is.Null);
+                Assert.That(root.Q<Button>("coop-create").enabledSelf, Is.True);
             });
         }
 
