@@ -8,6 +8,11 @@ export GIT_TERMINAL_PROMPT=0 GH_PROMPT_DISABLED=1 GIT_ASKPASS=/bin/false
 export SSH_ASKPASS=/bin/false SSH_ASKPASS_REQUIRE=never
 export GIT_SSH_COMMAND='ssh -oBatchMode=yes'
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=''
+case "${PACKAGED_QA_SIZE:-1024x768}" in
+  1024x768|1280x720|1920x1080) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
+  *) echo "Unsupported packaged player resolution" >&2; exit 2 ;;
+esac
+export PACKAGED_QA_WIDTH="${PACKAGED_QA_SIZE%x*}" PACKAGED_QA_HEIGHT="${PACKAGED_QA_SIZE#*x}"
 driver_dir="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 if [[ ${1:-} != "--inside-disposable-db" ]]; then
   if [[ $# != 3 ]]; then
@@ -41,7 +46,7 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
     node --version
     uname -sr
     printf 'Unity player with three independently authenticated integration clients\n'
-    printf 'Disposable local PostgreSQL, loopback Nest and Rust WSS, 1024x768 Gamescope and XTest input\n'
+    printf 'Disposable local PostgreSQL, loopback Nest and Rust WSS, %s Gamescope and XTest input\n' "$PACKAGED_QA_SIZE"
   } > "$qa_run/environment.txt"
   (cd "$(dirname "$qa_player")" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$qa_run/player-package.sha256"
   sha256sum "$qa_run/player-package.sha256" "$qa_engine" > "$qa_run/build.sha256"
@@ -82,11 +87,11 @@ if [[ -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi
 export XDG_RUNTIME_DIR="$qa_xdg_dir" XDG_CONFIG_HOME="$qa_run/profile"
 mkdir -m 700 "$XDG_CONFIG_HOME"
 
-gamescope --backend headless -w 1024 -h 768 -r 60 -- bash -ceu '
+gamescope --backend headless -w "$PACKAGED_QA_WIDTH" -h "$PACKAGED_QA_HEIGHT" -r 60 -- bash -ceu '
   unset WAYLAND_DISPLAY
   export SDL_VIDEODRIVER=x11
   printf "%s\n" "$DISPLAY" > "$PACKAGED_QA_RUN/display"
-  exec "$1" -force-glcore -screen-width 1024 -screen-height 768 -screen-fullscreen 0 \
+  exec "$1" -force-glcore -screen-width "$PACKAGED_QA_WIDTH" -screen-height "$PACKAGED_QA_HEIGHT" -screen-fullscreen 0 \
     -logFile "$PACKAGED_QA_RUN/game.log"
 ' launch-player "$qa_player" > "$qa_run/gamescope.log" 2>&1 &
 qa_game_pid=$!
