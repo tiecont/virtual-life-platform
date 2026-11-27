@@ -9,7 +9,7 @@ ALTER TABLE pet_wave_one_owned
 -- Backfill existing rows with deterministic UUIDs based on account_id and pet_id
 -- This ensures stable instance identities across migrations and restarts
 UPDATE pet_wave_one_owned
-SET owned_pet_instance_id = md5(account_id || ':' || pet_id || ':v1')::uuid
+SET owned_pet_instance_id = aetheria_pet_instance_id(account_id || ':' || pet_id || ':v1')
 WHERE owned_pet_instance_id IS NULL;
 
 -- Disable seat guard trigger before UPDATE (rooms may be LOCKED/STARTED)
@@ -61,7 +61,7 @@ CREATE OR REPLACE FUNCTION pet_wave_one_owned_ensure_instance_id()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
   IF NEW.owned_pet_instance_id IS NULL THEN
-    NEW.owned_pet_instance_id := md5(NEW.account_id || ':' || NEW.pet_id || ':v1')::uuid;
+    NEW.owned_pet_instance_id := aetheria_pet_instance_id(NEW.account_id || ':' || NEW.pet_id || ':v1');
   END IF;
   RETURN NEW;
 END;
@@ -77,7 +77,7 @@ CREATE OR REPLACE FUNCTION pet_wave_one_party_ensure_instance_id()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
   IF NEW.owned_pet_instance_id IS NULL THEN
-    NEW.owned_pet_instance_id := md5(NEW.account_id || ':' || NEW.pet_id || ':v1')::uuid;
+    NEW.owned_pet_instance_id := aetheria_pet_instance_id(NEW.account_id || ':' || NEW.pet_id || ':v1');
   END IF;
   RETURN NEW;
 END;

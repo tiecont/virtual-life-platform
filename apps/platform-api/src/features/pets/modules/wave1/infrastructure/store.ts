@@ -33,7 +33,7 @@ export async function recordArena8MapClear(db:Pick<PoolClient,'query'>,accountId
        ON CONFLICT DO NOTHING RETURNING account_id,map_id
      )
      INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source)
-     SELECT clear.account_id,candidate.pet_id,md5(clear.account_id || ':' || candidate.pet_id || ':v1')::uuid,1,0,'campaign'
+     SELECT clear.account_id,candidate.pet_id,aetheria_pet_instance_id(clear.account_id || ':' || candidate.pet_id || ':v1'),1,0,'campaign'
      FROM first_clear clear
      JOIN pet_wave_one_encounters boss ON boss.account_id=clear.account_id
        AND boss.map_id=clear.map_id AND boss.encounter_id=clear.map_id || '-boss'
@@ -62,10 +62,10 @@ export class Wave1Store {
       );
       if((created.rowCount??0)>0){
         for(const petId of STARTER_PET_IDS){
-          await client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1,$2,md5($1 || ':' || $2 || ':v1')::uuid,1,0,'starter')",[accountId,petId]);
+          await client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1,$2,aetheria_pet_instance_id($1 || ':' || $2 || ':v1'),1,0,'starter')",[accountId,petId]);
         }
         for(const [slot,petId] of STARTER_PET_IDS.entries()){
-          await client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1,$2,$3,md5($1 || ':' || $3 || ':v1')::uuid)",[accountId,slot,petId]);
+          await client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1,$2,$3,aetheria_pet_instance_id($1 || ':' || $3 || ':v1'))",[accountId,slot,petId]);
         }
       }
       await client.query(`SELECT ${PLAYER_COLUMNS} FROM pet_wave_one_players WHERE account_id=$1 FOR UPDATE`,[accountId]);
@@ -132,12 +132,12 @@ export class Wave1Transaction {
   async replaceParty(petIds:readonly string[]):Promise<void>{
     await this.client.query('DELETE FROM pet_wave_one_party WHERE account_id=$1',[this.accountId]);
     for(const [slot,petId] of petIds.entries()){
-      await this.client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1,$2,$3,md5($1 || ':' || $3 || ':v1')::uuid)",[this.accountId,slot,petId]);
+      await this.client.query("INSERT INTO pet_wave_one_party(account_id,slot,pet_id,owned_pet_instance_id) VALUES($1,$2,$3,aetheria_pet_instance_id($1 || ':' || $3 || ':v1'))",[this.accountId,slot,petId]);
     }
   }
 
   async insertOwned(petId:string,source:'starter'|'gacha'|'campaign'):Promise<void>{
-    await this.client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1,$2,md5($1 || ':' || $2 || ':v1')::uuid,1,0,$3)",[this.accountId,petId,source]);
+    await this.client.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,owned_pet_instance_id,level,exp,source) VALUES($1,$2,aetheria_pet_instance_id($1 || ':' || $2 || ':v1'),1,0,$3)",[this.accountId,petId,source]);
   }
 
   async setProgress(petId:string,level:number,exp:number,duplicateExpDelta:number):Promise<void>{
