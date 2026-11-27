@@ -103,7 +103,7 @@ namespace Aetheria.Tests
                 Assert.That(footer.worldBound.yMax, Is.LessThanOrEqualTo(root.worldBound.yMax));
                 Assert.That(scroll.worldBound.yMax, Is.LessThanOrEqualTo(footer.worldBound.yMin));
 
-                scroll.ScrollTo(lastCell);
+                scroll.ScrollTo(actions);
                 yield return null;
                 Assert.That(root.Q<Label>("coop-turn").worldBound.yMax, Is.LessThanOrEqualTo(scroll.worldBound.yMin + 1));
                 Assert.That(scroll.scrollOffset.y, Is.GreaterThan(0));

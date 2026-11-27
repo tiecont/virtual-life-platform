@@ -169,6 +169,10 @@
     width: 32%;
     height: 55%;
 }
+.battle-compact .coop-tile-multiplied .coop-element-icon,
+.battle-compact .coop-tile-multiplied .coop-functional-icon {
+    width: 20%;
+}
 .battle-stage .coop-tile-multiplier {
     position: absolute;
     top: 0;
