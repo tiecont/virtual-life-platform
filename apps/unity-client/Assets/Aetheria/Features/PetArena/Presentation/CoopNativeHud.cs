@@ -125,12 +125,11 @@ namespace Aetheria.PetArena.Presentation
                         else if (shielded > 0) feedback = now.PetId + " granted " + shielded + " shield";
                     }
                     if (BoardChanged(previous, view)) battleAudio?.Play(ArenaAudioCue.TileMatch);
-                    if (previous.PendingAttack == null && view.PendingAttack != null)
-                        battleAudio?.Play(ArenaAudioCue.BossWarning);
-                    else if (previous.PendingAttack != null && view.PendingAttack == null)
-                        battleAudio?.Play(ArenaAudioCue.Impact);
-                    else if (feedback != null) battleAudio?.Play(ArenaAudioCue.UiConfirm);
-                    else if (view.BossState.Health < previous.BossState.Health) battleAudio?.Play(ArenaAudioCue.Attack);
+                    if (!PlayBossAudio(previous, view))
+                    {
+                        if (feedback != null) battleAudio?.Play(ArenaAudioCue.UiConfirm);
+                        else if (view.BossState.Health < previous.BossState.Health) battleAudio?.Play(ArenaAudioCue.Attack);
+                    }
                 }
             }
             if (previous == null && !view.Terminal && battleAudio != null)
@@ -144,6 +143,34 @@ namespace Aetheria.PetArena.Presentation
             renderedRecovery = recovering;
             renderedVersion = view.Version;
             Render(view);
+        }
+
+        private bool PlayBossAudio(CoopNativeView before, CoopNativeView after)
+        {
+            // The projection has no event stream. Use observable deltas for
+            // a single committed step, including attacks without a telegraph.
+            if (battleAudio == null || after.Version != before.Version + 1) return false;
+            var impact = false;
+            for (var seat = 0; seat < after.Participants.Count; seat++)
+            {
+                var prior = before.Participants[seat];
+                var current = after.Participants[seat];
+                // An expired shield alone does not establish an impact.
+                if (current.Health < prior.Health || (current.ShieldTurns > 0 && current.Shield < prior.Shield))
+                {
+                    impact = true;
+                    break;
+                }
+            }
+            if (impact) battleAudio.Play(ArenaAudioCue.Impact);
+
+            var priorAttack = before.PendingAttack;
+            var nextAttack = after.PendingAttack;
+            // An attack can resolve and a fresh warning appear in the same step.
+            var warning = nextAttack != null &&
+                (priorAttack == null || (priorAttack.Remaining == 1 && after.Round > before.Round));
+            if (warning) battleAudio.Play(ArenaAudioCue.BossWarning);
+            return impact || warning;
         }
 
         private static bool BoardChanged(CoopNativeView before, CoopNativeView after)

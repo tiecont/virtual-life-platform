@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Reflection;
 using System.Threading.Tasks;
 using Aetheria.PetArena.Infrastructure;
 using Aetheria.Networking;
 using Aetheria.PetArena.Presentation;
+using Aetheria.PetArena.Vfx;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -130,7 +132,60 @@ namespace Aetheria.Tests
             }
         }
 
-        private static string Projection(string pending = "null")
+        [Test]
+        public void BossImpactPlaysForAnImmediateHitAndForShieldAbsorption()
+        {
+            AssertBossAudio(Projection(), Projection(health: 380), 4, 1, ArenaAudioCue.Impact);
+            AssertBossAudio(Projection(shield: 40, shieldTurns: 2),
+                Projection(shield: 20, shieldTurns: 1), 4, 1, ArenaAudioCue.Impact);
+        }
+
+        [Test]
+        public void BossImpactAndNewWarningBothPlayAcrossAReplacedTelegraph()
+        {
+            const string prior = "{\"targets\":2,\"remaining\":1,\"damage\":84}";
+            const string next = "{\"targets\":2,\"remaining\":2,\"damage\":84}";
+            AssertBossAudio(Projection(prior), Projection(next, health: 380, round: 2),
+                4, 2, ArenaAudioCue.BossWarning);
+        }
+
+        [Test]
+        public void ExpiredShieldAndSkippedVersionsDoNotInventBossImpact()
+        {
+            AssertBossAudio(Projection(shield: 40, shieldTurns: 1), Projection(),
+                4, 0, ArenaAudioCue.None);
+            AssertBossAudio(Projection(), Projection(health: 380), 5, 0, ArenaAudioCue.None);
+        }
+
+        private static void AssertBossAudio(string before, string after, ulong afterVersion,
+            int expectedCues, ArenaAudioCue expectedLastCue)
+        {
+            var go = new GameObject("coop-boss-audio-test");
+            var audioHost = new GameObject("coop-boss-audio-test-director");
+            const BindingFlags instance = BindingFlags.Instance | BindingFlags.NonPublic;
+            var directorField = typeof(CoopNativeHud).GetField("battleAudio", instance);
+            try
+            {
+                var hud = go.AddComponent<CoopNativeHud>();
+                var director = audioHost.AddComponent<ArenaAudioDirector>();
+                directorField.SetValue(hud, director);
+                var prior = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(before));
+                var next = CoopNativeView.Decode(afterVersion, System.Text.Encoding.UTF8.GetBytes(after));
+                typeof(CoopNativeHud).GetMethod("PlayBossAudio", instance).Invoke(hud, new object[] { prior, next });
+                Assert.That(director.PlayedCueCount, Is.EqualTo(expectedCues));
+                Assert.That(director.LastCue, Is.EqualTo(expectedLastCue));
+            }
+            finally
+            {
+                var hud = go.GetComponent<CoopNativeHud>();
+                if (hud != null) directorField.SetValue(hud, null);
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(audioHost);
+            }
+        }
+
+        private static string Projection(string pending = "null", int health = 400,
+            int shield = 0, int shieldTurns = 0, int round = 1)
         {
             var board = new System.Text.StringBuilder();
             for (var index = 0; index < 64; index += 1)
@@ -144,15 +199,18 @@ namespace Aetheria.Tests
             {
                 if (index > 0) seats.Append(',');
                 seats.Append("{\"seat\":").Append(index).Append(",\"petId\":\"").Append(pets[index])
-                    .Append("\",\"level\":1,\"hp\":400,\"maxHp\":400,\"attack\":40,\"defense\":4")
+                    .Append("\",\"level\":1,\"hp\":").Append(index == 0 ? health : 400)
+                    .Append(",\"maxHp\":400,\"attack\":40,\"defense\":4")
                     .Append(",\"critRateBp\":500,\"critDamageBp\":15000,\"mana\":0,\"rage\":0")
-                    .Append(",\"shield\":0,\"shieldTurns\":0,\"cooldowns\":[0,0,0,0,0]")
+                    .Append(",\"shield\":").Append(index == 0 ? shield : 0)
+                    .Append(",\"shieldTurns\":").Append(index == 0 ? shieldTurns : 0)
+                    .Append(",\"cooldowns\":[0,0,0,0,0]")
                     .Append(",\"statuses\":[],\"contribution\":{\"damage\":0,\"healing\":0,\"shielding\":0}")
                     .Append(",\"alive\":true}");
             }
             return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":1," +
                 "\"contentHash\":\"" + new string('a', 64) + "\",\"configDigest\":\"" + new string('b', 64) + "\"}," +
-                "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":1," +
+                "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":" + round + "," +
                 "\"boss\":{\"hp\":5000,\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false}," +
                 "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + "}," +
                 "\"epoch\":1,\"reward\":null}";
