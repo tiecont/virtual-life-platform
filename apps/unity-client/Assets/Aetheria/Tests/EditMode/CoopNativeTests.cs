@@ -17,6 +17,17 @@ namespace Aetheria.Tests
         private const string Digest = "101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f";
 
         [Test]
+        public void ArtifactInventoryDecodesNullableEquipment()
+        {
+            var state = UnityEngine.JsonUtility.FromJson<WaveAArtifactState>(
+                "{\"inventory\":[{\"equipped\":null},{\"equipped\":{\"petId\":\"fire-coalwhisk\",\"slot\":\"core\"}}]}");
+
+            Assert.That(state.inventory[0].Equipment, Is.Null);
+            Assert.That(state.inventory[1].Equipment.petId, Is.EqualTo("fire-coalwhisk"));
+            Assert.That(state.inventory[1].Equipment.slot, Is.EqualTo("core"));
+        }
+
+        [Test]
         public void ReadyProjectionDecodesParticipantsAndBoard()
         {
             var view = Coop(version: 7);

@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using Aetheria.Networking;
 using Aetheria.PetArena.Presentation;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace Aetheria.Tests
@@ -37,6 +39,56 @@ namespace Aetheria.Tests
                 Assert.That(recover.enabledSelf, Is.False);
             }
             finally { UnityEngine.Object.DestroyImmediate(go); }
+        }
+
+        [UnityTest]
+        public IEnumerator CompactHudKeepsRowsReachableAndTheFooterVisible()
+        {
+            var go = new GameObject("coop-compact-hud-test");
+            var settings = ScriptableObject.CreateInstance<PanelSettings>();
+            try
+            {
+                settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("Wave1Theme");
+                var document = go.AddComponent<UIDocument>();
+                document.panelSettings = settings;
+                var root = document.rootVisualElement;
+                root.style.width = 800;
+                root.style.height = 500;
+                root.styleSheets.Add(Resources.Load<StyleSheet>("Wave1"));
+                root.AddToClassList("coop-world");
+
+                var hud = go.AddComponent<CoopNativeHud>();
+                hud.Attach(document);
+                hud.Bind(null, () => { });
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection()));
+                hud.Render(view);
+                yield return null;
+                yield return null;
+
+                var scroll = root.Q<ScrollView>("coop-hud-scroll");
+                var footer = root.Q("coop-footer");
+                var lastCell = scroll.Q<Button>("coop-cell-63");
+                var actions = scroll.Q("coop-actions");
+                Assert.That(lastCell.worldBound.height, Is.GreaterThan(0));
+                Assert.That(lastCell.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
+                Assert.That(footer.worldBound.yMax, Is.LessThanOrEqualTo(root.worldBound.yMax));
+                Assert.That(scroll.worldBound.yMax, Is.LessThanOrEqualTo(footer.worldBound.yMin));
+
+                scroll.ScrollTo(lastCell);
+                yield return null;
+                Assert.That(scroll.scrollOffset.y, Is.GreaterThan(0));
+                Assert.That(lastCell.worldBound.yMax, Is.LessThanOrEqualTo(scroll.contentViewport.worldBound.yMax + 1));
+
+                hud.Render(view);
+                yield return null;
+                Assert.That(root.Q<ScrollView>("coop-hud-scroll"), Is.SameAs(scroll));
+                Assert.That(scroll.scrollOffset.y, Is.GreaterThan(0));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(settings);
+            }
         }
 
         private static string Projection()

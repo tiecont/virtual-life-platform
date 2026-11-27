@@ -127,14 +127,27 @@ namespace Aetheria.PetArena.Presentation
             if (view == null) return;
             var target = document != null ? document.rootVisualElement : null;
             if (target == null) return;
-            target.Clear();
+            var body = target.Q<ScrollView>("coop-hud-scroll");
+            if (body == null)
+            {
+                target.Clear();
+                body = new ScrollView { name = "coop-hud-scroll" };
+                body.AddToClassList("coop-hud-scroll");
+                target.Add(body);
+            }
+            else
+            {
+                body.Clear();
+                while (target.childCount > 1) target.RemoveAt(1);
+            }
+
             var presentation = CoopNativePresentation.Build(view, Select, Cast, selected);
             if (session != null && !CanSubmit)
             {
                 presentation.Q("coop-board").SetEnabled(false);
                 presentation.Q("coop-actions").SetEnabled(false);
             }
-            target.Add(presentation);
+            body.Add(presentation);
             if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)
             {

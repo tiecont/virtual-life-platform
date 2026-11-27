@@ -298,12 +298,13 @@ namespace Aetheria.PetArena.Presentation
 
             foreach (var item in artifacts.inventory ?? Array.Empty<WaveAArtifactInstance>())
             {
-                var stateLabel = item.equipped == null ? "unequipped" : "on " + item.equipped.petId;
+                var equipment = item.Equipment;
+                var stateLabel = equipment == null ? "unequipped" : "on " + equipment.petId;
                 content.Add(Label(item.name + " · " + item.rank + " " + item.slot + " · Lv " + item.upgradeLevel +
                                   "/" + item.maxUpgradeLevel + " · " + stateLabel, "arena-notice"));
-                if (item.equipped == null)
+                if (equipment == null)
                     Button("Equip to " + petName, () => EquipArtifact(item), "equip-" + item.artifactId, pet != null);
-                else if (item.equipped.petId == selectedPet)
+                else if (equipment.petId == selectedPet)
                     Button("Unequip", () => UnequipArtifact(item), "unequip-" + item.artifactId);
                 if (item.upgradeLevel < item.maxUpgradeLevel)
                     Button("Upgrade · " + item.nextUpgradeCost + " materials", () => UpgradeArtifact(item),
@@ -346,9 +347,10 @@ namespace Aetheria.PetArena.Presentation
 
         private void UnequipArtifact(WaveAArtifactInstance item)
         {
-            if (item.equipped == null) return;
+            var equipment = item.Equipment;
+            if (equipment == null) return;
             var request = new WaveAArtifactUnequipRequest {
-                requestId = NewRequestId(), petId = item.equipped.petId, slot = item.equipped.slot
+                requestId = NewRequestId(), petId = equipment.petId, slot = equipment.slot
             };
             Run(async () =>
             {

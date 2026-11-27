@@ -123,7 +123,7 @@ namespace Aetheria.PetArena.Presentation
 
                 artifacts = await api.GetArtifactState(lifetime.Token);
                 var reward = artifacts.inventory?.FirstOrDefault(item => item.acquiredMapId == "cinder-terraces")
-                    ?? artifacts.inventory?.FirstOrDefault(item => item.equipped == null);
+                    ?? artifacts.inventory?.FirstOrDefault(item => item.Equipment == null);
                 if (reward != null)
                 {
                     await api.EquipArtifact(new WaveAArtifactEquipRequest

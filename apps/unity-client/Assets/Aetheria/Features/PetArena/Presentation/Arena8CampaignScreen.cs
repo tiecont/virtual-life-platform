@@ -208,7 +208,7 @@ namespace Aetheria.PetArena.Presentation
                 "Equipped: core=" + (petArtifact.slots.core ?? "—") +
                 " aegis=" + (petArtifact.slots.aegis ?? "—") +
                 " rune=" + (petArtifact.slots.rune ?? "—") + " · materials=" + artifacts.materials));
-            var candidate = artifacts?.inventory?.FirstOrDefault(item => item.equipped == null);
+            var candidate = artifacts?.inventory?.FirstOrDefault(item => item.Equipment == null);
             if (candidate != null)
                 Button("Equip " + candidate.name + " (" + candidate.slot + ")", () => Run(async () =>
                 {

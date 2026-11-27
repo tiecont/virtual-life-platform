@@ -100,9 +100,9 @@ namespace Aetheria.PetArena.Presentation
                     view.stats?.effective?.attack + "/" + view.stats?.effective?.defense;
                 artifacts = await api.GetArtifactState(lifetime.Token);
                 automatedFacts.inventoryCount = artifacts.inventory?.Length ?? 0;
-                automatedFacts.equippedCount = artifacts.inventory?.Count(item => item.equipped != null) ?? 0;
+                automatedFacts.equippedCount = artifacts.inventory?.Count(item => item.Equipment != null) ?? 0;
                 var reward = artifacts.inventory?.FirstOrDefault(item => item.acquiredMapId == "cinder-terraces")
-                    ?? artifacts.inventory?.FirstOrDefault(item => item.equipped == null);
+                    ?? artifacts.inventory?.FirstOrDefault(item => item.Equipment == null);
                 if (reward != null)
                 {
                     await api.EquipArtifact(new WaveAArtifactEquipRequest
