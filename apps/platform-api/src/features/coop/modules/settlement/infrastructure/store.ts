@@ -1,5 +1,6 @@
 import type {PoolClient} from 'pg';
 import type {CoopRoomStatus} from '@aetheria/contracts';
+import {recordArena8MapClear} from '../../../../pets/modules/wave1/infrastructure/store';
 import {initializeArtifactInventory} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 
 type Queryable=Pick<PoolClient,'query'>;
@@ -104,27 +105,11 @@ export class CoopSettlementStore{
   // the encounter pair and choosing the first unowned species.
   await tx.query('SELECT 1 FROM pet_wave_one_players WHERE account_id=$1 FOR UPDATE',[accountId]);
   const first=await tx.query(
-   `INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id)
-    VALUES ($1,$2,$2 || '-boss') ON CONFLICT DO NOTHING RETURNING encounter_id`,[accountId,mapId]);
-  if(first.rowCount||recruitmentPetIds){
-   const clear=await tx.query(
-    `INSERT INTO pet_wave_one_map_clears(account_id,map_id)
-     SELECT $1,$2 WHERE EXISTS(SELECT 1 FROM pet_wave_one_encounters
-      WHERE account_id=$1 AND map_id=$2 AND encounter_id=$2 || '-regular')
-     ON CONFLICT DO NOTHING RETURNING map_id`,[accountId,mapId]);
-   // The canonical map milestone requires both encounter receipts. Only the
-   // transaction creating that milestone can grant the pinned recruit.
-   if(clear.rowCount&&recruitmentPetIds){
-    await tx.query(
-     `INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source)
-      SELECT $1,candidate.pet_id,1,0,'campaign'
-      FROM unnest($2::text[]) WITH ORDINALITY AS candidate(pet_id,priority)
-      WHERE NOT EXISTS(SELECT 1 FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=candidate.pet_id)
-      ORDER BY candidate.priority LIMIT 1
-      ON CONFLICT (account_id,pet_id) DO NOTHING`,[accountId,recruitmentPetIds]);
-   }
-  }
-  return first.rowCount===1;
+   `INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id,coop_recruitment_pet_ids)
+    VALUES ($1,$2,$2 || '-boss',$3) ON CONFLICT DO NOTHING RETURNING encounter_id`,[accountId,mapId,recruitmentPetIds??null]);
+  if(first.rowCount!==1)return false;
+  await recordArena8MapClear(tx,accountId,mapId);
+  return true;
  }
  async materials(tx:Queryable,accountId:string,amount:number):Promise<void>{
   if(amount===0)return;

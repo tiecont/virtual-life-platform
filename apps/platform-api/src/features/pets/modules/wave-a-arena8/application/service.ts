@@ -5,6 +5,7 @@ import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
 import {levelIncrement} from '../../wave1/domain/progression';
+import {recordArena8MapClear} from '../../wave1/infrastructure/store';
 import {
   assertUuid,conflict,encounterPairComplete,forbidden,
   readOwnedArena8Allocation,type AllocateInput,
@@ -153,20 +154,6 @@ export class Arena8Service {
              VALUES($1,$2,$3) ON CONFLICT(account_id,map_id,encounter_id) DO NOTHING`,
             [accountId,mapId,encounterId],
           );
-          // A map clears only after both authored encounters are present,
-          // independent of order. A boss-only victory must not unlock the next
-          // map. Legacy Wave 1 clears remain a separate compatibility signal.
-          const completed=await client.query<{encounter_id:string}>(
-            `SELECT encounter_id FROM pet_wave_one_encounters
-              WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($3,$4)`,
-            [accountId,mapId,mapId+'-regular',mapId+'-boss'],
-          );
-          if(encounterPairComplete(completed.rows.map(row=>row.encounter_id),mapId)){
-            await client.query(
-              'INSERT INTO pet_wave_one_map_clears(account_id,map_id) VALUES($1,$2) ON CONFLICT(account_id,map_id) DO NOTHING',
-              [accountId,mapId],
-            );
-          }
           const ownedIds=new Set((await client.query<{pet_id:string}>(
             'SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1',[accountId],
           )).rows.map(row=>row.pet_id));
@@ -181,6 +168,9 @@ export class Arena8Service {
             );
             if(inserted.rowCount===1)recruitedPetId=recruit.id;
           }
+          // Preserve the solo encounter grant before applying any pinned
+          // cooperative map grant, matching regular-first progression.
+          recruitedPetId=(await recordArena8MapClear(client,accountId,mapId))??recruitedPetId;
         }
         const artifactReward=PVE_ARTIFACT_REWARDS.find(value=>value.mapId===mapId);
         if(artifactReward){

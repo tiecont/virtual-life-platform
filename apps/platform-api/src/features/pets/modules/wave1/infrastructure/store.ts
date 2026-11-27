@@ -19,6 +19,34 @@ const OWNED_COLUMNS=`pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanc
 const CLEAR_COLUMNS=`map_id AS "mapId",replays,cleared_at AS "clearedAt"`;
 const GACHA_COLUMNS=`seq,pet_id AS "petId",featured,duplicate,pity_before AS "pityBefore",created_at AS "createdAt"`;
 
+// Call while holding the Wave 1 player lock, after recording the completed
+// encounter. Only the transaction inserting the map clear can grant its
+// first missing Pet from the cooperative Boss receipt's pinned order.
+export async function recordArena8MapClear(db:Pick<PoolClient,'query'>,accountId:string,mapId:string):Promise<string|null>{
+  const grant=await db.query<{pet_id:string}>(
+    `WITH first_clear AS (
+       INSERT INTO pet_wave_one_map_clears(account_id,map_id)
+       SELECT $1,$2 WHERE (
+         SELECT count(*) FROM pet_wave_one_encounters
+         WHERE account_id=$1 AND map_id=$2 AND encounter_id IN ($2 || '-regular',$2 || '-boss')
+       )=2
+       ON CONFLICT DO NOTHING RETURNING account_id,map_id
+     )
+     INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source)
+     SELECT clear.account_id,candidate.pet_id,1,0,'campaign'
+     FROM first_clear clear
+     JOIN pet_wave_one_encounters boss ON boss.account_id=clear.account_id
+       AND boss.map_id=clear.map_id AND boss.encounter_id=clear.map_id || '-boss'
+     CROSS JOIN LATERAL unnest(boss.coop_recruitment_pet_ids) WITH ORDINALITY AS candidate(pet_id,priority)
+     WHERE NOT EXISTS(
+       SELECT 1 FROM pet_wave_one_owned WHERE account_id=clear.account_id AND pet_id=candidate.pet_id
+     )
+     ORDER BY candidate.priority LIMIT 1
+     ON CONFLICT (account_id,pet_id) DO NOTHING RETURNING pet_id`,[accountId,mapId],
+  );
+  return grant.rows[0]?.pet_id??null;
+}
+
 // One transaction owner for Wave 1 state. The account player row is locked
 // before any command work, so idempotency, wallet and Pet updates serialize.
 export class Wave1Store {

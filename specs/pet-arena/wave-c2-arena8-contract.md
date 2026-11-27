@@ -177,9 +177,10 @@ accepts a nonempty list of active Pets from that Boss's canonical Wave 1 map.
 Regular Pets follow roster order and precede the map Legendary. The ordered
 list is part of the immutable bundle digest.
 
-A qualifying cooperative victory records the participant's Boss encounter.
-The regular encounter and the Boss encounter together complete the map, as in
-Arena8 campaign progression. The settlement that first records the map clear
-grants the first unowned species in the pinned list as a level-one campaign Pet.
-The clear, ownership and settlement commit together. The Pet is available in
-the participant's Wave 1 inventory. An omitted recruitment list grants no Pet.
+The first qualifying cooperative Boss victory records the participant's pinned
+list with the Boss encounter. The regular and Boss encounters together complete
+the map in either order. The settlement that records the first map clear grants
+the first unowned species in the pinned list as a level-one campaign Pet, after
+any solo encounter recruit. The clear, ownership and settlement commit together.
+The Pet is available in the participant's Wave 1 inventory. An omitted list
+skips the cooperative recruitment grant.
