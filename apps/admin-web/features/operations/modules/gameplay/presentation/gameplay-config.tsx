@@ -116,6 +116,7 @@ export default function GameplayConfig({request}:{request:Request}){
  const [party,setParty]=useState<GameplaySimulationParty|null>(null);
  const [simSeeds,setSimSeeds]=useState(12);
  const [simReport,setSimReport]=useState<SimulationResult|null>(null);
+ const [baselineReport,setBaselineReport]=useState<SimulationResult|null>(null);
  const [simBossId,setSimBossId]=useState('');
  const [simOtherBossId,setSimOtherBossId]=useState('');
  const [simRunning,setSimRunning]=useState(false);
@@ -141,7 +142,7 @@ export default function GameplayConfig({request}:{request:Request}){
  }
  async function open(version:number){
   const value=GameplayConfigVersionViewSchema.parse(await request('gameplay-config-version?ruleset='+RULESET+'&version='+version));
-  setComparison(null);setParty(null);setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
+  setComparison(null);setParty(null);setSelected(value);setBundle(value.bundle);setBossIndex(0);setSimBossId('');setSimOtherBossId('');setSimReport(null);setBaselineReport(null);setJson(JSON.stringify(value.bundle,null,2));setMessage('');
  }
  async function refresh(version?:number){await work(async()=>{const current=await loadOverview();await open(version??current.active?.version??current.versions[0]?.version??0);});}
  useEffect(()=>{void work(async()=>{const current=await loadOverview();if(current.active)await open(current.active.version);else if(current.versions[0])await open(current.versions[0].version);});},[]);
@@ -184,21 +185,29 @@ export default function GameplayConfig({request}:{request:Request}){
    await loadOverview();await open(result.version);setMessage('Active configuration restored to version '+result.version+' at active revision '+result.activeRevision+'.');
   });
  }
- async function runSimulation(){
+ async function runSimulation(compare=false){
   if(!selected||!encounter)return;
   await work(async()=>{
    const cancellation=new AbortController();
    simCancellation.current=cancellation;
    setSimRunning(true);
    setSimReport(null);
-   const input={requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,seeds:simSeeds,...(party?{party}:{})};
+   setBaselineReport(null);
    const settings=simPolicy==='all'
     ? {bossIds:otherEncounter?[encounter.id,otherEncounter.id]:[encounter.id]}
     : {policy:simPolicy,bossId:encounter.id};
-   try{
-    const result=await request('gameplay-config-simulate',{...input,...settings},cancellation.signal);
+   const seats=party??initialParty(selected.bundle);
+   const simulate=async(version:number)=>{
+    const payload={requestId:crypto.randomUUID(),ruleset:RULESET,version,seeds:simSeeds,party:seats,...settings};
+    const result=await request('gameplay-config-simulate',payload,cancellation.signal);
     cancellation.signal.throwIfAborted();
-    setSimReport(GameplaySimulationResultSchema.parse(result));
+    return GameplaySimulationResultSchema.parse(result);
+   };
+   try{
+    const baseline=compare&&overview?.active?await simulate(overview.active.version):null;
+    const candidate=await simulate(selected.version);
+    setBaselineReport(baseline);
+    setSimReport(candidate);
     setMessage('Simulation complete.');
    }catch(error){
     if(!cancellation.signal.aborted)throw error;
@@ -257,9 +266,13 @@ export default function GameplayConfig({request}:{request:Request}){
   </select></label>:null}
   <Num label={'Seeds (1–'+seedLimit+')'} value={simSeeds} min={1} max={seedLimit} onChange={setSimSeeds}/>
   <button type="button" className="aetheria-button secondary" disabled={busy||!encounter||!Number.isInteger(simSeeds)||simSeeds<1||simSeeds>seedLimit} onClick={()=>void runSimulation()}>Run simulation</button>
+  {overview?.active&&selected.version!==overview.active.version&&<button type="button" className="aetheria-button secondary"
+   disabled={busy||!encounter||!Number.isInteger(simSeeds)||simSeeds<1||simSeeds>seedLimit}
+   onClick={()=>void runSimulation(true)}>Simulate active and selected versions</button>}
   {simRunning?<button type="button" className="text-button" onClick={()=>simCancellation.current?.abort()}>Cancel simulation</button>:null}
  </div>
- {simReport?<SimulationResults result={simReport}/>:null}
+ {baselineReport&&<section><h4>Active version at comparison</h4><SimulationResults result={baselineReport}/></section>}
+ {simReport&&<section>{baselineReport&&<h4>Selected version at comparison</h4>}<SimulationResults result={simReport}/></section>}
  <dl className="metrics">
   <div><dt>Publication record schema</dt><dd>{selected.schemaVersion}</dd></div>
   <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>

@@ -240,6 +240,25 @@ try{
   await expect(priority()).toHaveValue(fields.priority);
   await expect(page.getByRole('heading',{name:'Version '+created.version+' · VALIDATED',exact:true})).toBeVisible();
   await expect(page.getByText('Engine validated:',{exact:false})).toBeVisible();
+  if(label==='B'){
+   const requests=[];
+   const collect=request=>{
+    if(new URL(request.url()).pathname==='/api/admin/gameplay-config-simulate')requests.push(request.postDataJSON());
+   };
+   page.on('request',collect);
+   try{
+    await page.getByLabel(/^Seeds /).fill('2');
+    await button('Simulate active and selected versions').click();
+    await expect(page.getByRole('heading',{name:'Selected version at comparison'})).toBeVisible();
+    assert.deepEqual(requests.map(input=>input.version),[configurations.A.version,created.version]);
+    assert.deepEqual(requests[0].party,requests[1].party);
+    assert.equal(requests[0].party.length,4);
+    assert.equal(requests[0].bossId,requests[1].bossId);
+    assert.equal(requests[0].policy,requests[1].policy);
+    assert.ok(requests.every(input=>input.seeds===2));
+    mark('active and selected simulations used matching parties, policies and seed sets',{versions:requests.map(input=>input.version),seeds:2});
+   }finally{page.off('request',collect);}
+  }
   const publishResult=await clickMutation('Publish validated version','publish');
   await expect(page.getByText('Version '+created.version+' published at active revision '+publishResult.activeRevision+'.',{exact:false})).toBeVisible();
   await expect(activeEntry('Digest')).toHaveAttribute('title',verdict.contentDigest);
