@@ -127,9 +127,9 @@ def status_button(image):
 def live_turn(image):
     with Image.open(image) as frame:
         middle = frame.width // 2
-    heard = ocr(image, (middle - 200, 0, middle + 200, 28)).lower()
-    match = re.search(r'turn\s+(\d+).*?seat\s+(\d+)', heard)
-    return tuple(map(int, match.groups())) if match else None
+    heard = ocr(image, (middle - 200, 6, middle + 200, 32)).lower()
+    match = re.search(r'turn\s+([0-9o]+).*?seat\s+([0-9o]+)', heard)
+    return tuple(int(value.replace('o', '0')) for value in match.groups()) if match else None
 
 def pending(data):
     state=data['state']
