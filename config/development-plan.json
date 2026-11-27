@@ -11329,6 +11329,13 @@
       ],
       "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
       "implementation": {
+        "publishedMultiplierProjection": {
+          "sourceRevision": "a4bbd16df1d45794775df393e41acae93944eabd",
+          "command": "Unity EditMode Aetheria.Tests.CoopNativeTests and cargo test --locked -p aetheria-pet-arena --lib",
+          "exitCode": 0,
+          "result": "10 Unity and 58 Rust tests passed without failures or skips. Unity now displays the authored x6 tier and accepts combat values using the wire integer ranges. Publication rejects tiers beyond the 64-cell engine limit.",
+          "evidence": "artifacts/integrated-d3/coop-x6-final.xml"
+        },
         "compactHud": {
           "sourceRevision": "b477cf8cf03e336d470955226c3757e0b56ea381",
           "command": "Unity -runTests -testPlatform PlayMode -testFilter Aetheria.Tests.CoopNativeHudTests",
