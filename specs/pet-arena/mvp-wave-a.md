@@ -35,7 +35,7 @@ owns entropy, the loadout snapshot, settlement and idempotent receipts.
 ## 8x8 tactical board
 
 - Exactly **64 cells** in eight rows and eight columns.
-- The six MVP tile kinds map to Fire, Water, Electric, Ghost, Ground and Light.
+- The active product uses six functional tile identities across every Pet and map. Fire, Water, Electric, Ghost, Ground and Light are **Pet elements**. The originally shipped Wave A elemental board remains a separate version for saved matches and replay.
 - Deterministic seeded initialization; no starting match and at least one legal move.
 - Orthogonal swaps of adjacent, different tiles; a move is valid only if it
   creates a match. Invalid swaps are rejected without mutating state.
@@ -53,6 +53,23 @@ owns entropy, the loadout snapshot, settlement and idempotent receipts.
   hash and event stream for identical inputs.
 - Stale state versions and duplicate command IDs fail closed. Request/receipt
   idempotency and execution bounds are mandatory.
+
+### Functional tile contract for solo and cooperative combat
+
+| TileKind | Authoritative result of a match |
+| --- | --- |
+| `sword` | Normal attack against the enemy. Resolve the active Pet's published attack and element against the defender. |
+| `mana` | Restore Mana within the resource policy. |
+| `rage` | Generate Rage within the resource policy. |
+| `heart` | Recover HP on a policy-selected eligible target, bounded by maximum HP. |
+| `shield` | Apply bounded, policy-targeted protection. |
+| `special` | Trigger the published, typed special-resource effect. Its exact resource, targets and yield require balance review. |
+
+An ordinary utility match deals zero direct attack damage. A cascade containing both Sword and utility resolves each matched tile under its own policy. A boosted tile applies its weight to its own function before the applicable cap. Matching the actor's element gives no generic board bonus. A four-player Boss encounter uses one shared board and the acting participant's Pet. A solo encounter uses the same tile contract with one Pet and one opponent. Pet levels, independent Skill Levels, Artifacts, telegraphs, Boss transformation and exactly-once settlement retain their existing contracts.
+
+PostgreSQL publishes immutable validated bundles. Admin authors spawn weights, per-function yields, targeting, limits and multiplier schedules. Rust validates engine capability, executes effects and projects committed resources and events. Unity selects tile art from the projected contract. Allocation, reload, restart and replay retain the selected version and digest. Incompatible clients or configurations fail closed. Historical studies and captures must identify their elemental-board ruleset.
+
+The tile vocabulary comes from [v2](v2.md), [v3.1](v3.1.md), its [historical board data](v3.1/data/board_rules_10x10.json) and the [art direction](art-direction.md). Their dimensions, resource values and balance examples apply only to their respective revisions. Candidate policy changes require a new validated publication.
 
 ### Board stability
 
@@ -120,7 +137,7 @@ Rules:
 
 ## Unity and presentation
 
-Extend the existing Pet Arena project/scene; do not create a competing client.
+Central Plaza remains a separate social and navigation experience. Active battle uses a dedicated fixed composition with a centered 8×8 board, allied Pet or four compact participant portraits on the left, and the enemy or Boss on the right. Keep HP, resources, active turn, telegraph and skill controls visible at 720p and 1080p. Suppress locomotion, portal interaction and free camera input for the lifetime of the battle. The interactive board is the only checkerboard. Authored character animation and bounded reduced-motion-aware cinematics may play within the scene.
 The 8x8 HUD must remain readable at the target desktop resolutions and provide:
 
 - tile selection, swaps, invalid-swap feedback and cascade/refill feedback;
@@ -143,8 +160,8 @@ next H1–H4 owner gate. Do not claim a high-poly unrigged mesh as a production 
 
 Establish reusable humanoid, quadruped, avian, serpent and floating intake
 profiles. The six maps retain their identities, but Wave A prioritizes **two
-functioning arenas** (Cinder Terraces/Fire and Tideglass Lagoon/Water) plus the
-Central Plaza foundation over six empty scene definitions.
+fixed-camera battle backgrounds** (Cinder Terraces/Fire and Tideglass Lagoon/Water) plus the
+Central Plaza social space. Existing walkable arena scenes are DEVELOPMENT_BLOCKOUT references for navigation and regression. Fire establishes the representative playable composition before visual expansion to Water, Stormcoil Fields, Lantern Necropolis, Ochre Labyrinth and Dawn Prism Sanctum.
 
 Audio foundation: AudioMixer groups for Music, Ambient, SFX, Voice and UI; volume
 settings; battle/boss hooks; environment ambience; tile/attack/impact/shield/
