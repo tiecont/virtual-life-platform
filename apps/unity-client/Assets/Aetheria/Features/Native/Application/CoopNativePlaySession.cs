@@ -25,8 +25,7 @@ namespace Aetheria.Networking
             }
             catch (FormatException error)
             {
-                System.Console.Error.WriteLine("Coop native projection rejected: " + error.Message + " · " +
-                    System.Text.Encoding.UTF8.GetString(bytes, 0, Math.Min(bytes.Length, 1200)));
+                System.Console.Error.WriteLine("Coop native projection rejected: " + error.Message);
                 throw new NativeFailure(Failure.Protocol);
             }
         }

@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
+using Aetheria.PetArena.Infrastructure;
 using Aetheria.Networking;
 using Aetheria.PetArena.Presentation;
 using NUnit.Framework;
@@ -85,6 +87,41 @@ namespace Aetheria.Tests
                 yield return null;
                 Assert.That(root.Q<ScrollView>("coop-hud-scroll"), Is.SameAs(scroll));
                 Assert.That(scroll.scrollOffset.y, Is.GreaterThan(0));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(settings);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator LateReceiptFromPreviousRoomCannotReplaceCurrentReward()
+        {
+            var go = new GameObject("coop-receipt-test");
+            var settings = ScriptableObject.CreateInstance<PanelSettings>();
+            try
+            {
+                var document = go.AddComponent<UIDocument>();
+                document.panelSettings = settings;
+                var hud = go.AddComponent<CoopNativeHud>();
+                hud.Attach(document);
+                var terminal = Projection().Replace("\"playing\"", "\"won\"").Replace("\"hp\":5000", "\"hp\":0");
+                var view = CoopNativeView.Decode(9, System.Text.Encoding.UTF8.GetBytes(terminal));
+                var old = new TaskCompletionSource<CoopLobbyClient.Reward>();
+                var current = new TaskCompletionSource<CoopLobbyClient.Reward>();
+                hud.Bind(null);
+                hud.SetRewardLoader(() => old.Task);
+                hud.Render(view);
+                hud.Bind(null);
+                hud.SetRewardLoader(() => current.Task);
+                hud.Render(view);
+                current.SetResult(new CoopLobbyClient.Reward { coins = 70 });
+                yield return null;
+                old.SetResult(new CoopLobbyClient.Reward { coins = 3 });
+                yield return null;
+                hud.Render(view);
+                Assert.That(document.rootVisualElement.Q<Label>("coop-reward").text, Does.Contain("70 coins"));
             }
             finally
             {

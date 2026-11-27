@@ -20,7 +20,7 @@ namespace Aetheria.PetArena.Presentation
         private Action returnToHub;
         private float nextRefresh;
         private bool reading, renderedReconnect, loadingReward;
-        private bool recovering, leaving;
+        private bool recovering, leaving, submitting;
         private Func<Task<CoopLobbyClient.Reward>> loadReward;
         private CoopLobbyClient.Reward reward;
         private string rewardNotice, feedback;
@@ -36,6 +36,8 @@ namespace Aetheria.PetArena.Presentation
         public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
         {
             reward = null; rewardNotice = null; loadReward = null;
+            loadingReward = false;
+            submitting = false;
             previous = null;
             feedback = null;
             recovering = false;
@@ -151,11 +153,12 @@ namespace Aetheria.PetArena.Presentation
             var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
             target.Insert(0, turn);
             body.Add(presentation);
-            if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
+            if (submitting) target.Add(new Label("Sending action…") { name = "coop-network" });
+            else if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
             if (view.Terminal && loadReward != null)
             {
                 if (reward != null)
-                    target.Add(new Label("Rewards received · " + reward.Summary));
+                    target.Add(new Label("Rewards received · " + reward.Summary) { name = "coop-reward" });
                 else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
                 else if (rewardNotice != null)
                     target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
@@ -169,7 +172,7 @@ namespace Aetheria.PetArena.Presentation
             if (returnToHub != null || session != null) target.Add(BuildFooter());
         }
 
-        private bool CanSubmit => session != null && !recovering && !leaving &&
+        private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&
             !session.RequiresReconnect && !session.HasPendingCommand;
 
         private VisualElement BuildFooter()
@@ -183,7 +186,7 @@ namespace Aetheria.PetArena.Presentation
             footer.Add(leave);
 
             var retry = session?.HasPendingCommand == true;
-            var needsRecovery = retry || session?.RequiresReconnect == true;
+            var needsRecovery = !submitting && (retry || session?.RequiresReconnect == true);
             var recover = new Button(() => _ = RecoverAsync())
             {
                 name = retry ? "coop-retry" : "coop-reconnect",
@@ -209,9 +212,24 @@ namespace Aetheria.PetArena.Presentation
         {
             if (loadingReward || loadReward == null) return;
             loadingReward = true;
-            try { reward = await loadReward(); }
-            catch (Exception) { rewardNotice = "Check settlement receipt"; }
-            finally { loadingReward = false; if (this != null) Refresh(); }
+            var loader = loadReward;
+            try
+            {
+                var receipt = await loader();
+                if (loadReward == loader) reward = receipt;
+            }
+            catch (Exception)
+            {
+                if (loadReward == loader) rewardNotice = "Check settlement receipt";
+            }
+            finally
+            {
+                if (this != null && loadReward == loader)
+                {
+                    loadingReward = false;
+                    Refresh();
+                }
+            }
         }
 
         private async Task RecoverAsync(bool renewal = false)
@@ -267,34 +285,44 @@ namespace Aetheria.PetArena.Presentation
             }
             var first = selected;
             selected = -1;
-            _ = SwapAsync(first, cell);
+            Submit(current => current.SwapAsync(first, cell));
         }
 
-        private async System.Threading.Tasks.Task SwapAsync(int first, int second)
+        private void Cast(string kind)
         {
-            try { if (session != null) await session.SwapAsync(first, second); }
-            catch (NativeFailure failure) { Debug.LogWarning("Coop swap rejected: " + failure.Reason); }
-            finally { Refresh(); }
+            switch (kind)
+            {
+                case "start": Submit(current => current.StartAsync()); break;
+                case "guard": Submit(current => current.GuardAsync()); break;
+                case "skill": Submit(current => current.SkillAsync()); break;
+                case "signature": Submit(current => current.SignatureAsync()); break;
+                case "fire-zone": Submit(current => current.FireZoneAsync()); break;
+                case "ultimate": Submit(current => current.UltimateAsync()); break;
+            }
         }
 
-        private async void Cast(string kind)
+        private async void Submit(Func<CoopNativePlaySession, Task<PlayState>> send)
         {
             if (!CanSubmit) return;
             var current = session;
-            try
+            submitting = true;
+            Refresh();
+            try { await send(current); }
+            catch (NativeFailure failure)
             {
-                switch (kind)
+                if (session == current)
+                    feedback = current.HasPendingCommand ? "Confirmation interrupted. Retry the pending command." :
+                        "Action was not committed · " + failure.Reason;
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                if (this != null && session == current)
                 {
-                    case "start": await current.StartAsync(); break;
-                    case "guard": await current.GuardAsync(); break;
-                    case "skill": await current.SkillAsync(); break;
-                    case "signature": await current.SignatureAsync(); break;
-                    case "fire-zone": await current.FireZoneAsync(); break;
-                    case "ultimate": await current.UltimateAsync(); break;
+                    submitting = false;
+                    Refresh();
                 }
             }
-            catch (NativeFailure failure) { Debug.LogWarning("Coop action rejected: " + failure.Reason); }
-            finally { Refresh(); }
         }
     }
 }
