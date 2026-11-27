@@ -44,7 +44,7 @@ else:
   sync(d,0); time.sleep(.10); button(d,1,1,0); sync(d,0); time.sleep(.15);button(d,1,0,0)
  elif sys.argv[1]=='scroll':
   x_pos,y_pos,child = c_int(),c_int(),c_ulong()
-  assert translate(d,window,root,700,400,byref(x_pos),byref(y_pos),byref(child))
+  assert translate(d,window,root,280,400,byref(x_pos),byref(y_pos),byref(child))
   sig(xt,'XTestFakeMotionEvent',c_int,c_void_p,c_int,c_int,c_int,c_ulong)(d,-1,x_pos.value,y_pos.value,0)
   sync(d,0); time.sleep(.10)
   button=sig(xt,'XTestFakeButtonEvent',c_int,c_void_p,c_uint,c_int,c_ulong)
