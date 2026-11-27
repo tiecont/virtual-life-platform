@@ -60,21 +60,35 @@ namespace Aetheria.PetArena.Presentation
             root.Add(seats);
 
             var board = new VisualElement { name = "coop-board" };
-            board.style.flexDirection = FlexDirection.Row;
-            board.style.flexWrap = Wrap.Wrap;
-            board.style.width = 520;
+            board.AddToClassList("coop-board");
             for (var index = 0; index < view.Board.Count; index += 1)
             {
                 var cell = index;
                 var tile = view.Board[cell];
-                var button = new Button(() => select(cell)) { text = CellText(tile) };
-                button.name = CellPrefix + cell;
-                if (tile != null) button.AddToClassList("tile-" + tile.Element);
+                var description = CellText(tile);
+                var button = new Button(() => select(cell))
+                {
+                    name = CellPrefix + cell,
+                    text = description,
+                    tooltip = description
+                };
+                button.AddToClassList("coop-tile");
+                if (tile != null)
+                {
+                    button.AddToClassList("tile-" + tile.Element);
+                    button.AddToClassList("coop-element-tile");
+                    var icon = new VisualElement { name = "coop-element-icon", pickingMode = PickingMode.Ignore };
+                    icon.AddToClassList("coop-element-icon");
+                    button.Add(icon);
+                    if (tile.Multiplier > 1)
+                    {
+                        button.AddToClassList("coop-tile-multiplied");
+                        var badge = new Label("×" + tile.Multiplier) { name = "coop-tile-multiplier", pickingMode = PickingMode.Ignore };
+                        badge.AddToClassList("coop-tile-multiplier");
+                        button.Add(badge);
+                    }
+                }
                 if (cell == selected) button.AddToClassList("coop-selected");
-                button.style.width = 58;
-                button.style.height = 48;
-                button.style.marginRight = 2;
-                button.style.marginBottom = 2;
                 button.SetEnabled(CoopNativePresenter.CanAct(view));
                 board.Add(button);
             }

@@ -65,10 +65,34 @@ namespace Aetheria.Tests
                 var hud = go.AddComponent<CoopNativeHud>();
                 hud.Attach(document);
                 hud.Bind(null, () => { });
-                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection()));
+                var elements = new[] { "fire", "water", "electric", "ghost", "ground", "light" };
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(elements: elements, firstMultiplier: 64)));
                 hud.Render(view);
                 yield return null;
                 yield return null;
+
+                var icons = new System.Collections.Generic.HashSet<Texture2D>();
+                for (var index = 0; index < elements.Length; index++)
+                {
+                    var tile = root.Q<Button>("coop-cell-" + index);
+                    var icon = tile.Q("coop-element-icon");
+                    Assert.That(tile.ClassListContains("tile-" + elements[index]), Is.True);
+                    Assert.That(icon.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                    var texture = icon.resolvedStyle.backgroundImage.texture;
+                    Assert.That(texture, Is.Not.Null, elements[index] + " icon failed to load");
+                    Assert.That(icons.Add(texture), Is.True, elements[index] + " icon must be unique");
+                    Assert.That(icon.worldBound.xMin, Is.GreaterThanOrEqualTo(tile.worldBound.xMin));
+                    Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(tile.worldBound.xMax));
+                }
+
+                var firstTile = root.Q<Button>("coop-cell-0");
+                var multiplier = firstTile.Q<Label>("coop-tile-multiplier");
+                Assert.That(multiplier.text, Is.EqualTo("×64"));
+                Assert.That(multiplier.worldBound.xMax, Is.LessThanOrEqualTo(firstTile.worldBound.xMax));
+                Assert.That(firstTile.Q("coop-element-icon").worldBound.xMax, Is.LessThanOrEqualTo(multiplier.worldBound.xMin));
+                Assert.That(multiplier.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                Assert.That(root.Q<Button>("coop-cell-1").Q("coop-tile-multiplier"), Is.Null);
+                Assert.That(root.Q<Button>("coop-cell-6").Q("coop-element-icon"), Is.Null);
 
                 var scroll = root.Q<ScrollView>("coop-hud-scroll");
                 var footer = root.Q("coop-footer");
@@ -185,13 +209,16 @@ namespace Aetheria.Tests
         }
 
         private static string Projection(string pending = "null", int health = 400,
-            int shield = 0, int shieldTurns = 0, int round = 1)
+            int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2)
         {
+            elements ??= new[] { "fire" };
             var board = new System.Text.StringBuilder();
             for (var index = 0; index < 64; index += 1)
             {
                 if (index > 0) board.Append(',');
-                board.Append(index == 0 ? "{\"element\":\"fire\",\"multiplier\":2}" : "null");
+                board.Append(index < elements.Length
+                    ? "{\"element\":\"" + elements[index] + "\",\"multiplier\":" + (index == 0 ? firstMultiplier : 1) + "}"
+                    : "null");
             }
             var seats = new System.Text.StringBuilder();
             var pets = new[] { "icarus", "coralline", "volt", "terran" };

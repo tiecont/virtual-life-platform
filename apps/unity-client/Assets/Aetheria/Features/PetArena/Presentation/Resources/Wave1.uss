@@ -90,13 +90,77 @@
     color: rgb(255, 217, 148);
     -unity-font-style: bold;
 }
-.coop-world #coop-board Button { color: white; -unity-font-style: bold; }
+.coop-board {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 520px;
+}
+.coop-tile {
+    width: 58px;
+    height: 48px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    color: white;
+    -unity-font-style: bold;
+}
+.coop-tile.coop-element-tile { color: rgba(0, 0, 0, 0); }
+.coop-element-icon {
+    position: absolute;
+    width: 29px;
+    height: 29px;
+    left: 13px;
+    top: 8px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.coop-tile-multiplied .coop-element-icon {
+    width: 26px;
+    height: 26px;
+    left: 6px;
+    top: 10px;
+}
+.coop-world .coop-tile-multiplier {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: rgb(255, 235, 175);
+    background-color: rgb(37, 32, 41);
+    border-bottom-left-radius: 5px;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    white-space: nowrap;
+}
 .tile-fire { background-color: rgb(142, 58, 37); }
 .tile-water { background-color: rgb(35, 93, 134); }
 .tile-electric { background-color: rgb(130, 93, 24); }
 .tile-ghost { background-color: rgb(89, 60, 126); }
 .tile-ground { background-color: rgb(105, 78, 55); }
 .tile-light { background-color: rgb(56, 111, 91); }
+.tile-fire .coop-element-icon {
+    background-image: url("ElementTiles/fire.png");
+    -unity-background-image-tint-color: rgb(255, 206, 156);
+}
+.tile-water .coop-element-icon {
+    background-image: url("ElementTiles/water.png");
+    -unity-background-image-tint-color: rgb(190, 237, 255);
+}
+.tile-electric .coop-element-icon {
+    background-image: url("ElementTiles/electric.png");
+    -unity-background-image-tint-color: rgb(255, 237, 166);
+}
+.tile-ghost .coop-element-icon {
+    background-image: url("ElementTiles/ghost.png");
+    -unity-background-image-tint-color: rgb(238, 215, 255);
+}
+.tile-ground .coop-element-icon {
+    background-image: url("ElementTiles/ground.png");
+    -unity-background-image-tint-color: rgb(255, 221, 186);
+}
+.tile-light .coop-element-icon {
+    background-image: url("ElementTiles/light.png");
+    -unity-background-image-tint-color: rgb(223, 255, 215);
+}
 .coop-selected { border-width: 3px; border-color: white; }
 
 .training-list {
