@@ -15,7 +15,7 @@ Run both builds from the same clean revision. The runner requires a passing Linu
 
 One packaged player uses ordinary guest login, owned Pet selection, movement, room creation and battle actions. Three independently authenticated socket clients occupy the other seats. They use the committed board and authorized projections only. This fixture supplies the three partner Pets, uses reduced Fire difficulty and an earlier multiplier stage, and exercises the host's real reward settlement and starter Emberglass upgrade. The suite checks Fire victory, restart recovery from the same board, one fresh host admission, four payouts, and upgraded loadout binding in the Water lobby and native HUD.
 
-The process produces source and package metadata, screenshot evidence, event projections and a checked result in ignored `artifacts/packaged-coop-runs/`. It does not exercise four packaged windows, human controls, physical Windows, or production balance. UI automation assumes the 1024×768 development player layout.
+The process produces source and package metadata, screenshot evidence, event projections and a checked result in ignored `artifacts/packaged-coop-runs/`. It does not exercise four packaged windows, human controls, physical Windows, or production balance. Set `PACKAGED_QA_SIZE=1280x720` or `PACKAGED_QA_SIZE=1920x1080` to request a review resolution. The default remains 1024×768. The runner publishes the functional candidate to its disposable database. Use `PACKAGED_QA_BOARD=elemental` for a historical regression run. The receipt identifies the observed board contract.
 
 ## Four-person offline playtest
 
@@ -34,7 +34,7 @@ existing routing and trust the configured public test CA before inviting players
 | --- | --- | --- |
 | Arrival | Four people start signed out and use separate guest accounts. Open the collection and select an owned Pet. | Time to first selection, confusion about duplicate species and ownership, missing or clipped labels. |
 | Formation | Use WASD to reach Fire and E to enter. An eligible host creates the room. Three people join by room UUID, choose their Pets and ready up. | Starting AP, eligible host, time until all four can see the board, any assistance required. |
-| Combat | In seat order, swap adjacent tiles for a match. Try a guard, a skill, a signature and an ultimate as resources permit. Scroll to inspect the controls. | First independently found legal move, mana/rage and cooldown comprehension, visibility of the active seat, multipliers and Boss warning, time to phase change and outcome. |
+| Combat | In seat order, swap adjacent tiles for a match. Try a guard, a skill, a signature and an ultimate as resources permit. Check which skills are ready while the board stays visible. | First independently found legal move, mana/rage and cooldown comprehension, visibility of the active seat, multipliers and Boss warning, time to phase change and outcome. |
 | Recovery | After one committed move, record turn, active seat, Boss HP and multiplier locations. Disconnect one client. Have that player reconnect. On a separate run restart the test match process. | Time until the same board returns, whether an action is repeated or lost, agreement of the four views. |
 | Progression | Record the four reward receipts. Return to Plaza, check balances, equip/upgrade a Core if affordable, and try entry to Water. | First-clear and replay rewards, changes in materials and Pet level, Water prerequisites and observable equipped stats. Record a loss or locked room as the outcome when it occurs. |
 
