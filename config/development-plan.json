@@ -10014,7 +10014,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Implement the authoritative deterministic 8x8 tactical board and combat loop in Rust without mutating frozen V1/V3."
+      "remaining": "Functional co-op and solo Rust use a shared reducer and version-bound tile projections. Rust tests on 6be5ac65 passed 194 scoped cases. Verify real solo admission, settlement and recovery."
     },
     {
       "id": "VL-177",
@@ -10732,7 +10732,7 @@
         "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
       },
       "workstream": "D3-B",
-      "remaining": "Wire existing lobby and HUD to the portal-selected Boss, owned roster, admission and reconnect. Complete reward presentation and return to hub.",
+      "remaining": "The fixed battle stage and camera are integrated at 415c9754. Verify that movement and portal input remain disabled throughout the fight, and resume correctly in Plaza.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
@@ -10836,7 +10836,7 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Local packaged journey passed. Confirm hosted CI for integrated code and the remaining D3 dependencies.",
+      "remaining": "The historical elemental Linux journey on d032a3b9 passed with Fire victory at v31 and four award rows. Exercise corrected functional encounters in a packaged build. Hosted CI remains open.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
@@ -11250,7 +11250,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Complete six regular routes and recruitment through packaged play.",
+      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Verify both in the released-for-local-test player, then extend the remaining encounter backgrounds and regular recruitment routes.",
       "qualificationDependencies": [
         "VL-183",
         "VL-184"
@@ -11374,7 +11374,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Complete the remaining acquisition policy editors and version-pinned acquisition simulation.",
+      "remaining": "Functional Admin authoring is integrated at 691b12c7. Prove comparative publication, historical rollback and pinned recovery, then complete acquisition policy editors.",
       "implementation": {
         "integratedLinuxReview": {
           "sourceRevision": "b2a35703bc74512f8803bcaf61749cacab74b6b2",
@@ -11486,7 +11486,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
+      "remaining": "The offline development player uses the six Gemini Neon High functional jewels from 29a8d136. Verify real screenshot coverage at 720p and 1080p, cooldown controls, terminal reconnect and Ghost vulnerability.",
       "implementation": {
         "productionReview": {
           "sourceRevision": "e19170e5",
@@ -11558,7 +11558,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Confirm candidates on larger seed sets; evaluate Boss pressure and attainable progression before owner review.",
+      "remaining": "The first functional co-op candidate at d79dcb43 lost 192/192 simulations. Three unpublished Fire/Water variants won 26, 92 and 46 of 192 respectively. Run held-out seeds and examine starter loadouts before selecting a balance candidate.",
       "qualificationDependencies": [
         "VL-206",
         "VL-207",
