@@ -17,7 +17,7 @@ namespace Aetheria.PetArena.Presentation
         public const string CellPrefix = "coop-cell-";
         public const string ActionPrefix = "coop-action-";
 
-        public static VisualElement Build(CoopNativeView view, Action<int> select, Action<string> cast, int selected = -1)
+        public static VisualElement Build(CoopNativeView view, Action<int> select, Action<string> cast, int selected = -1, bool inputAvailable = true)
         {
             if (view == null) throw new ArgumentNullException(nameof(view));
             if (select == null) throw new ArgumentNullException(nameof(select));
@@ -80,6 +80,7 @@ namespace Aetheria.PetArena.Presentation
             var center = BattleScreenLayout.Center("coop-board");
             var board = center[0];
             stage.Insert(0, center);
+            var allowSwap = inputAvailable && CoopNativePresenter.CanAct(view);
             for (var index = 0; index < view.Board.Count; index += 1)
             {
                 var cell = index;
@@ -130,7 +131,7 @@ namespace Aetheria.PetArena.Presentation
                     button.AddToClassList("coop-selected");
                     if (tile?.Kind != null) button.AddToClassList("functional-gem-selected");
                 }
-                button.SetEnabled(CoopNativePresenter.CanAct(view));
+                button.SetEnabled(allowSwap);
                 BattleScreenLayout.AddCell(board, button, index);
             }
 
@@ -157,7 +158,7 @@ namespace Aetheria.PetArena.Presentation
                 }
                 var button = new Button(() => cast(action)) { text = label, tooltip = label };
                 button.name = ActionPrefix + action;
-                button.SetEnabled(available.Contains(action));
+                button.SetEnabled(inputAvailable && available.Contains(action));
                 actions.Add(button);
             }
             center.Add(actions);

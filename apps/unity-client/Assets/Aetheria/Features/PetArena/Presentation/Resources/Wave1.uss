@@ -149,7 +149,7 @@
     border-color: rgb(46, 35, 54);
     border-radius: 5px;
 }
-.battle-cell:disabled { opacity: 0.7; }
+.battle-board .battle-cell:disabled { opacity: 0.88; }
 .battle-telegraph-cell { border-color: rgb(250, 165, 75); border-width: 2px; }
 .coop-tile.coop-element-tile,
 .coop-tile.coop-functional-tile { color: rgba(0, 0, 0, 0); }

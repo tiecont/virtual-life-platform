@@ -218,12 +218,8 @@ namespace Aetheria.PetArena.Presentation
                     if (target[index] != body) target.RemoveAt(index);
             }
 
-            var presentation = CoopNativePresentation.Build(view, Select, Cast, selected);
-            if (session != null && !CanSubmit)
-            {
-                presentation.Q("coop-board").SetEnabled(false);
-                presentation.Q("coop-actions").SetEnabled(false);
-            }
+            var presentation = CoopNativePresentation.Build(view, Select, Cast, selected,
+                inputAvailable: session == null || CanSubmit);
             var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
             turn.AddToClassList("battle-turn");
             target.Insert(0, turn);

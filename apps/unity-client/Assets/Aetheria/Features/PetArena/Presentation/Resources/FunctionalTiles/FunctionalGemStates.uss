@@ -17,7 +17,7 @@
 }
 
 .functional-gem-cell:disabled .functional-gem-art {
-    opacity: 0.52;
+    opacity: 1;
 }
 
 .functional-gem-cell .functional-gem-multiplier {
