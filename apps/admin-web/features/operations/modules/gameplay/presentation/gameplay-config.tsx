@@ -262,6 +262,13 @@ export default function GameplayConfig({request}:{request:Request}){
   <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>
   <div><dt>Content revision</dt><dd>{display(bundle,'contentRevision')}</dd></div>
  </dl>
+ {bundle?.schemaVersion===2&&<label>When the Boss reaches zero HP
+  <select className="aetheria-field" disabled={!editable} value={String(bundle.terminalOutcomePolicy??'')}
+   onChange={event=>change(['terminalOutcomePolicy'],event.target.value||undefined)}>
+   <option value="">Resolve remaining end-of-turn effects</option>
+   <option value="boss-defeat-first">Finish the battle immediately</option>
+  </select>
+ </label>}
  <h3>Pet catalog</h3><label>Find a Pet<input type="search" className="aetheria-field" value={petSearch} onChange={event=>setPetSearch(event.target.value)} /></label>
  <div className="audit"><table><thead><tr><th>Name</th><th>Pet ID</th><th>Element</th><th>Rarity</th><th>Power class</th><th>HP</th><th>Attack</th><th>Defense</th></tr></thead>
  <tbody>{(Array.isArray(bundle?.pets)?bundle.pets:[]).map((pet,index)=>{
