@@ -222,9 +222,10 @@ aetheria-game-runtime --compare-coop config/gameplay/arena8-coop-v2.seed.json 12
 ```
 
 The Admin gameplay workspace uses the saved version and supports 1–200 seeds
-for a single run or 1–25 per comparison row. The harness uses the first four
-authored Pets in seat order, cycling through shorter catalogs, at level 1 with
-zero Artifact power. Each row reports the selected boss and the engine's
+for a single run or 1–25 per comparison row. Pass `--party <file.json>` after the encounter arguments to simulate four
+specified Pets with their levels, Skill Levels and Artifact loadouts. With no
+party argument the harness uses the first four authored Pets in seat order,
+cycling through shorter catalogs, at level 1 with zero Artifact power. Each row reports the selected boss and the engine's
 canonical bundle digest. Multiplier occurrence counts matches where a
 multiplier tile appeared on a committed board. Duration uses one simulated
 second per accepted action. Contribution totals are summed across seeds per

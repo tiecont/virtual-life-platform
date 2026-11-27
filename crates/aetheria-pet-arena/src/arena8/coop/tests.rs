@@ -1060,3 +1060,36 @@ fn immediate_boss_attack_hands_the_round_to_a_surviving_seat() {
     assert_eq!(next.active_seat, 1);
     assert!(rules.reduce(&next, CoopAction::Guard, &mut rng).is_ok());
 }
+
+#[test]
+fn authored_boss_pressure_targets_living_mana_leaders_at_impact() {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    let model = &mut candidate["bosses"][0]["attackModel"];
+    model["targetPriority"] = "highest-mana".into();
+    let boss = candidate["bosses"][0]["id"].as_str().unwrap();
+    let configured =
+        CoopRules::load(&serde_json::to_vec(&candidate).unwrap(), boss.into()).unwrap();
+    assert_ne!(configured.digest(), rules().digest());
+    let mut state = configured.allocate(seats()).unwrap();
+    state.participants[0].hp = 1;
+    state.participants[1].mana = 80;
+    state.participants[2].mana = 80;
+    state.participants[3].mana = 90;
+    state.participants[3].alive = false;
+    state.participants[3].hp = 0;
+    let before = state.participants.clone();
+    let mut events = Vec::new();
+    state.pending = Some(PendingAttack {
+        targets: 1,
+        remaining: 1,
+        damage: 100,
+    });
+    configured.tick_pending(&mut state, &mut events);
+    assert_eq!(state.participants[0].hp, 1);
+    assert!(state.participants[1].hp < before[1].hp);
+    assert_eq!(state.participants[2].hp, before[2].hp);
+    assert_eq!(state.participants[3].hp, 0);
+
+    candidate["bosses"][0]["attackModel"]["targetPriority"] = "unsupported".into();
+    assert!(CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap()).is_err());
+}

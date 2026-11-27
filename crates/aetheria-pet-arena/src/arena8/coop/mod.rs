@@ -1694,16 +1694,17 @@ impl CoopRules {
         damage: u32,
         events: &mut Vec<Value>,
     ) {
-        // Deterministic target selection: lowest HP ratio first, then seat order.
+        // Resolve from the committed party at impact. Historical bundles rank by HP ratio.
         let mut order: Vec<usize> = (0..SEATS)
             .filter(|seat| state.participants[*seat].alive)
             .collect();
         order.sort_by_key(|index| {
             let seat = &state.participants[*index];
-            (
-                u64::from(seat.hp) * 1_000_000 / u64::from(seat.max_hp.max(1)),
-                *index as u64,
-            )
+            let priority = match self.selected_boss().attack_model.target_priority {
+                Some(config::BossTargetPriority::HighestMana) => u64::from(u16::MAX - seat.mana),
+                None => u64::from(seat.hp) * 1_000_000 / u64::from(seat.max_hp.max(1)),
+            };
+            (priority, *index)
         });
         for target in order.into_iter().take(usize::from(targets)) {
             let seat = &state.participants[target];

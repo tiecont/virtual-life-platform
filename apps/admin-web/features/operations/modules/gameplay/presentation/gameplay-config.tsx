@@ -286,6 +286,13 @@ export default function GameplayConfig({request}:{request:Request}){
    })}
   </select>
  </label>}
+ {bundle?.schemaVersion===2&&<label>Boss attack target priority
+  <select className="aetheria-field" disabled={!editable} value={String(read(bundle,[...bossPath,'attackModel','targetPriority'])??'')}
+   onChange={event=>change([...bossPath,'attackModel','targetPriority'],event.target.value||undefined)}>
+   <option value="">Lowest remaining HP percentage</option>
+   <option value="highest-mana">Highest current mana</option>
+  </select>
+ </label>}
  <div className="fields"><Num label="Achievement Points to host" value={read(bundle,[...bossPath,'requiredRoomPoints'])} onChange={value=>change([...bossPath,'requiredRoomPoints'],value)}/><Num label="Boss max HP" value={read(bundle,[...bossPath,'maxHp'])} onChange={value=>change([...bossPath,'maxHp'],value)}/>{(['baseDamage','perRoundDamage','minimumDamage','defenseDivisor'] as const).map((key,i)=><Num key={key} label={['Boss base damage','Additional damage per round','Minimum incoming damage','Party defense divisor'][i]} min={key==='perRoundDamage'?0:1} value={read(bundle,[...bossPath,'attackModel',key])} onChange={value=>change([...bossPath,'attackModel',key],value)}/>)}<Num label="Boss defense" value={read(bundle,[...bossPath,'defense'])} onChange={value=>change([...bossPath,'defense'],value)}/><Num label="Critical rate (bp)" value={read(bundle,[...bossPath,'critRateBp'])} onChange={value=>change([...bossPath,'critRateBp'],value)}/><Num label="Critical damage (bp)" value={read(bundle,[...bossPath,'critDamageBp'])} onChange={value=>change([...bossPath,'critDamageBp'],value)}/><Num label="Telegraph turns" value={read(bundle,[...bossPath,'telegraphTurns'])} onChange={value=>change([...bossPath,'telegraphTurns'],value)}/><Num label="Phase threshold (bp)" value={read(bundle,[...bossPath,'phase','thresholdBp'])} onChange={value=>change([...bossPath,'phase','thresholdBp'],value)}/><Num label="Phase max HP growth (bp)" value={read(bundle,[...bossPath,'phase','maxGrowthBp'])} onChange={value=>change([...bossPath,'phase','maxGrowthBp'],value)}/><Num label="Phase two current HP (bp)" value={read(bundle,[...bossPath,'phase','currentBp'])} onChange={value=>change([...bossPath,'phase','currentBp'],value)}/><Num label="Phase two attack (pm)" value={read(bundle,[...bossPath,'phase','phase2AttackPm'])} onChange={value=>change([...bossPath,'phase','phase2AttackPm'],value)}/><Num label="Attack targets" value={read(bundle,[...bossPath,'phase','attackTargets'])} onChange={value=>change([...bossPath,'phase','attackTargets'],value)}/></div>
  <h3>Elemental matchups</h3>
  <p className="small muted">Damage against each defending element. 100% is normal damage and 0% is immunity.</p>

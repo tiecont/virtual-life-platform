@@ -320,6 +320,13 @@ pub struct BossAttackModel {
     pub defense_divisor: u32,
     pub minimum_damage: u32,
     pub vulnerability: Option<BossVulnerability>,
+    pub target_priority: Option<BossTargetPriority>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum BossTargetPriority {
+    HighestMana,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
@@ -597,7 +604,8 @@ impl CoopConfig {
                 return Err(ConfigError::Boss);
             }
             if self.schema_version == HISTORICAL_SCHEMA_VERSION
-                && boss.attack_model.vulnerability.is_some()
+                && (boss.attack_model.vulnerability.is_some()
+                    || boss.attack_model.target_priority.is_some())
             {
                 return Err(ConfigError::Boss);
             }
@@ -1370,6 +1378,11 @@ impl BossAttackModel {
                 Value::Uint(u64::from(status.value_pm)),
                 Value::Uint(u64::from(status.duration_turns)),
             ]));
+        }
+        if let Some(priority) = self.target_priority {
+            fields.push(Value::Text(match priority {
+                BossTargetPriority::HighestMana => "highest-mana".into(),
+            }));
         }
         Value::List(fields)
     }
