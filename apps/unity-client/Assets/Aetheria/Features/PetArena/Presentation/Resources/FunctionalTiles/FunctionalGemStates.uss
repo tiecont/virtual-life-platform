@@ -1,0 +1,27 @@
+.functional-gem-cell.functional-gem-selected {
+    border-color: rgb(243, 209, 135);
+}
+
+.functional-gem-cell.functional-gem-matched {
+    background-color: rgb(74, 98, 88);
+    border-color: rgb(235, 223, 174);
+}
+
+.functional-gem-cell.functional-gem-matched .functional-gem-art {
+    -unity-background-image-tint-color: rgb(255, 244, 213);
+}
+
+.functional-gem-cell.functional-gem-falling .functional-gem-art {
+    translate: 0 3px;
+    opacity: 0.85;
+}
+
+.functional-gem-cell:disabled .functional-gem-art {
+    opacity: 0.52;
+}
+
+.functional-gem-cell .functional-gem-multiplier {
+    background-color: rgb(36, 32, 57);
+    border-color: rgb(193, 167, 119);
+    color: rgb(255, 240, 195);
+}
