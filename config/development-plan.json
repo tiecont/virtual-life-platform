@@ -10881,12 +10881,44 @@
         "Upgrade exact PR84 migration history on real PostgreSQL and re-run historical native/admission compatibility and old writes.",
         "Protected PR checks run against committed source."
       ],
-      "status": "IN_PROGRESS",
+      "status": "VERIFIED",
       "qualificationRequirements": [],
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Confirm current hosted checks before merge. Original runtime binary qualification is tracked separately from the successful database expansion and historical schema decoding.",
+      "verification": {
+        "sourceRevision": "0289d4e3e69b50306c07bad26a2d650ea26880b4",
+        "reviewMode": "SINGLE_AGENT_AUDIT",
+        "pullRequest": "https://github.com/tiecont/virtual-life-platform/pull/86",
+        "commands": [
+          {
+            "command": "gh pr checks 86 for runs 45984197230 and 45984197238 at 0289d4e3",
+            "exitCode": 0,
+            "result": "Seventeen protected checks pass on the committed source: change-plan, core-checks, four integration shards, runtime-images, eight browser groups and linux-foundation."
+          },
+          {
+            "command": "linux-foundation step: Format, check, clippy and tests",
+            "exitCode": 0,
+            "result": "cargo fmt --check, clippy -D warnings and the whole workspace test suite pass on the hosted runner."
+          },
+          {
+            "command": "linux-foundation step: Check native game schema races and archived runtime expansion compatibility",
+            "exitCode": 0,
+            "result": "The archived 47-migration native runtime and the archived 48-migration admission runtime expand to the current 66-file image under explicit expand policies while strict and older policies refuse it; native ciphertext and browser identity survive."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-game-migration-compat.mjs",
+            "exitCode": 0,
+            "result": "Local replay of the same archived-runtime upgrade passes after the current-window policies were regenerated."
+          },
+          {
+            "command": "node scripts/with-test-db.mjs node --import tsx scripts/runtime-admission-migration-compat.mjs",
+            "exitCode": 0,
+            "result": "Local admission replay passes on the same 66-migration image."
+          }
+        ],
+        "scope": "Build, database expansion and historical policy compatibility only. Original runtime binary qualification stays with its own task; no production deployment or media rights review is claimed."
+      },
       "implementation": {
         "sourceRevision": "126438dd68e62480e4c83af7dc7e643f99cdb0dd",
         "pullRequest": 86,
