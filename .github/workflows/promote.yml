@@ -29,19 +29,19 @@ jobs:
     env:
       AETHERIA_PROMOTION_ENABLED: ${{ vars.AETHERIA_PROMOTION_ENABLED }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
       - id: authorize
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/promotion-bot.mjs authorize
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         if: ${{ steps.authorize.outputs.promotion == 'true' }}
         with:
           name: ${{ steps.authorize.outputs.artifact }}
@@ -78,7 +78,7 @@ jobs:
           EXPECTED_SOURCE: ${{ steps.authorize.outputs.source }}
           EXPECTED_ATTEMPT: ${{ steps.authorize.outputs.attempt }}
         run: node scripts/promotion-bot.mjs publish
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: ${{ steps.prepare.outcome == 'success' }}
         with:
           name: digest-promotion-proposal-${{ github.run_id }}-${{ github.run_attempt }}
