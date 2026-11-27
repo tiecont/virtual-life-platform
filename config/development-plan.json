@@ -10832,6 +10832,11 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "c81a3c9c98bea5115ca8a32e9fc67dd4f268612a",
+          "command": "Linux packaged private-display run 6DMHg5Hy and CoopNativeHudTests",
+          "result": "Three targeted PlayMode tests passed. The guest used its own Pet, four accounts entered Fire and the host committed a swap. Disconnect and re-admission preserved version 3 and six multiplier tiles across a runtime epoch change. Full journey is tracked separately."
+        },
         "equippedWaterAcceptance": {
           "sourceRevision": "07f3c4ec5aa8f1778b411f3f6cb4beafc37f67a9",
           "buildBase": "745e775a6514f360a65753fd4b504e6d2ce500b5",
@@ -11156,6 +11161,11 @@
       ],
       "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "310a524ce8b9348b17b36bd1d086b1ac7e1d37fe",
+          "command": "H1 receipt validation and Blender expression audit",
+          "result": "Original R3 receipt SHA-256 3988de1a117914c2ab40a471a41926b58abaf243a263475857b03f42f8861fc4. Five independent Blender controls; legacy VRM has no expression bindings. Blink repair is a separate preview. No H1 owner receipt or new accepted production asset."
+        },
         "reviewImportVerification": {
           "sourceRevision": "fe9ae1f0ee4fdd4fefa56fded7abcaaee2b75864",
           "command": "UNITY_EDITOR=<6000.3.14f1> node scripts/unity-validate.mjs tests",
@@ -11224,6 +11234,11 @@
         "VL-184"
       ],
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
+          "command": "node scripts/unity-validate.mjs tests",
+          "result": "All six serialized developer arenas have round-trip portals, spawn anchors and 64 board tiles. 78 EditMode and 33 PlayMode passed with two explicit service skips. Persistent native campaign and human acceptance remain open."
+        },
         "november27Verification": {
           "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
           "command": "cargo test --locked -p aetheria-pet-arena --test arena8 six_campaign_regular_encounters_resolve_and_replay -- --nocapture; aetheria-game-runtime --simulate-coop <v2 seed> tactical 2 <each Boss>",
@@ -11284,6 +11299,11 @@
       ],
       "remaining": "Verify earned gear and a trained skill through packaged interactions and subsequent combat.",
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "b1472300be97a31177536c4f48bacf0e02f74975",
+          "command": "vitest run --project integration tests/integration/pet-artifacts-wave-a.test.ts tests/integration/coop-settlement.test.ts",
+          "result": "22 disposable PostgreSQL cases passed in the scoped run, including solo-first starter material/Core granting and concurrent historical wallet repair."
+        },
         "november27Verification": {
           "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
           "command": "node scripts/skill-training-candidate.mjs; aetheria-game-runtime --check-gameplay-config <rendered candidate>; vitest run --project integration tests/integration/pet-artifacts-wave-a.test.ts tests/integration/pet-arena-wave1-durable.test.ts",
@@ -11322,6 +11342,11 @@
       ],
       "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "33734b784935c744c6b17687f9ca7378b5d17a90",
+          "command": "Headless Chromium Admin publication and rollback driver, run-UkKv6q",
+          "result": "Compared active and selected versions with identical party, Boss, policies and seeds. Test publication changed four payouts from one to three and rollback restored one. In-flight match preserved its pinned version after restart."
+        },
         "november27Verification": {
           "sourceRevision": "ec85a778ba164f4a60c3758ac42c46110edf4194",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs",
@@ -11493,6 +11518,11 @@
         "VL-208"
       ],
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "d46c592d2025797ba6f794103014f34ead1d10cb",
+          "command": "Rust fixed-seed diagnostics with holdout seeds 101 to 118",
+          "result": "Water shared-pressure Ground-heavy level 40 won 0/1/12/11 of 18 by random/basic/tactical/coordinated. Starter level 20 won 0/0/0/1. Resource-burst failed to initialize seed 114. No candidate approved or published."
+        },
         "november27Verification": {
           "sourceRevision": "aa730cc2c46c7a9e131af1692d40f9d3da775e2f",
           "command": "cargo test --locked -p aetheria-pet-arena --test catalog_conformance",
