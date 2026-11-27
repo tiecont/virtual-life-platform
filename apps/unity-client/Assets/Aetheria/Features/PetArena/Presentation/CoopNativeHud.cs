@@ -19,7 +19,7 @@ namespace Aetheria.PetArena.Presentation
         private int selected = -1;
         private Action returnToHub;
         private float nextRefresh;
-        private bool reading, renderedReconnect, loadingReward;
+        private bool reading, renderedReconnect, renderedRecovery, loadingReward;
         private bool recovering, leaving, submitting;
         private Func<Task<CoopLobbyClient.Reward>> loadReward;
         private CoopLobbyClient.Reward reward;
@@ -68,7 +68,7 @@ namespace Aetheria.PetArena.Presentation
         private void Update()
         {
             var view = session?.State?.Coop;
-            if (view == null || recovering || leaving) return;
+            if (view == null || recovering || leaving || submitting) return;
             if (!view.Terminal && session.NeedsRefresh && !session.HasPendingCommand && !reading)
             {
                 _ = RecoverAsync(renewal: true);
@@ -141,6 +141,7 @@ namespace Aetheria.PetArena.Presentation
             }
             previous = view;
             renderedReconnect = session.RequiresReconnect;
+            renderedRecovery = recovering;
             renderedVersion = view.Version;
             Render(view);
         }
@@ -292,7 +293,9 @@ namespace Aetheria.PetArena.Presentation
                 if (this != null && session == current)
                 {
                     recovering = false;
-                    if (!renewal || current.RequiresReconnect || current.State?.Coop?.Version != renderedVersion)
+                    // A render during renewal can disable controls even if the
+                    // replacement socket resumes the same committed version.
+                    if (!renewal || renderedRecovery || current.RequiresReconnect || current.State?.Coop?.Version != renderedVersion)
                         Refresh();
                 }
             }
