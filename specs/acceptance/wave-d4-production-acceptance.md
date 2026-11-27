@@ -279,3 +279,38 @@ Related tasks VL-199, VL-212, VL-214.
 | M10 | Owner approval gates remain intact. | PASS | eb980abb · canonical plan | Accepted production model count 0/55. H1 undecided; later gates require separate decisions. |
 | M11 | Canonical task states match actual acceptance. | IN_PROGRESS | eb980abb · canonical plan | Keep verified states tied to exact revisions and hosted checks. |
 | M12 | Release remains OFFLINE_ONLY / NO_GO_PUBLIC. | PASS | eb980abb · canonical plan | OFFLINE_ONLY / NO_GO_PUBLIC. |
+
+## N. Product design correction
+
+The historical gameplay screenshots above show elemental boards. Baseline source for pending rows is 3c9ac05b. The following entries track the functional-board product separately.
+
+| ID | Task | Condition | Status | Source and evidence | Remaining qualification |
+| --- | --- | --- | --- | --- | --- |
+| N01 | VL-176 | Conflicting original and Wave A specifications reconciled. | PASS | b5e10d87 · [Product contract](../pet-arena/mvp-wave-a.md) | Reconciled original v2/v3.1 vocabulary, 8×8 dimensions and legacy replay boundaries. |
+| N02 | VL-176 | Pet Element and functional TileKind are distinct authoritative concepts. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Verify authoritative typed wire and bundle. |
+| N03 | VL-176 | All six functional tile categories have implemented and tested semantics. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Exercise all six effects against committed state. |
+| N04 | VL-176 | Utility tile matches no longer implicitly produce generic attack damage. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Verify utility-only swaps and mixed cascades. |
+| N05 | VL-176 | Multiplier behavior is correct for each functional tile. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Verify boosted yields, arithmetic and caps. |
+| N06 | VL-176 | Solo and cooperative gameplay use the intended versioned functional-board contract. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Run both allocation paths. |
+| N07 | VL-203 | Historical elemental-board matches and replays remain compatible. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Replay historical fixtures and recover a persisted match. |
+| N08 | VL-208 | Functional tile configuration is database-owned and Admin-editable. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Publish from Admin and compare new and existing matches. |
+| N09 | VL-211 | Corrected gameplay balance simulations executed. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Run corrected digest through Rust balance study. |
+| N10 | VL-210 | Six original functional gem artwork candidates produced. | PASS | ca5978ea · [Gem sheet](../../assets/review/wave-d4/combat/functional-gems-concept.webp) | Original offline vector designs. Owner review pending. |
+| N11 | VL-210 | Production sprite atlas integrated into Unity. | IN_PROGRESS | ca5978ea · [Gem sheet](../../assets/review/wave-d4/combat/functional-gems-concept.webp) | Verify Unity import, states and actual player binding. |
+| N12 | VL-210 | Actual battle screen contains a centered 8x8 board. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Measure center and tile dimensions in the built player. |
+| N13 | VL-210 | Player Pets and Boss have dedicated battle-side presentation. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Inspect solo and four-seat compositions. |
+| N14 | VL-196 | No player-controlled locomotion during active battle. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Exercise movement keys during combat and return to Plaza. |
+| N15 | VL-196 | No redundant physical checkerboard behind the interactive board. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Inspect rendered fixed battle. |
+| N16 | VL-196 | Battle camera remains stable during ordinary gameplay. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Verify ordinary swap and phase feedback. |
+| N17 | VL-206 | Fire battle background demonstrates original visual identity. | IN_PROGRESS | 14af5af3 · [CONCEPT](../../assets/review/wave-d4/world/cinder-terraces-battle-concept.webp) | Fixed-camera concept candidate. Review in real Fire combat. |
+| N18 | VL-206 | Water battle background demonstrates distinct visual identity. | IN_PROGRESS | 14af5af3 · [CONCEPT](../../assets/review/wave-d4/world/tideglass-lagoon-battle-concept.webp) | Fixed-camera concept candidate. Review in real Water combat. |
+| N19 | VL-205 | Actual character animation and skill effects integrated where authorized. | NOT_RUN | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | H1 owner decision and later rig/animation gates pending. |
+| N20 | VL-199 | Actual solo battle screenshot captured. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Capture real solo combat. |
+| N21 | VL-199 | Actual four-player cooperative battle screenshot captured. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Capture real cooperative combat. |
+| N22 | VL-210 | Before-and-after visual comparison available. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Capture matched dimensions and encounter. |
+| N23 | VL-210 | Corrected battle presentation tested at 1080p and 720p. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Capture both resolutions. |
+| N24 | VL-211 | Performance measured with the corrected presentation. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Measure actual battle frame pacing, background loads and texture memory. |
+| N25 | VL-203 | Security and historical compatibility independently verified. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Historical security suite passed 278/278. Repeat independently on corrected source. |
+| N26 | VL-199 | Public-safe review screenshots committed to GitHub. | NOT_RUN | 3c9ac05b · [Previous combat](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp) | Push permitted redacted derivatives and verify hosted revision. |
+| N27 | VL-204 | Authorized original artwork and production assets delivered to private cloud with verified manifests. | IN_PROGRESS | 14af5af3 · Local manifest `a4a5a0a3997a85c90a12725de1e6778f5690033e6669c73bd0470aa6681103f8` | Local private stage verified. Destination and authorized cloud receipt pending. |
+| N28 | VL-198 | Owner visual acceptance recorded separately. | OWNER_REVIEW_REQUIRED | 3c9ac05b · [Product contract](../pet-arena/mvp-wave-a.md) | Obtain explicit owner visual decision. |

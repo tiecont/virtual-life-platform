@@ -9998,6 +9998,7 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": [
+        "Solo and four-player Boss play use versioned 8x8 functional tile effects from immutable published config. Sword, Mana, Rage, Heart, Shield and Special resolve independently of Pet element. Preserve historical elemental boards, digests and replays.",
         "64 bounded cells, deterministic swaps/matches/cascades/refill and dead-board recovery",
         "Typed events, telegraph, cooldowns, Signature/Ultimate and Icarus FIRE_ZONE",
         "Replay/stale/duplicate safety and zero client-authoritative RNG or outcome"
@@ -10710,6 +10711,7 @@
         "VL-194"
       ],
       "acceptance": [
+        "Active battle has a stable fixed camera, centered board, allies at left and enemy at right. Disable locomotion and portal navigation until return to the social world.",
         "Unity renders four combatants, the active seat, individual resources and skills, team status, the shared 8x8 board with multiplier labels, Boss HP/phase/telegraph, turn/round and contribution without hardcoding costs or caps",
         "Guest login, Pet selection, portal interaction, native combat, settlement and return to hub work without direct PetArenaPve entry",
         "Reconnect and receipt replay never duplicate committed presentation events"
@@ -11237,6 +11239,7 @@
         "VL-202"
       ],
       "acceptance": [
+        "Deliver distinctive fixed battle backgrounds beginning with Cinder Terraces and Tideglass Lagoon. Walkable test environments are DEVELOPMENT_BLOCKOUT.",
         "Publish and clear all six maps through authored regular encounters and the correct Boss with persistent unlock/recruitment state.",
         "Match enrollment, rewards and unlocks remain pinned to the published version across restart."
       ],
@@ -11360,6 +11363,7 @@
         "VL-191"
       ],
       "acceptance": [
+        "Admin separates Pet element, functional tile effects, multiplier weights and Pet progression. Prove a validated publication changes newly allocated battles while active matches retain their bundle.",
         "Edit canonical metadata, encounters, Skill Level, Artifacts, economy, progression, reward and acquisition fields with typed engine approval.",
         "Preview changes and run test-only acquisition with pinned versions and idempotency. Preserve six gated candidates and approved rarities."
       ],
@@ -11473,6 +11477,7 @@
         "VL-196"
       ],
       "acceptance": [
+        "Qualify the functional sprite atlas, skill feedback and centered fixed composition at 720p and 1080p in real solo and cooperative battle.",
         "Render the active seat, 64 tiles, multipliers, four players, skill/phase/telegraph and correct victory or defeat.",
         "Return to Central Plaza with updated progression. Reconnect with renewed scoped admission at the committed version and avoid duplicate UI effects."
       ],
@@ -11541,6 +11546,7 @@
         "VL-197"
       ],
       "acceptance": [
+        "Measure corrected functional-board cohorts separately from historical elemental studies. Report damage, healing, protection, resources, party cooperation and Boss viability by digest.",
         "Comparable fixed seeds report win rate, Boss phases, multiplier rates and contribution across six elements, team compositions and attainable progression.",
         "Analytical and Monte Carlo gacha checks reproduce published distributions. Duplicate/retry/farming tests bound rewards and Achievement Points.",
         "Record proposed changes and approval by digest."
