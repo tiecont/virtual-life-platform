@@ -23,13 +23,10 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
-        with:
-          version: 11.28.5
+      # artifact-plan.mjs reads git history only: it needs Node, not pnpm.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version-file: .node-version
-          cache: pnpm
       - id: plan
         run: node scripts/artifact-plan.mjs >> "$GITHUB_OUTPUT"
 
