@@ -47,6 +47,9 @@ namespace Aetheria.PetArena.Presentation
                 enemy.Add(Label("coop-boss-vulnerability", "Boss damage taken ×" + (view.BossState.ArmorBreakPm / 1000f).ToString("0.###")));
             if (view.BossState.DotTurns > 0)
                 enemy.Add(Label("coop-burn", "Burn · " + view.BossState.DotDamage + " damage · " + view.BossState.DotTurns + " turns"));
+            if (view.FireZoneActiveTurns > 0)
+                enemy.Add(Label("coop-fire-zone", "Fire Zone · " + view.FireZoneActiveTurns +
+                    (view.FireZoneActiveTurns == 1 ? " turn" : " turns")));
 
             var pending = view.PendingAttack;
             if (pending != null)
@@ -84,7 +87,8 @@ namespace Aetheria.PetArena.Presentation
                 panel.Add(health);
                 panel.Add(Label("coop-seat-resources-" + seat,
                     "Mana " + own.Mana + " · Rage " + own.Rage +
-                    (own.Shield > 0 ? " · Shield " + own.Shield : "")));
+                    (own.Shield > 0 ? " · Shield " + own.Shield : "") +
+                    (own.UltimateReady ? " · Ultimate ready" : "")));
                 panel.Add(Label("coop-seat-contribution-" + seat,
                     "dmg " + own.Contribution.Damage + " · heal " + own.Contribution.Healing +
                     " · shield " + own.Contribution.Shielding));
@@ -143,6 +147,11 @@ namespace Aetheria.PetArena.Presentation
                         button.Add(badge);
                     }
                 }
+                if (view.FireZoneCells.Contains(cell))
+                {
+                    button.AddToClassList("coop-fire-zone-tile");
+                    button.tooltip += " · Fire Zone";
+                }
                 if (cell == selected)
                 {
                     button.AddToClassList("coop-selected");
@@ -158,9 +167,9 @@ namespace Aetheria.PetArena.Presentation
             var available = CoopNativePresenter.AvailableActions(view);
             var kinds = view.Abilities.Count == 0 ? new[] { "guard", "skill", "signature", "ultimate" } :
                 view.Abilities.Select(ability => ability.Kind).ToArray();
-            foreach (var kind in kinds)
+            foreach (var action in kinds)
             {
-                var action = kind;
+                if (action == CoopNativeView.Ultimate && !view.Own.HasUltimate) continue;
                 var ability = view.Abilities.FirstOrDefault(item => item.Kind == action);
                 var label = ActionName(action);
                 if (ability != null)
@@ -169,7 +178,7 @@ namespace Aetheria.PetArena.Presentation
                     var name = ability.Id.StartsWith(prefix, StringComparison.Ordinal) ? ability.Id.Substring(prefix.Length) : ability.Id;
                     var title = name.Replace('-', ' ');
                     title = title.Length == 0 ? label : char.ToUpperInvariant(title[0]) + title.Substring(1);
-                    label = title + "\nLv " + view.Own.SkillLevels[Array.IndexOf(kinds, kind)] + " · " +
+                    label = title + "\nLv " + view.Own.SkillLevels[view.SlotForAbility(action)] + " · " +
                         ability.Mana + " MP / " + ability.Rage + " rage";
                     if (ability.Cooldown > 0) label += "\nCooldown " + ability.Cooldown;
                 }
@@ -177,6 +186,14 @@ namespace Aetheria.PetArena.Presentation
                 button.name = ActionPrefix + action;
                 button.SetEnabled(inputAvailable && available.Contains(action));
                 actions.Add(button);
+            }
+            if (view.IsTimed && view.Phase == "playing")
+            {
+                var endTurn = new Button(() => cast(CoopNativeIntent.EndTurn))
+                    { name = ActionPrefix + "end-turn", text = "End Turn" };
+                endTurn.AddToClassList("battle-primary-action");
+                endTurn.SetEnabled(inputAvailable && view.CanEndTurn && CoopNativePresenter.CanAct(view));
+                actions.Add(endTurn);
             }
             center.Add(actions);
             return root;
@@ -198,6 +215,7 @@ namespace Aetheria.PetArena.Presentation
                 case "skill": return "Skill";
                 case "signature": return "Signature";
                 case "ultimate": return "Ultimate";
+                case "fire-zone": return "Fire Zone";
                 default: return kind ?? "?";
             }
         }

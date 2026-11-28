@@ -19,6 +19,9 @@ namespace Aetheria.PetArena.Presentation
         private int selected = -1;
         private Action returnToHub;
         private float nextRefresh;
+        private Label turnHeader;
+        private double? renderedSeconds;
+        private bool renderedExpired;
         private bool reading, renderedReconnect, renderedRecovery, loadingReward;
         private bool recovering, leaving, submitting;
         private Func<Task<string>> loadReward;
@@ -47,6 +50,8 @@ namespace Aetheria.PetArena.Presentation
             reward = null; rewardNotice = null; loadReward = null;
             loadingReward = false;
             submitting = false;
+            reading = false;
+            nextRefresh = 0;
             previous = null;
             feedback = null;
             recovering = false;
@@ -79,30 +84,44 @@ namespace Aetheria.PetArena.Presentation
         private void Update()
         {
             var view = session?.State?.Coop;
-            if (view == null || recovering || leaving || submitting) return;
+            if (view == null) return;
+            var remaining = session.RemainingTurnMilliseconds;
+            var seconds = remaining.HasValue ? Math.Ceiling(remaining.Value / 1000) : (double?)null;
+            if (turnHeader != null && view.Version == renderedVersion && seconds != renderedSeconds)
+            {
+                renderedSeconds = seconds;
+                turnHeader.text = CoopNativePresenter.TurnLabel(view, remaining);
+            }
+            if (recovering || leaving || submitting) return;
             if (!view.Terminal && session.NeedsRefresh && !session.HasPendingCommand && !reading)
             {
                 _ = RecoverAsync(renewal: true);
                 return;
             }
-            if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect) Refresh();
-            if (view.Terminal || reading || !CanSubmit ||
-                view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
+            var expired = remaining == 0;
+            if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect ||
+                expired != renderedExpired) Refresh();
+            if (view.Terminal || reading || !CanSubmit || Time.unscaledTime < nextRefresh ||
+                view.ActiveSeat == view.You && !expired) return;
             nextRefresh = Time.unscaledTime + 1f;
             _ = ReadSharedBoardAsync();
         }
 
         private async System.Threading.Tasks.Task ReadSharedBoardAsync()
         {
+            var current = session;
             reading = true;
-            try { await session.RefreshAsync(); }
+            try { await current.RefreshAsync(); }
             catch (NativeFailure failure) when (failure.Reason == Failure.Busy) { }
             catch (NativeFailure)
             {
-                Refresh();
+                if (this != null && session == current) Refresh();
             }
             catch (OperationCanceledException) { }
-            finally { reading = false; }
+            finally
+            {
+                if (session == current) reading = false;
+            }
         }
 
         internal void Refresh()
@@ -116,7 +135,8 @@ namespace Aetheria.PetArena.Presentation
                 if (view.Terminal)
                 {
                     battleAudio?.SetCombatScore(ArenaCombatScore.None);
-                    battleAudio?.Play(view.Phase == "won" ? ArenaAudioCue.Victory : ArenaAudioCue.Defeat);
+                    if (!previous.Terminal)
+                        battleAudio?.Play(view.Phase == "won" ? ArenaAudioCue.Victory : ArenaAudioCue.Defeat);
                 }
                 else if (view.BossState.Phase > previous.BossState.Phase)
                 {
@@ -220,11 +240,16 @@ namespace Aetheria.PetArena.Presentation
                     if (target[index] != body) target.RemoveAt(index);
             }
 
+            var remaining = session?.RemainingTurnMilliseconds;
+            renderedSeconds = remaining.HasValue ? Math.Ceiling(remaining.Value / 1000) : (double?)null;
+            renderedExpired = remaining == 0;
+            if (renderedExpired) selected = -1;
             var presentation = CoopNativePresentation.Build(view, Select, Cast, selected,
-                inputAvailable: session == null || CanSubmit);
-            var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
-            turn.AddToClassList("battle-turn");
-            target.Insert(0, turn);
+                inputAvailable: session == null || CanSubmit && !renderedExpired);
+            turnHeader = presentation.Q<Label>(CoopNativePresentation.TurnName);
+            turnHeader.text = CoopNativePresenter.TurnLabel(view, remaining);
+            turnHeader.AddToClassList("battle-turn");
+            target.Insert(0, turnHeader);
             body.Add(presentation);
             BattleScreenLayout.Size(body, body.contentViewport.contentRect.size);
             var status = view.Terminal ? (view.Phase == "won" ? "Victory" : "Defeat") : feedback;
@@ -362,8 +387,8 @@ namespace Aetheria.PetArena.Presentation
 
         private void Select(int cell)
         {
-            if (!CanSubmit) return;
-            var view = session?.State?.Coop;
+            if (!CanSubmit || session.RemainingTurnMilliseconds == 0) return;
+            var view = session.State?.Coop;
             if (view == null || view.Terminal || !CoopNativePresenter.CanAct(view)) return;
             if (selected < 0)
             {
@@ -393,21 +418,27 @@ namespace Aetheria.PetArena.Presentation
                 case "signature": Submit(current => current.SignatureAsync()); break;
                 case "fire-zone": Submit(current => current.FireZoneAsync()); break;
                 case "ultimate": Submit(current => current.UltimateAsync()); break;
+                case CoopNativeIntent.EndTurn: Submit(current => current.EndTurnAsync()); break;
             }
         }
 
         private async void Submit(Func<CoopNativePlaySession, Task<PlayState>> send)
         {
-            if (!CanSubmit) return;
+            if (!CanSubmit || session.RemainingTurnMilliseconds == 0) return;
             var current = session;
             submitting = true;
             Refresh();
             try { await send(current); }
             catch (NativeFailure failure)
             {
-                if (session == current)
+                if (this != null && session == current)
+                {
                     feedback = current.HasPendingCommand ? "Confirmation interrupted. Retry the pending command." :
                         "Action was not committed · " + failure.Reason;
+                    if (current.State?.Coop?.IsTimed == true &&
+                        failure.Code == Aetheria.Native.Public.V1.ErrorCode.StaleVersion)
+                        await RecoverAsync(renewal: true);
+                }
             }
             catch (OperationCanceledException) { }
             finally

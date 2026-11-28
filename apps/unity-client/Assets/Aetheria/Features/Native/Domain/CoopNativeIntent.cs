@@ -16,6 +16,7 @@ namespace Aetheria.Networking
         public const string Signature = "signature";
         public const string Ultimate = "ultimate";
         public const string FireZone = "fireZone";
+        public const string EndTurn = "endTurn";
 
         public static byte[] StartAction(long epoch) => Create(epoch, Start);
         public static byte[] SwapAction(long epoch, int first, int second) => Create(epoch, Swap, first, second);
@@ -24,6 +25,7 @@ namespace Aetheria.Networking
         public static byte[] SignatureAction(long epoch) => Create(epoch, Signature);
         public static byte[] UltimateAction(long epoch) => Create(epoch, Ultimate);
         public static byte[] FireZoneAction(long epoch) => Create(epoch, FireZone);
+        public static byte[] EndTurnAction(long epoch) => Create(epoch, EndTurn);
 
         public static byte[] Create(long epoch, string kind, int first = -1, int second = -1)
         {
@@ -42,6 +44,7 @@ namespace Aetheria.Networking
                 case Signature: return "{\"kind\":\"signature\"}";
                 case Ultimate: return "{\"kind\":\"ultimate\"}";
                 case FireZone: return "{\"kind\":\"fireZone\"}";
+                case EndTurn: return "{\"kind\":\"endTurn\"}";
                 case Swap:
                     if (first < 0 || first >= CoopNativeView.Cells || second < 0 || second >= CoopNativeView.Cells ||
                         first == second) throw new ArgumentException("Invalid coop swap cells");

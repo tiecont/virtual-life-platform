@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -11,6 +12,7 @@ namespace Aetheria.Networking
 {
     public sealed class PlayState
     {
+        internal long ObservedAtTicks { get; } = Stopwatch.GetTimestamp();
         public ulong Version { get; }
         public long Epoch { get; }
         public int Turns { get; }
@@ -126,7 +128,12 @@ namespace Aetheria.Networking
                 // Reconnect gets a fresh ticket. Retain the same immutable command,
                 // even if a view now shows that its original result was committed.
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
-                return await CommitPending(token).ConfigureAwait(false);
+                var receipt = await CommitPending(token).ConfigureAwait(false);
+                if (receipt.Coop?.IsTimed != true) return receipt;
+                // Replayed receipts preserve the original projection, including its clock sample.
+                var current = await Read(token).ConfigureAwait(false);
+                current.ReceiptId = receipt.ReceiptId;
+                return current;
             }, cancellation);
 
         private async Task<PlayState> CommitPending(CancellationToken token)

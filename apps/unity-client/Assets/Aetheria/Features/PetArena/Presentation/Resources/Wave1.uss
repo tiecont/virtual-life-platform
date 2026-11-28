@@ -249,6 +249,9 @@
     font-size: 12px;
     padding: 3px;
 }
+.coop-fire-zone-tile .coop-functional-icon {
+    -unity-background-image-tint-color: rgb(255, 187, 152);
+}
 .battle-actions Button:disabled { opacity: 0.64; }
 .tile-fire { background-color: rgb(142, 58, 37); }
 .tile-water { background-color: rgb(35, 93, 134); }

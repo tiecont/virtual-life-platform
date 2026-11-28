@@ -139,7 +139,7 @@ namespace Aetheria.Tests
                 hud.Attach(document);
                 hud.Bind(null, () => { });
                 var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(
-                    elements: new[] { "fire", "water", "electric", "ghost", "ground", "light" }, withAbilities: true)));
+                    elements: new[] { "sword", "mana", "rage", "heart", "shield", "special" }, withAbilities: true, timed: true)));
 
                 foreach (var (width, height) in new[] { (1280, 720), (1920, 1080) })
                 {
@@ -173,12 +173,15 @@ namespace Aetheria.Tests
                     Assert.That(side.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                     Assert.That(board.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
                     Assert.That(actions.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
-                    Assert.That(actions.childCount, Is.EqualTo(4));
+                    Assert.That(actions.childCount, Is.EqualTo(5));
+                    var endTurn = actions.Q<Button>("coop-action-end-turn");
+                    Assert.That(endTurn.enabledSelf, Is.True);
+                    Assert.That(root.Q<Label>("coop-turn").text, Does.EndWith("15 s"));
                     foreach (var skill in actions.Children().OfType<Button>())
                     {
                         Assert.That(skill.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                         Assert.That(skill.worldBound.width, Is.GreaterThan(50));
-                        Assert.That(skill.text, Does.Contain("\nLv 1"));
+                        if (skill != endTurn) Assert.That(skill.text, Does.Contain("\nLv 1"));
                     }
                 }
             }
@@ -304,7 +307,7 @@ namespace Aetheria.Tests
 
         private static string Projection(string pending = "null", int health = 400,
             int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2,
-            bool withAbilities = false)
+            bool withAbilities = false, bool timed = false)
         {
             elements ??= new[] { "fire" };
             var board = new System.Text.StringBuilder();
@@ -312,7 +315,7 @@ namespace Aetheria.Tests
             {
                 if (index > 0) board.Append(',');
                 board.Append(index < elements.Length
-                    ? "{\"element\":\"" + elements[index] + "\",\"multiplier\":" + (index == 0 ? firstMultiplier : 1) + "}"
+                    ? "{\"" + (timed ? "kind" : "element") + "\":\"" + elements[index] + "\",\"multiplier\":" + (index == 0 ? firstMultiplier : 1) + "}"
                     : "null");
             }
             var seats = new System.Text.StringBuilder();
@@ -328,23 +331,29 @@ namespace Aetheria.Tests
                     .Append(",\"shieldTurns\":").Append(index == 0 ? shieldTurns : 0)
                     .Append(",\"cooldowns\":[0,0,0,0,0]")
                     .Append(",\"statuses\":[],\"contribution\":{\"damage\":0,\"healing\":0,\"shielding\":0}")
-                    .Append(",\"alive\":true}");
+                    .Append(",\"alive\":true");
+                if (timed)
+                    seats.Append(",\"hasUltimate\":true,\"ultimateReady\":false,\"fireZoneTurns\":0,\"passives\":[]");
+                seats.Append('}');
             }
             var abilities = "";
             if (withAbilities)
             {
                 var kinds = new[] { "guard", "skill", "signature", "ultimate" };
                 var ids = new[] { "guard", "ember-lance", "ember-solar-flare", "blazing-descent" };
+                var fields = timed ? ",\"maxCooldown\":5,\"effectKind\":\"damage\",\"target\":\"boss\",\"powerPm\":1000" : "";
                 abilities = ",\"bossId\":\"cinder-terraces-warden\",\"abilities\":[" +
                     string.Join(",", kinds.Select((kind, position) =>
                         "{\"kind\":\"" + kind + "\",\"id\":\"icarus-" + ids[position] +
-                        "\",\"mana\":180,\"rage\":160,\"cooldown\":5,\"ready\":false}")) + "]";
+                        "\",\"mana\":180,\"rage\":160,\"cooldown\":5,\"ready\":false" + fields + "}")) + "]";
             }
-            return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":1," +
+            var timer = timed ? ",\"turnTimeoutMs\":15000,\"turnDeadlineUnixMs\":1015000,\"turnRemainingMs\":15000," +
+                "\"serverUnixMs\":1000000,\"maxRounds\":null,\"canEndTurn\":true,\"fireZoneActiveTurns\":0,\"fireZoneCells\":[]" : "";
+            return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":" + (timed ? 3 : 1) + "," +
                 "\"contentHash\":\"" + new string('a', 64) + "\",\"configDigest\":\"" + new string('b', 64) + "\"}," +
                 "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":" + round + "," +
                 "\"boss\":{\"hp\":5000,\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false}," +
-                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + abilities + "}," +
+                "\"board\":[" + board + "],\"participants\":[" + seats + "],\"pending\":" + pending + abilities + timer + "}," +
                 "\"epoch\":1,\"reward\":null}";
         }
     }

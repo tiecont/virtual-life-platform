@@ -16,11 +16,14 @@ namespace Aetheria.Networking
         public const string FunctionalSoloRuleset = "arena8-functional-pve";
         public const int ElementalVersion = 1;
         public const int FunctionalVersion = 2;
+        public const int TimedFunctionalVersion = 3;
+        public const int SoloTimedFunctionalVersion = 2;
         public const int Seats = 4;
         public const int Side = 8;
         public const int Cells = Side * Side;
         public const int MaxTurn = 4096;
         public const int MaxRound = 1000;
+        private const int TechnicalMaxCounter = ushort.MaxValue;
         public const uint MaxHealth = uint.MaxValue;
         public const int MaxMana = ushort.MaxValue;
         public const int MaxRage = ushort.MaxValue;
@@ -33,6 +36,7 @@ namespace Aetheria.Networking
         private static readonly string[] Elements = { "fire", "water", "electric", "ghost", "ground", "light" };
         private static readonly string[] TileKinds = { "sword", "mana", "rage", "heart", "shield", "special" };
         private static readonly string[] Statuses = { "attack-buff", "defense-buff", "vulnerability" };
+        private static readonly string[] AbilityKinds = { Guard, Skill, Signature, Ultimate, FireZone };
 
         public sealed class Tile
         {
@@ -86,15 +90,24 @@ namespace Aetheria.Networking
             public IReadOnlyList<Status> Statuses { get; }
             public Contribution Contribution { get; }
             public bool Alive { get; }
+            public bool HasUltimate { get; }
+            public bool UltimateReady { get; }
+            public IReadOnlyList<string> Passives { get; }
+            public int FireZoneTurns { get; }
+
             internal Participant(int seat, string petId, int level, uint health, uint maxHealth, uint attack, uint defense,
                 int critRateBp, int critDamageBp, int mana, int rage, uint shield, int shieldTurns,
-                int[] cooldowns, int[] skillLevels, Status[] statuses, Contribution contribution, bool alive)
+                int[] cooldowns, int[] skillLevels, Status[] statuses, Contribution contribution, bool alive,
+                bool hasUltimate, bool ultimateReady, string[] passives, int fireZoneTurns)
             {
                 Seat = seat; PetId = petId; Level = level; Health = health; MaxHealth = maxHealth;
                 Attack = attack; Defense = defense; CritRateBp = critRateBp; CritDamageBp = critDamageBp;
                 Mana = mana; Rage = rage; Shield = shield; ShieldTurns = shieldTurns;
                 Cooldowns = Array.AsReadOnly(cooldowns); SkillLevels = Array.AsReadOnly(skillLevels); Statuses = Array.AsReadOnly(statuses);
                 Contribution = contribution; Alive = alive;
+                HasUltimate = hasUltimate; UltimateReady = ultimateReady;
+                Passives = Array.AsReadOnly(passives ?? Array.Empty<string>());
+                FireZoneTurns = fireZoneTurns;
             }
         }
 
@@ -133,16 +146,31 @@ namespace Aetheria.Networking
             public int Rage { get; }
             public int Cooldown { get; }
             public bool Ready { get; }
+            public int MaxCooldown { get; }
+            public string EffectKind { get; }
+            public string Target { get; }
+            public uint PowerPm { get; }
 
-            internal Ability(XElement value, string kind)
+            internal Ability(XElement value, string expectedKind, bool allowV3Fields)
             {
-                ProjectionJson.ObjectFields(value, "kind", "id", "mana", "rage", "cooldown", "ready");
-                Kind = Token(value.Element("kind"), kind);
-                Id = Text(value.Element("id"), 3, 128);
+                if (allowV3Fields)
+                    ProjectionJson.ObjectFields(value, "kind", "id", "mana", "rage", "cooldown", "ready",
+                        "maxCooldown", "effectKind", "target", "powerPm");
+                else
+                    ProjectionJson.ObjectFields(value, "kind", "id", "mana", "rage", "cooldown", "ready");
+
+                Kind = expectedKind != null ? Token(value.Element("kind"), expectedKind) : Token(value.Element("kind"), AbilityKinds);
+                Id = allowV3Fields ? Text(value.Element("id"), 1, 64) : Text(value.Element("id"), 3, 128);
                 Mana = Bounded(value.Element("mana"), 0, ushort.MaxValue);
                 Rage = Bounded(value.Element("rage"), 0, ushort.MaxValue);
                 Cooldown = Bounded(value.Element("cooldown"), 0, byte.MaxValue);
                 Ready = ProjectionJson.Boolean(value.Element("ready"));
+
+                if (!allowV3Fields) return;
+                MaxCooldown = Bounded(value.Element("maxCooldown"), 0, byte.MaxValue);
+                EffectKind = Text(value.Element("effectKind"), 1, 64);
+                Target = Text(value.Element("target"), 1, 64);
+                PowerPm = CombatValue(value.Element("powerPm"), 1);
             }
         }
 
@@ -154,7 +182,9 @@ namespace Aetheria.Networking
         public string RulesetId { get; }
         public int RulesetVersion { get; }
         public string ContentHash { get; }
-        public bool IsFunctionalBoard => RulesetVersion == FunctionalVersion || RulesetId == FunctionalSoloRuleset;
+        public bool IsFunctionalBoard => RulesetVersion >= FunctionalVersion || RulesetId == FunctionalSoloRuleset;
+        public bool IsTimed => RulesetVersion == (RulesetId == FunctionalSoloRuleset
+            ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
         public string ConfigDigest { get; }
         public int You { get; }
         public string Phase { get; }
@@ -165,6 +195,14 @@ namespace Aetheria.Networking
         public IReadOnlyList<Tile> Board { get; }
         public IReadOnlyList<Participant> Participants { get; }
         public Pending PendingAttack { get; }
+        public int? TurnTimeoutMs { get; }
+        public ulong? TurnDeadlineUnixMs { get; }
+        public ulong? TurnRemainingMs { get; }
+        public ulong? ServerUnixMs { get; }
+        public int? MaxRounds { get; }
+        public bool CanEndTurn { get; }
+        public int FireZoneActiveTurns { get; }
+        public IReadOnlyList<int> FireZoneCells { get; }
         public bool Terminal => Phase == "won" || Phase == "lost";
         public Participant Own => Participants[You];
 
@@ -177,6 +215,14 @@ namespace Aetheria.Networking
             You = fields.You; Phase = fields.Phase; ActiveSeat = fields.ActiveSeat; Turn = fields.Turn; Round = fields.Round;
             BossState = fields.Boss; Board = Array.AsReadOnly(fields.Board);
             Participants = Array.AsReadOnly(fields.Participants); PendingAttack = fields.Pending;
+            TurnTimeoutMs = fields.TurnTimeoutMs;
+            TurnDeadlineUnixMs = fields.TurnDeadlineUnixMs;
+            TurnRemainingMs = fields.TurnRemainingMs;
+            ServerUnixMs = fields.ServerUnixMs;
+            MaxRounds = fields.MaxRounds;
+            CanEndTurn = fields.CanEndTurn;
+            FireZoneActiveTurns = fields.FireZoneActiveTurns;
+            FireZoneCells = Array.AsReadOnly(fields.FireZoneCells ?? Array.Empty<int>());
         }
 
         public static CoopNativeView Decode(ulong version, byte[] bytes)
@@ -190,38 +236,108 @@ namespace Aetheria.Networking
             if (reward != null && reward != "REWARD_PENDING" && reward != "GRANTED" && reward != "DECLINED")
                 throw new FormatException("Invalid coop reward");
             var play = root.Element("state");
-            ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
-                "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId");
-            if (ProjectionJson.Integer(play.Element("schemaVersion")) != 1) throw new FormatException("Invalid coop schema");
+            if (play == null || ProjectionJson.Type(play) != "object")
+                throw new FormatException("Missing coop play state");
 
-            var fields = new Fields { Epoch = epoch, Reward = reward };
             var ruleset = play.Element("ruleset");
             ProjectionJson.ObjectFields(ruleset, "id", "version", "contentHash", "configDigest");
+            var fields = new Fields { Epoch = epoch, Reward = reward };
             fields.RulesetId = Token(ruleset.Element("id"), Ruleset, FunctionalSoloRuleset);
             var solo = fields.RulesetId == FunctionalSoloRuleset;
             var seatCount = solo ? 1 : Seats;
             fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion,
-                solo ? ElementalVersion : FunctionalVersion);
+                solo ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
+            var isV3 = (solo && fields.RulesetVersion == SoloTimedFunctionalVersion) ||
+                (!solo && fields.RulesetVersion == TimedFunctionalVersion);
+
+            if (isV3)
+            {
+                ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
+                    "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId",
+                    "turnTimeoutMs", "turnDeadlineUnixMs", "turnRemainingMs", "serverUnixMs",
+                    "maxRounds", "canEndTurn", "fireZoneActiveTurns", "fireZoneCells");
+            }
+            else
+            {
+                ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
+                    "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId");
+            }
+
+            if (ProjectionJson.Integer(play.Element("schemaVersion")) != 1) throw new FormatException("Invalid coop schema");
+
             fields.ContentHash = Hex(ruleset.Element("contentHash"));
             fields.ConfigDigest = Hex(ruleset.Element("configDigest"));
             fields.You = Bounded(play.Element("you"), 0, seatCount - 1);
             fields.Phase = Token(play.Element("phase"), "ready", "playing", "won", "lost");
             fields.ActiveSeat = Bounded(play.Element("activeSeat"), 0, seatCount - 1);
-            fields.Turn = Bounded(play.Element("turn"), 0, fields.Phase == "lost" ? MaxTurn + 1 : MaxTurn);
-            fields.Round = Bounded(play.Element("round"), 1, fields.Phase == "lost" ? MaxRound + 1 : MaxRound);
+            var maxTurn = isV3 ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxTurn + 1 : MaxTurn);
+            var maxRound = isV3 ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxRound + 1 : MaxRound);
+            fields.Turn = Bounded(play.Element("turn"), 0, maxTurn);
+            fields.Round = Bounded(play.Element("round"), 1, maxRound);
+
+            if (isV3)
+            {
+                fields.TurnTimeoutMs = Bounded(play.Element("turnTimeoutMs"), 1000, 300_000);
+                fields.TurnDeadlineUnixMs = NullableUnsigned(play.Element("turnDeadlineUnixMs"));
+                fields.TurnRemainingMs = NullableUnsigned(play.Element("turnRemainingMs"));
+                fields.ServerUnixMs = Unsigned(play.Element("serverUnixMs"));
+                var maxRounds = NullableUnsigned(play.Element("maxRounds"));
+                if (maxRounds.HasValue && (maxRounds.Value == 0 || maxRounds.Value > TechnicalMaxCounter))
+                    throw new FormatException("Coop maxRounds out of range");
+                fields.MaxRounds = (int?)maxRounds;
+                fields.CanEndTurn = ProjectionJson.Boolean(play.Element("canEndTurn"));
+                fields.FireZoneActiveTurns = Bounded(play.Element("fireZoneActiveTurns"), 0, byte.MaxValue);
+                fields.FireZoneCells = ProjectionJson.Array(play.Element("fireZoneCells"), Cells)
+                    .Select(item => Bounded(item, 0, Cells - 1)).ToArray();
+            }
+
             if (play.Element("abilities") != null)
             {
-                var kinds = new[] { Guard, Skill, Signature, Ultimate, FireZone };
-                var entries = ProjectionJson.Array(play.Element("abilities"), kinds.Length);
-                if (entries.Length < 4) throw new FormatException("Incomplete ability projection");
-                fields.Abilities = entries.Select((value, slot) => new Ability(value, kinds[slot])).ToArray();
+                var entries = ProjectionJson.Array(play.Element("abilities"), AbilityKinds.Length);
+                if (!isV3)
+                {
+                    if (entries.Length < 4) throw new FormatException("Incomplete ability projection");
+                    fields.Abilities = entries.Select((value, slot) => new Ability(value, AbilityKinds[slot], false)).ToArray();
+                }
+                else
+                {
+                    if (entries.Length < 1) throw new FormatException("Incomplete ability projection");
+                    var list = new Ability[entries.Length];
+                    var lastOrder = -1;
+                    for (var i = 0; i < entries.Length; i++)
+                    {
+                        var ability = new Ability(entries[i], null, true);
+                        var order = Array.IndexOf(AbilityKinds, ability.Kind);
+                        if (order <= lastOrder)
+                            throw new FormatException("Duplicate or unordered ability kind");
+                        lastOrder = order;
+                        list[i] = ability;
+                    }
+                    fields.Abilities = list;
+                }
                 fields.BossId = Text(play.Element("bossId"), 3, 64);
             }
             fields.Boss = ReadBoss(play.Element("boss"));
-            fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion == FunctionalVersion);
-            fields.Participants = ReadParticipants(play.Element("participants"), seatCount);
+            fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion >= FunctionalVersion);
+            fields.Participants = ReadParticipants(play.Element("participants"), seatCount, isV3);
             fields.Pending = ReadPending(play.Element("pending"), seatCount);
+            if (isV3) ValidateTimedFields(fields);
             return new CoopNativeView(version, epoch, reward, fields);
+        }
+
+        private static void ValidateTimedFields(Fields fields)
+        {
+            var deadline = fields.TurnDeadlineUnixMs;
+            var serverTime = fields.ServerUnixMs.Value;
+            ulong? remaining = deadline.HasValue ? (deadline.Value > serverTime ? deadline.Value - serverTime : 0) : null;
+            var playing = fields.Phase == "playing";
+            if (fields.TurnRemainingMs != remaining || (!playing && deadline.HasValue) ||
+                (fields.CanEndTurn && (!playing || fields.You != fields.ActiveSeat ||
+                    !fields.Participants[fields.You].Alive || remaining == 0)))
+                throw new FormatException("Inconsistent coop turn projection");
+            if (fields.FireZoneCells.Distinct().Count() != fields.FireZoneCells.Length ||
+                (fields.FireZoneActiveTurns > 0) != (fields.FireZoneCells.Length > 0))
+                throw new FormatException("Inconsistent coop Fire Zone projection");
         }
 
         private static Boss ReadBoss(XElement boss)
@@ -259,7 +375,7 @@ namespace Aetheria.Networking
             return tiles;
         }
 
-        private static Participant[] ReadParticipants(XElement participants, int seatCount)
+        private static Participant[] ReadParticipants(XElement participants, int seatCount, bool allowV3Fields)
         {
             var items = ProjectionJson.Array(participants, seatCount);
             if (items.Length != seatCount) throw new FormatException("Invalid coop participant count");
@@ -267,9 +383,16 @@ namespace Aetheria.Networking
             for (var index = 0; index < items.Length; index += 1)
             {
                 var seat = items[index];
-                ProjectionJson.ObjectFields(seat, "seat", "petId", "level", "hp", "maxHp", "attack", "defense",
-                    "critRateBp", "critDamageBp", "mana", "rage", "shield", "shieldTurns", "cooldowns",
-                    "statuses", "contribution", "alive", "skillLevels");
+                if (allowV3Fields)
+                    ProjectionJson.ObjectFields(seat, "seat", "petId", "level", "hp", "maxHp", "attack", "defense",
+                        "critRateBp", "critDamageBp", "mana", "rage", "shield", "shieldTurns", "cooldowns",
+                        "statuses", "contribution", "alive", "skillLevels",
+                        "hasUltimate", "ultimateReady", "passives", "fireZoneTurns");
+                else
+                    ProjectionJson.ObjectFields(seat, "seat", "petId", "level", "hp", "maxHp", "attack", "defense",
+                        "critRateBp", "critDamageBp", "mana", "rage", "shield", "shieldTurns", "cooldowns",
+                        "statuses", "contribution", "alive", "skillLevels");
+
                 if (Bounded(seat.Element("seat"), 0, seatCount - 1) != index) throw new FormatException("Invalid coop seat");
                 var maxHealth = CombatValue(seat.Element("maxHp"), 1);
                 var health = CombatValue(seat.Element("hp"), 0);
@@ -287,13 +410,21 @@ namespace Aetheria.Networking
                 var value = new Contribution(Unsigned(contribution.Element("damage")),
                     Unsigned(contribution.Element("healing")),
                     Unsigned(contribution.Element("shielding")));
+
+                var hasUltimate = !allowV3Fields || ProjectionJson.Boolean(seat.Element("hasUltimate"));
+                var ultimateReady = allowV3Fields && ProjectionJson.Boolean(seat.Element("ultimateReady"));
+                var fireZoneTurns = allowV3Fields ? Bounded(seat.Element("fireZoneTurns"), 0, byte.MaxValue) : 0;
+                var passives = allowV3Fields ? ProjectionJson.Array(seat.Element("passives"), 16)
+                    .Select(passive => Text(passive, 1, 64)).ToArray() : Array.Empty<string>();
+
                 seats[index] = new Participant(index, Text(seat.Element("petId"), 1, 64),
                     Bounded(seat.Element("level"), 1, 60), health, maxHealth,
                     CombatValue(seat.Element("attack"), 0), CombatValue(seat.Element("defense"), 0),
                     Bounded(seat.Element("critRateBp"), 0, 10_000), Bounded(seat.Element("critDamageBp"), 0, 100_000),
                     Bounded(seat.Element("mana"), 0, MaxMana), Bounded(seat.Element("rage"), 0, MaxRage),
                     CombatValue(seat.Element("shield"), 0), Bounded(seat.Element("shieldTurns"), 0, 100),
-                    cooldowns, skillLevels, statuses, value, ProjectionJson.Boolean(seat.Element("alive")));
+                    cooldowns, skillLevels, statuses, value, ProjectionJson.Boolean(seat.Element("alive")),
+                    hasUltimate, ultimateReady, passives, fireZoneTurns);
             }
             return seats;
         }
@@ -330,6 +461,15 @@ namespace Aetheria.Networking
         }
 
         public int Cooldown(int slot) => slot < 0 || slot >= Own.Cooldowns.Count ? MaxCooldown : Own.Cooldowns[slot];
+
+        public int SlotForAbility(string kind) => Array.IndexOf(AbilityKinds, kind);
+
+        private static ulong? NullableUnsigned(XElement field)
+        {
+            if (ProjectionJson.Type(field) != "null") return Unsigned(field);
+            if (ProjectionJson.Scalar(field, "null").Length != 0) throw new FormatException("Invalid projection null");
+            return null;
+        }
 
         private static string Text(XElement field, int minimum, int maximum)
         {
@@ -393,6 +533,14 @@ namespace Aetheria.Networking
             public Tile[] Board;
             public Participant[] Participants;
             public Pending Pending;
+            public int? TurnTimeoutMs;
+            public ulong? TurnDeadlineUnixMs;
+            public ulong? TurnRemainingMs;
+            public ulong? ServerUnixMs;
+            public int? MaxRounds;
+            public bool CanEndTurn;
+            public int FireZoneActiveTurns;
+            public int[] FireZoneCells;
         }
     }
 }

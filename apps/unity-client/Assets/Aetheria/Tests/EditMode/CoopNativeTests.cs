@@ -104,6 +104,67 @@ namespace Aetheria.Tests
         }
 
         [Test]
+        public void TimedCoopAndSoloDecodeTheServerTimerAndGateActions()
+        {
+            foreach (var solo in new[] { false, true })
+            {
+                var view = Coop(seats: solo ? 1 : 4, phase: "playing",
+                    customize: json => Timed(json, solo));
+                var root = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(view.IsTimed, Is.True);
+                Assert.That(view.Turn, Is.EqualTo(5000));
+                Assert.That(view.Round, Is.EqualTo(5001));
+                Assert.That(view.MaxRounds, Is.Null);
+                Assert.That(view.TurnRemainingMs, Is.EqualTo(9000));
+                Assert.That(view.Own.HasUltimate, Is.False);
+                Assert.That(view.Abilities[1].PowerPm, Is.EqualTo(1600));
+                Assert.That(root.Q<Label>("coop-turn").text, Does.EndWith("9 s"));
+                Assert.That(root.Q<Button>("coop-action-end-turn").enabledSelf, Is.True);
+                Assert.That(root.Q<Button>("coop-action-ultimate"), Is.Null);
+                Assert.That(root.Q<Button>("coop-action-fire-zone").text, Does.Contain("Lv 5"));
+                Assert.That(root.Q<Button>("coop-cell-18").tooltip, Does.Contain("Fire Zone"));
+                Assert.That(root.Q<Label>("coop-fire-zone").text, Is.EqualTo("Fire Zone · 2 turns"));
+
+                var expired = Coop(seats: solo ? 1 : 4, phase: "playing", customize: json => Timed(json, solo)
+                    .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":0")
+                    .Replace("\"serverUnixMs\":1006000", "\"serverUnixMs\":1015000")
+                    .Replace("\"canEndTurn\":true", "\"canEndTurn\":false"));
+                var expiredHud = CoopNativePresentation.Build(expired, _ => { }, _ => { });
+                Assert.That(expiredHud.Q<Button>("coop-action-end-turn").enabledSelf, Is.False);
+                Assert.That(expiredHud.Q<Button>("coop-cell-0").enabledSelf, Is.False);
+                Assert.That(expiredHud.Q<Label>("coop-turn").text, Does.EndWith("Awaiting next turn"));
+            }
+
+            var waiting = Coop(activeSeat: 1, phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"canEndTurn\":true", "\"canEndTurn\":false"));
+            Assert.That(CoopNativePresentation.Build(waiting, _ => { }, _ => { })
+                .Q<Button>("coop-action-end-turn").enabledSelf, Is.False);
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"turnRemainingMs\":9000,", "")));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":12000")));
+        }
+
+        private static string Timed(string json, bool solo)
+        {
+            const string guard = "{\"kind\":\"guard\",\"id\":\"icarus-guard\",\"mana\":0,\"rage\":0,\"cooldown\":0," +
+                "\"ready\":true,\"maxCooldown\":0,\"effectKind\":\"shield\",\"target\":\"self\",\"powerPm\":1000}";
+            const string fireZone = "{\"kind\":\"fire-zone\",\"id\":\"icarus-fire-zone\",\"mana\":0,\"rage\":0,\"cooldown\":0," +
+                "\"ready\":true,\"maxCooldown\":3,\"effectKind\":\"fire-zone\",\"target\":\"self\",\"powerPm\":1600}";
+            return json.Replace("\"arena8-coop-pve\"", solo ? "\"arena8-functional-pve\"" : "\"arena8-coop-pve\"")
+                .Replace("\"version\":1", solo ? "\"version\":2" : "\"version\":3")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"")
+                .Replace("\"turn\":0,\"round\":1", "\"turn\":5000,\"round\":5001")
+                .Replace("\"alive\":true", "\"alive\":true,\"hasUltimate\":false,\"ultimateReady\":false," +
+                    "\"fireZoneTurns\":2,\"passives\":[],\"skillLevels\":[1,2,3,4,5]")
+                .Replace("\"pending\":null", "\"pending\":null,\"turnTimeoutMs\":15000,\"turnDeadlineUnixMs\":1015000," +
+                    "\"turnRemainingMs\":9000,\"serverUnixMs\":1006000,\"maxRounds\":null,\"canEndTurn\":true," +
+                    "\"fireZoneActiveTurns\":2,\"fireZoneCells\":[18,19],\"bossId\":\"cinder-terraces-warden\"," +
+                    "\"abilities\":[" + guard + "," + fireZone + "]");
+        }
+
+        [Test]
         public void PublishedMultiplierAndWideCombatValuesRemainPlayable()
         {
             var view = Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":6")
@@ -142,6 +203,8 @@ namespace Aetheria.Tests
                 CoopNativeIntent.GuardAction(1));
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("{\"epoch\":2,\"action\":{\"kind\":\"swap\",\"first\":0,\"second\":1}}"),
                 CoopNativeIntent.SwapAction(2, 0, 1));
+            CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("{\"epoch\":2,\"action\":{\"kind\":\"endTurn\"}}"),
+                CoopNativeIntent.EndTurnAction(2));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.GuardAction(0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 64));
@@ -191,6 +254,7 @@ namespace Aetheria.Tests
             Assert.That(root.Q<Button>("coop-cell-2").text, Is.EqualTo("·"));
             Assert.That(root.Q<Button>("coop-action-guard").enabledSelf, Is.True);
             Assert.That(root.Q<Button>("coop-action-skill").enabledSelf, Is.True);
+            Assert.That(root.Q<Button>("coop-action-end-turn"), Is.Null);
             Assert.That(root.Q<VisualElement>("coop-seat-3").Q<Label>("coop-seat-label-3").text, Does.Contain("terran"));
 
             var waiting = Coop(version: 2, phase: "playing", activeSeat: 1, you: 0);
