@@ -5,6 +5,7 @@ from board_capture import board_bounds, cell_center, enabled_action_frames, popu
 from subprocess import run
 from time import monotonic, sleep, time_ns
 import json
+from math import hypot, radians, tan
 import sys
 from io import BytesIO
 from shutil import copyfile
@@ -239,6 +240,51 @@ def room_ready(map_name, filename):
         sleep(.4)
     raise RuntimeError(f'{map_name} Start match did not become enabled')
 
+def plaza_position(image):
+    # Use the visible orange avatar body and the authored static Plaza camera
+    # to recover ground position. Holding a key for a fixed second count
+    # under four renderers can leave clients on the neighboring bench collider.
+    with Image.open(image) as frame:
+        sampled = frame.convert('RGB').resize((screen_width // 2, screen_height // 2))
+        points = []
+        for y in range(80, sampled.height-18):
+            for x in range(30, sampled.width-30):
+                red, green, blue = sampled.getpixel((x,y))
+                if red >= 228 and 91 <= green <= 182 and blue <= 72:
+                    points.append((2*x,2*y))
+    if len(points) < 18:
+        raise RuntimeError(f'Could not recover the orange Plaza figure in {image.name}')
+    # The projected avatar is compact even at the front of the plaza. Use
+    # the median to reject isolated warm pixels from distant portal props.
+    x = sorted(point[0] for point in points)[len(points)//2]
+    y = sorted(point[1] for point in points)[len(points)//2]
+    camera_length = hypot(14.3,24.5)
+    slope, forward_z = 14.3/camera_length, 24.5/camera_length
+    focal = (screen_height/2) / tan(radians(22.5))
+    vertical = (screen_height/2-y) / focal
+    dy = .95-15.5
+    dz = -(forward_z + slope*vertical)*dy/(slope-forward_z*vertical)
+    depth = -slope*dy+forward_z*dz
+    return (x-screen_middle)*depth/focal, dz-22.5
+
+def walk_four_client_to_fire():
+    # Follow the outer west lane, then turn inward while south of the north
+    # bench. Accept the actual portal label before interacting through E.
+    waypoints = [(0,-10.2),(1,4.6),(0,-8.1),(1,6.6)]
+    for index, (axis, target) in enumerate(waypoints):
+        for attempt in range(14):
+            image = capture(f'03-plaza-waypoint-{index}')
+            position = plaza_position(image)
+            error = target-position[axis]
+            if abs(error) < .42:
+                break
+            negative, positive = ('a','d') if axis == 0 else ('s','w')
+            key(negative if error < 0 else positive, min(1.3,max(.24,abs(error)/4.2)))
+        else:
+            raise RuntimeError(f'Plaza waypoint {index} stalled around {position}')
+    text('03-plaza-fire-sign','cinder terraces',(24,88,365,120))
+    key('e',.18)
+
 stage = sys.argv[1]
 if stage == 'read-shared-label':
     for image in sys.argv[2:]:
@@ -252,8 +298,7 @@ elif stage == 'four-lobby':
     click(*label('02-plaza','collection',collection, tries=45))
     click(*label('02b-owned-collection','back',plaza_back))
     sleep(.45)
-    for symbol, duration in [('a',1.88),('w',3.8),('e',.14)]:
-        key(symbol,duration)
+    walk_four_client_to_fire()
     label('03-fire-portal','coalwhisk',pet_selection, tries=45)
     if seat == 0:
         click(*label('04-host-room','create',head))
