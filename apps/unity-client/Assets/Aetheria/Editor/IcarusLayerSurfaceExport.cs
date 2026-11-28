@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -29,12 +30,12 @@ namespace Aetheria.Editor
         }
 
         internal static void Write(string path, SkinnedMeshRenderer[] skins, PlayableDirector director, double lead, float duration,
-            Mesh originalBodyClassifier = null)
+            Mesh originalBodyClassifier = null, ISet<string> armBones = null)
         {
             var body = skins.Single(s => s.name == "Body");
             var skirt = skins.Single(s => s.name == "Spring_06_skirt");
             var surfaces = new[] {
-                (body, Faces(body, originalBodyClassifier ?? body.sharedMesh, name => IsLimb(name, true))),
+                (body, Faces(body, originalBodyClassifier ?? body.sharedMesh, name => armBones?.Contains(name) ?? IsLimb(name, true))),
                 (body, Faces(body, originalBodyClassifier ?? body.sharedMesh, name => IsLimb(name, false))),
                 (skirt, Faces(skirt, skirt.sharedMesh, name => name.StartsWith("skirt_", StringComparison.Ordinal)))
             };

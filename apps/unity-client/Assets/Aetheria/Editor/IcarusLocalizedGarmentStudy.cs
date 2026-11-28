@@ -111,8 +111,17 @@ namespace Aetheria.Editor
                     }
                 var report = new Report { scene = folder + "/Garment.unity", affectedVertices = mask.vertices.Length, correctedRenderer = surface.name };
                 Material[] layeredMaterials = originalMaterials;
+                HashSet<string> armBones = null;
                 if (bodyLayer)
-                    layeredMaterials = SeparateBodySections(folder, surface, mesh, mask, report);
+                {
+                    armBones = new HashSet<string>();
+                    foreach (var bone in new[] { HumanBodyBones.LeftUpperArm, HumanBodyBones.RightUpperArm })
+                    {
+                        if (!vrm.TryGetBoneTransform(bone, out var upper)) throw new InvalidDataException("Missing arm root.");
+                        foreach (var child in upper.GetComponentsInChildren<Transform>(true)) armBones.Add(child.name);
+                    }
+                    layeredMaterials = SeparateBodySections(folder, surface, mesh, mask, report, armBones);
+                }
                 var joints = surface.bones;
                 var weights = mesh.boneWeights;
                 var binds = mesh.bindposes;
@@ -170,7 +179,7 @@ namespace Aetheria.Editor
                 AssetDatabase.SaveAssetIfDirty(timeline);
                 director.RebuildGraph();
                 string reimport = Path.Combine(output, "unity-corrected.bin");
-                IcarusLayerSurfaceExport.Write(reimport, skins, director, 0, walk.length, bodyLayer ? originalMesh : null);
+                IcarusLayerSurfaceExport.Write(reimport, skins, director, 0, walk.length, bodyLayer ? originalMesh : null, armBones);
                 var actual = LoadSurface(reimport, bodyLayer);
                 for (int frame = 0; frame < Frames; frame++)
                     for (int i = 0; i < vertexCount; i++)
@@ -230,14 +239,13 @@ namespace Aetheria.Editor
             finally { Object.DestroyImmediate(sampled); }
         }
 
-        static Material[] SeparateBodySections(string folder, SkinnedMeshRenderer skin, Mesh mesh, Mask mask, Report report)
+        static Material[] SeparateBodySections(string folder, SkinnedMeshRenderer skin, Mesh mesh, Mask mask, Report report, HashSet<string> armBones)
         {
             var thigh = new HashSet<int>(mask.thighVertices ?? Array.Empty<int>());
             if (thigh.Count != 1599 || mask.vertices.Any(v => !thigh.Contains(v)) ||
                 thigh.Any(v => v < 0 || v >= mesh.vertexCount))
                 throw new InvalidDataException("Expected the original pelvis/thigh connected surface.");
-            var arm = new HashSet<int>(IcarusLayerSurfaceExport.Faces(skin, mesh,
-                name => name.StartsWith("upper_arm.") || name.StartsWith("lower_arm.") || name.StartsWith("hand.")));
+            var arm = new HashSet<int>(IcarusLayerSurfaceExport.Faces(skin, mesh, armBones.Contains));
             var indices = new List<int[]>();
             var materials = new List<Material>();
             var sourceMaterials = skin.sharedMaterials;
