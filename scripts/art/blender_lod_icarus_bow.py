@@ -136,7 +136,10 @@ def retain_upper_string_join(source_vertices, source_faces, reduced_vertices, re
     surviving = reduced_z[corridor(reduced_vertices) & (reduced_z > anchor[2])]
     if not len(surviving):
         raise ValueError('The upper continuation lost its actual string surface')
-    cutoff = min(float(surviving.min()) + .003, anchor[2] + .030)
+    # The first surviving vertex can be a thin sliver. Use the original
+    # continuation through the gap seen in the matching side camera and leave
+    # a full overlap before joining the remaining simplified limb.
+    cutoff = max(float(surviving.min()) + .012, anchor[2] + .042)
     source_points = source_vertices[source_faces]
     keep = (corridor(source_points).all(axis=1) & (source_points[..., 2].min(axis=1) >= anchor[2] - .003)
             & (source_points[..., 2].max(axis=1) <= cutoff))
