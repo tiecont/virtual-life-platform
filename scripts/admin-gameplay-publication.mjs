@@ -21,6 +21,8 @@ import {pureSwap} from './coop-visible-kind-swap.mjs';
 import {verifyAdvancedCoopPublication} from './coop-advanced-publication-probe.mjs';
 import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
 import {verifySharedCoopReplay} from './coop-shared-replay-probe.mjs';
+import {routeCandidate} from './campaign-route-candidate.mjs';
+import {enableCampaignProbeRoutes,verifyCampaignRoute} from './campaign-route-e2e-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -67,20 +69,26 @@ assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
 const timedCoop=process.argv.includes('--timed-coop');
+const campaignSolo=process.argv.includes('--campaign-route');
+const campaignCoop=process.argv.includes('--campaign-route-coop');
+assert.ok(!(campaignSolo&&campaignCoop),'Select one campaign route seat mode');
+const campaignMode=campaignSolo?'campaign-route':campaignCoop?'campaign-route-coop':undefined;
 const sharedAdmin=process.argv.includes('--shared-admin');
 const sharedMode=process.argv.find(arg=>['--shared-solo','--shared-coop'].includes(arg))?.slice(2);
 const advancedCoop=process.argv.includes('--advanced-coop')||sharedMode==='shared-coop';
 const advancedSoloArg=process.argv.find(arg=>arg.startsWith('--advanced-solo='));
 const advancedSolo=advancedSoloArg?.slice('--advanced-solo='.length);
 assert.ok(advancedSoloArg===undefined||['nature','astral'].includes(advancedSolo),'Select Nature or Astral for the solo advanced fixture');
-const advanced=advancedCoop||Boolean(advancedSolo)||Boolean(sharedMode);
+const advanced=advancedCoop||Boolean(advancedSolo)||Boolean(sharedMode)||Boolean(campaignMode);
+assert.ok(!(campaignMode&&(sharedMode||advancedCoop||advancedSolo||sharedAdmin||timedSolo||timedCoop||unchangedCandidate||process.argv.includes('--solo'))),
+ 'A campaign route probe must use its own disposable publication');
 assert.ok(!(advancedSolo&&(timedSolo||unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
 assert.ok(!(advancedCoop&&timedCoop),'Select one cooperative fixture');
 assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
-const solo=sharedMode==='shared-solo'||Boolean(advancedSolo)||timedSolo||unchangedCandidate||process.argv.includes('--solo');
+const solo=campaignSolo||sharedMode==='shared-solo'||Boolean(advancedSolo)||timedSolo||unchangedCandidate||process.argv.includes('--solo');
 assert.ok(!(solo&&(timedCoop||advancedCoop)),'Select either a solo fixture or the timed cooperative fixture');
-const direct=solo||timedCoop||advancedCoop||process.argv.includes('--direct');
-const functional=solo||timedCoop||advancedCoop||process.argv.includes('--functional');
+const direct=Boolean(campaignMode)||solo||timedCoop||advancedCoop||process.argv.includes('--direct');
+const functional=Boolean(campaignMode)||solo||timedCoop||advancedCoop||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
 const historicalBinary=historicalArg?.slice('--historical-binary='.length);
 assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
@@ -89,8 +97,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:(sharedAdmin?'shared-admin':sharedMode)??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,campaignMode?campaignMode+'-':sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:(campaignMode??(sharedAdmin?'shared-admin':sharedMode))??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -133,9 +141,12 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=campaignMode||sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
- const seed=JSON.parse(seedBytes);
+ const shared=JSON.parse(seedBytes);
+ const seed=campaignMode?routeCandidate(shared,...await Promise.all([
+  'specs/pet-arena/campaign-v4-content.json','config/gameplay/candidates/map-encounters.json',
+ ].map(async path=>JSON.parse(await readFile(path,'utf8'))))):shared;
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
  if(timedCoop){
   // Only this disposable copy uses reachable victory and defeat conditions.
@@ -177,7 +188,7 @@ try{
   }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  }
  const validator=new EngineGameplayBundleValidator(binary);
- const baseline=advanced?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
+ const baseline=advanced&&!campaignMode?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
  const installed=await installGameplayConfig(pool,ruleset,baseline,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
  const operatorPassword='synthetic-local-ab-operator-only',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
@@ -203,11 +214,11 @@ try{
  });
  async function startApi(){
   const config=configForRuntime();
-  app=await createApp(config,pool,false,solo?{...(naturalCampaign?{petArenaWave1:{enabled:true}}:{}),petArtifacts:{enabled:unchangedCandidate},petArena8Native:{
+  app=await createApp(config,pool,false,solo?{...(naturalCampaign||campaignMode?{petArenaWave1:{enabled:true}}:{}),petArtifacts:{enabled:unchangedCandidate||Boolean(campaignMode)},petArena8Native:{
    enabled:true,binary:runtimeBinary,databaseUrl:runtime.toString(),role,caFile:tls.caFile,
    storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,
    httpsOrigin:nativeOrigin,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE,
-  }}:{});
+  }}:campaignMode?{petArenaWave1:{enabled:true},petArtifacts:{enabled:true}}:{});
   await app.app.listen(apiPort,'127.0.0.1');
  }
  await startApi();
@@ -313,7 +324,9 @@ try{
   const active=await dbActive();
   const bundle=globalThis.structuredClone(advanced?seed:(await dbConfig(active.version)).bundle);
   const fields=advanced?values(bundle):variants[label],boss=bundle.bosses[0];
-  if(advanced){
+  if(campaignMode){
+   enableCampaignProbeRoutes(bundle,campaignCoop);
+  }else if(advanced){
    if(label==='B'){
     if(sharedMode==='shared-coop')bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight++;
     else bundle.advancedJewels.frostReductionPm[0]++;
@@ -514,6 +527,13 @@ try{
   assert.equal(response.statusCode,201,JSON.stringify(response.json()));
   const body=response.json(),accountId=body.profile.id;
   const auth={cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId};
+  if(campaignMode){
+   const state=await app.http.inject({url:'/v1/pets/wave1/state',headers:{cookie:auth.cookie}});
+   assert.equal(state.statusCode,200,state.body);
+   const owned=state.json().pets.find(row=>row.petId===petId);
+   assert.equal(owned?.level,1);
+   return {...auth,instanceId:owned.ownedPetInstanceId};
+  }
   if(naturalCampaign)return auth;
   await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
   const owned=await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3) RETURNING owned_pet_instance_id',[accountId,petId,'starter']);
@@ -530,7 +550,8 @@ try{
   return send();
  }
  const get=(auth,url)=>app.http.inject({url,headers:{cookie:auth.cookie}});
- const pets=sharedMode==='shared-solo'||timedSolo||advancedSolo?['fire-coalwhisk']:unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
+ const pets=campaignSolo?['water-dewskip']:campaignCoop?['water-dewskip','ground-clodkin','fire-coalwhisk','water-dewskip']
+ :sharedMode==='shared-solo'||timedSolo||advancedSolo?['fire-coalwhisk']:unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
@@ -550,7 +571,7 @@ try{
   mark('Achievement Points gate used the active Admin version',{version:version.version,points,requiredPoints:eligibility.requiredPoints,eligible:allowed,createStatus:result?.statusCode});
   return result?.json();
  }
- if(!unchangedCandidate&&!timedSolo&&!advancedSolo&&sharedMode!=='shared-solo')await grant(host,timedCoop?6000:5250);
+ if(!campaignMode&&!unchangedCandidate&&!timedSolo&&!advancedSolo&&sharedMode!=='shared-solo')await grant(host,timedCoop?6000:5250);
  const caPem=await readFile(tls.caFile,'utf8');
  async function prepareRoom(version,room){
   if(!room){
@@ -615,7 +636,7 @@ try{
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,match.row.content_hash);
   assert.equal(view.wssUrl,nativeOrigin.replace('https:','wss:')+'/rt/v1');
-  assert.equal(view.clientBuild,sharedMode?'unity-native-v4':advancedCoop?'unity-native-v3':undefined);
+  assert.equal(view.clientBuild,campaignMode||sharedMode?'unity-native-v4':advancedCoop?'unity-native-v3':undefined);
   return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt),url:view.wssUrl};
  }
  async function openConnection(match,seat){
@@ -858,6 +879,12 @@ try{
   await verifySoloCampaign({
    natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
    dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
+  });
+ }else if(campaignMode){
+  await verifyCampaignRoute({
+   coOp:campaignCoop,pool,published:A,original:await dbConfig(installed.version),originalVersion:installed.version,host,members,
+   outsider:await guest('QA route outsider','water-dewskip'),mark,get,post,soloAdmission,native,
+   connections,closeMatch,prepareRoom,allocate,legalSwap,drain:()=>new CoopSettlement(pool).drain(),
   });
  }else if(sharedMode){
   const authored=A.bundle.bosses.find(row=>row.mapId==='cinder-terraces');
