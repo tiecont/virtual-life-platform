@@ -1168,7 +1168,7 @@
         "skills": "VERIFIED. 8ca82c16 added executable source/skill/package inventory and harness workflow. Inventory across supplied host roots enumerated 72 entries.",
         "scene": "IMPLEMENTED. be66e03e stages original Icarus, breathing, walk crossfade, camera, particle and voice cues. Director revision 1f1575f5 passed 10/10 CinematicStudioTests.",
         "face": "PROTOTYPE. 3ab30568 private soft smile and 3999c26c timed face track. Source VRM has 18 expression preset entries and no bound morphs. H1 facial approval pending.",
-        "wingAndBow": "PROTOTYPE. 23 source wing regions preserve 788288 triangles. Bow segmentation has 46 parts. H2 color, articulation and fit remain under review. Two Tripo segmentation jobs consumed the approved 80 credits.",
+        "wingAndBow": "PROTOTYPE. Owner superseded segmentation of the textured meshes. Rebuild both models from the original four views each, with editable geometry before UV or color. H3.5 Detailed, texture off, Sharing Only: wing 6b00e0ab-e76b-40cd-83c5-a1158f1c6c96 and bow 752639df-1298-4def-99bf-9f659cdf2c55. These jobs used the separately approved 150 credits. Historical textured segmentation used 80. Require actual part articulation, outline comparison, color and on-body H2 review.",
         "combat": "BLOCKED. Coordinated two-hand bow attack, elemental skill and Ultimate require approved H2 assets. Skirt clearance, foot plants and full animation review remain open.",
         "benchmark": "VERIFIED for the private Recorder take on llvmpipe only. f65c168c, 1280x720, 60 warmup and 240 measured frames. p50/p95/p99 75.05/111.83/130.46 ms. GPU timing unavailable. Gameplay 60 FPS qualification open.",
         "next": "Review exact-source garment clearance, matched wing lighting and face response. Obtain owner approval before dependent art stages and record the complete gameplay benchmark separately."
@@ -1178,7 +1178,7 @@
         "taskId": "a061ea26-294a-49f9-89f8-e4954ed11c21",
         "sourceSha256": "be86f92ab8aff6e22e9a3f7f9a8e355305aa0f7b7329926f800be2d7605f4524",
         "reviewedDerivativeSha256": "b7e97b488368bc0d26ae1984259f036573b4237513ddb318479409b8d7251c84",
-        "scope": "The owner locked the open silhouette of this exact source and rejected the 3f5d9af1 single-mesh fold and Unity appearance. Rework feather segmentation, articulation and both-sided color fidelity on the existing 788288-triangle Tripo mesh. The newly generated alternate wing concept is withdrawn. Next H2 requires owner review."
+        "scope": "The owner locked the design and open silhouette, rejected the 3f5d9af1 single-mesh fold and Unity appearance, and authorized reconstruction from the original reference images. Build independent geometry before UV and color. The alternate concept and attempts to segment the textured mesh are superseded. Next H2 requires owner review."
       },
       "icarusBodyMotionCorrection": {
         "chin": "9bfbae76 direct Unity original-vs-candidate, 40 walk samples, chin p95 head-relative drift 5.90 to 1.31 mm, pitch probe 9.39 to 2.66 mm. Four matching rendered close-ups.",
