@@ -23,6 +23,12 @@ ownership, server-authoritative behavior, and owner-only art gates.
 
 When the design is locked, compare the exported part count with the requested physical components. Retain the original GLB and atlas. A UV seam may split vertex indices on one continuous surface. Use [the character performance review](../aetheria-hero-character-vrm/references/character-performance.md) for shape-preserving separation, material controls, attachment and deforming-clip evidence.
 
+### Rebuild an articulated accessory from its original images
+
+When the owner retains the design and asks for new geometry, load the existing image plates directly. Record the files, checksums and angle labels, including three-quarter views. Use Tripo **Model → Generate in Parts → Detailed** when available, with Texture off. Confirm the live quote, visibility and owner spend cap. For Icarus the four original wing views and four original bow views drive this stage. Preserve their outlines, feather layout, ornament placement and palette.
+
+Export the untextured geometry. Inspect the mount and feather groups on the wing, and the grip, limb tips and physical string on the bow. Move each intended group independently, restore the rest pose, and compare matching camera views against the source plates. Check gaps and overlaps in intermediate poses. If a moving part is fused or a feather silhouette drifts, correct the geometry before Smart UV, material assignment or paid texture work. Preserve the rejected asset separately for comparison.
+
 ## 1. Prepare references and the production target
 
 Select the cleanest, highest-detail, owner-authorized reference images. Hash
@@ -69,10 +75,10 @@ Use Tripo Studio through **Chrome DevTools MCP** for Wings, Weapons, Standard
 Pets, and every asset needing multiple materials or detailed part separation.
 Reuse the authenticated English Tripo tab and a locale-neutral URL.
 
-The full chain is mandatory:
+For new assets, complete these production stages:
 
-1. **Smart Mesh** with the approved triangle budget set before generation.
-2. **Segment** by material and mechanical/component part.
+1. Generate geometry with the approved triangle budget. Use **Generate in Parts** for the articulated rebuild above or **Smart Mesh** for conventional assets.
+2. Verify separate mechanical components and material regions. Use **Segment** for a suitable untextured mesh when the provider has not already produced usable parts.
 3. **Smart UV** with checked islands, seams, texel density, and no accidental
    overlap.
 4. **Retexture** at 4K for the detailed master, or 2K only when the approved
