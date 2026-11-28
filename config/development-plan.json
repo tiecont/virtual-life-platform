@@ -10864,6 +10864,7 @@
     },
     {
       "id": "VL-199",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-2bXjXhkf", "result": "Four authenticated sessions, three healthy HUDs; client 3 showed Reconnect and transport close PolicyViolation. No four-seat turn rotation qualified."},
       "fourClientReceiptReview": {"harnessRevision":"135b120e","playerRevision":"f56a9e75","evidence":"artifacts/campaign-v4/rotation-qa/artifacts/packaged-coop-runs/run-wiSwnOGK","result":"Four accounts and four live sessions. Turn 0 committed; client 1 screenshot shows opening board, but the QA OCR misread the seat label. Run exited before a player input. Four-client rotation and reconnect remain open."},
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
@@ -11286,6 +11287,7 @@
     },
     {
       "id": "VL-204",
+      "reviewBranchQualification": {"branch": "codex/character-performance", "sourceRevision": "eb9a8165", "evidence": "artifacts/character-performance/hem-evidence/ribbon-review/icarus-motion-review.json", "result": "The source-matched Icarus ornament and side ribbon derivative closes the visible holes at 10% and 60% of the supplied walk. Broad Body strain check remains false. Fixed-socket bow e32402e8 still intersects fingers. H2 open."},
       "campaignV4Verification": {
         "sourceRevision": "e1deb43654fef592569b241624fc0d5c7ec37cb2",
         "command": "Aetheria.Editor.IcarusCharakuruMotionReview.Verify (direct Unity 6000.3.14f1 batchmode, existing Charakuru walk)",
@@ -11633,6 +11635,7 @@
     },
     {
       "id": "VL-210",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json", "result": "One packaged Linux player and three protocol peers: board acceptance PASS, Heart move v6 linked to turn 5. No visible effect trace, post-turn-12 or natural Frost/Astral qualification."},
       "feedbackReceiptQualification": {"harnessRevision":"5616845f","playerRevision":"f56a9e75","evidence":"artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json","result":"Native packaged shared RNG feedback passed on one Linux player and three protocol peers. Host Heart swap receipt v6 links to visible turn 5 seat 1; no displayed effect trace, Frost/Astral match or post-turn-12 frame qualified."},
       "feedbackLobbyVerification": {"sourceRevision":"eb92a293","result":"Packaged f56a9e75 feedback run-e3VNDr5H reached a real Fire lobby with four occupants. Corrected OCR region and scaled controls. Tesseract psm 6 on original frame read Seats: 4/4. End-to-end post-turn-12 multiplier evidence remains open.","evidence":"artifacts/campaign-v4/continuation-gameplay/artifacts/packaged-coop-runs/run-e3VNDr5H/04-four-seats-ready.png"},
       "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
