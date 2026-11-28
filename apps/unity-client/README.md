@@ -171,6 +171,11 @@ Batch tests exercise rules, spawning, collision-controller movement and
 interaction. Rendering and physical GPU performance require a separate
 interactive player run.
 
+When seeding a fresh worktree, copy only `apps/unity-client/Library/PackageCache`
+from the prepared checkout. If assets fail to load after copying the whole
+`Library`, close the Editor, move that worktree's `Library` aside, and copy its
+`PackageCache` into a new `Library`. Rerun validation to rebuild the asset database.
+
 ### Icarus Import Audit
 
 Audit an actual candidate FBX without changing its source or the main Unity
