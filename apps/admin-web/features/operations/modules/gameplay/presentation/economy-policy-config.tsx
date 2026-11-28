@@ -32,10 +32,8 @@ function IntField({
 }:{
   label:string;value:number;min:number;max:number;disabled:boolean;onChange:(next:number)=>void;
 }){
-  return <label>{label}<input className="aetheria-field" type="number" step={1} min={min} max={max} disabled={disabled} value={value} onChange={event=>{
-    const next=event.target.valueAsNumber;
-    if(Number.isSafeInteger(next)&&next>=min&&next<=max)onChange(next);
-  }}/></label>;
+  return <label>{label}<input className="aetheria-field" type="number" step={1} min={min} max={max} disabled={disabled} value={Number.isNaN(value)?'':value}
+    onChange={event=>onChange(event.currentTarget.valueAsNumber)}/></label>;
 }
 
 // Operator-only PostgreSQL Economy Authority editor: energy policy, locked 1:1
@@ -151,7 +149,7 @@ export function EconomyPolicyConfig({request}:{request:Request}){
       <label>Player-facing disclosure summary<textarea className="aetheria-field" rows={2} disabled={busy} maxLength={512} value={draft.gachaDisclosure.summary} onChange={event=>setDraft({...draft,gachaDisclosure:{...draft.gachaDisclosure,summary:event.target.value}})}/></label>
       <div className="fields">
         <label>Change reason<input className="aetheria-field" type="text" disabled={busy} minLength={3} maxLength={256} value={reason} onChange={event=>setReason(event.target.value)}/></label>
-        <button type="button" className="aetheria-button" disabled={busy||reason.trim().length<3} onClick={()=>void publish()}>Publish new economy version</button>
+        <button type="button" className="aetheria-button" disabled={busy||reason.trim().length<3||!EconomyPolicyValuesSchema.safeParse(draft).success} onClick={()=>void publish()}>Publish new economy version</button>
       </div>
 
       <h3>Immutable policy versions</h3>
