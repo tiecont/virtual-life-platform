@@ -139,6 +139,23 @@ namespace Aetheria.Editor
                 var report = new Report { scene = folder + "/Fitting.unity",
                     wingSha256 = Environment.GetEnvironmentVariable("AETHERIA_COLORED_WING_SHA"),
                     bowSha256 = Environment.GetEnvironmentVariable("AETHERIA_COLORED_BOW_SHA") };
+                var walk = StageFile(folder, "AETHERIA_ICARUS_REVIEW_MOTION", "Walk.vrma", WalkSha);
+                var vrm = actor.GetComponentInChildren<Vrm10Instance>();
+                var (animator, clip, _) = IcarusH2AccessoryMotionPreview.Retarget(actor, vrm,
+                    AssetDatabase.LoadAssetAtPath<GameObject>(Body), stage.transform, walk);
+                AssetDatabase.CreateAsset(clip, folder + "/Walk.anim");
+                var camera = IcarusH2AccessoryMotionPreview.Studio(stage.transform, target);
+                RenderSettings.ambientMode = AmbientMode.Flat;
+                RenderSettings.ambientLight = new Color(.76f, .76f, .76f);
+                var ambient = new SphericalHarmonicsL2();
+                ambient.AddAmbientLight(RenderSettings.ambientLight);
+                RenderSettings.ambientProbe = ambient;
+                foreach (var light in stage.GetComponentsInChildren<Light>())
+                {
+                    light.color = Color.white;
+                    light.intensity = .55f;
+                }
+                clip.SampleAnimation(animator.gameObject, clip.length * .10f);
                 var wing = StageFile(folder, "AETHERIA_COLORED_WING", "Wings.glb", report.wingSha256);
                 Fit(actor, "Socket_Wings", wing, "tripo_part_56", true, report);
                 if (!string.IsNullOrEmpty(report.bowSha256))
@@ -146,13 +163,6 @@ namespace Aetheria.Editor
                     var bow = StageFile(folder, "AETHERIA_COLORED_BOW", "Bow.glb", report.bowSha256);
                     Fit(actor, "Socket_Bow", bow, "BowGrip", false, report);
                 }
-                var walk = StageFile(folder, "AETHERIA_ICARUS_REVIEW_MOTION", "Walk.vrma", WalkSha);
-                var vrm = actor.GetComponentInChildren<Vrm10Instance>();
-                var (animator, clip, _) = IcarusH2AccessoryMotionPreview.Retarget(actor, vrm,
-                    AssetDatabase.LoadAssetAtPath<GameObject>(Body), stage.transform, walk);
-                AssetDatabase.CreateAsset(clip, folder + "/Walk.anim");
-                var camera = IcarusH2AccessoryMotionPreview.Studio(stage.transform, target);
-                clip.SampleAnimation(animator.gameObject, clip.length * .10f);
                 Directory.CreateDirectory(output);
                 camera.transform.position = actor.transform.position - actor.transform.forward * 4 + Vector3.up;
                 camera.transform.LookAt(actor.transform.position + Vector3.up);
