@@ -108,7 +108,13 @@ done
 
 for phase in fire first recover resume water; do
   printf 'Running %s\n' "$phase" | tee -a "$qa_run/ui.log"
-  timeout 180s python3 "$driver_dir/drive.py" "$phase" 2>&1 | tee -a "$qa_run/ui.log"
+  # The full battle includes multiple button captures, OCR passes and a
+  # packaged UI round-trip on every host turn.
+  case "$phase" in
+    resume) phase_timeout=420s ;;
+    *) phase_timeout=180s ;;
+  esac
+  timeout "$phase_timeout" python3 "$driver_dir/drive.py" "$phase" 2>&1 | tee -a "$qa_run/ui.log"
 done
 wait "$qa_backend_pid"
 qa_backend_pid=''

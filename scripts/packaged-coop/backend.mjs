@@ -34,23 +34,39 @@ function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent
 
 // Search only the committed board. A stable board has no existing matches, so
 // any three aligned elements after the trial swap constitute a legal move.
-function legalSwap(board){
- const elements=board.map(tile=>{
+function legalSwap(board, preferOffense=false){
+ const tiles=board.map(tile=>{
   const identity=isFunctional?tile.kind:tile.element;
   assert.equal(typeof identity,'string','Missing versioned tile identity');
-  return identity;
+  return {identity,multiplier:tile.multiplier};
  });
- const matches=()=>elements.some((value,index)=>
-  (index%8<6&&value===elements[index+1]&&value===elements[index+2])||
-  (index<48&&value===elements[index+8]&&value===elements[index+16]));
- for(let a=0;a<elements.length;a++){
+ let bestMove, bestDamageWeight=-1;
+ for(let a=0;a<tiles.length;a++){
   for(const b of [a%8<7?a+1:-1,a<56?a+8:-1]){
-   if(b<0||elements[a]===elements[b])continue;
-   [elements[a],elements[b]]=[elements[b],elements[a]];
-   if(matches())return {kind:'swap',first:a,second:b};
-   [elements[a],elements[b]]=[elements[b],elements[a]];
+   if(b<0||tiles[a].identity===tiles[b].identity)continue;
+   [tiles[a],tiles[b]]=[tiles[b],tiles[a]];
+   const matched=new Set();
+   for(const [index,{identity}] of tiles.entries()){
+    if(index%8<6&&identity===tiles[index+1].identity&&identity===tiles[index+2].identity){
+     matched.add(index);matched.add(index+1);matched.add(index+2);
+    }
+    if(index<48&&identity===tiles[index+8].identity&&identity===tiles[index+16].identity){
+     matched.add(index);matched.add(index+8);matched.add(index+16);
+    }
+   }
+   if(matched.size){
+    const move={kind:'swap',first:a,second:b};
+    if(!isFunctional||!preferOffense)return move;
+    // The functional fixture can complete all scripted host controls first.
+    // Then favor visible sword matches to finish the battle without stalling.
+    const damageWeight=[...matched].reduce((weight,index)=>
+     weight+(tiles[index].identity==='sword'?tiles[index].multiplier:0),0);
+    if(damageWeight>bestDamageWeight){bestMove=move;bestDamageWeight=damageWeight;}
+   }
+   [tiles[a],tiles[b]]=[tiles[b],tiles[a]];
   }
  }
+ if(bestMove)return bestMove;
  throw Error('Committed board has no legal swap');
 }
 
@@ -324,7 +340,7 @@ try{
     lastVersion=version;
     console.log('projection',JSON.stringify({version,phase:state.phase,activeSeat:state.activeSeat,turn:state.turn,multipliers:state.board.filter(tile=>tile?.multiplier>1).length,boss:state.boss.hp,bossPhase:state.boss.phase}));
     await json('state-'+String(version).padStart(3,'0')+'.json',{version,state});
-    await json('live-state.json',{version,state,move:state.phase==='playing'&&state.activeSeat===0?legalSwap(state.board):null,playerAction:localTurnActions.get(state.turn)??'swap'});
+    await json('live-state.json',{version,state,move:state.phase==='playing'&&state.activeSeat===0?legalSwap(state.board,state.turn>16):null,playerAction:localTurnActions.get(state.turn)??'swap'});
     if(state.phase==='playing'&&state.turn>0&&state.turn%4===1){
      const entry={preActionTurn:state.turn-1,expectedCtrl:localTurnActions.get(state.turn-1)??'swap',version,localCombatant:state.participants[0],bossHp:state.boss.hp};
      seatActions[0]++;
@@ -362,7 +378,7 @@ try{
     continue;
    }
    if(state.phase==='playing'&&state.activeSeat>0){
-    const action=state.turn===1||state.turn>16?legalSwap(state.board):{kind:'guard'};
+    const action=state.turn===1||state.turn>16?legalSwap(state.board,state.turn>16):{kind:'guard'};
     const played=await intent(connections[state.activeSeat],version,JSON.stringify({epoch:1,action}));
     assert.equal(played.body.case,'receipt',JSON.stringify(played.body.value));
     seatActions[state.activeSeat]++;
