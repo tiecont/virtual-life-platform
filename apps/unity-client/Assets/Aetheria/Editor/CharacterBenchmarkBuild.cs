@@ -13,10 +13,10 @@ namespace Aetheria.Editor
         {
             var scene = Environment.GetEnvironmentVariable("AETHERIA_CHARACTER_BENCHMARK_SCENE");
             var path = Environment.GetEnvironmentVariable("AETHERIA_CHARACTER_BENCHMARK_PLAYER");
-            if (!Application.isBatchMode || !Regex.IsMatch(scene ?? "", @"^Assets/IcarusMotionReview-[0-9a-f]{32}/IcarusRecorder\.unity$") ||
+            if (!Application.isBatchMode || !Regex.IsMatch(scene ?? "", @"\AAssets/(?:IcarusMotionReview-[0-9a-f]{32}/IcarusRecorder|IcarusPerformance-[0-9a-f]{32}/Performance)\.unity\z") ||
                 !AssetDatabase.LoadAssetAtPath<SceneAsset>(scene) || string.IsNullOrEmpty(path) ||
                 !Path.IsPathRooted(path) || File.Exists(path) || Directory.Exists(path))
-                throw new InvalidOperationException("Supply the staged Icarus Recorder scene and a new absolute player path.");
+                throw new InvalidOperationException("Supply a staged private Icarus performance or Recorder scene and a new absolute player path.");
             bool original = PlayerSettings.enableFrameTimingStats;
             try
             {
