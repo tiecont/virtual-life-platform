@@ -7,6 +7,7 @@ import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
 import {performance} from 'node:perf_hooks';
 import {createRequire} from 'node:module';
+import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-probe.mjs';
 import {prepareAdmissionTestTls} from '../../scripts/runtime-admission-test-tls.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../../apps/platform-api/src/shared/database/migrations.ts');
@@ -28,8 +29,9 @@ const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
 const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
-assert.ok(['functional','elemental'].includes(boardMode),'Choose functional or historical elemental board');
-const isFunctional=boardMode==='functional';
+assert.ok(['functional','elemental','advanced-water'].includes(boardMode),'Unknown packaged board fixture');
+const advancedWater=boardMode==='advanced-water';
+const isFunctional=boardMode!=='elemental';
 function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,isFunctional?'unity-native-v2':'coop-process-v1'),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
@@ -155,14 +157,18 @@ try{
  assert.equal(loginResponse.statusCode,200,JSON.stringify(loginResponse.json()));
  const operator={cookie:String(loginResponse.headers['set-cookie']).split(';')[0],csrf:loginResponse.json().csrfToken};
  const operatorPost=(action,payload)=>app.http.inject({method:'POST',url:'/v1/operator/'+action,headers:{origin:adminOrigin,cookie:operator.cookie,'x-csrf-token':operator.csrf},payload});
- const draftResponse=await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion:null,bundle});
- const created=draftResponse.json();
- assert.ok(created.version>1,JSON.stringify(created));
- const validation=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:created.revision});
- assert.equal(validation.statusCode,200,JSON.stringify(validation.json()));
- assert.equal(validation.json().contentDigest,verdict.digest);
- const release=await operatorPost('gameplay-config-publish',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:validation.json().revision,expectedActiveRevision:1});
- assert.equal(release.statusCode,200,JSON.stringify(release.json()));
+ async function publishFixture(input,expected,parentVersion,expectedActiveRevision){
+  const draftResponse=await operatorPost('gameplay-config-draft',{requestId:randomUUID(),ruleset:'arena8-coop-pve',parentVersion,bundle:input});
+  const created=draftResponse.json();
+  assert.ok(created.version>1,JSON.stringify(created));
+  const validation=await operatorPost('gameplay-config-validate',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:created.revision});
+  assert.equal(validation.statusCode,200,JSON.stringify(validation.json()));
+  assert.equal(validation.json().contentDigest,expected.digest);
+  const release=await operatorPost('gameplay-config-publish',{requestId:randomUUID(),ruleset:'arena8-coop-pve',version:created.version,expectedRevision:validation.json().revision,expectedActiveRevision});
+  assert.equal(release.statusCode,200,JSON.stringify(release.json()));
+  return {version:created.version,activeRevision:release.json().activeRevision};
+ }
+ const created=await publishFixture(bundle,verdict,null,1);
  const reseed=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  assert.equal(reseed.created,false);
  assert.equal(reseed.version,created.version);
@@ -232,6 +238,15 @@ try{
  assert.equal(allocation.config_digest,expected.digest);
  assert.equal(hex(allocation.content_hash),expected.contentHash);
  facts.scenarios.push('new-allocation-pinned-the-admin-published-digest-and-content-hash');
+ let waterBundle=bundle,waterVerdict=verdict;
+ if(advancedWater){
+  waterBundle=JSON.parse(await readFile('config/gameplay/arena8-coop-advanced-v1.candidate.json','utf8'));
+  // Preserve the existing packaged fixture's earned 333-point Water gate.
+  waterBundle.bosses.find(value=>value.id===water.id).requiredRoomPoints=water.requiredRoomPoints;
+  waterVerdict=await validator.validate('arena8-coop-pve',waterBundle);
+  const next=await publishFixture(waterBundle,waterVerdict,created.version,created.activeRevision);
+  await json('advanced-water-publication.json',{version:next.version,digest:waterVerdict.digest,contentHash:waterVerdict.contentHash,bundle:waterBundle});
+ }
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
@@ -481,7 +496,8 @@ try{
    [waterRoom.roomId]);
  const hostLoadout=waterAllocation.seats.find(seat=>seat.account===host);
  assert.equal(waterAllocation.seats.length,4);
- assert.equal(waterAllocation.config_digest,verdict.digest);
+ assert.equal(waterAllocation.config_digest,waterVerdict.digest);
+ assert.equal(waterAllocation.content_hash,waterVerdict.contentHash);
  assert.equal(hostLoadout.petId,equipped[0].pet_id);
  assert.ok(hostLoadout.loadout.entries.some(entry=>entry.artifactId===equipped[0].artifact_id&&entry.definitionId==='core-emberglass'&&entry.upgradeLevel===equipped[0].upgrade_level));
  const comparison=waterAllocation.seats.find(seat=>seat.account!==host&&seat.petId===hostLoadout.petId);
@@ -517,8 +533,10 @@ try{
    const started=await readWaterVersion(1);
    assert.equal(started.state.phase,'playing');
    assert.equal(started.state.activeSeat,0);
-   await json('water-started.json',{...started,move:legalSwap(started.state.board)});
+   const frost=advancedWater?checkWaterOpening(started.state,waterBundle):null;
+   await json('water-started.json',{...started,move:frost?.action??legalSwap(started.state.board)});
    const swapped=await readWaterVersion(2);
+   if(frost)checkWaterEffect(swapped.state,waterBundle,frost.matched);
    const receipts=(await pool.query(
      'SELECT actor_id=$2 AS "host", committed_version::int AS version FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version',
      [waterAllocation.match_id,host])).rows;
@@ -527,6 +545,7 @@ try{
    const retained=(await pool.query('SELECT seats FROM coop_allocations WHERE match_id=$1',[waterAllocation.match_id])).rows[0].seats;
    assert.deepEqual(retained,waterAllocation.seats);
    facts.scenarios.push('packaged-water-host-started-and-swapped-with-the-upgraded-core');
+   if(frost)facts.scenarios.push('packaged-host-scored-an-authored-frost-group-and-committed-chill');
    await waitForFile('water-swap-observed');
   }finally{
    connections[1]?.ws.close();

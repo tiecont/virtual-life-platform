@@ -17,6 +17,14 @@ One packaged player uses ordinary guest login, owned Pet selection, movement, ro
 
 The process produces source and package metadata, screenshot evidence, event projections and a checked result in ignored `artifacts/packaged-coop-runs/`. It does not exercise four packaged windows, human controls, physical Windows, or production balance. Set `PACKAGED_QA_SIZE=1280x720` or `PACKAGED_QA_SIZE=1920x1080` to request a review resolution. The default remains 1024×768. The runner publishes the functional candidate to its disposable database. Use `PACKAGED_QA_BOARD=elemental` for a historical regression run. The receipt identifies the observed board contract.
 
+Set `PACKAGED_QA_BOARD=advanced-water` to publish the schema 5 Water candidate after Fire allocates. The packaged host uses its earned 333-point Water gate, opens a timed board with three authored Frost tiles, and swaps the projected pair through the HUD. The authenticated observer checks the six-kind spawn pool, the post-swap Chill reduction and the host's journal receipts. The two Water PNGs retain the board before and after that swap.
+
+To qualify the unmodified schema 5 candidate through Nest, PostgreSQL and authenticated Rust WSS, run the following command after building the packages and runtime. It publishes a replacement before the match starts, then checks that the original Frost reduction, journal and absolute deadline survive a Nest and Rust restart.
+
+```sh
+node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop
+```
+
 ## Four-person offline playtest
 
 Use the Linux development player and local cooperative server setup in

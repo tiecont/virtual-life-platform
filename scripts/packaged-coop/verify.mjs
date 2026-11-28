@@ -3,6 +3,7 @@ import {readFile,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-probe.mjs';
 
 const root=process.argv[2];
 const read=async file=>JSON.parse(await readFile(join(root,file+'.json'),'utf8'));
@@ -67,13 +68,25 @@ assert.equal(gear.preUpgrade.upgrade_level,1);
 assert.equal(gear.materialsSpent,60);
 assert.equal(water.seats,4);
 assert.equal(water.petId,'fire-coalwhisk');
-assert.equal(water.configDigest,before.state.ruleset.configDigest);
+const advancedWater=(await readdir(root)).includes('advanced-water-publication.json');
+if(advancedWater)assert.notEqual(water.configDigest,before.state.ruleset.configDigest);
+else assert.equal(water.configDigest,before.state.ruleset.configDigest);
 assert.equal(water.entries.length,1);
 assert.equal(water.entries[0].artifactId,gear.preUpgrade.artifact_id);
 assert.equal(water.entries[0].definitionId,'core-emberglass');
 assert.equal(water.entries[0].upgradeLevel,2);
 if(version===2){
  const started=await read('water-started'),swapped=await read('water-swapped');
+ if(advancedWater){
+  const publication=await read('advanced-water-publication');
+  assert.equal(water.configDigest,publication.digest);
+  assert.equal(started.state.ruleset.contentHash,publication.contentHash);
+  const frost=checkWaterOpening(started.state,publication.bundle);
+  assert.deepEqual(started.move,frost.action);
+  checkWaterEffect(swapped.state,publication.bundle,frost.matched);
+  water.frostTilesMatched=frost.matched;
+  water.chillReductionPm=swapped.state.chillReductionPm;
+ }
  assert.equal(started.version,1);
  assert.equal(swapped.version,2);
  assert.deepEqual(swapped.receipts,[{host:true,version:1},{host:true,version:2}]);
@@ -86,10 +99,10 @@ if(version===2){
  for(const {state} of [started,swapped]){
   assert.equal(state.phase,'playing');
   assert.equal(state.bossId,gear.waterRoom.bossId);
-  assert.equal(state.ruleset.version,version);
+  assert.equal(state.ruleset.version,advancedWater?4:version);
   assert.equal(state.ruleset.configDigest,water.configDigest);
   assert.equal(state.board.length,64);
-  assert.ok(state.board.every(tile=>tile&&vocabulary.includes(tile.kind)&&!Object.hasOwn(tile,'element')));
+  assert.ok(state.board.every(tile=>tile&&(vocabulary.includes(tile.kind)||(advancedWater&&tile.kind==='frost'))&&!Object.hasOwn(tile,'element')));
   assert.equal(state.participants.length,4);
   const host=state.participants[0];
   const comparison=state.participants.find(unit=>unit.seat!==0&&unit.petId===water.petId);
@@ -109,6 +122,7 @@ assert.ok(outcome);
 const report=JSON.parse(outcome.slice('reward rows verified '.length));
 assert.equal(report.result,'PASS');
 assert.ok(report.scenarios.includes('packaged-player-consumed-a-native-admission-in-the-equipped-water-allocation'));
-console.log(JSON.stringify({result:'PASS',playerSize:expectedSize,screenshots,boardContract:version===2?'functional':'elemental',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
+if(advancedWater)assert.ok(report.scenarios.includes('packaged-host-scored-an-authored-frost-group-and-committed-chill'));
+console.log(JSON.stringify({result:'PASS',playerSize:expectedSize,screenshots,boardContract:advancedWater?'advanced-water':version===2?'functional':'elemental',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
  resumedGeneration:after.generation,extraHostAdmissions:renewed.hostTickets-after.hostTickets,actions:need,
  transformedVersion:transformed.version,fireWonVersion:states.at(-1).version,rewardRows:rewards.count,water},null,2));

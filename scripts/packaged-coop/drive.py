@@ -248,7 +248,7 @@ elif stage == 'water':
     room_ready('water','20-water-four-seats-ready')
     facts=expect('water-allocation-facts',lambda facts:facts['seats']==4,timeout=30)
     print('Water allocation', facts, flush=True)
-    if environ.get('PACKAGED_QA_BOARD', 'functional') == 'functional':
+    if environ.get('PACKAGED_QA_BOARD', 'functional') in ('functional', 'advanced-water'):
         start, _ = wait_for('21-water-equipped-native-hud', start_button, tries=28)
         (output/'water-hud-observed').touch()
         for attempt in range(5):
