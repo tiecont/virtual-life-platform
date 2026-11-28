@@ -10,8 +10,8 @@ from PIL import Image
 from compare_accessory_outline import foreground
 
 
-def crop(path):
-    mask, bounds = foreground(path)
+def crop(path, top_margin=0):
+    mask, bounds = foreground(path, top_margin)
     with Image.open(path) as image:
         return image.convert("RGB").crop(bounds), mask
 
@@ -46,9 +46,9 @@ def fractions(rgb):
                 nearWhite=float(np.mean(np.min(rgb, axis=1) >= 249)))
 
 
-def evaluate(plate, render):
+def evaluate(plate, render, render_top_margin=0):
     source, source_mask = crop(plate)
-    result, result_mask = crop(render)
+    result, result_mask = crop(render, render_top_margin)
     w = max(source.width, round(result.width * source.height / result.height))
     size = (w, source.height)
     a = place(source_mask, size, Image.Resampling.NEAREST)
@@ -60,7 +60,7 @@ def evaluate(plate, render):
     rgb_b = place(result, size, Image.Resampling.BILINEAR)
     diff = lab(rgb_b[both]) - lab(rgb_a[both])
     delta = np.linalg.norm(diff, axis=1)
-    return dict(plate=str(plate), render=str(render), plateSha256=hashlib.sha256(plate.read_bytes()).hexdigest(),
+    return dict(renderTopMargin=render_top_margin, plate=str(plate), render=str(render), plateSha256=hashlib.sha256(plate.read_bytes()).hexdigest(),
                 renderSha256=hashlib.sha256(render.read_bytes()).hexdigest(), pixelsCompared=int(both.sum()),
                 silhouetteIoU=float(both.sum() / (a | b).sum()),
                 deltaE76Median=float(np.median(delta)), deltaE76P90=float(np.percentile(delta, 90)),
@@ -72,5 +72,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("plate", type=Path)
     parser.add_argument("render", type=Path)
+    parser.add_argument("--render-top-margin", type=int, default=0,
+                        help="Exclude a labeled border above the asset from measurement")
     args = parser.parse_args()
-    print(json.dumps(evaluate(args.plate, args.render), indent=2))
+    print(json.dumps(evaluate(args.plate, args.render, args.render_top_margin), indent=2))

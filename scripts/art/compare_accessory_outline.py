@@ -8,9 +8,12 @@ import numpy as np
 from PIL import Image
 
 
-def foreground(path):
+def foreground(path, top_margin=0):
     with Image.open(path) as image:
         rgba = np.asarray(image.convert("RGBA")).astype(np.int16)
+    if top_margin < 0 or top_margin >= rgba.shape[0]:
+        raise ValueError("Invalid top comparison margin")
+    rgba = rgba[top_margin:]
     alpha = rgba[:, :, 3]
     if alpha.min() == 0:
         mask = alpha > 127
@@ -27,7 +30,7 @@ def foreground(path):
     if xs.size < 100 or xs.min() == 0 or xs.max() == mask.shape[1] - 1:
         raise ValueError(f"{path}: foreground is missing or touches the frame edge")
     box = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
-    return Image.fromarray(mask).crop(box), box
+    return Image.fromarray(mask).crop(box), (box[0], box[1] + top_margin, box[2], box[3] + top_margin)
 
 
 def silhouette(path):
