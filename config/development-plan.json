@@ -11091,7 +11091,7 @@
     },
     {
       "id": "VL-202",
-      "campaignV4ContinuationVerification": {"sourceRevision": "900431e969c915baee125ea0c843a2448642a6fc", "verifiedScope": "Disposable PostgreSQL campaign drafts and encounter settlement 24/24. Full schema7 route WSS qualification pending."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "a8e19d537c320a1b61deb8ad3dc35f49d6cce074", "verifiedScope": "Actual solo and cooperative WSS two-phase route wins, gating, member-bound rewards, one recruitment and idempotent retries PASS. All 48 independent authored profiles pass engine validation. Broader map traversal underway."},
       "campaignV4Verification": {
         "sourceRevision": "66af0a44b1c531d831467b8e9cfe9b722c79cef6",
         "command": "node --test scripts/campaign-v4-content.test.mjs",
@@ -11333,7 +11333,7 @@
     },
     {
       "id": "VL-206",
-      "campaignV4ContinuationVerification": {"sourceRevision": "10989babf428572f6b378043993b259e0d789b45", "verifiedScope": "GPU Editor rendered original Icarus walk and neutral face. Expression presets have zero bindings. Shader-link errors remain."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "7c1c364fc997df7c78b679bb69b068a2a3921658", "verifiedScope": "Existing model and motion recorded via Cinemachine 3.1.8 and Unity Recorder 5.1.8, 30 frames at 24 fps, 720\u00d7720, 1.25 s. Neutral face and expression inventory verified separately. Accessory and expression qualification remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
