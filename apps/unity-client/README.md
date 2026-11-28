@@ -341,6 +341,21 @@ win/loss, one restricted worker settlement, reduced motion, return to roaming
 and server logout. The Pet tests use the same local-CA path as the normal
 development player. The separate adapter fixture retains wrong-CA rejection.
 
+### Play the functional solo campaign
+
+With the Linux development player, Rust runtime and workspace packages built
+as above, run `pnpm play:linux:functional`. Docker and `openssl` provide the
+disposable loopback backend and its local TLS certificate. The launcher publishes
+the repository's functional candidate as authored into the fresh database.
+
+Choose **Enter local arena** to create a guest, then select an owned starter Pet
+and start the Fire regular encounter. Start the battle and swap adjacent tiles
+to match three or more of the same functional kind. The campaign uses the
+published Fire regular and Boss encounters to unlock Tideglass. Close the player
+to clean up the temporary profile, certificates, API, runtime and database.
+Each launch starts a fresh guest campaign. The player log stays under
+`artifacts/functional-linux-play/`.
+
 ## Native developer scene controller
 
 The `NativeSceneController` source wires the scene to the existing adapters via

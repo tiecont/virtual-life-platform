@@ -1,0 +1,150 @@
+import {spawn} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {randomBytes,randomUUID} from 'node:crypto';
+import {constants} from 'node:fs';
+import {access,mkdir,mkdtemp,readFile,rm} from 'node:fs/promises';
+import {createServer} from 'node:net';
+import {resolve} from 'node:path';
+import {Pool} from 'pg';
+import {toolEnvironment,validateTestDatabaseURL} from './test-environment.mjs';
+import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
+
+const require=createRequire(import.meta.url);
+const {createApp}=require('../apps/platform-api/src/app.ts');
+const {readConfig}=require('../apps/platform-api/src/shared/config/environment.ts');
+const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
+const {installGameplayConfig}=require('../apps/platform-api/src/features/gameplay/modules/config/application/seed-gameplay-config.ts');
+const {EngineGameplayBundleValidator}=require('../apps/platform-api/src/features/gameplay/modules/config/infrastructure/engine-validator.ts');
+
+function identifier(value){
+ if(!/^[a-z][a-z0-9_]*$/.test(value))throw Error('Invalid database identifier');
+ return '"'+value+'"';
+}
+
+function loopbackPort(){
+ return new Promise((resolvePort,reject)=>{
+  const listener=createServer();
+  listener.once('error',reject);
+  listener.listen(0,'127.0.0.1',()=>{
+   const {port}=listener.address();
+   listener.close(error=>error?reject(error):resolvePort(port));
+  });
+ });
+}
+
+async function grantRuntimeAccess(pool,role){
+ const grantee=identifier(role);
+ const admission=JSON.parse(await readFile('config/native-runtime-db-privileges.json','utf8'));
+ const game=JSON.parse(await readFile('config/native-game-db-privileges.json','utf8'));
+ for(const [table,columns] of [...Object.entries(admission.select),...Object.entries(game.rewardStatusSelect)])
+  await pool.query(`GRANT SELECT (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${grantee}`);
+ await pool.query(`GRANT INSERT ON platform_native_ticket_uses TO ${grantee}`);
+ for(const operation of ['select','insert'])
+  for(const table of game[operation])await pool.query(`GRANT ${operation.toUpperCase()} ON ${identifier(table)} TO ${grantee}`);
+ for(const [table,columns] of Object.entries(game.update))
+  await pool.query(`GRANT UPDATE (${columns.map(identifier).join(',')}) ON ${identifier(table)} TO ${grantee}`);
+}
+
+let phase='preflight',pool,app,privateDirectory,player,killTimer,stopping=false;
+const stop=()=>{
+ stopping=true;
+ if(!player||killTimer)return;
+ player.kill('SIGTERM');
+ killTimer=setTimeout(()=>player.kill('SIGKILL'),2000);
+ killTimer.unref();
+};
+process.once('SIGINT',stop);
+process.once('SIGTERM',stop);
+
+try{
+ if(process.platform!=='linux'||process.argv.length!==2)throw Error('Run pnpm play:linux:functional on Linux');
+ if(!/^aetheria-soulbound-test-[a-f0-9]{8}$/.test(process.env.AETHERIA_TEST_DB_PROJECT??''))
+  throw Error('The launcher needs a fresh wrapper-owned Docker database');
+ const playerBinary=resolve('apps/unity-client/Builds/Linux/Aetheria');
+ const binary=resolve('artifacts/rust/target/debug/aetheria-game-runtime');
+ await Promise.all([access(playerBinary,constants.X_OK),access(playerBinary+'.config'),access(binary,constants.X_OK)]);
+ const directoryRoot=resolve('artifacts/functional-linux-play');
+ await mkdir(directoryRoot,{recursive:true,mode:0o700});
+ const directory=await mkdtemp(directoryRoot+'/run-');
+ privateDirectory=await mkdtemp(directory+'/private-');
+ const profile=resolve(privateDirectory,'profile');
+ await mkdir(profile,{mode:0o700});
+
+ phase='disposable database';
+ const database=validateTestDatabaseURL(process.env.TEST_DATABASE_URL);
+ // The wrapper owns this empty database and removes its volume on exit.
+ pool=new Pool({connectionString:database});
+ await migrate(pool);
+ const role='functional_play_'+randomUUID().replaceAll('-','');
+ const password=randomBytes(32).toString('hex');
+ await pool.query(`CREATE ROLE ${identifier(role)} LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8`);
+ await grantRuntimeAccess(pool,role);
+ const tls=await prepareAdmissionTestTls(privateDirectory,pool);
+ await tls.enable();
+ const runtimeDatabase=new URL(database);
+ runtimeDatabase.username=role;
+ runtimeDatabase.password=password;
+
+ phase='functional gameplay publication';
+ const ruleset='arena8-coop-pve';
+ const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v1.candidate.json','utf8'));
+ const validator=new EngineGameplayBundleValidator(binary);
+ const published=await installGameplayConfig(pool,ruleset,bundle,validator,'system:local-functional-play');
+ if(!published.created)throw Error('Expected an empty local gameplay configuration store');
+ console.log('Published local functional gameplay version '+published.version+' ('+published.digest+')');
+
+ phase='loopback Arena8 API';
+ const httpsOrigin='https://127.0.0.1:'+(await loopbackPort());
+ const runtime={
+  enabled:true,binary,databaseUrl:runtimeDatabase.toString(),role,caFile:tls.caFile,
+  storageKey:randomBytes(32).toString('hex'),storageKeyId:'local-v1',httpsOrigin,
+  certFile:resolve(privateDirectory,'tls/server.pem'),keyFile:resolve(privateDirectory,'tls/server.key'),
+ };
+ const config=readConfig({
+  NODE_ENV:'test',HOST:'127.0.0.1',DATABASE_URL:database,SESSION_SECRET:randomBytes(48).toString('base64url'),
+  LOCAL_ARENA8_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
+  LOCAL_ARENA8_NATIVE_BINARY:binary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.databaseUrl,
+  LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:runtime.caFile,
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY:runtime.storageKey,LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:runtime.storageKeyId,
+  LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:httpsOrigin,
+  LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:runtime.certFile,LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:runtime.keyFile,
+ });
+ app=await createApp(config,pool,false,{
+  petArenaWave1:{enabled:true},petArtifacts:{enabled:true},petArena8Native:runtime,
+ });
+ const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
+ if(!stopping){
+  phase='Unity development player';
+  console.log('Create a guest with Enter local arena. Player log: '+resolve(directory,'player.log'));
+  player=spawn(playerBinary,[
+   '-force-glcore','-screen-width','1280','-screen-height','720','-screen-fullscreen','0',
+   '-logFile',resolve(directory,'player.log'),
+  ],{env:{
+   ...toolEnvironment(process.env),XDG_CONFIG_HOME:profile,
+   AETHERIA_ARENA8_NATIVE:endpoint,AETHERIA_ARENA8_NATIVE_CA:tls.caFile,AETHERIA_ARENA8_FUNCTIONAL:'1',
+  },stdio:'ignore'});
+  const code=await new Promise((done,fail)=>{player.once('error',fail);player.once('close',done);});
+  if(!stopping&&code!==0)throw Error('Check the local player log');
+ }
+}catch(error){
+ // Configuration and PostgreSQL errors may contain credentials. Phase names and
+ // operating-system error codes are sufficient to locate failures here.
+ const detail=phase==='preflight'?(error.code==='ENOENT'?'Build the Linux player and Rust runtime first':error.message):'Check the local prerequisites and player log';
+ console.error('Functional Linux play failed during '+phase+'. '+detail+'.');
+ process.exitCode=1;
+}finally{
+ clearTimeout(killTimer);
+ process.removeListener('SIGINT',stop);
+ process.removeListener('SIGTERM',stop);
+ const cleanup=[
+  ()=>app?.app.close(),
+  ()=>pool?.end(),
+  ()=>privateDirectory&&rm(privateDirectory,{recursive:true,force:true}),
+ ];
+ for(const close of cleanup){
+  try{await close();}catch{
+   console.error('Functional Linux play could not complete local cleanup.');
+   process.exitCode=1;
+  }
+ }
+}
