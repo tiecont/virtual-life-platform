@@ -185,13 +185,22 @@ export async function verifySoloCampaign({
    );
    return {wallet,pets,maps:clears.map(row=>row.map_id)};
   }
+  async function assertNoAdminGrants(){
+   const {rows:[{count}]}=await pool.query(
+    "SELECT count(*)::int AS count FROM coop_achievement_ledger WHERE account_id=$1 AND source='admin_grant'",[host.accountId],
+   );
+   assert.equal(count,0,'Natural campaign account received an administrator grant');
+   return count;
+  }
   const initial=await progression();
   assert.deepEqual(initial.maps,[]);
   if(natural){
    assert.deepEqual(initial.pets.map(row=>[row.pet_id,row.level,row.exp,row.source]),[
     ['fire-coalwhisk',1,0,'starter'],['ground-clodkin',1,0,'starter'],['water-dewskip',1,0,'starter'],
    ]);
-   mark('guest started with three ordinary level-1 starters and no clear or equipped Artifact',initial);
+   mark('guest started with three ordinary level-1 starters and no clear or equipped Artifact',{
+    ...initial,adminGrants:await assertNoAdminGrants(),
+   });
   }else assert.deepEqual(initial.pets.map(row=>row.pet_id).sort(),[electric,host.petId].sort());
 
   async function playAndSettle(mapId,kind,petId,{firstClear=true,restartOnFirstMove=false}={}){
@@ -350,7 +359,9 @@ export async function verifySoloCampaign({
    const final=await get(host,'/v1/pets/wave1/state');
    assert.equal(final.statusCode,200,final.body);
    assert.deepEqual(final.json().campaign,{clearedMaps:maps,nextMapId:null});
-   mark('one natural starter account completed all six maps and earned six recruits',await progression());
+   mark('one natural starter account completed all six maps and earned six recruits',{
+    ...await progression(),adminGrants:await assertNoAdminGrants(),
+   });
    return;
   }
 
