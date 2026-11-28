@@ -29,15 +29,17 @@ import {
 import {evolutionPreview, MAPS, type CoreElement, type Stats} from '../domain/manifest';
 import {Wave1Store, type Wave1Transaction} from '../infrastructure/store';
 
-import {WAVE_A_ACTIVE_PETS} from '../domain/wave-a-catalog';
+import {WAVE_A_ACTIVE_PETS,WAVE_A_ROSTER,type WaveAPet} from '../domain/wave-a-catalog';
 
 // Current production catalog annotations are outside the immutable combat bundle.
 const starterIds:ReadonlySet<string>=new Set(STARTER_PET_IDS);
-export const canonicalCatalogReference=WAVE_A_ACTIVE_PETS.map(pet=>({
+const referenceForPet=(pet:WaveAPet)=>({
  id:pet.id,catalogRank:pet.catalogRank,starter:starterIds.has(pet.id),
  sourceCategory:pet.sourceCategory,acquisitionAuthority:pet.acquisitionAuthority,
  gameplayReady:pet.runtime.gameplayReady,modelStatus:pet.runtime.modelStatus,
-}));
+});
+export const canonicalCatalogReference=WAVE_A_ACTIVE_PETS.map(referenceForPet);
+export const developmentCatalogReference=WAVE_A_ROSTER.map(referenceForPet);
 
 export type Wave1Entropy={int(maxExclusive:number):number};
 export type PartyInput={petIds:string[]};
