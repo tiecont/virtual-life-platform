@@ -10882,6 +10882,7 @@
     },
     {
       "id": "VL-199",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-2bXjXhkf", "result": "Four authenticated sessions, three healthy HUDs; client 3 showed Reconnect and transport close PolicyViolation. No four-seat turn rotation qualified."},
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -11292,6 +11293,7 @@
     },
     {
       "id": "VL-204",
+      "reviewBranchQualification": {"branch": "codex/character-performance", "sourceRevision": "eb9a8165", "evidence": "artifacts/character-performance/hem-evidence/ribbon-review/icarus-motion-review.json", "result": "The source-matched Icarus ornament and side ribbon derivative closes the visible holes at 10% and 60% of the supplied walk. Broad Body strain check remains false. Fixed-socket bow e32402e8 still intersects fingers. H2 open."},
       "fixedGripReview": {"sourceRevision":"e32402e8","evidence":"artifacts/character-performance/qa/native-grip-e32402e8/fitting.json","result":"Direct Unity exit 0, 11 images. Fixed local mount across phases. Wrist/palm/fingers 16/48/371 then 21/41/371 intersecting triangle pairs. Ornament and string zero. Walk target error 0.739 mm. First-phase palm count increased from 38. H2 open."},
       "ribbonNativeQualification": {"generator":"790d90d0","captureRevision":"eb9a8165","evidence":"artifacts/character-performance/hem-evidence/ribbon-review/icarus-motion-review.json","result":"Direct Unity exit 0. The 165 right and 152 left changed ribbon weights close the visible skin breakthroughs at 10% and 60% of the matched original walk. Central trim stays intact. Global Body strain maximum remains 22.351, and the OpenGLCore log reports shader link errors. Full pose and artistic qualification open."},
       "innerHemCandidate": {"sourceRevision":"9f8549f2","evidence":"artifacts/character-performance/hem-evidence/targeted-weights/inner-hem-weights.json","result":"Only 298 original Body/0 ornament vertex slots have changed skin records. Across 36 samples max predicted edge strain ratio 6.813 to 1.168. Max predicted displacement 66.4 mm. Direct Unity reimport matched 298 changed slots. At 35% the center pink and gold trim is continuous. Full lower-body count of edges above twice rest 93 to 85; maximum length ratio unchanged at 22.351 and broad improved flag false. Lateral thigh protrusions visible at 10% and 60%; OpenGLCore shader link warnings and owner review remain. Native evidence artifacts/character-performance/hem-evidence/targeted-review/icarus-motion-review.json."},
@@ -11633,6 +11635,7 @@
     },
     {
       "id": "VL-210",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json", "result": "One packaged Linux player and three protocol peers: board acceptance PASS, Heart move v6 linked to turn 5. No visible effect trace, post-turn-12 or natural Frost/Astral qualification."},
       "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
