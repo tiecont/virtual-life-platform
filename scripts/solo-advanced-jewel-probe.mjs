@@ -51,11 +51,11 @@ export async function verifyAdvancedSoloJewel({kind,pool,host,published,mark,sol
   assert.ok(vulnerability().turns>1,'The negative would survive a normal turn tick');
   assert.ok(statuses().some(s=>s.kind==='defense-buff'),'Guard should have applied its own positive status');
  }else{
-  while(current.state.turn<nextTier.from)await commit({kind:'endTurn'});
+  while(current.state.turn<nextTier.from)await commit({kind:'guard'});
   assert.equal(current.state.turn,nextTier.from);
  }
  assert.deepEqual(current.state.board,opening);
- const before={turn:current.state.turn,statuses:statuses()};
+ const before={turn:current.state.turn,statuses:statuses(),pending:current.state.pending,bossPhase:current.state.boss.phase};
  await commit(move.action);
  const feedback=current.state.jewelFeedback;
  assert.ok(current.state.board.every(tile=>basicKinds.includes(tile.kind)));
@@ -63,7 +63,14 @@ export async function verifyAdvancedSoloJewel({kind,pool,host,published,mark,sol
   const limit=bundle.advancedJewels.natureActorLimits[Math.min(move.matched,5)-3];
   assert.equal(limit,1);
   assert.deepEqual(feedback,[{kind:'nature-cleanse',seat:0,value:1}]);
-  assert.equal(vulnerability(),undefined);
+  // The Ghost Warden immediately schedules its next telegraph after each
+  // impact. It can therefore apply a fresh negative after the cleanse.
+  if(before.pending?.remaining===1&&current.state.boss.phase===before.bossPhase){
+   assert.deepEqual(vulnerability(),{kind:'vulnerability',value:boss.attackModel.vulnerability.valuePm,
+    turns:boss.attackModel.vulnerability.durationTurns-1});
+  }else{
+   assert.equal(vulnerability(),undefined);
+  }
   // Buff timers tick at the start of the actor's next turn.
   const survivingBuffs=before.statuses.filter(status=>status.kind==='defense-buff'&&status.turns>1)
    .map(status=>({...status,turns:status.turns-1}));
