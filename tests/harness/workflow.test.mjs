@@ -76,7 +76,8 @@ if (command === 'pr view --repo tiecont/virtual-life-platform 41 --json number,h
 }
 
 test('discovers workflows and rejects unrecognized or unsafe input before execution', () => {
-  assert.equal(invoke(['list']).report.workflows.length, 16);
+  assert.equal(invoke(['list']).report.workflows.length, 17);
+  assert(invoke(['search', 'character performance']).report.workflows.some(value => value.id === 'character-performance'));
   const migration = invoke(['describe', 'migration-compat']);
   assert.equal(migration.report.inputSchema.properties.mode.default, 'static');
   assert.equal(migration.report.inputSchema.additionalProperties, false);
