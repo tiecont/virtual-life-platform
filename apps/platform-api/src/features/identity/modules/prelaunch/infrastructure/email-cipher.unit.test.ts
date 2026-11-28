@@ -9,7 +9,10 @@ describe('prelaunch email protection',()=>{
     expect(cipher.open(sealed)).toBe('owner@example.com');
     expect(cipher.lookup('Owner@Example.com')).toBe(cipher.lookup('owner@example.com'));
     const parts=sealed.split('.');
-    parts[3]=parts[3].slice(0,-1)+(parts[3].endsWith('a')?'b':'a');
+    expect(()=>cipher.open(sealed+'=')).toThrow();
+    const ciphertext=Buffer.from(parts[3],'base64url');
+    ciphertext[0]^=1;
+    parts[3]=ciphertext.toString('base64url');
     expect(()=>cipher.open(parts.join('.'))).toThrow();
   });
 });

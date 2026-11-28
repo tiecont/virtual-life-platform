@@ -28,6 +28,9 @@ export class PrelaunchEmailCipher {
     const values=sealed.split('.');
     if(values.length!==4||values[0]!=='v1')throw Error('Invalid sealed email');
     const iv=Buffer.from(values[1],'base64url'),tag=Buffer.from(values[2],'base64url'),encrypted=Buffer.from(values[3],'base64url');
+    if(iv.toString('base64url')!==values[1]||tag.toString('base64url')!==values[2]||encrypted.toString('base64url')!==values[3]){
+      throw Error('Invalid sealed email encoding');
+    }
     if(iv.length!==12||tag.length!==16||encrypted.length<3||encrypted.length>1024)throw Error('Invalid sealed email');
     const decipher=createDecipheriv('aes-256-gcm',this.key,iv);
     decipher.setAAD(Buffer.from('prelaunch:email:'+this.keyId));
