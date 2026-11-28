@@ -1,5 +1,6 @@
-"""Locate the native board and verify that functional tiles have rendered."""
+"""Locate the native board and enabled actions in packaged HUD captures."""
 
+import re
 import sys
 
 from PIL import Image
@@ -55,6 +56,29 @@ def populated_board(filename):
             if frame.crop((x - 10, y - 10, x + 10, y + 10)).getcolors(maxcolors=64) is not None:
                 return None
     return bounds
+
+
+def enabled_action_frames(filename, bounds):
+    # Text interrupts the fill on individual rows at compact viewport sizes.
+    # An enabled frame still has enough fill in each column to recover its crop.
+    left, top, side = bounds
+    with Image.open(filename) as frame:
+        pixels = frame.convert('RGB').load()
+        start = max(0, left - 15)
+        end = min(frame.width, left + side + 15)
+        first_row = top + side
+        last_row = min(frame.height - 35, first_row + 111)
+        enabled_fill = {(43, 34, 57), (75, 52, 80)}
+        fill = [bytes(pixels[x, y] in enabled_fill for x in range(start, end))
+                for y in range(first_row, last_row)]
+    columns = bytes(sum(column) >= 12 for column in zip(*fill))
+    for match in re.finditer(rb'\x01{45,}', columns):
+        begin, stop = match.span()
+        width = stop - begin
+        rows = [y for y, row in enumerate(fill, start=first_row)
+                if sum(row[begin:stop]) >= width // 2]
+        if rows and 23 <= rows[-1] - rows[0] + 1 <= 65:
+            yield (start + begin, rows[0], start + stop, rows[-1] + 1)
 
 
 if __name__ == '__main__':

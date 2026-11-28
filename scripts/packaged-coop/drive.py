@@ -1,7 +1,7 @@
 from pathlib import Path
 from os import environ
 from PIL import Image
-from board_capture import board_bounds, cell_center, populated_board
+from board_capture import board_bounds, cell_center, enabled_action_frames, populated_board
 from subprocess import run
 from time import monotonic, sleep
 import json
@@ -64,23 +64,7 @@ def word_button(image, words, box, mode='11'):
     return None
 
 def action_button(image, word, board):
-    # Search the enabled skill frames below the grid, then OCR each frame
-    # independently. A disabled or unrelated button cannot satisfy the match.
-    runs = {}
-    left, top, side = board
-    with Image.open(image) as frame:
-        pixels = frame.convert('RGB').load()
-        start = max(0, left - 15)
-        end = min(frame.width, left + side + 15)
-        for y in range(top + side, min(frame.height - 35, top + side + 111)):
-            row = bytes(pixels[x, y] in {(43, 34, 57), (75, 52, 80)} for x in range(start, end))
-            for match in re.finditer(rb'\x01{45,}', row):
-                begin, stop = match.span()
-                runs.setdefault((start + begin, start + stop), []).append(y)
-    for (left, right), rows in runs.items():
-        top, bottom = rows[0], rows[-1] + 1
-        if len(rows) < 8 or not 23 <= bottom - top <= 65:
-            continue
+    for left, top, right, bottom in enabled_action_frames(image, board):
         label = ocr(image, (left, top, right, bottom), '6').lower()
         if re.search(r'\b' + re.escape(word) + r'\b', label):
             return ((left + right) // 2, (top + bottom) // 2)
