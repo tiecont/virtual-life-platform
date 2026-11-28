@@ -26,8 +26,13 @@ backend. See [native runtime development](apps/game-runtime/README.md) for actua
 Pet Arena process tests and [Unity validation](apps/unity-client/README.md) for
 the separately required licensed Editor/player checks.
 
-After building the Linux development player and native backend, `pnpm play:linux`
-opens Pet Arena with disposable loopback Nest/Rust/PostgreSQL services. The
+After building the Linux development player and native backend, run
+`pnpm play:linux:functional` to play the Wave D4 solo campaign. Choose **Enter
+local arena**, select an owned Pet and start Fire. Clearing the regular encounter
+and Boss unlocks Tideglass. Closing the player removes the disposable campaign.
+[Build prerequisites and campaign controls](apps/unity-client/README.md#play-the-functional-solo-campaign)
+
+The earlier `pnpm play:linux` prototype opens Pet Arena with disposable loopback Nest/Rust/PostgreSQL services. The
 launcher prints the path to a private local login file. Closing the player
 removes those services and the disposable match. See the Unity README for build
 prerequisites and controls.
