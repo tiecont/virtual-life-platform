@@ -41,7 +41,7 @@ namespace Aetheria.Editor
                     if (axis.sqrMagnitude<.00000001f)
                         throw new InvalidOperationException("Undefined authored skirt swing plane at "+spring.Name);
                     return (Name:spring.Name,Root:root,Axis:root.parent.InverseTransformDirection(axis.normalized),
-                        Rest:root.localRotation);
+                        RestRotation:root.localRotation);
                 }).ToArray();
                 IcarusLayerSurfaceExport.Write(Path.Combine(output,"skirt-baseline.bin"),skins,director,take.start,baseline.length);
                 foreach (string region in new[] {"front","all"})
@@ -55,7 +55,7 @@ namespace Aetheria.Editor
                         {
                             if (region=="front" && !panel.Name.StartsWith("skirt_Front",StringComparison.Ordinal)) continue;
                             string path=AnimationUtility.CalculateTransformPath(panel.Root,animator.transform);
-                            var rotation=Quaternion.AngleAxis(degrees,panel.Axis)*panel.Rest;
+                            var rotation=Quaternion.AngleAxis(degrees,panel.Axis)*panel.RestRotation;
                             for (int channel=0;channel<4;channel++)
                             {
                                 bindings.Add(EditorCurveBinding.FloatCurve(path,typeof(Transform),"m_LocalRotation."+"xyzw"[channel]));
@@ -75,7 +75,7 @@ namespace Aetheria.Editor
                         // region so unsampled root curves return to rest.
                         playable.clip=baseline;
                         director.RebuildGraph();
-                        foreach (var panel in panels) panel.Root.localRotation=panel.Rest;
+                        foreach (var panel in panels) panel.Root.localRotation=panel.RestRotation;
                     }
             }
             finally
