@@ -100,7 +100,7 @@ function journalFingerprint(row,matchId,action){
   header.writeUInt32BE(values.length,1);
   return Buffer.concat([header,...values]);
  };
- const canonicalAction=action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
+ const canonicalAction=action.kind==='endTurn'?number(3,7):action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
  const payload=list([text(row.actor),uuid(matchId),uuid(row.command),number(2,row.epoch),number(2,row.version-1),canonicalAction]);
  return createHash('sha256').update(Buffer.from('VL-CANON\x01')).update(list([text('vl.command.v1'),payload])).digest('hex');
 }
@@ -322,17 +322,59 @@ try{
   assert.equal(worldSessions.sessions,4);
   assert.ok(worldSessions.tickets>=4);
   await json('four-native-ready.json',{accounts:tickets.length,sessions:worldSessions.sessions});
-  const start=await until(
-   `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
-      encode(payload_fingerprint,'hex') AS fingerprint FROM game_native_receipts WHERE match_id=$1 AND committed_version=1`,
-   [allocation.match_id]);
+  const rotating=process.env.PACKAGED_QA_FOUR_ROTATION==='1';
+  const receiptQuery=`SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+      encode(payload_fingerprint,'hex') AS fingerprint,created_at AS "createdAt"
+      FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2`;
+  const start=await until(receiptQuery,[allocation.match_id,1]);
   assert.equal(start.actor,host);
   assert.equal(start.fingerprint,journalFingerprint(start,allocation.match_id,{kind:'start'}));
+  function receiptWindow(row,turn){
+   const startedUnixMs=row.createdAt.getTime();
+   return {turn,activeSeat:turn%4,version:row.version,startedUnixMs,
+    deadlineUnixMs:startedUnixMs+bundle.party.turnTimeoutMs};
+  }
+  const opening=receiptWindow(start,0);
+  if(rotating)await json('four-turn-0.json',opening);
   await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/board.json')));
-  await json('four-native-run.json',{harnessRevision:facts.backendSource,playerRevision:facts.unitySource,roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
-   digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
-   distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version});
+  const openingEvidence=async()=> {
+   const {rows:[next]}=await pool.query(receiptQuery,[allocation.match_id,2]);
+   await json('four-native-run.json',{harnessRevision:facts.backendSource,playerRevision:facts.unitySource,roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
+    digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
+    distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version,
+    openingStartedUnixMs:opening.startedUnixMs,openingEndedUnixMs:Math.min(opening.deadlineUnixMs,next?.createdAt.getTime()??Infinity)});
+  };
+  await openingEvidence();
   facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');
+  if(rotating){
+   const turns=[];
+   for(const {seat,account_id} of seats){
+    const version=seat+2;
+    const row=await until(receiptQuery,[allocation.match_id,version]);
+    const window=receiptWindow(row,seat+1);
+    if(row.actor!==account_id||row.fingerprint!==journalFingerprint(row,allocation.match_id,{kind:'endTurn'})){
+     await json('four-rotation-unexpected-receipt.json',{...window,expectedIssuerSeat:seat,
+      observedIssuerSeat:seats.find(seat=>seat.account_id===row.actor)?.seat??null,
+      commandId:row.command, fingerprint:row.fingerprint});
+     throw Error('Expected a committed End Turn from seat '+seat+' at version '+version);
+    }
+    turns.push({...window,issuerSeat:seat,commandId:row.command,fingerprint:row.fingerprint});
+    await json('four-turn-'+window.turn+'.json',window);
+   }
+   await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/handoff-4.json')));
+   const {rows:[next]}=await pool.query(receiptQuery,[allocation.match_id,6]);
+   for(const [index,row] of turns.entries()){
+    row.endedUnixMs=Math.min(row.deadlineUnixMs,turns[index+1]?.startedUnixMs??next?.createdAt.getTime()??Infinity);
+   }
+   const {rows:admissions}=await pool.query(
+    `SELECT s.seat,t.consumed_at FROM platform_native_ticket_uses t
+      JOIN coop_room_seats s ON s.account_id=t.account_id AND s.room_id=$2
+      WHERE t.world_id=$1 AND t.boot_id=$3 AND t.consumed_at >= $4 ORDER BY t.consumed_at`,
+    [allocation.world_id,room.roomId,allocation.boot_id,start.createdAt]);
+   await openingEvidence();
+   await json('four-rotation-journal.json',{matchId:allocation.match_id,turns,
+    admissions:admissions.map(row=>({seat:row.seat,consumedUnixMs:row.consumed_at.getTime()}))});
+  }
  }else{
  const fireTarget={room,allocation,boss};
  async function freshTicket(seat,{room,allocation,boss}=fireTarget){

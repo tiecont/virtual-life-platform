@@ -10865,6 +10865,7 @@
     {
       "id": "VL-199",
       "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-2bXjXhkf", "result": "Four authenticated sessions, three healthy HUDs; client 3 showed Reconnect and transport close PolicyViolation. No four-seat turn rotation qualified."},
+      "fourClientReceiptReview": {"harnessRevision":"135b120e","playerRevision":"f56a9e75","evidence":"artifacts/campaign-v4/rotation-qa/artifacts/packaged-coop-runs/run-wiSwnOGK","result":"Four accounts and four live sessions. Turn 0 committed; client 1 screenshot shows opening board, but the QA OCR misread the seat label. Run exited before a player input. Four-client rotation and reconnect remain open."},
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -10892,6 +10893,16 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "fourNativeOpening": {
+          "sourceRevision": "65ee6e0e18a3d26429a12a6b253508c2aef01b05",
+          "verification": "Four 1280×720 Linux clients on player f56a9e75 rendered the same opening on time in run-KN5DZkKm, with distinct authenticated sessions.",
+          "remaining": "Prove subsequent seat handoffs and settlement on four actual players."
+        },
+        "waitingRoomRefresh": {
+          "sourceRevision": "f56a9e75db3637145002dd62d4140cc83d021778",
+          "verification": "Direct Unity PlayMode: 18 of 18 passed. Linux development player built. Four real packaged clients with the 7c68e227 capture harness did not reach the opening; host Ready control was not found in run-wrAAGgE2.",
+          "remaining": "Reproduce the host Ready failure and verify the same committed opening on four distinct player surfaces."
+        },
         "compactFireSkillInput": {
           "sourceRevision": "80c76ae9d4602f945c63e4e1cd1a234b3d870e0f",
           "integratedRevision": "095cdf37",
@@ -11169,6 +11180,7 @@
     },
     {
       "id": "VL-203",
+      "november28HostedShardReconciliation": {"hostedHead": "fa0f816575997b1e10ca8f7c2a34e66dad27337a", "run": "46146889629", "failedJob": "140990739736", "reason": "The unchanged four integration shards passed six new route and settlement cases, but aggregation expected the previous 910 tests.", "localFix": "1092f9a5", "check": "The unchanged verify-vitest-reports.mjs verified the four original hosted JSON reports against 916 required tests. All 916 passed with zero skipped, pending or todo. The local fix awaits hosted verification."},
       "campaignV4ContinuationVerification": {"sourceRevision": "f675c641ba7b443fcc44fafdd2aead74c8a7d422", "verifiedScope": "Hosted architecture failure diagnosed. Local architecture and Portal production build passed after moving shared localization to specs."},
       "campaignV4Verification": {
         "sourceRevision": "973c55a619eac42014f814b01557547738463191",
@@ -11330,6 +11342,7 @@
     },
     {
       "id": "VL-205",
+      "nativePetLoopReview": {"sourceRevision":"ab1945ec","evidence":"artifacts/campaign-v4/pet-unity-admission/artifacts/pet-wingbeat-unity-admission/review-LWu4tb/unity-facts.json","result":"Native Unity, 49 frames per model. Ignivar and Cinderquill had zero coincident seam gaps and no torso motion. Repeated-phase discrepancies 1.905 / 2.236 mm exceed the pinned threshold. Both import Standard fallback and have no texture subassets. Native technical admission failed."},
       "campaignPrivateEyeQualification": {"sourceRevision": "5bdf49ce", "verifiedScope": "Original Charakuru VRM 10-degree single-eye probes in the real Unity Editor moved 84 left / 92 right skin vertices, up to 2.10 / 2.70 mm. All 18 existing expression presets remain unbound."},
       "campaignV4CandidateReview": {"sourceRevision": "3035d7a85a28a86ff59713e50cd70e289ee18151", "verifiedScope": "Ignivar and Cinderquill original GLBs verified, 11016 and 8386 triangles respectively, reference hashes and Tripo jobs recorded. No UVs, textures, rig or motion. Coalwhisk/Warden importer and animation probes passed at 33bb547a."},
       "campaignV4ContinuationVerification": {"sourceRevision": "9d824f915549d28e91cce7dd8ef0e5a000d0637c", "verifiedScope": "Blender 5.3 reimport and action deformation passed for Coalwhisk and Cinder Warden. Prototype material and silhouette review remains."},
@@ -11388,6 +11401,16 @@
         "VL-184"
       ],
       "implementation": {
+        "recruitmentHostPoints": {
+          "sourceRevision": "2eb7d6ae0c6be16ecf946b05e844ab5c05320069",
+          "verification": "Contracts build and all 20 disposable PostgreSQL cooperative settlement cases passed on detached source. The route response exposes remaining host points for cooperative encounters.",
+          "remaining": "Packaged multi-language recruitment presentation remains under visual review."
+        },
+        "routePolicyOperator": {
+          "sourceRevision": "beb5e795ec96905aea0ca703e9dafe92f282eb15",
+          "verification": "Admin typecheck passed. Isolated actual Chromium/Next/Nest/PostgreSQL operator session covered 48 authored routes, rejected a cycle with 422, published v2 and rolled back to v1. Anonymous overview returned 401. Schema-7 engine validated publication.",
+          "remaining": "Local verification. Production publication requires the owner."
+        },
         "naturalSoloCampaign": {
           "sourceRevision": "4bae21f514aae4f51519a77f7a6c8e2631af2256",
           "integratedRevision": "562fc8dba22c17410d6ce7cad52ab2bbc85fc481",
@@ -11613,6 +11636,8 @@
     {
       "id": "VL-210",
       "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json", "result": "One packaged Linux player and three protocol peers: board acceptance PASS, Heart move v6 linked to turn 5. No visible effect trace, post-turn-12 or natural Frost/Astral qualification."},
+      "feedbackReceiptQualification": {"harnessRevision":"5616845f","playerRevision":"f56a9e75","evidence":"artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json","result":"Native packaged shared RNG feedback passed on one Linux player and three protocol peers. Host Heart swap receipt v6 links to visible turn 5 seat 1; no displayed effect trace, Frost/Astral match or post-turn-12 frame qualified."},
+      "feedbackLobbyVerification": {"sourceRevision":"eb92a293","result":"Packaged f56a9e75 feedback run-e3VNDr5H reached a real Fire lobby with four occupants. Corrected OCR region and scaled controls. Tesseract psm 6 on original frame read Seats: 4/4. End-to-end post-turn-12 multiplier evidence remains open.","evidence":"artifacts/campaign-v4/continuation-gameplay/artifacts/packaged-coop-runs/run-e3VNDr5H/04-four-seats-ready.png"},
       "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
@@ -11650,6 +11675,16 @@
       ],
       "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. At eb7314d1, all nine R04-derived jewel icons matched provider pixels, 85 EditMode and 43 PlayMode cases passed with two skips. The Linux package at ae93b774 rendered all six functional designs in a four-seat Fire fixture at 1280×720. The host swapped, rejoined the pinned board across restart and committed skill and signature actions. At e9aacee9 the packaged Fire-to-Water verifier passed end to end, including all five host action types, Fire victory at v46, four reward rows and the Water start and swap at v1 and v2. Four-seat timed player recovery and owner art approval remain open.",
       "implementation": {
+        "localizedAbilityControls": {
+          "sourceRevision": "e01446a973df6b49f3ac67132a0211274088cc2b",
+          "verification": "Direct Unity 6000.3.14f1 PlayMode CoopNativeHudTests: 25 passed, zero failed or skipped. Shared skill and training controls include EN/VI/JA/KO/ZH.",
+          "remaining": "Ability names still fall back to stable IDs where authored translations are absent. Font and visual layout acceptance on target hardware remains open."
+        },
+        "frostAstralEncounterEvidence": {
+          "sourceRevision": "9c45f3da8b379adf5f3ce42d06b7785ceebc140d",
+          "verification": "The ordinary Ghost encounter in the f56a9e75 Linux player finished before its natural Frost and Astral cues in run-TbomSA. A separate optional technical encounter can extend only the local Ghost HP when testing the native effects.",
+          "remaining": "Record ordinary-encounter and extended-fixture results separately; verify effects against the committed Rust journal."
+        },
         "battleSettlementHud": {
           "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
           "testRevision": "f78f723c9ea827c15f22ff3e3d9a072d05332e4e",

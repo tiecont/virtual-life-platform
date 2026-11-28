@@ -1,9 +1,16 @@
 using System;
+using System.Collections;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 using Aetheria.PetArena.Infrastructure;
 using Aetheria.PetArena.Presentation;
 using Aetheria.World.Domain;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 
 namespace Aetheria.Tests
@@ -116,6 +123,78 @@ namespace Aetheria.Tests
             Assert.Throws<FormatException>(() => CoopCampaignCatalog.Decode(
                 CatalogJson(5000, LockedEncounter + "," + LockedEncounter)));
         }
+
+        [UnityTest]
+        public IEnumerator WaitingRoomFollowsCommittedReadinessAndStart()
+        {
+            const string roomId = "11111111-1111-4111-8111-111111111111";
+            var responses = new[] { RoomJson(roomId, 1, "OPEN", false), RoomJson(roomId, 2, "OPEN", true),
+                RoomJson(roomId, 3, "STARTED", false) };
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            var server = Task.Run(async () =>
+            {
+                foreach (var response in responses)
+                {
+                    using var client = await listener.AcceptTcpClientAsync();
+                    using var stream = client.GetStream();
+                    using var reader = new StreamReader(stream, Encoding.ASCII, false, 1024, true);
+                    var request = await reader.ReadLineAsync();
+                    string header;
+                    do { header = await reader.ReadLineAsync(); } while (!string.IsNullOrEmpty(header));
+                    if (request != "GET /v1/coop/rooms/" + roomId + " HTTP/1.1")
+                        throw new InvalidOperationException("Expected a room read.");
+                    var responseBytes = Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n" +
+                        "Connection: close\r\nContent-Length: " + response.Length + "\r\n\r\n" + response);
+                    await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+                }
+            });
+            using var api = new Wave1LocalApi("http://127.0.0.1:" + port, "http://127.0.0.1:3300", Application.temporaryCachePath);
+            var go = new GameObject("coop-waiting-room-test");
+            var panel = ScriptableObject.CreateInstance<PanelSettings>();
+            try
+            {
+                var document = go.AddComponent<UIDocument>();
+                document.panelSettings = panel;
+                var screen = go.AddComponent<CoopNativeCampaignScreen>();
+                screen.Attach(document);
+                screen.Enter(api, null, WorldMapCatalog.TideglassLagoon, () => { }, null);
+                var root = document.rootVisualElement;
+                root.Q<TextField>("coop-room-id").value = roomId;
+                var resume = root.Q<Button>("coop-resume");
+                using (var submit = NavigationSubmitEvent.GetPooled())
+                {
+                    submit.target = resume;
+                    resume.SendEvent(submit);
+                }
+
+                var deadline = Time.realtimeSinceStartupAsDouble + 12;
+                while (root.Q<Button>("coop-start")?.enabledSelf != true && Time.realtimeSinceStartupAsDouble < deadline)
+                    yield return null;
+                Assert.That(root.Q<Button>("coop-start")?.enabledSelf, Is.True);
+                Assert.That(root.Q<Button>("coop-enter"), Is.Null);
+
+                while (root.Q<Button>("coop-enter") == null && Time.realtimeSinceStartupAsDouble < deadline)
+                    yield return null;
+                Assert.That(root.Q<Button>("coop-enter")?.enabledSelf, Is.True);
+                Assert.That(root.Q<Button>("coop-start").enabledSelf, Is.False);
+                while (!server.IsCompleted && Time.realtimeSinceStartupAsDouble < deadline)
+                    yield return null;
+                Assert.That(server.IsCompletedSuccessfully, Is.True);
+            }
+            finally
+            {
+                listener.Stop();
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(panel);
+            }
+        }
+
+        private static string RoomJson(string id, int revision, string status, bool canStart) =>
+            "{\"roomId\":\"" + id + "\",\"mapId\":\"tideglass-lagoon\",\"bossId\":\"tideglass-lagoon-warden\"," +
+            "\"status\":\"" + status + "\",\"revision\":" + revision + ",\"configVersion\":1,\"canStart\":" +
+            (canStart ? "true" : "false") + ",\"you\":{\"seat\":0,\"isHost\":true},\"seats\":[{\"seat\":0,\"you\":true}]}";
 
         private static string CatalogJson(int points, string encounters) =>
             "{\"ruleset\":\"arena8-coop-pve\",\"configVersion\":2,\"points\":" + points + ",\"encounters\":[" + encounters + "]}";

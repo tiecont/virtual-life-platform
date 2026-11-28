@@ -29,17 +29,19 @@ namespace Aetheria.PetArena.Presentation
             this.cancellation = cancellation;
             this.back = back;
             AddToClassList("arena-panel");
+            CampaignLocale.ApplyFont(this);
         }
 
         private void Render()
         {
             Clear();
-            var title = new Label(pet.name + " skills") { name = "coop-skill-title" };
+            var title = new Label(CampaignLocale.Format("training.title", "{0} skills", pet.name)) { name = "coop-skill-title" };
             title.AddToClassList("arena-title");
             Add(title);
             if (progression != null)
             {
-                Add(new Label(progression.materials + " Artifact materials") { name = "coop-skill-materials" });
+                Add(new Label(CampaignLocale.Format("training.materials", "{0} Artifact materials", progression.materials))
+                    { name = "coop-skill-materials" });
                 var skills = new ScrollView();
                 skills.AddToClassList("training-list");
                 foreach (var skill in progression.skills)
@@ -51,20 +53,20 @@ namespace Aetheria.PetArena.Presentation
                     var heading = new Label(name);
                     heading.AddToClassList("training-name");
                     card.Add(heading);
-                    var level = "Level " + skill.level + " / " + skill.maxLevel;
-                    if (skill.effectiveLevel != skill.level)
-                        level = "Owned Lv " + skill.level + " · Active Lv " + skill.effectiveLevel;
+                    var level = skill.effectiveLevel == skill.level
+                        ? CampaignLocale.Format("training.level", "Level {0} / {1}", skill.level, skill.maxLevel)
+                        : CampaignLocale.Format("training.level_active", "Owned Lv {0} · Active Lv {1}", skill.level, skill.effectiveLevel);
                     card.Add(new Label(level) { name = "coop-skill-level-" + skill.skillId });
                     if (!(skill.nextMaterialCost is int cost)) continue;
                     var upgrade = new Button(() => _ = UpgradeAsync(skill))
                     {
                         name = "coop-skill-upgrade-" + skill.skillId,
-                        text = "Upgrade to Lv " + (skill.level + 1) + " · " + cost + " materials"
+                        text = CampaignLocale.Format("training.upgrade", "Upgrade to Lv {0} · {1} materials", skill.level + 1, cost)
                     };
                     upgrade.SetEnabled(!busy && pendingSkill == null && progression.materials >= cost);
                     card.Add(upgrade);
                     if (progression.materials < cost)
-                        card.Add(new Label((cost - progression.materials) + " more materials needed"));
+                        card.Add(new Label(CampaignLocale.Format("training.materials_needed", "{0} more materials needed", cost - progression.materials)));
                 }
                 Add(skills);
             }
@@ -78,14 +80,14 @@ namespace Aetheria.PetArena.Presentation
             {
                 var retry = new Button(() => _ = UpgradeAsync(pendingSkill))
                 {
-                    name = "coop-skill-retry", text = "Retry pending upgrade"
+                    name = "coop-skill-retry", text = CampaignLocale.Text("training.retry", "Retry pending upgrade")
                 };
                 retry.SetEnabled(!busy);
                 Add(retry);
             }
             else if (!busy)
-                Add(new Button(() => _ = RefreshAsync()) { name = "coop-skill-refresh", text = "Refresh skills" });
-            var returnButton = new Button(back) { name = "coop-skill-back", text = "Back to Pet collection" };
+                Add(new Button(() => _ = RefreshAsync()) { name = "coop-skill-refresh", text = CampaignLocale.Text("training.refresh", "Refresh skills") });
+            var returnButton = new Button(back) { name = "coop-skill-back", text = CampaignLocale.Text("training.back", "Back to Pet collection") };
             returnButton.SetEnabled(!busy);
             Add(returnButton);
         }
@@ -95,7 +97,7 @@ namespace Aetheria.PetArena.Presentation
             if (busy || pendingSkill != null) return;
             busy = true;
             progression = null;
-            notice = "Loading skills…";
+            notice = CampaignLocale.Text("training.loading", "Loading skills…");
             Render();
             try
             {
@@ -104,7 +106,11 @@ namespace Aetheria.PetArena.Presentation
             }
             catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { return; }
             catch (Wave1ApiException error) { notice = outcome == null ? error.Message : outcome + "\n" + error.Message; }
-            catch (Exception) { notice = outcome == null ? "Skills could not be loaded." : outcome + "\nSkills could not be loaded."; }
+            catch (Exception)
+            {
+                var failure = CampaignLocale.Text("training.load_failed", "Skills could not be loaded.");
+                notice = outcome == null ? failure : outcome + "\n" + failure;
+            }
             finally { busy = false; }
             Render();
         }
@@ -118,13 +124,13 @@ namespace Aetheria.PetArena.Presentation
                 pendingRequest = Guid.NewGuid();
             }
             busy = true;
-            notice = "Checking upgrade…";
+            notice = CampaignLocale.Text("training.checking", "Checking upgrade…");
             Render();
             try
             {
                 var receipt = await client.UpgradeAsync(instanceId, pendingRequest, progression, pendingSkill, cancellation);
-                notice = SkillName(receipt.skillId) + " reached Lv " + receipt.level +
-                    " · " + receipt.spentMaterials + " materials spent · " + receipt.remainingMaterials + " remaining";
+                notice = CampaignLocale.Format("training.upgraded", "{0} reached Lv {1} · {2} materials spent · {3} remaining",
+                    SkillName(receipt.skillId), receipt.level, receipt.spentMaterials, receipt.remainingMaterials);
                 pendingSkill = null;
             }
             catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { return; }
@@ -133,7 +139,7 @@ namespace Aetheria.PetArena.Presentation
                 notice = error.Message;
                 pendingSkill = null;
             }
-            catch (Exception) { notice = "Upgrade result unavailable. Retry to check the same request."; }
+            catch (Exception) { notice = CampaignLocale.Text("training.upgrade_unknown", "Upgrade result unavailable. Retry to check the same request."); }
             finally { busy = false; }
             if (pendingSkill == null) await RefreshAsync(notice);
             else Render();
@@ -143,7 +149,8 @@ namespace Aetheria.PetArena.Presentation
         {
             var prefix = pet.petId + "-";
             var name = skillId.StartsWith(prefix, StringComparison.Ordinal) ? skillId.Substring(prefix.Length) : skillId;
-            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.Replace('-', ' '));
+            return name == "guard" ? CoopNativePresentation.ActionName(name) :
+                CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.Replace('-', ' '));
         }
     }
 }

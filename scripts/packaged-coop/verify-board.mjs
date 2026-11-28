@@ -11,7 +11,19 @@ const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const sourceRevision=(await readFile(join(root,'source-sha.txt'),'utf8')).trim();
 const build=await read('build-receipt.json');
 assert.match(sourceRevision,/^[0-9a-f]{40}$/);
-assert.equal(build.sourceRevision,sourceRevision);
+// Historical runs used a single SHA and have no separate player marker.
+const playerRevision=(await readFile(join(root,'player-source-sha.txt'),'utf8').catch(error=>{
+ if(error.code==='ENOENT')return sourceRevision;
+ throw error;
+})).trim();
+assert.match(playerRevision,/^[0-9a-f]{40}$/);
+assert.equal(build.sourceRevision,playerRevision);
+if(playerRevision!==sourceRevision){
+ assert.equal(process.env.PACKAGED_QA_SCOPE,'feedback');
+ // Recheck the same source boundary as run.sh, including offline receipt review.
+ execFileSync('git',['diff','--no-ext-diff','--exit-code',playerRevision,sourceRevision,
+  '--','.',':(top,exclude)scripts/packaged-coop/**'],{cwd:fileURLToPath(new URL('../../',import.meta.url))});
+}
 
 async function verifyScreenshots(filenames){
  const screenshots=await Promise.all(filenames.map(async name=>{
@@ -108,16 +120,29 @@ async function verifySharedRng(){
    assert.match(turn.receipt.receiptHash,/^[0-9a-f]{64}$/);
    const effects=[...playerLog.matchAll(new RegExp('^Aetheria jewel HUD v'+turn.version+' ([a-z-]+) (\\d+)$','gm'))]
     .map(([,kind,value])=>({kind,value:Number(value)}));
+   const committed=await read(label+'-committed.json');
+   assert.equal(committed.version,turn.version);
+   let observedFrame=null;
+   if(committed.phase==='playing'){
+    observedFrame=await read(label+'-frame.json');
+    assert.equal(observedFrame.version,turn.version);
+    assert.equal(observedFrame.turn,committed.turn);
+    assert.equal(observedFrame.activeSeat,committed.activeSeat);
+    const inputs=clicks.filter(input=>input.action===label+'-cell');
+    assert.ok(inputs[1].sentUnixMs<=observedFrame.captureStartedUnixMs);
+    assert.ok(observedFrame.captureStartedUnixMs<=observedFrame.capturedUnixMs);
+    assert.ok(observedFrame.capturedUnixMs<committed.deadlineUnixMs);
+   }
    const frames=await verifyScreenshots([label+'-before.png',label+'-after.png']);
    const cropTool=fileURLToPath(new URL('./multiplier_crops.py',import.meta.url));
    const multiplierReview=JSON.parse(execFileSync('python3',[cropTool,
     join(root,label+'-before.png'),join(root,label+'.json')],{encoding:'utf8'}));
-   additionalHostTurns.push({...turn,displayedEffects:effects,frames,multiplierReview});
+   additionalHostTurns.push({...turn,displayedEffects:effects,observedFrame,frames,multiplierReview});
   }
  }
  verifyPerformance(performance);
  return {additionalHostTurns,
-  result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerSize:requestedSize,
+  result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerRevision,playerSize:requestedSize,
   boardContract:'shared-rng-fire',boardTiles:64,
   fixture:run,ruleset:started.state.ruleset,startedVersion:started.version,hostSwapVersion:swapped.version,
   observedTileCounts:{start:counts[0],afterHostSwap:counts[1]},displayedEffects,

@@ -12,6 +12,8 @@ namespace Aetheria.PetArena.Presentation
 {
     public sealed partial class Arena8CampaignScreen
     {
+        private const int FirstSharedMultiplierTurn = 12;
+
         [Serializable]
         private sealed class AdvancedSample
         {
@@ -29,9 +31,11 @@ namespace Aetheria.PetArena.Presentation
                 throw new InvalidOperationException("The Frost and Astral capture requires the shared functional board.");
             var token = lifetime.Token;
             var view = await StartGhostCapture("lantern-necropolis", token);
+            var encounterMaxHp = view.BossState.MaxHealth;
             functionalHud.Refresh();
             var samples = new List<AdvancedSample>();
             var timeline = new List<NatureFrame>();
+            var previousGuard = false;
             try
             {
                 for (var step = 0; step < 36 && !view.Terminal; step++)
@@ -40,43 +44,48 @@ namespace Aetheria.PetArena.Presentation
                     var before = view;
                     var frame = SnapshotNature(before);
                     timeline.Add(frame);
+                    var collectArmed = samples.All(sample => sample.kind != "chill-armed");
+                    var collectConsumed = !collectArmed && samples.All(sample => sample.kind != "chill-consumed");
+                    var target = collectArmed ? "frost" : "astral";
+                    var pending = before.PendingAttack;
+                    var inDanger = pending?.Remaining == 1 &&
+                        (long)before.Own.Health + before.Own.Shield <= 3L * pending.Damage;
                     var ids = frame.board.Distinct().ToList();
                     var board = frame.board.Select(kind => ids.IndexOf(kind)).ToArray();
                     var moves = FindNativeSwaps(board).Where(move => board[move.first] != board[move.second])
-                        .Select(pair => (pair, frost: MatchedKind(frame.board, pair, "frost"),
-                            astral: MatchedKind(frame.board, pair, "astral"), sword: MatchedKind(frame.board, pair, "sword"),
-                            protection: MatchedKind(frame.board, pair, "heart") + MatchedKind(frame.board, pair, "shield")))
-                        .OrderBy(move => move.sword).ThenByDescending(move => move.protection).ToArray();
+                        .Select(pair => (pair, score: ScoreAdvancedSwap(frame.board, pair, target)))
+                        .OrderByDescending(move => move.score.hits > 0)
+                        .ThenByDescending(move => inDanger && move.score.protection > 0)
+                        .ThenBy(move => move.score.swords > 0)
+                        .ThenByDescending(move => move.score.reach)
+                        .ThenByDescending(move => move.score.removed)
+                        .ThenByDescending(move => move.score.protection)
+                        .ThenBy(move => move.score.swords).ToArray();
                     if (moves.Length == 0) throw new InvalidOperationException("The committed Ghost board has no legal swap.");
-                    var collectArmed = samples.All(sample => sample.kind != "chill-armed");
-                    var collectConsumed = !collectArmed && samples.All(sample => sample.kind != "chill-consumed");
                     var move = moves[0];
-                    bool guard = collectConsumed;
-                    if (collectArmed && moves.Any(candidate => candidate.frost > 0))
-                        move = moves.First(candidate => candidate.frost > 0);
-                    else if (!collectArmed && !collectConsumed && moves.Any(candidate => candidate.astral > 0))
-                    {
-                        guard = before.Turn < 12;
-                        if (!guard) move = moves.First(candidate => candidate.astral > 0);
-                    }
+                    var keepAstral = !collectArmed && before.Turn < FirstSharedMultiplierTurn &&
+                        (move.score.hits > 0 || move.score.swords > 0);
+                    var needsDefense = inDanger && move.score.hits == 0 && move.score.protection == 0;
+                    bool guard = collectConsumed || keepAstral || (needsDefense && !previousGuard);
 
                     var result = guard
                         ? await functionalSession.GuardAsync(token)
                         : await functionalSession.SwapAsync(move.pair.first, move.pair.second, token);
+                    previousGuard = guard;
                     view = result.Coop;
                     functionalHud.Refresh();
-                    var pending = collectArmed ? new[] { "chill-armed", "chill-consumed" } :
+                    var wanted = collectArmed ? new[] { "chill-armed", "chill-consumed" } :
                         new[] { collectConsumed ? "chill-consumed" : "astral-upgrade" };
-                    foreach (var desired in pending)
+                    foreach (var desired in wanted)
                     {
                         var effect = view.JewelFeedback.Where(row => row.Kind == desired)
                             .OrderByDescending(row => row.Value).FirstOrDefault();
                         if (effect == null) continue;
-                        if (desired == "chill-armed" && (guard || move.frost < 3)) break;
+                        if (desired == "chill-armed" && guard) break;
                         if (desired == "chill-consumed" &&
                             (samples.Count == 0 || samples[0].value != effect.Value || view.ChillReductionPm != 0))
                             continue;
-                        if (desired == "astral-upgrade" && (guard || before.Turn < 12 || move.astral < 3))
+                        if (desired == "astral-upgrade" && guard)
                             continue;
                         string label = desired == "astral-upgrade" ? "×" + effect.Value :
                             "−" + (effect.Value / 1000d).ToString("0.#%", CultureInfo.InvariantCulture);
@@ -100,22 +109,19 @@ namespace Aetheria.PetArena.Presentation
                         await CaptureNative("advanced-solo-" + desired + ".png");
                         functionalHud.enabled = false;
                     }
-                    if (samples.Count == 3)
-                    {
-                        File.WriteAllText(Path.Combine(nativeCaptureDirectory, "advanced-samples.json"),
-                            JsonUtility.ToJson(new AdvancedEvidence { samples = samples.ToArray() }, true));
-                        nativeFacts.status = "ok";
-                        nativeFacts.matchId = matchId;
-                        nativeFacts.phase = view.Phase;
-                        nativeFacts.version = checked((int)view.Version);
-                        nativeFacts.ruleset = view.RulesetId;
-                        nativeFacts.participantCount = view.Participants.Count;
-                        nativeFacts.boardTiles = view.Board.Count;
-                        return;
-                    }
+                    if (samples.Count == 3) break;
                 }
-                throw new InvalidOperationException("The natural Ghost battle did not expose all Frost and Astral checks. Observed: " +
-                    string.Join(", ", samples.Select(sample => sample.kind)));
+                if (samples.Count == 0)
+                    throw new InvalidOperationException("The natural Ghost battle did not expose any Frost or Astral checks.");
+                File.WriteAllText(Path.Combine(nativeCaptureDirectory, "advanced-samples.json"),
+                    JsonUtility.ToJson(new AdvancedEvidence { encounterMaxHp = encounterMaxHp, samples = samples.ToArray() }, true));
+                nativeFacts.status = samples.Count == 3 ? "ok" : "partial";
+                nativeFacts.matchId = matchId;
+                nativeFacts.phase = view.Phase;
+                nativeFacts.version = checked((int)view.Version);
+                nativeFacts.ruleset = view.RulesetId;
+                nativeFacts.participantCount = view.Participants.Count;
+                nativeFacts.boardTiles = view.Board.Count;
             }
             finally
             {
@@ -125,7 +131,57 @@ namespace Aetheria.PetArena.Presentation
             }
         }
 
+        private static (int hits, int swords, int protection, int reach, int removed) ScoreAdvancedSwap(
+            string[] board, (int first, int second) move, string target)
+        {
+            var remaining = (string[])board.Clone();
+            (remaining[move.first], remaining[move.second]) = (remaining[move.second], remaining[move.first]);
+            var matched = FindNativeMatches(remaining);
+            var hits = matched.Count(cell => remaining[cell] == target);
+            var swords = matched.Count(cell => remaining[cell] == "sword");
+            var protection = matched.Count(cell => remaining[cell] == "heart" || remaining[cell] == "shield");
+
+            // Only gravity for already visible jewels is knowable. Leave all
+            // refill cells unknown instead of simulating the server's RNG.
+            for (var column = 0; column < 8; column++)
+            {
+                var destination = 56 + column;
+                for (var cell = destination; cell >= 0; cell -= 8)
+                {
+                    if (matched.Contains(cell)) continue;
+                    remaining[destination] = remaining[cell];
+                    destination -= 8;
+                }
+                for (; destination >= 0; destination -= 8) remaining[destination] = null;
+            }
+
+            var reach = 0;
+            for (var cell = 0; cell < remaining.Length; cell++)
+            {
+                if (cell % 8 < 6) reach += TargetReach(remaining, target, cell, cell + 1, cell + 2);
+                if (cell < 48) reach += TargetReach(remaining, target, cell, cell + 8, cell + 16);
+            }
+            return (hits, swords, protection, reach, matched.Count);
+        }
+
+        private static int TargetReach(string[] board, string target, int first, int second, int third)
+        {
+            var count = (board[first] == target ? 1 : 0) + (board[second] == target ? 1 : 0) +
+                (board[third] == target ? 1 : 0);
+            if (count == 3) return 3;
+            if (count < 2) return 0;
+            var gap = board[first] != target ? first : board[second] != target ? second : third;
+            if (board[gap] == null) return 1;
+            bool CanFill(int cell) => cell != first && cell != second && cell != third && board[cell] == target;
+            return (gap % 8 > 0 && CanFill(gap - 1)) || (gap % 8 < 7 && CanFill(gap + 1)) ||
+                (gap >= 8 && CanFill(gap - 8)) || (gap < 56 && CanFill(gap + 8)) ? 2 : 0;
+        }
+
         [Serializable]
-        private sealed class AdvancedEvidence { public AdvancedSample[] samples; }
+        private sealed class AdvancedEvidence
+        {
+            public uint encounterMaxHp;
+            public AdvancedSample[] samples;
+        }
     }
 }

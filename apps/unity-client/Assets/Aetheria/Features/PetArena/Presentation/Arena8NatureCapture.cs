@@ -143,20 +143,26 @@ namespace Aetheria.PetArena.Presentation
         {
             var swapped = (string[])board.Clone();
             (swapped[move.first], swapped[move.second]) = (swapped[move.second], swapped[move.first]);
+            return FindNativeMatches(swapped).Count(cell => swapped[cell] == kind);
+        }
+
+        private static HashSet<int> FindNativeMatches(string[] board)
+        {
             var matches = new HashSet<int>();
-            for (int cell = 0; cell < swapped.Length; cell++)
+            for (int cell = 0; cell < board.Length; cell++)
             {
-                if (swapped[cell] != kind) continue;
-                if (cell % 8 < 6 && swapped[cell + 1] == kind && swapped[cell + 2] == kind)
+                var kind = board[cell];
+                if (string.IsNullOrEmpty(kind)) continue;
+                if (cell % 8 < 6 && board[cell + 1] == kind && board[cell + 2] == kind)
                 {
                     matches.Add(cell); matches.Add(cell + 1); matches.Add(cell + 2);
                 }
-                if (cell < 48 && swapped[cell + 8] == kind && swapped[cell + 16] == kind)
+                if (cell < 48 && board[cell + 8] == kind && board[cell + 16] == kind)
                 {
                     matches.Add(cell); matches.Add(cell + 8); matches.Add(cell + 16);
                 }
             }
-            return matches.Count;
+            return matches;
         }
     }
 }

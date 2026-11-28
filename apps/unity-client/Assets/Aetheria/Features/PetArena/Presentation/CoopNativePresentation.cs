@@ -209,10 +209,11 @@ namespace Aetheria.PetArena.Presentation
                     var prefix = view.Own.PetId + "-";
                     var name = ability.Id.StartsWith(prefix, StringComparison.Ordinal) ? ability.Id.Substring(prefix.Length) : ability.Id;
                     var title = name.Replace('-', ' ');
-                    title = title.Length == 0 ? label : char.ToUpperInvariant(title[0]) + title.Substring(1);
-                    label = title + "\nLv " + view.Own.SkillLevels[view.SlotForAbility(action)] + " · " +
-                        ability.Mana + " MP / " + ability.Rage + " rage";
-                    if (ability.Cooldown > 0) label += "\nCooldown " + ability.Cooldown;
+                    title = title.Length == 0 || name == "guard" ? label : char.ToUpperInvariant(title[0]) + title.Substring(1);
+                    label = title + "\n" + CampaignLocale.Format("battle.action.cost", "Lv {0} · {1} MP / {2} rage",
+                        view.Own.SkillLevels[view.SlotForAbility(action)], ability.Mana, ability.Rage);
+                    if (ability.Cooldown > 0)
+                        label += "\n" + CampaignLocale.Format("battle.action.cooldown", "Cooldown {0}", ability.Cooldown);
                 }
                 var button = new Button(() => cast(action)) { text = label, tooltip = label };
                 button.name = ActionPrefix + action;
@@ -264,11 +265,11 @@ namespace Aetheria.PetArena.Presentation
         {
             switch (kind)
             {
-                case "guard": return "Guard";
-                case "skill": return "Skill";
-                case "signature": return "Signature";
-                case "ultimate": return "Ultimate";
-                case "fire-zone": return "Fire Zone";
+                case "guard": return CampaignLocale.Text("battle.action.guard", "Guard");
+                case "skill": return CampaignLocale.Text("battle.action.skill", "Skill");
+                case "signature": return CampaignLocale.Text("battle.action.signature", "Signature");
+                case "ultimate": return CampaignLocale.Text("battle.action.ultimate", "Ultimate");
+                case "fire-zone": return CampaignLocale.Text("battle.action.fire-zone", "Fire Zone");
                 default: return kind ?? "?";
             }
         }

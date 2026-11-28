@@ -22,6 +22,8 @@ export async function playFeedbackTurns({start,observe,peerSwap,chooseBasic,veri
   const receipt=await verifyHost(next.version,move);
   assert.ok(receipt.receiptHash&&receipt.fingerprint);
   turns.push({attempt,kind:kind??null,version:next.version,move,receipt});
+  await save(prefix+'-committed.json',{version:next.version,phase:next.state.phase,
+   turn:next.state.turn,activeSeat:next.state.activeSeat,deadlineUnixMs:next.state.turnDeadlineUnixMs});
   await wait(prefix+'-observed');
   if(kind)wanted.push(...wanted.splice(wanted.indexOf(kind),1));
   current=next;

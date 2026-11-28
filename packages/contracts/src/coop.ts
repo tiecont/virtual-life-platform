@@ -40,7 +40,7 @@ export const CampaignRouteCatalogSchema=z.strictObject({
   id:CoopBossIdSchema,mapId:CoopPetIdSchema,opponentPetId:CoopPetIdSchema,
   tier:z.enum(['entry','advanced','boss']),name:displayName,mode:z.enum(['solo','either']),
   prerequisiteEncounterId:CoopBossIdSchema.nullable(),cleared:z.boolean(),
-  canEnterSolo:z.boolean(),canHostCoop:z.boolean(),
+  canEnterSolo:z.boolean(),canHostCoop:z.boolean(),hostPointsNeeded:points.optional(),
  })).max(48),
 });
 export const CoopCreateRoomSchema=z.strictObject({requestId,bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional(),petId:CoopPetIdSchema.optional(),ownedPetInstanceId:z.uuid().optional()});
