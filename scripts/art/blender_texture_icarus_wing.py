@@ -42,6 +42,7 @@ class AssetSpec:
     candidate: str
     receipt: str
     projection_for_chart: Callable
+    interior_guard_pixels: int = 1
 
 
 def wing_projection(chart):
@@ -57,7 +58,7 @@ def wing_projection(chart):
 WING = AssetSpec(
     "wing", SOURCE_SHA, 104, 4980124, DIRECTIONS,
     (("front", (0, 1, 0)), ("back", (0, -1, 0)), ("left-quarter", (1, .66, .08)), ("right-quarter", (-1, .66, .08))),
-    TEXTURE, CANDIDATE, RECEIPT, wing_projection,
+    TEXTURE, CANDIDATE, RECEIPT, wing_projection, 3,
 )
 
 
@@ -93,7 +94,19 @@ def directions(direction):
     return np.asarray([list(right), list(up)], dtype=np.float32)
 
 
-def read_plate(path, direction, low, high):
+def stable_interior(mask, radius):
+    result = mask.copy()
+    for _ in range(radius):
+        previous = np.pad(result, 1, constant_values=False)
+        height, width = mask.shape
+        result = np.logical_and.reduce([
+            previous[row:row + height, col:col + width]
+            for row in range(3) for col in range(3)
+        ])
+    return result
+
+
+def read_plate(path, direction, low, high, interior_guard):
     image = bpy.data.images.load(str(path), check_existing=False)
     image.colorspace_settings.name = "Non-Color"
     width, height = image.size
@@ -107,9 +120,12 @@ def read_plate(path, direction, low, high):
     ys, xs = np.nonzero(foreground)
     if not len(xs) or xs.min() == 0 or xs.max() == width - 1:
         raise ValueError(f"The exact original plate {path.name} needs a plain border.")
-    edge = foreground.copy()
-    edge[1:-1, 1:-1] &= (~foreground[:-2, 1:-1] | ~foreground[2:, 1:-1]
-                         | ~foreground[1:-1, :-2] | ~foreground[1:-1, 2:])
+    # The shape mask includes anti-aliased art/background pixels. Preserve its
+    # bounds for registration, but select colors from pixels securely inside it.
+    interior = stable_interior(foreground, interior_guard)
+    if not interior.any():
+        raise ValueError(f"The reference {path.name} has no stable interior color pixels.")
+    edge = interior & ~stable_interior(interior, 1)
     rim_y, rim_x = np.nonzero(edge)
     tree = KDTree(len(rim_x))
     for index, (x, y) in enumerate(zip(rim_x, rim_y, strict=True)):
@@ -119,9 +135,10 @@ def read_plate(path, direction, low, high):
     center = (low + high) / 2
     pixel_scale = (ys.max() - ys.min()) / (high[1] - low[1])
     return {
-        "rgb": rgb, "foreground": foreground, "rim": (rim_x, rim_y), "tree": tree,
+        "rgb": rgb, "foreground": interior, "rim": (rim_x, rim_y), "tree": tree,
         "axis": directions(direction), "pxCenter": px_center, "worldCenter": center,
         "scale": pixel_scale, "dims": [width, height], "samples": 0, "filled": 0,
+        "maskPixels": int(foreground.sum()), "interiorPixels": int(interior.sum()),
     }
 
 
@@ -141,7 +158,7 @@ def fill_plate(points, rgb, valid, plate):
     plate["filled"] += len(missing)
     if not len(missing):
         return
-    # Query each unmatched projected pixel once and reuse its true plate rim color.
+    # Resolve each unmatched pixel to original art safely inside the mask.
     unmatched, mapping = np.unique(points[missing], axis=0, return_inverse=True)
     nearest = np.empty((len(unmatched), 3), dtype=np.uint8)
     rim_x, rim_y = plate["rim"]
@@ -327,7 +344,7 @@ def create(source, references, output, spec):
     charts, bounds, original = read_charts(objects, spec)
     rest_keys = {obj.name: shape_hashes(obj) for obj in objects if obj.data.shape_keys is not None}
     density = pack(charts)
-    plates = [read_plate(references / row["file"], direction, low, high)
+    plates = [read_plate(references / row["file"], direction, low, high, spec.interior_guard_pixels)
               for row, direction, (low, high) in zip(verify_reference(references, spec.asset), spec.directions, bounds, strict=True)]
     rgb = np.zeros((SIZE, SIZE, 3), dtype=np.uint8)
     for chart in charts.values():
@@ -367,8 +384,10 @@ def create(source, references, output, spec):
         "parts": parts,
         "chartRectangles": rows,
         "partChartsOverlap": False,
-        "plateSampling": [{"direction": d, "sampled": p["samples"], "rimFilled": p["filled"]}
+        "plateSampling": [{"direction": d, "sampled": p["samples"], "rimFilled": p["filled"],
+                           "referenceMaskPixels": p["maskPixels"], "stableInteriorPixels": p["interiorPixels"]}
                           for d, p in zip(spec.directions, plates, strict=True)],
+        "referenceInteriorGuardPixels": spec.interior_guard_pixels,
         "references": verify_reference(references, spec.asset),
         "scope": "Reference-only base color with independent face plates. Dominant-surface projection may overlap within one chart; no normal or metallic map, runtime LOD, rig or art admission.",
     }
@@ -392,6 +411,7 @@ def render(source, output, mode, evidence, spec):
     scene = bpy.context.scene
     scene.render.resolution_x, scene.render.resolution_y = (1024, 768) if spec.asset == "wing" else (768, 1024)
     scene.render.film_transparent = False
+    scene.render.use_stamp = False
     scene.render.image_settings.color_mode = "RGB"
     world = bpy.data.worlds.new("Neutral studio background")
     scene.world = world
