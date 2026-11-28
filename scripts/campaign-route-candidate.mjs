@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 
-export function routeCandidate(shared, content, profiles) {
+export function routeCandidate(shared, content, profiles, wardenTuning) {
   assert.equal(shared.schemaVersion, 6);
   assert.equal(content.routeAcquisitionEnabled, false);
   const pets = new Map(shared.pets.map(pet => [pet.id, pet]));
@@ -32,12 +32,25 @@ export function routeCandidate(shared, content, profiles) {
   }));
   assert.equal(byRoute.size, 0, 'Encounter profile has no canonical route');
   assert.equal(campaignRoutes.length, 48);
-  return {...shared, schemaVersion: 7, engineCapability: 'arena8-coop-v6', campaignRoutes};
+  const draft = {...shared, schemaVersion: 7, engineCapability: 'arena8-coop-v6', campaignRoutes};
+  if (wardenTuning) {
+    assert.deepEqual(Object.keys(wardenTuning).sort(), shared.bosses.map(boss => boss.id).sort());
+    draft.configId = 'arena8-campaign-warden-response-candidate';
+    draft.bosses = shared.bosses.map(boss => {
+      const {maxHp, telegraphTurns} = wardenTuning[boss.id];
+      return {...boss, maxHp, telegraphTurns};
+    });
+  }
+  return draft;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const files = ['../config/gameplay/arena8-coop-shared-rng-v1.candidate.json',
     '../specs/pet-arena/campaign-v4-content.json', '../config/gameplay/candidates/map-encounters.json'];
+  const args = process.argv.slice(2);
+  assert(args.length === 0 || (args.length === 1 && args[0] === '--warden-response'),
+    'Usage: node scripts/campaign-route-candidate.mjs [--warden-response]');
+  if (args.length) files.push('../config/gameplay/candidates/warden-response.json');
   const inputs = await Promise.all(files.map(async file => JSON.parse(await readFile(new URL(file, import.meta.url), 'utf8'))));
   console.log(JSON.stringify(routeCandidate(...inputs), null, 2));
 }

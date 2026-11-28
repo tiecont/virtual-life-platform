@@ -177,10 +177,15 @@ def all_region_warden_vitality(bundle):
 
 def deliberate_warden_telegraph(bundle):
     """Allow one more response turn between the existing fixed-strength impacts."""
-    all_region_warden_vitality(bundle)
+    tuning = json.loads((ROOT / "config/gameplay/candidates/warden-response.json").read_text())
     bundle["configId"] = "arena8-six-warden-telegraph-candidate"
+    bundle["contentRevision"] = 1
     for boss in bundle["bosses"]:
-        boss["telegraphTurns"] += 1
+        profile = tuning.pop(boss["id"])
+        boss["maxHp"] = profile["maxHp"]
+        boss["telegraphTurns"] = profile["telegraphTurns"]
+    if tuning:
+        raise ValueError("Warden tuning contains IDs absent from the bundle")
 
 
 def veteran_artifacts(bundle):

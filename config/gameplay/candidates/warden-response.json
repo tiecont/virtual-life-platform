@@ -1,0 +1,26 @@
+{
+  "cinder-terraces-warden": {
+    "maxHp": 3000,
+    "telegraphTurns": 3
+  },
+  "tideglass-lagoon-warden": {
+    "maxHp": 3375,
+    "telegraphTurns": 3
+  },
+  "stormcoil-fields-warden": {
+    "maxHp": 2750,
+    "telegraphTurns": 3
+  },
+  "lantern-necropolis-warden": {
+    "maxHp": 3125,
+    "telegraphTurns": 3
+  },
+  "ochre-labyrinth-warden": {
+    "maxHp": 3750,
+    "telegraphTurns": 3
+  },
+  "dawn-prism-sanctum-warden": {
+    "maxHp": 3250,
+    "telegraphTurns": 3
+  }
+}

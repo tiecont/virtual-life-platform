@@ -46,3 +46,11 @@ It joins the 48 canonical routes to separate encounter profiles from
 `config/gameplay/candidates/map-encounters.json`. All routes start disabled.
 Admin can enable an encounter and its prerequisite chain in a validated version.
 An active allocation keeps its published version, encounter ID and digest.
+
+
+Use `node scripts/campaign-route-candidate.mjs --warden-response` to prepare
+the alternative six-Warden draft for Admin review. It applies the measured
+HP and telegraph values to the Warden encounters after assembling the 48
+recruitment profiles. Solo and co-op receive the same opponent values. Run
+`aetheria-game-runtime --check-gameplay-config` on the materialized bundle
+before submitting its bytes to the existing Admin draft workflow.
