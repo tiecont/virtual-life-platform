@@ -19,6 +19,11 @@ Agent owns integration and is the only writer of the canonical backlog.
 Workers return `summary`, `revision`, `files`, actual `checks` and
 `limitations` through the existing handoff contract.
 
+For delegated work, use Fast (2× speed) when the interface supports it.
+Choose reasoning effort independently for each assignment according to its
+complexity. If speed selection is unavailable, keep the task-appropriate
+reasoning effort and report the actual settings when asked.
+
 Run relevant local checks, seek independent review when available, integrate
 accepted changes and update the backlog with exact-source evidence. Record all
 unmet acceptance and owner gates. Checkpoint outstanding work before stopping
