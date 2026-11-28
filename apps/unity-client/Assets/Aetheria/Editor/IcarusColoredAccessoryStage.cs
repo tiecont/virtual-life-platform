@@ -41,7 +41,7 @@ namespace Aetheria.Editor
             if (string.IsNullOrEmpty(source) || !Path.IsPathRooted(source) || string.IsNullOrEmpty(expected) || Hash(source) != expected)
                 throw new InvalidDataException("Missing or mismatched intake for " + variable);
             var path = folder + "/" + filename;
-            File.Copy(source, path);
+            File.Copy(source, Path.Combine(Application.dataPath, path.Substring(7)));
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
             return path;
         }
@@ -77,7 +77,7 @@ namespace Aetheria.Editor
             if (extent < .0001f) throw new InvalidDataException("Degenerate attachment extent.");
             model.transform.localScale *= height * (wing ? 1.20f : .78f) / extent;
             var anchor = model.GetComponentsInChildren<Transform>().Single(t => t.name == anchorName);
-            Vector3 Anchor() => wing ? VisibleBounds(anchor.gameObject).center : anchor.position;
+            Vector3 Anchor() => wing && anchor.GetComponent<Renderer>() != null ? VisibleBounds(anchor.gameObject).center : anchor.position;
             Vector3 target = socket.position;
             if (!wing && vrm.TryGetBoneTransform(HumanBodyBones.RightMiddleProximal, out var fingers))
                 target = Vector3.Lerp(joint.position, fingers.position, .67f);
@@ -111,7 +111,7 @@ namespace Aetheria.Editor
             var scene = SceneManager.GetActiveScene();
             if (!Application.isBatchMode || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null ||
                 string.IsNullOrEmpty(output) || !Path.IsPathRooted(output) || Directory.Exists(output) ||
-                scene.isDirty || !string.IsNullOrEmpty(scene.path) || SceneManager.sceneCount != 1 || Hash(Body) != BodySha)
+                scene.isDirty || !string.IsNullOrEmpty(scene.path) || SceneManager.sceneCount != 1 || Hash(Path.Combine(Application.dataPath, Body.Substring(7))) != BodySha)
                 throw new InvalidOperationException("Use the original Icarus and a fresh private graphics-enabled scene and output.");
             string folder = "Assets/PrivateIcarusFit-" + Guid.NewGuid().ToString("N");
             AssetDatabase.CreateFolder("Assets", Path.GetFileName(folder));
