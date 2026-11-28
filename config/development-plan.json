@@ -10841,6 +10841,13 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "compactFireSkillInput": {
+          "sourceRevision": "80c76ae9d4602f945c63e4e1cd1a234b3d870e0f",
+          "integratedRevision": "095cdf37",
+          "playerSourceRevision": "f50853e1829d04b2aec8e33e4869ac46e205eced",
+          "result": "At 1024x768 the previous tester missed the enabled Ember Lance after Fire reconnected. The corrected driver recognized it in all 24 failed frames and preserved 33 older 720p skill matches. Two synthetic regressions passed. In a fresh 1024x768 Linux run it clicked the skill at turn 4 on the first attempt and Rust committed v6.",
+          "evidence": "artifacts/wave-d4-session/functional-coop/fire-compact-80c76ae9"
+        },
         "waterStartedAndSwapped": {
           "sourceRevision": "f50853e1829d04b2aec8e33e4869ac46e205eced",
           "command": "PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh <linux-build-receipt> <rust-runtime> <tessdata>",
