@@ -25,10 +25,11 @@ namespace Aetheria.Editor
         // Runs only against temporary scene objects and assets. The checked-in
         // prefab keeps its existing Generic Icarus review import contract.
         public static void Verify() => Verify(false);
+        public static void VerifyDeformation() => Verify(false, reviewDeformation: true);
         public static void PrepareRecorder() => Verify(true);
         public static void PrepareAccessoryRecorder() => Verify(true, true);
 
-        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false)
+        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -121,6 +122,11 @@ namespace Aetheria.Editor
                 var take = track.GetClips().Single();
                 Require(director.GetGenericBinding(track) == modelAnimator && take.animationClip == bound && !director.playOnAwake,
                     "Cinematic Studio did not bind the retargeted motion to the actual Icarus instance.");
+                IcarusWalkDeformationReview.Result deformation = null;
+                AnimationClip garmentCorrection = null;
+                if (reviewDeformation)
+                    deformation = IcarusWalkDeformationReview.Compare(modelVrm,modelAnimator,skins,director,bound,take.start,
+                        out garmentCorrection);
                 var review = Sample(director, take.start, bound.length, bones.Select(bone => bone.Joint).ToArray(), skins);
                 Require(review.maxMappedJointAngleDegrees > 1f && review.maxSkinnedVertexDelta > .001f,
                     $"The Timeline must move mapped joints and deform the actual skin. Joint degrees {review.maxMappedJointAngleDegrees}, mesh delta {review.maxSkinnedVertexDelta}.");
@@ -142,10 +148,29 @@ namespace Aetheria.Editor
                         transform = entry.Clip.NodeTransformBindings.Length
                     }).ToArray();
                 review.eyeRig = MeasureEyeRig(modelVrm, skins);
+                review.deformation = deformation;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
-                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, modelVrm, output,
+                    review.frames = Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,output,
                         out review.clippedWhitePercent);
+                if (garmentCorrection != null)
+                {
+                    string privateClip = "IcarusWalkPrivateGarmentCorrection.anim";
+                    AssetDatabase.CreateAsset(garmentCorrection,folder+"/"+privateClip);
+                    AssetDatabase.SaveAssetIfDirty(garmentCorrection);
+                    File.Copy(Path.Combine(Application.dataPath,leaf,privateClip),Path.Combine(output,privateClip));
+                    review.correctedClipSha256 = Hash(Path.Combine(output,privateClip));
+                    if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
+                    {
+                        director.Stop();
+                        ((AnimationPlayableAsset)take.asset).clip = garmentCorrection;
+                        director.RebuildGraph();
+                        string correctedOutput = Path.Combine(output,"garment-correction");
+                        Directory.CreateDirectory(correctedOutput);
+                        review.correctedFrames = Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,
+                            correctedOutput,out review.correctedClippedWhitePercent);
+                    }
+                }
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
                 if (prepareRecorder)
                 {
@@ -491,6 +516,10 @@ namespace Aetheria.Editor
             public bool productionReady;
             public ExpressionBindings[] expressionBindings;
             public EyeRigSample[] eyeRig;
+            public IcarusWalkDeformationReview.Result deformation;
+            public string correctedClipSha256;
+            public string[] correctedFrames = Array.Empty<string>();
+            public float[] correctedClippedWhitePercent = Array.Empty<float>();
             public float[] sampleFractions;
             public float[] clippedWhitePercent = Array.Empty<float>();
             public string[] frames = Array.Empty<string>();
