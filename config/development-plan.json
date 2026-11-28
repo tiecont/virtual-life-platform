@@ -11262,12 +11262,19 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Packaged Fire and Tideglass regular encounters were verified at 8ad6e6e6. On 6a100b61 the Fire regular HUD displayed the new HP meter and 64 jewels after a committed swap. Revision 4 (7a6ae98e, engine digest e16b85f40f5766ad1e40fec70e105f60816f9c006336990ac15973809cc6dca2) adds Stormcoil regular/Warden and pins recruitment for the first three maps. The native WSS Water campaign probe passed 19 scenarios including exactly-once recruitment and Stormcoil admission. At ef30e7dd native Stormcoil completion in both orders awarded one Zipspool per account after fixture-supplied prerequisites. An active Warden match recovered its original version and rewards across publication replacement and restart. On ef30e7dd one fresh guest cleared Cinder, Tideglass and Stormcoil using earned levels and recruited Emberloom, Ripplefin and Zipspool through Nest/Rust. Stormcoil Warden took two attempts with one regular replay. At fd5c6c12 unpublished revision 5 adds regular and Warden profiles for Lantern, Ochre and Dawn and validates all six recruitment orders. In 24 fixed seeds per late encounter, each regular won 24; Lantern Warden won 24, Ochre 13 and Dawn 21. Verify natural six-map progression, human balance and dedicated artwork.",
+      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Packaged Fire and Tideglass regular encounters were verified at 8ad6e6e6. On 6a100b61 the Fire regular HUD displayed the new HP meter and 64 jewels after a committed swap. Revision 4 (7a6ae98e, engine digest e16b85f40f5766ad1e40fec70e105f60816f9c006336990ac15973809cc6dca2) adds Stormcoil regular/Warden and pins recruitment for the first three maps. The native WSS Water campaign probe passed 19 scenarios including exactly-once recruitment and Stormcoil admission. At ef30e7dd native Stormcoil completion in both orders awarded one Zipspool per account after fixture-supplied prerequisites. An active Warden match recovered its original version and rewards across publication replacement and restart. On ef30e7dd one fresh guest cleared Cinder, Tideglass and Stormcoil using earned levels and recruited Emberloom, Ripplefin and Zipspool through Nest/Rust. Stormcoil Warden took two attempts with one regular replay. At fd5c6c12 unpublished revision 5 adds regular and Warden profiles for Lantern, Ochre and Dawn and validates all six recruitment orders. In 24 fixed seeds per late encounter, each regular won 24; Lantern Warden won 24, Ochre 13 and Dawn 21. A fresh guest has since completed the six-map native solo route. Human balance, packaged six-map play and dedicated artwork remain open.",
       "qualificationDependencies": [
         "VL-183",
         "VL-184"
       ],
       "implementation": {
+        "naturalSoloCampaign": {
+          "sourceRevision": "4bae21f514aae4f51519a77f7a6c8e2631af2256",
+          "integratedRevision": "562fc8dba22c17410d6ce7cad52ab2bbc85fc481",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --natural-campaign",
+          "result": "PASS, 73 scenario records. One new guest won all twelve encounters with earned Pet levels. The guest had zero administrator ledger grants at entry and after the last settlement. PostgreSQL recorded six recruits. Tideglass Warden took five attempts and four regular replays. After publication replacement and Nest/Rust restart, Lantern Warden resumed at board version 2 on its original digest and paid its pinned rewards.",
+          "evidence": "artifacts/wave-d4-session/natural-six-map-4bae21f5/facts.json"
+        },
         "renderedDeveloperCampaign": {
           "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
           "buildManifestSha256": "af785007136fc786a51e3a718ae62f6bfcf14d14c9898376a4e5cf0ae8f611a0",
