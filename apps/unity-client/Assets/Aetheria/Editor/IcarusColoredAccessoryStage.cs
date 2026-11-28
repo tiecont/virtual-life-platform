@@ -86,7 +86,7 @@ namespace Aetheria.Editor
                 .Concat(model.GetComponentsInChildren<SkinnedMeshRenderer>().Select(r => r.sharedMesh)).ToArray();
             int triangles = meshes.Sum(mesh => mesh.triangles.Length / 3);
             var materials = model.GetComponentsInChildren<Renderer>().SelectMany(r => r.sharedMaterials).Distinct().ToArray();
-            if (materials.Length == 0 || materials.Any(m => !m || !m.mainTexture || m.mainTexture.width < 1024))
+            if (materials.Length == 0 || !materials.Any(m => m && m.mainTexture && m.mainTexture.width >= 4096) || materials.Any(m => !m || !m.mainTexture || m.mainTexture.width < (wing ? 1024 : 512)))
                 throw new InvalidDataException("The fitted accessory lacks the original colored texture.");
             var size = VisibleBounds(model).size;
             if (wing)
