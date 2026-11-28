@@ -513,10 +513,10 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-J04 | VL-210 | Runtime atlas preserves artwork fidelity and compatible sprite identifiers. | PASS | 6fc183f4 · nine stable sprite identifiers, 396×396 extruded atlas from the approved masters. |
 | V3-J05 | VL-210 | Jewels occupy the full usable square cell. | PASS | 6fc183f4 · source occupancy 96.9–98.4% in both axes. Native 720p and 1080p Fire captures at ec4b2cfe show full-cell sprites. |
 | V3-J06 | VL-210 | No clipping, distortion, redundant borders or atlas bleeding. | IN_PROGRESS | ec4b2cfe · six basic jewels retain their silhouettes in both native Fire renders. Inspect the three advanced kinds under all multipliers. |
-| V3-J07 | VL-210 | All 64 cells are visible and interactive. | IN_PROGRESS | ec4b2cfe · 8×8 Fire board visible at both native resolutions, adjacent host swaps committed. Exhaustive input across all 64 hitboxes remains open. |
-| V3-J08 | VL-210 | Multiplier badges do not obscure jewel symbols. | IN_PROGRESS | ec4b2cfe · compact badges rendered in the top corner, with basic glyph centers visible. Verify x7/x8 and all advanced icons. |
+| V3-J07 | VL-210 | All 64 cells are visible and interactive. | PASS | e038a404 · PlayMode located all 64 real buttons and their 64 sprites across four viewport sizes. Actual 720p host swaps and reconnect preserved the full grid. |
+| V3-J08 | VL-210 | Multiplier badges do not obscure jewel symbols. | PASS | e038a404 · PlayMode checked badge bounds above the glyph center and input-transparent labels at four viewport sizes. Actual compact corner badges are visible in both Fire screenshots. |
 | V3-J09 | VL-210 | Actual 720p and 1080p packaged screenshots captured. | PASS | ec4b2cfe · actual [720p reconnect](../../assets/review/wave-d4/combat/fire-full-cell-r04-720.webp) and [1080p Fire board](../../assets/review/wave-d4/combat/fire-full-cell-r04-1080.webp). A manual lobby Enter click assisted the 1080p run. |
-| V3-J10 | VL-210 | Higher-resolution visual checks executed where supported. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J10 | VL-210 | Higher-resolution visual checks executed where supported. | PASS | Unassisted Linux player at [1440p](../../assets/review/wave-d4/combat/fire-full-cell-r04-1440.webp) (1aae6433) and [4K](../../assets/review/wave-d4/combat/fire-full-cell-r04-2160.webp) (6404c50b). Both accepted a real host swap and restored the same 64-tile board after restart. |
 | V3-J11 | VL-176 | Strike resolves normal attack correctly. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
 | V3-J12 | VL-176 | Mana restores individual Mana within its cap. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
 | V3-J13 | VL-176 | Rage restores individual Rage within its cap. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
@@ -547,13 +547,13 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-J38 | VL-176 | Progressive x2–x8 tier behavior verified. | PASS | 9f0aecdd · timed uncapped rounds crossed 4,096 turns with x7/x8. Cascade cap regenerated after 16 passes. |
 | V3-J39 | VL-176 | Damage and utility multiplier weights resolve correctly. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
 | V3-J40 | VL-176 | No uncontrolled amplification or infinite cascade. | PASS | 9f0aecdd · timed uncapped rounds crossed 4,096 turns with x7/x8. Cascade cap regenerated after 16 passes. |
-| V3-J41 | VL-210 | Authoritative 15-second countdown is correct. | PASS | 660475d0 · 12 timed co-op WSS scenarios on schema 4, including restart. |
-| V3-J42 | VL-210 | EndTurn and timeout advance without free resources or automated actions. | PASS | c8698d6a and 660475d0 · native WSS pass, preserved resources and background expiry. |
-| V3-J43 | VL-210 | Jewel VFX consume committed gameplay events. | IN_PROGRESS | 21307eaf · command receipts carry bounded advanced cues to pooled client visuals, with exact Astral cell, reduced motion and speed selection. Qualify rendered effects on a package. |
-| V3-J44 | VL-210 | Damage, resources, healing and shielding match authoritative results. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J41 | VL-210 | Authoritative 15-second countdown is correct. | PASS | 660475d0 timed WSS tests, 763461ac packaged solo pass/idle expiry, and e038a404 packaged co-op confirmed the 15-second turn and an authorized Water swap. |
+| V3-J42 | VL-210 | EndTurn and timeout advance without free resources or automated actions. | PASS | 660475d0 timed WSS tests, 763461ac packaged solo pass/idle expiry, and e038a404 packaged co-op confirmed the 15-second turn and an authorized Water swap. |
+| V3-J43 | VL-210 | Jewel VFX consume committed gameplay events. | IN_PROGRESS | 249bf827 · runtime receipt parity and all 82 arena library tests passed. Authoritative attack, heal, shield and attributable resource gains route to R04 sprites. Mixed capped gains have no unique source and are omitted. Packaged presentation checks remain. |
+| V3-J44 | VL-210 | Damage, resources, healing and shielding match authoritative results. | IN_PROGRESS | 249bf827 · runtime receipt parity and all 82 arena library tests passed. Authoritative attack, heal, shield and attributable resource gains route to R04 sprites. Mixed capped gains have no unique source and are omitted. Packaged presentation checks remain. |
 | V3-J45 | VL-210 | Cleanse, Chill and Amplify presentation match authoritative results. | IN_PROGRESS | Native WSS receipts now verify all three effects (21307eaf and 07d135ea). Packaged visual qualification of Nature and Astral remains open. |
 | V3-J46 | VL-210 | Reduced motion and x1/x2 speed preserve gameplay semantics. | IN_PROGRESS | 21307eaf · command receipts carry bounded advanced cues to pooled client visuals, with exact Astral cell, reduced motion and speed selection. Qualify rendered effects on a package. |
-| V3-J47 | VL-210 | Tooltips and localization explain all nine jewels. | IN_PROGRESS | 6fc183f4 · nine localized names/descriptions in five locales and Chill presentation. Packaged interaction inspection remains open. |
+| V3-J47 | VL-210 | Tooltips and localization explain all nine jewels. | PASS | e038a404 · the desktop PlayMode case verifies all 64 sprite bindings cycling nine roles and visible focus tooltip text. Nine names and descriptions are included in five locales in 6fc183f4. |
 | V3-J48 | VL-210 | Reconnect restores jewel identities, multipliers and advanced effects. | PASS | 21307eaf · four-seat schema 5 WSS restored the Frost board, 150‰ Chill, deadline and pinned digest after replacement publication and restart. |
 | V3-J49 | VL-203 | New gameplay capability and schema compatibility validated. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
 | V3-J50 | VL-203 | Historical six-kind matches and replays remain unchanged. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
@@ -561,7 +561,7 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-J52 | VL-203 | Restart restores exact board and status state. | PASS | 21307eaf · four-seat schema 5 WSS restored the Frost board, 150‰ Chill, deadline and pinned digest after replacement publication and restart. |
 | V3-J53 | VL-203 | Active encounters retain their pinned configuration. | PASS | 21307eaf · four-seat schema 5 WSS restored the Frost board, 150‰ Chill, deadline and pinned digest after replacement publication and restart. |
 | V3-J54 | VL-203 | Admin rejects unsupported jewel configurations. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
-| V3-J55 | VL-203 | Duplicate, stale and unauthorized actions are rejected. | IN_PROGRESS | ec4b2cfe · outsider denied with HTTP 403 on private schema 5 probe. Duplicate/stale schema 5 cases need separate evidence. |
+| V3-J55 | VL-203 | Duplicate, stale and unauthorized actions are rejected. | PASS | fda59517 · exact command replay on fresh WSS returned the sealed bytes after restart. Stale version and wrong-seat actions were rejected with codes 4 and 13. Receipts stayed at 2 and events at 7, outsider returned 403, and the correct active seat then advanced to v3. |
 | V3-J56 | VL-203 | Reward settlement remains exactly-once. | PASS | 660475d0 · concurrent and repeated settlement across Nest restart; four seats paid once. |
 | V3-J57 | VL-203 | No unauthorized production configuration publication occurs. | PASS | 9822cd51 · private migration and publication tests use disposable databases; source migration creates no published candidate. |
 | V3-J58 | VL-211 | Six-kind baseline reproduced. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
@@ -582,15 +582,38 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-P08 | VL-170 | Private asset delivery and retrieval advanced where authorized. | BLOCKED | Private staging receipts exist; authorized remote target and independent retrieval receipt remain open. |
 | V3-P09 | VL-106 | Audio and localization improvements verified. | IN_PROGRESS | 6fc183f4 · localized all nine jewels in five locales, with Chill coverage. Production audio review remains open. |
 | V3-P10 | VL-210 | Additional eligible campaign work completed without duplicating earlier work. | PASS | ec4b2cfe · new schema 5 publication/restart WSS probe and disjoint 19,680-match comparison both completed. |
-| V3-Q01 | VL-212 | Focused Rust and TypeScript regression suites pass. | PASS | 9f0aecdd · 80 Rust library tests; 9822cd51 · 37 focused TS unit tests; 80215b43 · Admin build passed. |
+| V3-Q01 | VL-212 | Focused Rust and TypeScript regression suites pass. | PASS | 249bf827 · 82 arena library tests plus scoped Rust runtime and attribution checks. 37 TypeScript unit tests at 9822cd51 and 21 admission cases at ddfaa240. |
 | V3-Q02 | VL-212 | PostgreSQL integration and historical migration checks pass. | PASS | 9822cd51 · 20 integration cases and both archived migration probes passed in disposable PostgreSQL databases. |
-| V3-Q03 | VL-212 | Unity EditMode and PlayMode checks pass. | PASS | 09e0c501 · direct Editor, 89 EditMode and 48 PlayMode passed, two PlayMode skipped. Later Cinematic Studio cases are tracked separately under P06. |
-| V3-Q04 | VL-212 | Actual packaged solo gameplay verified. | IN_PROGRESS | 763461ac · historical solo packaged End Turn and expiry; advanced candidate awaits package. |
+| V3-Q03 | VL-212 | Unity EditMode and PlayMode checks pass. | PASS | e038a404 · 95/95 EditMode, 48 PlayMode passed and two skipped. Includes five Cinematic Studio cases and native receipt decoding. |
+| V3-Q04 | VL-212 | Actual packaged solo gameplay verified. | PASS | 1aae6433 · actual Linux guest, Coalwhisk, Fire regular. Recorded [round 3 at 4 seconds](../../assets/review/wave-d4/combat/fire-solo-full-cell-timed-720.webp), followed by round 5 with no further input. End Turn was submitted; the intermediate command receipt was not individually retained. |
 | V3-Q05 | VL-212 | Four authenticated cooperative seats verified. | PASS | 660475d0 · four authenticated WSS seats; e9aacee9 · one Linux player and three authenticated peers. |
-| V3-Q06 | VL-212 | Advanced jewel effects verified in packaged gameplay when enabled in an experimental configuration. | IN_PROGRESS | ec4b2cfe · three Frost jewels visible in the [native Water opening](../../assets/review/wave-d4/combat/water-full-cell-frost-opening-1080.webp). The old 1080p harness missed the swap deadline. 21307eaf WSS verified a real Chill receipt. |
-| V3-Q07 | VL-212 | Fire victory, reward settlement and Water admission verified. | PASS | ec4b2cfe · packaged Fire won at v29, four distinct rewards settled and the host entered schema 5 Water with the upgraded core. The lobby Enter click was assisted. |
-| V3-Q08 | VL-212 | Performance and memory measurements recorded. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-Q09 | VL-212 | Independent security and compatibility review completed. | IN_PROGRESS | Independent review traced actor-scoped sealed receipt replay, gateway envelope and old schemas. Schema 5 now requires native v3 hello. A missed response is deliberately recovered as state without replayed animation. |
+| V3-Q06 | VL-212 | Advanced jewel effects verified in packaged gameplay when enabled in an experimental configuration. | IN_PROGRESS | e038a404 · packaged host matched three Frost jewels in Water v2. Immutable receipts and the [720p board](../../assets/review/wave-d4/combat/water-full-cell-frost-swap-720.webp) confirm 150‰ Chill. Nature and Astral have authenticated solo WSS receipts; their packaged effects remain open. |
+| V3-Q07 | VL-212 | Fire victory, reward settlement and Water admission verified. | PASS | e038a404 · unassisted packaged Fire victory at version 25, four reward rows, upgraded Core and Water admission followed by host Frost swap v2. |
+| V3-Q08 | VL-212 | Performance and memory measurements recorded. | PASS | Successful unassisted Linux runs measured via procfs at 720p, 1440p and 4K. See the native player measurements below. |
+| V3-Q09 | VL-212 | Independent security and compatibility review completed. | PASS | Independent source review of 249bf827 and e038a404 found no blocking regression in receipt bounds, scope, admission renewal or replay. Review confirmed actor authentication, version and epoch guard before intent creation, and retention of the pending command identifier. The four-seat WSS result covers server behavior. |
 | V3-Q10 | VL-212 | Required exact-source hosted CI passes. | IN_PROGRESS | PR 90 failed at f6ddd3d8. Verify the final integrated revision before merge. |
 | V3-Q11 | VL-212 | Canonical backlog and acceptance ledger updated. | PASS | Campaign V3 verification entries in config/development-plan.json and this 87-gate ledger. |
 | V3-Q12 | VL-212 | Durable resumable campaign checkpoint recorded. | PASS | SQLite run master-campaign-v3 recovers isolated ownership and pending work. |
+
+### Native player measurements
+
+The sampler read the Unity player process every 250 ms through Linux procfs. Wall time includes scripted navigation and OCR. Some runs overlapped other local tests. Frame times, GPU utilization and four-human play were outside these measurements.
+
+| Completed run | Elapsed | CPU seconds | Peak RSS | Verified interaction |
+|---|---:|---:|---:|---|
+| 1280×720 · e038a404 | 152.320 s | 64.32 | 526.9 MiB | One packaged host and three authenticated peers. Fire win v25, four settled rewards, Water Frost swap v2 and 150‰ Chill. |
+| 2560×1440 · 1aae6433 | 117.042 s | 52.86 | 455.7 MiB | Normal host Start, legal swap v2 and restart with the same board and fresh host admission. |
+| 3840×2160 · 6404c50b | 122.768 s | 57.16 | 504.5 MiB | All 64 tiles rendered, 9 multiplied tiles, host swap v2, restart at v3 and same restored board. |
+
+The passing receipts are `artifacts/packaged-coop-runs/run-3O68e2sy/acceptance.json`, `artifacts/campaign-v3/work/packaged-board-smoke/artifacts/packaged-coop-runs/run-RIWDKdKC/board-acceptance.json`, and `artifacts/packaged-coop-runs/run-KkhkeFl8/board-acceptance.json`.
+
+Earlier attempts at 4584d95f exposed the admission renewal, high-resolution layout and lobby control problems repaired before these runs.
+
+| Native output | Elapsed | CPU seconds | Peak RSS | Last verified interaction |
+|---|---:|---:|---:|---|
+| 1280×720 | 271.202 s | 115.75 | 573.1 MiB | Fire won at v41, four rewards, three Frost jewels in Water at v1. The observer reached v2 without the required Frost swap. |
+| 2560×1440 | 115.808 s | 53.99 | 476.7 MiB | Native Fire admission. A recursive UI layout diagnostic opened the development console over Start. |
+| 3840×2160 | 84.075 s | 40.27 | 512.7 MiB | The lobby showed one seat while the backend had three authenticated peers ready. |
+
+Raw sampler records and attempt logs are in `artifacts/packaged-coop-runs/run-PUcW8J9p/` and `artifacts/campaign-v3/work/packaged-board-smoke/artifacts/packaged-coop-runs/{run-vJ8eO9b1,run-FvgZLb4s}/`.
+

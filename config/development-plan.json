@@ -9997,11 +9997,11 @@
     {
       "id": "VL-176",
       "campaignV3Verification": {
-        "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
-        "command": "cargo test --locked -p aetheria-pet-arena --lib",
+        "sourceRevision": "249bf8274b0b0dd89206cbfdccde3ce4e2987e77",
+        "command": "cargo test --locked -p aetheria-pet-arena --lib; game-runtime basic_jewel_receipts",
         "exitCode": 0,
-        "result": "80 passed, including six advanced-jewel regressions. Schema 5 adds encounter/skill conversions and keeps the six-kind natural pool.",
-        "evidence": "artifacts/campaign-v3/qa-rust-lib-9f0aecdd.log"
+        "result": "82/82 Rust library tests passed; attributed basic yields and advanced receipt rows preserve canonical state, events and RNG.",
+        "evidence": "artifacts/campaign-v3/pet-arena-lib-249bf827.log"
       },
       "mvpMilestone": "M1",
       "mvpCriticalPath": true,
@@ -11132,11 +11132,11 @@
     {
       "id": "VL-203",
       "campaignV3Verification": {
-        "sourceRevision": "9822cd51df1165279174efdbcacbaaa6a4afdfbc",
-        "command": "archived native and admission migration probes; focused PostgreSQL integration",
+        "sourceRevision": "fda59517be8b4cbf3bd7ec08f13374897439bb59",
+        "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop",
         "exitCode": 0,
-        "result": "Both archived upgrade probes and 20 integration tests passed in disposable databases. Integration PR 90 still requires green hosted CI.",
-        "evidence": "artifacts/campaign-v3/qa-integration.log"
+        "result": "Fresh WSS after restart recovered immutable receipt bytes. Stale and wrong-seat commands left 2 receipts and 7 events unchanged. The active seat advanced to version 3 and outsider admission returned 403.",
+        "evidence": "artifacts/campaign-v3/advanced-coop-fda59517.log"
       },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
@@ -11554,11 +11554,11 @@
     {
       "id": "VL-210",
       "campaignV3Verification": {
-        "sourceRevision": "c3b71d8856a709c656a88eaffd83b0766464212b",
-        "command": "node scripts/unity-validate.mjs tests",
+        "sourceRevision": "e038a40418548e5ce91399ee08730f119d818c19",
+        "command": "PACKAGED_QA_BOARD=advanced-water PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
         "exitCode": 0,
-        "result": "Owner approved both exact R04 sheets. Nine full-cell sprite regions preserve their IDs. Direct Editor passed 88 EditMode and 48 PlayMode tests, with two PlayMode skips.",
-        "evidence": "artifacts/unity/2026-11-28T09-08-27-686Z-48e86c1e/result.json"
+        "result": "One packaged host and three separately authenticated peers won Fire v25 and settled four rewards. The equipped host matched all three Frost tiles at Water v2, applying 150 per mille Chill. The host completed the journey without manual intervention.",
+        "evidence": "artifacts/packaged-coop-runs/run-3O68e2sy/acceptance.json"
       },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
@@ -11731,11 +11731,11 @@
     {
       "id": "VL-212",
       "campaignV3Verification": {
-        "sourceRevision": "d18d623893da732280acd0cb7105a65ddd7d17fa",
-        "command": "node scripts/unity-validate.mjs linux",
+        "sourceRevision": "1aae6433520bb1a2b0d968b6f1948cf5700eef10",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_SIZE=2560x1440 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
         "exitCode": 0,
-        "result": "Direct Editor Linux package built successfully. Runtime interaction evidence is tracked separately in the acceptance ledger.",
-        "evidence": "artifacts/unity/2026-11-28T09-11-07-961Z-2918f38b/result.json"
+        "result": "Unassisted 1440p Fire native swap and reconnect verified by exact board and renewed host admission. Package QA uses one real Linux player and three authenticated peers. Four-human Windows acceptance remains open.",
+        "evidence": "artifacts/campaign-v3/work/packaged-board-smoke/artifacts/packaged-coop-runs/run-RIWDKdKC/board-acceptance.json"
       },
       "mvpMilestone": "M5",
       "mvpScope": "MVP",
