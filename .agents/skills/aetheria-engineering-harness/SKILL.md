@@ -5,6 +5,9 @@ description: Execute and verify substantial Aetheria engineering tasks from INPU
 
 # Aetheria engineering harness
 
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
+
 Apply the repository's `AGENTS.md`. For startup, security boundaries and CLI examples, read [the harness runbook](../../../specs/engineering/harness.md) as needed.
 
 1. Convert the expected output into testable acceptance criteria. Use `pnpm plan:status` for backlog work and filter its JSON in the shell to the relevant tasks before reading the result. Inspect the matching authorities and specs. Identify dependencies, write scopes, and checks before assigning work.

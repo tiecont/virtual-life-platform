@@ -5,6 +5,9 @@ description: Produce or normalize Aetheria detached accessories, standard and co
 
 # Aetheria Standard Asset 3D
 
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
+
 Use this skill for detached character accessories such as wings, bows, and
 halos; standard/common Pets; weapons; map environments; and props. For
 flagship/Limited S humanoids or key NPCs requiring a high-likeness face,
@@ -71,7 +74,7 @@ new binaries larger than 500 KiB to Git.
 
 ## 2. Produce with Tripo Studio as the default
 
-Use Tripo Studio through **Chrome DevTools MCP** for Wings, Weapons, Standard
+Use the official Tripo Studio MCP or the authenticated Studio fallback for Wings, Weapons, Standard
 Pets, and every asset needing multiple materials or detailed part separation.
 Reuse the authenticated English Tripo tab and a locale-neutral URL.
 

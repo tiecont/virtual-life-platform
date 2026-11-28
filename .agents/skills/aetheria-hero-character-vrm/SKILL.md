@@ -5,6 +5,9 @@ description: Produce or revise Aetheria flagship and Limited S humanoid characte
 
 # Aetheria Hero Character VRM
 
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
+
 Use this skill for flagship/Limited S humanoids and key NPCs such as Icarus.
 For detached accessories, standard/common Pets, weapons, maps, environments,
 or props, use `aetheria-standard-asset-3d` instead. These two are the only
