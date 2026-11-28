@@ -130,11 +130,74 @@ def unwrap(obj):
     bpy.ops.object.mode_set(mode="EDIT")
     try:
         bpy.ops.mesh.select_all(action="SELECT")
-        outcome = bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=.008)
+        outcome = bpy.ops.uv.smart_project(angle_limit=math.radians(48), island_margin=.0018)
         if outcome != {"FINISHED"}:
             raise BatchError("Blender Smart UV Project did not finish")
     finally:
         bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def uv_intersections(coords):
+    """Find triangle interiors that overlap above normalized UV tolerance."""
+    epsilon = 2e-8
+    side = 48
+    bins = defaultdict(list)
+    low, high = coords.min(axis=1), coords.max(axis=1)
+    steps = np.roll(coords, -1, axis=1) - coords
+    normals = np.stack((-steps[:,:,1], steps[:,:,0]), axis=-1)
+    lengths = np.linalg.norm(normals, axis=-1, keepdims=True)
+    normals /= np.maximum(lengths, epsilon)
+    offenders = set()
+    pairs = 0
+    for index, triangle in enumerate(coords):
+        (x0,y0), (x1,y1) = np.floor(np.clip([low[index], high[index]], 0, 1) * side).astype(int)
+        cells = [(x,y) for y in range(y0,y1+1) for x in range(x0,x1+1)]
+        neighbors = {candidate for cell in cells for candidate in bins[cell]}
+        if neighbors:
+            others = np.fromiter(neighbors, dtype=np.int32)
+            aabb = np.minimum(high[index], high[others]) - np.maximum(low[index], low[others])
+            others = others[(aabb > epsilon).all(axis=1)]
+            if others.size:
+                axes = np.concatenate((np.broadcast_to(normals[index],(others.size,3,2)), normals[others]), axis=1)
+                left = np.einsum('ud,ndk->nuk', triangle, axes.transpose(0,2,1))
+                right = np.einsum('nud,ndk->nuk',coords[others],axes.transpose(0,2,1))
+                depth = np.minimum(left.max(axis=1),right.max(axis=1))-np.maximum(left.min(axis=1),right.min(axis=1))
+                intersections = others[(depth > epsilon).all(axis=1)]
+                if intersections.size:
+                    offenders.add(index)
+                    offenders.update(intersections.tolist())
+                    pairs += int(intersections.size)
+        for cell in cells:
+            bins[cell].append(index)
+    return offenders, pairs
+
+
+def separate_overlapping_uv_faces(obj):
+    mesh = obj.data
+    source = triangles(obj, uv=True)
+    offenders, pairs = uv_intersections(source)
+    if not offenders:
+        return {"movedFaces": 0, "overlapPairsBeforeRepair": 0, "rejectedLargeRepair": False}
+    if len(offenders) > .15*len(source) or any(polygon.loop_total != 3 for polygon in mesh.polygons):
+        return {"movedFaces": 0, "overlapPairsBeforeRepair": pairs, "rejectedLargeRepair": True}
+
+    layer = mesh.uv_layers.active.data
+    reserved = .18
+    for entry in layer:
+        entry.uv.y *= 1 - reserved
+    columns = math.ceil(math.sqrt(len(offenders)/reserved))
+    rows = math.ceil(len(offenders)/columns)
+    cell = np.array((1/columns, reserved/rows))
+    for slot, index in enumerate(sorted(offenders)):
+        coords = source[index]
+        minimum, maximum = coords.min(axis=0), coords.max(axis=0)
+        span = np.maximum(maximum-minimum, 1e-8)
+        scale = min((cell*.88)/span)
+        center = np.array(((slot % columns + .5)*cell[0], 1-reserved+(slot//columns + .5)*cell[1]))
+        for loop, point in zip(mesh.loop_triangles[index].loops, coords):
+            layer[loop].uv = tuple(center + (point-(minimum+maximum)/2)*scale)
+    mesh.update()
+    return {"movedFaces": len(offenders), "overlapPairsBeforeRepair": pairs, "rejectedLargeRepair": False}
 
 
 def raster(projected, size, strict_inside=False):
@@ -164,11 +227,13 @@ def uv_facts(obj):
     area_twice = delta[:,0,0]*delta[:,1,1] - delta[:,0,1]*delta[:,1,0]
     sample_size = 1536
     count = raster(coords * sample_size, sample_size, strict_inside=True)
+    _, pairs = uv_intersections(coords)
     return {
         "method": "Blender Smart UV Project",
         "sampleGrid": sample_size,
         "coveragePercent": round(float(np.count_nonzero(count)) * 100 / count.size, 4),
         "overlappingSamplePixels": int(np.count_nonzero(count > 1)),
+        "overlappingTrianglePairs": pairs,
         "degenerateUvTriangles": int(np.count_nonzero(np.abs(area_twice) < 1e-11)),
         "inUnitSquare": bool(np.isfinite(coords).all() and coords.min() >= -1e-6 and coords.max() <= 1 + 1e-6),
     }
@@ -259,6 +324,7 @@ def main():
         seam["reverted"] = False
 
     unwrap(obj)
+    repair = separate_overlapping_uv_faces(obj)
     candidate = output / (args.asset_id + ".glb")
     export_glb(candidate)
     reimported = load_asset(candidate)
@@ -275,7 +341,7 @@ def main():
     views, bounds = compare_views(before, after, output)
     uv = uv_facts(reimported)
     exact_silhouette = all(view["changedPixels"] == 0 for view in views.values())
-    uv_pass = uv["inUnitSquare"] and uv["overlappingSamplePixels"] == 0 and uv["degenerateUvTriangles"] == 0
+    uv_pass = uv["inUnitSquare"] and uv["overlappingSamplePixels"] == 0 and uv["overlappingTrianglePairs"] == 0 and uv["degenerateUvTriangles"] == 0
     report = {
         "classification": "PRIVATE_NORMALIZATION_REVIEW" if exact_silhouette and uv_pass else "PRIVATE_REVIEW_NEEDS_CORRECTION",
         "assetId": args.asset_id, "blender": bpy.app.version_string,
@@ -284,7 +350,7 @@ def main():
         "referenceSha256": accepted["referenceSha256"], "derivedFile": candidate.name,
         "derivedSha256": sha256_file(candidate), "derivedBytes": candidate.stat().st_size,
         "source": before_metrics, "afterGuardedWeld": welded, "reimportAfterUvSeamSplits": final_metrics,
-        "weld": seam, "uv": uv, "silhouette": views, "sameSampledSilhouette": exact_silhouette,
+        "weld": seam, "uv": {**uv, **repair}, "silhouette": views, "sameSampledSilhouette": exact_silhouette,
         "preservedProviderBounds": bounds, "preservedProviderPivot": pivot.tolist(),
         "scaleState": "source dimensions preserved; approved in-game dimensions and functional pivot pending",
         "topologyState": "boundary and internal non-manifold edges retained for targeted review",
