@@ -10,7 +10,7 @@
   "modules": {
     "pets": {
       "owner": "platform.pet-content",
-    "responsibility": "Default-off versioned Pet metadata drafts and local/test Wave 1 rules previews; no production match or platform reward writer",
+    "responsibility": "Default-off versioned Pet metadata drafts and local/test Wave 1 and wallet/economy previews; no production match or platform reward writer",
       "currentPublicEntryFiles": [
         "features/pets/modules/content/infrastructure/draft-store",
         "features/pets/modules/content/infrastructure/manifest-store",
@@ -29,7 +29,12 @@
       "features/pets/modules/wave-a-arena8/infrastructure/native-runtime",
       "features/pets/modules/wave-a-arena8/infrastructure/native-tls-bridge",
       "features/pets/modules/wave-a-arena8/presentation/http",
-      "features/pets/modules/wave-a-arena8/presentation/native-http"
+      "features/pets/modules/wave-a-arena8/presentation/native-http",
+      "features/pets/modules/wallet/application/service",
+      "features/pets/modules/wallet/presentation/http",
+      "features/pets/modules/economy/infrastructure/policy-store",
+      "features/pets/modules/economy/application/operator-economy",
+      "features/pets/modules/economy/presentation/operator-http"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
     },

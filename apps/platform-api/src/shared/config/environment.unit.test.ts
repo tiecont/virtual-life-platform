@@ -71,3 +71,11 @@ describe('prelaunch environment gate',()=>{
     expect(()=>readConfig({...base,NODE_ENV:'production',WEB_ORIGIN:'https://example.com',PRELAUNCH_REGISTRATION_ENABLED:'1',PRELAUNCH_EMAIL_KEY:'72'.repeat(32)})).toThrow('PRELAUNCH_REGISTRATION_ENABLED');
   });
 });
+
+it('defaults the pet wallet off and only accepts explicit loopback opt-in',()=>{
+  expect(readConfig(base).LOCAL_PET_WALLET).toBe('0');
+  expect(readConfig({...base,LOCAL_PET_WALLET:'1'}).LOCAL_PET_WALLET).toBe('1');
+  for(const override of [{NODE_ENV:'production'},{HOST:'0.0.0.0'},{TRUSTED_PROXY_IP:'127.0.0.1'}]){
+    expect(()=>readConfig({...base,LOCAL_PET_WALLET:'1',...override})).toThrow(/LOCAL_PET_WALLET/);
+  }
+});

@@ -87,6 +87,20 @@ test('actual browser prelaunch deep link preserves campaign through fresh verifi
  await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
  await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
 });
+
+test('actual browser recovers from expired economy verification, rotates the session and revokes all access',async({page,request})=>{
+ await signIn(page);
+ const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;
+ await page.route('**/api/admin/economy-policy',route=>route.fulfill({
+  status:403,json:{error:{code:'FORBIDDEN',message:'Fresh operator authentication required'}},
+ }));
+ await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Verify your password and authenticator to continue.');
+ await expect(page.getByRole('button',{name:'Session & security',exact:true})).toHaveAttribute('aria-current','page');
+ await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));await page.getByRole('button',{name:'Verify again',exact:true}).click();await expect(page.getByRole('status')).toContainText('Verification refreshed.');
+ const current=(await page.context().cookies()).find(value=>value.name==='city_operator')!;expect(current.value!==old.value).toBe(true);expect((await request.get('/api/admin/session',{headers:{cookie:'city_operator='+old.value}})).status()).toBe(401);
+ await page.getByRole('button',{name:'Revoke all sessions',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
+});
 test('synthetic observation fixtures show loading, true zero, stale, missing and error states with responsive keyboard controls',async({page})=>{
  await page.clock.install({time:new Date()});await page.emulateMedia({reducedMotion:'reduce'});await signIn(page);let mode='loading',release:undefined|(()=>void);const values={requests:0,errors:0,connections:0,memberships:0,eventLoopP95Ms:null};
  await page.route('**/api/admin/metrics?*',async route=>{
