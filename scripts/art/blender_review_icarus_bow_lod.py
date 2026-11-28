@@ -8,6 +8,7 @@ import struct
 import sys
 
 import bpy
+from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 import numpy as np
 
@@ -54,16 +55,30 @@ def image_rgb(path):
         bpy.data.images.remove(image)
 
 
-def match_frame(reference, candidate):
-    source, lod = image_rgb(reference), image_rgb(candidate)
+def match_frame(source, lod):
     if source.shape != lod.shape:
         raise ValueError('Approved and derivative views have different camera resolutions')
     mask = lambda pixels: np.max(np.abs(pixels - pixels[0, 0]), axis=2) > 20
     original, reduced = mask(source), mask(lod)
     overlap = original & reduced
-    return {'sourceFrameSha256': file_hash(reference), 'silhouetteIntersectionOverUnion': float(overlap.sum() / (original | reduced).sum()),
+    return {'silhouetteIntersectionOverUnion': float(overlap.sum() / (original | reduced).sum()),
             'overlappingColorMeanAbsoluteErrorRgb8': float(np.abs(source[overlap] - lod[overlap]).mean()),
             'sourcePixels': int(original.sum()), 'lodPixels': int(reduced.sum())}
+
+
+def compare_upper_join(source, lod, camera, anchor):
+    height, width = source.shape[:2]
+    rows = [world_to_camera_view(bpy.context.scene, camera, anchor + Vector((0, 0, offset)))
+            for offset in (.005, .035)]
+    x = round(rows[0].x * width)
+    lo, hi = sorted(round(row.y * height) for row in rows)
+    source_contrast = np.max(np.abs(source[lo:hi, x - 3:x + 4] - source[0, 0]), axis=(1, 2))
+    lod_contrast = np.max(np.abs(lod[lo:hi, x - 3:x + 4] - lod[0, 0]), axis=(1, 2))
+    missed = np.flatnonzero((source_contrast >= 22) & (lod_contrast < 22))
+    runs = np.split(missed, np.flatnonzero(np.diff(missed) != 1) + 1)
+    return {'windowColumns': [x - 3, x + 4], 'windowRowsFromBottom': [lo, hi],
+            'sourceVisibleRows': int(np.count_nonzero(source_contrast >= 22)), 'missingVisibleRows': int(len(missed)),
+            'longestMissingRunPixels': max(map(len, runs))}
 
 
 def setup_emission(objects):
@@ -134,7 +149,9 @@ def main():
     args.output.mkdir(parents=True, exist_ok=False, mode=0o700)
     camera = setup_emission(list(obj.values()))
     lo, hi = np.asarray(lod['sourceBoundsBlenderMeters'])
-    center = Vector((lo + hi) / 2 - np.asarray(lod['grip']['sourceBlenderMeters']))
+    grip = np.asarray(lod['grip']['sourceBlenderMeters'])
+    center = Vector((lo + hi) / 2 - grip)
+    anchor = Vector(np.asarray(lod['string']['endSourceBlenderMeters']) - grip)
     scale = float(np.linalg.norm(hi - lo)) * 1.10
     frames = []
     for view in approved['frames']:
@@ -143,7 +160,12 @@ def main():
             raise ValueError(f'Changed approved frame {reference}')
         output = args.output / view['file']
         captured = capture(camera, center, scale, Vector(view['direction']), output)
-        frames.append({'view': view['view'], **captured, **match_frame(reference, output)})
+        source_pixels, lod_pixels = image_rgb(reference), image_rgb(output)
+        frame = {'view': view['view'], **captured, 'sourceFrameSha256': view['sha256'],
+                 **match_frame(source_pixels, lod_pixels)}
+        if view['view'] in ('left', 'right'):
+            frame['upperStringJoinPixels'] = compare_upper_join(source_pixels, lod_pixels, camera, anchor)
+        frames.append(frame)
     key.value = 1
     bpy.context.view_layer.update()
     draw_frame = capture(camera, center, scale, Vector((1, 0, 0)), args.output / 'left-full-draw.png')
