@@ -252,8 +252,8 @@ def plaza_position(image):
                 red, green, blue = sampled.getpixel((x,y))
                 if red >= 228 and 91 <= green <= 182 and blue <= 72:
                     points.append((2*x,2*y))
-    if len(points) < 18:
-        raise RuntimeError(f'Could not recover the orange Plaza figure in {image.name}')
+    if len(points) < 8:
+        return None
     # The projected avatar is compact even at the front of the plaza. Use
     # the median to reject isolated warm pixels from distant portal props.
     x = sorted(point[0] for point in points)[len(points)//2]
@@ -274,16 +274,24 @@ def walk_four_client_to_fire():
     for index, (axis, target) in enumerate(waypoints):
         for attempt in range(14):
             image = capture(f'03-plaza-waypoint-{index}')
-            if index >= 2 and 'cinder terraces' in ocr(image,(24,88,415,120),'7').lower():
+            prompt = ocr(image,(24,88,415,120),'7').lower()
+            if re.search(r'\bcinder\s+terraces\b',prompt):
                 copyfile(image,output/'03-plaza-fire-sign.png')
                 key('e',.18)
                 return
             position = plaza_position(image)
+            if position is None:
+                # The fire arch can cover the figure a frame before or after
+                # its entry prompt. Step south to get the marker back in view.
+                key('s',.30)
+                sleep(.4)
+                continue
             error = target-position[axis]
             if abs(error) < .42:
                 break
             negative, positive = ('a','d') if axis == 0 else ('s','w')
             key(negative if error < 0 else positive, min(1.3,max(.24,abs(error)/4.2)))
+            sleep(.4)
         else:
             raise RuntimeError(f'Plaza waypoint {index} stalled around {position}')
     text('03-plaza-fire-sign','cinder terraces',(24,88,365,120))
@@ -293,7 +301,8 @@ stage = sys.argv[1]
 if stage == 'read-plaza-position':
     for image in sys.argv[2:]:
         point = plaza_position(Path(image))
-        print(f'{Path(image).name}: x={point[0]:.2f} z={point[1]:.2f}', flush=True)
+        description = f'x={point[0]:.2f} z={point[1]:.2f}' if point else 'figure occluded'
+        print(f'{Path(image).name}: {description}', flush=True)
 elif stage == 'read-shared-label':
     for image in sys.argv[2:]:
         visible, heard = shared_hud_turn(image)
