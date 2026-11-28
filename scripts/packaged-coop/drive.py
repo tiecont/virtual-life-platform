@@ -792,7 +792,22 @@ elif stage == 'shared-board':
             for cell in (turn['move']['first'], turn['move']['second']):
                 click_record(name + '-cell', cell_center(board, cell), cell)
                 sleep(.20)
-            capture(name + '-after')
+            committed = expect(name + '-committed', lambda row: row['version'] == turn['version'] + 1, timeout=8)
+            if committed['phase'] == 'playing':
+                target = (committed['turn'], committed['activeSeat'])
+                while time_ns() // 1_000_000 < committed['deadlineUnixMs']:
+                    interval = {}
+                    image = capture(name + '-after', interval)
+                    visible, _ = shared_hud_turn(image)
+                    if (visible == target and populated_board(image) is not None and
+                            interval['capturedUnixMs'] < committed['deadlineUnixMs']):
+                        write_marker(output / (name + '-frame.json'), {**interval, 'turn': visible[0],
+                                     'activeSeat': visible[1], 'version': committed['version']})
+                        break
+                else:
+                    raise RuntimeError(f'{name} committed but its next live HUD was not captured')
+            else:
+                capture(name + '-after')
             (output / (name + '-observed')).touch()
 
 

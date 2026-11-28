@@ -120,11 +120,24 @@ async function verifySharedRng(){
    assert.match(turn.receipt.receiptHash,/^[0-9a-f]{64}$/);
    const effects=[...playerLog.matchAll(new RegExp('^Aetheria jewel HUD v'+turn.version+' ([a-z-]+) (\\d+)$','gm'))]
     .map(([,kind,value])=>({kind,value:Number(value)}));
+   const committed=await read(label+'-committed.json');
+   assert.equal(committed.version,turn.version);
+   let observedFrame=null;
+   if(committed.phase==='playing'){
+    observedFrame=await read(label+'-frame.json');
+    assert.equal(observedFrame.version,turn.version);
+    assert.equal(observedFrame.turn,committed.turn);
+    assert.equal(observedFrame.activeSeat,committed.activeSeat);
+    const inputs=clicks.filter(input=>input.action===label+'-cell');
+    assert.ok(inputs[1].sentUnixMs<=observedFrame.captureStartedUnixMs);
+    assert.ok(observedFrame.captureStartedUnixMs<=observedFrame.capturedUnixMs);
+    assert.ok(observedFrame.capturedUnixMs<committed.deadlineUnixMs);
+   }
    const frames=await verifyScreenshots([label+'-before.png',label+'-after.png']);
    const cropTool=fileURLToPath(new URL('./multiplier_crops.py',import.meta.url));
    const multiplierReview=JSON.parse(execFileSync('python3',[cropTool,
     join(root,label+'-before.png'),join(root,label+'.json')],{encoding:'utf8'}));
-   additionalHostTurns.push({...turn,displayedEffects:effects,frames,multiplierReview});
+   additionalHostTurns.push({...turn,displayedEffects:effects,observedFrame,frames,multiplierReview});
   }
  }
  verifyPerformance(performance);
