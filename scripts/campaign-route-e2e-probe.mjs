@@ -75,7 +75,7 @@ export async function verifyCampaignRoute({
  assert.equal(baseline.schemaVersion,7);
  assert.equal(baseline.campaignRoutes.length,48);
  assert.ok(baseline.campaignRoutes.every(route=>!route.enabled));
- const expected=structuredClone(baseline);
+ const expected=globalThis.structuredClone(baseline);
  enableCampaignProbeRoutes(expected,coOp);
  assert.deepEqual(published.bundle,expected);
  assert.notEqual(original.content_digest,published.digest);

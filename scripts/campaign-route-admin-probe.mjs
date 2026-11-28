@@ -71,7 +71,7 @@ export async function verifyCampaignRouteAdmin({
  await editor.screenshot({path:join(artifact,'campaign-route-published.png')});
 
  const saved=await dbConfig(created.version);
- const expected=structuredClone(baseline.bundle);
+ const expected=globalThis.structuredClone(baseline.bundle);
  expected.campaignRoutes.find(route=>route.id===first).enabled=true;
  const nextRoute=expected.campaignRoutes.find(route=>route.id===next);
  Object.assign(nextRoute,{enabled:true,mode:'either'});

@@ -21,10 +21,10 @@ export function routeCandidate(shared, content, profiles) {
     const profile = {
       id, name: pets.get(opponentPetId).catalog.name, mapId: map.id, element: map.element,
       maxHp: tuning.maxHp, attack: tuning.attack, defense: tuning.defense,
-      attackModel: structuredClone(template.attackModel), phase: structuredClone(tuning.phase),
+      attackModel: globalThis.structuredClone(template.attackModel), phase: globalThis.structuredClone(tuning.phase),
       critRateBp: template.critRateBp, critDamageBp: template.critDamageBp,
       telegraphTurns: template.telegraphTurns, requiredRoomPoints: 0,
-      rewardPolicy: {...structuredClone(template.rewardPolicy), recruitmentPetIds: [opponentPetId],
+      rewardPolicy: {...globalThis.structuredClone(template.rewardPolicy), recruitmentPetIds: [opponentPetId],
         minimumActions: {victory: 1, defeat: 1}},
     };
     return {id, mapId: map.id, opponentPetId, tier, prerequisiteEncounterId,
