@@ -6755,7 +6755,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast. At f1eb5caa all five persisted-language PlayMode cases passed for End Turn. Localized campaign navigation is implemented. The same run found a four-pixel overlap between the action row and footer."
+      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast. At f1eb5caa all five persisted-language PlayMode cases passed for End Turn. Localized campaign navigation is implemented. The same run found a four-pixel action/footer overlap. The fix at 3461ce34 passed the layout regression in the full suite at eb7314d1."
     },
     {
       "id": "VL-107",
@@ -9837,7 +9837,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth. PR 95 at c60a5c0a passed 18 proxy cases, admin build, lint and signed-out browser smoke. Independent review found sign-in destination loss, stale auth responses and mixed database snapshots. Verify the corrected revision before accepting this read-only slice."
+      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth. PR 95 at c60a5c0a passed 18 proxy cases, admin build, lint and signed-out browser smoke. Independent review found sign-in destination loss, stale auth responses and mixed database snapshots. 959968b1 corrected these issues and passed 21 contract/proxy cases and six registration PostgreSQL cases. On integrated source 2f208d0c, admin production build, 16 focused unit cases, 12 DB proxy cases and four desktop/mobile browser journeys passed. Subscriber and editorial workflows remain open."
     },
     {
       "id": "VL-167",
@@ -11538,7 +11538,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. The rendered four-seat timed journey remains open.",
+      "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. At eb7314d1, all nine R04-derived jewel icons matched provider pixels, 85 EditMode and 43 PlayMode cases passed with two skips. The Linux package at ae93b774 rendered all six functional designs in a four-seat Fire fixture at 1280×720. The host swapped, rejoined the pinned board across restart and committed skill and signature actions. A peer socket closed before settlement on the first run. Four-seat timed player recovery and owner art approval remain open.",
       "implementation": {
         "battleSettlementHud": {
           "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
