@@ -38,22 +38,49 @@ for seat in 0 1 2 3; do
   [[ -s "$client/display" ]]
 done
 
-drive() {
-  local seat="$1" phase="$2" limit=180s
+drive() (
+  seat="$1" phase="$2" limit=180s
   if [[ "$phase" == four-lobby ]]; then limit=360s; fi
-  PACKAGED_QA_RUN="$run/client-$seat" PACKAGED_QA_SEAT="$seat" \
-    timeout "$limit" python3 "$driver_dir/drive.py" "$phase" >> "$run/client-$seat/ui.log" 2>&1
-}
+  export PACKAGED_QA_RUN="$run/client-$seat" PACKAGED_QA_SEAT="$seat"
+  exec timeout "$limit" python3 "$driver_dir/drive.py" "$phase" >> "$run/client-$seat/ui.log" 2>&1
+)
 drive_all() {
-  local phase="$1" state=0
+  local phase="$1" seat pid completed status
+  local -a remaining
+  local -A client_for_pid
   driver_pids=()
   for seat in 0 1 2 3; do
     drive "$seat" "$phase" &
-    driver_pids+=("$!")
+    pid=$!
+    driver_pids+=("$pid")
+    client_for_pid[$pid]="$seat"
   done
-  for pid in "${driver_pids[@]}"; do wait "$pid" || state=1; done
-  driver_pids=()
-  return "$state"
+  while (( ${#driver_pids[@]} )); do
+    status=0
+    wait -n -p completed "${driver_pids[@]}" || status=$?
+    if [[ -z "${completed:-}" && "$status" == 127 ]]; then
+      # Bash no longer lists these jobs as running. Retrieve their saved
+      # statuses without waiting for a later stage or draining live children.
+      for pid in "${driver_pids[@]}"; do
+        wait "$pid" || {
+          status=$?
+          printf 'Client %s failed during %s (exit %s)\n' "${client_for_pid[$pid]}" "$phase" "$status" >&2
+          return "$status"
+        }
+      done
+      driver_pids=()
+      return 0
+    fi
+    if (( status != 0 )); then
+      printf 'Client %s failed during %s (exit %s)\n' "${client_for_pid[${completed:-0}]:-unknown}" "$phase" "$status" >&2
+      return "$status"
+    fi
+    remaining=()
+    for pid in "${driver_pids[@]}"; do
+      if [[ "$pid" != "$completed" ]]; then remaining+=("$pid"); fi
+    done
+    driver_pids=("${remaining[@]}")
+  done
 }
 drive_all four-lobby
 drive 0 four-host-room-start
