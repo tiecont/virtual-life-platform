@@ -1,8 +1,9 @@
 import {spawn} from 'node:child_process';
+import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
-import {access,mkdir,mkdtemp,readFile,rm} from 'node:fs/promises';
+import {access,mkdir,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {createServer} from 'node:net';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
@@ -57,8 +58,16 @@ process.once('SIGINT',stop);
 process.once('SIGTERM',stop);
 
 try{
- const timed=process.argv.length===3&&process.argv[2]==='--timed';
- if(process.platform!=='linux'||(process.argv.length!==2&&!timed))throw Error('Use play:linux:functional or play:linux:timed on Linux');
+ const mode=process.argv[2]??'functional';
+ const capture=mode==='--shared-capture';
+ const candidates={
+  functional:'arena8-coop-functional-v1.candidate.json',
+  '--timed':'arena8-coop-functional-v2.candidate.json',
+  '--shared':'arena8-coop-shared-rng-v1.candidate.json',
+  '--shared-capture':'arena8-coop-shared-rng-v1.candidate.json',
+ };
+ if(process.platform!=='linux'||process.argv.length>3||!Object.hasOwn(candidates,mode))
+  throw Error('Use a supported functional, timed or shared Linux play mode');
  if(!/^aetheria-soulbound-test-[a-f0-9]{8}$/.test(process.env.AETHERIA_TEST_DB_PROJECT??''))
   throw Error('The launcher needs a fresh wrapper-owned Docker database');
  const playerBinary=resolve('apps/unity-client/Builds/Linux/Aetheria');
@@ -88,7 +97,7 @@ try{
 
  phase='functional gameplay publication';
  const ruleset='arena8-coop-pve';
- const candidate=timed?'arena8-coop-functional-v2.candidate.json':'arena8-coop-functional-v1.candidate.json';
+ const candidate=candidates[mode];
  const bundle=JSON.parse(await readFile('config/gameplay/'+candidate,'utf8'));
  const validator=new EngineGameplayBundleValidator(binary);
  const published=await installGameplayConfig(pool,ruleset,bundle,validator,'system:local-functional-play');
@@ -117,16 +126,46 @@ try{
  const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
  if(!stopping){
   phase='Unity development player';
-  console.log('Create a guest with Enter local arena. Player log: '+resolve(directory,'player.log'));
+  console.log((capture?'Recording a packaged guest turn.':'Create a guest with Enter local arena.')+' Player log: '+resolve(directory,'player.log'));
   player=spawn(playerBinary,[
    '-force-glcore','-screen-width','1280','-screen-height','720','-screen-fullscreen','0',
    '-logFile',resolve(directory,'player.log'),
+   ...(capture?['-aetheria-arena8-native-capture',directory,'-aetheria-arena8-functional-turn','-aetheria-arena8-functional-regular']:[]),
   ],{env:{
    ...toolEnvironment(process.env),XDG_CONFIG_HOME:profile,
    AETHERIA_ARENA8_NATIVE:endpoint,AETHERIA_ARENA8_NATIVE_CA:tls.caFile,AETHERIA_ARENA8_FUNCTIONAL:'1',
   },stdio:'ignore'});
   const code=await new Promise((done,fail)=>{player.once('error',fail);player.once('close',done);});
   if(!stopping&&code!==0)throw Error('Check the local player log');
+  if(capture&&!stopping){
+   phase='verify packaged solo turn';
+   const facts=JSON.parse(await readFile(resolve(directory,'native-facts.json'),'utf8'));
+   assert.equal(facts.status,'ok');
+   assert.equal(facts.ruleset,'arena8-functional-pve');
+   assert.equal(facts.version,2);
+   assert.equal(facts.participantCount,1);
+   assert.equal(facts.boardTiles,64);
+   const {rows:[match]}=await pool.query(
+    `SELECT functional_config_version::int AS version,functional_config_digest AS digest,
+      functional_allocation->>'bossId' AS encounter FROM platform_native_arena8_matches WHERE match_id=$1`,[facts.matchId]);
+   assert.equal(match.version,published.version);
+   assert.equal(match.digest,published.digest);
+   assert.equal(match.encounter,'cinder-terraces-regular');
+   const {rows:receipts}=await pool.query(
+    `SELECT committed_version::int AS version,encode(receipt_hash,'hex') AS hash FROM game_native_receipts
+     WHERE match_id=$1 ORDER BY committed_version`,[facts.matchId]);
+   assert.deepEqual(receipts.map(receipt=>receipt.version),[1,2]);
+   const frames=[];
+   for(const name of ['functional-solo-01-admitted.png','functional-solo-02-playing.png','functional-solo-03-committed-swap.png']){
+    const image=await readFile(resolve(directory,name));
+    assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+    assert.equal(image.readUInt32BE(16),1280);
+    assert.equal(image.readUInt32BE(20),720);
+    frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
+   }
+   assert.equal(new Set(frames.map(frame=>frame.sha256)).size,3);
+   await writeFile(resolve(directory,'solo-shared-capture.json'),JSON.stringify({candidate,match,receipts,frames},null,2)+'\n');
+  }
  }
 }catch(error){
  // Configuration and PostgreSQL errors may contain credentials. Phase names and

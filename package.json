@@ -15,6 +15,8 @@
     "preview:logs": "node scripts/local-preview.mjs logs",
     "preview:test": "node scripts/local-preview-smoke.mjs",
     "play:linux": "node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --pet-arena --movement --linux-play",
+    "play:linux:shared": "node scripts/with-test-db.mjs node --import tsx scripts/play-linux-functional.mjs --shared",
+    "qa:linux:solo-shared": "node scripts/with-test-db.mjs node --import tsx scripts/play-linux-functional.mjs --shared-capture",
     "play:linux:timed": "node scripts/with-test-db.mjs node --import tsx scripts/play-linux-functional.mjs --timed",
     "play:linux:functional": "node scripts/with-test-db.mjs node --import tsx scripts/play-linux-functional.mjs",
     "docker:prepare": "node scripts/local-compose.mjs prepare",
