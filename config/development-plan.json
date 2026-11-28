@@ -11310,6 +11310,7 @@
     },
     {
       "id": "VL-205",
+      "campaignPrivateEyeQualification": {"sourceRevision": "5bdf49ce", "verifiedScope": "Original Charakuru VRM 10-degree single-eye probes in the real Unity Editor moved 84 left / 92 right skin vertices, up to 2.10 / 2.70 mm. All 18 existing expression presets remain unbound."},
       "campaignV4CandidateReview": {"sourceRevision": "3035d7a85a28a86ff59713e50cd70e289ee18151", "verifiedScope": "Ignivar and Cinderquill original GLBs verified, 11016 and 8386 triangles respectively, reference hashes and Tripo jobs recorded. No UVs, textures, rig or motion. Coalwhisk/Warden importer and animation probes passed at 33bb547a."},
       "campaignV4ContinuationVerification": {"sourceRevision": "9d824f915549d28e91cce7dd8ef0e5a000d0637c", "verifiedScope": "Blender 5.3 reimport and action deformation passed for Coalwhisk and Cinder Warden. Prototype material and silhouette review remains."},
       "mvpMilestone": "M4",
