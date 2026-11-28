@@ -19,8 +19,16 @@ acceptance does not close an art, hardware, rights or release gate.
 
 ## Authority and compatibility
 
-The target gameplay authority is Rust. Wave A adds a **new versioned ruleset**
-(`aetheria-pet-arena-arena8`, version 1) with an **8x8** board.
+### Canonical authority precedence
+
+Active implementation and acceptance follow this strict precedence order:
+
+1. **Latest owner-approved gameplay decisions** (including the Wave D4 15-second server-authoritative turn timer, explicit End Turn voluntary pass, uncapped combat turns with no maximum-round/maximum-turn automatic defeat, removal of player-facing auto-battle and pause, `x1/x2` presentation-only speed, `x2`–`x8` progressive tile multipliers, individual per-Pet resources with zero team Rage, and the R02 four-resource wallet with atomic 1:1 Diamond → Luminous Stone conversion).
+2. **Current canonical gameplay specifications** (`mvp-wave-a.md`, `wave-b-owner-decisions.md`, `wave-c2-arena8-contract.md`, and the database-published `CoopConfig` bundle validated by `aetheria-game-runtime --check-gameplay-config`).
+3. **Historical specifications retained for compatibility** (`v2.md`, `v3.1.md`, Wave 1 6x6, and historical `arena8-coop-v1` / `arena8-coop-v2` bundles with `turnTimeoutMs: 60000` and `maxRounds: 40`), which govern existing replays, journals and pinned active matches only.
+4. **Visual references** (the owner's cinematic design kit R01–R05), which define the binding player-facing visual design system, iconography, color relationships and composition, but never override authoritative gameplay rules or activate deferred content.
+
+The target gameplay authority is Rust. Wave A adds versioned **8x8** rulesets (`aetheria-pet-arena-arena8`, `arena8-coop-pve`, and `arena8-functional-pve`), with **`arena8-coop-v3` (`schemaVersion: 4`)** serving as the active timed, uncapped functional-board contract (`turnTimeoutMs: 15000`, `maxRounds: null`).
 
 The existing native V1 6x6 reducer and its fixtures are frozen. The existing
 action-based Wave 1 campaign API is also a frozen local compatibility slice; it
@@ -41,8 +49,11 @@ owns entropy, the loadout snapshot, settlement and idempotent receipts.
   creates a match. Invalid swaps are rejected without mutating state.
 - Match-3 detection in rows and columns, deterministic clear, gravity/refill and
   bounded cascades. Dead boards recover through a bounded deterministic routine.
-- HP, defense, Mana, Rage and skill cooldowns. Normal attacks, shared skills,
-  Signature and Ultimate follow the committed skill definitions.
+- HP, defense, individual Mana, individual Rage and skill cooldowns (zero team Rage). Every authored skill is available from Pet Lv1 subject to its legitimate resource cost and cooldown; there is no level-based skill unlocking. Normal attacks, shared skills, Signature, Ultimate (displayed only when the Pet has an authored Ultimate) and Guard follow the committed skill definitions; passive abilities are displayed as non-castable indicators.
+- Every player turn lasts a maximum of **15,000 ms** (`turnTimeoutMs: 15000`), enforced by a durable server-authoritative deadline persisted across reconnects and runtime restarts. The active participant may submit **End Turn** as an explicit voluntary pass (granting zero free resources and never acting as Guard). Unused turns expire automatically without performing any automated swap, skill or Guard.
+- Active `arena8-coop-v3` matches have **no maximum-round or maximum-turn automatic combat defeat** (`maxRounds: null`); combat continues until all party combatants fall or the opponent/Boss HP reaches zero. Bounded simulations report evaluation-budget exhaustion as `unresolved` (censored), never as a combat defeat.
+- Player-facing **auto-battle** and **gameplay pause** are prohibited. The **`x1 / x2`** control adjusts client presentation speed only and never alters server deadlines, RNG, damage, resources or settlement.
+- Progressive board multipliers support **`x2` through `x8`** (with `x7` at turn 37 and `x8` at turn 42 evaluated as candidate tiers in `arena8-coop-functional-v2.candidate.json` pending owner balance sign-off).
 - Enemy telegraph is committed one turn ahead and cannot be retargeted by a
   client after commitment. Enemy AI is bounded and deterministic.
 - Icarus **FIRE_ZONE** is authored as a bounded board/encounter effect; it must
