@@ -15,6 +15,9 @@ assert acceptance['playerRevision'] == (run/'player-source-sha.txt').read_text()
 assert acceptance['accounts'] == acceptance['sessions'] == 4
 assert acceptance['distinctTickets'] >= 4
 assert acceptance['startVersion'] == 1
+opening_started = acceptance['openingStartedUnixMs']
+opening_ended = acceptance['openingEndedUnixMs']
+assert 0 < opening_ended - opening_started <= 15_000
 assert [item['seat'] for item in acceptance['seats']] == [0, 1, 2, 3]
 displays, processes, assigned = set(), set(), set()
 clients = []
@@ -39,7 +42,8 @@ for slot in range(4):
         assert size == expected_size
     assert list(populated_board(frame) or []) == evidence['bounds']
     frame_hash = hashlib.sha256(frame.read_bytes()).hexdigest()
-    assert evidence['visibleTurn'] >= 0 and 0 <= evidence['visibleActiveSeat'] <= 3
+    assert (evidence['visibleTurn'], evidence['visibleActiveSeat']) == (0, 0)
+    assert opening_started <= evidence['capturedUnixMs'] < opening_ended
     clients.append({**evidence, 'picture': f'client-{slot}/{name}', 'dimensions': size,
                     'display': display, 'window': window, 'pid': pid, 'sha256': frame_hash})
 assert len(displays) == len(processes) == 4

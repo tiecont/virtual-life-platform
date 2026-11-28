@@ -324,14 +324,21 @@ try{
   await json('four-native-ready.json',{accounts:tickets.length,sessions:worldSessions.sessions});
   const start=await until(
    `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
-      encode(payload_fingerprint,'hex') AS fingerprint FROM game_native_receipts WHERE match_id=$1 AND committed_version=1`,
+      encode(payload_fingerprint,'hex') AS fingerprint,created_at AS "createdAt"
+      FROM game_native_receipts WHERE match_id=$1 AND committed_version=1`,
    [allocation.match_id]);
   assert.equal(start.actor,host);
   assert.equal(start.fingerprint,journalFingerprint(start,allocation.match_id,{kind:'start'}));
   await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/board.json')));
+  const {rows:[next]}=await pool.query(
+   'SELECT created_at AS "createdAt" FROM game_native_receipts WHERE match_id=$1 AND committed_version=2',
+   [allocation.match_id]);
+  const openingStartedUnixMs=start.createdAt.getTime();
+  const openingEndedUnixMs=Math.min(openingStartedUnixMs+bundle.party.turnTimeoutMs,next?.createdAt.getTime()??Infinity);
   await json('four-native-run.json',{harnessRevision:facts.backendSource,playerRevision:facts.unitySource,roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
    digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
-   distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version});
+   distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version,
+   openingStartedUnixMs,openingEndedUnixMs});
   facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');
  }else{
  const fireTarget={room,allocation,boss};
