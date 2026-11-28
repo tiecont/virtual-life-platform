@@ -152,6 +152,7 @@ namespace Aetheria.PetArena.Presentation
                 else if (view.BossState.Phase > previous.BossState.Phase)
                 {
                     feedback = "The Boss transformed";
+                    battleAudio?.SetCombatScore(ArenaCombatScore.BossPhaseTwo);
                     battleAudio?.Play(ArenaAudioCue.BossWarning);
                 }
                 else
@@ -176,7 +177,8 @@ namespace Aetheria.PetArena.Presentation
             if (previous == null && !view.Terminal && battleAudio != null)
             {
                 var regular = view.BossId?.EndsWith("-regular", StringComparison.Ordinal) == true;
-                battleAudio.SetCombatScore(regular ? ArenaCombatScore.Regular : ArenaCombatScore.Boss);
+                battleAudio.SetCombatScore(regular ? ArenaCombatScore.Regular :
+                    view.BossState.Phase >= 2 ? ArenaCombatScore.BossPhaseTwo : ArenaCombatScore.Boss);
                 if (view.BossId?.StartsWith("cinder-terraces-", StringComparison.Ordinal) == true)
                     battleAudio.SetAmbience(ArenaAmbience.Fire);
                 else if (view.BossId?.StartsWith("tideglass-lagoon-", StringComparison.Ordinal) == true)

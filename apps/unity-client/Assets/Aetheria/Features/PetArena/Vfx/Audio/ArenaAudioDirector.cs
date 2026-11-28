@@ -259,6 +259,17 @@ namespace Aetheria.PetArena.Vfx
             if (library != null && library.TryGetMusic(value, out var overrideClip, out _) &&
                 overrideClip != null)
                 return overrideClip;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // These local compositions have a separate owner listening and rights gate.
+            var track = value == ArenaCombatScore.Boss ? "coop-boss" :
+                value == ArenaCombatScore.BossPhaseTwo ? "coop-boss-phase-2" : null;
+            if (track != null)
+            {
+                var developmentClip = Resources.Load<AudioClip>("WaveD4/Audio/Music/" + track);
+                if (developmentClip != null) return developmentClip;
+            }
+#endif
+            if (value == ArenaCombatScore.BossPhaseTwo) return ResolveMusicClip(ArenaCombatScore.Boss);
             var index = (int)value;
             if (index < 0 || index >= musicFallbacks.Length) return null;
             if (musicFallbacks[index] == null)
