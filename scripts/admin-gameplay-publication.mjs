@@ -294,7 +294,7 @@ try{
  }
  async function directPublish(label){
   const fields=variants[label],active=await dbActive();
-  const bundle=structuredClone((await dbConfig(active.version)).bundle),boss=bundle.bosses[0];
+  const bundle=globalThis.structuredClone((await dbConfig(active.version)).bundle),boss=bundle.bosses[0];
   boss.requiredRoomPoints=fields.points;
   boss.rewardPolicy.defeat.materials=fields.materials;
   if(fields.priority)boss.attackModel.targetPriority=fields.priority;
