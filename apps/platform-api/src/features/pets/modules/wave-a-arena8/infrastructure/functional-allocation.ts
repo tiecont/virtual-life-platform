@@ -16,7 +16,7 @@ function soloEncounter(bundle:Record<string,unknown>,mapId:string,encounterId:st
   const selected=catalog.find(candidate=>candidate?.mapId===mapId);
   if(encounterId===mapId+'-regular'&&selected?.regular?.id===encounterId&&selected.regular.rewardPolicy)
     return encounterId;
-  if(encounterId===mapId+'-boss'&&selected?.solo&&selected.rewardPolicy&&
+  if(encounterId===mapId+'-boss'&&selected?.rewardPolicy&&(bundle.schemaVersion===6||selected.solo)&&
     typeof selected.id==='string'&&stableId.test(selected.id))
     return selected.id;
   throw unavailable('This encounter has no published functional solo profile');

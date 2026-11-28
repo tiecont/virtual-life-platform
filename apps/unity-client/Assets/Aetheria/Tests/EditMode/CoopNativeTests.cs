@@ -314,6 +314,8 @@ namespace Aetheria.Tests
             var advanced = Admission().Insert(1, "\"clientBuild\":\"unity-native-v3\",");
             Assert.That(CoopNativeAdmission.Decode(advanced).ClientBuild,
                 Is.EqualTo(NativeConnection.JewelFeedbackClientBuild));
+            Assert.That(CoopNativeAdmission.Decode(advanced.Replace("unity-native-v3", "unity-native-v4")).ClientBuild,
+                Is.EqualTo(NativeConnection.SharedJewelClientBuild));
             Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(advanced.Replace("unity-native-v3", "unknown")));
             var connection = admission.CreateConnection();
             Assert.That(connection, Is.Not.Null);

@@ -85,7 +85,7 @@ export type NativeArena8ProvisionerOptions=Readonly<{
 
 export type NativeArena8AllocationView=Readonly<{
   matchId:string;wssUrl:string;httpsOrigin:string;ticket:string;expiresAt:string;
-  contentHash:string;bootId:string;principal:string;clientBuild?:'unity-native-v3';ruleset?:typeof FUNCTIONAL_SOLO_RULESET;
+  contentHash:string;bootId:string;principal:string;clientBuild?:ReturnType<typeof nativeClientBuildForBundle>;ruleset?:typeof FUNCTIONAL_SOLO_RULESET;
   allocation:Readonly<{
     petId:string;mapId:string;encounterId:string;level:number;
     artifacts:readonly Arena8Artifact[];
@@ -98,7 +98,7 @@ type Lease={
   stop:()=>void;
 };
 type ActiveMatch={
-  clientBuild?:'unity-native-v3';
+  clientBuild?:ReturnType<typeof nativeClientBuildForBundle>;
   record:NativeArena8MatchRecord;scope:RuntimeScope;generation:number;
   handle:NativeArena8RuntimeHandle;lease:Lease;
   stopped:boolean;exited:boolean;

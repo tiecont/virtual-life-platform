@@ -57,6 +57,8 @@ namespace Aetheria.Networking
     {
         public const int MaxFrameBytes = 65536;
         public const string LegacyClientBuild = "unity-native-v2";
+        public const string SharedJewelClientBuild = "unity-native-v4";
+        public static bool SupportsJewelFeedback(string build) => build == JewelFeedbackClientBuild || build == SharedJewelClientBuild;
         public const string JewelFeedbackClientBuild = "unity-native-v3";
         private readonly Uri endpoint;
         private readonly string origin, clientBuild;
@@ -89,7 +91,7 @@ namespace Aetheria.Networking
                 origin.UserInfo.Length != 0 || endpoint.Authority != origin.Authority ||
                 contentHash == null || contentHash.Length != 32 || contentHash.All(b => b == 0) || bootId == Guid.Empty || ticketProvider == null)
                 throw new ArgumentException("Explicit native scope required");
-            if (clientBuild != LegacyClientBuild && clientBuild != JewelFeedbackClientBuild)
+            if (clientBuild != LegacyClientBuild && !SupportsJewelFeedback(clientBuild))
                 throw new ArgumentException("Invalid native client build", nameof(clientBuild));
             this.clientBuild = clientBuild;
             this.endpoint = endpoint; this.origin = origin.GetLeftPart(UriPartial.Authority);
