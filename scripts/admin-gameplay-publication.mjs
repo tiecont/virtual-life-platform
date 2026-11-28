@@ -14,6 +14,7 @@ import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
+import {verifySoloWaterCampaign} from './solo-water-campaign-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -81,7 +82,8 @@ function pureSwap(board,requiredKind){
   }
  }
 }
-const solo=process.argv.includes('--solo');
+const waterCampaign=process.argv.includes('--water-campaign');
+const solo=waterCampaign||process.argv.includes('--solo');
 const direct=solo||process.argv.includes('--direct');
 const functional=solo||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
@@ -92,8 +94,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,waterCampaign?'water-campaign-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:waterCampaign?'unchanged-functional-solo-campaign':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -137,29 +139,32 @@ try{
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
  const seedPath=functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
- const seed=JSON.parse(await readFile(seedPath,'utf8'));
- // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
- seed.party.maxRounds=2;
+ const seedBytes=await readFile(seedPath);
+ const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
- boss.telegraphTurns=1;
- boss.attackModel.baseDamage=1;
- boss.attackModel.perRoundDamage=0;
- boss.attackModel.minimumDamage=1;
- if(solo){
-  assert.ok(boss.solo);
-  boss.solo.maxRounds=2;
-  assert.ok(boss.regular);
-  boss.regular.maxHp=1;
-  boss.regular.defense=1;
-  boss.regular.maxRounds=20;
+ if(!waterCampaign){
+  // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
+  seed.party.maxRounds=2;
+  boss.telegraphTurns=1;
+  boss.attackModel.baseDamage=1;
+  boss.attackModel.perRoundDamage=0;
+  boss.attackModel.minimumDamage=1;
+  if(solo){
+   assert.ok(boss.solo);
+   boss.solo.maxRounds=2;
+   assert.ok(boss.regular);
+   boss.regular.maxHp=1;
+   boss.regular.defense=1;
+   boss.regular.maxRounds=20;
+  }
+  if(functional){
+   // Keep the test segment on a known ×1 utility factor and make an eligible
+   // committed Mana match common even though the host chooses a fresh seed.
+   seed.multiplier.schedule=seed.multiplier.schedule.slice(0,1);
+   seed.multiplier.schedule[0].tiers=[{multiplier:1,weight:1,damageWeightPm:1000,resourceWeightPm:1000}];
+   for(const row of seed.board.functionalTiles.spawnWeights)row.weight=row.kind==='mana'||(solo&&row.kind==='sword')?5:1;
+  }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  }
- if(functional){
-  // Keep the test segment on a known ×1 utility factor and make an eligible
-  // committed Mana match common even though the host chooses a fresh seed.
-  seed.multiplier.schedule=seed.multiplier.schedule.slice(0,1);
-  seed.multiplier.schedule[0].tiers=[{multiplier:1,weight:1,damageWeightPm:1000,resourceWeightPm:1000}];
-  for(const row of seed.board.functionalTiles.spawnWeights)row.weight=row.kind==='mana'||(solo&&row.kind==='sword')?5:1;
- }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  const validator=new EngineGameplayBundleValidator(binary);
  const installed=await installGameplayConfig(pool,ruleset,seed,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
@@ -410,7 +415,7 @@ try{
   mark('published '+label+' through typed browser controls, engine validation and PostgreSQL selection',{version:created.version,digest:checked.digest,activeRevision:publishResult.activeRevision,fields});
   return configurations[label];
  }
- const A=await publish('A');
+ const A=waterCampaign?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');
  let addressIndex=1;
  async function guest(name,petId){
   const response=await app.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.214.1.'+addressIndex++,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
@@ -422,7 +427,7 @@ try{
  }
  const post=(auth,url,payload)=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
  const get=(auth,url)=>app.http.inject({url,headers:{cookie:auth.cookie}});
- const pets=['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
+ const pets=waterCampaign?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
@@ -442,7 +447,7 @@ try{
   mark('Achievement Points gate used the active Admin version',{version:version.version,points,requiredPoints:eligibility.requiredPoints,eligible:allowed,createStatus:result?.statusCode});
   return result?.json();
  }
- await grant(host,5250);
+ if(!waterCampaign)await grant(host,5250);
  const caPem=await readFile(tls.caFile,'utf8');
  async function prepareRoom(version,room){
   if(!room){
@@ -721,7 +726,12 @@ try{
   mark('all four receipts used the material award pinned at allocation',{version:match.version.version,materials:match.version.fields.materials});
   mark('disposable match settled to free the local runtime listener',{matchId:match.row.match_id,canonicalVersion:response.version});
  }
- if(solo){
+ if(waterCampaign){
+  await verifySoloWaterCampaign({
+   pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
+   dbConfig,post,soloAdmission,native,connections,closeMatch,restart,legalSwap,
+  });
+ }else if(solo){
   const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:'cinder-terraces',encounterId:'cinder-terraces-boss'};
   const admission=await soloAdmission(input);
   const match={input,row:{match_id:admission.matchId,content_hash:admission.contentHash},version:A};
