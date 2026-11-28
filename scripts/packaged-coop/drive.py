@@ -75,6 +75,24 @@ def cell_center(bounds, index):
         round(top + 6 + (index // 8 + .5) * cell_size),
     )
 
+def populated_board(filename):
+    try:
+        bounds = board_bounds(filename)
+    except RuntimeError:
+        return None
+    left, top, side = bounds
+    with Image.open(filename) as frame:
+        if left < 0 or left + side > frame.width or top + side > frame.height:
+            return None
+        for index in range(64):
+            x, y = cell_center(bounds, index)
+            # The pre-Start cells contain one flat background and a tiny dot.
+            # Each functional icon adds texture at the center of its cell.
+            if frame.crop((x - 10, y - 10, x + 10, y + 10)).getcolors(maxcolors=64) is not None:
+                return None
+    return bounds
+
+
 def ocr(image, box, mode='7', fmt=None):
     data=BytesIO()
     cropped = Image.open(image).convert('RGB').crop(box)
@@ -298,14 +316,7 @@ elif stage == 'water':
         def playing_board(img, state):
             if status_button(img) or live_turn(img) != (state['turn'], state['activeSeat']):
                 return None
-            try:
-                board = board_bounds(img)
-            except RuntimeError:
-                return None
-            left, top, side = board
-            if left < 0 or left + side > screen_width or top + side > screen_height:
-                return None
-            return board
+            return populated_board(img)
 
         board, _ = wait_for('22-water-started-board', lambda img: playing_board(img, started['state']))
         for attempt in range(5):
