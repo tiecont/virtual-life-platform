@@ -39,7 +39,7 @@ namespace Aetheria.ArtValidation
         {
             public string unityVersion = Application.unityVersion;
             public string importer = typeof(GlbScriptedImporter).FullName;
-            public string materialShader = "Universal Render Pipeline/Lit";
+            public string expectedMaterialShader = "Universal Render Pipeline/Lit";
             public Facts[] models;
         }
 
@@ -47,6 +47,8 @@ namespace Aetheria.ArtValidation
         private sealed class Facts
         {
             public string id, sourceSha256, wingbeatSha256, nativeClip;
+            public string[] importedShaders;
+            public bool expectedMaterialOnAllParts;
             public int meshParts, triangles, vertices, framesMeasured, sharedPartPairs, wingToBodyPairs, textureSubassets;
             public float nativeClipSeconds, maxRestGeometryError, maxRestUvError, maxStartDelta;
             public float maxTorsoDelta, maxStaticBodyDelta, maxReturnDelta, maxCoincidentVertexGap, maxWrappedDelta;
@@ -109,6 +111,8 @@ namespace Aetheria.ArtValidation
                     nativeClip = clips[0].name, nativeClipSeconds = clips[0].length, meshParts = skins.Count,
                     textureSubassets = assets.OfType<Texture2D>().Count(),
                 };
+                var importedShaders = new SortedSet<string>(StringComparer.Ordinal);
+                facts.expectedMaterialOnAllParts = true;
                 var parts = new Part[spec.partCount];
                 for (int index = 0; index < parts.Length; index++)
                 {
@@ -119,14 +123,19 @@ namespace Aetheria.ArtValidation
                     var master = filter.sharedMesh.vertices.Select(filter.transform.TransformPoint).ToArray();
                     bool wing = spec.wingParts.Contains(index);
                     parts[index] = new Part { skin = skin, rest = rest, side = WingSide(skin, wing) };
-                    Require(skin.sharedMaterials.Length == skin.sharedMesh.subMeshCount &&
-                        skin.sharedMaterials.All(material => material != null &&
-                            material.shader.name == "Universal Render Pipeline/Lit"),
-                        $"{spec.id}/{name}: expected the URP/Lit fallback material.");
+                    var materials = skin.sharedMaterials;
+                    facts.expectedMaterialOnAllParts &= materials.Length == skin.sharedMesh.subMeshCount;
+                    foreach (var material in materials)
+                    {
+                        string shader = material && material.shader ? material.shader.name : "(missing)";
+                        importedShaders.Add(shader);
+                        facts.expectedMaterialOnAllParts &= shader == "Universal Render Pipeline/Lit";
+                    }
                     CompareRest(filter.sharedMesh, master, skin.sharedMesh, rest, facts);
                 }
                 Require(facts.triangles == spec.triangles && parts[spec.torsoPart].side == 0,
                     $"{spec.id}: changed triangle count or torso assignment.");
+                facts.importedShaders = importedShaders.ToArray();
                 Measure(instance, clips[0], parts, spec.torsoPart, baked, facts);
                 return facts;
             }

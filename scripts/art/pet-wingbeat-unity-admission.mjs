@@ -83,8 +83,11 @@ try {
   if (facts.models?.length !== inputs.length || !facts.models.every((model, index) =>
     model.id === inputs[index].id && model.framesMeasured === 49))
     throw Error('Unity omitted required model or frame evidence');
-  report.classification = 'PRIVATE_UNITY_WINGBEAT_PASS';
   report.unityFacts = factsPath;
+  report.motionQualified = true;
+  if (!facts.models.every(model => model.expectedMaterialOnAllParts))
+    throw Error('Motion measured. Imported material failed the URP/Lit fallback check. See unity-facts.json.');
+  report.classification = 'PRIVATE_UNITY_WINGBEAT_PASS';
 } catch (error) {
   report.reason = error.message;
   process.exitCode = 1;
