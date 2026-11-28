@@ -11,7 +11,11 @@ const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const sourceRevision=(await readFile(join(root,'source-sha.txt'),'utf8')).trim();
 const build=await read('build-receipt.json');
 assert.match(sourceRevision,/^[0-9a-f]{40}$/);
-const playerRevision=(await readFile(join(root,'player-source-sha.txt'),'utf8')).trim();
+// Historical runs used a single SHA and have no separate player marker.
+const playerRevision=(await readFile(join(root,'player-source-sha.txt'),'utf8').catch(error=>{
+ if(error.code==='ENOENT')return sourceRevision;
+ throw error;
+})).trim();
 assert.match(playerRevision,/^[0-9a-f]{40}$/);
 assert.equal(build.sourceRevision,playerRevision);
 if(playerRevision!==sourceRevision){
