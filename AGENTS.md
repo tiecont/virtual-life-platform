@@ -1,5 +1,8 @@
 # Repository Instructions
 
+Use the [Universal Execution contract](specs/engineering/execution.md) to
+select a route, discover required skills and gates, and resume substantial work.
+
 At the start of an implementation session, inspect `git status --short --branch`,
 `git worktree list` and the relevant branch and PR revisions. Read README.md
 and the relevant entries in `config/development-plan.json` before editing code.

@@ -43,9 +43,10 @@ prerequisites and controls.
 
 ## Engineering Harness
 
-Use the [engineering harness runbook](specs/engineering/harness.md) to start a
-Codex session, run scoped verification workflows, or recover a task after a
-restart. The workflow and recovery CLIs also run directly under other harnesses.
+Start with the [Universal Execution contract](specs/engineering/execution.md)
+to discover project skills, task routes, evidence and recovery. The
+[engineering harness runbook](specs/engineering/harness.md) documents the
+underlying verification and checkpoint commands.
 
 ## Local UI Preview
 

@@ -1,6 +1,6 @@
 import { execFile, execFileSync, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { copyFileSync, lstatSync, mkdirSync, mkdtempSync, rmSync, symlinkSync } from 'node:fs'
+import { copyFileSync, lstatSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
@@ -9,16 +9,24 @@ import assert from 'node:assert/strict'
 
 const digest = 'a'.repeat(64)
 
-function fixture(t) {
+function fixture(t, registry) {
   const cwd = mkdtempSync(join(tmpdir(), 'aetheria-harness-state-'))
   t.after(() => rmSync(cwd, { recursive: true, force: true }))
   const scripts = join(cwd, 'scripts', 'engineering-harness')
   mkdirSync(scripts, { recursive: true })
-  for (const file of ['state.mjs', 'state-contract.mjs', 'state-store.mjs']) {
+  const files = ['state.mjs', 'state-contract.mjs', 'state-store.mjs', 'state-portable.mjs']
+  if (registry) files.push('state-execution.mjs', 'execution-contract.mjs')
+  for (const file of files) {
     copyFileSync(new URL(`../../scripts/engineering-harness/${file}`, import.meta.url), join(scripts, file))
   }
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
   git('init', '-q')
+  writeFileSync(join(cwd, '.gitignore'), 'artifacts/\n')
+  if (registry) {
+    mkdirSync(join(cwd, 'config'))
+    writeFileSync(join(cwd, 'config', 'engineering-execution.json'), JSON.stringify(registry))
+  }
+  git('add', '.')
   git('-c', 'core.hooksPath=/dev/null', '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '--no-gpg-sign', '-m', 'fixture')
   const script = join(scripts, 'state.mjs')
   function run(...args) {
@@ -29,8 +37,14 @@ function fixture(t) {
     assert.equal(result.status, 0, result.stderr)
     return JSON.parse(result.stdout)
   }
+  function clone() {
+    const target = mkdtempSync(join(tmpdir(), 'aetheria-harness-portable-'))
+    t.after(() => rmSync(target, { recursive: true, force: true }))
+    git('clone', '--quiet', '--local', cwd, target)
+    return (...args) => spawnSync(process.execPath, [join(target, 'scripts', 'engineering-harness', 'state.mjs'), ...args], { cwd: target, encoding: 'utf8' })
+  }
   return {
-    cwd, script, run, call,
+    cwd, script, run, call, git, clone,
     revision: git('rev-parse', 'HEAD'),
     database: join(cwd, 'artifacts', 'harness-state', 'checkpoints.sqlite'),
   }
@@ -183,4 +197,95 @@ test('discovers an unfinished checkpoint by run ID and recovers it in a fresh pr
     id: 'coop', version: 1, baseRevision: revision, active: [], ready: ['VL-200'], blocked: [],
   }])
   assert.deepEqual(call('recover', result.runs[0].id).ready, ['VL-200'])
+})
+
+test('moves a legacy checkpoint to a fresh clone with source and evidence diagnostics', (t) => {
+  const { cwd, call, clone, git } = fixture(t)
+  const workspace = join(cwd, 'artifacts', 'worker')
+  call('init', 'legacy', JSON.stringify(plan([task('inspect', { writePaths: ['scripts'], workspace })])))
+  const evidence = { path: 'artifacts/note.txt', sha256: createHash('sha256').update('evidence').digest('hex') }
+  writeFileSync(join(cwd, evidence.path), 'evidence')
+  call('update', 'legacy', '1', 'inspect', JSON.stringify({ status: 'IN_PROGRESS', evidence: [evidence] }))
+  const exported = call('export', 'legacy')
+  assert.equal(exported.state.tasks[0].workspace, 'artifacts/worker')
+  assert.equal(JSON.stringify(exported).includes(cwd), false)
+  assert.equal(call('verify', JSON.stringify(exported), 'inspect').evidence[0].status, 'MATCH')
+  assert.equal(call('export', 'legacy', '1').state.version, 1)
+
+  const destination = clone()
+  const result = destination('import', JSON.stringify(exported))
+  assert.equal(result.status, 0, result.stderr)
+  const imported = JSON.parse(result.stdout)
+  assert.equal(imported.version, 2)
+  assert.equal(imported.target.relation, 'EXACT')
+  assert.deepEqual(imported.evidence, [{ ...evidence, status: 'MISSING' }])
+  rejects(destination('import', JSON.stringify(exported)), 'CONFLICT')
+  const advanced = destination('update', 'legacy', '2', 'inspect', '{"status":"BLOCKED","blockers":["Restore evidence"]}')
+  assert.equal(advanced.status, 0, advanced.stderr)
+  assert.equal(JSON.parse(advanced.stdout).version, 3)
+  rejects(destination('verify', JSON.stringify({ ...exported, source: { ...exported.source, dirty: true } })), 'CORRUPT_STATE')
+  writeFileSync(join(cwd, evidence.path), 'modified')
+  assert.equal(call('verify', JSON.stringify(exported)).evidence[0].status, 'CHANGED')
+  git('-c', 'core.hooksPath=/dev/null', '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.test', 'commit', '--allow-empty', '--no-gpg-sign', '-m', 'advance')
+  assert.equal(call('verify', JSON.stringify(exported)).target.relation, 'DESCENDANT')
+})
+
+const registry = {
+  version: 2,
+  scopedRules: [],
+  stages: { scope: 'Scope the work', validate: 'Run checks', review: 'Get decision', handoff: 'Deliver' },
+  routes: { delivery: { paths: [], skills: [], stages: ['scope', 'validate', 'review', 'handoff'], gates: ['migration', 'owner'] } },
+  gates: {
+    migration: { kind: 'workflow', stage: 'validate', workflow: 'migration-compat', input: { mode: 'runtime' } },
+    owner: { kind: 'owner', stage: 'review' },
+  },
+}
+
+test('requires pinned route stages, configured workflow input and an explicit owner receipt', (t) => {
+  const { cwd, revision, call, run, clone } = fixture(t, registry)
+  const base = plan([task('inspect', { execution: { route: 'delivery' } })])
+  rejects(run('start', 'missing-route', JSON.stringify(plan())), 'INVALID_STATE', /required/)
+  rejects(run('start', 'forged', JSON.stringify(plan([task('inspect', { execution: { route: 'delivery', gate: [] } })]))), 'INVALID_STATE', /unknown/)
+  const initial = call('start', 'candidate', JSON.stringify(base))
+  assert.equal(initial.schemaVersion, 2)
+  const update = (version, patch, invoke = call) => invoke('update', 'candidate', String(version), 'inspect', JSON.stringify(patch))
+  rejects(update(1, { status: 'IN_PROGRESS', execution: { stage: 'review' } }, run), 'INVALID_STATE', /one step/)
+  update(1, { status: 'IN_PROGRESS', execution: { stage: 'validate' } })
+  rejects(update(2, { execution: { stage: 'review' } }, run), 'INVALID_STATE', /required gate migration/)
+  rejects(update(2, { execution: { policy: {} } }, run), 'INVALID_STATE', /unknown/)
+
+  const runId = '00000000-0000-0000-0000-000000000000'
+  const result = (id, path, content, extra) => {
+    const encoded = JSON.stringify(content)
+    mkdirSync(join(cwd, path, '..'), { recursive: true })
+    writeFileSync(join(cwd, path), encoded)
+    return { id, status: 'PASS', revision, evidence: { path, sha256: createHash('sha256').update(encoded).digest('hex') }, ...extra }
+  }
+  const workflow = (mode, worktreeDirty = false, status = 'PASS') => result('migration',
+    `artifacts/engineering-harness/runs/${runId}/report.json`, {
+      schemaVersion: 1, runId, workflow: 'migration-compat', status, revision, worktreeDirty, steps: [{ id: 'migration', status }],
+      reproduce: { argv: ['node', 'scripts/engineering-harness/workflow.mjs', 'run', 'migration-compat', JSON.stringify({ mode })] },
+    })
+  rejects(update(2, { execution: { stage: 'review', results: [workflow('static')] } }, run), 'INVALID_STATE', /mandatory gate inputs/)
+  rejects(update(2, { execution: { stage: 'review', results: [workflow('runtime', true)] } }, run), 'INVALID_STATE', /clean committed source/)
+  rejects(update(2, { execution: { stage: 'review', results: [workflow('runtime', false, 'FAIL')] } }, run), 'INVALID_STATE', /successful harness report/)
+  const migration = workflow('runtime')
+  update(2, { execution: { stage: 'review', results: [migration] } })
+  const handoff = { summary: 'Migration and owner gate', revision, files: [], checks: [{ name: 'migration', status: 'PASS' }] }
+  rejects(update(3, { status: 'REVIEW', handoff, execution: { stage: 'handoff' } }, run), 'INVALID_STATE', /required gate owner/)
+
+  const destination = clone()
+  const active = destination('import', JSON.stringify(call('export', 'candidate')))
+  assert.equal(active.status, 0, active.stderr)
+  assert.equal(JSON.parse(active.stdout).evidence[0].status, 'MISSING')
+  const missing = destination('update', 'candidate', '3', 'inspect', '{"execution":{"resources":{"attempts":1}}}')
+  rejects(missing, 'INVALID_STATE', /evidence is missing/)
+
+  const owner = result('owner', 'artifacts/approval.json',
+    { schemaVersion: 1, gate: 'owner', revision, status: 'PASS', decision: 'APPROVED', reference: 'Owner decision fixture' })
+  rejects(update(3, { execution: { stage: 'handoff', results: [migration, owner] } }, run), 'INVALID_STATE', /explicit owner approval/)
+  update(3, { status: 'REVIEW', handoff, execution: { stage: 'handoff', results: [migration, { ...owner, approval: 'APPROVED' }], resources: { attempts: 1 } } })
+  rejects(clone()('import', JSON.stringify(call('export', 'candidate'))), 'INVALID_STATE', /evidence is missing/)
+  const ceased = update(4, { status: 'IN_PROGRESS', execution: { stage: 'review' } })
+  assert.deepEqual(ceased.task.execution.results, [migration])
 })

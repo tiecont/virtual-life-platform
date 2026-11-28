@@ -112,8 +112,9 @@ an explicit owner/technical decision and a new hash. Do not silently replace the
 pinned source.
 
 1. Run `node scripts/agent-session.mjs begin <url> <exact_request_id>` exactly
-   **once only per request ID**. Require a confirmed save and the returned
-   instructions before work. Never invent a request ID, repeat `begin` after a
+   from the installed Charakuru directory **once only per request ID**.
+   Resolve that directory from the fresh app request. Require a confirmed save
+   and the returned instructions before work. Never invent a request ID, repeat `begin` after a
    successful response, or create a duplicate `project.charakit`; update the
    single canonical file and report progress with the same request ID.
 2. Register the 11 verified views, reopen the project, and stop for the

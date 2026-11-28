@@ -130,6 +130,35 @@ node scripts/engineering-harness/state.mjs recover review-1 inspect
 node scripts/engineering-harness/state.mjs show review-1 1
 ```
 
+Portable checkpoints move a run between checkouts and verify what travelled:
+
+```sh
+node scripts/engineering-harness/state.mjs start review-2 \
+  '{"objective":"Ship a registry route","tasks":[{"id":"deliver","owner":"lead","acceptance":["Route gates pass"],"dependsOn":[],"writePaths":["scripts"],"execution":{"route":"repo-review"}}]}'
+node scripts/engineering-harness/state.mjs export review-2 > /tmp/review-2.json
+node scripts/engineering-harness/state.mjs verify /tmp/review-2.json
+node scripts/engineering-harness/state.mjs import /tmp/review-2.json
+```
+
+`start` resolves the named route from
+[the committed execution registry](../../config/engineering-execution.json) at
+the current revision and records a schema 2 checkpoint whose tasks pin the
+route's stages, mandatory gates, rules and skills. Task updates record execution
+progress under the same expected version. A stage advances one step at a time,
+and every gate up to the current stage must pass before a task reaches
+`REVIEW`. Passing gate evidence is a JSON workflow report or gate receipt whose
+revision, inputs and SHA-256 match the checkpoint.
+
+`export` writes the selected version with its source revision, worktree state
+and a SHA-256 of the envelope. Absolute workspaces are rewritten as
+checkout-relative paths and external worktrees become labels, so the file
+carries no local checkout path. `verify` checks that digest, the workspace
+shape, the destination relation (`EXACT`, `DESCENDANT`, `DIVERGED` or
+`MISSING_SOURCE`), recorded revisions and evidence bytes without writing state.
+`import` refuses diverged or incomplete source history and then creates the
+checkpoint in the destination checkout. Evidence that cannot be read is reported
+as `MISSING` and must be restored before an active task can pass its gates.
+
 Use one lead checkout for all writes to `artifacts/harness-state/checkpoints.sqlite`.
 Worker checkout state databases are separate. Updates compare the expected
 version transactionally and reject concurrent claims on overlapping write paths
