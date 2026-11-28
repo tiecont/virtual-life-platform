@@ -22,6 +22,7 @@ namespace Aetheria.Networking
         public Arena8NativeView Arena8 { get; }
         public CoopNativeView Coop { get; }
         public string ReceiptId { get; internal set; }
+        public bool HasCommittedUltimate { get; internal set; }
         internal PlayState(ulong version, long epoch, int turns, int roll, string reward,
             PetArenaView arena = null, Arena8NativeView arena8 = null, CoopNativeView coop = null)
         { Version = version; Epoch = epoch; Turns = turns; OwnRoll = roll; Reward = reward; Arena = arena; Arena8 = arena8; Coop = coop; }
@@ -117,6 +118,7 @@ namespace Aetheria.Networking
 
         protected abstract string ViewKind { get; }
         protected abstract PlayState Decode(ulong version, byte[] bytes);
+        protected virtual void AnnotateCommitted(PlayState result, GameCommand command) { }
         public abstract Task<PlayState> AdvanceAsync(CancellationToken cancellation = default);
         protected Task<PlayState> SubmitPending(Func<PlayState, Guid, GameCommand> create,
             CancellationToken cancellation, bool renewAdmissionBeforeSubmit = false) =>
@@ -156,9 +158,7 @@ namespace Aetheria.Networking
         {
             try {
                 var receipt = await connection.SubmitAsync(pending, token).ConfigureAwait(false);
-                if (!receipt.Receipt.Committed) throw new NativeFailure(Failure.Protocol);
-                var result = Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
-                result.ReceiptId = Convert.ToBase64String(receipt.CommandId.ToByteArray());
+                var result = DecodeCommitted(receipt, pending);
                 token.ThrowIfCancellationRequested();
                 pending = null; return result;
             } catch (NativeFailure e) when (e.Reason == Failure.Rejected && !IsTransientRejection(e)) {
@@ -166,6 +166,17 @@ namespace Aetheria.Networking
                 pending = null; throw;
             }
         }
+        private PlayState DecodeCommitted(ServerEnvelope receipt, GameCommand command)
+        {
+            if (receipt.BodyCase != ServerEnvelope.BodyOneofCase.Receipt ||
+                !receipt.Receipt.Committed || !receipt.CommandId.Equals(command.Id))
+                throw new NativeFailure(Failure.Protocol);
+            var result = Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
+            result.ReceiptId = Convert.ToBase64String(receipt.CommandId.ToByteArray());
+            AnnotateCommitted(result, command);
+            return result;
+        }
+
         private static bool IsTransientRejection(NativeFailure failure) =>
             failure.Reason == Failure.Rejected &&
             (failure.Code == ErrorCode.TemporarilyUnavailable || failure.Code == ErrorCode.Backpressure);

@@ -47,6 +47,17 @@ namespace Aetheria.Networking
             }
         }
 
+        protected override void AnnotateCommitted(PlayState result, GameCommand command)
+        {
+            var before = State;
+            if (before?.Coop?.IsTimed != true || result.Coop == null ||
+                command.Kind != CoopNativeIntent.Kind || before.Version != command.Version ||
+                result.Version <= command.Version || result.Version - command.Version != 1 ||
+                result.Epoch != before.Epoch || result.Coop.You != before.Coop.ActiveSeat)
+                return;
+            result.HasCommittedUltimate = command.Action.SequenceEqual(CoopNativeIntent.UltimateAction(before.Epoch));
+        }
+
         public double? RemainingTurnMilliseconds => RemainingMilliseconds(State);
 
         private static double? RemainingMilliseconds(PlayState state)
