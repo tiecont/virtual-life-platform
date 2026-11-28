@@ -19,10 +19,8 @@ export default function OperatorConsole({initialTab='overview'}:{initialTab?:'ov
   const response=await fetch('/api/admin/'+action,{signal,method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{...body!==undefined?{'content-type':'application/json'}:{},...session?{'x-csrf-token':session.csrfToken}:{}},...body!==undefined?{body:JSON.stringify(body)}:{}});
   const value=await response.json();
   signal?.throwIfAborted();
-  if(!response.ok&&action.startsWith('gameplay-config')){
-   const detail=(value as {error?:{message?:unknown}})?.error?.message;
-   throw Error(typeof detail==='string'?detail:'Gameplay configuration request failed.');
-  }
+  const economyAction=action.startsWith('economy-policy');
+  if(action==='economy-policy'&&response.status===404)return null;
   if(response.status===401){
    setSession(null);setMetric(null);setEvents(null);
    const notice=action==='login'?'Password or authenticator code was not accepted.':'Your session expired. Sign in again.';
@@ -34,6 +32,10 @@ export default function OperatorConsole({initialTab='overview'}:{initialTab?:'ov
    const notice='Verify your password and authenticator to continue.';
    setTab('security');setMessage(notice);
    throw Error(notice);
+  }
+  if(!response.ok&&(action.startsWith('gameplay-config')||economyAction)){
+   const message=(value as {error?:{message?:unknown}})?.error?.message;
+   throw Error(typeof message==='string'?message:economyAction?'Economy policy request failed.':'Gameplay configuration request failed.');
   }
   if(response.status===409)throw Error(action.startsWith('runtime-')?'Runtime or release changed. Refresh before another command.':action.startsWith('event-')?'Event changed. Refresh the calendar before another command.':'Account changed. Refresh before another command.');
   if(response.status===404&&action.startsWith('prelaunch-summary?'))throw Error('Campaign unavailable. Check the campaign ID and registration configuration.');
