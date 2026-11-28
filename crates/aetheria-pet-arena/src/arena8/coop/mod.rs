@@ -14,6 +14,7 @@
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
 pub mod advanced;
+pub mod campaign_routes;
 pub mod config;
 mod functional;
 mod loadout;
@@ -514,18 +515,24 @@ impl CoopRules {
 
     fn bind(config: CoopConfig, encounter_id: &str, solo: bool) -> Result<Self, ConfigError> {
         config.validate()?;
-        let selected = config
-            .bosses()
-            .iter()
-            .find(|boss| {
-                boss.id == encounter_id
-                    || (solo
-                        && boss
-                            .regular
-                            .as_ref()
-                            .is_some_and(|regular| regular.id == encounter_id))
-            })
-            .ok_or(ConfigError::Boss)?;
+        let selected = if let Some(route) = config.campaign_route(encounter_id) {
+            route
+                .selectable_profile(solo)
+                .ok_or(ConfigError::CampaignRoute)?
+        } else {
+            config
+                .bosses()
+                .iter()
+                .find(|boss| {
+                    boss.id == encounter_id
+                        || (solo
+                            && boss
+                                .regular
+                                .as_ref()
+                                .is_some_and(|regular| regular.id == encounter_id))
+                })
+                .ok_or(ConfigError::Boss)?
+        };
         let regular_profile = selected
             .regular
             .as_ref()
@@ -582,6 +589,12 @@ impl CoopRules {
 
     pub fn regular_encounter(&self) -> bool {
         self.regular_profile.is_some()
+    }
+
+    pub fn campaign_route_id(&self) -> Option<&str> {
+        self.config
+            .campaign_route(self.encounter_id())
+            .map(|route| route.id.as_str())
     }
 
     fn opponent(&self) -> Opponent<'_> {

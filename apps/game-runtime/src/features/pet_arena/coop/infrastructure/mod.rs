@@ -74,7 +74,7 @@ impl Game for Rules {
             "rulesetVersion": ruleset.version,
             "turn": state.turn_index,
         });
-        if self.engine().regular_encounter() {
+        if self.engine().regular_encounter() || self.engine().campaign_route_id().is_some() {
             proposal["encounterId"] = self.engine().encounter_id().into();
         }
         Ok(Completion::Proposal(proposal))

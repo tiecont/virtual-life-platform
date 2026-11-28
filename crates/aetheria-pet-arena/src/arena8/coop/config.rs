@@ -11,6 +11,7 @@
 //! author tunes lives here.
 
 use super::{
+    campaign_routes::{CampaignRoute, validate_routes},
     functional::{FunctionalTiles, TileKind},
     loadout::ArtifactCatalog,
 };
@@ -36,6 +37,8 @@ pub const ADVANCED_SCHEMA_VERSION: u32 = 5;
 pub const ADVANCED_ENGINE_CAPABILITY: &str = "arena8-coop-v4";
 pub const SHARED_RNG_SCHEMA_VERSION: u32 = 6;
 pub const SHARED_RNG_ENGINE_CAPABILITY: &str = "arena8-coop-v5";
+pub const CAMPAIGN_ROUTE_SCHEMA_VERSION: u32 = 7;
+pub const CAMPAIGN_ROUTE_ENGINE_CAPABILITY: &str = "arena8-coop-v6";
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
@@ -54,6 +57,8 @@ pub struct CoopConfig {
     pub board: BoardConfig,
     #[serde(default, deserialize_with = "super::advanced::present_value")]
     pub advanced_jewels: Option<super::advanced::AdvancedJewels>,
+    #[serde(default, deserialize_with = "super::advanced::present_value")]
+    pub campaign_routes: Option<Vec<CampaignRoute>>,
     pub party: PartyConfig,
     pub resources: ResourceConfig,
     pub damage: DamageConfig,
@@ -393,7 +398,13 @@ impl RegularEncounterConfig {
     fn validate(&self, parent: &BossConfig, schema_version: u32) -> Result<(), ConfigError> {
         let map = parent.map_id.as_deref().ok_or(ConfigError::Boss)?;
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION, None) => true,
+            (
+                V3_SCHEMA_VERSION
+                | ADVANCED_SCHEMA_VERSION
+                | SHARED_RNG_SCHEMA_VERSION
+                | CAMPAIGN_ROUTE_SCHEMA_VERSION,
+                None,
+            ) => true,
             (
                 FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION,
                 Some(rounds),
@@ -637,6 +648,7 @@ pub enum ConfigError {
     MultiplierSchedule,
     Boss,
     BossPhase,
+    CampaignRoute,
     DuplicateSkill,
     MissingSkill,
     Skill,
@@ -666,6 +678,9 @@ impl ConfigError {
             Self::MultiplierSchedule => "gameplay multiplier schedule is invalid",
             Self::Boss => "gameplay Boss configuration is invalid",
             Self::BossPhase => "gameplay Boss phase configuration is outside the supported range",
+            Self::CampaignRoute => {
+                "gameplay campaign route identity, prerequisite or profile is invalid"
+            }
             Self::DuplicateSkill => "gameplay configuration repeats a skill id",
             Self::MissingSkill => "gameplay configuration has no skills",
             Self::Skill => "gameplay skill configuration is invalid",
@@ -722,14 +737,18 @@ impl CoopConfig {
                 self.engine_capability == SHARED_RNG_ENGINE_CAPABILITY
                     && self.board.functional_tiles.is_some()
             }
+            CAMPAIGN_ROUTE_SCHEMA_VERSION => {
+                self.engine_capability == CAMPAIGN_ROUTE_ENGINE_CAPABILITY
+                    && self.board.functional_tiles.is_some()
+                    && self.has_artifact_catalog()
+            }
             _ => false,
         };
         if !capability_matches
             || self.advanced_jewels.is_some()
-                != matches!(
-                    self.schema_version,
-                    ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION
-                )
+                != (self.schema_version == ADVANCED_SCHEMA_VERSION || self.shared_jewel_rng())
+            || self.campaign_routes.is_some()
+                != (self.schema_version == CAMPAIGN_ROUTE_SCHEMA_VERSION)
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -797,7 +816,8 @@ impl CoopConfig {
                 | FUNCTIONAL_SCHEMA_VERSION
                 | V3_SCHEMA_VERSION
                 | ADVANCED_SCHEMA_VERSION
-                | SHARED_RNG_SCHEMA_VERSION,
+                | SHARED_RNG_SCHEMA_VERSION
+                | CAMPAIGN_ROUTE_SCHEMA_VERSION,
                 None,
                 Some(bosses),
             ) if !bosses.is_empty() && bosses.len() <= 6 => bosses,
@@ -814,12 +834,13 @@ impl CoopConfig {
                     | FUNCTIONAL_SCHEMA_VERSION
                     | V3_SCHEMA_VERSION
                     | ADVANCED_SCHEMA_VERSION
-                    | SHARED_RNG_SCHEMA_VERSION,
+                    | SHARED_RNG_SCHEMA_VERSION
+                    | CAMPAIGN_ROUTE_SCHEMA_VERSION,
                     Some(map),
                 ) if stable_id(map) && map_ids.insert(map) => {}
                 _ => return Err(ConfigError::Boss),
             }
-            if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
+            if !stable_id(&boss.id) || !boss_ids.insert(boss.id.as_str()) {
                 return Err(ConfigError::Boss);
             }
             if self.schema_version == HISTORICAL_SCHEMA_VERSION
@@ -851,8 +872,9 @@ impl CoopConfig {
                         | V3_SCHEMA_VERSION
                         | ADVANCED_SCHEMA_VERSION
                         | SHARED_RNG_SCHEMA_VERSION
+                        | CAMPAIGN_ROUTE_SCHEMA_VERSION
                 ) || !self.has_artifact_catalog()
-                    || !boss_ids.insert(&regular.id)
+                    || !boss_ids.insert(regular.id.as_str())
                 {
                     return Err(ConfigError::Boss);
                 }
@@ -878,6 +900,7 @@ impl CoopConfig {
         }
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
+        validate_routes(self, elements, &boss_ids)?;
         if let Some(advanced) = &self.advanced_jewels {
             advanced.validate(self)?;
         }
@@ -920,6 +943,12 @@ impl CoopConfig {
         if let Some(advanced) = &self.advanced_jewels {
             fields.push(advanced.to_value());
         }
+        if let Some(routes) = &self.campaign_routes {
+            fields.push(list([
+                Value::Text("campaign-routes-v1".into()),
+                list(routes.iter().map(CampaignRoute::to_value)),
+            ]));
+        }
         Value::List(fields)
     }
 
@@ -930,12 +959,25 @@ impl CoopConfig {
     pub fn is_v3(&self) -> bool {
         matches!(
             self.schema_version,
-            V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION
+            V3_SCHEMA_VERSION
+                | ADVANCED_SCHEMA_VERSION
+                | SHARED_RNG_SCHEMA_VERSION
+                | CAMPAIGN_ROUTE_SCHEMA_VERSION
         )
     }
 
     pub fn shared_jewel_rng(&self) -> bool {
-        self.schema_version == SHARED_RNG_SCHEMA_VERSION
+        matches!(
+            self.schema_version,
+            SHARED_RNG_SCHEMA_VERSION | CAMPAIGN_ROUTE_SCHEMA_VERSION
+        )
+    }
+
+    pub fn campaign_route(&self, id: &str) -> Option<&CampaignRoute> {
+        self.campaign_routes
+            .as_ref()?
+            .iter()
+            .find(|route| route.id == id)
     }
 
     pub fn has_artifact_catalog(&self) -> bool {
@@ -1107,7 +1149,8 @@ impl CoopConfig {
                     | FUNCTIONAL_SCHEMA_VERSION
                     | V3_SCHEMA_VERSION
                     | ADVANCED_SCHEMA_VERSION
-                    | SHARED_RNG_SCHEMA_VERSION,
+                    | SHARED_RNG_SCHEMA_VERSION
+                    | CAMPAIGN_ROUTE_SCHEMA_VERSION,
                     Some(catalog),
                 ) if catalog.name.trim() == catalog.name
                     && !catalog.name.is_empty()
@@ -1268,12 +1311,21 @@ impl BoardConfig {
 impl PartyConfig {
     fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION, None) => true,
-            (SHARED_RNG_SCHEMA_VERSION, Some(_)) => false,
+            (
+                V3_SCHEMA_VERSION
+                | ADVANCED_SCHEMA_VERSION
+                | SHARED_RNG_SCHEMA_VERSION
+                | CAMPAIGN_ROUTE_SCHEMA_VERSION,
+                None,
+            ) => true,
+            (SHARED_RNG_SCHEMA_VERSION | CAMPAIGN_ROUTE_SCHEMA_VERSION, Some(_)) => false,
             (_, Some(rounds)) => (1..=1_000).contains(&rounds),
             _ => false,
         };
-        let valid_timeout = if schema_version == SHARED_RNG_SCHEMA_VERSION {
+        let valid_timeout = if matches!(
+            schema_version,
+            SHARED_RNG_SCHEMA_VERSION | CAMPAIGN_ROUTE_SCHEMA_VERSION
+        ) {
             self.turn_timeout_ms == 15_000
         } else {
             (1_000..=300_000).contains(&self.turn_timeout_ms)
@@ -1639,7 +1691,7 @@ impl BossConfig {
         profile
     }
 
-    fn validate(&self, elements: [&ElementProfile; 6]) -> Result<(), ConfigError> {
+    pub(super) fn validate(&self, elements: [&ElementProfile; 6]) -> Result<(), ConfigError> {
         let element = parse_element(&self.element)?;
         if self.id.is_empty()
             || self.name.is_empty()
@@ -1703,7 +1755,7 @@ impl BossConfig {
             .ok_or(ConfigError::Arithmetic)
     }
 
-    fn to_value(&self) -> Value {
+    pub(super) fn to_value(&self) -> Value {
         let mut fields = vec![
             Value::Text(self.id.clone()),
             Value::Text(self.name.clone()),

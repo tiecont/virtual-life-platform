@@ -49,12 +49,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if rules.functional_board() {
             receipt["rulesetVersion"] = ruleset.version.into();
         }
-        if let Some(encounter_id) = config.bosses().iter().find_map(|boss| {
-            boss.solo
-                .as_ref()
-                .map(|_| &boss.id)
-                .or_else(|| boss.regular.as_ref().map(|r| &r.id))
-        }) {
+        let solo_encounter = if config.shared_jewel_rng() {
+            config.bosses().first().map(|boss| &boss.id)
+        } else {
+            config.bosses().iter().find_map(|boss| {
+                boss.solo
+                    .as_ref()
+                    .map(|_| &boss.id)
+                    .or_else(|| boss.regular.as_ref().map(|r| &r.id))
+            })
+        };
+        if let Some(encounter_id) = solo_encounter {
             let solo = CoopRules::load_solo(&bytes, encounter_id.clone())?.ruleset();
             receipt["soloContentHash"] = hex(&solo.content_hash).into();
             receipt["soloRulesetVersion"] = solo.version.into();
