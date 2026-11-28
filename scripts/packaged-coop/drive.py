@@ -292,7 +292,9 @@ elif stage == 'water':
             return populated_board(img)
 
         board, _ = wait_for('22-water-started-board',
-                            lambda img: not status_button(img) and playing_board(img, started['state']))
+                            populated_board)
+        # The observer has already verified active seat, version and opening.
+        # Click the visible populated board before OCR of an expiring timer.
         for attempt in range(5):
             recover = None
             if attempt and not read('water-swapped'):
