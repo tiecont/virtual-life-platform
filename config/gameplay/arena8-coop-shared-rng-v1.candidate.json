@@ -4288,6 +4288,513 @@
         "durationTurns": 2,
         "stackingPm": 1000
       }
+    },
+    {
+      "id": "pet-s-fire-vulcaryn-cinder-pounce",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 92,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-fire-vulcaryn-ember-roar",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 300,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-fire-vulcaryn-caldera-leap",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 282,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-fire-vulcaryn-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-water-nerivelle-tide-dart",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 74,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-water-nerivelle-lagoon-shelter",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 50,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "pet-s-water-nerivelle-moonpool-renewal",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "heal",
+        "target": "allies",
+        "value": 72,
+        "durationTurns": 0,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-water-nerivelle-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-electric-fulgarys-spark-ram",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 97,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-electric-fulgarys-charged-elytra",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "self-actor",
+        "value": 110,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-electric-fulgarys-thunder-horn",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 290,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-electric-fulgarys-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-ghost-umbryss-grave-step",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 89,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-ghost-umbryss-hush-mark",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "debuff",
+        "target": "boss",
+        "value": 180,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-ghost-umbryss-moonless-prowl",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "damage-over-time",
+        "target": "boss",
+        "value": 104,
+        "durationTurns": 3,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-ghost-umbryss-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-ground-jaderyx-jade-stamp",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 82,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-ground-jaderyx-garden-rampart",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "shield",
+        "target": "allies",
+        "value": 45,
+        "durationTurns": 2,
+        "stackingPm": 1000,
+        "contribution": "caster"
+      }
+    },
+    {
+      "id": "pet-s-ground-jaderyx-qilin-thunder",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 260,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-ground-jaderyx-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-light-solenne-prism-step",
+      "kind": "skill",
+      "manaCost": 20,
+      "rageCost": 0,
+      "cooldownTurns": 1,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 84,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-light-solenne-gentle-dawn",
+      "kind": "signature",
+      "manaCost": 0,
+      "rageCost": 40,
+      "cooldownTurns": 2,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "cleanse",
+        "target": "allies",
+        "value": 1,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      }
+    },
+    {
+      "id": "pet-s-light-solenne-sunlit-reflection",
+      "kind": "ultimate",
+      "manaCost": 0,
+      "rageCost": 100,
+      "cooldownTurns": 6,
+      "powerPm": 1000,
+      "critEligible": true,
+      "effect": {
+        "kind": "damage",
+        "target": "boss",
+        "value": 269,
+        "durationTurns": 0,
+        "stackingPm": 1000
+      },
+      "upgradeLevels": [
+        {
+          "materials": 2,
+          "powerPm": 1100
+        },
+        {
+          "materials": 4,
+          "powerPm": 1200
+        }
+      ]
+    },
+    {
+      "id": "pet-s-light-solenne-guard",
+      "kind": "guard",
+      "manaCost": 0,
+      "rageCost": 0,
+      "cooldownTurns": 0,
+      "powerPm": 1000,
+      "critEligible": false,
+      "effect": {
+        "kind": "buff",
+        "target": "self-actor",
+        "value": 250,
+        "durationTurns": 2,
+        "stackingPm": 1000
+      }
     }
   ],
   "pets": [
@@ -5721,6 +6228,162 @@
         "defenseBp": 60,
         "biasPm": 20
       }
+    },
+    {
+      "id": "pet-s-fire-vulcaryn",
+      "element": "fire",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 228,
+      "attack": 27,
+      "defense": 15,
+      "critRateBp": 1450,
+      "critDamageBp": 17500,
+      "catalog": {
+        "name": "Vulcaryn",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 100,
+        "attackBp": 130,
+        "defenseBp": 65,
+        "biasPm": 0
+      },
+      "skill": "pet-s-fire-vulcaryn-cinder-pounce",
+      "signature": "pet-s-fire-vulcaryn-ember-roar",
+      "ultimate": "pet-s-fire-vulcaryn-caldera-leap",
+      "guard": "pet-s-fire-vulcaryn-guard"
+    },
+    {
+      "id": "pet-s-water-nerivelle",
+      "element": "water",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 245,
+      "attack": 22,
+      "defense": 17,
+      "critRateBp": 1000,
+      "critDamageBp": 16500,
+      "catalog": {
+        "name": "Nerivelle",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 135,
+        "attackBp": 90,
+        "defenseBp": 100,
+        "biasPm": 0
+      },
+      "skill": "pet-s-water-nerivelle-tide-dart",
+      "signature": "pet-s-water-nerivelle-lagoon-shelter",
+      "ultimate": "pet-s-water-nerivelle-moonpool-renewal",
+      "guard": "pet-s-water-nerivelle-guard"
+    },
+    {
+      "id": "pet-s-electric-fulgarys",
+      "element": "electric",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 195,
+      "attack": 29,
+      "defense": 12,
+      "critRateBp": 1750,
+      "critDamageBp": 18500,
+      "catalog": {
+        "name": "Fulgarys",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "agile",
+        "healthBp": 90,
+        "attackBp": 155,
+        "defenseBp": 55,
+        "biasPm": 0
+      },
+      "skill": "pet-s-electric-fulgarys-spark-ram",
+      "signature": "pet-s-electric-fulgarys-charged-elytra",
+      "ultimate": "pet-s-electric-fulgarys-thunder-horn",
+      "guard": "pet-s-electric-fulgarys-guard"
+    },
+    {
+      "id": "pet-s-ghost-umbryss",
+      "element": "ghost",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 211,
+      "attack": 26,
+      "defense": 14,
+      "critRateBp": 1500,
+      "critDamageBp": 17500,
+      "catalog": {
+        "name": "Umbryss",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "focused",
+        "healthBp": 95,
+        "attackBp": 135,
+        "defenseBp": 70,
+        "biasPm": 0
+      },
+      "skill": "pet-s-ghost-umbryss-grave-step",
+      "signature": "pet-s-ghost-umbryss-hush-mark",
+      "ultimate": "pet-s-ghost-umbryss-moonless-prowl",
+      "guard": "pet-s-ghost-umbryss-guard"
+    },
+    {
+      "id": "pet-s-ground-jaderyx",
+      "element": "ground",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 282,
+      "attack": 21,
+      "defense": 23,
+      "critRateBp": 700,
+      "critDamageBp": 16000,
+      "catalog": {
+        "name": "Jaderyx",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "bulwark",
+        "healthBp": 150,
+        "attackBp": 65,
+        "defenseBp": 125,
+        "biasPm": 0
+      },
+      "skill": "pet-s-ground-jaderyx-jade-stamp",
+      "signature": "pet-s-ground-jaderyx-garden-rampart",
+      "ultimate": "pet-s-ground-jaderyx-qilin-thunder",
+      "guard": "pet-s-ground-jaderyx-guard"
+    },
+    {
+      "id": "pet-s-light-solenne",
+      "element": "light",
+      "rarity": "standard-s",
+      "powerClass": "s",
+      "maxHp": 224,
+      "attack": 24,
+      "defense": 16,
+      "critRateBp": 1100,
+      "critDamageBp": 17000,
+      "catalog": {
+        "name": "Solenne",
+        "mapId": null
+      },
+      "growth": {
+        "curve": "steady",
+        "healthBp": 120,
+        "attackBp": 105,
+        "defenseBp": 85,
+        "biasPm": 0
+      },
+      "skill": "pet-s-light-solenne-prism-step",
+      "signature": "pet-s-light-solenne-gentle-dawn",
+      "ultimate": "pet-s-light-solenne-sunlit-reflection",
+      "guard": "pet-s-light-solenne-guard"
     }
   ],
   "rewards": {
