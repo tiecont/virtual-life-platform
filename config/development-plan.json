@@ -9749,7 +9749,7 @@
       "qualificationRequirements": [],
       "workstream": "F",
       "priority": 1,
-      "remaining": "PR 91 reconciles double opt-in, consent audit and the lifetime cap with main at migration 0067. Verify the disposable PostgreSQL concurrency suite, both historical migration policies and hosted CI on the final revision. Public registration remains disabled.",
+      "remaining": "At 00f23a52 all six disposable PostgreSQL cases and 11 unit cases passed. 10,001 concurrent confirm/retry calls resolved to 5,000 unique admissions. Both archived migrator compatibility probes passed against migration 0067. Verify hosted CI on PR 91 and complete campaign and privacy review before activation.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
