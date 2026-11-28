@@ -160,9 +160,9 @@ def shared_hud_turn(image):
     hud.save(data, format='PNG')
     args = ['tesseract', 'stdin', 'stdout', '--tessdata-dir', environ['PACKAGED_QA_TESSDATA'], '--psm', '7']
     heard = run(args, input=data.getvalue(), capture_output=True, check=True).stdout.decode().strip()
-    # The centered dot may be read as punctuation or attach to the preceding
-    # glyph. Accept joined label/digit text and normalize zero-shaped glyphs.
-    match = re.search(r'\bturn\s*([0-9oq]+)[^a-z0-9]*seat\s*([0-3oq])(?=\W|$)', heard.lower())
+    # OCR can attach the centered separator to the seat as O or Q, as in
+    # "seat0O". The HUD has one seat digit, so ignore that trailing glyph.
+    match = re.search(r'\bturn\s*([0-9oq]+)[^a-z0-9]*seat\s*([0-3oq])[oq]?(?=\W|$)', heard.lower())
     if match:
         return tuple(int(value.translate(str.maketrans('oq', '00'))) for value in match.groups()), heard
     return None, heard
@@ -491,6 +491,7 @@ elif stage == 'four-battle':
         if visible and visible[0] > turn:
             raise RuntimeError(f'Missed turn {turn}: {heard}')
         if visible != (turn, turn % 4) or 'awaiting' in heard.lower():
+            print(f'Four-client turn {turn} at {interval["capturedUnixMs"]}: HUD read {heard!r}', flush=True)
             return None
         if not window['startedUnixMs'] <= interval['captureStartedUnixMs'] <= interval['capturedUnixMs'] < window['deadlineUnixMs']:
             return None
