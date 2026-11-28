@@ -84,6 +84,10 @@ namespace Aetheria.PetArena.Infrastructure
             CancellationToken cancellation) =>
             Request<Arena8NativeAllocation>(Arena8Prefix + "/native/allocate", body, cancellation);
 
+        public Task<Arena8NativeAllocation> AllocateArena8Functional(Arena8FunctionalAllocateRequest body,
+            CancellationToken cancellation) =>
+            Request<Arena8NativeAllocation>(Arena8Prefix + "/native/allocate", body, cancellation);
+
         public Task<Arena8CommandResponse> CommandArena8(Arena8StartCommandRequest body,
             CancellationToken cancellation) =>
             Request<Arena8CommandResponse>(Arena8Prefix + "/command", body, cancellation);

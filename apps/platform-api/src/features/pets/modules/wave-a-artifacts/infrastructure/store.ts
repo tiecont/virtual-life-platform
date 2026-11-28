@@ -27,12 +27,22 @@ export async function initializeArtifactInventory(client:Pick<PoolClient,'query'
     'INSERT INTO pet_artifact_players(account_id,materials) VALUES($1,$2) ON CONFLICT(account_id) DO NOTHING RETURNING account_id',
     [accountId,STARTING_MATERIALS],
   );
-  if((created.rowCount??0)>0){
-    await client.query(
-      "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
-      [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
-    );
+  if(!created.rowCount){
+    await client.query('SELECT 1 FROM pet_artifact_players WHERE account_id=$1 FOR UPDATE',[accountId]);
+    // Earlier solo-first settlements created the wallet and campaign claim
+    // before the starter grant. The claim and absent Core identify that state.
+    const repair=await client.query(
+      `UPDATE pet_artifact_players SET materials=materials+$2,revision=revision+1,updated_at=clock_timestamp()
+       WHERE account_id=$1
+       AND EXISTS(SELECT 1 FROM pet_artifact_pve_claims WHERE account_id=$1)
+       AND NOT EXISTS(SELECT 1 FROM pet_artifact_owned WHERE account_id=$1 AND acquired_from='starter' AND definition_id=$3)
+       RETURNING account_id`,[accountId,STARTING_MATERIALS,STARTER_ARTIFACT_DEFINITION_ID]);
+    if(!repair.rowCount)return;
   }
+  await client.query(
+    "INSERT INTO pet_artifact_owned(account_id,artifact_id,definition_id,upgrade_level,acquired_from) VALUES($1,$2,$3,1,'starter')",
+    [accountId,randomUUID(),STARTER_ARTIFACT_DEFINITION_ID],
+  );
 }
 
 // One transaction owner for Wave A artifact state. The account artifact row is
@@ -47,7 +57,6 @@ export class ArtifactStore {
     try{
       await client.query('BEGIN');
       await initializeArtifactInventory(client,accountId);
-      await client.query(`SELECT ${PLAYER_COLUMNS} FROM pet_artifact_players WHERE account_id=$1 FOR UPDATE`,[accountId]);
       const value=await work(new ArtifactTransaction(client,accountId));
       await client.query('COMMIT');
       return value;

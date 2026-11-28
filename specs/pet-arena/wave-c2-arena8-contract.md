@@ -4,6 +4,8 @@ Release: **OFFLINE_ONLY / NO_GO_PUBLIC**. Local/test only, default off.
 This is the integration contract shared by Rust, Nest and Unity. It is not a
 production API and grants no public release, purchases, rights or deployment.
 
+This document describes the historical Arena8 integration. New solo and cooperative combat follows the [current functional tile and fixed battle presentation contract](mvp-wave-a.md#functional-tile-contract-for-solo-and-cooperative-combat). Keep this wire format and its persisted matches version-bound.
+
 ## Authority
 
 - Rust `Arena8Bound` + `MatchSnapshot` is the only combat authority.

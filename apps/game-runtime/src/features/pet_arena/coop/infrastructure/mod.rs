@@ -1,25 +1,17 @@
 //! Durable-state codec, membership and committed projection for `arena8-coop-pve`.
-use super::domain::Rules;
+use super::domain::{Rules, SYSTEM_ACTOR_ID};
 use aetheria_persistence::{Completion, Error, Game};
-use aetheria_pet_arena::arena8::Element;
-use aetheria_pet_arena::arena8::coop::{CoopAction, CoopPhase, CoopState, StatusKind, Tile};
+use aetheria_pet_arena::arena8::coop::config::{effect_kind_name, effect_target_name};
+use aetheria_pet_arena::arena8::coop::{
+    CoopAction, CoopCommand, CoopPhase, CoopState, FIRE_ZONE_CELLS, FUNCTIONAL_SOLO_RULESET_ID,
+    StatusKind,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Snapshot {
     state: CoopState,
-}
-
-fn element_name(element: Element) -> &'static str {
-    match element {
-        Element::Fire => "fire",
-        Element::Water => "water",
-        Element::Electric => "electric",
-        Element::Ghost => "ghost",
-        Element::Ground => "ground",
-        Element::Light => "light",
-    }
 }
 
 fn phase_name(phase: CoopPhase) -> &'static str {
@@ -36,16 +28,6 @@ fn status_name(kind: StatusKind) -> &'static str {
         StatusKind::AttackBuff => "attack-buff",
         StatusKind::DefenseBuff => "defense-buff",
         StatusKind::Vulnerability => "vulnerability",
-    }
-}
-
-fn tile(tile: &Option<Tile>) -> serde_json::Value {
-    match tile {
-        Some(tile) => serde_json::json!({
-            "element": element_name(tile.element),
-            "multiplier": tile.multiplier,
-        }),
-        None => serde_json::Value::Null,
     }
 }
 
@@ -81,17 +63,21 @@ impl Game for Rules {
             .collect::<Vec<_>>();
         // Proposal keys serialize in sorted (BTreeMap) order; the platform
         // recomputes this canonical string for its hash check.
-        Ok(Completion::Proposal(serde_json::json!({
+        let mut proposal = serde_json::json!({
             "configDigest": hex(&state.config_digest),
             "contentHash": hex(&ruleset.content_hash),
-            "kind": "coop.completed.v1",
+            "kind": if ruleset.id == FUNCTIONAL_SOLO_RULESET_ID { "solo.completed.v1" } else { "coop.completed.v1" },
             "outcome": outcome,
             "participants": participants,
             "round": state.round_index,
             "ruleset": ruleset.id,
             "rulesetVersion": ruleset.version,
             "turn": state.turn_index,
-        })))
+        });
+        if self.engine().regular_encounter() {
+            proposal["encounterId"] = self.engine().encounter_id().into();
+        }
+        Ok(Completion::Proposal(proposal))
     }
 
     fn encode(&self, state: &CoopState) -> aetheria_persistence::Result<Vec<u8>> {
@@ -112,7 +98,12 @@ impl Game for Rules {
         Rules::member(self, state, account)
     }
 
-    fn authorize(&self, state: &CoopState, account: &str, _: &Self::Action) -> bool {
+    fn authorize(&self, state: &CoopState, account: &str, command: &Self::Action) -> bool {
+        // `ExpireTurn` may only execute through the server's internal system path
+        // (`SYSTEM_ACTOR_ID`); client intents cannot parse or authorize it.
+        if matches!(command.action, CoopAction::ExpireTurn { .. }) {
+            return account == SYSTEM_ACTOR_ID;
+        }
         // Only the authenticated owner of the active seat may command. The
         // reducer itself has no actor identity, so this is the seat boundary.
         self.member(state, account)
@@ -122,9 +113,87 @@ impl Game for Rules {
                 .is_some_and(|seat| seat.account == account)
     }
 
+    fn prepare_action(
+        &self,
+        state: &CoopState,
+        command: CoopCommand,
+    ) -> aetheria_persistence::Result<CoopCommand> {
+        if !self.engine().is_v3() {
+            return Ok(CoopCommand::new(command.action));
+        }
+        let now_ms = self.now_ms().max(state.turn_started_ms.unwrap_or(0));
+        let expired = state
+            .turn_deadline_ms
+            .is_some_and(|deadline| now_ms >= deadline);
+        match command.action {
+            // The ticker's read can race a clock adjustment before it takes the lock.
+            CoopAction::ExpireTurn { .. } if !expired => Err(Error::Conflict),
+            CoopAction::ExpireTurn { .. } | CoopAction::Start => {
+                Ok(CoopCommand::timed(command.action, now_ms))
+            }
+            _ if expired => Err(Error::TurnExpired),
+            _ => Ok(CoopCommand::timed(command.action, now_ms)),
+        }
+    }
+
+    fn project_system(&self, state: &CoopState) -> aetheria_persistence::Result<Vec<u8>> {
+        serde_json::to_vec(&serde_json::json!({
+            "kind": "arena8-coop.system-receipt.v1",
+            "turn": state.turn_index,
+            "round": state.round_index,
+            "phase": phase_name(state.phase),
+        }))
+        .map_err(|_| Error::Invalid)
+    }
+
+    fn project_receipt(
+        &self,
+        state: &CoopState,
+        account: &str,
+        feedback: &[aetheria_game_core::Value],
+    ) -> aetheria_persistence::Result<Vec<u8>> {
+        use aetheria_game_core::Value;
+        let projection = self.project(state, account)?;
+        if self.engine().config().advanced_jewels.is_none() || feedback.is_empty() {
+            return Ok(projection);
+        }
+        let mut result: serde_json::Value =
+            serde_json::from_slice(&projection).map_err(|_| Error::Integrity)?;
+        let rows = feedback
+            .iter()
+            .filter_map(|e| {
+                let Value::List(row) = e else { return None };
+                let [Value::Text(kind), seat, Value::Uint(value), cell] = row.as_slice() else {
+                    return None;
+                };
+                let seat = match seat {
+                    Value::Null => None,
+                    Value::Uint(seat) => Some(*seat),
+                    _ => return None,
+                };
+                let mut entry = serde_json::json!({"kind":kind, "seat":seat, "value":value});
+                if let Value::Uint(cell) = cell {
+                    entry["cell"] = (*cell).into();
+                }
+                Some(entry)
+            })
+            .collect();
+        result["jewelFeedback"] = serde_json::Value::Array(rows);
+        let enriched = serde_json::to_vec(&result).map_err(|_| Error::Invalid)?;
+        // Purely presentational detail must never prevent a valid commitment.
+        Ok(if enriched.len() <= aetheria_persistence::MAX_PROJECTION {
+            enriched
+        } else {
+            projection
+        })
+    }
+
     fn project(&self, state: &CoopState, account: &str) -> aetheria_persistence::Result<Vec<u8>> {
         let seat = self.seat(state, account).ok_or(Error::Unauthorized)?;
         let ruleset = self.engine().ruleset();
+        let config = self.engine().config();
+        let is_v3 = config.is_v3();
+        let now_ms = self.now_ms();
         let participants = state
             .participants
             .iter()
@@ -160,9 +229,23 @@ impl Game for Rules {
                 if let Some(levels) = participant.upgraded_skill_levels() {
                     view["skillLevels"] = serde_json::json!(levels);
                 }
-                view
+                if is_v3 {
+                    let pet_cfg = config.pet(&participant.pet_id).ok_or(Error::Integrity)?;
+                    let has_ultimate = config.skill(&pet_cfg.ultimate).is_some();
+                    let ultimate_ready = self.engine().ultimate_charged(state, index);
+                    let fire_zone_turns = if state.phase.terminal() {
+                        0
+                    } else {
+                        participant.fire_zone_turns
+                    };
+                    view["hasUltimate"] = serde_json::json!(has_ultimate);
+                    view["ultimateReady"] = serde_json::json!(ultimate_ready);
+                    view["fireZoneTurns"] = serde_json::json!(fire_zone_turns);
+                    view["passives"] = serde_json::json!([]);
+                }
+                Ok(view)
             })
-            .collect::<Vec<_>>();
+            .collect::<aetheria_persistence::Result<Vec<_>>>()?;
         let mut projection = serde_json::json!({
             "schemaVersion": 1,
             "ruleset": {
@@ -186,7 +269,7 @@ impl Game for Rules {
                 "dotTurns": state.boss.dot_turns,
                 "transformed": state.boss.transformed,
             },
-            "board": state.board.iter().map(tile).collect::<Vec<_>>(),
+            "board": state.board.iter().map(|tile| serde_json::json!(tile)).collect::<Vec<_>>(),
             "participants": participants,
             "pending": state.pending.as_ref().map(|pending| serde_json::json!({
                 "targets": pending.targets,
@@ -194,9 +277,11 @@ impl Game for Rules {
                 "damage": pending.damage,
             })),
         });
+        if config.advanced_jewels.is_some() {
+            projection["chillReductionPm"] = state.chill_reduction_pm.unwrap_or(0).into();
+        }
         // Older bundles retain the historical projection exactly. New local
         // catalog matches present the caller's own published abilities.
-        let config = self.engine().config();
         if config.has_artifact_catalog() {
             let own = &state.participants[seat];
             let pet = config.pet(&own.pet_id).ok_or(Error::Integrity)?;
@@ -207,19 +292,67 @@ impl Game for Rules {
                 ("ultimate", CoopAction::Ultimate),
                 ("fire-zone", CoopAction::FireZone),
             ];
+            let own_levels = own.skill_levels();
             let mut abilities = Vec::new();
             for (slot, ((kind, action), id)) in slots.into_iter().zip(pet.skill_ids()).enumerate() {
                 let Some(id) = id else { continue };
                 let skill = config.skill(id).ok_or(Error::Integrity)?;
-                abilities.push(serde_json::json!({
+                let mut entry = serde_json::json!({
                     "kind": kind, "id": id, "mana": skill.mana_cost, "rage": skill.rage_cost,
                     "cooldown": own.cooldowns[slot],
                     "ready": self.engine().ability_ready(state, seat, action),
-                }));
+                });
+                if is_v3 {
+                    entry["maxCooldown"] = serde_json::json!(skill.cooldown_turns);
+                    entry["effectKind"] = serde_json::json!(effect_kind_name(skill.effect.kind));
+                    entry["target"] = serde_json::json!(effect_target_name(skill.effect.target));
+                    entry["powerPm"] = serde_json::json!(
+                        skill.power_at(own_levels[slot]).unwrap_or(skill.power_pm)
+                    );
+                }
+                abilities.push(entry);
             }
             projection["abilities"] = serde_json::Value::Array(abilities);
-            projection["bossId"] =
-                serde_json::Value::String(self.engine().selected_boss().id.clone());
+            projection["bossId"] = self.engine().encounter_id().into();
+        }
+        if is_v3 {
+            let remaining = if state.phase == CoopPhase::Playing {
+                state
+                    .turn_deadline_ms
+                    .map(|deadline| deadline.saturating_sub(now_ms))
+            } else {
+                None
+            };
+            let fire_zone_active_turns = if state.phase.terminal() {
+                0
+            } else {
+                state
+                    .participants
+                    .iter()
+                    .map(|participant| participant.fire_zone_turns)
+                    .max()
+                    .unwrap_or(0)
+            };
+            let fire_zone_cells: Vec<u8> = if fire_zone_active_turns > 0 {
+                FIRE_ZONE_CELLS.to_vec()
+            } else {
+                Vec::new()
+            };
+            projection["turnTimeoutMs"] = serde_json::json!(config.party.turn_timeout_ms);
+            projection["turnDeadlineUnixMs"] = serde_json::json!(state.turn_deadline_ms);
+            projection["turnRemainingMs"] = serde_json::json!(remaining);
+            projection["serverUnixMs"] = serde_json::json!(now_ms);
+            projection["maxRounds"] = serde_json::json!(self.engine().max_rounds());
+            projection["canEndTurn"] = serde_json::json!(
+                state.phase == CoopPhase::Playing
+                    && state.active_seat == seat
+                    && state.participants[seat].alive
+                    && state
+                        .turn_deadline_ms
+                        .is_none_or(|deadline| now_ms < deadline)
+            );
+            projection["fireZoneActiveTurns"] = serde_json::json!(fire_zone_active_turns);
+            projection["fireZoneCells"] = serde_json::json!(fire_zone_cells);
         }
         serde_json::to_vec(&projection).map_err(|_| Error::Invalid)
     }

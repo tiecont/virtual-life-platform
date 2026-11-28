@@ -8,7 +8,10 @@ use crate::features::{
 use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
-use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput, SkillLevelBinding};
+use aetheria_pet_arena::arena8::coop::{
+    ADVANCED_RULESET_VERSION, ADVANCED_SOLO_RULESET_VERSION, ArtifactLoadout, COOP_RULESET_ID,
+    FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID, SEATS, SeatInput, SkillLevelBinding,
+};
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
 };
@@ -21,7 +24,7 @@ use std::{
     fs,
     sync::{
         Arc,
-        atomic::{AtomicBool, AtomicU64, Ordering},
+        atomic::{AtomicBool, Ordering},
     },
 };
 use tokio::{sync::Mutex, task::JoinHandle};
@@ -106,7 +109,7 @@ impl Drop for Driver {
 struct Health<G: NativeGame> {
     commands: Arc<Commands<G>>,
     ruleset: String,
-    db: Mutex<Client>,
+    db: Arc<Mutex<Client>>,
     zone_alive: Arc<AtomicBool>,
     _driver: Driver,
 }
@@ -114,6 +117,7 @@ pub struct NativeRuntime {
     pub router: Router,
     zone: ZoneHandle,
     task: JoinHandle<()>,
+    ticker: Option<JoinHandle<()>>,
 }
 impl NativeRuntime {
     /// `bundle` is the validated, published gameplay configuration supplied by
@@ -137,7 +141,11 @@ impl NativeRuntime {
         {
             return Err("Explicit native ruleset and scope required");
         }
-        if settings.ruleset != coordinated::domain::RULESET_ID && settings.coop.is_some() {
+        if !matches!(
+            settings.ruleset.as_str(),
+            COOP_RULESET_ID | FUNCTIONAL_SOLO_RULESET_ID
+        ) && settings.coop.is_some()
+        {
             return Err("Cooperative allocation is not valid for this ruleset");
         }
         match settings.ruleset.as_str() {
@@ -197,7 +205,49 @@ impl NativeRuntime {
                 };
                 Self::compose(settings, database, game, initial).await
             }
-            "arena8-coop-pve" => {
+            FUNCTIONAL_SOLO_RULESET_ID => {
+                if settings.pet.is_some()
+                    || settings.stage.is_some()
+                    || settings.arena8.is_some()
+                    || settings.movement
+                {
+                    return Err("Functional solo match requires a fixed one-seat allocation");
+                }
+                let allocation = settings
+                    .coop
+                    .as_ref()
+                    .ok_or("Functional solo allocation required")?;
+                let [player] = allocation.seats.as_slice() else {
+                    return Err("One functional solo seat required");
+                };
+                if player.account != settings.player
+                    || player.owned_pet_instance_id.is_nil()
+                    || player.artifact_power_pm.is_some()
+                {
+                    return Err("Invalid functional solo allocation");
+                }
+                let loadout = player
+                    .loadout
+                    .as_ref()
+                    .ok_or("Solo Artifact loadout required")?;
+                let game = coordinated::domain::Rules::load_solo(
+                    &bundle.ok_or("Published gameplay configuration required")?,
+                    SeatInput {
+                        account: player.account.to_string(),
+                        pet_id: player.pet_id.clone(),
+                        owned_pet_instance_id: player.owned_pet_instance_id.to_string(),
+                        level: player.level,
+                        artifact_power_pm: 0,
+                    },
+                    allocation.boss_id.clone(),
+                    loadout,
+                    player.skill_levels.clone(),
+                )
+                .map_err(|_| "Invalid functional solo configuration")?;
+                let initial = game.initial();
+                Self::compose(settings, database, game, initial).await
+            }
+            COOP_RULESET_ID => {
                 if settings.pet.is_some() || settings.stage.is_some() || settings.arena8.is_some() {
                     return Err("Cooperative match requires an explicit four-seat allocation");
                 }
@@ -259,7 +309,22 @@ impl NativeRuntime {
         G::State: Send + Sync,
         G::Action: Send + Sync + 'static,
     {
-        let content = game.ruleset().content_hash;
+        let contract = game.ruleset();
+        let content = contract.content_hash;
+        let required_client_build = match (contract.id.as_str(), contract.version) {
+            (COOP_RULESET_ID, ADVANCED_RULESET_VERSION)
+            | (FUNCTIONAL_SOLO_RULESET_ID, ADVANCED_SOLO_RULESET_VERSION) => {
+                Some("unity-native-v3")
+            }
+            (FUNCTIONAL_SOLO_RULESET_ID, _) => Some("unity-native-v2"),
+            (COOP_RULESET_ID, version) if version >= FUNCTIONAL_RULESET_VERSION => {
+                Some("unity-native-v2")
+            }
+            _ => None,
+        };
+        if required_client_build.is_some() && settings.movement {
+            return Err("Movement is unavailable in functional battles");
+        }
         let ruleset = settings.ruleset.clone();
         let config: Config = database
             .parse()
@@ -288,12 +353,7 @@ impl NativeRuntime {
             .await
             .map_err(|_| "Native database unavailable")?;
         let driver = Driver(driver);
-        let commands = Arc::new(Commands {
-            host,
-            match_id: settings.match_id,
-            committed: AtomicU64::new(0),
-            rejected: AtomicU64::new(0),
-        });
+        let commands = Arc::new(Commands::new(host, settings.match_id));
         let trust = DurableTrust::new(
             TicketVerifier::new(
                 settings
@@ -338,6 +398,7 @@ impl NativeRuntime {
                 enabled: true,
                 origins: vec![settings.origin],
                 content_hash: content,
+                required_client_build,
                 runtime_boot_id: *settings.boot.as_bytes(),
                 connections: 32,
             },
@@ -370,10 +431,28 @@ impl NativeRuntime {
             let _ = actor.run().await;
             zone_alive.store(false, Ordering::Release);
         });
+        let db = Arc::new(Mutex::new(db));
+        let ticker = if commands.host.game().timed_turns() {
+            let ticker_commands = Arc::clone(&commands);
+            let ticker_db = Arc::clone(&db);
+            Some(tokio::spawn(async move {
+                let mut interval = tokio::time::interval(std::time::Duration::from_millis(100));
+                interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+                loop {
+                    interval.tick().await;
+                    let mut client = ticker_db.lock().await;
+                    if let Ok(false) = ticker_commands.tick_expiration(&mut client).await {
+                        break;
+                    }
+                }
+            }))
+        } else {
+            None
+        };
         let health = Arc::new(Health {
             commands,
             ruleset: ruleset.clone(),
-            db: Mutex::new(db),
+            db,
             zone_alive: alive,
             _driver: driver,
         });
@@ -383,9 +462,17 @@ impl NativeRuntime {
             .with_state(health)
             .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"aetheria-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
             .merge(gateway);
-        Ok(Self { router, zone, task })
+        Ok(Self {
+            router,
+            zone,
+            task,
+            ticker,
+        })
     }
     pub async fn stop(mut self) {
+        if let Some(ticker) = self.ticker.take() {
+            ticker.abort();
+        }
         if let Ok(reply) = self.zone.stop() {
             let _ = reply.await;
         }
@@ -394,6 +481,9 @@ impl NativeRuntime {
 }
 impl Drop for NativeRuntime {
     fn drop(&mut self) {
+        if let Some(ticker) = &self.ticker {
+            ticker.abort();
+        }
         self.task.abort();
     }
 }

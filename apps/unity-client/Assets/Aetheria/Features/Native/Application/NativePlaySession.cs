@@ -1,15 +1,18 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Aetheria.Native.Public.V1;
 
 namespace Aetheria.Networking
 {
     public sealed class PlayState
     {
+        internal long ObservedAtTicks { get; } = Stopwatch.GetTimestamp();
         public ulong Version { get; }
         public long Epoch { get; }
         public int Turns { get; }
@@ -39,7 +42,8 @@ namespace Aetheria.Networking
         public bool HasPendingCommand => pending != null;
         public Aetheria.Native.Public.V1.WorldSnapshot MovementState => connection.Snapshot?.Clone();
         public bool NeedsRefresh => connection.NeedsRefresh;
-        public bool RequiresReconnect => connection.NeedsRefresh || connection.State == ConnectionState.Faulted;
+        public bool HasTransportFault => connection.State == ConnectionState.Faulted;
+        public bool RequiresReconnect => connection.NeedsRefresh || HasTransportFault;
         public async Task<Aetheria.Native.Public.V1.WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
         {
             if (disposed) throw new ObjectDisposedException(nameof(NativePlaySession));
@@ -64,10 +68,21 @@ namespace Aetheria.Networking
             }, cancellation);
 
         public Task<PlayState> ReconnectAsync(CancellationToken cancellation = default) =>
-            Exclusive(async token => {
+            Exclusive(ReconnectAndRead, cancellation);
+
+        private async Task<PlayState> ReconnectAndRead(CancellationToken token)
+        {
+            await connection.ReconnectAsync(token).ConfigureAwait(false);
+            try {
+                return await Read(token).ConfigureAwait(false);
+            } catch (NativeFailure failure) when (IsTransientRejection(failure)) {
+                // The projected view is read-only. A transient rejection
+                // faults its socket, so retry once with fresh admission.
+                await Task.Delay(100, token).ConfigureAwait(false);
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
                 return await Read(token).ConfigureAwait(false);
-            }, cancellation);
+            }
+        }
 
         // A native match allocation can already scope the admission ticket to one
         // match, so the transport must connect without a fresh platform login.
@@ -103,10 +118,22 @@ namespace Aetheria.Networking
         protected abstract string ViewKind { get; }
         protected abstract PlayState Decode(ulong version, byte[] bytes);
         public abstract Task<PlayState> AdvanceAsync(CancellationToken cancellation = default);
-        protected Task<PlayState> SubmitPending(Func<PlayState, Guid, GameCommand> create, CancellationToken cancellation) =>
+        protected Task<PlayState> SubmitPending(Func<PlayState, Guid, GameCommand> create,
+            CancellationToken cancellation, bool renewAdmissionBeforeSubmit = false) =>
             Exclusive(async token => {
                 if (pending != null) throw new NativeFailure(Failure.Busy);
-                if (state == null) throw new NativeFailure(Failure.Rejected);
+                var requested = state;
+                if (requested == null) throw new NativeFailure(Failure.Rejected);
+                if (renewAdmissionBeforeSubmit && connection.NeedsRefresh)
+                {
+                    // A short admission can end during a playable turn. Renew
+                    // before creating an intent and recheck the board it targeted.
+                    var latest = await ReconnectAndRead(token).ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
+                    state = latest;
+                    if (latest.Version != requested.Version || latest.Epoch != requested.Epoch)
+                        throw new NativeFailure(Failure.Rejected, ErrorCode.StaleVersion);
+                }
                 pending = create(state, match);
                 return await CommitPending(token).ConfigureAwait(false);
             }, cancellation);
@@ -117,7 +144,12 @@ namespace Aetheria.Networking
                 // Reconnect gets a fresh ticket. Retain the same immutable command,
                 // even if a view now shows that its original result was committed.
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
-                return await CommitPending(token).ConfigureAwait(false);
+                var receipt = await CommitPending(token).ConfigureAwait(false);
+                if (receipt.Coop?.IsTimed != true) return receipt;
+                // Replayed receipts preserve the original projection, including its clock sample.
+                var current = await Read(token).ConfigureAwait(false);
+                current.ReceiptId = receipt.ReceiptId;
+                return current;
             }, cancellation);
 
         private async Task<PlayState> CommitPending(CancellationToken token)
@@ -129,16 +161,22 @@ namespace Aetheria.Networking
                 result.ReceiptId = Convert.ToBase64String(receipt.CommandId.ToByteArray());
                 token.ThrowIfCancellationRequested();
                 pending = null; return result;
-            } catch (NativeFailure e) when (e.Reason == Failure.Rejected && e.Code != Aetheria.Native.Public.V1.ErrorCode.TemporarilyUnavailable && e.Code != Aetheria.Native.Public.V1.ErrorCode.Backpressure) {
+            } catch (NativeFailure e) when (e.Reason == Failure.Rejected && !IsTransientRejection(e)) {
                 // A definite server rejection has no ambiguous effect to retry.
                 pending = null; throw;
             }
         }
+        private static bool IsTransientRejection(NativeFailure failure) =>
+            failure.Reason == Failure.Rejected &&
+            (failure.Code == ErrorCode.TemporarilyUnavailable || failure.Code == ErrorCode.Backpressure);
+
         private async Task<PlayState> Read(CancellationToken token)
         {
             var receipt = await connection.SubmitAsync(new GameCommand(Guid.NewGuid(), match, 0, ViewKind, Array.Empty<byte>()), token).ConfigureAwait(false);
             if (receipt.Receipt.Committed) throw new NativeFailure(Failure.Protocol);
-            return Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
+            var view = Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
+            if (view.Coop?.JewelFeedback.Count > 0) throw new NativeFailure(Failure.Protocol);
+            return view;
         }
         private async Task<PlayState> Exclusive(Func<CancellationToken, Task<PlayState>> work, CancellationToken cancellation)
         {

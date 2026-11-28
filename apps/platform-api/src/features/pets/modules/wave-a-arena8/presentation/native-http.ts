@@ -14,6 +14,7 @@ const AllocateInput=z.strictObject({
   petId:z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),
   mapId:z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),
   encounterId:z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),
+  boardRuleset:z.literal('functional').optional(),
 });
 
 // Local-only native allocation route. It returns only the ticket, transport
@@ -59,6 +60,7 @@ export function registerNativeArena8(
       const body=AllocateInput.parse(req.body);
       return provisioner.allocate(accountId,credential,body.requestId,{
         petId:body.petId,mapId:body.mapId,encounterId:body.encounterId,
+        ...(body.boardRuleset?{boardRuleset:body.boardRuleset}:{}),
       });
     });
     api.post('/pets/wave-a/arena8/native/matches/:matchId/settle',{bodyLimit:1024},async req=>{

@@ -74,10 +74,7 @@ fn digest(state: &CoopState) -> [u8; 32] {
 }
 
 fn flat(element: Element, multiplier: u8) -> Tile {
-    Tile {
-        element,
-        multiplier,
-    }
+    Tile::legacy(element, multiplier)
 }
 
 /// A 6-periodic diagonal board with no three-in-a-row and no multiplier tiles.
@@ -307,7 +304,7 @@ fn gravity_preserves_order_and_refills_only_empty_cells() {
     }
     state.board = board;
     rules
-        .gravity_and_refill(&mut state, &mut stream)
+        .gravity_and_refill(&mut state, &mut stream, &mut 0)
         .expect("gravity");
     let filled: Vec<u8> = (0..SIDE)
         .map(|row| state.board[row * SIDE].unwrap().multiplier)
@@ -324,7 +321,7 @@ fn gravity_preserves_order_and_refills_only_empty_cells() {
         .map(|row| state.board[row * SIDE + 7].unwrap())
         .collect();
     rules
-        .gravity_and_refill(&mut state, &mut stream)
+        .gravity_and_refill(&mut state, &mut stream, &mut 0)
         .expect("gravity");
     let after: Vec<Tile> = (0..SIDE)
         .map(|row| state.board[row * SIDE + 7].unwrap())
@@ -1229,3 +1226,1088 @@ fn terminal_policy_resolves_due_telegraph_when_the_boss_survives() {
         Some(configured.settlement(&finished.state))
     );
 }
+
+fn constructive_rules() -> CoopRules {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["board"]["initialBoardPolicy"] = "constructive".into();
+    CoopRules::load(
+        &serde_json::to_vec(&candidate).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap()
+}
+
+#[test]
+fn constructive_openings_are_playable_under_skewed_weights() {
+    let mut candidate: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    candidate["board"]["initialBoardPolicy"] = "constructive".into();
+    candidate["board"]["generationAttempts"] = 1.into();
+    for (index, weight) in candidate["board"]["spawnWeights"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .enumerate()
+    {
+        weight["weight"] = if index == 0 { 1_000_000 } else { 1 }.into();
+    }
+    let rules = CoopRules::load(
+        &serde_json::to_vec(&candidate).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+    let initial = rules.allocate(seats()).unwrap();
+    for seed in 1..=1_000 {
+        let secret = SecretSeed::from_host_entropy([43; 32]);
+        let mut rng = TurnRng::new(&secret, Value::Uint(seed), 0).unwrap();
+        let state = rules
+            .reduce(&initial, CoopAction::Start, &mut rng)
+            .unwrap()
+            .state;
+        assert!(
+            state
+                .board
+                .iter()
+                .all(|tile| tile.is_some_and(|tile| tile.multiplier == 1))
+        );
+        assert!(!matched_cells(&state.board).contains(&true), "seed {seed}");
+        assert!(rules.legal_swap(&state).is_some(), "seed {seed}");
+    }
+}
+
+#[test]
+fn constructive_openings_are_explicit_and_bind_to_the_match_digest() {
+    use aetheria_game_core::{Command, apply, begin};
+
+    let historical = rules();
+    let candidate = constructive_rules();
+    assert_eq!(
+        historical
+            .digest()
+            .map(|byte| format!("{byte:02x}"))
+            .concat(),
+        "69c326020b10f28bace6dab175ee1b1630afe83ec1165d9ff1fb845c143419bf"
+    );
+    assert_ne!(candidate.digest(), historical.digest());
+
+    let legacy = include_bytes!("../../../tests/fixtures/arena8-coop-v1-legacy.seed.json");
+    let mut invalid: serde_json::Value = serde_json::from_slice(legacy).unwrap();
+    invalid["board"]["initialBoardPolicy"] = "constructive".into();
+    assert!(CoopConfig::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+    invalid = serde_json::from_slice(&bundle()).unwrap();
+    invalid["board"]["initialBoardPolicy"] = "unknown-policy".into();
+    assert!(CoopConfig::parse(&serde_json::to_vec(&invalid).unwrap()).is_err());
+
+    let ready_to_start = |rules: &CoopRules, seed: u64| {
+        let mut entropy = [0u8; 32];
+        for bytes in entropy.as_chunks_mut::<8>().0 {
+            bytes.copy_from_slice(&seed.to_le_bytes());
+        }
+        let secret = SecretSeed::from_host_entropy(entropy);
+        let mut match_id = [0u8; 16];
+        match_id[..8].copy_from_slice(&seed.to_le_bytes());
+        match_id[15] = 1;
+        let clock = LogicalClock {
+            server_tick: 0,
+            logical_time_ms: 0,
+        };
+        let state = rules.allocate(seats()).unwrap();
+        let checkpoint = begin(rules, match_id, state, &secret, clock).unwrap();
+        let command = Command {
+            id: [1; 16],
+            match_id,
+            expected_version: checkpoint.version,
+            ruleset: checkpoint.ruleset.clone(),
+            action: CoopAction::Start,
+        };
+        (checkpoint, command, secret, clock)
+    };
+    for seed in [233, 548, 605, 892] {
+        let (ready, command, entropy, clock) = ready_to_start(&historical, seed);
+        // These fixed seeds previously exhausted the opening generator.
+        assert!(matches!(
+            apply(&historical, &ready, &command, &entropy, clock),
+            Err(CoreError::InvalidState)
+        ));
+        assert!(matches!(
+            apply(&candidate, &ready, &command, &entropy, clock),
+            Err(CoreError::ContentMismatch)
+        ));
+        let (ready, command, entropy, clock) = ready_to_start(&candidate, seed);
+        let first = apply(&candidate, &ready, &command, &entropy, clock).unwrap();
+        let replay = apply(&candidate, &ready, &command, &entropy, clock).unwrap();
+        assert_eq!(first.next.audit_hash, replay.next.audit_hash);
+        assert_eq!(first.next.state.config_digest, candidate.digest());
+        assert_ne!(first.next.state.config_digest, historical.digest());
+        assert!(candidate.legal_swap(&first.next.state).is_some());
+    }
+}
+
+fn functional_bundle() -> &'static [u8] {
+    include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v1.candidate.json"
+    ))
+}
+
+fn functional_rules() -> CoopRules {
+    CoopRules::load(functional_bundle(), "cinder-terraces-warden".into()).unwrap()
+}
+
+#[test]
+fn functional_campaign_binds_all_six_solo_maps_and_their_canonical_recruitment_order() {
+    let catalog: serde_json::Value = serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../specs/pet-arena/mvp-wave1-43-pets.json"
+    )))
+    .unwrap();
+    let config = CoopConfig::parse(functional_bundle()).unwrap();
+    let maps = catalog["maps"].as_array().unwrap();
+    let first_clear = [
+        (500, 200),
+        (750, 250),
+        (1100, 300),
+        (1500, 350),
+        (2000, 400),
+        (2600, 500),
+    ];
+    assert_eq!(config.bosses().len(), maps.len());
+    assert_eq!(maps.len(), first_clear.len());
+    for (index, (chapter, boss)) in maps.iter().zip(config.bosses()).enumerate() {
+        let map_id = chapter["id"].as_str().unwrap();
+        let regular_id = format!("{map_id}-regular");
+        assert_eq!(boss.map_id.as_deref(), Some(map_id));
+        assert_eq!(boss.id, format!("{map_id}-warden"));
+        assert_eq!(boss.element, chapter["element"].as_str().unwrap());
+        assert_eq!(boss.required_room_points, 5000);
+        // The original Fire and Water cooperative hosting policies have no map gate.
+        let prerequisite = (index >= 2).then(|| maps[index - 1]["id"].as_str().unwrap());
+        assert_eq!(boss.required_map_clear.as_deref(), prerequisite);
+
+        let regular = CoopRules::load_solo(functional_bundle(), regular_id.clone())
+            .expect("functional regular encounter");
+        let warden =
+            CoopRules::load_solo(functional_bundle(), boss.id.clone()).expect("functional Warden");
+        let scout = boss.regular.as_ref().unwrap();
+        let solo = boss.solo.as_ref().unwrap();
+        assert_eq!(regular.encounter_id(), regular_id);
+        assert_eq!(warden.encounter_id(), boss.id);
+        assert!(regular.regular_encounter());
+        assert!(!warden.regular_encounter());
+        assert_eq!(regular.opponent().max_hp, scout.max_hp);
+        assert_eq!(warden.opponent().max_hp, solo.max_hp);
+        assert_eq!(regular.digest(), config.digest());
+        assert_eq!(warden.digest(), config.digest());
+
+        let mut recruits = chapter["regularPetIds"].as_array().unwrap().clone();
+        recruits.push(chapter["legendaryPetId"].clone());
+        let rewards = boss.reward_policy.as_ref().unwrap();
+        assert_eq!(
+            serde_json::json!(rewards.recruitment_pet_ids),
+            serde_json::Value::Array(recruits)
+        );
+        let scout_rewards = &scout.reward_policy;
+        assert_eq!(
+            (
+                scout_rewards.first_clear.exp,
+                scout_rewards.first_clear.coins
+            ),
+            first_clear[index]
+        );
+        let index = u32::try_from(index).unwrap();
+        assert_eq!(
+            (
+                scout_rewards.repeat_clear.exp,
+                scout_rewards.repeat_clear.coins
+            ),
+            (120 + 30 * index, 40 + 10 * index)
+        );
+        assert_eq!(
+            (scout_rewards.defeat.exp, scout_rewards.defeat.coins),
+            (0, 0)
+        );
+    }
+}
+
+#[test]
+fn functional_candidate_requires_separate_typed_identities_and_progressive_weights() {
+    let mutate = |path: &str, value: serde_json::Value| {
+        let mut candidate: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
+        *candidate.pointer_mut(path).unwrap() = value;
+        CoopConfig::parse(&serde_json::to_vec(&candidate).unwrap())
+    };
+    for (path, value) in [
+        ("/schemaVersion", serde_json::json!(2)),
+        ("/engineCapability", serde_json::json!("arena8-coop-v1")),
+        ("/resources/manaOwnBonus", serde_json::json!(1)),
+        (
+            "/board/functionalTiles/spawnWeights/1/kind",
+            serde_json::json!("sword"),
+        ),
+        (
+            "/board/functionalTiles/spawnWeights/1/kind",
+            serde_json::json!("water"),
+        ),
+        (
+            "/board/functionalTiles/spawnWeights/1/weight",
+            serde_json::json!(u32::MAX),
+        ),
+        ("/board/functionalTiles/manaPerTile", serde_json::json!(101)),
+        (
+            "/board/functionalTiles/heart/target",
+            serde_json::json!("boss"),
+        ),
+        (
+            "/board/functionalTiles/shield/shieldCapPm",
+            serde_json::json!(1001),
+        ),
+        (
+            "/board/functionalTiles/special/kind",
+            serde_json::json!("random-board-damage"),
+        ),
+        (
+            "/multiplier/schedule/0/tiers/0/resourceWeightPm",
+            serde_json::json!(0),
+        ),
+    ] {
+        assert!(mutate(path, value).is_err(), "{path}");
+    }
+    assert_ne!(functional_rules().digest(), rules().digest());
+}
+
+#[test]
+fn functional_tile_effects_scale_only_their_authored_function() {
+    let coop = functional_rules();
+    let initial = coop.allocate(seats()).unwrap();
+    assert_weighted_tile_effects(&coop, &initial, 1);
+    for encounter in ["cinder-terraces-warden", "cinder-terraces-regular"] {
+        let solo = CoopRules::load_solo(functional_bundle(), encounter.into()).unwrap();
+        let seat = seats()[0].clone();
+        let loadout = ArtifactLoadout {
+            digest: ArtifactLoadout::digest(solo.digest(), &seat, &[]),
+            entries: vec![],
+        };
+        let initial = solo.allocate_solo(seat, &loadout).unwrap();
+        assert_weighted_tile_effects(&solo, &initial, 0);
+    }
+}
+
+fn assert_weighted_tile_effects(rules: &CoopRules, initial: &CoopState, wounded_seat: usize) {
+    let policy = rules.config().board.functional_tiles.as_ref().unwrap();
+    for kind in TileKind::ALL {
+        let mut state = initial.clone();
+        state.participants[0].crit_rate_bp = 0;
+        state.participants[wounded_seat].hp = 10;
+        let hp = state.boss.hp;
+        for (index, multiplier) in [1, 2, 1].into_iter().enumerate() {
+            state.board[index] = Some(Tile {
+                identity: TileIdentity::Kind(kind),
+                multiplier,
+            });
+        }
+        let matched = matched_cells(&state.board);
+        let mut events = Vec::new();
+        let mut stream = rng(0);
+        let outcome = rules
+            .score_functional_match(&mut state, 0, &matched, &mut stream, &mut events)
+            .unwrap();
+
+        let actor = &state.participants[0];
+        assert_eq!(
+            actor.mana,
+            match kind {
+                TileKind::Mana => 42,
+                TileKind::Special => 24,
+                _ => 0,
+            },
+            "{kind:?}"
+        );
+        assert_eq!(
+            actor.rage,
+            match kind {
+                TileKind::Rage => 35,
+                TileKind::Special => 21,
+                _ => 0,
+            },
+            "{kind:?}"
+        );
+        assert_eq!(actor.shield, if kind == TileKind::Shield { 52 } else { 0 });
+        assert_eq!(
+            actor.shield_turns,
+            if kind == TileKind::Shield { 2 } else { 0 }
+        );
+        assert_eq!(actor.contribution_shielding, u64::from(actor.shield));
+        assert_eq!(
+            state.participants[wounded_seat].hp,
+            if kind == TileKind::Heart { 52 } else { 10 }
+        );
+        assert_eq!(
+            actor.contribution_healing,
+            u64::from(state.participants[wounded_seat].hp - 10)
+        );
+        if kind == TileKind::Sword {
+            let opponent = rules.opponent();
+            let authored_contribution = (2 + 2) * policy.sword_contribution_pm;
+            let authored_bonus =
+                authored_contribution * rules.config().damage.contribution_scale_pm / 1_000;
+            let raw = actor.attack + authored_bonus
+                - opponent.defense / rules.config().damage.defense_divisor;
+            let elemental = raw
+                * u32::from(rules.effectiveness(Element::Fire, rules.opponent_element().unwrap()))
+                / 1_000;
+            // Apply encounter-specific phase and lethal caps to the expected hit.
+            let expected = rules.damage_boss(&mut initial.clone(), elemental).unwrap();
+            assert_eq!(outcome.damage, expected);
+            assert_eq!(hp - state.boss.hp, expected);
+        } else {
+            assert_eq!(outcome.damage, 0);
+            assert_eq!(hp, state.boss.hp);
+            assert_eq!(stream.cursor(), 0, "utility effects consume no crit draw");
+        }
+        assert!(state.board.iter().all(Option::is_none));
+    }
+}
+
+#[test]
+fn identical_sword_matches_follow_the_six_pet_elements_against_each_warden() {
+    let config = CoopConfig::parse(functional_bundle()).unwrap();
+    for boss in config.bosses() {
+        let rules = CoopRules::load(functional_bundle(), boss.id.clone()).unwrap();
+        let mut hits = Vec::new();
+        for profile in &config.elements {
+            let pet = config
+                .pets
+                .iter()
+                .find(|pet| pet.element == profile.element)
+                .unwrap();
+            let mut team = seats();
+            team[0].pet_id.clone_from(&pet.id);
+            let mut state = rules.allocate(team).unwrap();
+            // Hold offensive stats and the board constant to isolate the Pet matchup.
+            state.participants[0].attack = 100;
+            state.participants[0].crit_rate_bp = 0;
+            state.board[..3].fill(Some(Tile {
+                identity: TileIdentity::Kind(TileKind::Sword),
+                multiplier: 1,
+            }));
+            let matched = matched_cells(&state.board);
+            let result = rules
+                .score_functional_match(&mut state, 0, &matched, &mut rng(0), &mut Vec::new())
+                .unwrap();
+            let weight = profile
+                .effectiveness
+                .iter()
+                .find(|row| row.element == boss.element)
+                .unwrap()
+                .permille;
+            hits.push((weight, result.damage));
+        }
+        let neutral = hits.iter().find(|(weight, _)| *weight == 1000).unwrap().1;
+        assert!(neutral > 0, "{}", boss.id);
+        for (weight, damage) in hits {
+            assert_eq!(damage, neutral * u32::from(weight) / 1000, "{}", boss.id);
+        }
+    }
+}
+
+#[test]
+fn functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity() {
+    let rules = functional_rules();
+    let policy = rules.config().board.functional_tiles.as_ref().unwrap();
+    let mut state = rules.allocate(seats()).unwrap();
+    let seat = &mut state.participants[0];
+    seat.mana = 99;
+    seat.rage = 98;
+    seat.hp = seat.max_hp - 5;
+    let shield_cap = seat.max_hp * u32::from(policy.shield.shield_cap_pm) / 1_000;
+    seat.shield = shield_cap - 1;
+    for (index, kind) in [TileKind::Special, TileKind::Shield, TileKind::Heart]
+        .into_iter()
+        .enumerate()
+    {
+        for column in 0..3 {
+            state.board[index * SIDE + column] = Some(Tile {
+                identity: TileIdentity::Kind(kind),
+                multiplier: 6,
+            });
+        }
+    }
+    let matched = matched_cells(&state.board);
+    let mut events = Vec::new();
+    rules
+        .score_functional_match(&mut state, 0, &matched, &mut rng(0), &mut events)
+        .unwrap();
+    let seat = &state.participants[0];
+    assert_eq!(
+        (seat.mana, seat.rage, seat.hp, seat.shield),
+        (100, 100, seat.max_hp, shield_cap)
+    );
+    assert_eq!(seat.contribution_shielding, 1);
+    assert_eq!(seat.contribution_healing, 5);
+}
+
+#[test]
+fn functional_swaps_replay_and_mixed_snapshots_fail_closed() {
+    let functional = functional_rules();
+    let legacy = rules();
+    let initial = functional.allocate(seats()).unwrap();
+    let mut stream = rng(0);
+    let first = functional
+        .reduce(&initial, CoopAction::Start, &mut stream)
+        .unwrap()
+        .state;
+    let original_cursor = stream.cursor();
+    let playing: CoopState = serde_json::from_slice(&serde_json::to_vec(&first).unwrap()).unwrap();
+    assert_eq!(state_digest(&playing), state_digest(&first));
+    assert_eq!(functional.ruleset().version, FUNCTIONAL_RULESET_VERSION);
+    assert_eq!(legacy.ruleset().version, COOP_RULESET_VERSION);
+    assert_ne!(
+        functional.ruleset().content_hash,
+        content_hash(functional.digest())
+    );
+    assert!(legacy.validate(&playing).is_err());
+
+    let mut mixed = playing.clone();
+    mixed.board[0] = Some(Tile::legacy(Element::Fire, 1));
+    assert!(functional.validate(&mixed).is_err());
+    assert!(
+        functional
+            .reduce(
+                &mixed,
+                CoopAction::Swap {
+                    first: 0,
+                    second: 1
+                },
+                &mut stream
+            )
+            .is_err()
+    );
+    assert_eq!(stream.cursor(), original_cursor);
+    let mixed_tile = br#"{"element":"fire","kind":"sword","multiplier":1}"#;
+    assert!(serde_json::from_slice::<Tile>(mixed_tile).is_err());
+    let previous_tile = br#"{"element":"water","multiplier":2}"#;
+    let previous = serde_json::from_slice::<Tile>(previous_tile).unwrap();
+    assert_eq!(serde_json::to_vec(&previous).unwrap(), previous_tile);
+    let next_tile = br#"{"kind":"mana","multiplier":2}"#;
+    let next = serde_json::from_slice::<Tile>(next_tile).unwrap();
+    assert_eq!(serde_json::to_vec(&next).unwrap(), next_tile);
+
+    assert!(
+        functional
+            .reduce(
+                &playing,
+                CoopAction::Swap {
+                    first: 0,
+                    second: 9
+                },
+                &mut stream
+            )
+            .is_err()
+    );
+    assert_eq!(stream.cursor(), original_cursor);
+    let (first, second) = functional.legal_swap(&playing).unwrap();
+    let action = CoopAction::Swap { first, second };
+    let committed = functional.reduce(&playing, action, &mut stream).unwrap();
+    let mut replay_rng = rng(original_cursor);
+    let replayed = functional
+        .reduce(&playing, action, &mut replay_rng)
+        .unwrap();
+    assert_eq!(
+        state_digest(&committed.state),
+        state_digest(&replayed.state)
+    );
+    assert_eq!(committed.events, replayed.events);
+    assert_eq!(stream.cursor(), replay_rng.cursor());
+    assert!(
+        !matched_cells(&committed.state.board)
+            .into_iter()
+            .any(|marked| marked)
+    );
+}
+
+#[test]
+fn regular_profile_requires_bounded_authored_policy_and_binds_payouts() {
+    let source: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
+    let parse =
+        |bundle: &serde_json::Value| CoopConfig::parse(&serde_json::to_vec(bundle).unwrap());
+    let valid = parse(&source).unwrap();
+    for (field, value) in [
+        ("id", serde_json::json!("tideglass-lagoon-regular")),
+        ("element", serde_json::json!("water")),
+        ("maxHp", serde_json::json!(0)),
+        ("maxRounds", serde_json::json!(0)),
+        ("rewardPolicy", serde_json::json!(null)),
+        ("phase", serde_json::json!({})),
+    ] {
+        let mut broken = source.clone();
+        broken["bosses"][0]["regular"][field] = value;
+        assert!(parse(&broken).is_err(), "{field}");
+    }
+    let mut broken = source.clone();
+    broken["bosses"][0]["regular"]["rewardPolicy"]["firstClear"]["coins"] = 1_000_001.into();
+    assert_eq!(parse(&broken), Err(ConfigError::Rewards));
+    let mut new_reward = source.clone();
+    new_reward["bosses"][0]["regular"]["rewardPolicy"]["firstClear"]["coins"] = 99.into();
+    assert_ne!(parse(&new_reward).unwrap().digest(), valid.digest());
+    let mut previous: serde_json::Value = serde_json::from_slice(&bundle()).unwrap();
+    previous["bosses"][0]["regular"] = source["bosses"][0]["regular"].clone();
+    assert!(
+        parse(&previous).is_err(),
+        "historical capability cannot opt in"
+    );
+}
+
+#[test]
+fn regular_encounter_uses_one_phase_and_cannot_restore_as_a_boss() {
+    for (regular_id, boss_id, expected_hp) in [
+        ("cinder-terraces-regular", "cinder-terraces-warden", 420),
+        ("tideglass-lagoon-regular", "tideglass-lagoon-warden", 480),
+    ] {
+        let regular = CoopRules::load_solo(functional_bundle(), regular_id.into()).unwrap();
+        let boss = CoopRules::load_solo(functional_bundle(), boss_id.into()).unwrap();
+        assert!(CoopRules::load(functional_bundle(), regular_id.into()).is_err());
+        let seat = seats()[0].clone();
+        let loadout = ArtifactLoadout {
+            digest: ArtifactLoadout::digest(regular.digest(), &seat, &[]),
+            entries: vec![],
+        };
+        let initial = regular.allocate_solo(seat, &loadout).unwrap();
+        assert_eq!(initial.boss_id.as_deref(), Some(regular_id));
+        assert_eq!(
+            (initial.boss.hp, initial.boss.max_hp),
+            (expected_hp, expected_hp)
+        );
+        assert!(boss.validate(&initial).is_err());
+        let mut playing = regular
+            .reduce(&initial, CoopAction::Start, &mut rng(0))
+            .unwrap()
+            .state;
+        assert!(
+            playing
+                .board
+                .iter()
+                .flatten()
+                .all(|tile| matches!(tile.identity, TileIdentity::Kind(_)))
+        );
+        let mut tampered = playing.clone();
+        tampered.boss.transformed = true;
+        tampered.boss.phase = 2;
+        assert!(regular.validate(&tampered).is_err());
+
+        let dealt = regular.damage_boss(&mut playing, expected_hp * 2).unwrap();
+        assert_eq!(dealt, expected_hp);
+        assert_eq!(playing.phase, CoopPhase::Won);
+        assert_eq!(playing.boss.phase, 1);
+        assert!(!playing.boss.transformed);
+        assert!(regular.validate(&playing).is_ok());
+        let Value::List(settlement) = regular.settlement(&playing) else {
+            panic!("expected canonical settlement")
+        };
+        assert_eq!(settlement[5], Value::Text(regular_id.into()));
+    }
+}
+
+fn v3_bundle() -> &'static [u8] {
+    include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v2.candidate.json"
+    ))
+}
+
+fn v3_rules() -> CoopRules {
+    CoopRules::load(v3_bundle(), "cinder-terraces-warden".into()).unwrap()
+}
+
+#[test]
+fn v3_candidate_config_and_historical_digests_remain_isolated() {
+    assert_eq!(
+        rules().digest().map(|b| format!("{b:02x}")).concat(),
+        "69c326020b10f28bace6dab175ee1b1630afe83ec1165d9ff1fb845c143419bf"
+    );
+    let functional = functional_rules();
+    assert_eq!(functional.ruleset().version, FUNCTIONAL_RULESET_VERSION);
+    assert_eq!(functional.max_rounds(), Some(40));
+
+    let v3_cfg = CoopConfig::parse(v3_bundle()).unwrap();
+    assert!(v3_cfg.is_v3());
+    assert_eq!(v3_cfg.schema_version, config::V3_SCHEMA_VERSION);
+    assert_eq!(v3_cfg.engine_capability, config::V3_ENGINE_CAPABILITY);
+    assert_eq!(v3_cfg.party.max_rounds, None);
+    assert_eq!(v3_cfg.party.turn_timeout_ms, 15_000);
+    assert_eq!(v3_cfg.multiplier.schedule.len(), 8);
+    assert_eq!(v3_cfg.multiplier.damage_weight(7).unwrap(), 7_000);
+    assert_eq!(v3_cfg.multiplier.resource_weight(7).unwrap(), 4_000);
+    assert_eq!(v3_cfg.multiplier.damage_weight(8).unwrap(), 8_000);
+    assert_eq!(v3_cfg.multiplier.resource_weight(8).unwrap(), 4_500);
+
+    let v3 = v3_rules();
+    assert!(v3.is_v3());
+    assert_eq!(v3.max_rounds(), None);
+    assert_eq!(v3.ruleset().id, COOP_RULESET_ID);
+    assert_eq!(v3.ruleset().version, V3_RULESET_VERSION);
+    assert_ne!(v3.digest(), functional.digest());
+    assert_ne!(v3.ruleset().content_hash, functional.ruleset().content_hash);
+
+    for boss in v3_cfg.bosses() {
+        assert_eq!(boss.solo.as_ref().and_then(|s| s.max_rounds), None);
+        assert_eq!(boss.regular.as_ref().and_then(|r| r.max_rounds), None);
+        let solo_boss = CoopRules::load_solo(v3_bundle(), boss.id.clone()).unwrap();
+        assert_eq!(solo_boss.ruleset().id, FUNCTIONAL_SOLO_RULESET_ID);
+        assert_eq!(solo_boss.ruleset().version, V3_SOLO_RULESET_VERSION);
+        assert_eq!(solo_boss.max_rounds(), None);
+        let reg_id = boss.regular.as_ref().unwrap().id.clone();
+        let solo_reg = CoopRules::load_solo(v3_bundle(), reg_id).unwrap();
+        assert_eq!(solo_reg.ruleset().version, V3_SOLO_RULESET_VERSION);
+        assert_eq!(solo_reg.max_rounds(), None);
+    }
+}
+
+#[test]
+fn v3_config_validation_enforces_schema_bounds_and_version_gating() {
+    let parse = |value: &serde_json::Value| CoopConfig::parse(&serde_json::to_vec(value).unwrap());
+
+    // `schemaVersion <= 3` still rejects null `maxRounds`.
+    for legacy_bytes in [&bundle()[..], functional_bundle()] {
+        let mut legacy: serde_json::Value = serde_json::from_slice(legacy_bytes).unwrap();
+        legacy["party"]["maxRounds"] = serde_json::Value::Null;
+        assert!(parse(&legacy).is_err());
+    }
+    let mut legacy_fn: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();
+    legacy_fn["bosses"][0]["solo"]["maxRounds"] = serde_json::Value::Null;
+    assert!(parse(&legacy_fn).is_err());
+
+    let base: serde_json::Value = serde_json::from_slice(v3_bundle()).unwrap();
+    // Bounded numeric `maxRounds` stays valid on v3, while 0 or >1000 fail closed.
+    let mut capped = base.clone();
+    capped["party"]["maxRounds"] = 50.into();
+    assert_eq!(parse(&capped).unwrap().party.max_rounds, Some(50));
+    capped["party"]["maxRounds"] = 0.into();
+    assert!(parse(&capped).is_err());
+    capped["party"]["maxRounds"] = 1001.into();
+    assert!(parse(&capped).is_err());
+
+    // `turnTimeoutMs` must stay within 1_000..=300_000.
+    for bad_timeout in [0u64, 999, 300_001] {
+        let mut bad = base.clone();
+        bad["party"]["turnTimeoutMs"] = bad_timeout.into();
+        assert!(parse(&bad).is_err(), "{bad_timeout}");
+    }
+    for ok_timeout in [1_000u64, 15_000, 300_000] {
+        let mut ok = base.clone();
+        ok["party"]["turnTimeoutMs"] = ok_timeout.into();
+        assert_eq!(parse(&ok).unwrap().party.turn_timeout_ms, ok_timeout as u32);
+    }
+
+    // Wrong capability for schemaVersion 4 fails closed.
+    let mut wrong_cap = base.clone();
+    wrong_cap["engineCapability"] = "arena8-coop-v2".into();
+    assert_eq!(parse(&wrong_cap), Err(ConfigError::Identity));
+
+    // Inconsistent tier 7 weight between stage 6 and stage 7 fails closed.
+    let mut bad_tier = base;
+    bad_tier["multiplier"]["schedule"][7]["tiers"][6]["damageWeightPm"] = 9_999.into();
+    assert_eq!(parse(&bad_tier), Err(ConfigError::MultiplierSchedule));
+}
+
+#[test]
+fn v3_uncapped_combat_crosses_round_40_uses_x7_x8_and_exceeds_4096_turns() {
+    let mut authored: serde_json::Value = serde_json::from_slice(v3_bundle()).unwrap();
+    authored["bosses"][0]["maxHp"] = 50_000.into();
+    authored["bosses"][0]["attackModel"]["baseDamage"] = 1.into();
+    authored["bosses"][0]["attackModel"]["perRoundDamage"] = 0.into();
+    authored["bosses"][0]["attackModel"]["minimumDamage"] = 1.into();
+    let v3 = CoopRules::load(
+        &serde_json::to_vec(&authored).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+
+    let mut roster = seats();
+    for seat in &mut roster {
+        seat.level = 60;
+    }
+    let mut stream = rng(42);
+    let mut state = v3
+        .reduce_stamped(
+            &v3.allocate(roster).unwrap(),
+            CoopAction::Start,
+            Some(1_000),
+            &mut stream,
+        )
+        .unwrap()
+        .state;
+
+    let mut ts = 2_000u64;
+    let mut saw_x7_in_stage7 = false;
+    let mut saw_x8_in_stage8 = false;
+    while state.round_index < 45 {
+        state = v3
+            .reduce_stamped(&state, CoopAction::EndTurn, Some(ts), &mut stream)
+            .unwrap()
+            .state;
+        assert_eq!(state.phase, CoopPhase::Playing);
+        ts += 1_000;
+        let (first, second) = v3.legal_swap(&state).unwrap();
+        state = v3
+            .reduce_stamped(
+                &state,
+                CoopAction::Swap { first, second },
+                Some(ts),
+                &mut stream,
+            )
+            .unwrap()
+            .state;
+        ts += 1_000;
+        if (37..42).contains(&state.turn_index) {
+            assert!(!state.board.iter().flatten().any(|t| t.multiplier == 8));
+            saw_x7_in_stage7 |= state.board.iter().flatten().any(|t| t.multiplier == 7);
+        }
+        if state.turn_index >= 42 {
+            saw_x8_in_stage8 |= state.board.iter().flatten().any(|t| t.multiplier == 8);
+        }
+    }
+    assert!(state.round_index >= 45);
+    assert_eq!(state.phase, CoopPhase::Playing);
+    assert!(saw_x7_in_stage7 || saw_x8_in_stage8);
+
+    // Explicitly verify stage 7 (from: 37) and stage 8 (from: 42) spawn tiers over refills.
+    let mut s37 = state.clone();
+    s37.turn_index = 37;
+    let mut spawned7 = false;
+    let mut spawned8_at_37 = false;
+    for _ in 0..40 {
+        s37.board = [None; CELLS];
+        v3.gravity_and_refill(&mut s37, &mut stream, &mut 0)
+            .unwrap();
+        spawned7 |= s37.board.iter().flatten().any(|t| t.multiplier == 7);
+        spawned8_at_37 |= s37.board.iter().flatten().any(|t| t.multiplier == 8);
+    }
+    assert!(spawned7);
+    assert!(!spawned8_at_37);
+
+    let mut s42 = state.clone();
+    s42.turn_index = 42;
+    let mut spawned8 = false;
+    for _ in 0..40 {
+        s42.board = [None; CELLS];
+        v3.gravity_and_refill(&mut s42, &mut stream, &mut 0)
+            .unwrap();
+        spawned8 |= s42.board.iter().flatten().any(|t| t.multiplier == 8);
+    }
+    assert!(spawned8);
+
+    // Compare x8 Sword match damage against x1 Sword match damage.
+    let mut cmp = v3.allocate(seats()).unwrap();
+    cmp.phase = CoopPhase::Playing;
+    cmp.board = calm_board();
+    for (idx, tile) in cmp.board.iter_mut().enumerate() {
+        *tile = Some(Tile {
+            identity: TileIdentity::Kind(if idx < 3 {
+                TileKind::Sword
+            } else {
+                TileKind::Heart
+            }),
+            multiplier: 1,
+        });
+    }
+    let matched = matched_cells(&cmp.board);
+    let d1 = v3
+        .score_functional_match(&mut cmp.clone(), 0, &matched, &mut rng(0), &mut Vec::new())
+        .unwrap()
+        .damage;
+    for idx in 0..3 {
+        cmp.board[idx].as_mut().unwrap().multiplier = 8;
+    }
+    let d8 = v3
+        .score_functional_match(&mut cmp, 0, &matched, &mut rng(0), &mut Vec::new())
+        .unwrap()
+        .damage;
+    assert!(d8 > d1);
+
+    // Exceeding MAX_TURNS = 4_096 does NOT trigger fake CoopPhase::Lost on v3.
+    let mut high_turn = state.clone();
+    high_turn.turn_index = MAX_TURNS;
+    let over_4096 = v3
+        .reduce_checked(
+            &high_turn,
+            CoopCommand::timed(CoopAction::EndTurn, ts + 1_000),
+            &mut stream,
+        )
+        .unwrap();
+    assert_eq!(over_4096.state.turn_index, MAX_TURNS + 1);
+    assert_eq!(over_4096.state.phase, CoopPhase::Playing);
+
+    // At TECHNICAL_MAX_TURNS_V3, reject with ExecutionBoundExceeded instead of fake Lost.
+    let mut capped = state;
+    capped.turn_index = TECHNICAL_MAX_TURNS_V3;
+    let err = v3
+        .reduce_checked(
+            &capped,
+            CoopCommand::timed(CoopAction::EndTurn, ts + 2_000),
+            &mut stream,
+        )
+        .err()
+        .expect("expected execution bound error");
+    assert_eq!(err, CoopError::ExecutionBoundExceeded);
+
+    // Historical v2 (`schemaVersion: 3`) still ends in Lost at > MAX_TURNS and rejects EndTurn.
+    let f1 = functional_rules();
+    let mut f1_rng = rng(9);
+    let mut f1_state = f1
+        .reduce(
+            &f1.allocate(seats()).unwrap(),
+            CoopAction::Start,
+            &mut f1_rng,
+        )
+        .unwrap()
+        .state;
+    assert_eq!(
+        f1.reduce_checked(
+            &f1_state,
+            CoopCommand::new(CoopAction::EndTurn),
+            &mut f1_rng
+        )
+        .err()
+        .expect("unsupported action"),
+        CoopError::UnsupportedAction
+    );
+    f1_state.turn_index = MAX_TURNS;
+    let f1_lost = f1
+        .reduce(&f1_state, CoopAction::Guard, &mut f1_rng)
+        .unwrap();
+    assert_eq!(f1_lost.state.phase, CoopPhase::Lost);
+}
+
+#[test]
+fn v3_timed_turns_enforce_deadlines_action_economy_monotonic_clock_and_replay() {
+    use aetheria_game_core::{Command, apply, begin};
+
+    let v3 = v3_rules();
+    let initial = v3.allocate(seats()).unwrap();
+    assert_eq!(initial.turn_started_ms, None);
+    assert_eq!(initial.turn_deadline_ms, None);
+
+    let secret = SecretSeed::from_host_entropy([21; 32]);
+    let match_id = [4u8; 16];
+    let cp0 = begin(
+        &v3,
+        match_id,
+        initial,
+        &secret,
+        LogicalClock {
+            server_tick: 0,
+            logical_time_ms: 0,
+        },
+    )
+    .unwrap();
+
+    let t0 = 1_000_000u64;
+    let mut rng_direct = secret
+        .stream(Value::Text("replay-check".into()), 0)
+        .unwrap();
+    let s1 = v3
+        .reduce_stamped(&cp0.state, CoopAction::Start, Some(t0), &mut rng_direct)
+        .unwrap()
+        .state;
+    assert_eq!(s1.phase, CoopPhase::Playing);
+    assert_eq!(s1.turn_started_ms, Some(t0));
+    assert_eq!(s1.turn_deadline_ms, Some(t0 + 15_000));
+
+    // ExpireTurn before deadline is rejected with no state change or entropy draw.
+    let cursor = rng_direct.cursor();
+    assert_eq!(
+        v3.reduce_stamped(
+            &s1,
+            CoopAction::ExpireTurn { turn_index: 0 },
+            Some(t0 + 14_999),
+            &mut rng_direct
+        )
+        .err()
+        .expect("early expiry rejected"),
+        CoreError::InvalidAction
+    );
+    assert_eq!(rng_direct.cursor(), cursor);
+
+    // EndTurn before deadline emits "end-turn" and awards 0 mana/rage/shield/buff/credit.
+    let end_decision = v3
+        .reduce_stamped(&s1, CoopAction::EndTurn, Some(t0 + 5_000), &mut rng_direct)
+        .unwrap();
+    assert!(end_decision.events.contains(&event("end-turn", Some(0), 0)));
+    assert_eq!(end_decision.state.turn_index, 1);
+    assert_eq!(end_decision.state.active_seat, 1);
+    assert_eq!(end_decision.state.participants[0].mana, 0);
+    assert_eq!(end_decision.state.participants[0].rage, 0);
+    assert_eq!(end_decision.state.participants[0].shield, 0);
+    assert!(
+        end_decision.state.participants[0]
+            .statuses
+            .iter()
+            .all(Option::is_none)
+    );
+    assert_eq!(end_decision.state.participants[0].contribution_damage, 0);
+    assert_eq!(end_decision.state.participants[0].contribution_healing, 0);
+    assert_eq!(end_decision.state.participants[0].contribution_shielding, 0);
+    assert_eq!(end_decision.state.turn_started_ms, Some(t0 + 5_000));
+    assert_eq!(end_decision.state.turn_deadline_ms, Some(t0 + 20_000));
+
+    // Monotonic clock clamping on backward wall-clock skew before deadline.
+    let skewed = v3
+        .reduce_stamped(
+            &end_decision.state,
+            CoopAction::EndTurn,
+            Some(t0 + 2_000),
+            &mut rng_direct,
+        )
+        .unwrap()
+        .state;
+    assert_eq!(skewed.turn_started_ms, Some(t0 + 5_000));
+    assert_eq!(skewed.turn_deadline_ms, Some(t0 + 20_000));
+
+    // Late player command at exact deadline is rejected with TurnExpired, leaving entropy untouched.
+    let late_cursor = rng_direct.cursor();
+    assert_eq!(
+        v3.reduce_checked(
+            &skewed,
+            CoopCommand::timed(CoopAction::EndTurn, t0 + 20_000),
+            &mut rng_direct,
+        )
+        .err()
+        .expect("late action rejected"),
+        CoopError::TurnExpired
+    );
+    assert_eq!(rng_direct.cursor(), late_cursor);
+
+    // Wrong turn_index ExpireTurn is rejected.
+    assert!(
+        v3.reduce_stamped(
+            &skewed,
+            CoopAction::ExpireTurn { turn_index: 99 },
+            Some(t0 + 20_000),
+            &mut rng_direct,
+        )
+        .is_err()
+    );
+
+    // Matching turn_index ExpireTurn at deadline emits "turn-expired" with 0 economy & advances turn.
+    let expired = v3
+        .reduce_stamped(
+            &skewed,
+            CoopAction::ExpireTurn {
+                turn_index: skewed.turn_index,
+            },
+            Some(t0 + 20_000),
+            &mut rng_direct,
+        )
+        .unwrap();
+    assert!(expired.events.contains(&event(
+        "turn-expired",
+        Some(skewed.active_seat as u8),
+        u64::from(skewed.turn_index)
+    )));
+    assert_eq!(expired.state.turn_index, skewed.turn_index + 1);
+    assert_eq!(expired.state.active_seat, 3);
+    assert_eq!(expired.state.participants[2].mana, 0);
+    assert_eq!(expired.state.participants[2].rage, 0);
+    assert_eq!(expired.state.turn_started_ms, Some(t0 + 20_000));
+    assert_eq!(expired.state.turn_deadline_ms, Some(t0 + 35_000));
+
+    // Journal replay through game_core::apply reproduces identical state_digest and audit_hash.
+    let cmd1 = Command {
+        id: [1; 16],
+        match_id,
+        expected_version: cp0.version,
+        ruleset: cp0.ruleset.clone(),
+        action: CoopAction::Start,
+    };
+    let tr1 = apply(
+        &v3,
+        &cp0,
+        &cmd1,
+        &secret,
+        LogicalClock {
+            server_tick: 1,
+            logical_time_ms: 1,
+        },
+    )
+    .unwrap();
+    let tr1_b = apply(
+        &v3,
+        &cp0,
+        &cmd1,
+        &secret,
+        LogicalClock {
+            server_tick: 1,
+            logical_time_ms: 1,
+        },
+    )
+    .unwrap();
+    assert_eq!(tr1.next.audit_hash, tr1_b.next.audit_hash);
+    assert_eq!(
+        state_digest(&tr1.next.state),
+        state_digest(&tr1_b.next.state)
+    );
+
+    // Terminal Won clears turn_deadline_ms and fire_zone_turns.
+    let mut almost_won = s1;
+    almost_won.participants[0].fire_zone_turns = 2;
+    almost_won.boss.phase = 2;
+    almost_won.boss.transformed = true;
+    almost_won.boss.max_hp = v3.selected_boss().phase2_max_hp().unwrap();
+    almost_won.boss.hp = 1;
+    almost_won.participants[0].mana = v3.config().resources.mana_cap;
+    almost_won.participants[0].crit_rate_bp = 0;
+    let won = v3
+        .reduce_stamped(
+            &almost_won,
+            CoopAction::Skill,
+            Some(t0 + 1_000),
+            &mut rng_direct,
+        )
+        .unwrap()
+        .state;
+    assert_eq!(won.phase, CoopPhase::Won);
+    assert_eq!(won.turn_deadline_ms, None);
+    assert!(won.participants.iter().all(|p| p.fire_zone_turns == 0));
+}
+
+#[test]
+fn v3_icarus_fire_zone_tracks_turns_and_clears_on_expiry() {
+    let v3 = v3_rules();
+    let mut rng_s = rng(7);
+    let mut state = v3
+        .reduce_stamped(
+            &v3.allocate(seats()).unwrap(),
+            CoopAction::Start,
+            Some(50_000),
+            &mut rng_s,
+        )
+        .unwrap()
+        .state;
+    state.participants[0].mana = v3.config().resources.mana_cap;
+    let after_cast = v3
+        .reduce_stamped(&state, CoopAction::FireZone, Some(51_000), &mut rng_s)
+        .unwrap()
+        .state;
+    // durationTurns = 3, ticked once at end of Icarus's turn => 2 remaining.
+    assert_eq!(after_cast.participants[0].fire_zone_turns, 2);
+    assert_eq!(after_cast.boss.dot_turns, 2);
+    assert!(
+        after_cast.participants[1..]
+            .iter()
+            .all(|p| p.fire_zone_turns == 0)
+    );
+
+    let after_p2 = v3
+        .reduce_stamped(&after_cast, CoopAction::EndTurn, Some(52_000), &mut rng_s)
+        .unwrap()
+        .state;
+    assert_eq!(after_p2.participants[0].fire_zone_turns, 1);
+
+    let after_p3 = v3
+        .reduce_stamped(&after_p2, CoopAction::EndTurn, Some(53_000), &mut rng_s)
+        .unwrap()
+        .state;
+    assert_eq!(after_p3.participants[0].fire_zone_turns, 0);
+    assert_eq!(after_p3.boss.dot_turns, 0);
+}
+
+mod advanced;

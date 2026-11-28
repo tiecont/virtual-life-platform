@@ -4,7 +4,7 @@ import {DomainError} from '../../../../../shared/common/errors';
 import {WAVE1_PETS} from '../../wave1/domain/catalog';
 import {MAPS} from '../../wave1/domain/manifest';
 
-export type AllocateInput=Readonly<{petId:string;mapId:string;encounterId:string}>;
+export type AllocateInput=Readonly<{petId:string;mapId:string;encounterId:string;boardRuleset?:'functional'}>;
 export type Arena8Artifact=Readonly<{definitionId:string;upgradeLevel:number}>;
 export type OwnedArena8Allocation=Readonly<{level:number;artifacts:readonly Arena8Artifact[]}>;
 

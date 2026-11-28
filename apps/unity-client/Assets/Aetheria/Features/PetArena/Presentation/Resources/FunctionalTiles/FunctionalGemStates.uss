@@ -1,0 +1,70 @@
+.functional-gem-board .battle-cell {
+    margin: 1px;
+    border-width: 0;
+    background-color: transparent;
+}
+
+.functional-gem-board .battle-cell:disabled {
+    opacity: 1;
+}
+
+.functional-gem-art,
+.functional-gem-selection {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.functional-gem-art {
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.functional-gem-selection {
+    border-width: 2px;
+    border-color: rgb(255, 230, 166);
+    border-radius: 8px;
+}
+
+.battle-stage .functional-gem-tooltip,
+.coop-world .battle-stage .functional-gem-tooltip {
+    position: absolute;
+    background-color: rgb(28, 23, 42);
+    color: rgb(255, 241, 215);
+    padding: 6px 8px;
+    border-radius: 5px;
+    white-space: normal;
+    font-size: 13px;
+}
+
+.battle-stage #coop-chill {
+    color: rgb(151, 219, 255);
+    -unity-font-style: bold;
+}
+
+.functional-gem-cell.functional-gem-matched {
+    background-color: rgb(74, 98, 88);
+    border-color: rgb(235, 223, 174);
+}
+
+.functional-gem-cell.functional-gem-matched .functional-gem-art {
+    -unity-background-image-tint-color: rgb(255, 244, 213);
+}
+
+.functional-gem-cell.functional-gem-falling .functional-gem-art {
+    translate: 0 3px;
+    opacity: 0.85;
+}
+
+.functional-gem-cell:disabled .functional-gem-art {
+    opacity: 1;
+}
+
+.battle-stage .functional-gem-cell .functional-gem-multiplier {
+    background-color: rgb(36, 32, 57);
+    color: rgb(255, 240, 195);
+    border-radius: 4px;
+    font-size: 11px;
+    margin: 1px;
+}

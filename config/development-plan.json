@@ -35,6 +35,7 @@
     }
   ],
   "mvpProgram": {
+    "criticalPath": ["M0", "M1", "M2", "M3", "M4", "M5", "M6"],
     "schemaVersion": 1,
     "wave": "Wave D3",
     "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
@@ -49,6 +50,7 @@
       "stages": {
         "combatBound": 55,
         "bindingVerified": 55,
+        "levelOneCastVerified": 55,
         "combatVerified": 0,
         "conceptApproved": 0,
         "modelProduced": 0,
@@ -69,7 +71,8 @@
       "basis": {
         "canonicalIdentities": "crates/aetheria-pet-arena binding IDENTITY_COUNT = 55 ACTIVE + 6 CANDIDATE",
         "combatBound": "every active identity binds; arena8_binding.rs every_active_identity_binds_and_every_candidate_stays_gated",
-        "combatVerified": "0 identities have a claimed full battle-verification result. All 55 are bindingVerified (snapshot/allocation construction); actual battle simulation across families/levels/loadouts is Wave C2 work, and owner playtesting remains M5.",
+        "levelOneCastVerified": "catalog_conformance executes 221 abilities across all 55 active kits using fixture-provided resources and statuses, with all 11 effect families observed.",
+        "combatVerified": "Per-identity full battle qualification across levels and loadouts remains open. Owner playtesting remains M5.",
         "artStages": "no owner-accepted production model/rig/animation/render exists; all PetVisualAsset rights remain PENDING_REVIEW; Icarus assets are developer substitutes"
       }
     },
@@ -1156,6 +1159,13 @@
     },
     {
       "id": "VL-171",
+      "campaignV3Verification": {
+        "sourceRevision": "8c252e592234a25faeb3b53da86ffdd3e1c5c430",
+        "command": "Installed Unity Editor -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.CinematicStudioTests",
+        "exitCode": 0,
+        "result": "All five cases passed. Four saved and reloaded Timeline compositions animated only the bound synthetic model. Existing assets survive reuse and scene director replacement. Canonical Icarus capture awaits H1.",
+        "evidence": "artifacts/campaign-v3/cinematic-studio-8c252e59-results.xml"
+      },
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -6752,7 +6762,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast."
+      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast. At f1eb5caa all five persisted-language PlayMode cases passed for End Turn. Localized campaign navigation is implemented. The same run found a four-pixel action/footer overlap. The fix at 3461ce34 passed the layout regression in the full suite at eb7314d1."
     },
     {
       "id": "VL-107",
@@ -9742,11 +9752,11 @@
         "Strict bounded registration/verify/resend/withdraw/status contracts, generic anti-enumeration, rate limits, redacted logs and minimal approved aggregates; marketing consent separate; no game accounts or beta entitlement",
         "Fake/sink mail tests exercise outbox retry/suppression and expiring tokens; production campaign acceptance and delivery default OFF"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "workstream": "F",
       "priority": 1,
-      "remaining": "Implement expiry, idempotent double opt-in, consent audit and atomic lifetime cap of 5000 in the current PostgreSQL journal. Verify concurrent final-slot claims with local mail delivery fixtures.",
+      "remaining": "At 00f23a52 all six disposable PostgreSQL cases and 11 unit cases passed. 10,001 concurrent confirm/retry calls resolved to 5,000 unique admissions. Both archived migrator compatibility probes passed against migration 0067. Verify hosted CI on PR 91 and complete campaign and privacy review before activation.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
@@ -9828,13 +9838,13 @@
         "Versioned approved editorial content with optimistic concurrency, publish audit and release gates; no public edit endpoints",
         "Real HTTP/browser auth, CSRF, stale session, privacy and concurrency regressions pass"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "priority": 2,
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth."
+      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth. PR 95 at c60a5c0a passed 18 proxy cases, admin build, lint and signed-out browser smoke. Independent review found sign-in destination loss, stale auth responses and mixed database snapshots. 959968b1 corrected these issues and passed 21 contract/proxy cases and six registration PostgreSQL cases. On integrated source 2f208d0c, admin production build, 16 focused unit cases, 12 DB proxy cases and four desktop/mobile browser journeys passed. Subscriber and editorial workflows remain open."
     },
     {
       "id": "VL-167",
@@ -9986,6 +9996,13 @@
     },
     {
       "id": "VL-176",
+      "campaignV3Verification": {
+        "sourceRevision": "249bf8274b0b0dd89206cbfdccde3ce4e2987e77",
+        "command": "cargo test --locked -p aetheria-pet-arena --lib; game-runtime basic_jewel_receipts",
+        "exitCode": 0,
+        "result": "82/82 Rust library tests passed; attributed basic yields and advanced receipt rows preserve canonical state, events and RNG.",
+        "evidence": "artifacts/campaign-v3/pet-arena-lib-249bf827.log"
+      },
       "mvpMilestone": "M1",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -9995,6 +10012,7 @@
       "priority": 1,
       "dependsOn": [],
       "acceptance": [
+        "Solo and four-player Boss play use versioned 8x8 functional tile effects from immutable published config. Sword, Mana, Rage, Heart, Shield and Special resolve independently of Pet element. Preserve historical elemental boards, digests and replays.",
         "64 bounded cells, deterministic swaps/matches/cascades/refill and dead-board recovery",
         "Typed events, telegraph, cooldowns, Signature/Ultimate and Icarus FIRE_ZONE",
         "Replay/stale/duplicate safety and zero client-authoritative RNG or outcome"
@@ -10010,7 +10028,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Implement the authoritative deterministic 8x8 tactical board and combat loop in Rust without mutating frozen V1/V3."
+      "remaining": "On 91415575 all 155 aetheria-pet-arena tests passed, including six weighted jewel effects in solo regular, solo Boss and four-seat Boss. Packaged Linux solo admitted and swapped on 8ad6e6e6. Four-seat Fire on ea298452 resumed the same board and configuration after restart, won and settled four receipts once. On 86f883d2 the same packaged guest resumed solo regular Fire v2 after a Nest/Rust restart and committed another swap at v3 on the original candidate; receipts [1,2,3]. Full player-process restart and hosted CI remain to qualify."
     },
     {
       "id": "VL-177",
@@ -10233,11 +10251,16 @@
         "No unlicensed media is committed or represented as production",
         "Mixer groups, persisted volumes and event hooks remain intact"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [
         "Owner media licence approval per OD-10"
       ],
       "implementation": {
+        "productionReview": {
+          "sourceRevision": "d1435d44",
+          "observed": "Eight locally composed cue masters and Ogg derivatives passed technical probing. Opening animatic uses four real scene stills with local score. Commercial clearance, owner listening review and runtime integration remain open.",
+          "evidence": "artifacts/wave-d4-media/original-score-r1/technical-verification.json"
+        },
         "release": "OFFLINE_ONLY / NO_GO_PUBLIC",
         "wave": "Wave B/M4"
       },
@@ -10702,6 +10725,7 @@
         "VL-194"
       ],
       "acceptance": [
+        "Active battle has a stable fixed camera, centered board, allies at left and enemy at right. Disable locomotion and portal navigation until return to the social world.",
         "Unity renders four combatants, the active seat, individual resources and skills, team status, the shared 8x8 board with multiplier labels, Boss HP/phase/telegraph, turn/round and contribution without hardcoding costs or caps",
         "Guest login, Pet selection, portal interaction, native combat, settlement and return to hub work without direct PetArenaPve entry",
         "Reconnect and receipt replay never duplicate committed presentation events"
@@ -10722,7 +10746,7 @@
         "availableAt": "f0c7f507a2eb13c08ee87db25cd8cb6a1b1d5aea"
       },
       "workstream": "D3-B",
-      "remaining": "Wire existing lobby and HUD to the portal-selected Boss, owned roster, admission and reconnect. Complete reward presentation and return to hub.",
+      "remaining": "In the 8ad6e6e6 Linux player, W/A/S/D and repeated E left the camera, match and turn fixed across 13 frames, then a mouse swap committed v2. Verify return to Plaza after functional settlement.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
@@ -10769,6 +10793,13 @@
     },
     {
       "id": "VL-198",
+      "campaignV3Verification": {
+        "sourceRevision": "ec4b2cfe598069c83998c9fc54201f85396abe0f",
+        "command": "sha256sum provider-master.png reference-jewels.png FunctionalGems.png; packaged Linux Fire screenshot inspection",
+        "exitCode": 0,
+        "result": "The approved two R04 masters match their hashes. The nine-sprite atlas preserves the approved image content. Native 720p and 1080p Fire captures show the six basic jewels. H1 model approval and media rights remain separate.",
+        "evidence": "specs/media/hydrogen-production.md"
+      },
       "mvpMilestone": "M4",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -10826,11 +10857,43 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Run the matching Linux binary and runtime from login through recovery, settlement and the next equipped allocation.",
+      "remaining": "8ad6e6e6 packaged Fire and Water regular starts and swaps passed after fixing camera initialization. On 4fea54bb a disposable Admin fixture unlocked Water only after both Fire wins settled through Rust and Nest. On 8c69d12c a 1280×720 packaged four-seat acceptance run restored the functional board, won Fire v37, awarded each seat once, upgraded Emberglass to level 2, and admitted four seats to Water with the equipped +5 HP. Uses a disposable acceptance balance profile. On 824ea699 the host started and swapped in Water (v1/v2); the four-seat allocation retained the upgraded Core and all 64 jewels. Verify full Water settlement on authored campaign balance and hosted CI.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "compactFireSkillInput": {
+          "sourceRevision": "80c76ae9d4602f945c63e4e1cd1a234b3d870e0f",
+          "integratedRevision": "095cdf37",
+          "playerSourceRevision": "f50853e1829d04b2aec8e33e4869ac46e205eced",
+          "result": "At 1024x768 the previous tester missed the enabled Ember Lance after Fire reconnected. The corrected driver recognized it in all 24 failed frames and preserved 33 older 720p skill matches. Two synthetic regressions passed. In a fresh 1024x768 Linux run it clicked the skill at turn 4 on the first attempt and Rust committed v6. The run then won Fire at v36, granted four rewards, started Water at v1 and committed the host swap at v2. The verifier passed. The outer disposable database wrapper exited 143 while the inner runner continued to completion.",
+          "evidence": "artifacts/wave-d4-session/functional-coop/fire-compact-80c76ae9"
+        },
+        "waterStartedAndSwapped": {
+          "sourceRevision": "f50853e1829d04b2aec8e33e4869ac46e205eced",
+          "command": "PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh <linux-build-receipt> <rust-runtime> <tessdata>",
+          "packageManifestSha256": "9f0fccd4a394c6ac537736cad154b9b31f53584d9b16d2f9a806140c6584b63f",
+          "runtimeSha256": "90a5e5c2641f6498ad94c5340f033406559ac57497eedd2ea8247c176bad3535",
+          "result": "PASS on one Linux player and three authenticated socket peers. Fire resumed after restart at v3 and settled four rewards at victory v42. The host equipped and upgraded Emberglass, then started Water at v1 and swapped at v2 for 36 Mana. Both screenshots show 64 jewels. Coalwhisk gained 5 max HP. The run used disposable encounter and partner fixtures. The verifier and both manifests were checked independently.",
+          "evidence": "artifacts/wave-d4-session/functional-coop/water-f50853e1/acceptance.json"
+        },
+        "functionalRegularPackage": {
+          "sourceRevision": "d203f179",
+          "command": "Direct Linux Editor build and private Gamescope solo start/swap with authenticated Nest and Rust WSS.",
+          "result": "Fire regular 1280x720 and Water regular 1920x1080 each showed 64 tiles, 4 abilities, state v2, exact encounter, published config and receipts [1,2]. Water used a disposable account with both Fire clears preloaded.",
+          "evidence": "artifacts/wave-d4-session/native-functional-regular-d203f179"
+        },
+        "integratedLinuxReview": {
+          "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
+          "command": "bash scripts/packaged-coop/run.sh <linux-build-receipt> artifacts/rust/target/debug/aetheria-game-runtime <tessdata>",
+          "exitCode": 0,
+          "result": "PASS run-lzi0bXka. One Linux guest and three separate native sockets executed swap, skill, signature, ultimate and guard. Re-admission at version 3 preserved all 64 cells including five multipliers. Fire transformed at v25 and ended in victory at v29. All four first-clear payouts persisted. Guest returned to Plaza, spent 60 materials upgrading Emberglass to Lv2 and entered Water with 5 additional HP. Linux package manifest SHA-256 d72c7169c7a6570aad302ae01522bda4b9c342773b4809cff3bdcf6ecb3b55ba. Reduced difficulty and three partner fixtures."
+        },
+        "localIntegrationReview": {
+          "sourceRevision": "c81a3c9c98bea5115ca8a32e9fc67dd4f268612a",
+          "command": "Linux packaged private-display run 6DMHg5Hy and CoopNativeHudTests",
+          "result": "Three targeted PlayMode tests passed. The guest used its own Pet, four accounts entered Fire and the host committed a swap. Disconnect and re-admission preserved version 3 and six multiplier tiles across a runtime epoch change. Full journey is tracked separately."
+        },
         "equippedWaterAcceptance": {
           "sourceRevision": "07f3c4ec5aa8f1778b411f3f6cb4beafc37f67a9",
           "buildBase": "745e775a6514f360a65753fd4b504e6d2ce500b5",
@@ -11068,6 +11131,13 @@
     },
     {
       "id": "VL-203",
+      "campaignV3Verification": {
+        "sourceRevision": "fda59517be8b4cbf3bd7ec08f13374897439bb59",
+        "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop",
+        "exitCode": 0,
+        "result": "Fresh WSS after restart recovered immutable receipt bytes. Stale and wrong-seat commands left 2 receipts and 7 events unchanged. The active seat advanced to version 3 and outsider admission returned 403.",
+        "evidence": "artifacts/campaign-v3/advanced-coop-fda59517.log"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11091,8 +11161,39 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Confirm hosted checks on the integrated source.",
+      "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision. At 660475d0 the timed cooperative WSS fixture passed all 12 scenarios with four authenticated seats, digest and deadline recovery, and per-seat awards paid once across retries and restart.",
       "implementation": {
+        "timedSoloWss": {
+          "sourceRevision": "c8698d6a3d4faf01f96dda3c69a5bc38a3ecb3c2",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --timed-solo",
+          "result": "Eight scenarios passed with disposable PostgreSQL. The active match retained its absolute deadline and digest across Nest/Rust restart after a replacement publication. A system receipt preceded stale Guard rejection. Repeated settlement granted the original 200 coins once. A new match selected the replacement publication.",
+          "evidence": "artifacts/campaign-v2/receipts/solo-timed-wss-c8698d6a.json"
+        },
+        "timedSettlement": {
+          "sourceRevision": "d32252c219b0056aae3ff089c5a6b7d2a516cd65",
+          "integratedAt": "c8e7039d",
+          "command": "scripts/with-test-db.mjs with Vitest integration tests/integration/coop-settlement.test.ts",
+          "result": "All 14 PostgreSQL settlement tests passed. Cases cover schema 4 cooperative settlement, rejection of mismatched cooperative and solo versions, duplicate delivery, player erasure and six paired campaign clears.",
+          "evidence": "artifacts/campaign-v2/receipts/settlement-d32252c2.log"
+        },
+        "historicalFunctionalSettlement": {
+          "sourceRevision": "9ab5beac",
+          "command": "admin-gameplay-publication.mjs --direct with historical and current binaries, then --solo. PostgreSQL 18.7 with private loopback TLS.",
+          "result": "30 historical/current scenarios and 8 solo scenarios passed. Old matches retained digest and award values across restart and rollback. Reviewed independently by authority worker.",
+          "evidence": "artifacts/wave-d4-session/functional-authority/historical-two-binary-9ab5beac.json"
+        },
+        "integratedLinuxReview": {
+          "sourceRevision": "68584413767a01b517c55888962ce9d4429fdf7f",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
+          "exitCode": 0,
+          "result": "PASS: 23 recorded scenarios with a fresh build of the Rust runtime and restricted Docker PG. Four authenticated seats, alternate config publication, pinned restart, Fire victory, Water defeat and exactly-once settlement."
+        },
+        "november27Verification": {
+          "sourceRevision": "89db72d3ca693ea07fd6f5a0267cfe75b1c13fe5",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:45586",
+          "exitCode": 0,
+          "result": "Authenticated four-seat Fire victory and Water defeat recovered at v5. Repeat drains preserved rewards. PR86 hosted all 17 checks passed at 0289d4e3. Fixtures supplied points and encounter tuning."
+        },
         "integratedAcceptance": {
           "sourceRevision": "5977b95e566c170e42fd5c0560da841253de0c4d",
           "command": "node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs https://127.0.0.1:4489",
@@ -11149,6 +11250,16 @@
       ],
       "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
       "implementation": {
+        "reviewCandidateStorage": {
+          "sourceRevision": "c7c7ea9fc03204009abe70a118306a843f34f906",
+          "evidence": "artifacts/campaign-v2/receipts/asset-inspection.json",
+          "result": "All 17 Icarus H1 R3 files matched the receipt. Six procedural GLBs had skins and zero embedded textures. Coalwhisk and Cinder Warden each had four joints and four named animation clips. Their GLBs, compressed Blender sources and portraits passed local private staging and independent byte verification. No provider calls, art approval, private cloud transfer or rights acceptance."
+        },
+        "localIntegrationReview": {
+          "sourceRevision": "310a524ce8b9348b17b36bd1d086b1ac7e1d37fe",
+          "command": "H1 receipt validation and Blender expression audit",
+          "result": "Original R3 receipt SHA-256 3988de1a117914c2ab40a471a41926b58abaf243a263475857b03f42f8861fc4. Five independent Blender controls; legacy VRM has no expression bindings. Blink repair is a separate preview. No H1 owner receipt or new accepted production asset."
+        },
         "reviewImportVerification": {
           "sourceRevision": "fe9ae1f0ee4fdd4fefa56fded7abcaaee2b75864",
           "command": "UNITY_EDITOR=<6000.3.14f1> node scripts/unity-validate.mjs tests",
@@ -11201,6 +11312,7 @@
         "VL-202"
       ],
       "acceptance": [
+        "Deliver distinctive fixed battle backgrounds beginning with Cinder Terraces and Tideglass Lagoon. Walkable test environments are DEVELOPMENT_BLOCKOUT.",
         "Publish and clear all six maps through authored regular encounters and the correct Boss with persistent unlock/recruitment state.",
         "Match enrollment, rewards and unlocks remain pinned to the published version across restart."
       ],
@@ -11211,12 +11323,41 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Complete six regular routes and recruitment through packaged play.",
+      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Packaged Fire and Tideglass regular encounters were verified at 8ad6e6e6. On 6a100b61 the Fire regular HUD displayed the new HP meter and 64 jewels after a committed swap. Revision 4 (7a6ae98e, engine digest e16b85f40f5766ad1e40fec70e105f60816f9c006336990ac15973809cc6dca2) adds Stormcoil regular/Warden and pins recruitment for the first three maps. The native WSS Water campaign probe passed 19 scenarios including exactly-once recruitment and Stormcoil admission. At ef30e7dd native Stormcoil completion in both orders awarded one Zipspool per account after fixture-supplied prerequisites. An active Warden match recovered its original version and rewards across publication replacement and restart. On ef30e7dd one fresh guest cleared Cinder, Tideglass and Stormcoil using earned levels and recruited Emberloom, Ripplefin and Zipspool through Nest/Rust. Stormcoil Warden took two attempts with one regular replay. At fd5c6c12 unpublished revision 5 adds regular and Warden profiles for Lantern, Ochre and Dawn and validates all six recruitment orders. In 24 fixed seeds per late encounter, each regular won 24; Lantern Warden won 24, Ochre 13 and Dawn 21. A fresh guest has since completed the six-map native solo route. Human balance, packaged six-map play and dedicated artwork remain open.",
       "qualificationDependencies": [
         "VL-183",
         "VL-184"
       ],
       "implementation": {
+        "naturalSoloCampaign": {
+          "sourceRevision": "4bae21f514aae4f51519a77f7a6c8e2631af2256",
+          "integratedRevision": "562fc8dba22c17410d6ce7cad52ab2bbc85fc481",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --natural-campaign",
+          "result": "PASS, 73 scenario records. One new guest won all twelve encounters with earned Pet levels. The guest had zero administrator ledger grants at entry and after the last settlement. PostgreSQL recorded six recruits. Tideglass Warden took five attempts and four regular replays. After publication replacement and Nest/Rust restart, Lantern Warden resumed at board version 2 on its original digest and paid its pinned rewards.",
+          "evidence": "artifacts/wave-d4-session/natural-six-map-4bae21f5/facts.json"
+        },
+        "renderedDeveloperCampaign": {
+          "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
+          "buildManifestSha256": "af785007136fc786a51e3a718ae62f6bfcf14d14c9898376a4e5cf0ae8f611a0",
+          "command": "Packaged Linux world capture with -aetheria-world-capture on private Gamescope",
+          "result": "Validated nine 1280x720 screenshots with OpenGLCore, 64 tiles in each of the six arenas, and all twelve Plaza portal transitions."
+        },
+        "persistentNativeSettlement": {
+          "sourceRevision": "76394de547f418bc27fd2fbe68eaf337849e8a3c",
+          "command": "node scripts/with-test-db.mjs pnpm exec vitest run --project integration tests/integration/coop-settlement.test.ts",
+          "result": "8/8 passed. All six maps advance only after both encounters, in either order. Fresh state and eligibility reads expose persistent clears and newly recruited Pets. Test fixtures supplied terminal proposals and zeroed the room points threshold."
+        },
+        "localIntegrationReview": {
+          "sourceRevision": "c6276c4c1d0c6d4861c0cc453d8e5754e99dda73",
+          "command": "node scripts/unity-validate.mjs tests",
+          "result": "All six serialized developer arenas have round-trip portals, spawn anchors and 64 board tiles. 78 EditMode and 33 PlayMode passed with two explicit service skips. Persistent native campaign and human acceptance remain open."
+        },
+        "november27Verification": {
+          "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
+          "command": "cargo test --locked -p aetheria-pet-arena --test arena8 six_campaign_regular_encounters_resolve_and_replay -- --nocapture; aetheria-game-runtime --simulate-coop <v2 seed> tactical 2 <each Boss>",
+          "exitCode": 0,
+          "result": "All six regulars resolved and reproduced the replay digest. Lv1 Icarus won the first four and lost the last two. All six cooperative Bosses reached defeat on both seeds. This exercises engine execution; end-to-end campaign progression remains open."
+        },
         "regularLastRecruitment": {
           "sourceRevision": "63322a8759d70d819799aa37ef0a2b3b4dccc281",
           "integratedRevision": "5ccce14d8c6a53a5fad4bd3364a5ce7bf2bfd235",
@@ -11271,6 +11412,17 @@
       ],
       "remaining": "Verify earned gear and a trained skill through packaged interactions and subsequent combat.",
       "implementation": {
+        "localIntegrationReview": {
+          "sourceRevision": "b1472300be97a31177536c4f48bacf0e02f74975",
+          "command": "vitest run --project integration tests/integration/pet-artifacts-wave-a.test.ts tests/integration/coop-settlement.test.ts",
+          "result": "22 disposable PostgreSQL cases passed in the scoped run, including solo-first starter material/Core granting and concurrent historical wallet repair."
+        },
+        "november27Verification": {
+          "sourceRevision": "6aa4a64adc7c046570ebc9de6257ba5322e852b3",
+          "command": "node scripts/skill-training-candidate.mjs; aetheria-game-runtime --check-gameplay-config <rendered candidate>; vitest run --project integration tests/integration/pet-artifacts-wave-a.test.ts tests/integration/pet-arena-wave1-durable.test.ts",
+          "exitCode": 0,
+          "result": "Rust digest fc6c02247940eba9a8341960f685b0050138114c4e9420bc28d30ee3c0b464ad. 164 trainable skills, 55 fixed guards and two fixed cleanses. 30 DB cases passed, including unassisted guest Fire clear, claim and equip of upgraded starter Core. Candidate pending owner review."
+        },
         "integrationCheckpoint": {
           "sourceRevision": "117af2ed2bd00679392a0640e0e86c8584e438c5",
           "pullRequest": 86,
@@ -11280,6 +11432,13 @@
     },
     {
       "id": "VL-208",
+      "campaignV3Verification": {
+        "sourceRevision": "80215b43e569074959aebd4db4e7c6fa064a3392",
+        "command": "pnpm --filter @aetheria/admin-web build",
+        "exitCode": 0,
+        "result": "Admin advanced policy draft controls and schema-aware turn policy compiled successfully.",
+        "evidence": "artifacts/campaign-v3/qa-admin-build-80215b43.log"
+      },
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11291,6 +11450,7 @@
         "VL-191"
       ],
       "acceptance": [
+        "Admin separates Pet element, functional tile effects, multiplier weights and Pet progression. Prove a validated publication changes newly allocated battles while active matches retain their bundle.",
         "Edit canonical metadata, encounters, Skill Level, Artifacts, economy, progression, reward and acquisition fields with typed engine approval.",
         "Preview changes and run test-only acquisition with pinned versions and idempotency. Preserve six gated candidates and approved rarities."
       ],
@@ -11301,8 +11461,25 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Exercise per-skill publishing in the browser and complete acquisition policy editors.",
+      "remaining": "Real Chromium operator publication, rollback, pinned restart recovery and audited Mana yields passed 34 scenarios on 834198e3. Complete the remaining acquisition policy editors and verify the combined integration before merge. PR 94 adds opt-in wallet and typed policy handling. At ab8650a9 all 23 unit and contract cases and six PostgreSQL cases passed. At 055031d5 the admin production build, editor lint and desktop and mobile expired-verification cases passed. Pin economy policy at allocation before wiring it into settlement.",
       "implementation": {
+        "integratedLinuxReview": {
+          "sourceRevision": "b2a35703bc74512f8803bcaf61749cacab74b6b2",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs",
+          "exitCode": 0,
+          "result": "PASS: 34 recorded browser/native scenarios. Browser authored Water Dewskip Tide Lance level two at 17 materials and 1150 permille. Engine digest df9df4ef8043c7fe235f5b8e8e727f008c1e026340dbf46dbe11f594a11f4382 persisted, with subsequent native reward isolation and rollback to A. Disposable values only."
+        },
+        "localIntegrationReview": {
+          "sourceRevision": "33734b784935c744c6b17687f9ca7378b5d17a90",
+          "command": "Headless Chromium Admin publication and rollback driver, run-UkKv6q",
+          "result": "Compared active and selected versions with identical party, Boss, policies and seeds. Test publication changed four payouts from one to three and rollback restored one. In-flight match preserved its pinned version after restart."
+        },
+        "november27Verification": {
+          "sourceRevision": "ec85a778ba164f4a60c3758ac42c46110edf4194",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs",
+          "exitCode": 0,
+          "result": "Chromium published A/B, rolled back and compared a Boss by ID and field. Across three four-seat Rust matches after restarts the pinned defeat award paid 1, 3, then 1 material per account."
+        },
         "targetPriorityBrowserAcceptance": {
           "sourceRevision": "60048a0005cbd5a3c0c0b936474997c5f7b17eca",
           "command": "Independent Chromium Admin A/B driver, isolated PostgreSQL, Rust runtime, rollback and native impact check",
@@ -11376,6 +11553,13 @@
     },
     {
       "id": "VL-210",
+      "campaignV3Verification": {
+        "sourceRevision": "e038a40418548e5ce91399ee08730f119d818c19",
+        "command": "PACKAGED_QA_BOARD=advanced-water PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
+        "exitCode": 0,
+        "result": "One packaged host and three separately authenticated peers won Fire v25 and settled four rewards. The equipped host matched all three Frost tiles at Water v2, applying 150 per mille Chill. The host completed the journey without manual intervention.",
+        "evidence": "artifacts/packaged-coop-runs/run-3O68e2sy/acceptance.json"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11387,6 +11571,7 @@
         "VL-196"
       ],
       "acceptance": [
+        "Qualify the functional sprite atlas, skill feedback and centered fixed composition at 720p and 1080p in real solo and cooperative battle.",
         "Render the active seat, 64 tiles, multipliers, four players, skill/phase/telegraph and correct victory or defeat.",
         "Return to Central Plaza with updated progression. Reconnect with renewed scoped admission at the committed version and avoid duplicate UI effects."
       ],
@@ -11395,8 +11580,20 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Exercise Ghost damage window and terminal reconnect on the current Linux player.",
+      "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. At eb7314d1, all nine R04-derived jewel icons matched provider pixels, 85 EditMode and 43 PlayMode cases passed with two skips. The Linux package at ae93b774 rendered all six functional designs in a four-seat Fire fixture at 1280×720. The host swapped, rejoined the pinned board across restart and committed skill and signature actions. At e9aacee9 the packaged Fire-to-Water verifier passed end to end, including all five host action types, Fire victory at v46, four reward rows and the Water start and swap at v1 and v2. Four-seat timed player recovery and owner art approval remain open.",
       "implementation": {
+        "battleSettlementHud": {
+          "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
+          "testRevision": "f78f723c9ea827c15f22ff3e3d9a072d05332e4e",
+          "command": "Direct Unity Editor 6000.3.14f1 via node scripts/unity-validate.mjs tests and linux",
+          "result": "The Linux build passed. The identical source tree passed 84 EditMode and 38 PlayMode tests with two explicit skips. HUD tests exercised the terminal text, pending settlement and retry. A separate 1280x720 packaged Fire solo run on an adjusted encounter showed the pending state and the subsequent durable receipt for 200 coins and 500 Pet EXP.",
+          "evidence": "artifacts/wave-d4-session/fire-hud-c1c5b343/tests.json"
+        },
+        "productionReview": {
+          "sourceRevision": "e19170e5",
+          "observed": "Six elemental glyphs with separate multiplier badges integrated. Prior 1024x768 board is preserved for matched visual review.",
+          "evidence": "specs/acceptance/wave-d4-production-acceptance.md"
+        },
         "publishedMultiplierProjection": {
           "sourceRevision": "a4bbd16df1d45794775df393e41acae93944eabd",
           "command": "Unity EditMode Aetheria.Tests.CoopNativeTests and cargo test --locked -p aetheria-pet-arena --lib",
@@ -11439,6 +11636,13 @@
     },
     {
       "id": "VL-211",
+      "campaignV3Verification": {
+        "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
+        "command": "scripts/coop-balance-study.py (discovery 4001–4002; holdout 5001–5002)",
+        "exitCode": 0,
+        "result": "19,680 reducer matches. Quarter Warden won 294/480 in co-op, while level-20 tactical starters lost 4/4 against Tideglass. 245 solo mirror matches reached the study ceiling. Balance remains unpublished.",
+        "evidence": "artifacts/jewel-study-5001/summary.json"
+      },
       "mvpMilestone": "M5",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11450,6 +11654,7 @@
         "VL-197"
       ],
       "acceptance": [
+        "Measure corrected functional-board cohorts separately from historical elemental studies. Report damage, healing, protection, resources, party cooperation and Boss viability by digest.",
         "Comparable fixed seeds report win rate, Boss phases, multiplier rates and contribution across six elements, team compositions and attainable progression.",
         "Analytical and Monte Carlo gacha checks reproduce published distributions. Duplicate/retry/farming tests bound rewards and Achievement Points.",
         "Record proposed changes and approval by digest."
@@ -11461,13 +11666,47 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Confirm candidates on larger seed sets; evaluate Boss pressure and attainable progression before owner review.",
+      "remaining": "At ef30e7dd one fresh guest cleared Tideglass Warden at level 19 on its first attempt. A second fresh guest lost eight Warden attempts at levels 19–24 despite five regular replays. Review Water win rates, durations and party composition before selecting or publishing a balance candidate.",
       "qualificationDependencies": [
         "VL-206",
         "VL-207",
         "VL-208"
       ],
       "implementation": {
+        "timedWardenStudy": {
+          "sourceRevision": "5213a1c7d3b294cd65b07ae0c141b13158f22ec2",
+          "command": "scripts/coop-balance-study.py --baseline config/gameplay/arena8-coop-functional-v2.candidate.json with confirmation seeds 1001–1003 and 2001–2003 and composition seeds 3011–3022",
+          "result": "Across the two confirmation sets, baseline won 0/864, quarter HP won 36/864, quarter attack won 56/864 and both changes won 467/864. All baseline defeats were team wipes. The independent composition study recorded 0/2592 baseline wins and 1635/2592 with both changes. Level-20 starter tactical Water remained 0/6 in confirmation. Offline experiment only.",
+          "candidateDigest": "50bb237788a8bafc8f1dd1ef7ed9c35c544d737942025f542fa33b4843f3521f",
+          "evidence": "artifacts/campaign-v2/receipts/balance-3011.json"
+        },
+        "functionalWaterHoldout": {
+          "sourceRevision": "44bc7fab",
+          "command": "scripts/coop-balance-study.py --stage confirmation --bundles functional-b tideglass-endurance tideglass-vitality (functional candidate, seeds 801-812). Rust arena8_coop_balance Water-only repeat on seeds 1001-1024.",
+          "result": "1728 initial battles and 576 held-out Water battles across four policies, all resolved. Tactical level-20 starters won 0/24 with reference, 6/24 with reduced attack pressure, and 6/24 with reduced boss HP. Ground level 40 won 12/24, 24/24 and 16/24. Phase and multiplier parameters preserved.",
+          "evidence": "artifacts/wave-d4-session/functional-board/tideglass-comparison/fresh-water-holdout.json"
+        },
+        "productionReview": {
+          "sourceRevision": "eb980abb",
+          "observed": "Seeds 301\u2013324 across four configurations, six Bosses and four policies completed 2304 simulations. Shared-pressure Fire victories were 0/0/6/3. The other five Bosses had no wins with these level 20 starter parties. Natural access to the tested progression remains unqualified.",
+          "evidence": "artifacts/wave-d4-measures/balance-summary.json"
+        },
+        "constructiveOpeningHoldout": {
+          "sourceRevision": "b4039d6b135b050b70cc62f2d3716afacbeecb34",
+          "command": "cargo build --offline --locked -p aetheria-pet-arena --example arena8_coop_balance, then arena8_coop_balance BUNDLE PARTY 101 18 BOSS",
+          "result": "Three offline bundles, three party/Boss combinations and four policies completed all 648 simulations. Constructive shared-pressure gave Water Ground-heavy Lv40 0/0/10/9 victories and Water starter Lv20 0/0/0/1. Fire Lv10 won 0/0/1/0. Constructive resource-burst completed historical failed seed 114. Tests change opening policy and digest and do not establish published odds."
+        },
+        "localIntegrationReview": {
+          "sourceRevision": "d46c592d2025797ba6f794103014f34ead1d10cb",
+          "command": "Rust fixed-seed diagnostics with holdout seeds 101 to 118",
+          "result": "Water shared-pressure Ground-heavy level 40 won 0/1/12/11 of 18 by random/basic/tactical/coordinated. Starter level 20 won 0/0/0/1. Resource-burst failed to initialize seed 114. No candidate approved or published."
+        },
+        "november27Verification": {
+          "sourceRevision": "aa730cc2c46c7a9e131af1692d40f9d3da775e2f",
+          "command": "cargo test --locked -p aetheria-pet-arena --test catalog_conformance",
+          "exitCode": 0,
+          "result": "All 55 active Lv1 Pets cast their 221 skills; all 11 effects observed, Icarus-only FIRE_ZONE. Resources and statuses provided by the cast fixture."
+        },
         "waterTargetComparison": {
           "sourceRevision": "266c69005fca97008ead82912ede72481b7c771b",
           "command": "aetheria-game-runtime --compare-coop <candidate> 8 tideglass-lagoon-warden --party <level-60 starter party>",
@@ -11491,6 +11730,13 @@
     },
     {
       "id": "VL-212",
+      "campaignV3Verification": {
+        "sourceRevision": "1aae6433520bb1a2b0d968b6f1948cf5700eef10",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_SIZE=2560x1440 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
+        "exitCode": 0,
+        "result": "Unassisted 1440p Fire native swap and reconnect verified by exact board and renewed host admission. Package QA uses one real Linux player and three authenticated peers. Four-human Windows acceptance remains open.",
+        "evidence": "artifacts/campaign-v3/work/packaged-board-smoke/artifacts/packaged-coop-runs/run-RIWDKdKC/board-acceptance.json"
+      },
       "mvpMilestone": "M5",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,

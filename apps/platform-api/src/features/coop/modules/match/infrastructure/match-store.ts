@@ -6,22 +6,24 @@ import {readAllocationSeats} from '../domain/loadout';
 
 type Row={
  match_id:string;room_id:string;world_id:string;boot_id:string;
- config_version:unknown;config_digest:string;content_hash:string;
+ config_version:unknown;config_digest:string;content_hash:string;engine_hash:string|null;
  bound_seats:unknown;boss_id:string;status:CoopAllocationStatus;generation:unknown;
 };
-const ALLOCATIONS=`SELECT a.*,r.boss_id,
+const ALLOCATIONS=`SELECT a.*,r.boss_id,encode(m.engine_hash,'hex') AS engine_hash,
   (SELECT jsonb_agg(e.seat || jsonb_build_object('ownedPetInstanceId',
     COALESCE(e.seat->>'ownedPetInstanceId',s.owned_pet_instance_id::text,p.owned_pet_instance_id::text)) ORDER BY e.ordinal)
    FROM jsonb_array_elements(a.seats) WITH ORDINALITY e(seat,ordinal)
    LEFT JOIN coop_room_seats s ON s.room_id=a.room_id AND s.seat=e.ordinal-1
     AND s.account_id::text=e.seat->>'account' AND s.pet_id=e.seat->>'petId'
    LEFT JOIN pet_wave_one_owned p ON p.account_id=s.account_id AND p.pet_id=s.pet_id) AS bound_seats
- FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id`;
+ FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id
+ LEFT JOIN game_native_matches m ON m.id=a.match_id`;
 
 function map(row:Row):CoopAllocationRecord{
  return Object.freeze({
   matchId:row.match_id,roomId:row.room_id,worldId:row.world_id,bootId:row.boot_id,
   configVersion:Number(row.config_version),configDigest:row.config_digest,contentHash:row.content_hash,
+  ...(row.engine_hash===null?{}:{engineHash:row.engine_hash}),
   bossId:row.boss_id,seats:readAllocationSeats(row.bound_seats,row.config_digest),status:row.status,generation:Number(row.generation),
  });
 }

@@ -429,3 +429,40 @@ fn reducer_settlement_is_always_none_and_actions_carry_no_client_results() {
     assert_eq!(swap["swap"]["first"], 2);
     assert_eq!(swap["swap"]["second"], 10);
 }
+
+#[test]
+fn six_campaign_regular_encounters_resolve_and_replay() {
+    let maps = [
+        "cinder-terraces",
+        "tideglass-lagoon",
+        "stormcoil-fields",
+        "lantern-necropolis",
+        "ochre-labyrinth",
+        "dawn-prism-sanctum",
+    ];
+    for map in maps {
+        let id = format!("{map}-regular");
+        let encounter = ENCOUNTERS
+            .iter()
+            .position(|entry| entry.id == id && !entry.boss)
+            .unwrap_or_else(|| panic!("missing {id}"));
+        let play = || {
+            finish_with(
+                Driver::new(ICARUS as u8, encounter as u8, 11),
+                choose_attack,
+            )
+        };
+        let first = play();
+        assert!(first.state().phase().terminal(), "{id}");
+        assert_eq!(
+            first.engine.replay().digest(),
+            play().engine.replay().digest(),
+            "{id}"
+        );
+        println!(
+            "{id}: {:?} after {} turns",
+            first.state().phase(),
+            first.state().turn()
+        );
+    }
+}

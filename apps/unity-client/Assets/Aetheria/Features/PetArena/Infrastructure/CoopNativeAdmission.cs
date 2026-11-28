@@ -21,6 +21,7 @@ namespace Aetheria.PetArena.Infrastructure
         {
             [DataMember(IsRequired = true)] public string roomId, bossId, matchId, bootId, accountId, wssUrl, httpsOrigin, ticket, expiresAt, contentHash;
             [DataMember(IsRequired = true)] public int seat;
+            [DataMember] public string clientBuild;
         }
 
         public Guid RoomId { get; }
@@ -34,6 +35,7 @@ namespace Aetheria.PetArena.Infrastructure
         public string Ticket { get; }
         public DateTimeOffset ExpiresAt { get; }
         public byte[] ContentHash { get; }
+        public string ClientBuild { get; }
 
         private CoopNativeAdmission(Payload payload)
         {
@@ -48,6 +50,7 @@ namespace Aetheria.PetArena.Infrastructure
             Ticket = payload.ticket;
             ExpiresAt = DateTimeOffset.Parse(payload.expiresAt, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
             ContentHash = Hex(payload.contentHash);
+            ClientBuild = payload.clientBuild ?? NativeConnection.LegacyClientBuild;
         }
 
         public static CoopNativeAdmission Decode(string json)
@@ -71,7 +74,8 @@ namespace Aetheria.PetArena.Infrastructure
                 https.AbsoluteUri.TrimEnd('/') != https.GetLeftPart(UriPartial.Authority) || https.UserInfo.Length != 0 ||
                 wss.Authority != https.Authority ||
                 payload.ticket == null || payload.ticket.Length < 20 || payload.ticket.Length > MaxTicketLength ||
-                payload.contentHash == null || payload.contentHash.Length != 64)
+                payload.contentHash == null || payload.contentHash.Length != 64 ||
+                payload.clientBuild != null && payload.clientBuild != NativeConnection.JewelFeedbackClientBuild)
                 throw new FormatException("Invalid coop admission scope");
             var admission = new CoopNativeAdmission(payload);
             var lifetime = admission.ExpiresAt - DateTimeOffset.UtcNow;
@@ -92,12 +96,12 @@ namespace Aetheria.PetArena.Infrastructure
                 var next = await renew(cancellation).ConfigureAwait(false);
                 if (next.RoomId != RoomId || next.BossId != BossId || next.WssOrigin != WssOrigin || next.HttpsOrigin != HttpsOrigin ||
                     next.MatchId != MatchId || next.BootId != BootId || next.AccountId != AccountId ||
-                    next.Seat != Seat || next.ContentHash.Length != ContentHash.Length)
+                    next.Seat != Seat || next.ClientBuild != ClientBuild || next.ContentHash.Length != ContentHash.Length)
                     throw new NativeFailure(Failure.Scope);
                 for (var index = 0; index < ContentHash.Length; index += 1)
                     if (next.ContentHash[index] != ContentHash[index]) throw new NativeFailure(Failure.Scope);
                 return new AdmissionTicket(next.Ticket, next.AccountId.ToString(), next.ExpiresAt);
-            });
+            }, clientBuild: ClientBuild);
         }
 
         private static byte[] Hex(string value)

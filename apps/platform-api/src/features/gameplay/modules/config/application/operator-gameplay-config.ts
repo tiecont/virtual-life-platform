@@ -2,7 +2,8 @@ import {
  GameplayConfigAuditSchema,GameplayConfigCreateSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigPublishSchema,GameplayConfigRollbackResultSchema,
  GameplayConfigRollbackSchema,GameplayConfigUpdateSchema,GameplayConfigValidateSchema,GameplayConfigValidationSchema,
- GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationComparisonSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,type GameplayBundle,type GameplayRuleset,
+ GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationComparisonSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,
+ gameplayEngineBinding,type GameplayBundle,type GameplayRuleset,
 } from '@aetheria/contracts';
 import type {PoolClient} from 'pg';
 import {canonicalCatalogReference} from '../../../../pets/modules/wave1/application/service';
@@ -23,7 +24,7 @@ const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
 });
 const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
- ...(row.bundle.schemaVersion===2?{catalogReference:canonicalCatalogReference}:{}),
+ ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:canonicalCatalogReference}:{}),
 });
 
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,
@@ -162,6 +163,9 @@ export class OperatorGameplayConfig{
    const target=await this.store.read(tx,value.ruleset,value.version);
    if(!target)throw missing();
    if(!target.publishedAt||!['PUBLISHED','SUPERSEDED'].includes(target.state))throw conflict('Only a previously published configuration can be restored');
+   const verdict=await this.verify(value.ruleset,target.bundle);
+   if(verdict.digest!==target.contentDigest||verdict.engineCapability!==target.engineCapability)
+    throw conflict('Gameplay configuration no longer validates under the current engine');
    const active=await this.store.active(tx,value.ruleset,true);
    if(!active)throw conflict('No active gameplay configuration to roll back');
    if(active.revision!==value.expectedActiveRevision)throw conflict('Active gameplay configuration changed; refresh before rolling back');

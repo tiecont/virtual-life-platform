@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Aetheria.World.Domain;
 using Aetheria.World.Presentation;
 using UnityEditor;
@@ -9,37 +10,28 @@ using UnityEngine.SceneManagement;
 
 namespace Aetheria.Editor
 {
-    // Builds the three committed world scenes from the same layout data the
-    // tests validate. Scenes contain real composed objects; nothing here creates
-    // an empty scene file or claims one of the four foundation maps finished.
     public static class WorldSceneBuilder
     {
-        public const string HubScenePath = "Assets/Aetheria/Scenes/CentralPlaza.unity";
-        public const string CinderScenePath = "Assets/Aetheria/Scenes/CinderTerraces.unity";
-        public const string TideglassScenePath = "Assets/Aetheria/Scenes/TideglassLagoon.unity";
+        private const string ScenesDirectory = "Assets/Aetheria/Scenes";
 
         public static readonly string[] ScenePaths =
-        {
-            HubScenePath, CinderScenePath, TideglassScenePath
-        };
+            WorldMapCatalog.WorldSceneNames.Select(ScenePath).ToArray();
 
-        [MenuItem("Aetheria/World/Build Central Plaza and two arena scenes")]
+        [MenuItem("Aetheria/World/Build Central Plaza and campaign arenas")]
         public static void BuildAll()
         {
             EnsureFolder("Assets/Aetheria/Features/World/Content");
-            EnsureFolder("Assets/Aetheria/Scenes");
-            var materials = WorldMaterialPalette.EnsureMaterials(new[]
-            {
-                WorldThemes.Hub, WorldThemes.Fire, WorldThemes.Water
-            });
-            BuildScene(HubScenePath, WorldLayouts.Hub, materials);
-            BuildScene(CinderScenePath, WorldLayouts.CinderTerraces, materials);
-            BuildScene(TideglassScenePath, WorldLayouts.TideglassLagoon, materials);
+            EnsureFolder(ScenesDirectory);
+            var layouts = WorldLayouts.PlayableScenes;
+            var materials = WorldMaterialPalette.EnsureMaterials(layouts.Select(layout => layout.Theme).ToArray());
+            foreach (var layout in layouts)
+                BuildScene(ScenePath(layout.SceneName), layout, materials);
             EnsureBuildEntries();
             AssetDatabase.SaveAssets();
-            Debug.Log("World scenes saved: CentralPlaza, CinderTerraces, TideglassLagoon. " +
-                      "Four remaining maps stay foundation-only previews.");
+            Debug.Log("World scenes saved: " + string.Join(", ", WorldMapCatalog.WorldSceneNames));
         }
+
+        private static string ScenePath(string name) => ScenesDirectory + "/" + name + ".unity";
 
         // The world scenes are part of the one canonical player-build registry;
         // keep this entry point so existing build menus and callers stay valid.

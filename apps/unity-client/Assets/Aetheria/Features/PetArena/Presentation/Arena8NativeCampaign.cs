@@ -53,8 +53,11 @@ namespace Aetheria.PetArena.Presentation
             " to the HTTPS platform origin, or opt in to the frozen HTTP compatibility bridge with " +
             HttpBridgeVariable + "=1.";
 
-        private Task AllocateMatch(string map, string encounter) =>
-            nativeMode ? AllocateNative(map, encounter) : Allocate(map, encounter);
+        private Task AllocateMatch(string map, string encounter)
+        {
+            if (!nativeMode) return Allocate(map, encounter);
+            return UsesFunctionalBoard ? AllocateFunctional(map, encounter) : AllocateNative(map, encounter);
+        }
 
         private async Task AllocateNative(string map, string encounter)
         {
@@ -87,6 +90,7 @@ namespace Aetheria.PetArena.Presentation
                 var admitted = await session.ConnectAsync(lifetime.Token);
                 nativeSession = session;
                 nativeView = admitted.Arena8;
+                stage?.PresentFixedNativeBattle(map);
                 matchId = admission.MatchIdText;
                 selectedCell = -1;
                 nativeSettlementRequest = NewRequestId();
@@ -155,6 +159,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void DisposeNative()
         {
+            DisposeFunctional();
             var session = nativeSession;
             nativeSession = null;
             nativeView = null;
@@ -166,51 +171,64 @@ namespace Aetheria.PetArena.Presentation
         private void DrawNativeCombat()
         {
             var current = nativeView;
-            content.Add(Label("Native match " + matchId + " · v" + current.Version + " · " + current.Phase, "arena-meta"));
-            content.Add(Label("Pet " + current.PetName + " · " + current.PetElement + " Lv" + current.PetLevel +
-                " · opponent " + current.EncounterId + (current.EncounterBoss ? " (boss)" : ""), "arena-meta"));
-            content.Add(Label("HP " + current.Health + " / enemy " + current.EnemyHealth +
-                " · shield " + current.EnemyShield, "arena-title"));
-            content.Add(Label("Mana " + current.Mana + "/" + Arena8NativeView.ManaCap +
-                " · Rage " + current.Rage + "/" + Arena8NativeView.RageCap +
-                " · Cooldown " + current.Cooldown + " · FireZone " + current.FireZoneTurns +
-                " · Turn " + current.Turn + "/" + Arena8NativeView.MaxTurn));
-            if (current.TelegraphKind != null)
-                content.Add(Label("Telegraph: " + current.TelegraphKind + " " + current.TelegraphAxis + " " +
-                    current.TelegraphTarget + " resolves turn " + current.TelegraphResolvesTurn + " · cells " +
-                    string.Join(",", current.TelegraphCells), "arena-notice"));
-            content.Add(BuildNativeCombatBoard(current, selectedCell, SelectNativeCell));
-            content.Add(Label(selectedCell < 0 ? "Select a tile, then an adjacent tile to swap."
-                : "Selected " + selectedCell + ". Choose an adjacent tile."));
-            if (current.Phase == "ready")
-                Button("Start match", () => Run(() => Native((session, token) => session.StartAsync(token)),
-                    "Starting match"), "start-match");
-            else
-                content.Add(Arena8NativePresentation.BuildSkills(current, CastNativeSkill));
-            if (nativeSession != null && nativeSession.HasPendingCommand)
-                Button("Retry pending command (same ID)", () => Run(RetryNative, "Retrying pending command"));
-            if (nativeSession != null && nativeSession.NeedsRefresh)
-                Button("Reconnect + resync", () => Run(ReconnectNative, "Reconnecting to the native match"));
-        }
+            var turn = Label("Turn " + current.Turn + "/" + Arena8NativeView.MaxTurn +
+                " · " + (current.Phase == "ready" ? "Ready" : "Your turn"), "battle-turn");
+            root.Add(turn);
+            var stageView = BattleScreenLayout.Stage();
+            var battleScroll = new ScrollView { name = "arena8-battle-scroll" };
+            battleScroll.AddToClassList("coop-hud-scroll");
+            battleScroll.contentViewport.RegisterCallback<GeometryChangedEvent>(change =>
+                BattleScreenLayout.Size(battleScroll, change.newRect.size));
+            content = battleScroll;
+            root.Add(content);
+            content.Add(stageView);
 
-        private static VisualElement BuildNativeCombatBoard(Arena8NativeView view, int selected, Action<int> select)
-        {
-            var combatBoard = Arena8NativePresentation.BuildBoard(view, selected, select);
-            combatBoard.style.maxWidth = combatBoard.style.width;
-            combatBoard.style.width = Length.Percent(100);
-            foreach (var cell in combatBoard.Children())
+            var player = BattleScreenLayout.Side("arena8-player", "battle-player-side");
+            var pet = new VisualElement();
+            pet.AddToClassList("battle-combatant");
+            pet.Add(Label(current.PetName + " · Lv " + current.PetLevel + " · " + current.PetElement));
+            pet.Add(Label("HP " + current.Health + "/" + current.EffectiveHealth));
+            pet.Add(Label("Mana " + current.Mana + "/" + Arena8NativeView.ManaCap +
+                " · Rage " + current.Rage + "/" + Arena8NativeView.RageCap));
+            if (current.FireZoneTurns > 0) pet.Add(Label("Fire Zone · " + current.FireZoneTurns + " turns"));
+            player.Add(pet);
+            stageView.Add(player);
+
+            var opponents = BattleScreenLayout.Side("arena8-opponents", "battle-enemy-side");
+            var enemy = new VisualElement();
+            enemy.AddToClassList("battle-combatant");
+            enemy.Add(Label(current.EncounterId.Replace('-', ' ') + (current.EncounterBoss ? " · Boss" : "")));
+            enemy.Add(Label("HP " + current.EnemyHealth + " · Shield " + current.EnemyShield));
+            if (current.TelegraphKind != null)
+                enemy.Add(Label(current.TelegraphKind + " · " + current.TelegraphAxis + " " +
+                    (current.TelegraphTarget + 1) + " · resolves on turn " + current.TelegraphResolvesTurn));
+            opponents.Add(enemy);
+            stageView.Add(opponents);
+
+            var board = Arena8NativePresentation.BuildBoard(current, selectedCell, SelectNativeCell);
+            var center = BattleScreenLayout.Center(board);
+            board.SetEnabled(!busy);
+            stageView.Insert(0, center);
+            if (current.Phase == "ready")
             {
-                cell.style.width = Length.Percent(100f / 8);
-                cell.style.height = 40;
-                cell.style.marginLeft = 0;
-                cell.style.marginRight = 0;
-                cell.style.marginTop = 1;
-                cell.style.marginBottom = 1;
-                cell.style.paddingLeft = 0;
-                cell.style.paddingRight = 0;
-                cell.style.unityTextAlign = TextAnchor.MiddleCenter;
+                var start = new Button(() => Run(() => Native((session, token) => session.StartAsync(token)),
+                    "Starting match")) { text = "Start match" };
+                start.AddToClassList("battle-primary-action");
+                start.AddToClassList("start-match");
+                start.SetEnabled(!busy);
+                center.Add(start);
             }
-            return combatBoard;
+            else
+            {
+                var skills = Arena8NativePresentation.BuildSkills(current, CastNativeSkill);
+                skills.SetEnabled(!busy);
+                center.Add(skills);
+            }
+            if (!string.IsNullOrEmpty(notice)) center.Add(Label(notice, "battle-turn"));
+            if (nativeSession != null && nativeSession.HasPendingCommand)
+                Button("Retry pending command (same ID)", () => Run(RetryNative, "Retrying pending command"), enabled: !busy);
+            if (nativeSession != null && nativeSession.NeedsRefresh)
+                Button("Reconnect + resync", () => Run(ReconnectNative, "Reconnecting to the native match"), enabled: !busy);
         }
 
         private void DrawNativeTerminal()

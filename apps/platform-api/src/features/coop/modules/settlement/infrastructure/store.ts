@@ -12,6 +12,7 @@ export type CoopSettlementEvent=Readonly<{
 }>;
 export type CoopAllocationBinding=Readonly<{
  roomId:string;bossId:string;worldId:string;configVersion:number;configDigest:string;contentHash:string;
+ rulesetVersion:number;engineCapability:string;bundleSchema:unknown;
  seats:readonly {account:string;petId:string;petLevel:number;ownedPetInstanceId:string|null}[];
 }>;
 
@@ -76,10 +77,19 @@ export class CoopSettlementStore{
  async allocation(tx:Queryable,matchId:string):Promise<CoopAllocationBinding|undefined>{
   const row=(await tx.query<{
    room_id:string;boss_id:string;world_id:string;config_version:unknown;config_digest:string;content_hash:string;seats:unknown;
-  }>('SELECT a.room_id,r.boss_id,a.world_id,a.config_version,a.config_digest,a.content_hash,a.seats FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id WHERE a.match_id=$1',[matchId])).rows[0];
+   ruleset_version:number;engine_capability:string;bundle_schema:unknown;
+  }>(`SELECT a.room_id,r.boss_id,a.world_id,a.config_version,a.config_digest,a.content_hash,a.seats,
+     m.ruleset_version,v.engine_capability,v.bundle->'schemaVersion' AS bundle_schema
+     FROM coop_allocations a JOIN coop_rooms r ON r.id=a.room_id
+     JOIN game_native_matches m ON m.id=a.match_id AND m.ruleset_id=a.ruleset
+      AND m.content_hash=decode(a.content_hash,'hex')
+     JOIN gameplay_config_versions v ON v.ruleset=a.ruleset AND v.version=a.config_version
+      AND v.content_digest=a.config_digest AND v.published_at IS NOT NULL
+     WHERE a.match_id=$1`,[matchId])).rows[0];
   return row?Object.freeze({
    roomId:row.room_id,bossId:row.boss_id,worldId:row.world_id,configVersion:Number(row.config_version),
    configDigest:row.config_digest,contentHash:row.content_hash,seats:seats(row.seats),
+   rulesetVersion:row.ruleset_version,engineCapability:row.engine_capability,bundleSchema:row.bundle_schema,
   }):undefined;
  }
  async bundle(tx:Queryable,version:number,digest:string):Promise<Record<string,unknown>|undefined>{

@@ -19,6 +19,18 @@ Agent owns integration and is the only writer of the canonical backlog.
 Workers return `summary`, `revision`, `files`, actual `checks` and
 `limitations` through the existing handoff contract.
 
+Only GPT-6 Luna and GPT-6.1 Terra may run execution-only assignments. This
+covers tests, builds, lint and experiments with supplied inputs and cases when
+the deliverable is the resulting output. Choose reasoning effort for the case.
+Apply this rule to the lead and every worker. If neither model is available,
+queue the run. Assign diagnosis or implementation separately when a result
+requires engineering judgment. Sol and Astra may take those engineering tasks.
+
+For delegated work, use Fast (2× speed) when the interface supports it.
+Choose reasoning effort independently for each assignment according to its
+complexity. If speed selection is unavailable, keep the task-appropriate
+reasoning effort and report the actual settings when asked.
+
 Run relevant local checks, seek independent review when available, integrate
 accepted changes and update the backlog with exact-source evidence. Record all
 unmet acceptance and owner gates. Checkpoint outstanding work before stopping
@@ -50,6 +62,54 @@ room writer. Pet Arena PvE precedes new Lodge gameplay; mobile is conditional.
 Keep authentication, authorization, privacy, consent, moderation and release gates.
 Source implementation and green CI do not authorize production deployment,
 purchases, signing, media licensing, destructive migrations or public dating.
+
+## Noninteractive Linux desktop sessions
+
+For the lead and all workers, launch Unity through the installed Editor binary
+matching `apps/unity-client/ProjectSettings/ProjectVersion.txt`. On this host the
+Editor is under `$HOME/Unity/Hub/Editor/<version>/Editor/Unity`. For Editor tests
+and Linux builds, set `UNITY_EDITOR` to that executable and run the repository
+validation script. It starts the Editor directly in batch mode. The Unity CLI's
+Auth Broker path has triggered a desktop password prompt via `systemd-creds`
+on this workstation. Skip the CLI and Hub launcher for these operations.
+
+```sh
+version=$(awk '/^m_EditorVersion:/{print $2; exit}' apps/unity-client/ProjectSettings/ProjectVersion.txt)
+env -u DISPLAY -u WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS=unix:path=/dev/null \
+  UNITY_EDITOR="$HOME/Unity/Hub/Editor/$version/Editor/Unity" \
+  node scripts/unity-validate.mjs tests </dev/null
+```
+
+Use a private compositor for rendered player tests. If the installed Editor
+cannot use its existing license headlessly, record that failure and continue
+independent work. Leave system credential stores and license settings intact.
+For Git operations that might authenticate, disable terminal prompting,
+graphical askpass and the desktop credential helper for that invocation. Reuse
+one authorized Chrome debugging connection throughout a browser-based production task.
+If Chrome asks for permission, preserve its consent boundary and continue
+independent production work. Reconcile the existing chat before resubmitting.
+
+## Hydrogen for visual and audiovisual production
+
+Use Hydrogen for every workflow previously assigned to Gemini, including 3D
+reference plates, jewel art, battle backgrounds, character studies, storyboards
+and supported music inputs. Build briefs from the canonical asset identity, its
+in-game purpose, approved references and Aetheria's gentle anime-fantasy direction.
+Verify available capabilities in the authorized Hydrogen session and record the
+actual provider, mode and costs. Reconcile outstanding jobs before resubmission.
+If Hydrogen is unavailable, keep the brief and continue independent work.
+Obtain owner direction before substituting a different provider. Keep historical
+Gemini outputs attributed to the provider that produced them.
+
+The owner approved the two exact R04 sheets for all nine current jewel roles.
+Reuse their recorded master hashes and preserve their sprite identifiers when
+repacking. For a new jewel design, use the owner's R04 battle image as a visual input to the
+generator. Hydrogen, the authorized Gemini tab and repository-listed image tools
+are permitted for this workflow. Use Meshy only when a 3D deliverable is needed.
+Keep the reference hash, actual provider master and atlas mapping. Limit local
+processing to extracting, resizing and packing generated pixels. All new artwork
+must come from reference-based generation; hand drawing and procedural redraws
+are outside the owner's production workflow.
 
 ## Gameplay Configuration Authority
 

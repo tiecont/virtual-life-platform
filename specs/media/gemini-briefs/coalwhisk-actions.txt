@@ -1,0 +1,8 @@
+Create a single 2×2 icon sheet for Fire Coalwhisk’s four battle actions in Aetheria: SoulBound. These icons sit beside action names below the fixed 8×8 jewel board in Cinder Terraces. The player needs to distinguish the actions at 32 pixels, with shape alone.
+
+Top left, Guard. A curled ember petal shelters one small kiln-ceramic coal. Give it a low, compact silhouette to convey a personal defensive stance.
+Top right, Ember Lance. A narrow tapered flame shoots diagonally upward. Keep one sharp leading point and a single trail.
+Bottom left, Ember Solar Flare. A low sheltering arc of glowing ceramic spans a cluster of small coals. Make the wide silhouette communicate a shield for the whole party.
+Bottom right, Blazing Descent. A heavy teardrop of molten ceramic falls vertically, with two short upward trails and a small impact crescent below.
+
+Use Aetheria’s gentle anime-fantasy rendering. Build each glyph from a deep kiln-red shadow, a vermilion midtone and a small apricot highlight. Keep the painted edge crisp, with a restrained warm rim. Use the same scale and light direction across the set. Centre each glyph in its square with ample padding on a uniform matte charcoal field. Deliver a square 1024-pixel sheet with four equally sized quadrants, without text, frames, separators, unrelated board jewels or logos.

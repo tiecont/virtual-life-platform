@@ -72,28 +72,25 @@ credentials are committed here.
 
 ## Central Plaza and developer arenas
 
-Wave B adds a playable **Central Plaza** hub and two developer arena
-compositions: **Cinder Terraces** (Fire) and **Tideglass Lagoon** (Water). The
-three committed scenes are built from one reusable modular kit:
+Central Plaza connects to six developer arena compositions built from the shared
+modular world kit:
 
-- `Assets/Aetheria/Scenes/CentralPlaza.unity`
-- `Assets/Aetheria/Scenes/CinderTerraces.unity`
-- `Assets/Aetheria/Scenes/TideglassLagoon.unity`
+| Arena | Element |
+| --- | --- |
+| Cinder Terraces | Fire |
+| Tideglass Lagoon | Water |
+| Stormcoil Fields | Electric |
+| Lantern Necropolis | Ghost |
+| Ochre Labyrinth | Ground |
+| Dawn Prism Sanctum | Light |
 
-Open a scene and enter Play mode. WASD walks the local `CharacterController`
-inside authored bounds; **E** uses a portal or return gate; **M** toggles
-ambient movement (reduced motion is on by default). The hub has a spawn pad,
-walkable collision, a framed camera, modular props, two active arena portals and
-four **foundation-only** map bindings (Stormcoil Fields, Lantern Necropolis,
-Ochre Labyrinth, Dawn Prism Sanctum). Those four reuse the same kit and palette
-data but have no scene, no build entry and no claim of completion.
-
-Each arena composes an 8x8 developer board with 64 contrasting tiles, a raised
-plinth, a Pet and enemy presentation, a rendered return gate back to the matching
-hub spawn anchor, authored fog/lighting and bounded ambient movement. Geometry
-and materials are **intermediate developer primitives**, not production art and
-not a finished map. This work adds no combat, reward or movement authority; the
-Rust ruleset and existing Pet Arena PvE scene are unchanged.
+Open a scene and enter Play mode. WASD moves the local `CharacterController`
+inside authored bounds. **E** uses a portal or return gate, and **M** toggles
+ambient movement. Reduced motion is on by default. Each arena has an 8×8
+developer board, walkable collision, an entry spawn, a return anchor in Central
+Plaza and distinct lighting and environment dressing. The developer primitives
+are interim assets. In the cooperative player, the server still decides which
+encounters are available to the signed-in account.
 
 Rebuild the scenes and their URP materials after changing layout data:
 
@@ -110,8 +107,8 @@ node scripts/unity-validate.mjs tests
 node scripts/unity-validate.mjs world
 ```
 
-`world` builds the Linux development player, loads the hub and both arenas,
-walks the real portal/return flow, renders 1280x720 screenshots and writes
+`world` builds the Linux development player, drives portal and return interactions
+across all six arenas, renders 1280×720 screenshots and writes
 `facts.json` under the ignored `artifacts/unity/` run directory. It requires a
 real Linux graphics device and does not qualify Windows.
 
@@ -173,6 +170,11 @@ A missing Editor returns exit code 2 with MISSING_OPTIONAL_LOCAL_TOOLING.
 Batch tests exercise rules, spawning, collision-controller movement and
 interaction. Rendering and physical GPU performance require a separate
 interactive player run.
+
+When seeding a fresh worktree, copy only `apps/unity-client/Library/PackageCache`
+from the prepared checkout. If assets fail to load after copying the whole
+`Library`, close the Editor, move that worktree's `Library` aside, and copy its
+`PackageCache` into a new `Library`. Rerun validation to rebuild the asset database.
 
 ### Icarus Import Audit
 
@@ -343,6 +345,26 @@ same-ID retry, skill/swap or pass, exact checkpoint after Rust SIGKILL, terminal
 win/loss, one restricted worker settlement, reduced motion, return to roaming
 and server logout. The Pet tests use the same local-CA path as the normal
 development player. The separate adapter fixture retains wrong-CA rejection.
+
+### Play the functional solo campaign
+
+With the Linux development player, Rust runtime and workspace packages built
+as above, run `pnpm play:linux:functional`. Docker and `openssl` provide the
+disposable loopback backend and its local TLS certificate. The launcher publishes
+the repository's functional candidate as authored into the fresh database.
+
+Choose **Enter local arena** to create a guest, then select an owned starter Pet
+and start the Fire regular encounter. Start the battle and swap adjacent tiles
+to match three or more of the same functional kind. Clear both the regular encounter and the Warden in Cinder Terraces to open
+Tideglass Lagoon. Each subsequent pair opens the next chapter, in order: Stormcoil
+Fields, Lantern Necropolis, Ochre Labyrinth and Dawn Prism Sanctum.
+The first complete pair in each map recruits the first Pet you do not
+already own from its published recruitment list, if one is available. Close the player
+to clean up the temporary profile, certificates, API, runtime and database.
+For the timed ruleset, run `pnpm play:linux:timed` with a player and runtime built from the timed-turn source. This publishes the schema 4 candidate to the disposable database. The active seat has fifteen seconds to act and may choose **End turn**. The server also advances an expired turn. The ordinary functional launcher continues to use schema 3.
+
+Each launch starts a fresh guest campaign. The player log stays under
+`artifacts/functional-linux-play/`.
 
 ## Native developer scene controller
 

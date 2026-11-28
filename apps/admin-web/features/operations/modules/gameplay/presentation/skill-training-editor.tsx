@@ -1,12 +1,12 @@
 import {useState} from 'react';
-import type {GameplayBundle} from '@aetheria/contracts';
+import {gameplayEngineBinding,type GameplayBundle} from '@aetheria/contracts';
 
 type Row={materials:number;powerPm:number};
 
 export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBundle;editable:boolean;change:(path:string[],value:unknown)=>void}) {
  const [petSelection,setPet]=useState(''),[skillSelection,setSkill]=useState('');
  const [materialInput,setMaterials]=useState(''),[powerInput,setPower]=useState('');
- if(bundle.schemaVersion!==2||!Array.isArray(bundle.skills)||!Array.isArray(bundle.pets))return null;
+ if((bundle.schemaVersion!==2&&!gameplayEngineBinding(bundle.schemaVersion)?.soloVersion)||!Array.isArray(bundle.skills)||!Array.isArray(bundle.pets))return null;
  const pets=bundle.pets as Record<string,unknown>[],skills=bundle.skills as Record<string,unknown>[];
  const pet=pets.find(p=>p.id===petSelection)??pets[0];
  if(!pet)return null;
@@ -29,7 +29,7 @@ export function SkillTrainingEditor({bundle,editable,change}:{bundle:GameplayBun
  const last=rows.at(-1)?.powerPm??Number(skill.powerPm);
  const materials=Number(materialInput),powerPm=Number(powerInput);
  const valid=Number.isInteger(materials)&&materials>=1&&materials<=1000000&&Number.isInteger(powerPm)&&powerPm>last&&powerPm<=10000;
- function save(next:Row[]){change(['skills',String(index),'upgradeLevels'],next.length?next:undefined);}
+ function save(next:Row[]){change(['skills',String(index),'upgradeLevels'],next.length?next:null);}
  function clearInput(){setMaterials('');setPower('');}
  return <details><summary>Skill training costs and levels</summary>
   <label>Training Pet<select aria-label="Training Pet" value={String(pet.id)} onChange={e=>{setPet(e.target.value);setSkill('');clearInput();}}>{pets.map(p=><option key={String(p.id)}>{String(p.id)}</option>)}</select></label>

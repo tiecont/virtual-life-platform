@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {constants} from 'node:fs';
 import {lstat,open,mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {constants as zlibConstants,zstdDecompressSync} from 'node:zlib';
 
 export const MAX_TOTAL=10_000_000_000,MAX_FILE=256*1024*1024,MAX_JSON=1024*1024;
 export const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -34,11 +35,34 @@ export function validateManifest(value){
   assert(typeof file.sha256==='string'&&hash.test(file.sha256)&&Object.hasOwn(types,path.extname(file.path))&&types[path.extname(file.path)]===file.mime,'Hash/MIME/extension rejected');
  }return value;
 }
+function blenderHeader(bytes){
+ const header=bytes.subarray(0,17).toString('latin1');
+ return /^BLENDER[_-][vV][0-9]{3}/.test(header)||/^BLENDER17-01[vV][0-9]{4}$/.test(header);
+}
+function verifyBlend(bytes){
+ if(blenderHeader(bytes))return true;
+ // Blender saves compressed projects as consecutive Zstandard frames followed
+ // by a skippable seek table. Node decodes one frame per synchronous call.
+ if(bytes.length<4||bytes.readUInt32LE(0)!==0xfd2fb528)return false;
+ let offset=0,decoded=0,header=Buffer.alloc(0);
+ while(offset<bytes.length){
+  const {buffer,engine}=zstdDecompressSync(bytes.subarray(offset),{
+   info:true,maxOutputLength:Math.max(1,MAX_FILE-decoded),
+   params:{[zlibConstants.ZSTD_d_windowLogMax]:28},
+  });
+  decoded+=buffer.length;
+  assert(decoded<=MAX_FILE&&engine.bytesWritten>0,'Compressed Blender file exceeded bounds');
+  offset+=engine.bytesWritten;
+  if(header.length<17)header=Buffer.concat([header,buffer.subarray(0,17-header.length)]);
+  if(header.length===17&&!blenderHeader(header))return false;
+ }
+ return blenderHeader(header);
+}
 export function verifyBytes(file,bytes){
  assert(bytes.length===file.bytes&&sha256(bytes)===file.sha256,'Content hash/size mismatch');const ext=path.extname(file.path);let valid=false;
  if(ext==='.png')valid=bytes.length>=45&&bytes.subarray(0,8).equals(Buffer.from('89504e470d0a1a0a','hex'))&&bytes.readUInt32BE(8)===13&&bytes.toString('ascii',12,16)==='IHDR'&&bytes.readUInt32BE(16)>0&&bytes.readUInt32BE(20)>0&&bytes.toString('ascii',bytes.length-8,bytes.length-4)==='IEND';
  if(ext==='.webp')valid=bytes.length>=20&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.readUInt32LE(4)+8===bytes.length&&bytes.toString('ascii',8,12)==='WEBP'&&['VP8 ','VP8L','VP8X'].includes(bytes.toString('ascii',12,16));
- if(ext==='.blend')valid=bytes.length>=12&&/^BLENDER[_-][vV][0-9]{3}$/.test(bytes.toString('ascii',0,12));
+ if(ext==='.blend')valid=verifyBlend(bytes);
  if(ext==='.fbx')valid=bytes.length>=27&&bytes.subarray(0,23).equals(Buffer.from('Kaydara FBX Binary  \0\x1a\0','binary'))&&bytes.readUInt32LE(23)>=7000&&bytes.readUInt32LE(23)<=8000;
  if(ext==='.mp4')valid=bytes.length>=24&&bytes.toString('ascii',4,8)==='ftyp'&&bytes.readUInt32BE(0)>=24&&bytes.readUInt32BE(0)<=bytes.length&&['isom','iso2','mp41','mp42','avc1'].includes(bytes.toString('ascii',8,12));
  if(ext==='.wav')valid=bytes.length>=44&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.readUInt32LE(4)+8===bytes.length&&bytes.toString('ascii',8,12)==='WAVE'&&bytes.toString('ascii',12,16)==='fmt ';

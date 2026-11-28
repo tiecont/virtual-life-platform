@@ -75,26 +75,244 @@
     padding-left: 6px;
     white-space: normal;
 }
-.coop-panel {
-    background-color: rgba(16, 24, 38, 0.95);
-    padding: 6px;
+.coop-panel { flex-grow: 1; }
+.coop-hud-scroll {
+    --battle-scroll-gutter: 24px;
+    flex-grow: 1;
+    min-height: 0;
 }
-.coop-world #coop-seats { flex-wrap: wrap; }
-.coop-member { flex-grow: 1; flex-basis: 22%; min-width: 130px; }
-.coop-active-member { border-top-width: 3px; border-top-color: rgb(255, 206, 104); }
-.coop-hud-scroll { flex-grow: 1; min-height: 0; }
+.coop-hud-scroll .unity-scroll-view__content-viewport {
+    margin-left: var(--battle-scroll-gutter);
+    margin-right: var(--battle-scroll-gutter);
+}
+.coop-hud-scroll .unity-scroll-view__vertical-scroller {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--battle-scroll-gutter);
+}
+#coop-network, #coop-feedback, #coop-reward, #coop-reward-pending {
+    flex-shrink: 0;
+    padding: 4px 6px;
+    background-color: rgba(20, 16, 28, 0.94);
+    color: rgb(245, 234, 213);
+    white-space: normal;
+}
 .coop-footer { flex-direction: row; flex-shrink: 0; }
 .coop-footer-button { flex-basis: 0; flex-grow: 1; }
 .coop-footer-hidden { visibility: hidden; }
-.coop-world #coop-turn, .coop-world #coop-boss, .coop-world #coop-telegraph {
-    color: rgb(255, 217, 148);
-    -unity-font-style: bold;
+
+.battle-stage {
+    position: relative;
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 12px;
 }
-.coop-world #coop-board Button { color: white; -unity-font-style: bold; }
+.battle-stage Label,
+.coop-world .battle-stage Label {
+    background-color: transparent;
+    color: rgb(245, 234, 213);
+    white-space: normal;
+}
+.battle-turn,
+.coop-world .battle-turn {
+    min-height: 28px;
+    padding-top: 4px;
+    background-color: rgba(20, 16, 28, 0.94);
+    color: rgb(255, 218, 152);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+.battle-side {
+    position: absolute;
+    top: 14px;
+    width: 21%;
+    max-width: 350px;
+    min-width: 0;
+}
+.battle-player-side { left: 2%; }
+.battle-enemy-side { right: 2%; }
+.battle-combatant {
+    min-width: 0;
+    margin-bottom: 5px;
+    padding: 7px 9px;
+    background-color: rgba(21, 19, 35, 0.94);
+    border-left-width: 2px;
+    border-left-color: rgb(156, 121, 196);
+    border-top-right-radius: 11px;
+    border-bottom-right-radius: 11px;
+}
+.battle-enemy-side .battle-combatant { border-left-color: rgb(214, 137, 81); }
+.coop-active-member { border-left-width: 3px; border-left-color: rgb(255, 206, 104); }
+.battle-player-side .coop-seat-health {
+    height: 6px;
+    min-height: 6px;
+    flex-shrink: 0;
+    margin: 1px 0 2px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__container,
+.battle-player-side .coop-seat-health .unity-progress-bar__background {
+    height: 6px;
+    min-height: 6px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__background {
+    background-color: rgb(56, 43, 67);
+    border-width: 0;
+    border-radius: 3px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__progress {
+    background-color: rgb(124, 206, 170);
+    border-width: 0;
+    border-radius: 3px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__title-container { display: none; }
+.battle-stage #coop-boss,
+.battle-stage #coop-telegraph { color: rgb(255, 217, 148); -unity-font-style: bold; }
+.battle-compact .battle-combatant { padding: 3px 2px; }
+.battle-compact .battle-side { width: 21%; font-size: 11px; }
+
+.battle-center { width: 52%; }
+.battle-board {
+    padding: 5px;
+    background-color: rgba(17, 16, 29, 0.97);
+    border-width: 1px;
+    border-color: rgb(178, 123, 76);
+    border-radius: 8px;
+}
+.battle-board-row { flex-direction: row; flex-grow: 1; flex-basis: 0; min-height: 0; }
+.battle-cell {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin: 2px;
+    padding: 0;
+    color: rgb(255, 242, 218);
+    -unity-font-style: bold;
+    border-width: 1px;
+    border-color: rgb(46, 35, 54);
+    border-radius: 5px;
+}
+.battle-board .battle-cell:disabled { opacity: 0.88; }
+.battle-telegraph-cell { border-color: rgb(250, 165, 75); border-width: 2px; }
+.coop-tile.coop-element-tile,
+.coop-tile.coop-functional-tile { color: rgba(0, 0, 0, 0); }
+.coop-element-icon {
+    position: absolute;
+    left: 11%;
+    top: 11%;
+    width: 78%;
+    height: 78%;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.coop-tile-multiplied .coop-element-icon {
+    left: 0;
+    top: 31%;
+    width: 32%;
+    height: 55%;
+}
+.battle-compact .coop-tile-multiplied .coop-element-icon {
+    width: 20%;
+}
+.battle-stage .coop-tile-multiplier {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: rgb(255, 235, 175);
+    background-color: rgb(37, 32, 41);
+    border-bottom-left-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    white-space: nowrap;
+}
+.battle-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-top: 6px;
+}
+.battle-actions Button, .battle-primary-action {
+    flex-grow: 1;
+    min-height: 33px;
+    margin: 3px 2px;
+    border-color: rgb(153, 113, 92);
+    border-radius: 5px;
+    background-color: rgb(43, 34, 57);
+    color: rgb(251, 232, 194);
+    -unity-font-style: bold;
+    white-space: normal;
+}
+.battle-actions Button:enabled:hover,
+.battle-actions Button:enabled:focus,
+.battle-primary-action:hover {
+    border-color: rgb(255, 218, 152);
+    background-color: rgb(75, 52, 80);
+}
+.battle-actions Button {
+    flex-basis: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    font-size: 12px;
+    padding: 3px;
+}
+.coop-fire-zone-tile .coop-functional-icon {
+    -unity-background-image-tint-color: rgb(255, 187, 152);
+}
+.battle-actions Button:disabled { opacity: 0.64; }
 .tile-fire { background-color: rgb(142, 58, 37); }
 .tile-water { background-color: rgb(35, 93, 134); }
 .tile-electric { background-color: rgb(130, 93, 24); }
 .tile-ghost { background-color: rgb(89, 60, 126); }
 .tile-ground { background-color: rgb(105, 78, 55); }
 .tile-light { background-color: rgb(56, 111, 91); }
+.tile-fire .coop-element-icon {
+    background-image: url("ElementTiles/fire.png");
+    -unity-background-image-tint-color: rgb(255, 206, 156);
+}
+.tile-water .coop-element-icon {
+    background-image: url("ElementTiles/water.png");
+    -unity-background-image-tint-color: rgb(190, 237, 255);
+}
+.tile-electric .coop-element-icon {
+    background-image: url("ElementTiles/electric.png");
+    -unity-background-image-tint-color: rgb(255, 237, 166);
+}
+.tile-ghost .coop-element-icon {
+    background-image: url("ElementTiles/ghost.png");
+    -unity-background-image-tint-color: rgb(238, 215, 255);
+}
+.tile-ground .coop-element-icon {
+    background-image: url("ElementTiles/ground.png");
+    -unity-background-image-tint-color: rgb(255, 221, 186);
+}
+.tile-light .coop-element-icon {
+    background-image: url("ElementTiles/light.png");
+    -unity-background-image-tint-color: rgb(223, 255, 215);
+}
 .coop-selected { border-width: 3px; border-color: white; }
+
+.training-list {
+    min-height: 0;
+    flex-shrink: 1;
+}
+.training-card {
+    margin-top: 6px;
+    padding: 8px;
+    background-color: rgb(28, 40, 57);
+    border-left-width: 2px;
+    border-left-color: rgb(147, 122, 83);
+}
+.arena-panel .training-name {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 217, 148);
+}
+
+/* The ready action sits above the footer. Extra desktop height belongs to the board viewport. */
+#coop-battle-start {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 40px;
+}

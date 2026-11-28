@@ -21,6 +21,34 @@ namespace Aetheria.World.Presentation
         public Renderer[] BoardTiles => boardTiles;
         public Transform PetActor => petActor;
         public Transform EnemyActor => enemyActor;
+        public bool BattlePresentation { get; private set; }
+
+        public void EnterBattlePresentation()
+        {
+            if (BattlePresentation) return;
+            BattlePresentation = true;
+            InputLocked = true;
+            enabled = false;
+            var hud = GetComponent<WorldHud>();
+            if (hud != null) hud.enabled = false;
+            if (Player != null) Player.gameObject.SetActive(false);
+            if (boardRoot != null) boardRoot.gameObject.SetActive(false);
+            foreach (var portal in Portals)
+                if (portal != null) portal.gameObject.SetActive(false);
+
+            if (CameraRig == null) return;
+            var stage = CameraRig.gameObject.AddComponent<FixedBattleCamera>();
+            stage.Frame(transform.position + new Vector3(0f, 2.6f, .2f), petActor, enemyActor, mapId);
+            if (!stage.HasBackdrop) return;
+
+            var cameraTransform = CameraRig.transform;
+            foreach (Transform group in transform)
+            {
+                if (group == petActor || group == enemyActor || group == cameraTransform ||
+                    group.GetComponent<Light>() != null) continue;
+                group.gameObject.SetActive(false);
+            }
+        }
 
         public void BindArenaExtras(string arenaMapId, Transform board, Renderer[] tiles, Transform pet, Transform enemy)
         {

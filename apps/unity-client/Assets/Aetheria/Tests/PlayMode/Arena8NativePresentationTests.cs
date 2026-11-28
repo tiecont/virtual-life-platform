@@ -22,7 +22,7 @@ namespace Aetheria.Tests.PlayMode
             var view = View(playing: true);
             var selected = -1;
             var board = Arena8NativePresentation.BuildBoard(view, 2, cell => selected = cell);
-            var cells = board.Children().OfType<Button>().ToList();
+            var cells = board.Query<Button>().ToList();
             Assert.That(cells.Count, Is.EqualTo(64));
             Assert.That(cells.Select(button => button.name).Distinct().Count(), Is.EqualTo(64));
             Assert.That(cells[0].name, Is.EqualTo("arena8-cell-0"));

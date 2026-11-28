@@ -19,12 +19,11 @@ namespace Aetheria.Tests.EditMode
     public sealed class WorldEnvironmentTests
     {
         [Test]
-        public void CatalogKeepsTwoPlayableArenasAndFourFoundationMaps()
+        public void CatalogKeepsSixCanonicalPlayableArenas()
         {
             Assert.That(WorldMapCatalog.Maps.Count, Is.EqualTo(6));
-            Assert.That(WorldMapCatalog.PlayableArenas.Count, Is.EqualTo(2));
-            Assert.That(WorldMapCatalog.FoundationMaps.Count, Is.EqualTo(4));
-            Assert.That(WorldMapCatalog.WorldSceneNames.Count, Is.EqualTo(3));
+            Assert.That(WorldMapCatalog.PlayableArenas.Count, Is.EqualTo(6));
+            Assert.That(WorldMapCatalog.WorldSceneNames.Count, Is.EqualTo(7));
             Assert.That(WorldMapCatalog.PlayableArenas[0].Id, Is.EqualTo(WorldMapCatalog.CinderTerracesId));
             Assert.That(WorldMapCatalog.PlayableArenas[1].Id, Is.EqualTo(WorldMapCatalog.TideglassLagoonId));
             Assert.That(WorldMapCatalog.CinderTerraces.Element, Is.EqualTo(WorldMapElement.Fire));
@@ -35,18 +34,10 @@ namespace Aetheria.Tests.EditMode
             foreach (var map in WorldMapCatalog.Maps)
             {
                 Assert.That(ids.Add(map.Id), Is.True, "Duplicate map id: " + map.Id);
-                if (map.IsPlayable)
-                {
-                    Assert.That(map.SceneName, Is.Not.Empty);
-                    Assert.That(scenes.Add(map.SceneName), Is.True, "Duplicate scene name: " + map.SceneName);
-                    Assert.That(map.Theme, Is.Not.Null);
-                }
-                else
-                {
-                    Assert.That(map.Status, Is.EqualTo(WorldMapStatus.FoundationOnly));
-                    Assert.That(map.SceneName, Is.Empty, "Foundation maps must not claim a scene.");
-                    Assert.That(map.ContentStage, Does.Contain("FOUNDATION ONLY"));
-                }
+                Assert.That(map.IsPlayable, Is.True, map.Id);
+                Assert.That(map.SceneName, Is.Not.Empty, map.Id);
+                Assert.That(scenes.Add(map.SceneName), Is.True, "Duplicate scene name: " + map.SceneName);
+                Assert.That(map.Theme, Is.Not.Null, map.Id);
             }
             Assert.That(ids.Add(WorldMapCatalog.CentralPlazaId), Is.True);
         }
@@ -54,7 +45,7 @@ namespace Aetheria.Tests.EditMode
         [Test]
         public void HubAndArenaLayoutsValidateAgainstTheEightByEightBoard()
         {
-            foreach (var layout in new[] { WorldLayouts.Hub, WorldLayouts.CinderTerraces, WorldLayouts.TideglassLagoon })
+            foreach (var layout in WorldLayouts.PlayableScenes)
             {
                 var problems = WorldLayoutValidator.Validate(layout);
                 Assert.That(problems, Is.Empty, layout.MapId + ": " + string.Join(" | ", problems));
@@ -64,7 +55,7 @@ namespace Aetheria.Tests.EditMode
             Assert.That(WorldLayouts.Hub.Kind, Is.EqualTo(WorldLayoutKind.Hub));
             Assert.That(WorldLayouts.Hub.Placements.Count, Is.GreaterThan(60));
             Assert.That(WorldLayouts.Hub.Portals.Count, Is.EqualTo(6));
-            Assert.That(WorldLayouts.Hub.ActivePortals().Count, Is.EqualTo(2));
+            Assert.That(WorldLayouts.Hub.ActivePortals().Count, Is.EqualTo(6));
             Assert.That(WorldLayouts.Hub.DefaultSpawnId, Is.EqualTo(WorldLayouts.HubSpawnId));
 
             foreach (var arena in WorldLayouts.PlayableArenas)
@@ -104,13 +95,6 @@ namespace Aetheria.Tests.EditMode
                 Assert.That(WorldLayouts.Hub.FindSpawn(returnGate.TargetSpawnId), Is.Not.Null);
             }
 
-            foreach (var marker in WorldLayouts.Hub.Portals)
-            {
-                if (marker.Interactable) continue;
-                Assert.That(marker.Status, Does.Contain("FOUNDATION ONLY"));
-                Assert.That(marker.TargetScene, Is.Empty);
-                Assert.That(marker.TargetSpawnId, Is.Empty);
-            }
         }
 
         [Test]
@@ -139,22 +123,22 @@ namespace Aetheria.Tests.EditMode
         }
 
         [Test]
-        public void FoundationPreviewsComposeFromTheSameKitWithoutScenes()
+        public void ExtendedArenasPreserveDistinctAuthoredEnvironmentDressing()
         {
-            Assert.That(WorldSceneBuilder.ScenePaths.Length, Is.EqualTo(3));
-            foreach (var map in WorldMapCatalog.FoundationMaps)
+            Assert.That(WorldSceneBuilder.ScenePaths.Length, Is.EqualTo(7));
+            var motifs = new[]
             {
-                var preview = WorldLayouts.Preview(map);
-                Assert.That(preview.PreviewOnly, Is.True);
-                Assert.That(preview.SceneName, Is.Empty);
-                Assert.That(preview.ActivePortals(), Is.Empty);
-                Assert.That(preview.Board.CellCount, Is.EqualTo(64));
-                Assert.That(preview.Placements.Count, Is.GreaterThan(60));
-                Assert.That(preview.Theme.Id, Is.Not.Empty);
-                var problems = WorldLayoutValidator.Validate(preview);
-                Assert.That(problems, Is.Empty, map.Id + ": " + string.Join(" | ", problems));
-                foreach (var scenePath in WorldSceneBuilder.ScenePaths)
-                    Assert.That(scenePath, Does.Not.Contain(map.DisplayName), "Foundation map must not own a scene.");
+                (Map: WorldMapCatalog.StormcoilFields, Part: "sigil-core", Count: 6),
+                (Map: WorldMapCatalog.LanternNecropolis, Part: "lamp-globe", Count: 6),
+                (Map: WorldMapCatalog.OchreLabyrinth, Part: "terrace-step", Count: 4),
+                (Map: WorldMapCatalog.DawnPrismSanctum, Part: "sigil-ring", Count: 5)
+            };
+            foreach (var motif in motifs)
+            {
+                var layout = WorldLayouts.ForMap(motif.Map.Id);
+                Assert.That(layout.Placements.Count(placement =>
+                    placement.Group == "environment" && placement.PartId == motif.Part),
+                    Is.EqualTo(motif.Count), motif.Map.Id);
             }
         }
 
@@ -192,7 +176,7 @@ namespace Aetheria.Tests.EditMode
         }
 
         [Test]
-        public void BuildSettingsKeepExistingScenesAndAppendTheThreeWorldScenes()
+        public void BuildSettingsKeepExistingScenesAndAppendTheCampaignScenes()
         {
             var paths = new List<string>();
             foreach (var scene in EditorBuildSettings.scenes) paths.Add(scene.path);
@@ -291,8 +275,8 @@ namespace Aetheria.Tests.EditMode
                     {
                         var hub = root.GetComponent<HubWorldController>();
                         Assert.That(hub, Is.Not.Null);
-                        Assert.That(hub.ActivePortalCount, Is.EqualTo(2));
-                        Assert.That(hub.FoundationMarkerCount, Is.EqualTo(4));
+                        Assert.That(hub.ActivePortalCount, Is.EqualTo(6));
+                        Assert.That(hub.FoundationMarkerCount, Is.Zero);
                         Assert.That(hub.IsHub, Is.True);
                     }
                 }

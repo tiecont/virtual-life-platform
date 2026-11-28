@@ -13,6 +13,7 @@
     "Aetheria.RemoteContent",
     "Unity.Addressables",
     "Unity.ResourceManager",
+    "Unity.Timeline",
     "Aetheria.World.Domain",
     "Aetheria.World.Presentation"
   ],

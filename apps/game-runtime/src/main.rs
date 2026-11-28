@@ -1,6 +1,7 @@
 use aetheria_game_runtime::{Config, probe, router};
 use aetheria_pet_arena::arena8::coop::simulation::{
     COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
+    simulate_solo,
 };
 use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules};
 
@@ -33,18 +34,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let rules = CoopRules::load(&bytes, boss_id)
             .map_err(|_| "Invalid cooperative gameplay configuration")?;
         let digest = rules.digest();
-        let content = aetheria_pet_arena::arena8::coop::content_hash(digest);
+        let ruleset = rules.ruleset();
         let hex = |bytes: &[u8]| {
             bytes
                 .iter()
                 .map(|byte| format!("{byte:02x}"))
                 .collect::<String>()
         };
-        println!(
-            "{{\"engineCapability\":\"arena8-coop-v1\",\"digest\":\"{}\",\"contentHash\":\"{}\"}}",
-            hex(&digest),
-            hex(&content)
-        );
+        let mut receipt = serde_json::json!({
+            "engineCapability": config.engine_capability,
+            "digest": hex(&digest),
+            "contentHash": hex(&ruleset.content_hash),
+        });
+        if rules.functional_board() {
+            receipt["rulesetVersion"] = ruleset.version.into();
+        }
+        if let Some(encounter_id) = config.bosses().iter().find_map(|boss| {
+            boss.solo
+                .as_ref()
+                .map(|_| &boss.id)
+                .or_else(|| boss.regular.as_ref().map(|r| &r.id))
+        }) {
+            let solo = CoopRules::load_solo(&bytes, encounter_id.clone())?.ruleset();
+            receipt["soloContentHash"] = hex(&solo.content_hash).into();
+            receipt["soloRulesetVersion"] = solo.version.into();
+        }
+        println!("{receipt}");
         return Ok(());
     }
     if let [flag, ruleset] = args.as_slice()
@@ -121,6 +136,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 reports.push(
                     simulate_party(&rules, policy, seeds, party.as_ref())
                         .map_err(|error| error.message())?,
+                );
+            }
+        }
+        println!("{}", serde_json::to_string(&reports)?);
+        return Ok(());
+    }
+    if let [flag, path, pet_id, level, seeds, bosses @ ..] = args.as_slice()
+        && flag == "--compare-solo"
+    {
+        let seeds = simulation_seeds(seeds)?;
+        let level = level.parse::<u8>()?;
+        if seeds == 0 || seeds > COMPARISON_MAX_SEEDS || !(1..=60).contains(&level) {
+            return Err("Solo comparison inputs are outside their bounds".into());
+        }
+        if bosses.is_empty()
+            || bosses.len() > COMPARISON_MAX_BOSSES
+            || (bosses.len() == 2 && bosses[0] == bosses[1])
+        {
+            return Err("Solo comparison requires one or two distinct encounters".into());
+        }
+        let bytes = std::fs::read(path)?;
+        let seat = SimulationSeat {
+            pet_id: pet_id.clone(),
+            level,
+            artifacts: vec![],
+            skill_levels: vec![],
+        };
+        let mut reports = Vec::new();
+        for boss in bosses {
+            let rules = CoopRules::load_solo(&bytes, boss.clone())?;
+            for policy in POLICIES {
+                reports.push(
+                    simulate_solo(&rules, policy, seeds, &seat).map_err(|err| err.message())?,
                 );
             }
         }

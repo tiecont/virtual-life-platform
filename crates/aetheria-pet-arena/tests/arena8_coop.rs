@@ -479,10 +479,10 @@ fn illegal_swap_rejected_before_any_state_change() {
     playing.phase = CoopPhase::Playing;
     let mut calm = [None; CELLS];
     for (index, cell) in calm.iter_mut().enumerate() {
-        *cell = Some(Tile {
-            element: aetheria_pet_arena::arena8::ELEMENTS[(index / SIDE + 2 * (index % SIDE)) % 6],
-            multiplier: 1,
-        });
+        *cell = Some(Tile::legacy(
+            aetheria_pet_arena::arena8::ELEMENTS[(index / SIDE + 2 * (index % SIDE)) % 6],
+            1,
+        ));
     }
     playing.board = calm;
     playing.active_seat = 0;
@@ -506,23 +506,11 @@ fn same_element_mixed_multipliers_match() {
     // Row 0: Fire x1, Fire x2, Fire x3 -> one horizontal Fire match after swap.
     let mut board = [None; CELLS];
     for cell in board.iter_mut() {
-        *cell = Some(Tile {
-            element: Element::Water,
-            multiplier: 1,
-        });
+        *cell = Some(Tile::legacy(Element::Water, 1));
     }
-    board[0] = Some(Tile {
-        element: Element::Fire,
-        multiplier: 1,
-    });
-    board[1] = Some(Tile {
-        element: Element::Fire,
-        multiplier: 2,
-    });
-    board[2] = Some(Tile {
-        element: Element::Fire,
-        multiplier: 3,
-    });
+    board[0] = Some(Tile::legacy(Element::Fire, 1));
+    board[1] = Some(Tile::legacy(Element::Fire, 2));
+    board[2] = Some(Tile::legacy(Element::Fire, 3));
     // Ensure the swap that joins them is legal and the rest is quiet.
     state.board = board;
     let matched = aetheria_pet_arena::arena8::coop::matched_cells_for_test(&state.board);
@@ -537,26 +525,11 @@ fn intersecting_cells_are_counted_once() {
     let matched = aetheria_pet_arena::arena8::coop::matched_cells_for_test(&{
         let mut board = [None; CELLS];
         // Row 0 and column 0 both Fire, sharing (0,0).
-        board[0] = Some(Tile {
-            element: Element::Fire,
-            multiplier: 1,
-        });
-        board[1] = Some(Tile {
-            element: Element::Fire,
-            multiplier: 1,
-        });
-        board[2] = Some(Tile {
-            element: Element::Fire,
-            multiplier: 1,
-        });
-        board[SIDE] = Some(Tile {
-            element: Element::Fire,
-            multiplier: 1,
-        });
-        board[2 * SIDE] = Some(Tile {
-            element: Element::Fire,
-            multiplier: 1,
-        });
+        board[0] = Some(Tile::legacy(Element::Fire, 1));
+        board[1] = Some(Tile::legacy(Element::Fire, 1));
+        board[2] = Some(Tile::legacy(Element::Fire, 1));
+        board[SIDE] = Some(Tile::legacy(Element::Fire, 1));
+        board[2 * SIDE] = Some(Tile::legacy(Element::Fire, 1));
         board
     });
     let counted = matched.iter().filter(|value| **value).count();
@@ -571,18 +544,15 @@ fn gravity_preserves_column_order_and_skips_full_columns() {
     let mut board = [None; CELLS];
     let mut column_zero = Vec::new();
     for row in 0..SIDE {
-        let tile = Tile {
-            element: Element::Water,
-            multiplier: u8::try_from(row + 1).unwrap(),
-        };
+        let tile = Tile::legacy(Element::Water, u8::try_from(row + 1).unwrap());
         board[row * SIDE] = Some(tile);
         column_zero.push(tile);
         // Column one: bottom three survive, top five empty.
         if row >= 3 {
-            board[row * SIDE + 1] = Some(Tile {
-                element: Element::Electric,
-                multiplier: u8::try_from(row - 2).unwrap(),
-            });
+            board[row * SIDE + 1] = Some(Tile::legacy(
+                Element::Electric,
+                u8::try_from(row - 2).unwrap(),
+            ));
         }
     }
     state.board = board;
@@ -696,10 +666,7 @@ fn boss_transforms_exactly_once_and_never_skips_phase_two() {
     let rules = rules();
     let mut state = rules.allocate(seats()).unwrap();
     state.phase = CoopPhase::Playing;
-    state.board = [Some(Tile {
-        element: Element::Water,
-        multiplier: 1,
-    }); CELLS];
+    state.board = [Some(Tile::legacy(Element::Water, 1)); CELLS];
 
     // A single enormous hit must still land in phase 2 at the authored values.
     let dealt = rules
@@ -811,10 +778,7 @@ fn signature_and_ultimate_are_available_at_level_one() {
     let mut state = rules.allocate(seats).unwrap();
     state.phase = CoopPhase::Playing;
     state.active_seat = 0;
-    state.board = [Some(Tile {
-        element: Element::Water,
-        multiplier: 1,
-    }); CELLS];
+    state.board = [Some(Tile::legacy(Element::Water, 1)); CELLS];
     for participant in &mut state.participants {
         participant.mana = rules.config().resources.mana_cap;
         participant.rage = rules.config().resources.rage_cap;

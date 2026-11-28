@@ -1,8 +1,8 @@
-//! Versioned four-seat cooperative Arena8 Boss ruleset.
+//! Versioned Arena8 Boss rulesets for cooperative and functional solo play.
 //!
-//! This module is separate from the frozen solo `arena8-pve` reducer. It models
-//! one shared board, four authenticated seats, deterministic seat order, two
-//! Boss phases, progressive multiplier tiles and a typed effect system.
+//! This module runs four-seat and one-seat matches using the same board,
+//! deterministic turn order, two Boss phases and typed effects. The original
+//! `arena8-pve` solo reducer retains its historical behavior.
 //!
 //! Every authored number comes from [`config::CoopConfig`], which PostgreSQL
 //! owns and Admin publishes. This file contains algorithms, structural bounds
@@ -13,12 +13,15 @@
 //! [`aetheria_game_core::TurnRng`] and a command envelope carrying only an
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
+pub mod advanced;
 pub mod config;
+mod functional;
 mod loadout;
+mod opening_board;
 pub mod simulation;
 
 use crate::arena8::Element;
-use crate::arena8::coop::config::BossConfig;
+use crate::arena8::coop::config::{BossAttackModel, BossConfig, RegularEncounterConfig};
 use aetheria_game_core::{
     Canonical, Decision, Error as CoreError, LogicalClock, ProjectionIntent, RNG_VERSION, Reducer,
     Ruleset, TurnRng, Value, canonical::list,
@@ -49,17 +52,31 @@ mod board_cells {
 }
 
 pub use config::{ConfigError, CoopConfig};
+pub use functional::{FunctionalTiles, TileKind};
 pub use loadout::{ArtifactLoadout, EquippedArtifact};
 
 /// Stable identifier of the cooperative ruleset family.
 pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
 pub const COOP_RULESET_VERSION: u32 = 1;
+pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
+pub const V3_RULESET_VERSION: u32 = 3;
+pub const ADVANCED_RULESET_VERSION: u32 = 4;
+pub const ADVANCED_SOLO_RULESET_VERSION: u32 = 3;
+pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
+pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
+pub const V3_SOLO_RULESET_VERSION: u32 = 2;
 /// Structural engine capability: the board is 8x8 and the party has 4 seats.
 pub const SEATS: usize = 4;
 pub const SIDE: usize = 8;
 pub const CELLS: usize = SIDE * SIDE;
-/// Structural ceiling on a single match. Authored limits must not exceed it.
+/// Deterministic centered 4x4 board cells covered by Icarus's FIRE_ZONE.
+pub const FIRE_ZONE_CELLS: [u8; 16] = [
+    18, 19, 20, 21, 26, 27, 28, 29, 34, 35, 36, 37, 42, 43, 44, 45,
+];
+/// Structural ceiling on a single match for historical versions.
 pub const MAX_TURNS: u16 = 4_096;
+/// Technical safety ceiling on v3 uncapped combat turns.
+pub const TECHNICAL_MAX_TURNS_V3: u16 = u16::MAX;
 pub const MAX_SUBMISSIONS: u16 = 8_192;
 
 /// Adapter contract text bound into the native content hash.
@@ -80,10 +97,72 @@ impl CoopPhase {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TileIdentity {
+    Element(Element),
+    Kind(TileKind),
+}
+
+impl TileIdentity {
+    const fn index(self) -> usize {
+        match self {
+            Self::Element(element) => element.index(),
+            Self::Kind(kind) => kind.index(),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(from = "TileWire")]
 pub struct Tile {
-    pub element: Element,
+    #[serde(flatten)]
+    pub identity: TileIdentity,
     pub multiplier: u8,
+}
+
+// Two strict wire variants preserve historical snapshots while rejecting
+// missing, unknown, or mixed identities.
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum TileWire {
+    Historical(LegacyTileWire),
+    Functional(FunctionalTileWire),
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyTileWire {
+    element: Element,
+    multiplier: u8,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FunctionalTileWire {
+    kind: TileKind,
+    multiplier: u8,
+}
+
+impl From<TileWire> for Tile {
+    fn from(wire: TileWire) -> Self {
+        match wire {
+            TileWire::Historical(tile) => Self::legacy(tile.element, tile.multiplier),
+            TileWire::Functional(tile) => Self {
+                identity: TileIdentity::Kind(tile.kind),
+                multiplier: tile.multiplier,
+            },
+        }
+    }
+}
+
+impl Tile {
+    pub const fn legacy(element: Element, multiplier: u8) -> Self {
+        Self {
+            identity: TileIdentity::Element(element),
+            multiplier,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -102,6 +181,10 @@ pub struct Status {
 }
 
 const NO_STATUS: Option<Status> = None;
+
+fn is_zero_u8(value: &u8) -> bool {
+    *value == 0
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Participant {
@@ -125,6 +208,8 @@ pub struct Participant {
     pub shield: u32,
     /// Remaining authored turns before the shield expires. Zero when unshielded.
     pub shield_turns: u8,
+    #[serde(default, skip_serializing_if = "is_zero_u8")]
+    pub fire_zone_turns: u8,
     pub cooldowns: [u8; 5],
     pub statuses: [Option<Status>; 4],
     pub contribution_damage: u64,
@@ -174,7 +259,8 @@ pub struct CoopState {
     pub config_digest: [u8; 32],
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub boss_id: Option<String>,
-    pub participants: [Participant; SEATS],
+    #[serde(deserialize_with = "deserialize_party")]
+    pub participants: Vec<Participant>,
     pub boss: Boss,
     #[serde(with = "board_cells")]
     pub board: [Option<Tile>; CELLS],
@@ -183,6 +269,24 @@ pub struct CoopState {
     pub turn_index: u16,
     pub round_index: u16,
     pub pending: Option<PendingAttack>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chill_reduction_pm: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_started_ms: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_deadline_ms: Option<u64>,
+}
+
+// Historical records remain arrays of four participants on the wire. Only the
+// new solo ruleset may use an array of one, checked again against the bound game.
+fn deserialize_party<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<Participant>, D::Error> {
+    let participants = Vec::<Participant>::deserialize(deserializer)?;
+    if !matches!(participants.len(), 1 | SEATS) {
+        return Err(serde::de::Error::custom("invalid Arena8 party length"));
+    }
+    Ok(participants)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -194,6 +298,8 @@ pub enum CoopAction {
     Signature,
     Ultimate,
     FireZone,
+    EndTurn,
+    ExpireTurn { turn_index: u16 },
 }
 
 impl Canonical for CoopAction {
@@ -210,7 +316,42 @@ impl Canonical for CoopAction {
             Self::Signature => Value::Uint(4),
             Self::Ultimate => Value::Uint(5),
             Self::FireZone => Value::Uint(6),
+            Self::EndTurn => Value::Uint(7),
+            Self::ExpireTurn { turn_index } => {
+                list([Value::Uint(8), Value::Uint(u64::from(*turn_index))])
+            }
         }
+    }
+}
+
+/// Runtime command envelope carrying an authoritative server timestamp.
+/// Clients never construct this directly; canonical hashing binds the action
+/// so idempotent receipt retries remain invariant across timestamp skew.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CoopCommand {
+    pub action: CoopAction,
+    pub server_timestamp_ms: Option<u64>,
+}
+
+impl CoopCommand {
+    pub const fn new(action: CoopAction) -> Self {
+        Self {
+            action,
+            server_timestamp_ms: None,
+        }
+    }
+
+    pub const fn timed(action: CoopAction, server_timestamp_ms: u64) -> Self {
+        Self {
+            action,
+            server_timestamp_ms: Some(server_timestamp_ms),
+        }
+    }
+}
+
+impl Canonical for CoopCommand {
+    fn canonical(&self) -> Value {
+        self.action.canonical()
     }
 }
 
@@ -226,13 +367,19 @@ pub enum CoopError {
     Cooldown,
     InsufficientResources,
     UnsupportedAction,
+    TurnExpired,
+    ExecutionBoundExceeded,
     Arithmetic,
     Config(ConfigError),
 }
 
 impl From<CoreError> for CoopError {
-    fn from(_: CoreError) -> Self {
-        Self::Arithmetic
+    fn from(error: CoreError) -> Self {
+        match error {
+            CoreError::Capacity => Self::ExecutionBoundExceeded,
+            CoreError::VersionConflict => Self::TurnExpired,
+            _ => Self::Arithmetic,
+        }
     }
 }
 
@@ -249,6 +396,8 @@ impl CoopError {
             Self::Cooldown => "action is on cooldown",
             Self::InsufficientResources => "insufficient mana or rage",
             Self::UnsupportedAction => "action is not supported by this engine",
+            Self::TurnExpired => "turn deadline has expired",
+            Self::ExecutionBoundExceeded => "match exceeded technical turn execution bound",
             Self::Arithmetic => "gameplay arithmetic is out of bounds",
             Self::Config(_) => "gameplay configuration is invalid",
         }
@@ -263,8 +412,22 @@ pub struct CoopRules {
     digest: [u8; 32],
     spawn_table: [u32; 6],
     spawn_total: u32,
+    board_tiers: u64,
     effectiveness: [[u16; 6]; 6],
-    selected_boss_id: String,
+    boss_profile: BossConfig,
+    regular_profile: Option<RegularEncounterConfig>,
+    solo: bool,
+    solo_round_limit: Option<u16>,
+}
+
+struct Opponent<'a> {
+    element: &'a str,
+    max_hp: u32,
+    defense: u32,
+    crit_rate_bp: u16,
+    crit_damage_bp: u16,
+    attack_model: &'a BossAttackModel,
+    telegraph_turns: u8,
 }
 
 struct PreparedAbility<'a> {
@@ -322,8 +485,9 @@ impl CoopState {
     /// order is the engine's structural rule; the authored party size is fixed
     /// by configuration validation to the engine's four seats.
     fn next_alive(&self, from: usize) -> Option<usize> {
-        (0..SEATS)
-            .map(|offset| (from + offset) % SEATS)
+        let seats = self.participants.len();
+        (0..seats)
+            .map(|offset| (from + offset) % seats)
             .find(|index| self.participants[*index].alive)
     }
 }
@@ -334,12 +498,41 @@ impl CoopRules {
         Self::from_config(CoopConfig::parse(bytes)?, boss_id)
     }
 
+    pub fn load_solo(bytes: &[u8], encounter_id: String) -> Result<Self, ConfigError> {
+        Self::bind(CoopConfig::parse(bytes)?, &encounter_id, true)
+    }
+
     pub fn from_config(config: CoopConfig, boss_id: String) -> Result<Self, ConfigError> {
+        Self::bind(config, &boss_id, false)
+    }
+
+    fn bind(config: CoopConfig, encounter_id: &str, solo: bool) -> Result<Self, ConfigError> {
         config.validate()?;
-        // Verify the boss_id exists in the configuration
-        if !config.bosses().iter().any(|b| b.id == boss_id) {
-            return Err(ConfigError::Boss);
-        }
+        let selected = config
+            .bosses()
+            .iter()
+            .find(|boss| {
+                boss.id == encounter_id
+                    || (solo
+                        && boss
+                            .regular
+                            .as_ref()
+                            .is_some_and(|regular| regular.id == encounter_id))
+            })
+            .ok_or(ConfigError::Boss)?;
+        let regular_profile = selected
+            .regular
+            .as_ref()
+            .filter(|profile| profile.id == encounter_id)
+            .cloned();
+        let (boss_profile, solo_round_limit) = match (solo, &regular_profile) {
+            (true, Some(profile)) => (selected.clone(), profile.max_rounds),
+            (true, None) => {
+                let profile = selected.solo.as_ref().ok_or(ConfigError::Boss)?;
+                (selected.solo_profile(profile), profile.max_rounds)
+            }
+            (false, _) => (selected.clone(), None),
+        };
         let (spawn_table, spawn_total) = config.board.spawn_table()?;
         let mut effectiveness = [[1_000u16; 6]; 6];
         for (index, profile) in config.elements.iter().enumerate() {
@@ -347,14 +540,24 @@ impl CoopRules {
             effectiveness[attacker.index()] = profile.effectiveness_table()?;
             debug_assert_eq!(index, attacker.index());
         }
+        let board_tiers = config
+            .multiplier
+            .schedule
+            .iter()
+            .flat_map(|stage| &stage.tiers)
+            .fold(0u64, |mask, tier| mask | (1 << (tier.multiplier - 1)));
         let digest = config.digest();
         Ok(Self {
             config,
             digest,
             spawn_table,
             spawn_total,
+            board_tiers,
             effectiveness,
-            selected_boss_id: boss_id,
+            boss_profile,
+            regular_profile,
+            solo,
+            solo_round_limit,
         })
     }
 
@@ -363,24 +566,150 @@ impl CoopRules {
     }
 
     pub fn selected_boss(&self) -> &BossConfig {
-        self.config
-            .bosses()
-            .iter()
-            .find(|b| b.id == self.selected_boss_id)
-            .expect("validated boss_id")
+        &self.boss_profile
+    }
+
+    pub fn encounter_id(&self) -> &str {
+        self.regular_profile
+            .as_ref()
+            .map_or(self.boss_profile.id.as_str(), |regular| &regular.id)
+    }
+
+    pub fn regular_encounter(&self) -> bool {
+        self.regular_profile.is_some()
+    }
+
+    fn opponent(&self) -> Opponent<'_> {
+        if let Some(regular) = &self.regular_profile {
+            Opponent {
+                element: &regular.element,
+                max_hp: regular.max_hp,
+                defense: regular.defense,
+                crit_rate_bp: regular.crit_rate_bp,
+                crit_damage_bp: regular.crit_damage_bp,
+                attack_model: &regular.attack_model,
+                telegraph_turns: regular.telegraph_turns,
+            }
+        } else {
+            let boss = self.selected_boss();
+            Opponent {
+                element: &boss.element,
+                max_hp: boss.max_hp,
+                defense: boss.defense,
+                crit_rate_bp: boss.crit_rate_bp,
+                crit_damage_bp: boss.crit_damage_bp,
+                attack_model: &boss.attack_model,
+                telegraph_turns: boss.telegraph_turns,
+            }
+        }
+    }
+
+    fn opponent_element(&self) -> Result<Element, ConfigError> {
+        config::parse_element(self.opponent().element)
     }
 
     pub fn digest(&self) -> [u8; 32] {
         self.digest
     }
 
+    pub fn is_v3(&self) -> bool {
+        self.config.is_v3()
+    }
+
     pub fn ruleset(&self) -> Ruleset {
+        if self.config.advanced_jewels.is_some() {
+            let (id, version, domain) = if self.solo {
+                (
+                    FUNCTIONAL_SOLO_RULESET_ID,
+                    ADVANCED_SOLO_RULESET_VERSION,
+                    "aetheria.arena8-functional-native.v3",
+                )
+            } else {
+                (
+                    COOP_RULESET_ID,
+                    ADVANCED_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v4",
+                )
+            };
+            return Ruleset {
+                id: id.into(),
+                version,
+                rng_version: RNG_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    version,
+                    domain,
+                    "timed-turns-v1;advanced-jewels-v1",
+                    self.seat_count(),
+                ),
+            };
+        }
+        if self.solo {
+            if self.is_v3() {
+                return Ruleset {
+                    id: FUNCTIONAL_SOLO_RULESET_ID.into(),
+                    version: V3_SOLO_RULESET_VERSION,
+                    content_hash: solo_v2_content_hash(self.digest),
+                    rng_version: RNG_VERSION,
+                };
+            }
+            return Ruleset {
+                id: FUNCTIONAL_SOLO_RULESET_ID.into(),
+                version: FUNCTIONAL_SOLO_RULESET_VERSION,
+                content_hash: solo_content_hash(self.digest),
+                rng_version: RNG_VERSION,
+            };
+        }
+        if self.is_v3() {
+            return Ruleset {
+                id: COOP_RULESET_ID.into(),
+                version: V3_RULESET_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    V3_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v3",
+                    "functional-board-v1;independent-tile-effects;timed-turns-v1",
+                    SEATS,
+                ),
+                rng_version: RNG_VERSION,
+            };
+        }
         Ruleset {
             id: COOP_RULESET_ID.into(),
-            version: COOP_RULESET_VERSION,
-            content_hash: crate::arena8::coop::content_hash(self.digest),
+            version: if self.functional_board() {
+                FUNCTIONAL_RULESET_VERSION
+            } else {
+                COOP_RULESET_VERSION
+            },
+            content_hash: if self.functional_board() {
+                native_content_hash(
+                    self.digest,
+                    FUNCTIONAL_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v2",
+                    "functional-board-v1;independent-tile-effects",
+                    SEATS,
+                )
+            } else {
+                content_hash(self.digest)
+            },
             rng_version: RNG_VERSION,
         }
+    }
+
+    fn seat_count(&self) -> usize {
+        if self.solo { 1 } else { SEATS }
+    }
+
+    pub fn max_rounds(&self) -> Option<u16> {
+        if self.solo {
+            self.solo_round_limit
+        } else {
+            self.config.party.max_rounds
+        }
+    }
+
+    pub fn functional_board(&self) -> bool {
+        self.config.board.functional_tiles.is_some()
     }
 
     pub fn effectiveness(&self, attacker: Element, defender: Element) -> u16 {
@@ -397,7 +726,7 @@ impl CoopRules {
                 entries: Vec::new(),
             })
         });
-        self.allocate_bound(seats, loadouts.as_ref())
+        self.allocate_bound(seats, loadouts.as_ref().map(|value| value.as_slice()))
     }
 
     /// Bind the exact Artifact instances read from the server-owned inventory.
@@ -414,12 +743,27 @@ impl CoopRules {
         self.allocate_bound(seats, Some(loadouts))
     }
 
-    fn allocate_bound(
+    /// One authenticated owned Pet enters without artificial party members.
+    pub fn allocate_solo(
         &self,
-        seats: [SeatInput; SEATS],
-        loadouts: Option<&[ArtifactLoadout; SEATS]>,
+        seat: SeatInput,
+        loadout: &ArtifactLoadout,
     ) -> Result<CoopState, CoopError> {
-        let mut participants = [(); SEATS].map(|()| unreachable_participant());
+        if !self.solo || !self.config.has_artifact_catalog() || seat.artifact_power_pm != 0 {
+            return Err(CoopError::InvalidSeat);
+        }
+        self.allocate_bound([seat], Some(std::slice::from_ref(loadout)))
+    }
+
+    fn allocate_bound<const N: usize>(
+        &self,
+        seats: [SeatInput; N],
+        loadouts: Option<&[ArtifactLoadout]>,
+    ) -> Result<CoopState, CoopError> {
+        if N != self.seat_count() || loadouts.is_some_and(|entries| entries.len() != N) {
+            return Err(CoopError::InvalidSeat);
+        }
+        let mut participants = Vec::with_capacity(N);
         let mut seen_accounts = std::collections::BTreeSet::new();
         let mut seen_pets = std::collections::BTreeSet::new();
         for (index, seat) in seats.into_iter().enumerate() {
@@ -433,18 +777,19 @@ impl CoopRules {
             {
                 return Err(CoopError::InvalidSeat);
             }
-            participants[index] =
-                self.participant(seat, loadouts.map(|loadouts| &loadouts[index]))?;
+            participants.push(self.participant(seat, loadouts.map(|loadouts| &loadouts[index]))?);
         }
-        let boss_config = self.selected_boss();
+        let opponent = self.opponent();
         let state = CoopState {
             config_digest: self.digest,
-            boss_id: (self.config.schema_version == config::CONFIG_SCHEMA_VERSION)
-                .then(|| boss_config.id.clone()),
+            boss_id: self
+                .config
+                .versioned_roster()
+                .then(|| self.encounter_id().into()),
             participants,
             boss: Boss {
-                hp: boss_config.max_hp,
-                max_hp: boss_config.max_hp,
+                hp: opponent.max_hp,
+                max_hp: opponent.max_hp,
                 phase: 1,
                 shield: 0,
                 armor_break_pm: 1_000,
@@ -459,6 +804,9 @@ impl CoopRules {
             turn_index: 0,
             round_index: 1,
             pending: None,
+            chill_reduction_pm: None,
+            turn_started_ms: None,
+            turn_deadline_ms: None,
         };
         // The board is generated by `Start` from host-owned entropy. Allocating
         // must not derive a stream from the public configuration digest.
@@ -470,12 +818,15 @@ impl CoopRules {
     pub fn bind_skill_levels(
         &self,
         state: &mut CoopState,
-        bindings: &[Vec<SkillLevelBinding>; SEATS],
+        bindings: &[Vec<SkillLevelBinding>],
     ) -> Result<(), CoopError> {
         if state.phase != CoopPhase::Ready || state.config_digest != self.digest {
             return Err(CoopError::InvalidPhase);
         }
-        let mut resolved = [[1; 5]; SEATS];
+        if state.participants.len() != self.seat_count() || bindings.len() != self.seat_count() {
+            return Err(CoopError::InvalidSeat);
+        }
+        let mut resolved = vec![[1; 5]; self.seat_count()];
         for ((participant, bindings), levels) in
             state.participants.iter().zip(bindings).zip(&mut resolved)
         {
@@ -588,7 +939,7 @@ impl CoopRules {
         Ok(Participant {
             account: seat.account,
             pet_id: seat.pet_id,
-            owned_pet_instance_id: (self.config.schema_version == config::CONFIG_SCHEMA_VERSION)
+            owned_pet_instance_id: (self.config.versioned_roster())
                 .then_some(seat.owned_pet_instance_id),
             artifact_loadout_digest: loadout.map(|loadout| loadout.digest.clone()),
             level: seat.level,
@@ -598,15 +949,18 @@ impl CoopRules {
             attack,
             defense,
             crit_rate_bp: pet.crit_rate_bp,
-            // All player critical damage in this encounter targets the Boss.
-            crit_damage_bp: pet
-                .crit_damage_bp
-                .checked_add(profile.boss_crit_damage_bonus_bp.unwrap_or(0))
-                .ok_or(CoopError::Arithmetic)?,
+            crit_damage_bp: if self.regular_encounter() {
+                pet.crit_damage_bp
+            } else {
+                pet.crit_damage_bp
+                    .checked_add(profile.boss_crit_damage_bonus_bp.unwrap_or(0))
+                    .ok_or(CoopError::Arithmetic)?
+            },
             mana: 0,
             rage: 0,
             shield: 0,
             shield_turns: 0,
+            fire_zone_turns: 0,
             cooldowns: [0; 5],
             statuses: [NO_STATUS; 4],
             contribution_damage: 0,
@@ -617,9 +971,10 @@ impl CoopRules {
     }
 
     pub fn validate(&self, state: &CoopState) -> Result<(), CoreError> {
-        let versioned = self.config.schema_version == config::CONFIG_SCHEMA_VERSION;
-        let expected_boss = versioned.then_some(self.selected_boss().id.as_str());
-        if state.config_digest != self.digest
+        let versioned = self.config.versioned_roster();
+        let expected_boss = versioned.then_some(self.encounter_id());
+        if !self.valid_advanced_state(state)
+            || state.config_digest != self.digest
             || state.boss.curse.is_some_and(|curse| {
                 !(1..=32).contains(&curse.turns)
                     || !(1..=9000).contains(&curse.bonus_pm)
@@ -629,7 +984,8 @@ impl CoopRules {
                         .iter()
                         .any(|skill| skill.effect.kind == config::EffectKind::Curse)
             })
-            || state.active_seat >= SEATS
+            || state.participants.len() != self.seat_count()
+            || state.active_seat >= self.seat_count()
             || state.boss_id.as_deref() != expected_boss
         {
             return Err(CoreError::InvalidState);
@@ -664,30 +1020,146 @@ impl CoopRules {
         if state.boss.max_hp == 0 || state.boss.hp > state.boss.max_hp {
             return Err(CoreError::InvalidState);
         }
-        if state
-            .board
-            .iter()
-            .flatten()
-            .any(|tile| tile.multiplier == 0 || !(1..=CELLS as u8).contains(&tile.multiplier))
+        if state.board.iter().flatten().any(|tile| {
+            !(1..=CELLS as u8).contains(&tile.multiplier)
+                || matches!(tile.identity, TileIdentity::Kind(_)) != self.functional_board()
+                || (self.functional_board()
+                    && (self.board_tiers & (1 << (tile.multiplier - 1))) == 0)
+        }) {
+            return Err(CoreError::InvalidState);
+        }
+        if self.functional_board()
+            && (state.boss.max_hp
+                != match state.boss.phase {
+                    1 if !state.boss.transformed => self.opponent().max_hp,
+                    2 if state.boss.transformed && !self.regular_encounter() => self
+                        .selected_boss()
+                        .phase2_max_hp()
+                        .map_err(|_| CoreError::InvalidState)?,
+                    _ => return Err(CoreError::InvalidState),
+                }
+                || state.pending.is_some_and(|attack| {
+                    attack.targets == 0
+                        || usize::from(attack.targets) > self.seat_count()
+                        || attack.remaining == 0
+                        || attack.remaining >= self.opponent().telegraph_turns
+                })
+                || (state.phase == CoopPhase::Won && state.boss.hp != 0)
+                || (state.phase == CoopPhase::Ready && state.board.iter().any(Option::is_some))
+                || (state.phase == CoopPhase::Playing
+                    && (!state.participants[state.active_seat].alive
+                        || state.boss.hp == 0
+                        || state.board.iter().any(Option::is_none)
+                        || matched_cells(&state.board).into_iter().any(|marked| marked)))
+                || state.participants.iter().any(|seat| {
+                    seat.alive != (seat.hp > 0)
+                        || seat.mana > self.config.resources.mana_cap
+                        || seat.rage > self.config.resources.rage_cap
+                }))
         {
             return Err(CoreError::InvalidState);
         }
-        if u32::from(state.round_index) > u32::from(self.config.party.max_rounds)
+        if let Some(max_rounds) = self.max_rounds()
+            && u32::from(state.round_index) > u32::from(max_rounds)
             && !state.phase.terminal()
         {
             return Err(CoreError::InvalidState);
         }
+        if !self.is_v3()
+            && (state.turn_started_ms.is_some()
+                || state.turn_deadline_ms.is_some()
+                || state
+                    .participants
+                    .iter()
+                    .any(|participant| participant.fire_zone_turns > 0))
+        {
+            return Err(CoreError::InvalidState);
+        }
+        if self.is_v3() {
+            if state.phase == CoopPhase::Ready
+                && (state.turn_started_ms.is_some() || state.turn_deadline_ms.is_some())
+            {
+                return Err(CoreError::InvalidState);
+            }
+            if state.phase.terminal()
+                && (state.turn_deadline_ms.is_some()
+                    || state
+                        .participants
+                        .iter()
+                        .any(|participant| participant.fire_zone_turns > 0))
+            {
+                return Err(CoreError::InvalidState);
+            }
+            if state.turn_deadline_ms.is_some() && state.turn_started_ms.is_none() {
+                return Err(CoreError::InvalidState);
+            }
+            if let (Some(started), Some(deadline)) = (state.turn_started_ms, state.turn_deadline_ms)
+                && deadline != started.saturating_add(u64::from(self.config.party.turn_timeout_ms))
+            {
+                return Err(CoreError::InvalidState);
+            }
+        }
         Ok(())
     }
 
-    /// Deterministic reduction of one command. Failed commands consume no
-    /// entropy: every roll happens only after the command is accepted.
+    /// Deterministic reduction of one command without an external wall-clock timestamp.
+    /// Failed commands consume no entropy: every roll happens only after the command is accepted.
     pub fn reduce(
         &self,
         state: &CoopState,
         action: CoopAction,
         rng: &mut TurnRng,
     ) -> Result<Decision<CoopState>, CoreError> {
+        self.reduce_stamped(state, action, None, rng)
+    }
+
+    /// Deterministic reduction of a command stamped with an authoritative server timestamp.
+    pub fn reduce_stamped(
+        &self,
+        state: &CoopState,
+        action: CoopAction,
+        server_timestamp_ms: Option<u64>,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<CoopState>, CoreError> {
+        self.reduce_observed(
+            state,
+            action,
+            server_timestamp_ms,
+            rng,
+            &mut TurnObservation::default(),
+        )
+    }
+
+    fn reduce_observed(
+        &self,
+        state: &CoopState,
+        action: CoopAction,
+        server_timestamp_ms: Option<u64>,
+        rng: &mut TurnRng,
+        observation: &mut TurnObservation,
+    ) -> Result<Decision<CoopState>, CoreError> {
+        if self.functional_board()
+            || state.config_digest != self.digest
+            || state.participants.len() != self.seat_count()
+        {
+            self.validate(state)?;
+        }
+        if !self.is_v3() && matches!(action, CoopAction::EndTurn | CoopAction::ExpireTurn { .. }) {
+            return Err(CoreError::InvalidAction);
+        }
+        if self.is_v3()
+            && !matches!(action, CoopAction::Start)
+            && state.turn_index == TECHNICAL_MAX_TURNS_V3
+        {
+            return Err(CoreError::Capacity);
+        }
+        if self.is_v3()
+            && !matches!(action, CoopAction::Start | CoopAction::ExpireTurn { .. })
+            && let (Some(ts), Some(deadline)) = (server_timestamp_ms, state.turn_deadline_ms)
+            && ts >= deadline
+        {
+            return Err(CoreError::VersionConflict);
+        }
         let mut next = state.clone();
         let mut events = Vec::new();
         match action {
@@ -695,10 +1167,19 @@ impl CoopRules {
                 if next.phase != CoopPhase::Ready {
                     return Err(CoreError::InvalidAction);
                 }
-                // The initial board is generated only here, from the host's
-                // server-owned stream. It has no unresolved matches and at
-                // least one legal swap (or the authored dead-board policy).
-                self.fill_board(&mut next, rng)?;
+                // Historical bundles keep their original reducer and RNG stream.
+                match self.config.board.initial_board_policy {
+                    None => self.fill_board(&mut next, rng)?,
+                    Some(config::InitialBoardPolicy::Constructive) => {
+                        next.board = self.construct_board(rng)?;
+                    }
+                }
+                if let Some(opening) = self
+                    .advanced_encounter()
+                    .and_then(|encounter| encounter.opening)
+                {
+                    self.convert_group(&mut next, opening, &mut events);
+                }
                 next.phase = CoopPhase::Playing;
                 next.active_seat = next.next_alive(0).ok_or(CoreError::InvalidState)?;
                 events.push(event("started", None, u64::from(next.boss.hp)));
@@ -715,17 +1196,58 @@ impl CoopRules {
                 }
                 let mut board = next.board;
                 board.swap(first, second);
-                if !matched_cells(&board).iter().any(|matched| *matched) {
+                if !self.swap_has_match(&board, first, second) {
                     // Rejected before any mutation and before any entropy use.
                     return Err(CoreError::InvalidAction);
                 }
                 next.board = board;
-                self.resolve_cascades(&mut next, rng, &mut events)?;
-                self.complete_turn(&mut next, rng, &mut events);
+                self.resolve_cascades(&mut next, rng, &mut events, observation)?;
+            }
+            CoopAction::EndTurn => {
+                self.require_turn(&next)?;
+                events.push(event(
+                    "end-turn",
+                    Some(next.active_seat as u8),
+                    u64::from(next.turn_index),
+                ));
+            }
+            CoopAction::ExpireTurn { turn_index } => {
+                self.require_turn(&next)?;
+                if next.turn_index != turn_index {
+                    return Err(CoreError::InvalidAction);
+                }
+                if let (Some(ts), Some(deadline)) = (server_timestamp_ms, next.turn_deadline_ms)
+                    && ts < deadline
+                {
+                    return Err(CoreError::InvalidAction);
+                }
+                events.push(event(
+                    "turn-expired",
+                    Some(next.active_seat as u8),
+                    u64::from(next.turn_index),
+                ));
             }
             ability => {
                 self.act_ability(&mut next, ability, rng, &mut events)?;
-                self.complete_turn(&mut next, rng, &mut events);
+            }
+        }
+        if !matches!(action, CoopAction::Start) {
+            observation.shield_absorbed = self.complete_turn(&mut next, rng, &mut events);
+        }
+        if self.is_v3() {
+            if next.phase.terminal() {
+                next.turn_deadline_ms = None;
+                next.chill_reduction_pm = None;
+                for participant in &mut next.participants {
+                    participant.fire_zone_turns = 0;
+                }
+            } else if next.phase == CoopPhase::Playing
+                && let Some(ts) = server_timestamp_ms
+            {
+                let clamped = ts.max(next.turn_started_ms.unwrap_or(0));
+                next.turn_started_ms = Some(clamped);
+                next.turn_deadline_ms =
+                    Some(clamped.saturating_add(u64::from(self.config.party.turn_timeout_ms)));
             }
         }
         self.validate(&next)?;
@@ -747,6 +1269,22 @@ impl CoopRules {
         })
     }
 
+    /// Typed convenience wrapper over `reduce_stamped` exposing `CoopError`.
+    pub fn reduce_checked(
+        &self,
+        state: &CoopState,
+        command: CoopCommand,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<CoopState>, CoopError> {
+        self.reduce_stamped(state, command.action, command.server_timestamp_ms, rng)
+            .map_err(|err| match err {
+                CoreError::Capacity => CoopError::ExecutionBoundExceeded,
+                CoreError::VersionConflict => CoopError::TurnExpired,
+                CoreError::InvalidAction => CoopError::UnsupportedAction,
+                _ => CoopError::from(err),
+            })
+    }
+
     fn require_turn(&self, state: &CoopState) -> Result<(), CoreError> {
         if state.phase != CoopPhase::Playing {
             return Err(CoreError::InvalidAction);
@@ -760,6 +1298,35 @@ impl CoopRules {
     /// Checks turn ownership, cast costs, cooldown and required utility targets.
     pub fn ability_ready(&self, state: &CoopState, seat: usize, action: CoopAction) -> bool {
         seat == state.active_seat && self.prepare_ability(state, action).is_ok()
+    }
+
+    /// Checks whether `seat`'s Ultimate is currently charged and usable (independent of active turn).
+    pub fn ultimate_charged(&self, state: &CoopState, seat_index: usize) -> bool {
+        if state.phase != CoopPhase::Playing {
+            return false;
+        }
+        let Some(seat) = state.participants.get(seat_index) else {
+            return false;
+        };
+        if !seat.alive {
+            return false;
+        }
+        let Some(pet) = self.config.pet(&seat.pet_id) else {
+            return false;
+        };
+        let Some(skill) = self.config.skill(&pet.ultimate) else {
+            return false;
+        };
+        let level = seat.skill_levels()[3];
+        let Some(power_pm) = skill.power_at(level) else {
+            return false;
+        };
+        if seat.cooldowns[3] > 0 || seat.mana < skill.mana_cost || seat.rage < skill.rage_cost {
+            return false;
+        }
+        let remaining_rage = seat.rage - skill.rage_cost;
+        self.prepare_utility(state, seat_index, skill, power_pm, remaining_rage)
+            .is_ok()
     }
 
     fn prepare_ability(
@@ -782,7 +1349,10 @@ impl CoopRules {
             CoopAction::Signature => 2,
             CoopAction::Ultimate => 3,
             CoopAction::FireZone => 4,
-            CoopAction::Start | CoopAction::Swap { .. } => return Err(CoreError::InvalidAction),
+            CoopAction::Start
+            | CoopAction::Swap { .. }
+            | CoopAction::EndTurn
+            | CoopAction::ExpireTurn { .. } => return Err(CoreError::InvalidAction),
         };
         let skill_id = pet.skill_ids()[slot].ok_or(CoreError::InvalidAction)?;
         let skill = self.config.skill(skill_id).ok_or(CoreError::InvalidState)?;
@@ -930,6 +1500,7 @@ impl CoopRules {
                     }
                 }
             }
+            self.convert_skill(state, &skill.id, events);
             return Ok(());
         }
         let actor_attack = seat.attack;
@@ -947,6 +1518,7 @@ impl CoopRules {
             crit_damage,
             events,
         )?;
+        self.convert_skill(state, &skill.id, events);
         Ok(())
     }
 
@@ -979,8 +1551,7 @@ impl CoopRules {
                     .and_then(|pet| pet.element().ok())
                     .ok_or(CoreError::InvalidState)?;
                 let boss_element = self
-                    .selected_boss()
-                    .element()
+                    .opponent_element()
                     .map_err(|_| CoreError::InvalidState)?;
                 damage = u32::try_from(
                     u64::from(damage) * u64::from(self.effectiveness(attacker, boss_element))
@@ -991,6 +1562,10 @@ impl CoopRules {
                     config::EffectKind::DamageOverTime => {
                         state.boss.dot_damage = state.boss.dot_damage.saturating_add(damage);
                         state.boss.dot_turns = effect.duration_turns.max(1);
+                        if self.is_v3() && skill.kind == config::SkillKind::FireZone {
+                            state.participants[actor].fire_zone_turns =
+                                effect.duration_turns.max(1);
+                        }
                     }
                     _ => {
                         // A chain uses one critical roll for the cast. Resolve each
@@ -1138,11 +1713,11 @@ impl CoopRules {
         match target {
             config::EffectTarget::Boss => Vec::new(),
             config::EffectTarget::SelfActor => vec![actor],
-            config::EffectTarget::Allies => (0..SEATS)
+            config::EffectTarget::Allies => (0..state.participants.len())
                 .filter(|seat| state.participants[*seat].alive)
                 .collect(),
             config::EffectTarget::LowestAlly => {
-                let lowest = (0..SEATS)
+                let lowest = (0..state.participants.len())
                     .filter(|seat| state.participants[*seat].alive)
                     .min_by_key(|seat| {
                         let seat = &state.participants[*seat];
@@ -1151,7 +1726,7 @@ impl CoopRules {
                 lowest.into_iter().collect()
             }
             config::EffectTarget::LowestRageAlly | config::EffectTarget::LowestManaAlly => (0
-                ..SEATS)
+                ..state.participants.len())
                 .filter(|seat| *seat != actor && state.participants[*seat].alive)
                 .min_by_key(|index| {
                     let seat = &state.participants[*index];
@@ -1184,7 +1759,7 @@ impl CoopRules {
             state.boss.shield -= absorbed;
             remaining -= absorbed;
         }
-        if state.boss.phase == 1 {
+        if state.boss.phase == 1 && !self.regular_encounter() {
             let threshold = self.selected_boss().phase_threshold();
             let to_threshold = state.boss.hp.saturating_sub(threshold);
             if remaining >= to_threshold {
@@ -1248,15 +1823,30 @@ impl CoopRules {
         state: &mut CoopState,
         rng: &mut TurnRng,
         events: &mut Vec<Value>,
+        observation: &mut TurnObservation,
     ) -> Result<(), CoreError> {
         let max = u32::from(self.config.party.max_cascades);
         let seat = state.active_seat;
+        let mut survivors = u64::MAX;
+        let mut upgrades = 0;
         for cascade in 0..max {
             let matched = matched_cells(&state.board);
             if !matched.iter().any(|matched| *matched) {
-                return Ok(());
+                break;
             }
-            let outcome = self.score_match(state, seat, &matched, rng)?;
+            upgrades += self.advanced_matches(state, events);
+            let outcome = if self.functional_board() {
+                self.score_functional_match(state, seat, &matched, rng, events)?
+            } else {
+                self.score_match(state, seat, &matched, rng)?
+            };
+            for (total, credit) in observation
+                .jewel_resources
+                .iter_mut()
+                .zip(outcome.jewel_resources)
+            {
+                *total += credit;
+            }
             events.push(event("match", Some(seat as u8), u64::from(outcome.damage)));
             if outcome.critical {
                 events.push(event("critical", Some(seat as u8), 0));
@@ -1264,24 +1854,35 @@ impl CoopRules {
             if state.phase.terminal() {
                 return Ok(());
             }
-            self.gravity_and_refill(state, rng)?;
+            observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
                 // the authored dead-board procedure restores a playable board.
+                let remaining = if self.functional_board() {
+                    matched_cells(&state.board)
+                } else {
+                    matched
+                };
+                if self.functional_board() && !remaining.iter().any(|marked| *marked) {
+                    break;
+                }
                 events.push(event("cascade-cap", Some(seat as u8), u64::from(max)));
-                for (index, is_matched) in matched.iter().enumerate() {
+                for (index, is_matched) in remaining.iter().enumerate() {
                     if *is_matched {
                         state.board[index] = None;
                     }
                 }
-                self.gravity_and_refill(state, rng)?;
+                observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
                     self.dead_board(state, rng)?;
+                    observation.forced_cascade_regenerations += 1;
+                    survivors = 0;
                 }
-                return Ok(());
+                break;
             }
         }
+        observation.amplified_cells = self.amplify(state, survivors, upgrades, events);
         Ok(())
     }
 
@@ -1292,11 +1893,7 @@ impl CoopRules {
         matched: &[bool; CELLS],
         rng: &mut TurnRng,
     ) -> Result<MatchOutcome, CoreError> {
-        let element = self
-            .config
-            .pet(&state.participants[seat_index].pet_id)
-            .and_then(|pet| pet.element().ok())
-            .ok_or(CoreError::InvalidState)?;
+        let element = self.actor_element(state, seat_index)?;
         let own_weight = u64::from(self.config.damage.own_tile_weight_pm);
         let mut contribution = 0u64;
         let mut mana = 0u32;
@@ -1307,7 +1904,7 @@ impl CoopRules {
                 continue;
             }
             let tile = state.board[index].ok_or(CoreError::InvalidState)?;
-            let own = tile.element == element;
+            let own = tile.identity == TileIdentity::Element(element);
             let weight = if own { own_weight } else { 1_000 };
             let damage_weight = u64::from(
                 self.config
@@ -1353,6 +1950,34 @@ impl CoopRules {
         if tiles == 0 {
             return Err(CoreError::InvalidState);
         }
+        let outcome = self.resolve_normal_attack(state, seat_index, contribution, rng)?;
+        let seat = &mut state.participants[seat_index];
+        seat.mana = seat
+            .mana
+            .saturating_add(u16::try_from(mana).unwrap_or(u16::MAX))
+            .min(self.config.resources.mana_cap);
+        seat.rage = seat
+            .rage
+            .saturating_add(u16::try_from(rage).unwrap_or(u16::MAX))
+            .min(self.config.resources.rage_cap);
+        Ok(outcome)
+    }
+
+    fn actor_element(&self, state: &CoopState, seat_index: usize) -> Result<Element, CoreError> {
+        self.config
+            .pet(&state.participants[seat_index].pet_id)
+            .and_then(|pet| pet.element().ok())
+            .ok_or(CoreError::InvalidState)
+    }
+
+    fn resolve_normal_attack(
+        &self,
+        state: &mut CoopState,
+        seat_index: usize,
+        contribution: u64,
+        rng: &mut TurnRng,
+    ) -> Result<MatchOutcome, CoreError> {
+        let element = self.actor_element(state, seat_index)?;
         let participant = &state.participants[seat_index];
         let base = u64::from(participant.attack)
             .checked_mul(u64::from(self.config.damage.attack_scale_pm))
@@ -1371,7 +1996,7 @@ impl CoopRules {
         let mut damage = u32::try_from(raw).map_err(|_| CoreError::Arithmetic)?;
         // Boss defense mitigation uses the authored divisor.
         let mitigation = u32::try_from(
-            u64::from(self.selected_boss().defense) / u64::from(self.config.damage.defense_divisor),
+            u64::from(self.opponent().defense) / u64::from(self.config.damage.defense_divisor),
         )
         .unwrap_or(u32::MAX);
         damage = damage.saturating_sub(mitigation).max(1);
@@ -1384,8 +2009,7 @@ impl CoopRules {
                 .map_err(|_| CoreError::Arithmetic)?;
         }
         let boss_element = self
-            .selected_boss()
-            .element()
+            .opponent_element()
             .map_err(|_| CoreError::InvalidState)?;
         damage = u32::try_from(
             u64::from(damage) * u64::from(self.effectiveness(element, boss_element)) / 1_000,
@@ -1394,17 +2018,10 @@ impl CoopRules {
         let dealt = self.damage_boss(state, damage)?;
         let seat = &mut state.participants[seat_index];
         seat.contribution_damage = seat.contribution_damage.saturating_add(u64::from(dealt));
-        seat.mana = seat
-            .mana
-            .saturating_add(u16::try_from(mana).unwrap_or(u16::MAX))
-            .min(self.config.resources.mana_cap);
-        seat.rage = seat
-            .rage
-            .saturating_add(u16::try_from(rage).unwrap_or(u16::MAX))
-            .min(self.config.resources.rage_cap);
         Ok(MatchOutcome {
             damage: dealt,
             critical,
+            jewel_resources: [0; 4],
         })
     }
 
@@ -1421,19 +2038,23 @@ impl CoopRules {
         &self,
         state: &mut CoopState,
         rng: &mut TurnRng,
-    ) -> Result<(), CoreError> {
+        surviving_cells: &mut u64,
+    ) -> Result<RefillResult, CoreError> {
         let mut next = [None; CELLS];
+        let mut moved_survivors = 0;
         for column in 0..SIDE {
             let mut survivors = Vec::with_capacity(SIDE);
             for row in (0..SIDE).rev() {
                 if let Some(tile) = state.board[row * SIDE + column] {
-                    survivors.push(tile);
+                    survivors.push((tile, row * SIDE + column));
                 }
             }
             let mut row = SIDE;
-            for tile in survivors {
+            for (tile, from) in survivors {
                 row -= 1;
-                next[row * SIDE + column] = Some(tile);
+                let to = row * SIDE + column;
+                next[to] = Some(tile);
+                moved_survivors |= ((*surviving_cells >> from) & 1) << to;
             }
             // Fill every genuinely empty cell above the surviving run.
             let empty = (0..SIDE)
@@ -1444,14 +2065,26 @@ impl CoopRules {
             }
         }
         state.board = next;
-        if self.legal_swap(state).is_none() {
+        *surviving_cells = moved_survivors;
+        let still_matching =
+            self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
+        if still_matching {
+            Ok(RefillResult::StillMatching)
+        } else if self.legal_swap(state).is_none() {
             self.dead_board(state, rng)?;
+            *surviving_cells = 0;
+            Ok(RefillResult::Regenerated)
+        } else {
+            Ok(RefillResult::Playable)
         }
-        Ok(())
     }
 
     fn dead_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
         match self.config.board.dead_board_policy {
+            config::DeadBoardPolicy::Regenerate if self.functional_board() => {
+                state.board = self.construct_board(rng)?;
+                Ok(())
+            }
             config::DeadBoardPolicy::Regenerate => {
                 self.fill_board(state, rng)?;
                 Ok(())
@@ -1468,8 +2101,25 @@ impl CoopRules {
                         return Ok(());
                     }
                 }
-                Err(CoreError::InvalidState)
+                if self.functional_board() {
+                    state.board = self.construct_board(rng)?;
+                    Ok(())
+                } else {
+                    Err(CoreError::InvalidState)
+                }
             }
+        }
+    }
+
+    fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {
+        opening_board::construct(self.identities(), self.spawn_table, self.spawn_total, rng)
+    }
+
+    fn identities(&self) -> [TileIdentity; 6] {
+        if self.functional_board() {
+            TileKind::ALL.map(TileIdentity::Kind)
+        } else {
+            crate::arena8::ELEMENTS.map(TileIdentity::Element)
         }
     }
 
@@ -1481,7 +2131,7 @@ impl CoopRules {
                 // refill draws the escalating multiplier distribution.
                 let roll = rng.below(self.spawn_total)?;
                 state.board[index] = Some(Tile {
-                    element: spawn_element(self.spawn_table, roll),
+                    identity: spawn_identity(self.identities(), self.spawn_table, roll),
                     multiplier: 1,
                 });
             }
@@ -1504,7 +2154,7 @@ impl CoopRules {
     fn spawn_tile(&self, state: &CoopState, rng: &mut TurnRng) -> Result<Tile, CoreError> {
         let clock = self.escalation_clock(state);
         let roll = rng.below(self.spawn_total)?;
-        let element = spawn_element(self.spawn_table, roll);
+        let identity = spawn_identity(self.identities(), self.spawn_table, roll);
         let budget = self
             .config
             .multiplier
@@ -1517,7 +2167,7 @@ impl CoopRules {
             .tier_for(clock, tier_roll)
             .map_err(|_| CoreError::InvalidState)?;
         Ok(Tile {
-            element,
+            identity,
             multiplier: tier.multiplier,
         })
     }
@@ -1542,10 +2192,25 @@ impl CoopRules {
         }
         let mut board = state.board;
         board.swap(first, second);
-        matched_cells(&board).iter().any(|matched| *matched)
+        self.swap_has_match(&board, first, second)
     }
 
-    fn complete_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
+    fn swap_has_match(&self, board: &[Option<Tile>; CELLS], first: usize, second: usize) -> bool {
+        let matches = matched_cells(board);
+        if self.functional_board() {
+            let identity = |index: usize| board[index].map(|tile| tile.identity);
+            identity(first) != identity(second) && (matches[first] || matches[second])
+        } else {
+            matches.into_iter().any(|matched| matched)
+        }
+    }
+
+    fn complete_turn(
+        &self,
+        state: &mut CoopState,
+        rng: &mut TurnRng,
+        events: &mut Vec<Value>,
+    ) -> u64 {
         state.turn_index = state.turn_index.saturating_add(1);
         let boss_defeat_first = self.config.terminal_outcome_policy
             == Some(config::TerminalOutcomePolicy::BossDefeatFirst);
@@ -1556,7 +2221,7 @@ impl CoopRules {
             // A defeat by the player's action or by the final DoT tick
             // cancels the Boss's queued attack before it can deal damage.
             state.pending = None;
-            return;
+            return 0;
         }
         if let Some(active) = state.boss.curse.as_mut() {
             active.turns -= 1;
@@ -1564,19 +2229,20 @@ impl CoopRules {
                 state.boss.curse = None;
             }
         }
-        self.tick_pending(state, events);
+        let mut shield_absorbed = self.tick_pending(state, events);
         if state.phase.terminal() {
-            return;
+            return shield_absorbed;
         }
         let current = state.active_seat;
-        let next = (1..=SEATS)
-            .map(|offset| (current + offset) % SEATS)
+        let seats = state.participants.len();
+        let next = (1..=seats)
+            .map(|offset| (current + offset) % seats)
             .find(|index| state.participants[*index].alive);
         match next {
             Some(next) => {
                 if next <= current {
                     state.round_index = state.round_index.saturating_add(1);
-                    self.boss_turn(state, rng, events);
+                    shield_absorbed += self.boss_turn(state, rng, events);
                 }
                 // Durations tick at the start of the affected participant's own
                 // turn, so a cooldown, buff or shield authored for N turns lasts
@@ -1590,14 +2256,16 @@ impl CoopRules {
             None => state.phase = CoopPhase::Lost,
         }
         if state.phase == CoopPhase::Playing
-            && u32::from(state.round_index) > u32::from(self.config.party.max_rounds)
+            && let Some(max_rounds) = self.max_rounds()
+            && u32::from(state.round_index) > u32::from(max_rounds)
         {
             state.phase = CoopPhase::Lost;
             events.push(event("round-limit", None, u64::from(state.round_index)));
         }
-        if state.turn_index > MAX_TURNS {
+        if !self.is_v3() && state.turn_index > MAX_TURNS {
             state.phase = CoopPhase::Lost;
         }
+        shield_absorbed
     }
 
     /// Advance one participant's authored durations exactly once per own turn.
@@ -1631,13 +2299,22 @@ impl CoopRules {
         if state.boss.dot_turns == 0 {
             state.boss.dot_damage = 0;
         }
+        if self.is_v3() {
+            for participant in &mut state.participants {
+                participant.fire_zone_turns = participant.fire_zone_turns.saturating_sub(1);
+                if state.boss.dot_turns == 0 {
+                    participant.fire_zone_turns = 0;
+                }
+            }
+        }
     }
 
-    fn boss_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
+    fn boss_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) -> u64 {
         if state.pending.is_some() {
-            return;
+            return 0;
         }
-        let model = &self.selected_boss().attack_model;
+        let opponent = self.opponent();
+        let model = opponent.attack_model;
         let phase_scale = if state.boss.phase == 2 {
             u64::from(self.selected_boss().phase.phase2_attack_pm)
         } else {
@@ -1652,48 +2329,51 @@ impl CoopRules {
         let mut damage = u32::try_from(base).unwrap_or(u32::MAX);
         let crit = rng
             .below(self.config.damage.crit_roll_basis)
-            .map(|roll| roll < u32::from(self.selected_boss().crit_rate_bp))
+            .map(|roll| roll < u32::from(opponent.crit_rate_bp))
             .unwrap_or(false);
         if crit {
-            damage = u32::try_from(
-                u64::from(damage) * u64::from(self.selected_boss().crit_damage_bp) / 10_000,
-            )
-            .unwrap_or(u32::MAX);
+            damage = u32::try_from(u64::from(damage) * u64::from(opponent.crit_damage_bp) / 10_000)
+                .unwrap_or(u32::MAX);
             events.push(event("boss-critical", None, 0));
         }
         let targets = if state.boss.phase == 2 {
-            self.selected_boss().phase.attack_targets.min(SEATS as u8)
+            self.selected_boss()
+                .phase
+                .attack_targets
+                .min(self.seat_count() as u8)
         } else {
             1
         };
-        if self.selected_boss().telegraph_turns <= 1 {
-            self.apply_boss_attack(state, targets, damage, events);
+        if opponent.telegraph_turns <= 1 {
+            self.apply_boss_attack(state, targets, damage, events)
         } else {
             state.pending = Some(PendingAttack {
                 targets,
-                remaining: self.selected_boss().telegraph_turns - 1,
+                remaining: opponent.telegraph_turns - 1,
                 damage,
             });
             events.push(event(
                 "boss-telegraph",
                 None,
-                u64::from(self.selected_boss().telegraph_turns),
+                u64::from(opponent.telegraph_turns),
             ));
+            0
         }
     }
 
-    fn tick_pending(&self, state: &mut CoopState, events: &mut Vec<Value>) {
+    fn tick_pending(&self, state: &mut CoopState, events: &mut Vec<Value>) -> u64 {
         let Some(mut pending) = state.pending else {
-            return;
+            return 0;
         };
         if pending.remaining > 0 {
             pending.remaining -= 1;
         }
         if pending.remaining == 0 {
             state.pending = None;
-            self.apply_boss_attack(state, pending.targets, pending.damage, events);
+            self.apply_boss_attack(state, pending.targets, pending.damage, events)
         } else {
             state.pending = Some(pending);
+            0
         }
     }
 
@@ -1703,42 +2383,57 @@ impl CoopRules {
         targets: u8,
         damage: u32,
         events: &mut Vec<Value>,
-    ) {
+    ) -> u64 {
+        let model = self.opponent().attack_model;
         // Resolve from the committed party at impact. Historical bundles rank by HP ratio.
-        let mut order: Vec<usize> = (0..SEATS)
+        let mut order: Vec<usize> = (0..state.participants.len())
             .filter(|seat| state.participants[*seat].alive)
             .collect();
         order.sort_by_key(|index| {
             let seat = &state.participants[*index];
-            let priority = match self.selected_boss().attack_model.target_priority {
+            let priority = match model.target_priority {
                 Some(config::BossTargetPriority::HighestMana) => u64::from(u16::MAX - seat.mana),
                 None => u64::from(seat.hp) * 1_000_000 / u64::from(seat.max_hp.max(1)),
             };
             (priority, *index)
         });
+        let chill = state.chill_reduction_pm.take();
+        if let Some(reduction) = chill {
+            events.push(event("chill-consumed", None, reduction.into()));
+        }
+        let mut shield_absorbed = 0;
         for target in order.into_iter().take(usize::from(targets)) {
             let seat = &state.participants[target];
             let defense_buff = self.status_permille(seat, StatusKind::DefenseBuff);
             let buffed_defense =
                 u32::try_from(u64::from(seat.defense) * u64::from(defense_buff) / 1_000)
                     .unwrap_or(u32::MAX);
-            let effective_defense = u32::try_from(
-                u64::from(buffed_defense)
-                    / u64::from(self.selected_boss().attack_model.defense_divisor),
-            )
-            .unwrap_or(u32::MAX);
+            let effective_defense =
+                u32::try_from(u64::from(buffed_defense) / u64::from(model.defense_divisor))
+                    .unwrap_or(u32::MAX);
             let vulnerability = self.status_permille(seat, StatusKind::Vulnerability);
             let mut taken = damage
                 .saturating_sub(effective_defense)
-                .max(self.selected_boss().attack_model.minimum_damage);
+                .max(model.minimum_damage);
             taken = u32::try_from(u64::from(taken) * u64::from(vulnerability) / 1_000)
                 .unwrap_or(u32::MAX)
-                .max(self.selected_boss().attack_model.minimum_damage);
+                .max(model.minimum_damage);
+            if let Some(reduction) = chill {
+                let reduced = (u64::from(taken) * u64::from(1000 - reduction) / 1000) as u32;
+                let mitigated = reduced.max(model.minimum_damage);
+                events.push(event(
+                    "chill-prevented",
+                    Some(target as u8),
+                    (taken - mitigated).into(),
+                ));
+                taken = mitigated;
+            }
             let seat = &mut state.participants[target];
             if seat.shield > 0 {
                 let absorbed = seat.shield.min(taken);
                 seat.shield -= absorbed;
                 taken -= absorbed;
+                shield_absorbed += u64::from(absorbed);
             }
             seat.hp = seat.hp.saturating_sub(taken);
             seat.rage = seat
@@ -1750,7 +2445,7 @@ impl CoopRules {
             }
             events.push(event("boss-attack", Some(target as u8), u64::from(taken)));
             if seat.alive
-                && let Some(vulnerability) = self.selected_boss().attack_model.vulnerability
+                && let Some(vulnerability) = model.vulnerability
             {
                 // Reapplication refreshes the same status. A successful
                 // shield still leaves the surviving target marked.
@@ -1776,18 +2471,20 @@ impl CoopRules {
         if state.participants.iter().all(|seat| !seat.alive) {
             state.phase = CoopPhase::Lost;
         }
+        shield_absorbed
     }
 
     /// Canonical settlement payload. The economy owner validates and commits it
     /// idempotently; this engine only reports contribution.
     pub fn settlement(&self, state: &CoopState) -> Value {
+        let ruleset = self.ruleset();
         list([
-            Value::Uint(u64::from(COOP_RULESET_VERSION)),
-            Value::Text(COOP_RULESET_ID.into()),
+            Value::Uint(u64::from(ruleset.version)),
+            Value::Text(ruleset.id),
             Value::Bytes(self.digest.to_vec()),
-            Value::Bytes(content_hash(self.digest).to_vec()),
+            Value::Bytes(ruleset.content_hash.to_vec()),
             Value::Text(phase_name(state.phase).into()),
-            Value::Text(self.selected_boss().id.clone()),
+            Value::Text(self.encounter_id().into()),
             Value::List(state.participants.iter().map(participant_value).collect()),
             Value::Uint(u64::from(state.round_index)),
             Value::Uint(u64::from(state.turn_index)),
@@ -1808,48 +2505,83 @@ fn event(kind: &str, seat: Option<u8>, value: u64) -> Value {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct MatchOutcome {
+    jewel_resources: [u16; 4],
     damage: u32,
     critical: bool,
 }
 
-fn unreachable_participant() -> Participant {
-    Participant {
-        account: String::new(),
-        pet_id: String::new(),
-        owned_pet_instance_id: None,
-        artifact_loadout_digest: None,
-        level: 1,
-        skill_levels: None,
-        hp: 1,
-        max_hp: 1,
-        attack: 1,
-        defense: 1,
-        crit_rate_bp: 0,
-        crit_damage_bp: 10_000,
-        mana: 0,
-        rage: 0,
-        shield: 0,
-        shield_turns: 0,
-        cooldowns: [0; 5],
-        statuses: [NO_STATUS; 4],
-        contribution_damage: 0,
-        contribution_healing: 0,
-        contribution_shielding: 0,
-        alive: true,
+enum RefillResult {
+    StillMatching,
+    Playable,
+    Regenerated,
+}
+
+/// Measurements outside the durable state and event stream.
+#[derive(Clone, Copy, Default)]
+struct TurnObservation {
+    // Mana, Rage, Special Mana, Special Rage. Actual gains never exceed the resource cap.
+    jewel_resources: [u16; 4],
+    refill_swap_checks: u64,
+    dead_board_regenerations: u64,
+    forced_cascade_regenerations: u64,
+    shield_absorbed: u64,
+    amplified_cells: u64,
+}
+
+impl TurnObservation {
+    fn record_refill(&mut self, result: RefillResult) {
+        self.refill_swap_checks += u64::from(!matches!(result, RefillResult::StillMatching));
+        self.dead_board_regenerations += u64::from(matches!(result, RefillResult::Regenerated));
     }
 }
 
 /// Native content hash bound into tickets and the match snapshot. It commits to
 /// the exact published configuration digest.
 pub fn content_hash(config_digest: [u8; 32]) -> [u8; 32] {
-    aetheria_game_core::canonical::hash(
+    native_content_hash(
+        config_digest,
+        COOP_RULESET_VERSION,
         "aetheria.arena8-coop-native.v1",
+        CONTRACT,
+        SEATS,
+    )
+}
+
+pub fn solo_content_hash(config_digest: [u8; 32]) -> [u8; 32] {
+    native_content_hash(
+        config_digest,
+        FUNCTIONAL_SOLO_RULESET_VERSION,
+        "aetheria.arena8-functional-native.v1",
+        "solo;functional-board-v1;independent-tile-effects",
+        1,
+    )
+}
+
+pub fn solo_v2_content_hash(config_digest: [u8; 32]) -> [u8; 32] {
+    native_content_hash(
+        config_digest,
+        V3_SOLO_RULESET_VERSION,
+        "aetheria.arena8-functional-native.v2",
+        "solo;functional-board-v1;independent-tile-effects;timed-turns-v1",
+        1,
+    )
+}
+
+fn native_content_hash(
+    config_digest: [u8; 32],
+    version: u32,
+    domain: &str,
+    contract: &str,
+    seats: usize,
+) -> [u8; 32] {
+    aetheria_game_core::canonical::hash(
+        domain,
         &list([
             Value::Bytes(config_digest.to_vec()),
-            Value::Text(CONTRACT.into()),
-            Value::Uint(COOP_RULESET_VERSION.into()),
+            Value::Text(contract.into()),
+            Value::Uint(version.into()),
             Value::Uint(u64::from(SIDE as u32)),
-            Value::Uint(u64::from(SEATS as u32)),
+            Value::Uint(seats as u64),
         ]),
     )
     .expect("bounded static adapter contract")
@@ -1864,28 +2596,28 @@ pub(crate) fn adjacent(first: usize, second: usize) -> bool {
     (r1 == r2 && c1.abs_diff(c2) == 1) || (c1 == c2 && r1.abs_diff(r2) == 1)
 }
 
-/// Match detection compares element identity only, so Fire x1, x2 and x3 form a
-/// single Fire match. Each cell is counted at most once.
+/// Match detection uses tile identity. Multipliers do not affect run membership.
+/// Each cell is counted at most once.
 pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     let mut matched = [false; CELLS];
-    let element = |index: usize| board[index].map(|tile| tile.element);
+    let identity = |index: usize| board[index].map(|tile| tile.identity);
     for row in 0..SIDE {
         for column in 0..SIDE {
             let index = row * SIDE + column;
-            let Some(current) = element(index) else {
+            let Some(current) = identity(index) else {
                 continue;
             };
             if column + 2 < SIDE
-                && element(index + 1) == Some(current)
-                && element(index + 2) == Some(current)
+                && identity(index + 1) == Some(current)
+                && identity(index + 2) == Some(current)
             {
                 matched[index] = true;
                 matched[index + 1] = true;
                 matched[index + 2] = true;
             }
             if row + 2 < SIDE
-                && element(index + SIDE) == Some(current)
-                && element(index + 2 * SIDE) == Some(current)
+                && identity(index + SIDE) == Some(current)
+                && identity(index + 2 * SIDE) == Some(current)
             {
                 matched[index] = true;
                 matched[index + SIDE] = true;
@@ -1896,18 +2628,15 @@ pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     matched
 }
 
-fn spawn_element(table: [u32; 6], roll: u32) -> Element {
+fn spawn_identity(identities: [TileIdentity; 6], table: [u32; 6], roll: u32) -> TileIdentity {
     let mut point = roll;
-    for element in crate::arena8::ELEMENTS {
-        let weight = table[element.index()];
+    for (identity, weight) in identities.into_iter().zip(table) {
         if point < weight {
-            return element;
+            return identity;
         }
         point -= weight;
     }
-    // Structural fallback only: a validated bundle always totals more than the
-    // roll, so this branch is unreachable and carries no balance meaning.
-    Element::Fire
+    unreachable!("validated spawn table totals exceed every roll")
 }
 
 fn participant_value(seat: &Participant) -> Value {
@@ -1962,6 +2691,12 @@ fn participant_value(seat: &Participant) -> Value {
                 .map(|level| Value::Uint(u64::from(level))),
         ));
     }
+    if seat.fire_zone_turns > 0 {
+        fields.push(list([
+            Value::Text("fire-zone".into()),
+            Value::Uint(u64::from(seat.fire_zone_turns)),
+        ]));
+    }
     Value::List(fields)
 }
 
@@ -1971,7 +2706,10 @@ fn board_value(board: &[Option<Tile>; CELLS]) -> Value {
             .iter()
             .map(|cell| match cell {
                 Some(tile) => list([
-                    Value::Uint(tile.element.index() as u64),
+                    match tile.identity {
+                        TileIdentity::Element(element) => Value::Uint(element.index() as u64),
+                        TileIdentity::Kind(kind) => Value::Text(kind.name().into()),
+                    },
                     Value::Uint(u64::from(tile.multiplier)),
                 ]),
                 None => Value::Null,
@@ -2009,6 +2747,12 @@ impl Canonical for CoopState {
                 None => Value::Null,
             },
         ];
+        if let Some(chill) = self.chill_reduction_pm {
+            fields.push(list([
+                Value::Text("chill".into()),
+                Value::Uint(chill.into()),
+            ]));
+        }
         if let Some(curse) = self.boss.curse {
             fields.push(list([
                 Value::Text("curse".into()),
@@ -2018,6 +2762,13 @@ impl Canonical for CoopState {
         }
         if let Some(id) = &self.boss_id {
             fields.push(Value::Text(id.clone()));
+        }
+        if self.turn_started_ms.is_some() || self.turn_deadline_ms.is_some() {
+            fields.push(list([
+                Value::Text("turn-clock".into()),
+                self.turn_started_ms.map_or(Value::Null, Value::Uint),
+                self.turn_deadline_ms.map_or(Value::Null, Value::Uint),
+            ]));
         }
         Value::List(fields)
     }
@@ -2101,7 +2852,7 @@ pub mod test_support {
             state: &mut CoopState,
             rng: &mut TurnRng,
         ) -> Result<(), aetheria_game_core::Error> {
-            self.gravity_and_refill(state, rng)
+            self.gravity_and_refill(state, rng, &mut 0).map(|_| ())
         }
 
         /// Apply raw damage to the Boss through the authored phase policy.

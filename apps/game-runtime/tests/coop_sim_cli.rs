@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::process::Command;
 
+use aetheria_pet_arena::arena8::coop::CoopRules;
 use serde_json::Value;
 
 const BINARY: &str = env!("CARGO_BIN_EXE_aetheria-game-runtime");
@@ -8,10 +9,15 @@ const FIRE: &str = "cinder-terraces-warden";
 const WATER: &str = "tideglass-lagoon-warden";
 
 fn run(flag: &str, version: u8, args: &[&str]) -> std::process::Output {
-    let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join(match version {
+    let bundle = match version {
         1 => "tests/fixtures/arena8-coop-v1-legacy.seed.json".to_string(),
         v => format!("../../config/gameplay/arena8-coop-v{v}.seed.json"),
-    });
+    };
+    run_bundle(flag, &bundle, args)
+}
+
+fn run_bundle(flag: &str, bundle: &str, args: &[&str]) -> std::process::Output {
+    let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join(bundle);
     Command::new(BINARY)
         .arg(flag)
         .arg(bundle)
@@ -74,5 +80,37 @@ fn rejects_unknown_encounters_and_unbounded_comparisons() {
         let output = run(flag, version, args);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
+    }
+}
+
+#[test]
+fn validation_reports_version_and_hash_of_the_solo_adapter() {
+    let legacy = report("--check-gameplay-config", 1, &[]);
+    assert!(!legacy.as_object().unwrap().contains_key("soloContentHash"));
+    assert!(
+        !legacy
+            .as_object()
+            .unwrap()
+            .contains_key("soloRulesetVersion")
+    );
+
+    for (candidate, version) in [(1, 1), (2, 2)] {
+        let path =
+            format!("../../config/gameplay/arena8-coop-functional-v{candidate}.candidate.json");
+        let output = run_bundle("--check-gameplay-config", &path, &[]);
+        assert!(output.status.success(), "{output:?}");
+        let receipt: Value = serde_json::from_slice(&output.stdout).expect("validation receipt");
+        let bundle = std::fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join(path)).unwrap();
+        let ruleset = CoopRules::load_solo(&bundle, FIRE.into())
+            .unwrap()
+            .ruleset();
+        let hash = ruleset
+            .content_hash
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        assert_eq!(ruleset.version, version);
+        assert_eq!(receipt["soloRulesetVersion"], version);
+        assert_eq!(receipt["soloContentHash"], hash);
     }
 }

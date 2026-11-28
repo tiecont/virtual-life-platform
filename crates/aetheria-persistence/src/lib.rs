@@ -25,6 +25,7 @@ pub enum Error {
     Invalid,
     Unauthorized,
     Conflict,
+    TurnExpired,
     Collision,
     EffectDenied,
     Integrity,
@@ -42,7 +43,7 @@ impl From<aetheria_game_core::Error> for Error {
     }
 }
 const MAX_STATE: usize = 131_072;
-const MAX_PROJECTION: usize = 16_384;
+pub const MAX_PROJECTION: usize = 16_384;
 
 /// A reviewed domain must implement codecs, membership and recipient projection.
 /// Turn authorization is separate from membership so old receipts remain readable.
@@ -66,7 +67,25 @@ pub trait Game: Reducer + Send + Sync + 'static {
     fn decode(&self, bytes: &[u8]) -> Result<Self::State>;
     fn member(&self, state: &Self::State, account: &str) -> bool;
     fn authorize(&self, state: &Self::State, account: &str, action: &Self::Action) -> bool;
+    /// Bind execution metadata for a new command while its checkpoint is locked.
+    /// Receipt retries are resolved before this hook.
+    fn prepare_action(&self, _state: &Self::State, action: Self::Action) -> Result<Self::Action> {
+        Ok(action)
+    }
     fn project(&self, state: &Self::State, account: &str) -> Result<Vec<u8>>;
+    /// New member commands may add transient feedback before the authorized
+    /// receipt is sealed. Read-only views and historical receipts remain stable.
+    fn project_receipt(
+        &self,
+        state: &Self::State,
+        account: &str,
+        _feedback: &[Value],
+    ) -> Result<Vec<u8>> {
+        self.project(state, account)
+    }
+    fn project_system(&self, _state: &Self::State) -> Result<Vec<u8>> {
+        Err(Error::Unauthorized)
+    }
     fn can_spectate(&self, _state: &Self::State, _account: &str) -> bool {
         false
     }
@@ -552,12 +571,90 @@ where
             .await
             .map_err(|_| Error::Unauthorized)?
     }
+    /// Read-only inspection of the current sealed match state under owner check.
+    pub async fn inspect_state(
+        &self,
+        db: &mut Client,
+        id: Uuid,
+    ) -> Result<(i64, u64, String, G::State)> {
+        if id.is_nil() {
+            return Err(Error::Invalid);
+        }
+        let tx = db.transaction().await?;
+        tx.batch_execute("SET LOCAL statement_timeout='2000ms';SET LOCAL lock_timeout='1000ms'")
+            .await?;
+        self.owner.check(&tx).await?;
+        let row = tx
+            .query_opt(
+                "SELECT *,owner_boot_id::text AS boot_text,server_tick::text AS tick_text,logical_time_ms::text AS time_text,rng_cursor::text AS cursor_text FROM game_native_matches WHERE id=$1::text::uuid",
+                &[&id.to_string()],
+            )
+            .await?
+            .ok_or(Error::Unauthorized)?;
+        if row.get::<_, String>("boot_text") != self.owner.scope.boot.to_string() {
+            return Err(Error::Conflict);
+        }
+        let stored = self.restore(id, &row)?;
+        self.owner.check(&tx).await?;
+        tx.commit().await?;
+        Ok((
+            stored.epoch,
+            stored.checkpoint.version,
+            stored.status,
+            stored.checkpoint.state,
+        ))
+    }
+
+    /// Server-originated turn execution for internal maintenance (such as turn expiry).
+    /// Bypasses `member()` ONLY when `system_actor` is the nil UUID, while still
+    /// requiring `Game::authorize`, `Owner::check`, `SELECT ... FOR UPDATE`, and
+    /// full AEAD journal sealing.
+    pub async fn execute_system(
+        &self,
+        db: &mut Client,
+        request: Request<G::Action>,
+        system_actor: Uuid,
+    ) -> Result<Receipt> {
+        if request.match_id.is_nil()
+            || request.command_id.is_nil()
+            || request.expected_version < 0
+            || request.epoch < 1
+            || !system_actor.is_nil()
+        {
+            return Err(Error::Invalid);
+        }
+        let tx = db.transaction().await?;
+        tx.batch_execute("SET LOCAL statement_timeout='2000ms';SET LOCAL lock_timeout='1000ms';SELECT pg_advisory_xact_lock(hashtextextended('native-admission-v1',0))").await?;
+        let account = system_actor.to_string();
+        let boot = self.owner.scope.boot.to_string();
+        let actor = aetheria_security::durable::AuthorizedActor {
+            account: &account,
+            session: "",
+            world: &self.owner.scope.world,
+            boot: &boot,
+        };
+        let receipt = self.turn_inner(&tx, &actor, request, true, true).await?;
+        tx.commit().await?;
+        Ok(receipt)
+    }
+
     async fn turn(
         &self,
         tx: &Transaction<'_>,
         actor: &aetheria_security::durable::AuthorizedActor<'_>,
         r: Request<G::Action>,
         effect_allowed: bool,
+    ) -> Result<Receipt> {
+        self.turn_inner(tx, actor, r, effect_allowed, false).await
+    }
+
+    async fn turn_inner(
+        &self,
+        tx: &Transaction<'_>,
+        actor: &aetheria_security::durable::AuthorizedActor<'_>,
+        r: Request<G::Action>,
+        effect_allowed: bool,
+        system_mode: bool,
     ) -> Result<Receipt> {
         self.owner.check(tx).await?;
         if actor.world != self.owner.scope.world || actor.boot != self.owner.scope.boot.to_string()
@@ -569,7 +666,7 @@ where
             return Err(Error::Conflict);
         }
         let stored = self.restore(r.match_id, &row)?;
-        if !self.game.member(&stored.checkpoint.state, actor.account) {
+        if !system_mode && !self.game.member(&stored.checkpoint.state, actor.account) {
             return Err(Error::Unauthorized);
         }
         let fingerprint = canonical::hash(
@@ -626,6 +723,9 @@ where
                 .checked_add(1)
                 .ok_or(Error::Invalid)?,
         };
+        let action = self
+            .game
+            .prepare_action(&stored.checkpoint.state, r.action)?;
         let transition = apply(
             self.game.as_ref(),
             &stored.checkpoint,
@@ -634,7 +734,7 @@ where
                 match_id: *r.match_id.as_bytes(),
                 expected_version: r.expected_version as u64,
                 ruleset: self.game.ruleset(),
-                action: r.action,
+                action,
             },
             &stored.seed,
             clock,
@@ -656,7 +756,15 @@ where
         {
             return Err(Error::Invalid);
         }
-        let projection = self.game.project(&transition.next.state, actor.account)?;
+        let projection = if system_mode {
+            self.game.project_system(&transition.next.state)?
+        } else {
+            self.game.project_receipt(
+                &transition.next.state,
+                actor.account,
+                &transition.receipt_feedback,
+            )?
+        };
         if projection.is_empty() || projection.len() > MAX_PROJECTION {
             return Err(Error::Invalid);
         }

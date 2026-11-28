@@ -1,8 +1,12 @@
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash,randomUUID,timingSafeEqual} from 'node:crypto';
 import type {Pool} from 'pg';
+import {z} from 'zod';
+import {gameplayEngineBinding} from '@aetheria/contracts';
+import {canonicalProposalHash} from '../../../../coop/modules/settlement/application/service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
 import {firstClearReward,replayReward,WAVE1_PETS} from '../../wave1/domain/catalog';
+import {initializeArtifactInventory} from '../../wave-a-artifacts/infrastructure/store';
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
 import {levelIncrement} from '../../wave1/domain/progression';
 import {recordArena8MapClear} from '../../wave1/infrastructure/store';
@@ -39,6 +43,22 @@ type Settlement={
 const notFound=(message:string)=>new DomainError('NOT_FOUND',404,message);
 const runtime=(message:string)=>new DomainError('WORLD_UNAVAILABLE',503,message);
 const fingerprint=(value:string)=>createHash('sha256').update(value).digest('hex');
+const hex=z.string().regex(/^[a-f0-9]{64}$/),id=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/);
+const counter=z.int().nonnegative();
+const soloProposal=z.strictObject({
+ configDigest:hex,contentHash:hex,encounterId:id.optional(),kind:z.literal('solo.completed.v1'),outcome:z.enum(['won','lost']),
+ participants:z.tuple([z.strictObject({account:z.uuid(),petId:id,alive:z.boolean(),damage:counter,healing:counter,shielding:counter})]),
+ round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.union([z.literal(1),z.literal(2),z.literal(3)]),turn:counter.max(65535),
+});
+const payout=z.strictObject({achievementPoints:counter.max(1_000_000),coins:counter.max(1_000_000),exp:counter.max(1_000_000),materials:counter.max(1_000_000)});
+const policy=z.strictObject({
+ minimumActions:z.strictObject({victory:counter.max(4096),defeat:counter.max(4096)}).nullish(),
+ recruitmentPetIds:z.array(id).nonempty().nullish(),
+ firstClear:payout,repeatClear:payout,defeat:payout,
+});
+type FunctionalSettlement={
+ ownedPetInstanceId:string;settlementId:string;stateVersion:string;qualified:boolean;rewards:z.infer<typeof policy>;
+};
 
 // Authenticated local Arena8 allocation/settlement coordinator. It is default-off
 // and only talks to the loopback supervisor with its private bearer token.
@@ -94,7 +114,7 @@ export class Arena8Service {
     return this.call<MatchView>('/matches/'+encodeURIComponent(matchId),'GET');
   }
 
-  async settle(accountId:string,requestId:string,matchId:string,supplied?:MatchView){
+  async settle(accountId:string,requestId:string,matchId:string,supplied?:MatchView,functional?:FunctionalSettlement){
     assertUuid(accountId,'account');assertUuid(requestId,'requestId');assertUuid(matchId,'matchId');
     let match:MatchView;
     if(supplied)match=supplied;
@@ -122,8 +142,8 @@ export class Arena8Service {
       )).rows[0];
       if(existing){await client.query('COMMIT');return existing.response;}
       const owned=(await client.query<OwnedRow>(
-        'SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 FOR UPDATE',
-        [accountId,projection.pet.id],
+        'SELECT level,exp FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2 AND ($3::uuid IS NULL OR owned_pet_instance_id=$3) FOR UPDATE',
+        [accountId,projection.pet.id,functional?.ownedPetInstanceId??null],
       )).rows[0];
       if(!owned)throw forbidden('Pet is no longer owned');
       const encounterId=projection.encounter.id;
@@ -132,11 +152,37 @@ export class Arena8Service {
         [accountId,mapId,encounterId],
       )).rowCount===1;
       const won=projection.phase==='won';
-      const firstClear=won&&!encounterCompleted;
+      const qualified=functional?.qualified??true;
+      const firstClear=won&&qualified&&!encounterCompleted;
       let exp=0;let coins=0;let recruitedPetId:string|null=null;
       let artifactId:string|null=null;let materials=0;
       let petLevel=owned.level;let petExp=owned.exp;
-      if(won){
+      if(functional){
+        const {rewards,settlementId,stateVersion}=functional;
+        const awarded=won?(firstClear?rewards.firstClear:rewards.repeatClear):rewards.defeat;
+        if(qualified){
+          exp=awarded.exp;coins=awarded.coins;materials=awarded.materials;
+          ({level:petLevel,exp:petExp}=levelIncrement(owned.level,owned.exp+exp));
+          if(coins>0)await client.query('UPDATE pet_wave_one_players SET coins=coins+$2,revision=revision+1,updated_at=clock_timestamp() WHERE account_id=$1',[accountId,coins]);
+          if(exp>0)await client.query('UPDATE pet_wave_one_owned SET level=$3,exp=$4 WHERE account_id=$1 AND pet_id=$2 AND owned_pet_instance_id=$5',[accountId,projection.pet.id,petLevel,petExp,functional.ownedPetInstanceId]);
+          if(materials>0){
+            await initializeArtifactInventory(client,accountId);
+            await client.query('UPDATE pet_artifact_players SET materials=materials+$2,revision=revision+1,updated_at=clock_timestamp() WHERE account_id=$1',[accountId,materials]);
+          }
+        }
+        if(firstClear){
+          await client.query(`INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id,coop_recruitment_pet_ids)
+            VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,[accountId,mapId,encounterId,rewards.recruitmentPetIds??null]);
+          recruitedPetId=await recordArena8MapClear(client,accountId,mapId);
+        }
+        const outbox=await client.query(`UPDATE game_native_outbox SET delivered_at=clock_timestamp(),delivery_outcome='granted'
+          WHERE match_id=$1 AND settlement_id=$2 AND effect_type='game.settlement.v1' AND delivered_at IS NULL`,[matchId,settlementId]);
+        const finalized=await client.query(`UPDATE game_native_matches SET status='FINISHED',updated_at=clock_timestamp()
+          WHERE id=$1 AND status='SETTLING' AND state_version=$2`,[matchId,stateVersion]);
+        const released=await client.query(`UPDATE platform_native_arena8_matches SET status='CLOSED',updated_at=clock_timestamp()
+          WHERE match_id=$1 AND account_id=$2 AND functional_config_version IS NOT NULL AND status='ACTIVE'`,[matchId,accountId]);
+        if(outbox.rowCount!==1||finalized.rowCount!==1||released.rowCount!==1)throw conflict('Functional solo settlement changed');
+      }else if(won){
         const reward=firstClear?firstClearReward(mapIndex):replayReward(mapIndex);
         exp=reward.exp;coins=reward.coins;
         ({level:petLevel,exp:petExp}=levelIncrement(owned.level,owned.exp+exp));
@@ -175,10 +221,7 @@ export class Arena8Service {
         const artifactReward=PVE_ARTIFACT_REWARDS.find(value=>value.mapId===mapId);
         if(artifactReward){
           materials=firstClear?artifactReward.materials:5;
-          await client.query(
-            `INSERT INTO pet_artifact_players(account_id,materials)
-             VALUES($1,0) ON CONFLICT(account_id) DO NOTHING`,[accountId],
-          );
+          await initializeArtifactInventory(client,accountId);
           await client.query(
             'UPDATE pet_artifact_players SET materials=materials+$2,revision=revision+1,updated_at=clock_timestamp() WHERE account_id=$1',
             [accountId,materials],
@@ -227,19 +270,58 @@ export class Arena8Service {
     assertUuid(accountId,'account');assertUuid(requestId,'requestId');assertUuid(matchId,'matchId');
     const row=(await this.db.query<{
       account_id:string;pet_id:string;encounter_id:string;map_id:string;
-      proposal:Record<string,unknown>;
+      proposal:Record<string,unknown>;content_hash:string;functional_config_digest:string|null;
+      functional_allocation:{bossId:string;seat:{ownedPetInstanceId:string}}|null;
+      proposal_hash:Buffer;settlement_id:string;state_version:string;
+      ruleset_id:string|null;ruleset_version:number|null;runtime_content_hash:string|null;status:string|null;
+      bundle:Record<string,unknown>|null;engine_capability:string|null;
     }>(
-      `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,s.proposal
+      `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,m.content_hash,m.functional_config_digest,m.functional_allocation,
+          s.proposal,s.proposal_hash,s.settlement_id,s.state_version,n.ruleset_id,n.ruleset_version,n.status,
+          encode(n.content_hash,'hex') AS runtime_content_hash,v.bundle,v.engine_capability
          FROM platform_native_arena8_matches m
          JOIN game_native_settlements s ON s.match_id=m.match_id
+         LEFT JOIN game_native_matches n ON n.id=s.match_id AND n.state_version=s.state_version AND n.epoch=s.epoch
+         LEFT JOIN gameplay_config_versions v ON v.ruleset=m.functional_config_ruleset AND v.version=m.functional_config_version
+          AND v.content_digest=m.functional_config_digest AND v.published_at IS NOT NULL
         WHERE m.match_id=$1`,
       [matchId],
     )).rows[0];
     if(!row)throw conflict('Native match is not terminal');
     if(row.account_id!==accountId)throw forbidden('Match belongs to another account');
     const proposal=row.proposal;
-    if(proposal?.ruleset!=='arena8-pve'||(proposal.outcome!=='won'&&proposal.outcome!=='lost'))
+    let functional:FunctionalSettlement|undefined;
+    if(row.functional_config_digest){
+      const parsed=soloProposal.safeParse(proposal);
+      const pin=row.functional_allocation;
+      const binding=gameplayEngineBinding(row.bundle?.schemaVersion);
+      if(!parsed.success||!pin||!row.bundle||!binding?.soloVersion||row.engine_capability!==binding.capability||
+        row.ruleset_id!=='arena8-functional-pve'||row.ruleset_version!==binding.soloVersion||parsed.data.rulesetVersion!==binding.soloVersion||
+        (row.status!=='SETTLING'&&row.status!=='FINISHED')||
+        parsed.data.contentHash!==row.content_hash||row.runtime_content_hash!==row.content_hash||
+        parsed.data.configDigest!==row.functional_config_digest||
+        parsed.data.participants[0].account!==accountId||parsed.data.participants[0].petId!==row.pet_id||
+        row.proposal_hash.length!==32||!timingSafeEqual(row.proposal_hash,canonicalProposalHash(proposal)))
+        throw runtime('Functional solo completion does not match the allocated match');
+      const bosses=Array.isArray(row.bundle.bosses)?row.bundle.bosses:[];
+      const map=bosses.find(candidate=>candidate?.mapId===row.map_id);
+      const regular=row.encounter_id===row.map_id+'-regular';
+      const expectedEncounter=regular?row.encounter_id:undefined;
+      if(parsed.data.encounterId!==expectedEncounter||
+        (regular?map?.regular?.id!==pin.bossId||pin.bossId!==row.encounter_id:map?.id!==pin.bossId))
+        throw runtime('Functional solo completion does not match the pinned encounter');
+      const rewards=policy.safeParse(regular?map?.regular?.rewardPolicy:map?.rewardPolicy);
+      if(!rewards.success)throw runtime('Functional solo reward policy is unavailable');
+      const minimum=rewards.data.minimumActions?.[parsed.data.outcome==='won'?'victory':'defeat']??0;
+      const receipts=minimum===0?undefined:await this.db.query(
+        'SELECT 1 FROM game_native_receipts WHERE match_id=$1 AND actor_id=$2 AND committed_version>1 AND committed_version<=$3 LIMIT $4',
+        [matchId,accountId,row.state_version,minimum],
+      );
+      functional={ownedPetInstanceId:pin.seat.ownedPetInstanceId,settlementId:row.settlement_id,
+        stateVersion:row.state_version,qualified:minimum===0||receipts?.rowCount===minimum,rewards:rewards.data};
+    }else if(proposal?.ruleset!=='arena8-pve'||(proposal.outcome!=='won'&&proposal.outcome!=='lost')){
       throw runtime('Native completion proposal is invalid');
+    }
     const encounterId=row.encounter_id;
     const projection={
       matchId,version:0,terminal:true,phase:proposal.outcome,
@@ -247,7 +329,7 @@ export class Arena8Service {
       pet:{id:row.pet_id,level:0},
       stats:{effective:{health:0,attack:0,defense:0}},
     } as unknown as MatchProjection;
-    return this.settle(accountId,requestId,matchId,{matchId,version:0,view:projection,terminal:true});
+    return this.settle(accountId,requestId,matchId,{matchId,version:0,view:projection,terminal:true},functional);
   }
 
   private async assertOwner(accountId:string,matchId:string){

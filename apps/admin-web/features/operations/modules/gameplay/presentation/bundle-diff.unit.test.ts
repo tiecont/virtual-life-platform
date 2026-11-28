@@ -1,16 +1,26 @@
 import {describe,expect,it} from 'vitest';
 import {bundleDifferences} from './bundle-diff';
 
-describe('gameplay bundle differences',()=>{
- it('reports no differences for the same value',()=>{
-  expect(bundleDifferences({boss:{maxHp:10},party:{maxRounds:4}},{boss:{maxHp:10},party:{maxRounds:4}})).toEqual([]);
+describe('gameplay publication comparison',()=>{
+ it('ignores unchanged values and identifies the affected skill',()=>{
+  const before={skills:[{id:'mend',powerPm:1000}]};
+  expect(bundleDifferences(before,structuredClone(before))).toEqual([]);
+  expect(bundleDifferences(before,{skills:[{id:'mend',powerPm:1100}]})).toEqual([
+   {path:'skills[0: mend].powerPm',before:1000,after:1100},
+  ]);
  });
- it('reports nested scalar and array-length paths',()=>{
-  expect(bundleDifferences({boss:{maxHp:10,phase:{thresholdBp:2500}}},{boss:{maxHp:12,phase:{thresholdBp:2500}}})).toEqual(['boss.maxHp']);
-  expect(bundleDifferences({skills:[1,2]},{skills:[1,2,3]})).toEqual(['skills.length']);
-  expect(bundleDifferences({skills:[1,2]},{skills:[1,3]})).toEqual(['skills.1']);
+ it('reports an edit even when another item is added in the same array',()=>{
+  expect(bundleDifferences([1,2],[1,3,4])).toEqual([
+   {path:'[1]',before:2,after:3},{path:'[2]',before:undefined,after:4},
+  ]);
  });
- it('reports type changes at the containing path',()=>{
-  expect(bundleDifferences({party:{maxRounds:4}},{party:{maxRounds:'4'}})).toEqual(['party.maxRounds']);
+ it('distinguishes removal, explicit null, and a new object',()=>{
+  const before={a:null,b:{cost:2},c:0};
+  const after={a:{cost:3},b:null};
+  expect(bundleDifferences(before,after)).toEqual([
+   {path:'a',before:null,after:{cost:3}},
+   {path:'b',before:{cost:2},after:null},
+   {path:'c',before:0,after:undefined},
+  ]);
  });
 });

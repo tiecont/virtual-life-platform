@@ -1,4 +1,5 @@
 import type {Pool} from 'pg';
+import {readArtifactSeat} from '../../../../coop/modules/match/domain/loadout';
 import type {Arena8Artifact} from '../application/allocation';
 import type {
   NativeArena8MatchRecord,NativeArena8MatchRegistry,NativeArena8MatchStatus,
@@ -8,11 +9,14 @@ type Row={
   match_id:string;account_id:string;request_id:string;fingerprint:string;
   world_id:string;boot_id:string;content_hash:string;generation:string;
   pet_id:string;map_id:string;encounter_id:string;level:number;
-  artifacts:unknown;status:NativeArena8MatchStatus;
+  artifacts:unknown;status:NativeArena8MatchStatus;engine_hash?:string;
+  functional_config_version:string|null;functional_config_digest:string|null;
+  functional_allocation:{bossId:string;seat:unknown}|null;
 };
 
 const COLUMNS=`match_id,account_id,request_id,fingerprint,world_id,boot_id,content_hash,
-  generation,pet_id,map_id,encounter_id,level,artifacts,status`;
+  generation,pet_id,map_id,encounter_id,level,artifacts,status,
+  functional_config_version,functional_config_digest,functional_allocation`;
 
 function artifacts(value:unknown):readonly Arena8Artifact[]{
   if(!Array.isArray(value))return Object.freeze([]);
@@ -24,12 +28,22 @@ function artifacts(value:unknown):readonly Arena8Artifact[]{
   }));
 }
 function map(row:Row):NativeArena8MatchRecord{
+  const version=Number(row.functional_config_version),digest=row.functional_config_digest,value=row.functional_allocation;
+  let functional;
+  if(value&&digest){
+    const seat=readArtifactSeat(value.seat,digest);
+    if(!Number.isSafeInteger(version)||version<1||!(/^[a-z][a-z0-9-]{2,63}$/).test(value.bossId)||
+      seat.account!==row.account_id||seat.petId!==row.pet_id||seat.petLevel!==row.level)
+      throw new Error('Functional solo allocation is invalid');
+    functional={configVersion:version,configDigest:digest,bossId:value.bossId,seat};
+  }
   return Object.freeze({
     matchId:row.match_id,accountId:row.account_id,requestId:row.request_id,
     fingerprint:row.fingerprint,worldId:row.world_id,bootId:row.boot_id,
     contentHash:row.content_hash,generation:Number(row.generation),
     petId:row.pet_id,mapId:row.map_id,encounterId:row.encounter_id,
     level:row.level,artifacts:artifacts(row.artifacts),status:row.status,
+    ...(functional?{functional}:{}),...(row.engine_hash?{engineHash:row.engine_hash}:{}),
   });
 }
 
@@ -60,13 +74,34 @@ export class NativeArena8MatchStore implements NativeArena8MatchRegistry {
     await this.db.query(
       `INSERT INTO platform_native_arena8_matches(
          match_id,account_id,request_id,fingerprint,world_id,boot_id,content_hash,
-         generation,pet_id,map_id,encounter_id,level,artifacts,status
-       ) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+         generation,pet_id,map_id,encounter_id,level,artifacts,status,
+         functional_config_version,functional_config_digest,functional_allocation
+       ) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17::jsonb)`,
       [record.matchId,record.accountId,record.requestId,record.fingerprint,
         record.worldId,record.bootId,record.contentHash,record.generation,
         record.petId,record.mapId,record.encounterId,record.level,
-        JSON.stringify(record.artifacts),record.status],
+        JSON.stringify(record.artifacts),record.status,record.functional?.configVersion??null,
+        record.functional?.configDigest??null,record.functional?JSON.stringify({bossId:record.functional.bossId,seat:record.functional.seat}):null],
     );
+  }
+
+  async reconcileFunctionalStarting(){
+    await this.db.query(`UPDATE platform_native_arena8_matches SET status='FAILED',updated_at=clock_timestamp()
+      WHERE status='STARTING' AND functional_config_version IS NOT NULL`);
+  }
+
+  async functionalActive(){
+    const rows=(await this.db.query<Row>(`SELECT a.*,encode(n.engine_hash,'hex') AS engine_hash
+      FROM platform_native_arena8_matches a LEFT JOIN game_native_matches n ON n.id=a.match_id
+      WHERE a.status='ACTIVE' AND a.functional_config_version IS NOT NULL ORDER BY a.created_at`)).rows;
+    return rows.map(map);
+  }
+
+  async recovered(matchId:string,generation:number){
+    const result=await this.db.query(`UPDATE platform_native_arena8_matches
+      SET generation=$2,updated_at=clock_timestamp()
+      WHERE match_id=$1 AND status='ACTIVE' AND functional_config_version IS NOT NULL`,[matchId,generation]);
+    if(result.rowCount!==1)throw new Error('Functional solo allocation recovery conflict');
   }
 
   async activate(matchId:string,generation:number){

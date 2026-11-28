@@ -218,6 +218,23 @@ namespace Aetheria.Tests
             Assert.That(scope.Reason, Is.EqualTo(Failure.Scope));
         }
 
+        [Test]
+        public async Task FunctionalAdmissionRejectsMixedRulesetAllocationAndRenewal()
+        {
+            var reply = Allocation();
+            Assert.ThrowsAsync<NativeFailure>(async () => await Arena8NativeAdmission.OpenAsync(
+                _ => Task.FromResult(reply), expectedRuleset: CoopNativeView.FunctionalSoloRuleset));
+
+            reply.ruleset = CoopNativeView.FunctionalSoloRuleset;
+            Assert.ThrowsAsync<NativeFailure>(async () => await Arena8NativeAdmission.OpenAsync(
+                _ => Task.FromResult(reply)));
+            var admission = await Arena8NativeAdmission.OpenAsync(_ => Task.FromResult(reply),
+                expectedRuleset: CoopNativeView.FunctionalSoloRuleset);
+            Assert.That(await admission.TicketAsync(), Is.Not.Null);
+            reply.ruleset = null;
+            Assert.ThrowsAsync<NativeFailure>(async () => await admission.TicketAsync());
+        }
+
         private static Arena8NativeAllocation Allocation(string httpsOrigin = "https://127.0.0.1:8443",
             string wssUrl = "wss://127.0.0.1:8443/rt/v1", string contentHash = "abababababababababababababababababababababababababababababababab",
             string matchId = "11111111-1111-4111-8111-111111111111", string expiresAt = null, string principal = "principal")

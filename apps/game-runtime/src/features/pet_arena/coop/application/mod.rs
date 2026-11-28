@@ -5,8 +5,9 @@
 use super::domain::Rules;
 use crate::features::runtime::application::NativeGame;
 use aetheria_persistence::Error;
-use aetheria_pet_arena::arena8::coop::CoopAction;
+use aetheria_pet_arena::arena8::coop::{CoopAction, CoopCommand, CoopPhase, CoopState};
 use serde::Deserialize;
+use std::sync::Arc;
 
 pub const INTENT_KIND: &str = "arena8-coop.intent.v1";
 pub const VIEW_KIND: &str = "arena8-coop.view.v1";
@@ -29,6 +30,7 @@ enum IntentAction {
     Signature {},
     Ultimate {},
     FireZone {},
+    EndTurn {},
 }
 
 impl NativeGame for Rules {
@@ -38,7 +40,7 @@ impl NativeGame for Rules {
     fn view_kind(&self) -> &'static str {
         VIEW_KIND
     }
-    fn parse(&self, kind: &str, payload: &[u8]) -> Result<(i64, CoopAction), Error> {
+    fn parse(&self, kind: &str, payload: &[u8]) -> Result<(i64, CoopCommand), Error> {
         if kind != INTENT_KIND {
             return Err(Error::Invalid);
         }
@@ -51,7 +53,30 @@ impl NativeGame for Rules {
             IntentAction::Signature {} => CoopAction::Signature,
             IntentAction::Ultimate {} => CoopAction::Ultimate,
             IntentAction::FireZone {} => CoopAction::FireZone,
+            IntentAction::EndTurn {} => CoopAction::EndTurn,
         };
-        Ok((intent.epoch, action))
+        Ok((intent.epoch, CoopCommand::new(action)))
+    }
+    fn timed_turns(&self) -> bool {
+        self.engine().is_v3()
+    }
+    fn expired_turn(&self, state: &CoopState, now_ms: u64) -> Option<u16> {
+        (self.engine().is_v3()
+            && state.phase == CoopPhase::Playing
+            && state
+                .turn_deadline_ms
+                .is_some_and(|deadline| now_ms >= deadline))
+        .then_some(state.turn_index)
+    }
+    fn expire_turn_action(&self, turn_index: u16) -> Option<CoopCommand> {
+        self.engine()
+            .is_v3()
+            .then(|| CoopCommand::new(CoopAction::ExpireTurn { turn_index }))
+    }
+    fn supports_ping(&self) -> bool {
+        true
+    }
+    fn clock(&self) -> Arc<dyn Fn() -> u64 + Send + Sync> {
+        Rules::clock(self)
     }
 }

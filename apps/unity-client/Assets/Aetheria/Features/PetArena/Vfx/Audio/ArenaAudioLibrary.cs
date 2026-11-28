@@ -31,8 +31,7 @@ namespace Aetheria.PetArena.Vfx
         [Range(0f, 1f)] public float volume = .3f;
     }
 
-    // Override table for approved media. Every entry stays empty until licensed
-    // or owner-approved audio is delivered, so the generated placeholders run.
+    // Authored clips override the procedural fallback for their configured cue.
     [CreateAssetMenu(menuName = "Aetheria/Arena Audio Library", fileName = "ArenaAudioLibrary")]
     public sealed class ArenaAudioLibrary : ScriptableObject
     {

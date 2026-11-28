@@ -307,12 +307,43 @@ describe('Wave A Artifact durable loop',()=>{
     const played=await post(app,'/v1/pets/wave1/campaign/play',{requestId:randomUUID(),mapId:MAP_IDS[0],petId:STARTER,actions:POLICY},visitor);
     expect(played.statusCode).toBe(200);
     expect((played.json() as {result:{won:boolean;firstClear:boolean}}).result).toMatchObject({won:true,firstClear:true});
-    const available=(await state(app,visitor)).pve.available;
+    const before=await state(app,visitor);
+    const starter=before.inventory.find(item=>item.definitionId==='core-emberglass')!;
+    const available=before.pve.available;
     expect(available).toEqual([{mapId:MAP_IDS[0],definitionId:'core-amberlattice',materials:60}]);
     const claimed=await claim(visitor);
     expect(claimed.statusCode).toBe(200);
     expect(claimed.json()).toMatchObject({grant:{mapId:MAP_IDS[0],definitionId:'core-amberlattice'}});
     expect((await claim(visitor)).statusCode).toBe(409);
+    // Use the first clear's 60 materials on the eligible starter Core. Amber
+    // Lattice stays in inventory until Coalwhisk reaches its published rank gate.
+    const trained=await upgrade(visitor,starter.artifactId);
+    expect(trained.statusCode).toBe(200);
+    expect(trained.json()).toMatchObject({spent:60,upgradeLevel:2,state:{materials:before.materials}});
+    expect((await equip(visitor,STARTER,starter.artifactId)).statusCode).toBe(200);
+    const loadout=await snapshot(visitor,STARTER);
+    expect(loadout.statusCode).toBe(200);
+    expect(loadout.json()).toMatchObject({snapshot:{loadout:{petId:STARTER,entries:[
+      {slot:'core',definitionId:'core-emberglass',upgradeLevel:2,modifiers:{hp:5,attack:2,defense:0}},
+    ]}}});
+  });
+
+  it('repairs a historical solo-first wallet once when inventory opens concurrently',async()=>{
+    const visitor=await guest();
+    await initializePets(visitor);
+    await addClear(visitor,MAP_IDS[0]);
+    const reward=await claim(visitor);
+    expect(reward.statusCode).toBe(200);
+    // Reproduce the persisted pre-fix layout with its genuine PvE receipt.
+    await pool.query("DELETE FROM pet_artifact_owned WHERE account_id=$1 AND acquired_from='starter'",[visitor.accountId]);
+    await pool.query('UPDATE pet_artifact_players SET materials=60 WHERE account_id=$1',[visitor.accountId]);
+    const reads=await Promise.all([state(app,visitor),state(app,visitor)]);
+    for(const view of reads){
+      expect(view.materials).toBe(210);
+      expect(view.inventory.map(item=>item.definitionId).sort()).toEqual(['core-amberlattice','core-emberglass']);
+      expect(view.pve.claims).toHaveLength(1);
+    }
+    expect(reads[0]).toEqual(reads[1]);
   });
 
   it('9 replays receipts without double grants and rejects conflicting request ids',async()=>{

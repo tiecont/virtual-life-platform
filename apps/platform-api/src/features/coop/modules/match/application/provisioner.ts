@@ -1,4 +1,4 @@
-import type {CoopAdmissionView} from '@aetheria/contracts';
+import {nativeClientBuildForBundle,type CoopAdmissionView} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
@@ -15,6 +15,7 @@ export type CoopAllocationStatus='STARTING'|'ACTIVE'|'SETTLED'|'FAILED'|'CLOSED'
 export type CoopAllocationRecord=Readonly<{
  matchId:string;roomId:string;worldId:string;bootId:string;bossId:string;
  configVersion:number;configDigest:string;contentHash:string;
+ engineHash?:string;
  seats:readonly CoopSeat[];status:CoopAllocationStatus;generation:number;
 }>;
 export type CoopMatchStorePort=Readonly<{
@@ -35,7 +36,7 @@ export type CoopAdmissionPort=Readonly<{
 export type CoopIssuerPort=Readonly<{issue(credential:string,scope:RuntimeScope):Promise<Readonly<{ticket:string;expiresAt:string}>>}>;
 export type CoopRuntimeRequest=Readonly<{
  matchId:string;bootId:string;worldId:string;origin:string;bossId:string;
- configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];
+ configDigest:string;bundle:Record<string,unknown>;seats:readonly CoopSeat[];engineHash?:string;
 }>;
 export type CoopRuntimeHandle=Readonly<{port:number;stop():Promise<void>;onExit(listener:()=>void):void}>;
 export type CoopRuntimePort=Readonly<{start(request:CoopRuntimeRequest):Promise<CoopRuntimeHandle>}>;
@@ -52,7 +53,7 @@ export type CoopStartInput=Readonly<{
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
 export type {CoopAdmissionView} from '@aetheria/contracts';
 type Lease={timer:ReturnType<typeof setInterval>;stop:()=>void};
-type ActiveMatch={record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
+type ActiveMatch={clientBuild?:'unity-native-v3';record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
 
 const unavailable=(message='Cooperative native runtime is unavailable')=>new DomainError('NOT_AVAILABLE',503,message);
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
@@ -179,7 +180,7 @@ export class CoopMatchProvisioner{
    if(!handle)throw startError;
    await this.options.store.activate(matchId,generation);
    const activated:CoopAllocationRecord=Object.freeze({...record,status:'ACTIVE',generation});
-   active={record:activated,scope,generation,handle,lease,stopped:false,exited:false};
+   active={clientBuild:nativeClientBuildForBundle(input.bundle.schemaVersion),record:activated,scope,generation,handle,lease,stopped:false,exited:false};
    handle.onExit(()=>{
     const current=this.active.get(matchId);
     if(current)current.exited=true;
@@ -216,6 +217,7 @@ export class CoopMatchProvisioner{
    wssUrl:'wss:'+this.origin.slice('https:'.length)+WSS_PATH,
    httpsOrigin:this.origin,ticket:issued.ticket,expiresAt:issued.expiresAt,
    contentHash:record.contentHash,
+   ...(current.clientBuild?{clientBuild:current.clientBuild}:{}),
   });
  }
 
@@ -225,7 +227,7 @@ export class CoopMatchProvisioner{
   let recovered=0,failed=0;
   for(const record of records){
    if(this.active.has(record.matchId)){recovered+=1;continue;}
-   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined;
+   let generation=0,handle:CoopRuntimeHandle|undefined,lease:Lease|undefined,leaseFailed=false;
    try{
     const bundle=await this.options.loadBundle(record);
     if(!bundle)throw unavailable('Pinned cooperative configuration is unavailable');
@@ -234,21 +236,24 @@ export class CoopMatchProvisioner{
      throw unavailable('Pinned cooperative configuration no longer matches the allocation');
     const scope=scopeFor(record);
     generation=await this.options.admission.configure(scope,record.generation,true,CAPACITY);
-    handle=await this.options.runtime.start({
-     matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
-     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,
-    });
     lease=this.lease(scope,generation,()=>{
+     leaseFailed=true;
      const current=this.active.get(record.matchId);
      if(current)void this.abandon(current.record,current.generation);
     });
+    handle=await this.options.runtime.start({
+     matchId:record.matchId,bootId:record.bootId,worldId:record.worldId,origin:this.origin,
+     bossId:record.bossId,configDigest:record.configDigest,bundle,seats:record.seats,engineHash:record.engineHash,
+    });
+    if(leaseFailed)throw unavailable('Cooperative runtime lease expired during recovery');
     await this.options.store.recovered(record.matchId,generation);
+    if(leaseFailed)throw unavailable('Cooperative runtime lease expired during recovery');
     const restored:CoopAllocationRecord=Object.freeze({...record,status:'ACTIVE',generation});
     handle.onExit(()=>{
      const current=this.active.get(record.matchId);
      if(current)current.exited=true;
     });
-    this.active.set(record.matchId,{record:restored,scope,generation,handle,lease,stopped:false,exited:false});
+    this.active.set(record.matchId,{clientBuild:nativeClientBuildForBundle(bundle.schemaVersion),record:restored,scope,generation,handle,lease,stopped:false,exited:false});
     recovered+=1;
    }catch{
     failed+=1;

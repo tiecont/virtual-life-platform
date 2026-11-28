@@ -70,6 +70,18 @@ pub trait Reducer {
         clock: LogicalClock,
         rng: &mut TurnRng,
     ) -> Result<Decision<Self::State>, Error>;
+    /// Capture optional recipient-presentation data during this exact reduction.
+    /// This data cannot affect canonical state, events, audit records or RNG.
+    fn reduce_for_receipt(
+        &self,
+        state: &Self::State,
+        action: &Self::Action,
+        clock: LogicalClock,
+        rng: &mut TurnRng,
+        _feedback: &mut Vec<Value>,
+    ) -> Result<Decision<Self::State>, Error> {
+        self.reduce(state, action, clock, rng)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -116,6 +128,8 @@ pub struct Checkpoint<S> {
 }
 
 pub struct Transition<S> {
+    /// Transient hints. Only a game-specific authenticated projection may disclose them.
+    pub receipt_feedback: Vec<Value>,
     pub next: Checkpoint<S>,
     pub events: Vec<Value>,
     pub projections: Vec<ProjectionIntent>,
@@ -197,7 +211,14 @@ pub fn apply<R: Reducer>(
     canonical::encode(&action)?;
     let mut rng = TurnRng::new(seed, binding.clone(), previous.rng_cursor)?;
     // Isolation means reducer failures cannot mutate the committed input.
-    let decision = rules.reduce(&previous.state.clone(), &command.action, clock, &mut rng)?;
+    let mut receipt_feedback = Vec::new();
+    let decision = rules.reduce_for_receipt(
+        &previous.state.clone(),
+        &command.action,
+        clock,
+        &mut rng,
+        &mut receipt_feedback,
+    )?;
     rules.validate(&decision.state)?;
     if decision.events.len() > 512 || decision.projections.len() > 512 {
         return Err(Error::Capacity);
@@ -225,6 +246,7 @@ pub fn apply<R: Reducer>(
     let audit_record = canonical::encode(&record)?;
     let audit_hash = canonical::hash("vl.turn.v1", &record)?;
     Ok(Transition {
+        receipt_feedback,
         next: Checkpoint {
             match_id: previous.match_id,
             ruleset: previous.ruleset.clone(),

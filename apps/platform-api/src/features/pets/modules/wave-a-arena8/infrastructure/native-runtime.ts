@@ -1,12 +1,12 @@
 import {spawn,execFile} from 'node:child_process';
-import {createHash} from 'node:crypto';
 import {constants} from 'node:fs';
-import {access,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {access,mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
-import type {
-  NativeArena8RuntimeHandle,NativeArena8RuntimePort,NativeArena8RuntimeRequest,
+import {selectNativeExecutable} from '../../../../../shared/common/native-executable';
+import {
+  FUNCTIONAL_SOLO_RULESET,type NativeArena8RuntimeHandle,type NativeArena8RuntimePort,type NativeArena8RuntimeRequest,
 } from '../application/native-provisioner';
 import {startNativeTlsBridge} from './native-tls-bridge';
 
@@ -48,9 +48,8 @@ export function nativeArena8Settings(
   }
   const storageKey=hexBytes(options.storageKey,'Native Arena8 storage key');
   const engineHash=hexBytes(options.engineHash,'Native Arena8 engine hash');
-  return {
+  const base={
     schemaVersion:1,
-    ruleset:'arena8-pve',
     movement:false,
     world:request.worldId,
     boot:request.bootId,
@@ -63,6 +62,17 @@ export function nativeArena8Settings(
     activeStorageKey:options.storageKeyId,
     storageKeys:{[options.storageKeyId]:storageKey},
     engineHash,
+  };
+  if(request.functional){
+    const {bossId,seat}=request.functional.pin;
+    if(seat.account!==request.accountId||seat.petId!==request.petId||
+      seat.ownedPetInstanceId!==request.ownedPetId||seat.petLevel!==request.level)
+      throw new Error('Functional solo runtime seat identity mismatch');
+    const {petLevel,...bound}=seat;
+    return {...base,ruleset:FUNCTIONAL_SOLO_RULESET,coop:{bossId,seats:[{...bound,level:petLevel}]}};
+  }
+  return {
+    ...base,ruleset:'arena8-pve',
     arena8:{
       petId:request.petId,
       ownedPetId:request.ownedPetId,
@@ -77,7 +87,7 @@ export function nativeArena8Settings(
 }
 
 export type LocalNativeArena8RuntimeOptions=Readonly<{
-  binary:string;databaseUrl:string;role:string;caFile:string;
+  binary:string;historicalBinary?:string;databaseUrl:string;role:string;caFile:string;
   publicKey:string;keyId:string;origin:string;
   storageKey:string;storageKeyId:string;certFile:string;keyFile:string;
 }>;
@@ -123,7 +133,6 @@ async function waitForReady(port:number,timeoutMs:number){
 export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
   private readonly options:LocalNativeArena8RuntimeOptions;
   private content?:Promise<string>;
-  private engine?:Promise<string>;
 
   constructor(options:LocalNativeArena8RuntimeOptions){
     if(!LABEL.test(options.role))throw new Error('Native Arena8 database role is invalid');
@@ -154,26 +163,12 @@ export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
     return this.content;
   }
 
-  private engineHash(){
-    this.engine??=(async()=>{
-      try{
-        return createHash('sha256').update(await readFile(this.options.binary)).digest('hex');
-      }catch{throw new Error('Arena8 runtime binary unavailable');}
-    })();
-    return this.engine;
-  }
-
   async start(request:NativeArena8RuntimeRequest):Promise<NativeArena8RuntimeHandle>{
     if(request.origin!==this.options.origin)
       throw new Error('Arena8 runtime origin mismatch');
-    const [contentHash,engineHash]=await Promise.all([
-      this.contentHash(),this.engineHash(),
-    ]);
-    if(request.contentHash!==contentHash)
+    if(!request.functional&&request.contentHash!==await this.contentHash())
       throw new Error('Arena8 runtime content mismatch');
-    await access(this.options.binary,constants.X_OK).catch(()=>{
-      throw new Error('Arena8 runtime binary unavailable');
-    });
+    const {binary,engineHash}=await selectNativeExecutable(this.options.binary,this.options.historicalBinary,request.engineHash);
     await access(this.options.caFile,constants.R_OK).catch(()=>{
       throw new Error('Arena8 runtime CA unavailable');
     });
@@ -186,12 +181,15 @@ export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
     const directory=await mkdtemp(join(tmpdir(),'aetheria-arena8-native-'));
     const file=join(directory,'runtime.json');
     await writeFile(file,JSON.stringify(settings),{mode:0o600});
-    const child=spawn(this.options.binary,[],{
+    const bundleFile=join(directory,'bundle.json');
+    if(request.functional)await writeFile(bundleFile,JSON.stringify(request.functional.bundle),{mode:0o600});
+    const child=spawn(binary,[],{
       env:{
         PATH:process.env.PATH??'',
         AETHERIA_RUNTIME_BIND:'127.0.0.1:0',
         AETHERIA_GAMEPLAY_ENABLED:'1',
         AETHERIA_GAMEPLAY_CONFIG:file,
+        ...(request.functional?{AETHERIA_GAMEPLAY_BUNDLE:bundleFile}:{}),
         AETHERIA_GAME_DATABASE_URL:this.options.databaseUrl,
       },
       stdio:['ignore','pipe','pipe'],
@@ -212,6 +210,7 @@ export class LocalNativeArena8Runtime implements NativeArena8RuntimePort {
       throw new Error('Arena8 native runtime unavailable');
     }
     await rm(file,{force:true});
+    await rm(bundleFile,{force:true});
     let bridge;
     try{
       bridge=await startNativeTlsBridge({

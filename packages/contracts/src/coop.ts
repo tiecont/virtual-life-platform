@@ -46,6 +46,7 @@ export const CoopRewardReceiptSchema=z.strictObject({
 });
 export const CoopAdmissionCommandSchema=z.strictObject({});
 export const CoopAdmissionViewSchema=z.strictObject({
+ clientBuild:z.literal('unity-native-v3').optional(),
  roomId:z.uuid(),bossId:CoopBossIdSchema,matchId:z.uuid(),bootId:z.uuid(),accountId:z.uuid(),seat:seatNumber,
  wssUrl:z.string().min(10).max(512),httpsOrigin:z.string().url(),
  ticket:z.string().min(20).max(8192),expiresAt:z.iso.datetime(),

@@ -55,6 +55,205 @@ namespace Aetheria.Tests
         }
 
         [Test]
+        public void FunctionalProjectionUsesOnlyFunctionalTileKinds()
+        {
+            string Functional(string json) => json
+                .Replace("\"version\":1", "\"version\":2")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"");
+
+            var functional = Coop(customize: Functional, phase: "playing");
+            Assert.That(functional.RulesetVersion, Is.EqualTo(CoopNativeView.FunctionalVersion));
+            Assert.That(functional.Board[0].Element, Is.Null);
+            Assert.That(functional.Board[0].Kind, Is.EqualTo("sword"));
+            Assert.That(functional.CanSwap(0, 1), Is.True);
+            var root = CoopNativePresentation.Build(functional, _ => { }, _ => { }, 0);
+            Assert.That(root.Q<Button>("coop-cell-0").tooltip, Does.Contain(" ×2\n"));
+            Assert.That(root.Q("coop-cell-0").Q("coop-functional-icon"), Is.Not.Null);
+            Assert.That(root.Q("coop-cell-0").Q("coop-element-icon"), Is.Null);
+
+            Assert.Throws<FormatException>(() => Coop(customize: json => json
+                .Replace("\"version\":1", "\"version\":2")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"version\":2", "\"version\":1")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"water\"")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"mana\",\"element\":\"water\"")));
+            Assert.Throws<FormatException>(() => Coop(customize: json => Functional(json)
+                .Replace("\"version\":2", "\"version\":3")));
+        }
+
+        [Test]
+        public void FunctionalSoloProjectionRequiresOneSeat()
+        {
+            string Solo(string json) => json
+                .Replace("\"arena8-coop-pve\"", "\"arena8-functional-pve\"")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"");
+
+            var solo = Coop(seats: 1, customize: Solo, phase: "playing");
+            Assert.That(solo.IsFunctionalBoard, Is.True);
+            Assert.That(solo.Participants.Count, Is.EqualTo(1));
+            Assert.That(solo.CanSwap(0, 1), Is.True);
+            Assert.That(CoopNativePresentation.Build(solo, _ => { }, _ => { }).Q("coop-seats").childCount,
+                Is.EqualTo(1));
+            Assert.Throws<FormatException>(() => Coop(customize: Solo));
+            Assert.Throws<FormatException>(() => Coop(seats: 1));
+            Assert.Throws<FormatException>(() => Coop(seats: 1, you: 1, customize: Solo));
+        }
+
+        [Test]
+        public void TimedCoopAndSoloDecodeTheServerTimerAndGateActions()
+        {
+            foreach (var solo in new[] { false, true })
+            {
+                var view = Coop(seats: solo ? 1 : 4, phase: "playing",
+                    customize: json => Timed(json, solo));
+                var root = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(view.IsTimed, Is.True);
+                Assert.That(view.Turn, Is.EqualTo(5000));
+                Assert.That(view.Round, Is.EqualTo(5001));
+                Assert.That(view.MaxRounds, Is.Null);
+                Assert.That(view.TurnRemainingMs, Is.EqualTo(9000));
+                Assert.That(view.Own.HasUltimate, Is.False);
+                Assert.That(view.Abilities[1].PowerPm, Is.EqualTo(1600));
+                Assert.That(root.Q<Label>("coop-turn").text, Does.EndWith("9 s"));
+                Assert.That(root.Q<Button>("coop-action-end-turn").enabledSelf, Is.True);
+                Assert.That(root.Q<Button>("coop-action-ultimate"), Is.Null);
+                Assert.That(root.Q<Button>("coop-action-fire-zone").text, Does.Contain("Lv 5"));
+                Assert.That(root.Q<Button>("coop-cell-18").tooltip, Does.Contain("Fire Zone"));
+                Assert.That(root.Q<Label>("coop-fire-zone").text, Is.EqualTo("Fire Zone · 2 turns"));
+
+                var expired = Coop(seats: solo ? 1 : 4, phase: "playing", customize: json => Timed(json, solo)
+                    .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":0")
+                    .Replace("\"serverUnixMs\":1006000", "\"serverUnixMs\":1015000")
+                    .Replace("\"canEndTurn\":true", "\"canEndTurn\":false"));
+                var expiredHud = CoopNativePresentation.Build(expired, _ => { }, _ => { });
+                Assert.That(expiredHud.Q<Button>("coop-action-end-turn").enabledSelf, Is.False);
+                Assert.That(expiredHud.Q<Button>("coop-cell-0").enabledSelf, Is.False);
+                Assert.That(expiredHud.Q<Label>("coop-turn").text, Does.EndWith("Awaiting next turn"));
+            }
+
+            var waiting = Coop(activeSeat: 1, phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"canEndTurn\":true", "\"canEndTurn\":false"));
+            Assert.That(CoopNativePresentation.Build(waiting, _ => { }, _ => { })
+                .Q<Button>("coop-action-end-turn").enabledSelf, Is.False);
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"turnRemainingMs\":9000,", "")));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", customize: json => Timed(json, false)
+                .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":12000")));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AdvancedProjectionUsesOnlyVersionedJewelKindsAndChill(bool solo)
+        {
+            var legacyVersion = solo ? CoopNativeView.SoloTimedFunctionalVersion : CoopNativeView.TimedFunctionalVersion;
+            var newVersion = solo ? CoopNativeView.SoloAdvancedFunctionalVersion : CoopNativeView.AdvancedFunctionalVersion;
+            var legacyVersionField = "\"version\":" + legacyVersion;
+            var newVersionField = "\"version\":" + newVersion;
+            const string pending = "\"pending\":null";
+            const string chill = ",\"chillReductionPm\":250";
+
+            string WithTiles(string json) => Timed(json, solo)
+                .Replace("\"kind\":\"sword\"", "\"kind\":\"nature\"")
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"frost\"")
+                .Replace("\"kind\":\"frost\",\"multiplier\":1},null",
+                    "\"kind\":\"frost\",\"multiplier\":1},{\"kind\":\"astral\",\"multiplier\":8}");
+            string Advanced(string json) => WithTiles(json).Replace(legacyVersionField, newVersionField)
+                .Replace(pending, pending + chill);
+            CoopNativeView Decode(Func<string, string> map) =>
+                Coop(seats: solo ? 1 : 4, phase: "playing", customize: map);
+
+            var view = Decode(Advanced);
+            Assert.That(view.IsTimed, Is.True);
+            Assert.That(view.RulesetVersion, Is.EqualTo(newVersion));
+            Assert.That(view.ChillReductionPm, Is.EqualTo(250));
+            Assert.That(view.Board.Take(3).Select(tile => tile.Kind), Is.EqualTo(new[] { "nature", "frost", "astral" }));
+            Assert.That(view.Board[2].Multiplier, Is.EqualTo(8));
+            var hud = CoopNativePresentation.Build(view, _ => { }, _ => { });
+            Assert.That(hud.Q<Label>("coop-chill").text, Does.Contain("25%"));
+            Assert.That(hud.Q<Button>("coop-cell-0").Q("coop-functional-icon").style.backgroundImage.value.sprite,
+                Is.SameAs(FunctionalGemArt.Get("nature")));
+            Assert.That(hud.Q<Button>("coop-action-end-turn").enabledSelf, Is.True);
+            Assert.That(Decode(json => Timed(json, solo)).ChillReductionPm, Is.Zero);
+            Assert.Throws<FormatException>(() => Decode(WithTiles));
+            Assert.Throws<FormatException>(() => Decode(json => Timed(json, solo).Replace(pending, pending + chill)));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace(chill, "")));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace(chill, ",\"chillReductionPm\":1000")));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace("\"multiplier\":8", "\"multiplier\":9")));
+        }
+
+        [Test]
+        public void AdvancedReceiptFeedbackPreservesOrderAndValidatesSkillTargets()
+        {
+            const string effects = "\"jewelFeedback\":[" +
+                "{\"kind\":\"nature-cleanse\",\"seat\":2,\"value\":1}," +
+                "{\"kind\":\"chill-armed\",\"seat\":0,\"value\":250}," +
+                "{\"kind\":\"astral-upgrade\",\"seat\":0,\"value\":2,\"cell\":0}," +
+                "{\"kind\":\"chill-consumed\",\"seat\":null,\"value\":250}],";
+            string Advanced(string json) => Timed(json, false).Replace("\"version\":3", "\"version\":4")
+                .Replace("\"pending\":null", "\"pending\":null,\"chillReductionPm\":0");
+            var receipt = Coop(phase: "playing", extra: effects, customize: Advanced);
+            Assert.That(receipt.JewelFeedback.Select(effect => effect.Kind),
+                Is.EqualTo(new[] { "nature-cleanse", "chill-armed", "astral-upgrade", "chill-consumed" }));
+            Assert.That(receipt.JewelFeedback[0].Seat, Is.EqualTo(2));
+            Assert.That(receipt.JewelFeedback[2].Cell, Is.Zero);
+            Assert.That(receipt.JewelFeedback[2].Value, Is.EqualTo(2));
+            Assert.That(receipt.JewelFeedback[3].Seat, Is.Null);
+            Assert.That(Coop(phase: "playing", customize: Advanced).JewelFeedback, Is.Empty);
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects,
+                customize: json => Timed(json, false)));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects.Replace("\"cell\":0", "\"cell\":1"),
+                customize: Advanced));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects.Replace("\"seat\":null", "\"seat\":0"),
+                customize: Advanced));
+        }
+
+        [Test]
+        public void BasicJewelReceiptsPreserveWideDamageAndEnforcePerSourceBounds()
+        {
+            string Advanced(string json) => Timed(json, false).Replace("\"version\":3", "\"version\":4")
+                .Replace("\"pending\":null", "\"pending\":null,\"chillReductionPm\":0");
+            const string rows = "\"jewelFeedback\":[" +
+                "{\"kind\":\"sword-damage\",\"seat\":0,\"value\":4000000000}," +
+                "{\"kind\":\"heart-heal\",\"seat\":1,\"value\":9}," +
+                "{\"kind\":\"shield-grant\",\"seat\":2,\"value\":4}," +
+                "{\"kind\":\"special-mana\",\"seat\":0,\"value\":65535}," +
+                "{\"kind\":\"special-rage\",\"seat\":0,\"value\":7}," +
+                "{\"kind\":\"mana-gain\",\"seat\":0,\"value\":1}," +
+                "{\"kind\":\"rage-gain\",\"seat\":0,\"value\":2}],";
+            CoopNativeView Read(string input) => Coop(phase: "playing", extra: input, customize: Advanced);
+            var receipt = Read(rows);
+            Assert.That(receipt.JewelFeedback.Count, Is.EqualTo(7));
+            Assert.That(receipt.JewelFeedback[0].Value, Is.EqualTo(4000000000L));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("65535", "65536")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("4000000000", "0")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("special-mana", "mana-gain")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("sword-damage\",\"seat\":0", "sword-damage\",\"seat\":1")));
+        }
+
+        private static string Timed(string json, bool solo)
+        {
+            const string guard = "{\"kind\":\"guard\",\"id\":\"icarus-guard\",\"mana\":0,\"rage\":0,\"cooldown\":0," +
+                "\"ready\":true,\"maxCooldown\":0,\"effectKind\":\"shield\",\"target\":\"self\",\"powerPm\":1000}";
+            const string fireZone = "{\"kind\":\"fire-zone\",\"id\":\"icarus-fire-zone\",\"mana\":0,\"rage\":0,\"cooldown\":0," +
+                "\"ready\":true,\"maxCooldown\":3,\"effectKind\":\"fire-zone\",\"target\":\"self\",\"powerPm\":1600}";
+            return json.Replace("\"arena8-coop-pve\"", solo ? "\"arena8-functional-pve\"" : "\"arena8-coop-pve\"")
+                .Replace("\"version\":1", solo ? "\"version\":2" : "\"version\":3")
+                .Replace("\"element\":\"fire\"", "\"kind\":\"sword\"")
+                .Replace("\"element\":\"water\"", "\"kind\":\"mana\"")
+                .Replace("\"turn\":0,\"round\":1", "\"turn\":5000,\"round\":5001")
+                .Replace("\"alive\":true", "\"alive\":true,\"hasUltimate\":false,\"ultimateReady\":false," +
+                    "\"fireZoneTurns\":2,\"passives\":[],\"skillLevels\":[1,2,3,4,5]")
+                .Replace("\"pending\":null", "\"pending\":null,\"turnTimeoutMs\":15000,\"turnDeadlineUnixMs\":1015000," +
+                    "\"turnRemainingMs\":9000,\"serverUnixMs\":1006000,\"maxRounds\":null,\"canEndTurn\":true," +
+                    "\"fireZoneActiveTurns\":2,\"fireZoneCells\":[18,19],\"bossId\":\"cinder-terraces-warden\"," +
+                    "\"abilities\":[" + guard + "," + fireZone + "]");
+        }
+
+        [Test]
         public void PublishedMultiplierAndWideCombatValuesRemainPlayable()
         {
             var view = Coop(customize: json => json.Replace("\"multiplier\":2", "\"multiplier\":6")
@@ -93,6 +292,8 @@ namespace Aetheria.Tests
                 CoopNativeIntent.GuardAction(1));
             CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("{\"epoch\":2,\"action\":{\"kind\":\"swap\",\"first\":0,\"second\":1}}"),
                 CoopNativeIntent.SwapAction(2, 0, 1));
+            CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("{\"epoch\":2,\"action\":{\"kind\":\"endTurn\"}}"),
+                CoopNativeIntent.EndTurnAction(2));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.GuardAction(0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 0));
             Assert.Throws<ArgumentException>(() => CoopNativeIntent.SwapAction(1, 0, 64));
@@ -109,6 +310,11 @@ namespace Aetheria.Tests
             Assert.That(admission.AccountId, Is.Not.EqualTo(Guid.Empty));
             Assert.That(admission.ContentHash.Length, Is.EqualTo(32));
             Assert.That(admission.WssOrigin.AbsolutePath, Is.EqualTo("/rt/v1"));
+            Assert.That(admission.ClientBuild, Is.EqualTo(NativeConnection.LegacyClientBuild));
+            var advanced = Admission().Insert(1, "\"clientBuild\":\"unity-native-v3\",");
+            Assert.That(CoopNativeAdmission.Decode(advanced).ClientBuild,
+                Is.EqualTo(NativeConnection.JewelFeedbackClientBuild));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(advanced.Replace("unity-native-v3", "unknown")));
             var connection = admission.CreateConnection();
             Assert.That(connection, Is.Not.Null);
             Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(origin: "http://127.0.0.1:4443")));
@@ -142,6 +348,7 @@ namespace Aetheria.Tests
             Assert.That(root.Q<Button>("coop-cell-2").text, Is.EqualTo("·"));
             Assert.That(root.Q<Button>("coop-action-guard").enabledSelf, Is.True);
             Assert.That(root.Q<Button>("coop-action-skill").enabledSelf, Is.True);
+            Assert.That(root.Q<Button>("coop-action-end-turn"), Is.Null);
             Assert.That(root.Q<VisualElement>("coop-seat-3").Q<Label>("coop-seat-label-3").text, Does.Contain("terran"));
 
             var waiting = Coop(version: 2, phase: "playing", activeSeat: 1, you: 0);
@@ -149,10 +356,39 @@ namespace Aetheria.Tests
             Assert.That(blocked.Q<Button>("coop-action-guard").enabledSelf, Is.False);
             Assert.That(blocked.Q<Button>("coop-cell-0").enabledSelf, Is.False);
 
+            var pending = CoopNativePresentation.Build(view, _ => { }, _ => { }, inputAvailable: false);
+            Assert.That(pending.Q("coop-board").enabledSelf, Is.True);
+            Assert.That(pending.Q<Button>("coop-cell-0").enabledSelf, Is.False);
+            Assert.That(pending.Q<Button>("coop-action-skill").enabledSelf, Is.False);
+
             var terminal = Coop(version: 2, phase: "lost", reward: "\"GRANTED\"");
             var over = CoopNativePresentation.Build(terminal, index => selected = index, _ => { });
             Assert.That(over.Q<Button>("coop-action-guard").enabledSelf, Is.False);
             StringAssert.Contains("lost", over.Q<Label>("coop-turn").text);
+        }
+
+        [Test]
+        public void SeatHealthMetersPreserveExactHpAndDistinguishDuplicateSpecies()
+        {
+            var view = Coop(version: 2, phase: "playing", activeSeat: 0, customize: json =>
+                json.Replace("\"petId\":\"coralline\",\"level\":1,\"hp\":400", "\"petId\":\"icarus\",\"level\":1,\"hp\":127"));
+            var root = CoopNativePresentation.Build(view, _ => { }, _ => { });
+
+            for (var seat = 0; seat < view.Participants.Count; seat++)
+            {
+                var unit = view.Participants[seat];
+                var panel = root.Q("coop-seat-" + seat);
+                var health = panel.Q<ProgressBar>("coop-seat-health-" + seat);
+                Assert.That(health.value, Is.EqualTo(unit.Health));
+                Assert.That(health.highValue, Is.EqualTo(unit.MaxHealth));
+                Assert.That(health.title, Does.StartWith("Seat " + seat + " · "));
+                Assert.That(health.tooltip, Is.EqualTo(health.title));
+                Assert.That(panel.Q<Label>("coop-seat-label-" + seat).text,
+                    Does.Contain(unit.Health + "/" + unit.MaxHealth));
+            }
+
+            Assert.That(root.Q<ProgressBar>("coop-seat-health-1").value, Is.EqualTo(127));
+            Assert.That(root.Q<ProgressBar>("coop-seat-health-1").title, Does.Contain("icarus health"));
         }
 
         [Test]

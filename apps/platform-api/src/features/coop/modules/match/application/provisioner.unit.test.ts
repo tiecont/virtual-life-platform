@@ -150,11 +150,12 @@ describe('cooperative match provisioner',()=>{
  it('recovers an active allocation with the same match, world, boot and configuration',async()=>{
   const store=new MemoryStore();
   const match='66666666-6666-4666-8666-666666666666',boot='77777777-7777-4777-8777-777777777777';
-  store.rows.set(match,{matchId:match,roomId:ROOM,bossId:bundle.boss.id,worldId:'native:coop-'+match,bootId:boot,configVersion:1,configDigest:DIGEST,contentHash:CONTENT,seats:SEATS,status:'ACTIVE',generation:1});
+  const engineHash='c'.repeat(64);
+  store.rows.set(match,{matchId:match,roomId:ROOM,bossId:bundle.boss.id,worldId:'native:coop-'+match,bootId:boot,configVersion:1,configDigest:DIGEST,contentHash:CONTENT,engineHash,seats:SEATS,status:'ACTIVE',generation:1});
   const {provisioner,admission,runtime}=fixture({store});
   await expect(provisioner.recover()).resolves.toEqual({recovered:1,failed:0});
   expect(runtime.requests).toHaveLength(1);
-  expect(runtime.requests[0]).toMatchObject({matchId:match,worldId:'native:coop-'+match,bootId:boot,configDigest:DIGEST});
+  expect(runtime.requests[0]).toMatchObject({matchId:match,worldId:'native:coop-'+match,bootId:boot,configDigest:DIGEST,engineHash});
   expect(admission.configured[0]).toMatchObject({expected:1,enabled:true,capacity:4});
   expect(store.rows.get(match)!.generation).toBe(2);
   const view=await provisioner.admission(ROOM,'cred-'+ACCOUNTS[1]);

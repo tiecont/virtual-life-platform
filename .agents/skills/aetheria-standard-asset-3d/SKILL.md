@@ -26,7 +26,9 @@ each source and identify exact design details, hidden surfaces, material
 partitions, expected attachment, gameplay orientation, target platform, and
 delivery format.
 
-If reference art does not exist, priority 1 is the authenticated English **Tripo
+For missing references use the [Hydrogen production workflow](../../../specs/media/hydrogen-production.md) to request individual silhouettes, material plates, turnaround studies or environment views keyed to the asset ID. Review the result against the map or morphology contract before geometry production.
+
+The free alternative is the authenticated English **Tripo
 Studio Image** tab with the exact model **`GPT Image 2.5`** and its free image
 quota. Before every run, visibly verify `GPT Image 2.5`, zero paid credit cost,
 and the remaining free counter. Use one submitted prompt per generated file;

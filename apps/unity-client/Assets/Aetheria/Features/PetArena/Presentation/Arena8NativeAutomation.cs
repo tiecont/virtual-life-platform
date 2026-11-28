@@ -16,9 +16,9 @@ namespace Aetheria.PetArena.Presentation
         [Serializable]
         private sealed class NativeFacts
         {
-            public string status, matchId, phase, error, boardDigest, settlement;
+            public string status, matchId, phase, error, boardDigest, settlement, ruleset;
             public string regularSettlement, bossSettlement, artifactId;
-            public int version, boardTiles, skills, coins;
+            public int version, boardTiles, skills, coins, participantCount;
             public bool artifactEquipped, waterAllocated, waterStarted;
             public string[] skillIds;
         }
@@ -51,6 +51,11 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
+                if (NativeArgument("-aetheria-arena8-functional-turn"))
+                {
+                    await CaptureFunctionalBattleTurn();
+                    return;
+                }
                 if (NativeArgument("-aetheria-arena8-native-turn"))
                 {
                     await AllocateNative("cinder-terraces", "cinder-terraces-regular");
@@ -189,6 +194,47 @@ namespace Aetheria.PetArena.Presentation
                     JsonUtility.ToJson(nativeFacts, true));
                 Application.Quit(nativeFacts.status == "ok" ? 0 : 2);
             }
+        }
+
+        private async Task CaptureFunctionalBattleTurn()
+        {
+            var map = NativeArgument("-aetheria-arena8-functional-water") ? "tideglass-lagoon" : "cinder-terraces";
+            var encounter = map + (NativeArgument("-aetheria-arena8-functional-regular") ? "-regular" : "-boss");
+            if (!UsesFunctionalBoard)
+                throw new InvalidOperationException("Enable the functional native campaign for this capture.");
+            var token = lifetime.Token;
+            await AllocateFunctional(map, encounter, automated: true);
+            await CaptureNative("functional-solo-01-admitted.png");
+
+            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
+            await functionalSession.StartAsync(token);
+            functionalHud.Refresh();
+            await CaptureNative("functional-solo-02-playing.png");
+
+            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
+            var started = functionalSession.State.Coop;
+            if (started.Board.Any(tile => tile?.Kind == null))
+                throw new InvalidOperationException("Expected a full committed functional board.");
+            var identities = started.Board.Select(tile => tile.Kind).Distinct().ToList();
+            var board = started.Board.Select(tile => identities.IndexOf(tile.Kind)).ToArray();
+            var moves = FindNativeSwaps(board);
+            if (moves.Count == 0) throw new InvalidOperationException("No legal swap on the committed board.");
+            var move = moves[0];
+            var swapped = (await functionalSession.SwapAsync(move.first, move.second, token)).Coop;
+            if (swapped.Version <= started.Version)
+                throw new InvalidOperationException("The native swap did not advance the committed version.");
+            functionalHud.Refresh();
+            await CaptureNative("functional-solo-03-committed-swap.png");
+
+            nativeFacts.status = "ok";
+            nativeFacts.matchId = matchId;
+            nativeFacts.phase = swapped.Phase;
+            nativeFacts.ruleset = swapped.RulesetId;
+            nativeFacts.participantCount = swapped.Participants.Count;
+            nativeFacts.version = checked((int)swapped.Version);
+            nativeFacts.boardTiles = swapped.Board.Count;
+            nativeFacts.skillIds = swapped.Abilities.Select(ability => ability.Id).ToArray();
+            nativeFacts.skills = nativeFacts.skillIds.Length;
         }
 
         private async Task<Arena8Settlement> RunNativeMatch(string map, string encounter, string prefix)

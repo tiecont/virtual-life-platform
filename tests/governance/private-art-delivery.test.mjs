@@ -4,6 +4,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm,symlink,stat} from 'node:fs/promises
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import {zstdCompressSync} from 'node:zlib';
 import {createHash,createHmac} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {stage,verifyStage,validateManifest,verifyBytes,validateReview,MAX_FILE,MAX_TOTAL,sha256} from '../../scripts/media/private-art-manifest.mjs';
@@ -52,6 +53,15 @@ async function localS3(work,{corrupt=false,status=null,redirect=false,oversized=
  const transport=(request,limit)=>sendRequest(request,limit,(_url,options,cb)=>http.request(`http://127.0.0.1:${server.address().port}${request.url.pathname}`,options,cb));
  try{await work({transport,objects,requests});assert.deepEqual(errors,[]);}finally{await new Promise(resolve=>server.close(resolve));}
 }
+
+test('Blender 5.3 and legacy headers survive private staging, including multiframe compressed sources',()=>{
+ const check=bytes=>verifyBytes({path:'source.blend',bytes:bytes.length,sha256:sha256(bytes)},bytes);
+ const header=Buffer.from('BLENDER17-01v0503');
+ const compressed=Buffer.concat([zstdCompressSync(header.subarray(0,8)),zstdCompressSync(header.subarray(8))]);
+ for(const bytes of [Buffer.from('BLENDER-v403'),header,compressed])assert.equal(check(bytes),bytes);
+ assert.throws(()=>check(zstdCompressSync(Buffer.from('another file type'))));
+ assert.throws(()=>check(compressed.subarray(0,-1)));
+});
 
 test('private staging verifies bytes, preserves originals, uses restrictive modes and refuses reuse',()=>fixture(async({root,staging,bytes})=>{
  assert.equal((await verifyStage(root,'artifacts/stage')).manifest.files.length,1);
