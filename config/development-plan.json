@@ -10864,6 +10864,7 @@
     },
     {
       "id": "VL-199",
+      "fourClientReceiptReview": {"harnessRevision":"135b120e","playerRevision":"f56a9e75","evidence":"artifacts/campaign-v4/rotation-qa/artifacts/packaged-coop-runs/run-wiSwnOGK","result":"Four accounts and four live sessions. Turn 0 committed; client 1 screenshot shows opening board, but the QA OCR misread the seat label. Run exited before a player input. Four-client rotation and reconnect remain open."},
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
