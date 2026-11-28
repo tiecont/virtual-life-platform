@@ -15,3 +15,5 @@ Apply the repository's `AGENTS.md`. For startup, security boundaries and CLI exa
 6. Report task IDs, implementation and acceptance status, exact revision and PR if available, actual checks, evidence, blockers, and the next exact action. Keep the full backlog, logs, and transcripts out of the prompt and committed source.
 
 For a character performance task, search for `character performance` and run the offline intake before assigning rig, rendering or cinematic work. The result records actual VRM bindings and installed packages.
+
+For visual refinement, record source hash, variant revision, renderer, pose, camera and relative evidence paths together. Use the [character fidelity checklist](../../../specs/acceptance/character-visual-fidelity.md) for candidate scope and owner acceptance. Carry a source audit and matched frames through the handoff. An unchanged visibility defect stays open after a successful capture.

@@ -112,9 +112,7 @@ Reopen the exported geometry and verify:
 - retained textures, normals, roughness/metallic/AO channels, alpha mode, and
   correct color spaces.
 
-Remove broken zero-thickness bowstrings; render the string in Unity with
-`LineRenderer` using the approved endpoints. Do not replace them with visible
-AI mesh rods.
+For a source with a usable physical string, preserve the approved profile, pin both nocks and measure draw and return. On the reconstructed Phoenix Bow, compare both upper joins against the source in the same side cameras. Use the original material and inspect the held wrist separately. Use a LineRenderer replacement only when the character contract allows it and the physical source is unusable. Apply the [class-specific visual rubric](../../../specs/acceptance/character-visual-fidelity.md) to each candidate.
 
 ## 4. Enforce poly and quality budgets
 
