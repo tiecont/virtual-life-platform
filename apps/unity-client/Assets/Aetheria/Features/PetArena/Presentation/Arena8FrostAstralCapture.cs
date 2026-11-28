@@ -12,6 +12,8 @@ namespace Aetheria.PetArena.Presentation
 {
     public sealed partial class Arena8CampaignScreen
     {
+        private const int FirstSharedMultiplierTurn = 12;
+
         [Serializable]
         private sealed class AdvancedSample
         {
@@ -51,14 +53,11 @@ namespace Aetheria.PetArena.Presentation
                     var collectArmed = samples.All(sample => sample.kind != "chill-armed");
                     var collectConsumed = !collectArmed && samples.All(sample => sample.kind != "chill-consumed");
                     var move = moves[0];
-                    bool guard = collectConsumed;
+                    bool guard = !collectArmed && (collectConsumed || before.Turn < FirstSharedMultiplierTurn);
                     if (collectArmed && moves.Any(candidate => candidate.frost > 0))
                         move = moves.First(candidate => candidate.frost > 0);
-                    else if (!collectArmed && !collectConsumed && moves.Any(candidate => candidate.astral > 0))
-                    {
-                        guard = before.Turn < 12;
-                        if (!guard) move = moves.First(candidate => candidate.astral > 0);
-                    }
+                    else if (!collectArmed && !guard && moves.Any(candidate => candidate.astral > 0))
+                        move = moves.First(candidate => candidate.astral > 0);
 
                     var result = guard
                         ? await functionalSession.GuardAsync(token)
@@ -76,7 +75,7 @@ namespace Aetheria.PetArena.Presentation
                         if (desired == "chill-consumed" &&
                             (samples.Count == 0 || samples[0].value != effect.Value || view.ChillReductionPm != 0))
                             continue;
-                        if (desired == "astral-upgrade" && (guard || before.Turn < 12 || move.astral < 3))
+                        if (desired == "astral-upgrade" && (guard || move.astral < 3))
                             continue;
                         string label = desired == "astral-upgrade" ? "×" + effect.Value :
                             "−" + (effect.Value / 1000d).ToString("0.#%", CultureInfo.InvariantCulture);
