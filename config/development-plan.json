@@ -10836,7 +10836,7 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "8ad6e6e6 packaged Fire and Water regular starts and swaps passed after fixing camera initialization. On 4fea54bb a disposable Admin fixture unlocked Water only after both Fire wins settled through Rust and Nest. On 8c69d12c a 1280×720 packaged four-seat acceptance run restored the functional board, won Fire v37, awarded each seat once, upgraded Emberglass to level 2, and admitted four seats to Water with the equipped +5 HP. Uses a disposable acceptance balance profile. Verify active Water input and hosted CI.",
+      "remaining": "8ad6e6e6 packaged Fire and Water regular starts and swaps passed after fixing camera initialization. On 4fea54bb a disposable Admin fixture unlocked Water only after both Fire wins settled through Rust and Nest. On 8c69d12c a 1280×720 packaged four-seat acceptance run restored the functional board, won Fire v37, awarded each seat once, upgraded Emberglass to level 2, and admitted four seats to Water with the equipped +5 HP. Uses a disposable acceptance balance profile. On 824ea699 the host started and swapped in Water (v1/v2); the four-seat allocation retained the upgraded Core and all 64 jewels. Verify full Water settlement on authored campaign balance and hosted CI.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
