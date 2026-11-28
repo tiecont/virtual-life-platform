@@ -3,8 +3,12 @@ const record = value => value && typeof value === 'object' && !Array.isArray(val
 const idPattern = /^[a-z][a-z0-9-]*$/;
 const gateKinds = new Set(['workflow', 'technical', 'review', 'owner']);
 
+function hasControlCharacter(value) {
+  return Array.from(value).some(character => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127);
+}
+
 export function repositoryPath(value) {
-  return typeof value === 'string' && value.length <= 300 && !/[\\:\x00-\x1f\x7f]/.test(value) &&
+  return typeof value === 'string' && value.length <= 300 && !hasControlCharacter(value) && !/[\\:]/.test(value) &&
     value.split('/').every(part => part && part !== '.' && part !== '..');
 }
 
@@ -63,7 +67,7 @@ export function discoverRoutes(registry, query, paths = []) {
   return {
     version: registry.version,
     selection: !candidate ? 'REVIEW_SCOPE' : candidate.score === matches[1]?.score ? 'AMBIGUOUS' : 'SUGGESTED',
-    routes: matches.slice(0, 6).map(({score, ...route}) => route),
+    routes: matches.slice(0, 6).map(route => ({id: route.id, summary: route.summary, tags: route.tags, paths: route.paths})),
   };
 }
 
