@@ -94,6 +94,8 @@
     "assets:push": "node --env-file-if-exists=.env scripts/media/assets-push.mjs",
     "cdn:upload": "node --env-file-if-exists=.env scripts/pet-cdn-upload.mjs",
     "cdn:upload:dry": "node --env-file-if-exists=.env scripts/pet-cdn-upload.mjs --dry-run",
+    "cdn:pull": "node --env-file-if-exists=.env scripts/pet-cdn-pull.mjs",
+    "cdn:pull:dry": "node --env-file-if-exists=.env scripts/pet-cdn-pull.mjs --dry-run",
     "bench:rooms": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/rooms-baseline.ts",
     "bench:deadline": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/deadline-baseline.ts",
     "bench:city": "pnpm build:packages && node scripts/with-test-db.mjs node --import tsx tests/load/city-profiles.ts",
