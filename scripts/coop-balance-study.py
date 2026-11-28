@@ -129,6 +129,22 @@ TIMED_VARIANTS = {
 }
 
 
+def shared_weights(bundle, weights):
+    for entry in bundle["board"]["functionalTiles"]["spawnWeights"]:
+        entry["weight"] = weights[entry["kind"]]
+
+
+# Study inputs only. Each variant changes the shared distribution and nothing else.
+SHARED_VARIANTS = {
+    "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
+        ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
+    "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
+        "sword": 2000, "mana": 1600, "rage": 1600, "heart": 1400, "shield": 1400,
+        "special": 1100, "nature": 350, "frost": 350, "astral": 200,
+    }),
+}
+
+
 def party(name, level, gear):
     result = []
     for i, pet in enumerate(PARTIES[name], 1):
@@ -253,7 +269,7 @@ def main():
     parser.add_argument("--seed-count", type=int, default=6)
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
-    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS])
+    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS, *SHARED_VARIANTS])
     parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels"], default="progression")
     parser.add_argument("--mode", choices=["coop", "solo", "both"], default="coop")
     parser.add_argument("--include-regular", action="store_true", help="Include regular opponents for solo play")
@@ -273,11 +289,12 @@ def main():
         parser.error(f"build the Rust example, or set --binary: {binary}")
     base = json.loads(args.baseline.read_text())
     capability = base.get("engineCapability")
-    if capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
+    shared = capability == "arena8-coop-v5" and base.get("schemaVersion") == 6
+    if not shared and capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
-    functional = capability in ("arena8-coop-v2", "arena8-coop-v3")
+    functional = shared or capability in ("arena8-coop-v2", "arena8-coop-v3")
     base_bosses = {row["id"]: row for row in base["bosses"]}
-    if args.bosses == ["all"] or (args.bosses is None and capability == "arena8-coop-v3"):
+    if args.bosses == ["all"] or (args.bosses is None and (shared or capability == "arena8-coop-v3")):
         boss_ids = tuple(base_bosses)
     elif args.bosses:
         boss_ids = tuple(args.bosses)
@@ -288,6 +305,10 @@ def main():
     variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
     if capability == "arena8-coop-v3":
         variants = {**variants, **TIMED_VARIANTS}
+    if shared:
+        variants = SHARED_VARIANTS
+        if args.advanced_candidate:
+            parser.error("shared RNG cannot be compared through conversion controls")
     selected = args.bundles or (["baseline"] if functional else ["baseline", *variants])
     if any(name != "baseline" and name not in variants for name in selected):
         parser.error(f"requested balance variant is incompatible with {capability}")
