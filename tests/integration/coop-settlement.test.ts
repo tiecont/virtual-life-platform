@@ -516,34 +516,71 @@ describe('cooperative settlement',()=>{
    await pool.query("UPDATE game_native_outbox SET available_at=clock_timestamp()+interval '1 hour' WHERE settlement_id=$1",[mismatched.settlementId]);
   }
  });
- it('settles functional campaign pairs in either order and grants the first unowned authored recruit once',async()=>{
+ it('settles all six functional campaign pairs in either order and grants the first unowned authored recruit once',async()=>{
   const path=new URL('../../config/gameplay/arena8-coop-functional-v1.candidate.json',import.meta.url);
-  const {bosses}=JSON.parse(readFileSync(path,'utf8')) as {bosses:Record<string,unknown>[]};
+  type Payout={coins:number;exp:number;materials:number};
+  const {bosses}=JSON.parse(readFileSync(path,'utf8')) as {bosses:Array<{
+   mapId:string;
+   rewardPolicy:{firstClear:Payout};
+   regular:{rewardPolicy:{firstClear:Payout;repeatClear:Payout}};
+  }>};
+  const soloPayout=({coins,exp,materials}:Payout)=>({coins,exp,materials});
   const pinned=await publishSettlementFixture(bosses,true);
   const candidateRecruits=[
    {map:'cinder-terraces',owned:'fire-coalwhisk',recruit:'fire-emberloom'},
    {map:'tideglass-lagoon',owned:'water-dewskip',recruit:'water-ripplefin'},
    {map:'stormcoil-fields',owned:'electric-zipspool',recruit:'electric-copperkip'},
+   {map:'lantern-necropolis',owned:'ghost-wickrift',recruit:'ghost-shroudlet'},
+   {map:'ochre-labyrinth',owned:'ground-clodkin',recruit:'ground-burrowick'},
+   {map:'dawn-prism-sanctum',owned:'light-gleamlet',recruit:'light-dawnpurl'},
   ];
-  for(const {map,owned,recruit} of candidateRecruits){
-   for(const first of ['regular','boss'] as const){
-    const account=await guest(map.slice(0,12)+' '+first,owned);
+  expect(bosses.map(boss=>boss.mapId)).toEqual(candidateRecruits.map(entry=>entry.map));
+  for(const first of ['regular','boss'] as const){
+   const account=await guest('Functional '+first,candidateRecruits[0]!.owned);
+   // Pre-own each first-ranked recruit to exercise the published order.
+   for(const {owned} of candidateRecruits.slice(1)){
+    await pool.query(
+     "INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,'gacha')",
+     [account.accountId,owned],
+    );
+   }
+   const clearedMaps:string[]=[];
+   const expectedRecruits:string[]=[];
+   const second=first==='regular'?'boss':'regular';
+   for(const [index,{map,recruit}] of candidateRecruits.entries()){
+    const boss=bosses[index]!;
+    const rewards={boss:boss.rewardPolicy,regular:boss.regular.rewardPolicy};
     const firstReceipt=await (await functionalSoloWin(account,map,first,pinned))();
     expect(firstReceipt.statusCode,firstReceipt.body).toBe(200);
-    expect(firstReceipt.json()).toMatchObject({won:true,firstClear:true,clearedMaps:[],recruitedPetId:null});
+    expect(firstReceipt.json()).toMatchObject({
+     won:true,firstClear:true,clearedMaps,recruitedPetId:null,...soloPayout(rewards[first].firstClear),
+    });
 
-    const settle=await functionalSoloWin(account,map,first==='regular'?'boss':'regular',pinned);
+    const settle=await functionalSoloWin(account,map,second,pinned);
     const receipts=await Promise.all([settle(),settle()]);
+    clearedMaps.push(map);
+    expectedRecruits.push(recruit);
     for(const receipt of receipts){
      expect(receipt.statusCode,receipt.body).toBe(200);
-     expect(receipt.json()).toMatchObject({won:true,firstClear:true,clearedMaps:[map],recruitedPetId:recruit});
+     expect(receipt.json()).toMatchObject({
+      won:true,firstClear:true,clearedMaps,recruitedPetId:recruit,...soloPayout(rewards[second].firstClear),
+     });
     }
     expect(receipts[0]!.json()).toEqual(receipts[1]!.json());
-    const ownedRecruits=await pool.query(
-     "SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1 AND source='campaign'",[account.accountId],
+    const replay=await (await functionalSoloWin(account,map,'regular',pinned))();
+    expect(replay.statusCode,replay.body).toBe(200);
+    expect(replay.json()).toMatchObject({
+     won:true,firstClear:false,clearedMaps,recruitedPetId:null,...soloPayout(rewards.regular.repeatClear),
+    });
+    const ownedRecruits=await pool.query<{pet_id:string}>(
+     "SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1 AND source='campaign' ORDER BY pet_id",
+     [account.accountId],
     );
-    expect(ownedRecruits.rows).toEqual([{pet_id:recruit}]);
+    expect(ownedRecruits.rows.map(row=>row.pet_id)).toEqual([...expectedRecruits].sort());
    }
+   const state=await server.http.inject({url:'/v1/pets/wave1/state',headers:{cookie:account.cookie}});
+   expect(state.statusCode,state.body).toBe(200);
+   expect(state.json().campaign).toEqual({clearedMaps,nextMapId:null});
   }
  });
 

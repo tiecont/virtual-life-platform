@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "engineCapability": "arena8-coop-v2",
   "configId": "arena8-coop-functional-candidate",
-  "contentRevision": 4,
+  "contentRevision": 5,
   "board": {
     "deadBoardPolicy": "regenerate",
     "generationAttempts": 64,
@@ -5948,7 +5948,16 @@
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
       "mapId": "lantern-necropolis",
+      "requiredMapClear": "stormcoil-fields",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "ghost-wickrift",
+          "ghost-shroudlet",
+          "ghost-bellshade",
+          "ghost-echowisp",
+          "ghost-veilrelic",
+          "ghost-lanternwake"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -5966,6 +5975,54 @@
           "coins": 0,
           "exp": 0,
           "materials": 0
+        }
+      },
+      "solo": {
+        "maxHp": 2100,
+        "baseDamage": 10,
+        "perRoundDamage": 0,
+        "minimumDamage": 3,
+        "maxRounds": 25
+      },
+      "regular": {
+        "id": "lantern-necropolis-regular",
+        "name": "Lantern Necropolis Scout",
+        "element": "ghost",
+        "maxHp": 620,
+        "defense": 14,
+        "critRateBp": 900,
+        "critDamageBp": 15000,
+        "attackModel": {
+          "baseDamage": 17,
+          "perRoundDamage": 1,
+          "defenseDivisor": 8,
+          "minimumDamage": 3,
+          "vulnerability": {
+            "valuePm": 200,
+            "durationTurns": 2
+          }
+        },
+        "telegraphTurns": 2,
+        "maxRounds": 15,
+        "rewardPolicy": {
+          "firstClear": {
+            "achievementPoints": 0,
+            "coins": 350,
+            "exp": 1500,
+            "materials": 0
+          },
+          "repeatClear": {
+            "achievementPoints": 0,
+            "coins": 70,
+            "exp": 210,
+            "materials": 0
+          },
+          "defeat": {
+            "achievementPoints": 0,
+            "coins": 0,
+            "exp": 0,
+            "materials": 0
+          }
         }
       }
     },
@@ -5995,7 +6052,16 @@
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
       "mapId": "ochre-labyrinth",
+      "requiredMapClear": "lantern-necropolis",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "ground-clodkin",
+          "ground-burrowick",
+          "ground-dunebraid",
+          "ground-siltmaw",
+          "ground-terracrest",
+          "ground-faultwarden"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -6013,6 +6079,50 @@
           "coins": 0,
           "exp": 0,
           "materials": 0
+        }
+      },
+      "solo": {
+        "maxHp": 2600,
+        "baseDamage": 16,
+        "perRoundDamage": 1,
+        "minimumDamage": 3,
+        "maxRounds": 25
+      },
+      "regular": {
+        "id": "ochre-labyrinth-regular",
+        "name": "Ochre Labyrinth Scout",
+        "element": "ground",
+        "maxHp": 750,
+        "defense": 22,
+        "critRateBp": 700,
+        "critDamageBp": 15000,
+        "attackModel": {
+          "baseDamage": 16,
+          "perRoundDamage": 1,
+          "defenseDivisor": 8,
+          "minimumDamage": 3
+        },
+        "telegraphTurns": 2,
+        "maxRounds": 15,
+        "rewardPolicy": {
+          "firstClear": {
+            "achievementPoints": 0,
+            "coins": 400,
+            "exp": 2000,
+            "materials": 0
+          },
+          "repeatClear": {
+            "achievementPoints": 0,
+            "coins": 80,
+            "exp": 240,
+            "materials": 0
+          },
+          "defeat": {
+            "achievementPoints": 0,
+            "coins": 0,
+            "exp": 0,
+            "materials": 0
+          }
         }
       }
     },
@@ -6042,7 +6152,16 @@
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
       "mapId": "dawn-prism-sanctum",
+      "requiredMapClear": "ochre-labyrinth",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "light-gleamlet",
+          "light-dawnpurl",
+          "light-raymantle",
+          "light-solweft",
+          "light-prismhalo",
+          "light-dawnarchon"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -6060,6 +6179,50 @@
           "coins": 0,
           "exp": 0,
           "materials": 0
+        }
+      },
+      "solo": {
+        "maxHp": 2450,
+        "baseDamage": 14,
+        "perRoundDamage": 0,
+        "minimumDamage": 3,
+        "maxRounds": 25
+      },
+      "regular": {
+        "id": "dawn-prism-sanctum-regular",
+        "name": "Dawn Prism Sanctum Scout",
+        "element": "light",
+        "maxHp": 880,
+        "defense": 19,
+        "critRateBp": 1000,
+        "critDamageBp": 15000,
+        "attackModel": {
+          "baseDamage": 19,
+          "perRoundDamage": 2,
+          "defenseDivisor": 8,
+          "minimumDamage": 3
+        },
+        "telegraphTurns": 2,
+        "maxRounds": 15,
+        "rewardPolicy": {
+          "firstClear": {
+            "achievementPoints": 0,
+            "coins": 500,
+            "exp": 2600,
+            "materials": 0
+          },
+          "repeatClear": {
+            "achievementPoints": 0,
+            "coins": 90,
+            "exp": 270,
+            "materials": 0
+          },
+          "defeat": {
+            "achievementPoints": 0,
+            "coins": 0,
+            "exp": 0,
+            "materials": 0
+          }
         }
       }
     }

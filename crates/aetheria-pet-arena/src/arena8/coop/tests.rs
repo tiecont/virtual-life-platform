@@ -1354,7 +1354,7 @@ fn functional_rules() -> CoopRules {
 }
 
 #[test]
-fn functional_campaign_binds_three_solo_maps_and_their_canonical_recruitment_order() {
+fn functional_campaign_binds_all_six_solo_maps_and_their_canonical_recruitment_order() {
     let catalog: serde_json::Value = serde_json::from_str(include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/../../specs/pet-arena/mvp-wave1-43-pets.json"
@@ -1362,13 +1362,39 @@ fn functional_campaign_binds_three_solo_maps_and_their_canonical_recruitment_ord
     .unwrap();
     let config = CoopConfig::parse(functional_bundle()).unwrap();
     let maps = catalog["maps"].as_array().unwrap();
-    for (chapter, boss) in maps[..3].iter().zip(&config.bosses()[..3]) {
+    let first_clear = [
+        (500, 200),
+        (750, 250),
+        (1100, 300),
+        (1500, 350),
+        (2000, 400),
+        (2600, 500),
+    ];
+    assert_eq!(config.bosses().len(), maps.len());
+    assert_eq!(maps.len(), first_clear.len());
+    for (index, (chapter, boss)) in maps.iter().zip(config.bosses()).enumerate() {
         let map_id = chapter["id"].as_str().unwrap();
+        let regular_id = format!("{map_id}-regular");
         assert_eq!(boss.map_id.as_deref(), Some(map_id));
-        let regular = CoopRules::load_solo(functional_bundle(), format!("{map_id}-regular"))
+        assert_eq!(boss.id, format!("{map_id}-warden"));
+        assert_eq!(boss.element, chapter["element"].as_str().unwrap());
+        assert_eq!(boss.required_room_points, 5000);
+        // The original Fire and Water cooperative hosting policies have no map gate.
+        let prerequisite = (index >= 2).then(|| maps[index - 1]["id"].as_str().unwrap());
+        assert_eq!(boss.required_map_clear.as_deref(), prerequisite);
+
+        let regular = CoopRules::load_solo(functional_bundle(), regular_id.clone())
             .expect("functional regular encounter");
         let warden =
             CoopRules::load_solo(functional_bundle(), boss.id.clone()).expect("functional Warden");
+        let scout = boss.regular.as_ref().unwrap();
+        let solo = boss.solo.as_ref().unwrap();
+        assert_eq!(regular.encounter_id(), regular_id);
+        assert_eq!(warden.encounter_id(), boss.id);
+        assert!(regular.regular_encounter());
+        assert!(!warden.regular_encounter());
+        assert_eq!(regular.opponent().max_hp, scout.max_hp);
+        assert_eq!(warden.opponent().max_hp, solo.max_hp);
         assert_eq!(regular.digest(), config.digest());
         assert_eq!(warden.digest(), config.digest());
 
@@ -1379,28 +1405,27 @@ fn functional_campaign_binds_three_solo_maps_and_their_canonical_recruitment_ord
             serde_json::json!(rewards.recruitment_pet_ids),
             serde_json::Value::Array(recruits)
         );
+        let scout_rewards = &scout.reward_policy;
+        assert_eq!(
+            (
+                scout_rewards.first_clear.exp,
+                scout_rewards.first_clear.coins
+            ),
+            first_clear[index]
+        );
+        let index = u32::try_from(index).unwrap();
+        assert_eq!(
+            (
+                scout_rewards.repeat_clear.exp,
+                scout_rewards.repeat_clear.coins
+            ),
+            (120 + 30 * index, 40 + 10 * index)
+        );
+        assert_eq!(
+            (scout_rewards.defeat.exp, scout_rewards.defeat.coins),
+            (0, 0)
+        );
     }
-
-    let stormcoil = &config.bosses()[2];
-    let regular = stormcoil.regular.as_ref().unwrap();
-    assert_eq!(
-        stormcoil.required_map_clear.as_deref(),
-        Some("tideglass-lagoon")
-    );
-    assert_eq!(
-        (
-            regular.reward_policy.first_clear.exp,
-            regular.reward_policy.first_clear.coins
-        ),
-        (1100, 300)
-    );
-    assert_eq!(
-        (
-            regular.reward_policy.repeat_clear.exp,
-            regular.reward_policy.repeat_clear.coins
-        ),
-        (180, 60)
-    );
 }
 
 #[test]
