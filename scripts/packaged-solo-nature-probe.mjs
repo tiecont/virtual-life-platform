@@ -174,6 +174,12 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
  assert.ok(!sameReceipt||frostMatch.event_index<frostConsumed.event_index);
  assert.ok(astral.value>=2&&astral.cell>=0&&astral.cell<64);
  assert.equal(astral.afterMultipliers[astral.cell],astral.value);
+ const amplified=await receiptEvents(pool,player.matchId,astral.version);
+ const astralGroups=new Set(Array.from({length:62},(_,index)=>nativeEventHash('matched-astral',0,index+3)));
+ const astralMatch=amplified.find(row=>astralGroups.has(row.hash));
+ const astralUpgrade=amplified.find(row=>row.event_index>astralMatch?.event_index
+  &&row.hash===nativeEventHash('astral-upgrade',0,astral.value));
+ assert.ok(astralMatch&&astralUpgrade,'Expected journal commitments to matching and upgrading Astral');
  const earlyMax=Math.max(...bundle.multiplier.schedule.filter(stage=>stage.from<=astral.beforeTurn)
   .flatMap(stage=>stage.tiers.map(row=>row.multiplier)));
  assert.ok(astral.value<=earlyMax);
@@ -216,7 +222,7 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
  assert.equal(astral.version,player.version);
  const verified={candidate,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,
   playerLevel:fixture.playerLevel,levelFixture:fixture.levelFixture,
-  samples,journalOrder:{frostMatch,frostConsumed,sameReceipt},receipts,frames};
+  samples,journalOrder:{frostMatch,frostConsumed,sameReceipt,astralMatch,astralUpgrade},receipts,frames};
  await writeFile(join(directory,'solo-shared-frost-astral-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
 
