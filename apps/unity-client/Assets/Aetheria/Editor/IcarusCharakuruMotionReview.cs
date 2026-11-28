@@ -40,7 +40,12 @@ namespace Aetheria.Editor
             Directory.CreateDirectory(output);
             IcarusPrefabSetupEditor.RecoverReviewImports();
             var originalScene = SceneManager.GetActiveScene();
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            // Batch Editor can start with a clean untitled scene. Unlike a saved
+            // scene it cannot coexist with a new additive scene.
+            bool replaceBootstrap = SceneManager.sceneCount == 1 && string.IsNullOrEmpty(originalScene.path);
+            Require(!replaceBootstrap || !originalScene.isDirty, "The untitled scene contains unsaved changes.");
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
+                replaceBootstrap ? NewSceneMode.Single : NewSceneMode.Additive);
             string leaf = "IcarusMotionReview-" + Guid.NewGuid().ToString("N");
             string folder = "Assets/" + leaf;
             PlayableDirector director = null;
@@ -126,8 +131,12 @@ namespace Aetheria.Editor
                     director.Stop();
                     Undo.ClearUndo(director.gameObject);
                 }
-                EditorSceneManager.CloseScene(scene, true);
-                if (originalScene.IsValid() && originalScene.isLoaded) SceneManager.SetActiveScene(originalScene);
+                if (replaceBootstrap) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                else
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                    if (originalScene.IsValid() && originalScene.isLoaded) SceneManager.SetActiveScene(originalScene);
+                }
                 if (AssetDatabase.IsValidFolder(folder)) AssetDatabase.DeleteAsset(folder);
             }
         }
