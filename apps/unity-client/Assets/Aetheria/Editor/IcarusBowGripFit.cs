@@ -241,16 +241,18 @@ namespace Aetheria.Editor
         internal static Evidence Fit(GameObject model, Transform marker, Vrm10Instance vrm, bool compareBaseline)
         {
             using var hand = new Hand(vrm);
-            var parts = model.GetComponentsInChildren<MeshFilter>();
-            var body = parts.Single(f => f.name == "BowBody");
-            var bowString = parts.Single(f => f.name == "BowString");
+            var parts = model.GetComponentsInChildren<Renderer>();
+            var body = parts.Single(r => r.name == "BowBody");
+            var bowString = parts.Single(r => r.name == "BowString");
+            Mesh RestMesh(Renderer renderer) => renderer is SkinnedMeshRenderer skin
+                ? skin.sharedMesh : renderer.GetComponent<MeshFilter>().sharedMesh;
             var markerLocal = model.transform.InverseTransformPoint(marker.position);
-            Vector3[] Source(MeshFilter part) => part.sharedMesh.vertices.Select(p =>
+            Vector3[] Source(Renderer part) => RestMesh(part).vertices.Select(p =>
                 model.transform.InverseTransformPoint(part.transform.TransformPoint(p)) - markerLocal).ToArray();
             var source = Source(body);
-            var faces = body.sharedMesh.triangles;
+            var faces = RestMesh(body).triangles;
             var stringSource = Source(bowString);
-            var stringFaces = bowString.sharedMesh.triangles;
+            var stringFaces = RestMesh(bowString).triangles;
             var band = source.Where(p => Mathf.Abs(p.y - RiserHeight) < .012f).ToArray();
             if (band.Length < 8) throw new InvalidDataException("Missing the measured grip surface below the ornament.");
             float halfKnuckleSpan = Vector3.Distance(hand.digits[0, 0].position, hand.digits[3, 0].position) / 2;
