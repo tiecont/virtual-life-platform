@@ -41,6 +41,7 @@ namespace Aetheria.Editor
         private static Vector3 firstHipPosition;
         private static Quaternion firstHipRotation;
         private static double deadline, clipStart;
+        private static int readyFrame;
         private static float maxHipDistance;
         private static float maxHipAngle;
 
@@ -194,7 +195,13 @@ namespace Aetheria.Editor
             if (string.IsNullOrEmpty(output)) return;
             if (change == PlayModeStateChange.EnteredPlayMode)
             {
-                try { Begin(output); }
+                try
+                {
+                    FocusGameView();
+                    readyFrame = Time.frameCount + 3;
+                    deadline = EditorApplication.timeSinceStartup + 420;
+                    EditorApplication.update += WaitForGraphics;
+                }
                 catch (Exception error) { Fail(error); }
             }
             else if (change == PlayModeStateChange.EnteredEditMode)
@@ -203,6 +210,22 @@ namespace Aetheria.Editor
                 int status = File.Exists(Path.Combine(output, "icarus-recorder-review.json")) ? 0 : 1;
                 EditorApplication.delayCall += () => EditorApplication.Exit(status);
             }
+        }
+
+        private static void WaitForGraphics()
+        {
+            try
+            {
+                Require(EditorApplication.timeSinceStartup < deadline, "Private recording never reached an active Game view.");
+                // The first URP Game view can import shaders and camera assets.
+                // Let several real game frames complete before starting Recorder's
+                // fixed timeline and bounded recording interval.
+                if (Time.frameCount < readyFrame || EditorApplication.isUpdating || ShaderUtil.anythingCompiling)
+                    return;
+                EditorApplication.update -= WaitForGraphics;
+                Begin(SessionState.GetString(SessionKey, ""));
+            }
+            catch (Exception error) { Fail(error); }
         }
 
         private static void Begin(string output)
@@ -329,6 +352,7 @@ namespace Aetheria.Editor
 
         private static void EndPlay()
         {
+            EditorApplication.update -= WaitForGraphics;
             EditorApplication.update -= Poll;
             controller?.StopRecording();
             controller = null;
