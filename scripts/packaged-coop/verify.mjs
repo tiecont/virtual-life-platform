@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
 const root=process.argv[2];
 const read=async file=>JSON.parse(await readFile(join(root,file+'.json'),'utf8'));
@@ -19,6 +21,10 @@ for(const name of screenshots){
  assert.ok(png.length>32&&png.subarray(0,8).toString('hex')==='89504e470d0a1a0a'&&
   png.toString('ascii',12,16)==='IHDR'&&png.toString('ascii',png.length-8,png.length-4)==='IEND',name);
  assert.equal(png.readUInt32BE(16)+'x'+png.readUInt32BE(20),expectedSize,name+' dimensions');
+}
+if(before.state.ruleset.version===2){
+ const verifier=fileURLToPath(new URL('./board_capture.py',import.meta.url));
+ execFileSync('python3',[verifier,join(root,'22-water-started-board.png'),join(root,'23-water-after-host-swap.png')],{stdio:'inherit'});
 }
 const states=(await Promise.all((await readdir(root)).filter(name=>/^state-\d{3}\.json$/.test(name)).map(name=>read(name.slice(0,-5))))).sort((a,b)=>a.version-b.version);
 const stateAt=version=>states.find(s=>s.version===version)?.state;
