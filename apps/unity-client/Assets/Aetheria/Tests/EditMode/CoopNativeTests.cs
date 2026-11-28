@@ -211,6 +211,29 @@ namespace Aetheria.Tests
                 customize: Advanced));
         }
 
+        [Test]
+        public void BasicJewelReceiptsPreserveWideDamageAndEnforcePerSourceBounds()
+        {
+            string Advanced(string json) => Timed(json, false).Replace("\"version\":3", "\"version\":4")
+                .Replace("\"pending\":null", "\"pending\":null,\"chillReductionPm\":0");
+            const string rows = "\"jewelFeedback\":[" +
+                "{\"kind\":\"sword-damage\",\"seat\":0,\"value\":4000000000}," +
+                "{\"kind\":\"heart-heal\",\"seat\":1,\"value\":9}," +
+                "{\"kind\":\"shield-grant\",\"seat\":2,\"value\":4}," +
+                "{\"kind\":\"special-mana\",\"seat\":0,\"value\":65535}," +
+                "{\"kind\":\"special-rage\",\"seat\":0,\"value\":7}," +
+                "{\"kind\":\"mana-gain\",\"seat\":0,\"value\":1}," +
+                "{\"kind\":\"rage-gain\",\"seat\":0,\"value\":2}],";
+            CoopNativeView Read(string input) => Coop(phase: "playing", extra: input, customize: Advanced);
+            var receipt = Read(rows);
+            Assert.That(receipt.JewelFeedback.Count, Is.EqualTo(7));
+            Assert.That(receipt.JewelFeedback[0].Value, Is.EqualTo(4000000000L));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("65535", "65536")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("4000000000", "0")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("special-mana", "mana-gain")));
+            Assert.Throws<FormatException>(() => Read(rows.Replace("sword-damage\",\"seat\":0", "sword-damage\",\"seat\":1")));
+        }
+
         private static string Timed(string json, bool solo)
         {
             const string guard = "{\"kind\":\"guard\",\"id\":\"icarus-guard\",\"mana\":0,\"rage\":0,\"cooldown\":0," +

@@ -64,10 +64,10 @@ namespace Aetheria.Networking
         {
             public string Kind { get; }
             public int? Seat { get; }
-            public int Value { get; }
+            public long Value { get; }
             public int? Cell { get; }
 
-            internal JewelEffect(string kind, int? seat, int value, int? cell)
+            internal JewelEffect(string kind, int? seat, long value, int? cell)
             { Kind = kind; Seat = seat; Value = value; Cell = cell; }
         }
 
@@ -347,7 +347,7 @@ namespace Aetheria.Networking
             fields.Boss = ReadBoss(play.Element("boss"));
             fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion >= FunctionalVersion, advanced);
             if (advanced && play.Element("jewelFeedback") is XElement jewelFeedback)
-                fields.JewelFeedback = ReadJewelFeedback(jewelFeedback, fields.Board, seatCount);
+                fields.JewelFeedback = ReadJewelFeedback(jewelFeedback, fields.Board, seatCount, fields.You);
             fields.Participants = ReadParticipants(play.Element("participants"), seatCount, timed);
             fields.Pending = ReadPending(play.Element("pending"), seatCount);
             if (timed) ValidateTimedFields(fields);
@@ -404,12 +404,14 @@ namespace Aetheria.Networking
             return tiles;
         }
 
-        private static JewelEffect[] ReadJewelFeedback(XElement field, Tile[] board, int seats)
+        private static JewelEffect[] ReadJewelFeedback(XElement field, Tile[] board, int seats, int you)
         {
             var upgraded = new HashSet<int>();
+            var basic = new HashSet<(string, int)>();
             return ProjectionJson.Array(field, MaxJewelFeedback).Select(row =>
             {
-                var kind = Token(row.Element("kind"), "nature-cleanse", "chill-armed", "chill-consumed", "astral-upgrade");
+                var kind = Token(row.Element("kind"), "nature-cleanse", "chill-armed", "chill-consumed", "astral-upgrade",
+                    "sword-damage", "mana-gain", "rage-gain", "special-mana", "special-rage", "heart-heal", "shield-grant");
                 var astral = kind == "astral-upgrade";
                 var consumed = kind == "chill-consumed";
                 if (astral) ProjectionJson.ObjectFields(row, "kind", "seat", "value", "cell");
@@ -419,8 +421,21 @@ namespace Aetheria.Networking
                 if (consumed && NullableUnsigned(row.Element("seat")).HasValue)
                     throw new FormatException("Unexpected Chill feedback seat");
                 int? cell = astral ? Bounded(row.Element("cell"), 0, Cells - 1) : null;
-                var amount = astral ? Bounded(row.Element("value"), 2, AdvancedMaxMultiplier) :
-                    Bounded(row.Element("value"), 1, kind == "nature-cleanse" ? MaxJewelFeedback : MaxChillReductionPm);
+                var actorYield = kind is "sword-damage" or "mana-gain" or "rage-gain" or "special-mana" or "special-rage";
+                if ((actorYield && seat != you) ||
+                    ((actorYield || kind is "heart-heal" or "shield-grant") && !basic.Add((kind, seat.Value))))
+                    throw new FormatException("Invalid basic jewel feedback seat");
+                var maximum = kind switch
+                {
+                    "sword-damage" => 2L * uint.MaxValue, // both Boss phases can be hit by this swap
+                    "heart-heal" or "shield-grant" => (long)uint.MaxValue,
+                    "mana-gain" or "rage-gain" or "special-mana" or "special-rage" => ushort.MaxValue,
+                    "nature-cleanse" => MaxJewelFeedback,
+                    "astral-upgrade" => AdvancedMaxMultiplier,
+                    _ => MaxChillReductionPm
+                };
+                var amount = ProjectionJson.Integer(row.Element("value"));
+                if (amount < (astral ? 2 : 1) || amount > maximum) throw new FormatException("Invalid jewel effect value");
                 if (cell.HasValue && (!upgraded.Add(cell.Value) ||
                     board[cell.Value]?.Multiplier != amount || !TileKinds.Contains(board[cell.Value].Kind)))
                     throw new FormatException("Invalid Astral feedback cell");

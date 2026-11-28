@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
-import {basicKinds} from './coop-advanced-publication-probe.mjs';
+import {advancedFeedback,basicKinds} from './coop-advanced-publication-probe.mjs';
 import {pureSwap} from './coop-visible-kind-swap.mjs';
 
 export async function verifyAdvancedSoloJewel({kind,pool,host,published,mark,soloAdmission,native,connections}){
@@ -57,7 +57,7 @@ export async function verifyAdvancedSoloJewel({kind,pool,host,published,mark,sol
  assert.deepEqual(current.state.board,opening);
  const before={turn:current.state.turn,statuses:statuses(),pending:current.state.pending,bossPhase:current.state.boss.phase};
  await commit(move.action);
- const feedback=current.state.jewelFeedback;
+ const feedback=advancedFeedback(current.state);
  assert.ok(current.state.board.every(tile=>basicKinds.includes(tile.kind)));
  if(kind==='nature'){
   const limit=bundle.advancedJewels.natureActorLimits[Math.min(move.matched,5)-3];

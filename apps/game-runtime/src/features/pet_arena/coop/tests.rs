@@ -979,7 +979,12 @@ fn member_receipt_reports_exact_astral_cell_without_changing_state_events_or_ent
     )
     .unwrap();
     let rows = receipt["jewelFeedback"].as_array().unwrap();
-    assert_eq!(rows.len(), 1);
+    assert_eq!(
+        rows.iter()
+            .filter(|row| row["kind"] == "astral-upgrade")
+            .count(),
+        1
+    );
     assert_eq!(rows[0]["kind"], "astral-upgrade");
     assert_eq!(rows[0]["seat"], 0);
     let index = rows[0]["cell"].as_u64().unwrap() as usize;
@@ -992,4 +997,110 @@ fn member_receipt_reports_exact_astral_cell_without_changing_state_events_or_ent
     let plain_view: serde_json::Value =
         serde_json::from_slice(&rules.project(&detailed.state, actor).unwrap()).unwrap();
     assert!(plain_view.get("jewelFeedback").is_none());
+}
+
+#[test]
+fn basic_jewel_receipts_report_actual_yields_without_changing_events_state_or_entropy() {
+    use aetheria_game_core::{LogicalClock, Reducer};
+    use aetheria_pet_arena::arena8::coop::{Tile, TileIdentity, TileKind};
+    let bytes = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-advanced-v1.candidate.json"
+    ));
+    let roster = seats();
+    let bindings = bindings(bytes, &roster);
+    let rules = Rules::load(
+        bytes,
+        roster,
+        "cinder-terraces-warden".into(),
+        Some(&bindings),
+    )
+    .unwrap();
+    let seed = SecretSeed::from_host_entropy([32; 32]);
+    let stream = || {
+        seed.stream(Value::Text("ordinary-receipt".into()), 0)
+            .unwrap()
+    };
+    let initial = rules
+        .engine()
+        .reduce(&rules.initial(), CoopAction::Start, &mut stream())
+        .unwrap()
+        .state;
+    let clock = LogicalClock {
+        server_tick: 1,
+        logical_time_ms: 1,
+    };
+    for (offset, kind) in TileKind::ALL.into_iter().enumerate() {
+        let mut state = initial.clone();
+        state.board = std::array::from_fn(|index| {
+            Some(Tile {
+                identity: TileIdentity::Kind(TileKind::ALL[(index / 8 + index % 8 + offset) % 6]),
+                multiplier: 1,
+            })
+        });
+        // The swap 2↔10 completes the forced first-row triple.
+        state.board[1] = state.board[0];
+        state.board[10] = state.board[0];
+        state.participants[1].hp = 10;
+        let action = CoopCommand::new(CoopAction::Swap {
+            first: 2,
+            second: 10,
+        });
+        let mut plain_rng = stream();
+        let mut observed_rng = stream();
+        let plain = rules
+            .reduce(&state, &action, clock, &mut plain_rng)
+            .unwrap();
+        let mut feedback = Vec::new();
+        let detailed = rules
+            .reduce_for_receipt(&state, &action, clock, &mut observed_rng, &mut feedback)
+            .unwrap();
+        assert_eq!(plain.state, detailed.state);
+        assert_eq!(plain.events, detailed.events);
+        assert_eq!(plain_rng.cursor(), observed_rng.cursor());
+        let view: serde_json::Value = serde_json::from_slice(
+            &rules
+                .project_receipt(&detailed.state, &state.participants[0].account, &feedback)
+                .unwrap(),
+        )
+        .unwrap();
+        let rows = view["jewelFeedback"].as_array().unwrap();
+        let yield_sum = |name: &str| -> u64 {
+            rows.iter()
+                .filter(|row| row["kind"] == name)
+                .map(|row| row["value"].as_u64().unwrap())
+                .sum()
+        };
+        let actor = &plain.state.participants[0];
+        assert_eq!(yield_sum("sword-damage"), actor.contribution_damage);
+        assert_eq!(yield_sum("heart-heal"), actor.contribution_healing);
+        assert_eq!(yield_sum("shield-grant"), actor.contribution_shielding);
+        assert_eq!(
+            yield_sum("mana-gain") + yield_sum("special-mana"),
+            u64::from(actor.mana - state.participants[0].mana)
+        );
+        assert_eq!(
+            yield_sum("rage-gain") + yield_sum("special-rage"),
+            u64::from(actor.rage - state.participants[0].rage)
+        );
+        let expected = match kind {
+            TileKind::Sword => "sword-damage",
+            TileKind::Heart => "heart-heal",
+            TileKind::Shield => "shield-grant",
+            TileKind::Mana => "mana-gain",
+            TileKind::Rage => "rage-gain",
+            TileKind::Special => {
+                assert!(yield_sum("special-rage") > 0);
+                "special-mana"
+            }
+            _ => unreachable!(),
+        };
+        assert!(yield_sum(expected) > 0, "{expected}");
+        if kind == TileKind::Heart {
+            assert!(
+                rows.iter()
+                    .any(|row| row["kind"] == "heart-heal" && row["seat"] == 1)
+            );
+        }
+    }
 }

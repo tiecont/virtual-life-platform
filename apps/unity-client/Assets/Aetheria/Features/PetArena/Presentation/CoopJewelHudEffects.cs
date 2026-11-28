@@ -56,7 +56,7 @@ namespace Aetheria.PetArena.Presentation
                 if (next == MaxActive) continue;
                 var destination = effect.Cell.HasValue
                     ? root.Q(CoopNativePresentation.CellPrefix + effect.Cell.Value)
-                    : kind == "frost" ? root.Q("coop-opponents")
+                    : (kind == "frost" || kind == "sword") ? root.Q("coop-opponents")
                     : root.Q(CoopNativePresentation.SeatPrefix + effect.Seat.Value);
                 if (destination == null) continue;
                 if (next == chips.Count)
@@ -83,6 +83,20 @@ namespace Aetheria.PetArena.Presentation
             var amount = effect.Value.ToString(CultureInfo.InvariantCulture);
             switch (effect.Kind)
             {
+                case "sword-damage":
+                    kind = "sword"; value = "−" + amount; color = new Color32(255, 174, 151, 255); cue = ArenaAudioCue.Attack; return true;
+                case "heart-heal":
+                    kind = "heart"; value = "+" + amount; color = new Color32(255, 168, 199, 255); cue = ArenaAudioCue.ElementLight; return true;
+                case "shield-grant":
+                    kind = "shield"; value = "+" + amount; color = new Color32(180, 213, 255, 255); cue = ArenaAudioCue.Guard; return true;
+                case "mana-gain":
+                case "special-mana":
+                    kind = effect.Kind == "special-mana" ? "special" : "mana"; value = "+" + amount + (kind == "special" ? " " + CampaignLocale.Text("battle.jewel.mana", "Mana") : "");
+                    color = new Color32(143, 222, 255, 255); cue = ArenaAudioCue.ElementWater; return true;
+                case "rage-gain":
+                case "special-rage":
+                    kind = effect.Kind == "special-rage" ? "special" : "rage"; value = "+" + amount + (kind == "special" ? " " + CampaignLocale.Text("battle.jewel.rage", "Rage") : "");
+                    color = new Color32(255, 194, 123, 255); cue = ArenaAudioCue.ElementFire; return true;
                 case "nature-cleanse":
                     kind = "nature"; value = "−" + amount; color = new Color32(152, 234, 131, 255); cue = ArenaAudioCue.ElementGround; return true;
                 case "chill-armed":
@@ -119,6 +133,7 @@ namespace Aetheria.PetArena.Presentation
                 text.style.unityFontStyleAndWeight = FontStyle.Bold;
                 text.style.backgroundColor = Color.clear;
                 text.style.paddingLeft = 2;
+                CampaignLocale.ApplyFont(text);
                 Element.Add(icon);
                 Element.Add(text);
                 Hide();

@@ -205,8 +205,8 @@ impl CoopRules {
         // or utility multiplier. Crossings are already deduplicated.
         let mut yields = [0u64; 6];
         let SpecialPolicy::ResourceCombo { mana, rage } = policy.special;
-        let mut mana_yield = 0u64;
-        let mut rage_yield = 0u64;
+        let mut special_mana = 0u64;
+        let mut special_rage = 0u64;
         let mut has_sword = false;
         for (cell, matched) in state.board.iter_mut().zip(matched) {
             if !matched {
@@ -232,19 +232,21 @@ impl CoopRules {
                     yields[kind.index()] += scaled(policy.sword_contribution_pm);
                 }
                 TileKind::Nature | TileKind::Frost | TileKind::Astral => unreachable!(),
-                TileKind::Mana => mana_yield += scaled(policy.mana_per_tile.into()),
-                TileKind::Rage => rage_yield += scaled(policy.rage_per_tile.into()),
+                TileKind::Mana => yields[kind.index()] += scaled(policy.mana_per_tile.into()),
+                TileKind::Rage => yields[kind.index()] += scaled(policy.rage_per_tile.into()),
                 TileKind::Heart => yields[kind.index()] += scaled(policy.heart.amount),
                 TileKind::Shield => yields[kind.index()] += scaled(policy.shield.amount),
                 TileKind::Special => {
-                    mana_yield += scaled(mana.into());
-                    rage_yield += scaled(rage.into());
+                    special_mana += scaled(mana.into());
+                    special_rage += scaled(rage.into());
                 }
             }
         }
 
         let seat = &mut state.participants[actor];
         let before = (seat.mana, seat.rage);
+        let mana_yield = yields[TileKind::Mana.index()] + special_mana;
+        let rage_yield = yields[TileKind::Rage.index()] + special_rage;
         seat.mana = seat
             .mana
             .saturating_add(u16::try_from(mana_yield).unwrap_or(u16::MAX))
@@ -253,6 +255,8 @@ impl CoopRules {
             .rage
             .saturating_add(u16::try_from(rage_yield).unwrap_or(u16::MAX))
             .min(self.config.resources.rage_cap);
+        let (mana, special_mana) = resource_credit(seat.mana - before.0, mana_yield, special_mana);
+        let (rage, special_rage) = resource_credit(seat.rage - before.1, rage_yield, special_rage);
         for (name, gain) in [
             ("mana", seat.mana - before.0),
             ("rage", seat.rage - before.1),
@@ -292,13 +296,44 @@ impl CoopRules {
                 }
             }
         }
-        if has_sword {
-            self.resolve_normal_attack(state, actor, yields[TileKind::Sword.index()], rng)
+        let mut outcome = if has_sword {
+            self.resolve_normal_attack(state, actor, yields[TileKind::Sword.index()], rng)?
         } else {
-            Ok(MatchOutcome {
+            MatchOutcome {
                 damage: 0,
                 critical: false,
-            })
-        }
+                jewel_resources: [0; 4],
+            }
+        };
+        outcome.jewel_resources = [mana, rage, special_mana, special_rage];
+        Ok(outcome)
+    }
+}
+
+// In one batch ordinary and Special jewels grant a pooled resource. If both
+// contribute and the grant caps, the reducer defines no priority between them.
+fn resource_credit(granted: u16, total: u64, special: u64) -> (u16, u16) {
+    if special == 0 {
+        (granted, 0)
+    } else if special == total {
+        (0, granted)
+    } else if u64::from(granted) == total {
+        (granted - special as u16, special as u16)
+    } else {
+        (0, 0)
+    }
+}
+
+#[cfg(test)]
+mod receipt_tests {
+    use super::resource_credit;
+
+    #[test]
+    fn a_binding_shared_cap_has_no_per_jewel_attribution() {
+        assert_eq!(resource_credit(2, 5, 0), (2, 0));
+        assert_eq!(resource_credit(2, 5, 5), (0, 2));
+        assert_eq!(resource_credit(5, 5, 2), (3, 2));
+        assert_eq!(resource_credit(3, 5, 2), (0, 0));
+        assert_eq!(resource_credit(0, 3, 3), (0, 0));
     }
 }

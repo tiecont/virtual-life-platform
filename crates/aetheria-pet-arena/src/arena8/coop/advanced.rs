@@ -165,6 +165,9 @@ impl CoopRules {
             rng,
             &mut observed,
         )?;
+        let mut damage = 0;
+        let mut healing = [0; super::SEATS];
+        let mut shields = [0; super::SEATS];
         let mut cells = observed.amplified_cells;
         let mut armed = state.chill_reduction_pm.unwrap_or(0);
         for entry in &decision.events {
@@ -172,6 +175,19 @@ impl CoopRules {
             let [Value::Text(kind), seat, Value::Uint(value)] = row.as_slice() else {
                 continue;
             };
+            // Only swaps emit tile yields. Casts can also emit heal/shield
+            // events but never get attributed to Heart or Shield jewels.
+            if matches!(command.action, super::CoopAction::Swap { .. })
+                && let Value::Uint(target) = seat
+            {
+                let target = *target as usize;
+                match kind.as_str() {
+                    "match" => damage += value,
+                    "heal" => healing[target] += value,
+                    "shield" => shields[target] += value,
+                    _ => {}
+                }
+            }
             let (label, amount, cell) = match kind.as_str() {
                 "nature-cleanse" | "chill-consumed" => (kind.as_str(), *value, Value::Null),
                 "matched-frost" => {
@@ -195,6 +211,29 @@ impl CoopRules {
             if feedback.len() >= CELLS {
                 break;
             }
+        }
+        // Preserve the existing advanced rows first; ordinary chips aggregate
+        // cascades by source and recipient and share the same 64-row bound.
+        let mut chip = |kind: &str, seat: usize, amount: u64| {
+            if amount > 0 && feedback.len() < CELLS {
+                feedback.push(list([
+                    Value::Text(kind.into()),
+                    Value::Uint(seat as u64),
+                    Value::Uint(amount),
+                    Value::Null,
+                ]));
+            }
+        };
+        chip("sword-damage", state.active_seat, damage);
+        for (kind, amount) in ["mana-gain", "rage-gain", "special-mana", "special-rage"]
+            .into_iter()
+            .zip(observed.jewel_resources)
+        {
+            chip(kind, state.active_seat, amount.into());
+        }
+        for seat in 0..state.participants.len() {
+            chip("heart-heal", seat, healing[seat]);
+            chip("shield-grant", seat, shields[seat]);
         }
         Ok(decision)
     }

@@ -1840,6 +1840,13 @@ impl CoopRules {
             } else {
                 self.score_match(state, seat, &matched, rng)?
             };
+            for (total, credit) in observation
+                .jewel_resources
+                .iter_mut()
+                .zip(outcome.jewel_resources)
+            {
+                *total += credit;
+            }
             events.push(event("match", Some(seat as u8), u64::from(outcome.damage)));
             if outcome.critical {
                 events.push(event("critical", Some(seat as u8), 0));
@@ -2014,6 +2021,7 @@ impl CoopRules {
         Ok(MatchOutcome {
             damage: dealt,
             critical,
+            jewel_resources: [0; 4],
         })
     }
 
@@ -2497,6 +2505,7 @@ fn event(kind: &str, seat: Option<u8>, value: u64) -> Value {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct MatchOutcome {
+    jewel_resources: [u16; 4],
     damage: u32,
     critical: bool,
 }
@@ -2510,6 +2519,8 @@ enum RefillResult {
 /// Measurements outside the durable state and event stream.
 #[derive(Clone, Copy, Default)]
 struct TurnObservation {
+    // Mana, Rage, Special Mana, Special Rage. Actual gains never exceed the resource cap.
+    jewel_resources: [u16; 4],
     refill_swap_checks: u64,
     dead_board_regenerations: u64,
     forced_cascade_regenerations: u64,

@@ -3,6 +3,11 @@ import {pureSwap} from './coop-visible-kind-swap.mjs';
 
 export const basicKinds = ['sword','mana','rage','heart','shield','special'];
 
+const advancedEffects=new Set(['nature-cleanse','chill-armed','chill-consumed','astral-upgrade']);
+export function advancedFeedback(state){
+ return (state.jewelFeedback??[]).filter(effect=>advancedEffects.has(effect.kind));
+}
+
 export function checkWaterOpening(state, bundle) {
  const water = bundle.advancedJewels.encounters.find(encounter => encounter.encounterId === state.bossId);
  assert.deepEqual(state.ruleset.version, 4);
@@ -59,7 +64,7 @@ export async function verifyAdvancedCoopPublication({
  assert.equal(swap.version,2);
  assert.equal(swap.state.activeSeat,1);
  checkWaterEffect(swap.state,bundle,move.matched);
- assert.deepEqual(swap.state.jewelFeedback,[{kind:'chill-armed',seat:0,value:swap.state.chillReductionPm}]);
+ assert.deepEqual(advancedFeedback(swap.state),[{kind:'chill-armed',seat:0,value:swap.state.chillReductionPm}]);
  assert.notEqual(swap.state.chillReductionPm,replacement.bundle.advancedJewels.frostReductionPm[0]);
  const journal=async()=>(await pool.query(
   "SELECT committed_version::int AS version,actor_id,encode(receipt_hash,'hex') AS hash FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version",
