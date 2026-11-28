@@ -449,7 +449,7 @@ namespace Aetheria.Editor
 
         internal static string[] Capture(PlayableDirector director, double lead, float length,
             SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent,
-            bool captureMovingChin = false, bool captureMovingPelvis = false)
+            bool captureMovingChin = false, bool captureMovingPelvis = false, bool supersample = false, Bounds? fixedFrame = null)
         {
             Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
                 "A graphics capture requires the project's URP pipeline.");
@@ -476,12 +476,24 @@ namespace Aetheria.Editor
             }
             var bounds = skins[0].bounds;
             foreach (var skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
+            bounds = fixedFrame ?? bounds;
             camera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y) * 1.35f;
             camera.transform.position = bounds.center + new Vector3(1.45f, .18f, 5);
             camera.transform.LookAt(bounds.center);
             const int size = 720;
-            var target = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
+            var renderSize = supersample ? size * 2 : size;
+            var target = new RenderTexture(renderSize, renderSize, 24, RenderTextureFormat.ARGB32)
+                { filterMode = FilterMode.Bilinear };
+            var resolve = supersample ? new RenderTexture(size, size, 0, RenderTextureFormat.ARGB32) : null;
             var image = new Texture2D(size, size, TextureFormat.RGB24, false);
+            void ReadCamera()
+            {
+                RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                if (resolve != null) Graphics.Blit(target, resolve);
+                RenderTexture.active = resolve != null ? resolve : target;
+                image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
+                image.Apply();
+            }
             var previous = RenderTexture.active;
             var originalScene = SceneManager.GetActiveScene();
             bool switchScene = originalScene != reviewRoot.gameObject.scene;
@@ -523,10 +535,7 @@ namespace Aetheria.Editor
                         mesh.RecalculateBounds();
                         filter.sharedMesh = mesh;
                     }
-                    RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                    RenderTexture.active = target;
-                    image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
-                    image.Apply();
+                    ReadCamera();
                     var pixels = image.GetPixels32();
                     var background = pixels[0];
                     int foreground = 0;
@@ -563,10 +572,7 @@ namespace Aetheria.Editor
                         var chinFocus = eyes+Vector3.down*(separation*1.36f);
                         camera.transform.position = chinFocus+new Vector3(.36f,.04f,1f);
                         camera.transform.LookAt(chinFocus);
-                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                        RenderTexture.active = target;
-                        image.ReadPixels(new Rect(0,0,size,size),0,0);
-                        image.Apply();
+                        ReadCamera();
                         File.WriteAllBytes(Path.Combine(output,$"icarus-motion-chin-{i+1:D2}.png"),image.EncodeToPNG());
                         camera.transform.SetPositionAndRotation(position,rotation);
                         camera.orthographicSize = orthoSize;
@@ -584,10 +590,7 @@ namespace Aetheria.Editor
                         camera.orthographicSize = Vector3.Distance(hips.position,midpoint)*.78f;
                         camera.transform.position = focus+new Vector3(.29f,.08f,1f);
                         camera.transform.LookAt(focus);
-                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });
-                        RenderTexture.active = target;
-                        image.ReadPixels(new Rect(0,0,size,size),0,0);
-                        image.Apply();
+                        ReadCamera();
                         File.WriteAllBytes(Path.Combine(output,$"icarus-motion-pelvis-{i+1:D2}.png"),image.EncodeToPNG());
                         camera.transform.SetPositionAndRotation(position,rotation);
                         camera.orthographicSize = orthoSize;
@@ -603,10 +606,7 @@ namespace Aetheria.Editor
                     var focus = eyes + Vector3.down * (separation * .45f);
                     camera.transform.position = focus + new Vector3(0, 0, 1);
                     camera.transform.LookAt(focus);
-                    RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                    RenderTexture.active = target;
-                    image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
-                    image.Apply();
+                    ReadCamera();
                     File.WriteAllBytes(Path.Combine(output, "icarus-face-neutral.png"), image.EncodeToPNG());
                 }
                 clippedWhitePercent = exposure.ToArray();
@@ -628,6 +628,7 @@ namespace Aetheria.Editor
                     Object.DestroyImmediate(filter.gameObject);
                     Object.DestroyImmediate(mesh);
                 }
+                if (resolve != null) { resolve.Release(); Object.DestroyImmediate(resolve); }
                 target.Release();
                 Object.DestroyImmediate(target);
                 Object.DestroyImmediate(image);

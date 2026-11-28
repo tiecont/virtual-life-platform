@@ -43,7 +43,10 @@ namespace Aetheria.Editor
         public static void BuildBodyLayers() => BuildStudy(false, true);
         public static void BuildBodyLayersRendered() => BuildStudy(true, true);
 
-        static void BuildStudy(bool render, bool bodyLayer = false)
+        // Matching original, rendering-only and undercloth captures for the refinement benchmark.
+        public static void CaptureRefinementABC() => BuildStudy(true, true, true);
+
+        static void BuildStudy(bool render, bool bodyLayer = false, bool compareVariants = false)
         {
             string Input(string variable)
             {
@@ -205,7 +208,11 @@ namespace Aetheria.Editor
                     throw new InvalidDataException($"Native Timeline overlay differs from target ({report.maxCorrectiveErrorMeters} m).");
                 if (render)
                 {
-                    void CaptureWalk(string name)
+                    director.time = 0;
+                    director.Evaluate();
+                    var frame = skins[0].bounds;
+                    foreach (var skin in skins.Skip(1)) frame.Encapsulate(skin.bounds);
+                    void CaptureWalk(string name, bool supersample = false)
                     {
                         string path = Path.Combine(output, name);
                         Directory.CreateDirectory(path);
@@ -215,7 +222,8 @@ namespace Aetheria.Editor
                             director.time = 0;
                             director.Evaluate();
                             IcarusCharakuruMotionReview.Capture(director, 0, walk.length, skins, captureRoot.transform,
-                                vrm, path, out _, captureMovingPelvis: true);
+                                vrm, path, out _, captureMovingChin: compareVariants, captureMovingPelvis: true,
+                                supersample: supersample, fixedFrame: compareVariants ? frame : (Bounds?)null);
                         }
                         finally { Object.DestroyImmediate(captureRoot); }
                     }
@@ -223,12 +231,13 @@ namespace Aetheria.Editor
                     surface.sharedMesh = originalMesh;
                     surface.sharedMaterials = originalMaterials;
                     director.RebuildGraph();
-                    CaptureWalk("original");
+                    CaptureWalk(compareVariants ? "A-original-v1" : "original");
+                    if (compareVariants) CaptureWalk("B-render-v1", true);
                     surface.sharedMesh = mesh;
                     surface.sharedMaterials = layeredMaterials;
                     layer.muted = false;
                     director.RebuildGraph();
-                    CaptureWalk("corrected");
+                    CaptureWalk(compareVariants ? "C-undercloth-v1" : "corrected", compareVariants);
                 }
                 director.Stop();
                 director.playOnAwake = true;
