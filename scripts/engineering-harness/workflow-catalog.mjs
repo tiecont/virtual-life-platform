@@ -426,6 +426,15 @@ async function summarizeReview(ctx, input) {
 const describe = (summary, tags, inputSchema, run, manual = []) => ({summary, tags, inputSchema, run, manual});
 
 export const workflows = {
+  'character-performance': describe('Inspect character performance bindings, resolved Unity packages, and canonical skill discovery',
+    ['charakuru', 'vrm', 'animation', 'cinematic', 'offline'], object({allowLocalExecution: localOptIn}),
+    (ctx, input) => localExecution(ctx, input, false, () => ctx.command('character-performance-intake', 'python3',
+      ['.agents/skills/aetheria-hero-character-vrm/scripts/performance_intake.py'], {project: stdout => {
+        const data = checkedJson(stdout, value => value.source?.sha256 && Array.isArray(value.skills));
+        return {sourceSha256: data.source.sha256, mappedBones: data.source.mappedHumanoidBones,
+          springChains: data.source.springChains, boundExpressions: Object.values(data.source.expressions)
+            .filter(clip => Object.values(clip).some(count => count > 0)).length, skills: data.skills.map(skill => skill.name)};
+      }}))),
   'repo-inspect': describe('Inspect HEAD, worktree cleanliness, and backlog readiness', ['git', 'plan'], object(), repoInspect),
   'pr-ci': describe('Read a single PR check snapshot from the configured Aetheria repository', ['github', 'ci', 'read-only'],
     object(prInputs, ['pr']), prCi, ['Supply a read-only AETHERIA_HARNESS_GITHUB_TOKEN or authorize the configured gh identity.']),

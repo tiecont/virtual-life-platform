@@ -19,6 +19,10 @@ release state. Keep new source artwork and editable production handoffs under
 Skill installation does not establish an accepted benchmark, owner approval,
 publishable rights, or deployment permission.
 
+## Existing character performance
+
+For motion fixes or a showcase on an existing VRM, start with the actual bindings and approved source. Use [character performance](references/character-performance.md) for inspection, matched-pose comparisons, facial/audio capability, camera takes and frame-time evidence.
+
 ## H0 source and reference preflight
 
 1. Start from the owner-authorized clean full-body **A-pose illustration**. The

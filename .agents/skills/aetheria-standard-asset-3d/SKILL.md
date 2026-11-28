@@ -19,6 +19,10 @@ animation contracts, and release state before production. Run
 `pnpm plan:status`. Preserve canonical IDs, scale, pivots, provenance, material
 ownership, server-authoritative behavior, and owner-only art gates.
 
+## Existing textured wing, weapon or creature
+
+When the design is locked, compare the exported part count with the requested physical components. Retain the original GLB and atlas. A UV seam may split vertex indices on one continuous surface. Use [the character performance review](../aetheria-hero-character-vrm/references/character-performance.md) for shape-preserving separation, material controls, attachment and deforming-clip evidence.
+
 ## 1. Prepare references and the production target
 
 Select the cleanest, highest-detail, owner-authorized reference images. Hash
