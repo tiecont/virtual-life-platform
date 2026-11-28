@@ -32,12 +32,15 @@ namespace Aetheria.Editor
             public string classification = "PRIVATE_H2_ASSEMBLY_REVIEW";
             public string unityVersion = Application.unityVersion, graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
             public string modelSha256 = VrmSha, walkSha256 = WalkSha, bowSha256 = BowSha, wingsSha256 = WingsSha;
-            public string prefabSha256, wingsSocketParent, bowSocketParent;
+            public string prefabSha256, wingsSocketParent, bowSocketParent, wingsClip, bowClip;
             public int wingsTriangles, bowTriangles, assembledTriangles, frameCount, mappedWalkJoints;
             public float wingFoldDeltaMeters, bowDrawDeltaMeters, releaseRestResidualMeters;
             public float walkWingSocketTravelMeters, walkBowSocketTravelMeters;
+            public float spreadMeanDepthFromChestMeters, foldMeanDepthFromChestMeters, wingPreviewYawDegrees;
+            public float bowGripToPalmBeforeMeters, bowGripToPalmAfterMeters, drawNockToFreePalmMeters, bowPreviewYawDegrees;
+            public float bowRestWeight, bowDrawWeight, bowReleaseMiddleWeight, bowReleasedWeight;
             public string[] frames;
-            public string bowReviewScope = "Provider mesh morph at the pinned right-hand socket, with a fixed hand pose for bow draw and release.";
+            public string bowReviewScope = "Provider draw clip and integrated string. Stable center-grip band fitted to the mapped right palm. The free hand remains in the static review pose.";
             public string movementReviewScope = "Existing retargeted Charakuru walk with sampled accessory morph weights.";
         }
 
@@ -83,13 +86,29 @@ namespace Aetheria.Editor
                 foreach (var stringController in model.GetComponentsInChildren<Aetheria.Icarus.IcarusBowString>(true))
                     stringController.enabled = false;
 
-                var wing = Attach(wingSocket, "Icarus_Wings", Wings, "WingFold");
-                var bow = Attach(bowSocket, "Icarus_Bow", Bow, "BowDraw");
+                var wing = Attach(wingSocket, "Icarus_Wings", Wings, "WingFold", "WingSpreadBeatFold");
+                var bow = Attach(bowSocket, "Icarus_Bow", Bow, "BowDraw", "BowDrawRelease");
+                var forward = model.transform.forward;
+                float wingYaw = FitFoldAxis(wing, forward);
+                var bowFit = FitBow(bow, vrm, bowSocket.parent);
                 var (animator, clip, joints) = Retarget(model, vrm, sourceVrm, stage.transform);
                 retargeted = clip;
 
                 Vector3[] wingSpread = Measure(wing, 0), wingFolded = Measure(wing, 1);
-                Vector3[] bowRest = Measure(bow, 0), bowDrawn = Measure(bow, 1), bowReleased = Measure(bow, 0);
+                const float drawTime = .8f, releaseMiddle = .94f;
+                float restWeight = bow.Sample(0);
+                Vector3[] bowRest = MeasureSample(bow);
+                float drawnWeight = bow.Sample(drawTime);
+                Vector3[] bowDrawn = MeasureSample(bow);
+                float middleWeight = bow.Sample(releaseMiddle);
+                float releasedWeight = bow.Sample(bow.Clip.length);
+                Vector3[] bowReleased = MeasureSample(bow);
+                Require(restWeight < .01f && drawnWeight > .95f && middleWeight > .05f &&
+                    middleWeight < .95f && releasedWeight < .01f, "The imported draw clip lost its staged rest, draw or release.");
+                float spreadDepth = MeanDepth(wingSpread, wingSocket.parent.position, forward);
+                float foldDepth = MeanDepth(wingFolded, wingSocket.parent.position, forward);
+                Require(foldDepth < spreadDepth, "The imported folded wings move in front of their spread pose.");
+
                 float wingDelta = Delta(wingSpread, wingFolded), drawDelta = Delta(bowRest, bowDrawn);
                 float releaseDelta = Delta(bowRest, bowReleased);
                 Require(wingDelta > .001f && drawDelta > .001f && releaseDelta < .00001f,
@@ -105,10 +124,10 @@ namespace Aetheria.Editor
                 wing.Set(0);
                 draw.Refresh();
                 whole.Encapsulate(BoundsFor(model));
-                bow.Set(1);
+                bow.Sample(drawTime);
                 draw.Refresh();
                 var bowFrame = BoundsFor(bow.Root);
-                bow.Set(0);
+                bow.Sample(0);
                 draw.Refresh();
                 bowFrame.Encapsulate(BoundsFor(bow.Root));
                 var shots = new System.Collections.Generic.List<string>();
@@ -130,10 +149,17 @@ namespace Aetheria.Editor
                 Shot("05-back-folded.png", whole, back, 1, 0);
                 wingSocket.gameObject.SetActive(false);
                 var bowAngle = new Vector3(-1, .12f, .4f);
-                Shot("06-bow-rest.png", bowFrame, bowAngle, 1, 0);
-                Shot("07-bow-draw.png", bowFrame, bowAngle, 1, 1);
-                Shot("08-bow-release-mid.png", bowFrame, bowAngle, 1, .4f);
-                Shot("09-bow-released.png", bowFrame, bowAngle, 1, 0);
+                void BowShot(string name, float seconds)
+                {
+                    bow.Sample(seconds);
+                    draw.Refresh();
+                    Capture(camera, target, pixels, bowFrame, bowAngle, Path.Combine(output, name));
+                    shots.Add(name);
+                }
+                BowShot("06-bow-rest.png", 0);
+                BowShot("07-bow-draw.png", drawTime);
+                BowShot("08-bow-release-mid.png", releaseMiddle);
+                BowShot("09-bow-released.png", bow.Clip.length);
                 wingSocket.gameObject.SetActive(true);
                 string FrameHash(int index) => Hash(Path.Combine(output, shots[index]));
                 Require(FrameHash(2) != FrameHash(4) && FrameHash(5) != FrameHash(6) &&
@@ -142,15 +168,16 @@ namespace Aetheria.Editor
 
                 Vector3 wingStart = wingSocket.position, bowStart = bowSocket.position;
                 float wingTravel = 0, bowTravel = 0;
-                foreach (var pose in new[] { (time: .15f, fold: .75f), (time: .50f, fold: .3f), (time: .85f, fold: .65f) })
+                foreach (float time in new[] { .15f, .50f, .85f })
                 {
-                    clip.SampleAnimation(animator.gameObject, pose.time * clip.length);
+                    clip.SampleAnimation(animator.gameObject, time * clip.length);
+                    float fold = wing.Sample(time * wing.Clip.length);
                     wingTravel = Mathf.Max(wingTravel, Vector3.Distance(wingStart, wingSocket.position));
                     bowTravel = Mathf.Max(bowTravel, Vector3.Distance(bowStart, bowSocket.position));
                     draw.Refresh();
                     var movementFrame = whole;
                     movementFrame.Encapsulate(BoundsFor(model));
-                    Shot($"{10 + shots.Count - 9:D2}-walk.png", movementFrame, quarter, pose.fold, 0);
+                    Shot($"{10 + shots.Count - 9:D2}-walk.png", movementFrame, quarter, fold, 0);
                 }
                 Require(wingTravel > .001f && bowTravel > .001f, "The actual retargeted walk did not move both sockets.");
                 Require(Hash(path) == prefabHash, "The canonical prefab changed during private evidence capture.");
@@ -159,6 +186,12 @@ namespace Aetheria.Editor
                     wingsTriangles = wingTriangles, bowTriangles = bowTriangles, assembledTriangles = assembled,
                     wingFoldDeltaMeters = wingDelta, bowDrawDeltaMeters = drawDelta, releaseRestResidualMeters = releaseDelta,
                     walkWingSocketTravelMeters = wingTravel, walkBowSocketTravelMeters = bowTravel, mappedWalkJoints = joints,
+                    wingsClip = wing.Clip.name, bowClip = bow.Clip.name,
+                    spreadMeanDepthFromChestMeters = spreadDepth, foldMeanDepthFromChestMeters = foldDepth,
+                    wingPreviewYawDegrees = wingYaw, bowPreviewYawDegrees = bowFit.yaw,
+                    bowGripToPalmBeforeMeters = bowFit.before, bowGripToPalmAfterMeters = bowFit.after,
+                    drawNockToFreePalmMeters = bowFit.free, bowRestWeight = restWeight, bowDrawWeight = drawnWeight,
+                    bowReleaseMiddleWeight = middleWeight, bowReleasedWeight = releasedWeight,
                     frameCount = shots.Count, frames = shots.ToArray(),
                 };
                 File.WriteAllText(Path.Combine(output, "icarus-h2-accessory-motion.json"), JsonUtility.ToJson(facts, true) + "\n");
@@ -194,16 +227,25 @@ namespace Aetheria.Editor
         private sealed class Morph
         {
             public readonly GameObject Root;
+            public readonly AnimationClip Clip;
             public readonly (SkinnedMeshRenderer renderer, int index)[] Skins;
 
-            public Morph(GameObject root, string shape)
+            public Morph(GameObject root, string shape, AnimationClip clip)
             {
                 Root = root;
+                Clip = clip;
+                Require(clip != null && clip.length > 0, $"The imported candidate has no timed {shape} clip.");
                 Skins = root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                     .Where(renderer => renderer.sharedMesh != null)
                     .Select(renderer => (renderer, index: renderer.sharedMesh.GetBlendShapeIndex(shape)))
                     .Where(entry => entry.index >= 0).ToArray();
                 Require(Skins.Length > 0, $"The imported candidate has no {shape} morph.");
+            }
+
+            public float Sample(float seconds)
+            {
+                Clip.SampleAnimation(Root, seconds);
+                return Skins[0].renderer.GetBlendShapeWeight(Skins[0].index) / 100;
             }
 
             public void Set(float normalized)
@@ -212,7 +254,7 @@ namespace Aetheria.Editor
             }
         }
 
-        private static Morph Attach(Transform socket, string oldName, string path, string shape)
+        private static Morph Attach(Transform socket, string oldName, string path, string shape, string action)
         {
             var old = socket.Find(oldName);
             Require(old != null, $"The reference prefab is missing its {oldName} attachment.");
@@ -221,7 +263,8 @@ namespace Aetheria.Editor
             var candidate = Object.Instantiate(Import(path), socket, false);
             candidate.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             candidate.transform.localScale = Vector3.one;
-            return new Morph(candidate, shape);
+            var clip = AssetDatabase.LoadAllAssetsAtPath(path).OfType<AnimationClip>().SingleOrDefault(item => item.name == action);
+            return new Morph(candidate, shape, clip);
         }
 
         private static (Animator animator, AnimationClip clip, int joints) Retarget(GameObject model, Vrm10Instance vrm,
@@ -252,6 +295,11 @@ namespace Aetheria.Editor
         private static Vector3[] Measure(Morph shape, float weight)
         {
             shape.Set(weight);
+            return MeasureSample(shape);
+        }
+
+        private static Vector3[] MeasureSample(Morph shape)
+        {
             var scratch = new Mesh();
             try
             {
@@ -261,6 +309,58 @@ namespace Aetheria.Editor
                 }).ToArray();
             }
             finally { Object.DestroyImmediate(scratch); }
+        }
+
+        private static float FitFoldAxis(Morph wing, Vector3 forward)
+        {
+            var spread = Measure(wing, 0);
+            var folded = Measure(wing, 1);
+            if (MeanDepth(folded, Vector3.zero, forward) <= MeanDepth(spread, Vector3.zero, forward))
+                return 0;
+            wing.Root.transform.rotation = Quaternion.AngleAxis(180, Vector3.up) * wing.Root.transform.rotation;
+            return 180;
+        }
+
+        private static float MeanDepth(Vector3[] vertices, Vector3 origin, Vector3 forward) =>
+            vertices.Average(vertex => Vector3.Dot(vertex - origin, forward));
+
+        private static (float before, float after, float free, float yaw) FitBow(Morph bow, Vrm10Instance vrm, Transform wrist)
+        {
+            var right = Palm(vrm, wrist, HumanBodyBones.RightIndexProximal, HumanBodyBones.RightLittleProximal);
+            Require(vrm.TryGetBoneTransform(HumanBodyBones.LeftHand, out var freeWrist), "The source VRM has no mapped free hand.");
+            var free = Palm(vrm, freeWrist, HumanBodyBones.LeftIndexProximal, HumanBodyBones.LeftLittleProximal);
+            var rest = Measure(bow, 0);
+            var drawn = Measure(bow, 1);
+            var root = bow.Root.transform;
+            int nock = 0;
+            for (int i = 1; i < rest.Length; i++)
+                if ((drawn[i] - rest[i]).sqrMagnitude > (drawn[nock] - rest[nock]).sqrMagnitude)
+                    nock = i;
+            var handle = Enumerable.Range(0, rest.Length)
+                .Where(i => Mathf.Abs(root.InverseTransformPoint(rest[i]).y) < .08f && Vector3.Distance(rest[i], drawn[i]) < .02f)
+                .Select(i => root.InverseTransformPoint(rest[i])).ToArray();
+            Require(handle.Length > 0, "The imported bow has no stable center grip band.");
+            var grip = handle.Aggregate(Vector3.zero, (sum, point) => sum + point) / handle.Length;
+            float before = Vector3.Distance(root.TransformPoint(grip), right);
+            var axis = root.up;
+            var drawPlane = Vector3.ProjectOnPlane(drawn[nock] - rest[nock], axis);
+            var freePlane = Vector3.ProjectOnPlane(free - right, axis);
+            Require(drawPlane.sqrMagnitude > .0001f && freePlane.sqrMagnitude > .0001f,
+                "The draw axis and free hand must define a measurable bow plane.");
+            float yaw = Vector3.SignedAngle(drawPlane, freePlane, axis);
+            root.rotation = Quaternion.AngleAxis(yaw, axis) * root.rotation;
+            root.position += right - root.TransformPoint(grip);
+            float after = Vector3.Distance(root.TransformPoint(grip), right);
+            float freeDistance = Vector3.Distance(Measure(bow, 1)[nock], free);
+            return (before, after, freeDistance, yaw);
+        }
+
+        private static Vector3 Palm(Vrm10Instance vrm, Transform wrist, HumanBodyBones index, HumanBodyBones little)
+        {
+            bool hasIndex = vrm.TryGetBoneTransform(index, out var first);
+            bool hasLittle = vrm.TryGetBoneTransform(little, out var last);
+            Require(hasIndex && hasLittle, "The source VRM has no mapped palm landmarks.");
+            return Vector3.Lerp(wrist.position, (first.position + last.position) / 2, .75f);
         }
 
         private static float Delta(Vector3[] a, Vector3[] b)
