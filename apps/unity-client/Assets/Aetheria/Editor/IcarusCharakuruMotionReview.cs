@@ -249,22 +249,45 @@ namespace Aetheria.Editor
             camera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y) * 1.35f;
             camera.transform.position = bounds.center + new Vector3(1.45f, .18f, 5);
             camera.transform.LookAt(bounds.center);
+            Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
+                "A graphics capture requires the project's URP pipeline.");
             const int size = 720;
             var target = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
             var image = new Texture2D(size, size, TextureFormat.RGB24, false);
             var previous = RenderTexture.active;
+            var bakedSkins = new List<(SkinnedMeshRenderer Source, MeshFilter Filter, Mesh Mesh)>();
             try
             {
-                target.Create();
+                foreach (var skin in skins)
+                {
+                    var draw = new GameObject(skin.name + " sampled motion");
+                    draw.transform.SetParent(skin.transform, false);
+                    var filter = draw.AddComponent<MeshFilter>();
+                    draw.AddComponent<MeshRenderer>().sharedMaterials = skin.sharedMaterials;
+                    bakedSkins.Add((skin, filter, new Mesh()));
+                    skin.enabled = false;
+                }
+                Require(target.Create(), "Could not allocate the review render target.");
                 var frames = new List<string>();
                 for (int i = 0; i < ReviewSamples.Length; i++)
                 {
                     director.time = lead + ReviewSamples[i] * length;
                     director.Evaluate();
+                    foreach (var (source, filter, mesh) in bakedSkins)
+                    {
+                        source.BakeMesh(mesh);
+                        Require(mesh.vertexCount == source.sharedMesh.vertexCount, "A captured pose lost skinned vertices.");
+                        mesh.RecalculateBounds();
+                        filter.sharedMesh = mesh;
+                    }
                     RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
                     RenderTexture.active = target;
                     image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
                     image.Apply();
+                    var pixels = image.GetPixels32();
+                    var background = pixels[0];
+                    Require(pixels.Count(pixel => !pixel.Equals(background)) > size * size / 20,
+                        "The review frame contains no readable character render.");
                     string name = $"icarus-charakuru-walk-{i + 1:D2}.png";
                     File.WriteAllBytes(Path.Combine(output, name), image.EncodeToPNG());
                     frames.Add(name);
@@ -274,6 +297,12 @@ namespace Aetheria.Editor
             finally
             {
                 RenderTexture.active = previous;
+                foreach (var (source, filter, mesh) in bakedSkins)
+                {
+                    source.enabled = true;
+                    Object.DestroyImmediate(filter.gameObject);
+                    Object.DestroyImmediate(mesh);
+                }
                 target.Release();
                 Object.DestroyImmediate(target);
                 Object.DestroyImmediate(image);
