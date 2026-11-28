@@ -30,11 +30,14 @@ def row_limits(mask, row, string_on_right):
     if not string_on_right:
         xs = mask.shape[1] - 1 - xs[::-1]
     gaps = np.where(np.diff(xs) > mask.shape[1] * .025)[0]
+    strand = np.nan
     if len(gaps) and xs[-1] - xs[gaps[-1] + 1] < mask.shape[1] * .018:
+        strand = float(np.mean(xs[gaps[-1] + 1:]))
         xs = xs[:gaps[-1] + 1]
     if not string_on_right:
         xs = mask.shape[1] - 1 - xs[::-1]
-    return xs[0], xs[-1]
+        strand = mask.shape[1] - 1 - strand
+    return xs[0], xs[-1], strand
 
 
 def register_profiles(plates, directory):
@@ -59,20 +62,28 @@ def register_profiles(plates, directory):
         ry, _ = np.nonzero(ref_mask)
         ratio = (ry.max() - ry.min()) / (ys.max() - ys.min())
         mid = (xs.max() + xs.min()) * .5
-        rows = np.tile([1., 0.], (len(target), 1))
+        rows = np.tile([1., 0., np.nan, 1., 0.], (len(target), 1))
         for y in range(int(ry.min()), int(ry.max()) + 1):
             src = row_limits(mask, round((y - ry.min()) / ratio + ys.min()), index == 0)
             dst = row_limits(ref_mask, y, index == 0)
             if src is None or dst is None:
                 continue
-            lo, hi = (np.array(src) - mid) * ratio + plate["pxCenter"][0]
+            lo, hi, strand = (np.array(src) - mid) * ratio + plate["pxCenter"][0]
             if hi - lo > 2 and dst[1] - dst[0] > 2:
                 gain = np.clip((dst[1] - dst[0]) / (hi - lo), .5, 2.)
-                rows[y] = gain, sum(dst) / 2 - gain * (lo + hi) / 2
-        def register(points, table=rows):
+                offset = (dst[0] + dst[1]) / 2 - gain * (lo + hi) / 2
+                rows[y, :2] = gain, offset
+                edge = hi if index == 0 else lo
+                if np.isfinite(strand + dst[2]) and abs(strand - edge) > 1:
+                    seam = gain * edge + offset
+                    tail_gain = (dst[2] - seam) / (strand - edge)
+                    rows[y, 2:] = edge, tail_gain, seam - tail_gain * edge
+        def register(points, table=rows, right=index == 0):
             out = points.copy()
-            gain, offset = table[np.clip(points[:, 1], 0, len(table) - 1)].T
-            out[:, 0] = np.rint(points[:, 0] * gain + offset).astype(np.int32)
+            gain, offset, edge, tail_gain, tail_offset = table[np.clip(points[:, 1], 0, len(table) - 1)].T
+            x = points[:, 0]
+            use_tail = x > edge if right else x < edge
+            out[:, 0] = np.rint(np.where(use_tail, x * tail_gain + tail_offset, x * gain + offset)).astype(np.int32)
             return out
         plate.update(register=register, calibrationSha=pins[index])
 
