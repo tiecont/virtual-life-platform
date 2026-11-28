@@ -11507,6 +11507,13 @@
       ],
       "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review.",
       "implementation": {
+        "battleSettlementHud": {
+          "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
+          "testRevision": "f78f723c9ea827c15f22ff3e3d9a072d05332e4e",
+          "command": "Direct Unity Editor 6000.3.14f1 via node scripts/unity-validate.mjs tests and linux",
+          "result": "The Linux build passed. The identical source tree passed 84 EditMode and 38 PlayMode tests with two explicit skips. HUD tests exercised the terminal text, pending settlement and retry. Solo and cooperative feedback use the same high-contrast styling.",
+          "evidence": "artifacts/wave-d4-session/fire-hud-c1c5b343/tests.json"
+        },
         "productionReview": {
           "sourceRevision": "e19170e5",
           "observed": "Six elemental glyphs with separate multiplier badges integrated. Prior 1024x768 board is preserved for matched visual review.",
