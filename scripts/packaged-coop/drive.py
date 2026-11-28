@@ -84,8 +84,8 @@ def ocr(image, box, mode='7', fmt=None):
         argv.extend(('-c','tessedit_create_tsv=1'))
     return run(argv,input=data.getvalue(),capture_output=True,check=True).stdout.decode()
 
-def word_button(image, words, box):
-    lines=ocr(image,box,'11','tsv').splitlines()[1:]
+def word_button(image, words, box, mode='11'):
+    lines=ocr(image,box,mode,'tsv').splitlines()[1:]
     for line in lines:
         cells=line.split('\t')
         if len(cells)!=12:
@@ -287,10 +287,12 @@ elif stage == 'water':
     room_ready('water','20-water-four-seats-ready')
     facts=expect('water-allocation-facts',lambda facts:facts['seats']==4,timeout=30)
     print('Water allocation', facts, flush=True)
-    text('21-water-equipped-native-hud','start battle',center_band(screen_height - 115, screen_height - 18),tries=28)
-    (output/'water-hud-observed').touch()
+    start_box = center_band(screen_height - 115, screen_height - 18)
     if environ.get('PACKAGED_QA_BOARD', 'functional') == 'functional':
-        click(*label('21-water-equipped-native-hud', 'battle', center_band(screen_height - 115, screen_height - 18)))
+        start, _ = wait_for('21-water-equipped-native-hud',
+                            lambda img: word_button(img, {'battle'}, start_box, mode='6'), tries=28)
+        (output/'water-hud-observed').touch()
+        click(*start)
         started = expect('water-started', lambda result: result['version'] == 1, timeout=25)
 
         def playing_board(img, state):
@@ -306,12 +308,24 @@ elif stage == 'water':
             return board
 
         board, _ = wait_for('22-water-started-board', lambda img: playing_board(img, started['state']))
-        for tile in (started['move']['first'], started['move']['second']):
-            click(*cell_center(board, tile))
-            sleep(.42)
-        swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=20)
+        for attempt in range(5):
+            swapped = read('water-swapped')
+            if swapped:
+                break
+            for tile in (started['move']['first'], started['move']['second']):
+                click(*cell_center(board, tile))
+                sleep(.42)
+            try:
+                swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=3)
+                break
+            except RuntimeError:
+                if attempt == 4:
+                    raise
         wait_for('23-water-after-host-swap', lambda img: playing_board(img, swapped['state']))
         (output/'water-swap-observed').touch()
+    else:
+        text('21-water-equipped-native-hud', 'start battle', start_box, tries=28)
+        (output/'water-hud-observed').touch()
 
 elif stage=='first':
     for attempt in range(14):
