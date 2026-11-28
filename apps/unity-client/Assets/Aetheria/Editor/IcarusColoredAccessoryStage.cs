@@ -130,7 +130,9 @@ namespace Aetheria.Editor
                     throw new InvalidDataException("The modular rig must contain the original Charakuru VRM.");
                 var stage = new GameObject("Icarus fitting");
                 var actor = Object.Instantiate(prefab, stage.transform);
-                foreach (var socket in actor.GetComponentsInChildren<Transform>(true).Where(t => t.name is "Socket_Wings" or "Socket_Bow"))
+                var sockets = actor.GetComponentsInChildren<Transform>(true)
+                    .Where(t => t.name is "Socket_Wings" or "Socket_Bow").ToArray();
+                foreach (var socket in sockets)
                     foreach (var child in socket.Cast<Transform>().ToArray()) Object.DestroyImmediate(child.gameObject);
                 foreach (var line in actor.GetComponentsInChildren<LineRenderer>(true)) Object.DestroyImmediate(line);
                 foreach (var control in actor.GetComponentsInChildren<Aetheria.Icarus.IcarusBowString>(true)) control.enabled = false;
