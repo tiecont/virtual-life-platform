@@ -16,6 +16,7 @@ import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 import {verifySoloCampaign} from './solo-water-campaign-probe.mjs';
 import {verifyTimedSoloPublication} from './solo-timed-publication-probe.mjs';
+import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -88,10 +89,12 @@ const naturalCampaign=process.argv.includes('--natural-campaign');
 assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe');
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
+const timedCoop=process.argv.includes('--timed-coop');
 assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
 const solo=timedSolo||unchangedCandidate||process.argv.includes('--solo');
-const direct=solo||process.argv.includes('--direct');
-const functional=solo||process.argv.includes('--functional');
+assert.ok(!(solo&&timedCoop),'Select either a solo fixture or the timed cooperative fixture');
+const direct=solo||timedCoop||process.argv.includes('--direct');
+const functional=solo||timedCoop||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
 const historicalBinary=historicalArg?.slice('--historical-binary='.length);
 assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
@@ -100,8 +103,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -144,11 +147,20 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=timedSolo?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
  const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
- if(timedSolo){
+ if(timedCoop){
+  // Only this disposable copy uses reachable victory and defeat conditions.
+  // Preserve the authored deadlines and uncapped rounds for both encounters.
+  const water=seed.bosses.find(value=>value.mapId==='tideglass-lagoon');
+  Object.assign(boss,{maxHp:4,defense:1});
+  Object.assign(boss.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
+  Object.assign(water.attackModel,{baseDamage:100_000,perRoundDamage:0,minimumDamage:1});
+  for(const encounter of [boss,water])encounter.rewardPolicy.minimumActions={victory:1,defeat:1};
+  Object.assign(water.rewardPolicy.defeat,{coins:9,materials:1});
+ }else if(timedSolo){
   // Preserve the authored timer and uncapped rounds. The synthetic attack and
   // health values give the probe room to finish after explicit and timed passes.
   assert.ok(boss.regular);
@@ -319,6 +331,11 @@ try{
   if(timedSolo&&label==='B'){
    boss.regular.rewardPolicy.firstClear.coins+=20;
   }
+  if(timedCoop&&label==='B'){
+   bundle.contentRevision++;
+   boss.rewardPolicy.firstClear.coins+=20;
+   bundle.bosses.find(value=>value.mapId==='tideglass-lagoon').rewardPolicy.defeat.coins+=7;
+  }
   if(solo&&!timedSolo&&label==='B'){
    // The progression fixture needs a reachable win with two real Boss phases.
    Object.assign(boss.solo,{maxHp:16,maxRounds:30,baseDamage:1,perRoundDamage:0,minimumDamage:1});
@@ -458,7 +475,7 @@ try{
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
- const createRoom=member=>post(member,'/v1/coop/rooms',{requestId:randomUUID(),bossId:boss.id,petId:member.petId,ownedPetInstanceId:member.instanceId});
+ const createRoom=(member,bossId=boss.id)=>post(member,'/v1/coop/rooms',{requestId:randomUUID(),bossId,petId:member.petId,ownedPetInstanceId:member.instanceId});
  async function checkGate(member,points,version,allowed,create=true){
   const response=await get(member,'/v1/coop/eligibility?bossId='+boss.id);
   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
@@ -474,7 +491,7 @@ try{
   mark('Achievement Points gate used the active Admin version',{version:version.version,points,requiredPoints:eligibility.requiredPoints,eligible:allowed,createStatus:result?.statusCode});
   return result?.json();
  }
- if(!unchangedCandidate&&!timedSolo)await grant(host,5250);
+ if(!unchangedCandidate&&!timedSolo)await grant(host,timedCoop?6000:5250);
  const caPem=await readFile(tls.caFile,'utf8');
  async function prepareRoom(version,room){
   if(!room){
@@ -532,7 +549,7 @@ try{
   const response=await post(member,'/v1/coop/rooms/'+match.room.roomId+'/admission',{});
   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
   const view=response.json();
-  assert.equal(view.bossId,boss.id);
+  assert.equal(view.bossId,match.room.bossId);
   assert.equal(view.matchId,match.row.match_id);
   assert.equal(view.bootId,match.row.boot_id);
   assert.equal(view.accountId,member.accountId);
@@ -590,7 +607,7 @@ try{
   }
   throw Error('Native command failed ('+match.row.match_id+' seat '+seat+' '+(action?.kind??'view')+'): '+errors.join(' | '));
  }
- async function sendNative(match,seat,expectedVersion,action,id){
+ async function sendNative(match,seat,expectedVersion,action,id,sessionId=match.row.match_id){
   const connections=match.connections??=new Map();
   let connection=connections.get(seat);
   if(!connection||connection.ws.readyState!==WebSocket.OPEN||connection.expiresAt-Date.now()<1200){
@@ -598,7 +615,7 @@ try{
    connection=await openConnection(match,seat);
    connections.set(seat,connection);
   }
-  const session=Buffer.from(match.row.match_id.replaceAll('-',''),'hex');
+  const session=Buffer.from(sessionId.replaceAll('-',''),'hex');
   const intent=action?JSON.stringify({epoch:1,action}):'';
   const kind=action?'arena8-coop.intent.v1':'arena8-coop.view.v1';
   connection.ws.send(envelope(11,intentMessage(session,expectedVersion,intent,kind),id,connection.sequence++));
@@ -775,6 +792,13 @@ try{
   await verifySoloCampaign({
    natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
    dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
+  });
+ }else if(timedCoop){
+  const outsider=await guest('QA unseated account','ground-clodkin');
+  await verifyTimedCoopPublication({
+   pool,members,outsider,published:A,mark,get,post,publish,createRoom,prepareRoom,allocate,allocationRow,native,connections,closeMatch,restart,pureSwap,legalSwap,
+   sendOnce:(match,seat,version,action,sessionId)=>sendNative(match,seat,version,action,randomBytes(16),sessionId),
+   drain:()=>new CoopSettlement(pool).drain(),
   });
  }else if(timedSolo){
   await verifyTimedSoloPublication({
