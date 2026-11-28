@@ -242,10 +242,11 @@ def import_mesh(path, count):
     return obj
 
 
-def png_pixels(path):
+def image_pixels(path):
     image = bpy.data.images.load(str(path), check_existing=False)
     try:
-        image.colorspace_settings.name = "Non-Color"
+        if path.suffix == ".png":
+            image.colorspace_settings.name = "Non-Color"
         values = np.empty(len(image.pixels), dtype=np.float32)
         image.pixels.foreach_get(values)
         return values.reshape(-1, 4)
@@ -254,7 +255,7 @@ def png_pixels(path):
 
 
 def compare_frames(source, lod):
-    before, after = png_pixels(source), png_pixels(lod)
+    before, after = image_pixels(source), image_pixels(lod)
     source_mask, lod_mask = before[:, 3] >= 0.5, after[:, 3] >= 0.5
     shared = source_mask & lod_mask
     union = source_mask | lod_mask
@@ -264,6 +265,11 @@ def compare_frames(source, lod):
     if not np.any(opaque):
         raise RuntimeError("Matched frames had no common opaque pixels")
     delta = np.abs(before[opaque, :3] - after[opaque, :3]) * 255.0
+    linear_source = image_pixels(source.with_suffix(".exr"))[opaque, :3]
+    linear_lod = image_pixels(lod.with_suffix(".exr"))[opaque, :3]
+    linear_difference = np.abs(linear_source - linear_lod)
+    if not np.isfinite(linear_difference).all():
+        raise RuntimeError("Matched frames contained non-finite linear RGB")
     return {
         "silhouetteIoU": float(np.count_nonzero(shared) / np.count_nonzero(union)),
         "sourceSilhouettePixels": int(np.count_nonzero(source_mask)),
@@ -272,7 +278,22 @@ def compare_frames(source, lod):
         "commonOpaquePixels": int(np.count_nonzero(opaque)),
         "meanAbsDisplayRgbDifference255": float(delta.mean()),
         "p95AbsDisplayRgbDifference255": float(np.percentile(delta, 95)),
+        "meanAbsSceneLinearRgbDifference": float(linear_difference.mean()),
+        "p95AbsSceneLinearRgbDifference": float(np.percentile(linear_difference, 95)),
+        "meanSceneLinearRgbSource": float(linear_source.mean()),
+        "meanSceneLinearRgbLod": float(linear_lod.mean()),
     }
+
+
+def write_frame(scene, path):
+    bpy.ops.render.render()
+    result = bpy.data.images["Render Result"]
+    settings = scene.render.image_settings
+    settings.file_format, settings.color_mode, settings.color_depth = "PNG", "RGBA", "8"
+    result.save_render(str(path), scene=scene)
+    settings.file_format, settings.color_mode, settings.color_depth = "OPEN_EXR", "RGBA", "32"
+    settings.exr_codec = "ZIP"
+    result.save_render(str(path.with_suffix(".exr")), scene=scene)
 
 
 def render_pair(source, candidate, evidence, output):
@@ -321,17 +342,17 @@ def render_pair(source, candidate, evidence, output):
             for asset, obj, hidden in (("original", original, lod), ("lod", lod, original)):
                 obj.hide_render, hidden.hide_render = False, True
                 path = output / f"{side}-{name}-{asset}.png"
-                scene.render.filepath = str(path)
-                bpy.ops.render.render(write_still=True)
+                write_frame(scene, path)
                 pair.append(path)
+            files = [path for image in pair for path in (image, image.with_suffix(".exr"))]
             frames.append({"side": side, "lighting": name, "keyVector": key,
-                           "files": [{"file": path.name, "sha256": checksum(path.read_bytes())} for path in pair],
+                           "files": [{"file": path.name, "sha256": checksum(path.read_bytes())} for path in files],
                            "comparison": compare_frames(*pair)})
     return {
         "sourceSha256": evidence["sourceSha256"],
         "candidateSha256": evidence["candidateSha256"],
-        "renderer": "Blender Cycles CPU, 12 samples, AgX, 768x512 RGBA",
-        "comparisonScope": "Mask threshold alpha 0.5; display RGB on common opaque pixels. Neutral and grazing keys share camera, material, and exposure within each pair.",
+        "renderer": "Blender Cycles CPU, 12 samples, 768x512 RGBA, AgX PNG and scene-linear OpenEXR",
+        "comparisonScope": "Mask threshold alpha 0.5; display and scene-linear RGB on common opaque pixels. Neutral and grazing keys share camera, material, and exposure within each pair.",
         "frames": frames,
     }
 
