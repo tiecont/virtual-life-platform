@@ -14,6 +14,12 @@ The canonical backlog is [development-plan.json](../../config/development-plan.j
 | Gemini workflow | [Production inputs and prompt handoffs](../media/gemini-production.md) |
 | Gallery | [Guest and equipment](../../assets/review/wave-d4/baseline/), [combat](../../assets/review/wave-d4/combat/), [six maps](../../assets/review/wave-d4/world/) |
 
+![Functional Fire regular battle on the Linux player](../../assets/review/wave-d4/combat/fire-functional-regular-720.webp)
+
+[Functional Fire co-op victory and rewards](../../assets/review/wave-d4/combat/fire-functional-victory-720.webp) · [Equipped four-seat Water admission](../../assets/review/wave-d4/combat/water-functional-coop-ready-720.webp)
+
+### Historical board comparison
+
 ![Fire board before the glyph update](../../assets/review/wave-d4/combat/fire-board-after-reconnect-1024x768.webp)
 
 ![Element silhouettes on the Linux player after reconnect, revision d032a3b9](../../assets/review/wave-d4/combat/fire-board-element-glyphs-1024x768.webp)
@@ -47,7 +53,7 @@ Related tasks VL-199, VL-209, VL-210.
 | B03 | Central Plaza navigation works. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
 | B04 | Pet collection and owned selection work. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
 | B05 | Equipment and Skill Training work. | IN_PROGRESS | b1472300 · progression and settlement tests | Core and earned materials exercised. Full packaged natural-training and acquisition coverage pending. |
-| B06 | Regular encounters work through normal navigation. | NOT_RUN | — | Collect dedicated evidence for this condition. |
+| B06 | Regular encounters work through normal navigation. | PASS | 8ad6e6e6 · [Fire regular](../../assets/review/wave-d4/combat/fire-functional-regular-720.webp) | A fresh guest entered the Plaza, selected an owned Pet, started Fire regular and swapped adjacent jewels. Receipts v1 and v2 used the unchanged functional publication. |
 | B07 | Cooperative room creation and joining work. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
 | B08 | Four independently authenticated seats share one match. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
 | B09 | Legal combat reaches a victory. | PASS | 68584413 · Player | One Linux guest, three socket clients, Fire victory v29, four receipts and Water admission with Lv2 Core. Restart preserved v3 and all 64 tiles. |
