@@ -493,7 +493,7 @@ try{
      },
      async verifyHost(version,action){
       const {rows}=await pool.query(
-       `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,
+       `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
           encode(payload_fingerprint,'hex') AS fingerprint,encode(receipt_hash,'hex') AS "receiptHash"
         FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2`,[allocation.match_id,version]);
       assert.equal(rows.length,1);

@@ -91,3 +91,11 @@ session-bound Rust tickets. The host commits Start from the HUD after all four
 are admitted. Each client contributes its own rendered 8×8 board capture.
 The acceptance JSON binds the four windows and observed seats to one allocation
 and the digest published through the existing operator fixture.
+
+For a longer schema 6 HUD sample, use `PACKAGED_QA_SCOPE=feedback` with
+`PACKAGED_QA_BOARD=shared-rng`. After the regular opening checks, the three
+protocol peers advance their own turns and the packaged host plays up to six
+more visible swaps. Each host action has a durable receipt fingerprint,
+before/after frames and a list of effect chips attached by that player version.
+An available move targeting Nature can yield no cleanse when the actor has
+no removable status. Use the recorded effects for qualification.
