@@ -29,6 +29,7 @@ namespace Aetheria.PetArena.Infrastructure
         public Guid BootId { get; }
         public Guid MatchId { get; }
         public string MatchIdText { get; }
+        public string ClientBuild { get; }
 
         private Arena8NativeAdmission(Func<CancellationToken, Task<Arena8NativeAllocation>> allocate,
             Scope scope, string expectedRuleset)
@@ -37,6 +38,7 @@ namespace Aetheria.PetArena.Infrastructure
             this.expectedRuleset = expectedRuleset;
             WssOrigin = scope.WssOrigin; HttpsOrigin = scope.HttpsOrigin; ContentHash = (byte[])scope.ContentHash.Clone();
             BootId = scope.BootId; MatchId = scope.MatchId; MatchIdText = MatchId.ToString();
+            ClientBuild = scope.ClientBuild;
         }
 
         public static async Task<Arena8NativeAdmission> OpenAsync(
@@ -56,7 +58,7 @@ namespace Aetheria.PetArena.Infrastructure
             var response = await allocate(cancellation).ConfigureAwait(false);
             var scope = Scope.Parse(response, DateTimeOffset.UtcNow, expectedRuleset);
             if (scope.WssOrigin != WssOrigin || scope.HttpsOrigin != HttpsOrigin ||
-                !scope.ContentHash.SequenceEqual(ContentHash) || scope.BootId != BootId || scope.MatchId != MatchId)
+                scope.ClientBuild != ClientBuild || !scope.ContentHash.SequenceEqual(ContentHash) || scope.BootId != BootId || scope.MatchId != MatchId)
                 throw new NativeFailure(Failure.Scope);
             return scope.Ticket;
         }
@@ -67,6 +69,7 @@ namespace Aetheria.PetArena.Infrastructure
             public byte[] ContentHash = Array.Empty<byte>();
             public Guid BootId, MatchId;
             public AdmissionTicket Ticket;
+            public string ClientBuild;
 
             public static Scope Parse(Arena8NativeAllocation response, DateTimeOffset now, string expectedRuleset)
             {
@@ -75,6 +78,9 @@ namespace Aetheria.PetArena.Infrastructure
                     string.IsNullOrEmpty(response.bootId) || string.IsNullOrEmpty(response.matchId))
                     throw new NativeFailure(Failure.Protocol);
                 if (!string.Equals(response.ruleset ?? "", expectedRuleset ?? "", StringComparison.Ordinal))
+                    throw new NativeFailure(Failure.Scope);
+                if (response.clientBuild != null && (expectedRuleset != CoopNativeView.FunctionalSoloRuleset ||
+                    response.clientBuild != NativeConnection.JewelFeedbackClientBuild))
                     throw new NativeFailure(Failure.Scope);
                 var https = Canonical(response.httpsOrigin, "https");
                 var wss = Canonical(response.wssUrl, "wss");
@@ -95,6 +101,7 @@ namespace Aetheria.PetArena.Infrastructure
                 return new Scope
                 {
                     WssOrigin = wss, HttpsOrigin = https, ContentHash = hash, BootId = boot, MatchId = match,
+                    ClientBuild = response.clientBuild ?? NativeConnection.LegacyClientBuild,
                     Ticket = new AdmissionTicket(response.ticket, principal, expiry),
                 };
             }

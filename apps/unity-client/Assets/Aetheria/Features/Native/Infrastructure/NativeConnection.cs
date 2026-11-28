@@ -56,8 +56,10 @@ namespace Aetheria.Networking
     public sealed class NativeConnection : IDisposable
     {
         public const int MaxFrameBytes = 65536;
+        public const string LegacyClientBuild = "unity-native-v2";
+        public const string JewelFeedbackClientBuild = "unity-native-v3";
         private readonly Uri endpoint;
-        private readonly string origin;
+        private readonly string origin, clientBuild;
         private readonly ByteString content, boot;
         private readonly Func<CancellationToken, Task<AdmissionTicket>> tickets;
         private readonly Func<ClientWebSocket> sockets;
@@ -78,7 +80,8 @@ namespace Aetheria.Networking
 
         public NativeConnection(Uri endpoint, Uri origin, byte[] contentHash, Guid bootId,
             Func<CancellationToken, Task<AdmissionTicket>> ticketProvider,
-            Func<ClientWebSocket> socketFactory = null, TimeSpan? requestTimeout = null)
+            Func<ClientWebSocket> socketFactory = null, TimeSpan? requestTimeout = null,
+            string clientBuild = LegacyClientBuild)
         {
             if (endpoint == null || origin == null || endpoint.Scheme != "wss" || endpoint.AbsolutePath != "/rt/v1" ||
                 endpoint.Query.Length != 0 || endpoint.Fragment.Length != 0 || endpoint.UserInfo.Length != 0 ||
@@ -86,6 +89,9 @@ namespace Aetheria.Networking
                 origin.UserInfo.Length != 0 || endpoint.Authority != origin.Authority ||
                 contentHash == null || contentHash.Length != 32 || contentHash.All(b => b == 0) || bootId == Guid.Empty || ticketProvider == null)
                 throw new ArgumentException("Explicit native scope required");
+            if (clientBuild != LegacyClientBuild && clientBuild != JewelFeedbackClientBuild)
+                throw new ArgumentException("Invalid native client build", nameof(clientBuild));
+            this.clientBuild = clientBuild;
             this.endpoint = endpoint; this.origin = origin.GetLeftPart(UriPartial.Authority);
             content = ByteString.CopyFrom(contentHash); boot = GameCommand.WireUuid(bootId);
             tickets = ticketProvider; sockets = socketFactory ?? (() => new ClientWebSocket());
@@ -115,7 +121,7 @@ namespace Aetheria.Networking
                 if (socket.SubProtocol != "vl.native.v1") throw new NativeFailure(Failure.Protocol);
                 sequence = 0;
                 var response = await Exchange(new ClientEnvelope { Hello = new Hello {
-                    Ticket = ticket.Value, ClientBuild = "unity-native-v2", ContentHash = content
+                    Ticket = ticket.Value, ClientBuild = clientBuild, ContentHash = content
                 } }, GameCommand.WireUuid(Guid.NewGuid()), token).ConfigureAwait(false);
                 if (response.BodyCase != ServerEnvelope.BodyOneofCase.Hello || response.Hello.StateSchemaVersion != 1 ||
                     !response.Hello.ContentHash.Equals(content) || !response.Hello.RuntimeBootId.Equals(boot) ||

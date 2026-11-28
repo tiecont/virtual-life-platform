@@ -185,6 +185,32 @@ namespace Aetheria.Tests
             Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace("\"multiplier\":8", "\"multiplier\":9")));
         }
 
+        [Test]
+        public void AdvancedReceiptFeedbackPreservesOrderAndValidatesSkillTargets()
+        {
+            const string effects = "\"jewelFeedback\":[" +
+                "{\"kind\":\"nature-cleanse\",\"seat\":2,\"value\":1}," +
+                "{\"kind\":\"chill-armed\",\"seat\":0,\"value\":250}," +
+                "{\"kind\":\"astral-upgrade\",\"seat\":0,\"value\":2,\"cell\":0}," +
+                "{\"kind\":\"chill-consumed\",\"seat\":null,\"value\":250}],";
+            string Advanced(string json) => Timed(json, false).Replace("\"version\":3", "\"version\":4")
+                .Replace("\"pending\":null", "\"pending\":null,\"chillReductionPm\":0");
+            var receipt = Coop(phase: "playing", extra: effects, customize: Advanced);
+            Assert.That(receipt.JewelFeedback.Select(effect => effect.Kind),
+                Is.EqualTo(new[] { "nature-cleanse", "chill-armed", "astral-upgrade", "chill-consumed" }));
+            Assert.That(receipt.JewelFeedback[0].Seat, Is.EqualTo(2));
+            Assert.That(receipt.JewelFeedback[2].Cell, Is.Zero);
+            Assert.That(receipt.JewelFeedback[2].Value, Is.EqualTo(2));
+            Assert.That(receipt.JewelFeedback[3].Seat, Is.Null);
+            Assert.That(Coop(phase: "playing", customize: Advanced).JewelFeedback, Is.Empty);
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects,
+                customize: json => Timed(json, false)));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects.Replace("\"cell\":0", "\"cell\":1"),
+                customize: Advanced));
+            Assert.Throws<FormatException>(() => Coop(phase: "playing", extra: effects.Replace("\"seat\":null", "\"seat\":0"),
+                customize: Advanced));
+        }
+
         private static string Timed(string json, bool solo)
         {
             const string guard = "{\"kind\":\"guard\",\"id\":\"icarus-guard\",\"mana\":0,\"rage\":0,\"cooldown\":0," +
@@ -261,6 +287,11 @@ namespace Aetheria.Tests
             Assert.That(admission.AccountId, Is.Not.EqualTo(Guid.Empty));
             Assert.That(admission.ContentHash.Length, Is.EqualTo(32));
             Assert.That(admission.WssOrigin.AbsolutePath, Is.EqualTo("/rt/v1"));
+            Assert.That(admission.ClientBuild, Is.EqualTo(NativeConnection.LegacyClientBuild));
+            var advanced = Admission().Insert(1, "\"clientBuild\":\"unity-native-v3\",");
+            Assert.That(CoopNativeAdmission.Decode(advanced).ClientBuild,
+                Is.EqualTo(NativeConnection.JewelFeedbackClientBuild));
+            Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(advanced.Replace("unity-native-v3", "unknown")));
             var connection = admission.CreateConnection();
             Assert.That(connection, Is.Not.Null);
             Assert.Throws<FormatException>(() => CoopNativeAdmission.Decode(Admission(origin: "http://127.0.0.1:4443")));

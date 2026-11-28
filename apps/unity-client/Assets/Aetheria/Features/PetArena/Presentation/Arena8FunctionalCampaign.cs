@@ -33,7 +33,7 @@ namespace Aetheria.PetArena.Presentation
             try
             {
                 var connection = new NativeConnection(admission.WssOrigin, admission.HttpsOrigin,
-                    admission.ContentHash, admission.BootId, admission.TicketAsync);
+                    admission.ContentHash, admission.BootId, admission.TicketAsync, clientBuild: admission.ClientBuild);
                 session = new CoopNativePlaySession(platform, connection, admission.MatchId,
                     CoopNativeView.FunctionalSoloRuleset);
                 await session.ConnectAsync(lifetime.Token);

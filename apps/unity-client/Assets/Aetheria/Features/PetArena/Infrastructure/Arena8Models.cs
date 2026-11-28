@@ -26,7 +26,7 @@ namespace Aetheria.PetArena.Infrastructure
     // optional ticket-scope hints and never client-selected authority.
     [Serializable] public sealed class Arena8NativeAllocation
     {
-        public string ticket, wssUrl, httpsOrigin, contentHash, bootId, matchId, expiresAt, principal, ruleset;
+        public string ticket, wssUrl, httpsOrigin, contentHash, bootId, matchId, expiresAt, principal, ruleset, clientBuild;
     }
 
     [Serializable] public sealed class Arena8Allocation

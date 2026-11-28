@@ -158,7 +158,9 @@ namespace Aetheria.Networking
         {
             var receipt = await connection.SubmitAsync(new GameCommand(Guid.NewGuid(), match, 0, ViewKind, Array.Empty<byte>()), token).ConfigureAwait(false);
             if (receipt.Receipt.Committed) throw new NativeFailure(Failure.Protocol);
-            return Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
+            var view = Decode(receipt.CanonicalVersion, receipt.Receipt.AuthorizedProjection.ToByteArray());
+            if (view.Coop?.JewelFeedback.Count > 0) throw new NativeFailure(Failure.Protocol);
+            return view;
         }
         private async Task<PlayState> Exclusive(Func<CancellationToken, Task<PlayState>> work, CancellationToken cancellation)
         {

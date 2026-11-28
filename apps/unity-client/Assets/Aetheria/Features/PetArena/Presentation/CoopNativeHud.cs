@@ -2,6 +2,7 @@ using System;
 using Aetheria.Networking;
 using Aetheria.PetArena.Vfx;
 using Aetheria.PetArena.Infrastructure;
+using Aetheria.World.Presentation;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -30,6 +31,9 @@ namespace Aetheria.PetArena.Presentation
         private string exitLabel;
         private CoopNativeView previous;
         private ArenaAudioDirector battleAudio;
+        private CoopJewelHudEffects jewelEffects;
+        private int jewelFeedbackSpeed = 1;
+        private const string JewelSpeedPreference = "aetheria.campaign.jewel_feedback_speed";
         public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) =>
             SetSettlementLoader(loader == null ? null : async () => (await loader()).Summary);
 
@@ -53,6 +57,8 @@ namespace Aetheria.PetArena.Presentation
             reading = false;
             nextRefresh = 0;
             previous = null;
+            jewelEffects?.Clear();
+            jewelFeedbackSpeed = PlayerPrefs.GetInt(JewelSpeedPreference, 1) == 2 ? 2 : 1;
             feedback = null;
             recovering = false;
             leaving = false;
@@ -78,11 +84,13 @@ namespace Aetheria.PetArena.Presentation
 
         private void OnDestroy()
         {
+            jewelEffects?.Clear();
             if (battleAudio != null) Destroy(battleAudio.gameObject);
         }
 
         private void Update()
         {
+            jewelEffects?.Update(Time.unscaledDeltaTime, jewelFeedbackSpeed, WorldPresentationSettings.ReducedMotion);
             var view = session?.State?.Coop;
             if (view == null) return;
             var remaining = session.RemainingTurnMilliseconds;
@@ -126,8 +134,11 @@ namespace Aetheria.PetArena.Presentation
 
         internal void Refresh()
         {
-            var view = session?.State?.Coop;
+            var state = session?.State;
+            var view = state?.Coop;
             if (view == null) return;
+            var playJewelFeedback = previous != null && view.Version > previous.Version &&
+                view.Version - previous.Version == 1 && state.ReceiptId != null && view.JewelFeedback.Count > 0;
             if (previous != null && view.Version > previous.Version)
             {
                 selected = -1;
@@ -176,6 +187,13 @@ namespace Aetheria.PetArena.Presentation
             renderedRecovery = recovering;
             renderedVersion = view.Version;
             Render(view);
+            var target = document != null ? document.rootVisualElement : null;
+            if (playJewelFeedback && target != null)
+            {
+                jewelEffects ??= new CoopJewelHudEffects();
+                jewelEffects.Attach(target);
+                jewelEffects.Play(view, cue => battleAudio?.Play(cue));
+            }
         }
 
         private bool PlayBossAudio(CoopNativeView before, CoopNativeView after)
@@ -223,6 +241,7 @@ namespace Aetheria.PetArena.Presentation
             if (view == null) return;
             var target = document != null ? document.rootVisualElement : null;
             if (target == null) return;
+            jewelEffects?.Clear();
             var body = target.Q<ScrollView>("coop-hud-scroll");
             if (body == null)
             {
@@ -249,6 +268,7 @@ namespace Aetheria.PetArena.Presentation
             turnHeader = presentation.Q<Label>(CoopNativePresentation.TurnName);
             turnHeader.text = CoopNativePresenter.TurnLabel(view, remaining);
             turnHeader.AddToClassList("battle-turn");
+            if (view.HasAdvancedJewels) AddJewelSpeedControl(turnHeader);
             target.Insert(0, turnHeader);
             body.Add(presentation);
             BattleScreenLayout.Size(body, body.contentViewport.contentRect.size);
@@ -286,6 +306,27 @@ namespace Aetheria.PetArena.Presentation
             }
             if (returnToHub != null || session != null) target.Add(BuildFooter(view));
             if (requestReward) _ = ReadRewardAsync();
+        }
+
+        private void AddJewelSpeedControl(VisualElement header)
+        {
+            string SpeedLabel() => jewelFeedbackSpeed == 2
+                ? CampaignLocale.Text("battle.speed_2x", "Speed ×2")
+                : CampaignLocale.Text("battle.speed_1x", "Speed ×1");
+            var control = new Button { name = "coop-jewel-speed", text = SpeedLabel() };
+            control.clicked += () =>
+            {
+                jewelFeedbackSpeed = jewelFeedbackSpeed == 1 ? 2 : 1;
+                PlayerPrefs.SetInt(JewelSpeedPreference, jewelFeedbackSpeed);
+                PlayerPrefs.Save();
+                control.text = SpeedLabel();
+            };
+            control.style.position = Position.Absolute;
+            control.style.right = 6;
+            control.style.top = control.style.bottom = 3;
+            control.style.marginTop = control.style.marginBottom = 0;
+            CampaignLocale.ApplyFont(control);
+            header.Add(control);
         }
 
         private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&

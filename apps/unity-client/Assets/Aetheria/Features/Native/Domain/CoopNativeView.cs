@@ -28,6 +28,7 @@ namespace Aetheria.Networking
         private const int TechnicalMaxCounter = ushort.MaxValue;
         private const int AdvancedMaxMultiplier = 8;
         private const int MaxChillReductionPm = 999;
+        private const int MaxJewelFeedback = 64;
         public const uint MaxHealth = uint.MaxValue;
         public const int MaxMana = ushort.MaxValue;
         public const int MaxRage = ushort.MaxValue;
@@ -57,6 +58,17 @@ namespace Aetheria.Networking
                 Kind = functional ? identity : null;
                 Multiplier = multiplier;
             }
+        }
+
+        public sealed class JewelEffect
+        {
+            public string Kind { get; }
+            public int? Seat { get; }
+            public int Value { get; }
+            public int? Cell { get; }
+
+            internal JewelEffect(string kind, int? seat, int value, int? cell)
+            { Kind = kind; Seat = seat; Value = value; Cell = cell; }
         }
 
         public sealed class Status
@@ -191,6 +203,8 @@ namespace Aetheria.Networking
         public bool IsFunctionalBoard => RulesetVersion >= FunctionalVersion || RulesetId == FunctionalSoloRuleset;
         public bool IsTimed => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
+        public bool HasAdvancedJewels => RulesetVersion == (RulesetId == FunctionalSoloRuleset
+            ? SoloAdvancedFunctionalVersion : AdvancedFunctionalVersion);
         public string ConfigDigest { get; }
         public int You { get; }
         public string Phase { get; }
@@ -210,6 +224,7 @@ namespace Aetheria.Networking
         public int FireZoneActiveTurns { get; }
         public int ChillReductionPm { get; }
         public IReadOnlyList<int> FireZoneCells { get; }
+        public IReadOnlyList<JewelEffect> JewelFeedback { get; }
         public bool Terminal => Phase == "won" || Phase == "lost";
         public Participant Own => Participants[You];
 
@@ -231,6 +246,7 @@ namespace Aetheria.Networking
             FireZoneActiveTurns = fields.FireZoneActiveTurns;
             ChillReductionPm = fields.ChillReductionPm;
             FireZoneCells = Array.AsReadOnly(fields.FireZoneCells ?? Array.Empty<int>());
+            JewelFeedback = Array.AsReadOnly(fields.JewelFeedback);
         }
 
         public static CoopNativeView Decode(ulong version, byte[] bytes)
@@ -269,7 +285,7 @@ namespace Aetheria.Networking
                     "maxRounds", "canEndTurn", "fireZoneActiveTurns", "fireZoneCells"
                 }).ToArray();
             if (advanced)
-                allowedFields = allowedFields.Append("chillReductionPm").ToArray();
+                allowedFields = allowedFields.Concat(new[] { "chillReductionPm", "jewelFeedback" }).ToArray();
             ProjectionJson.ObjectFields(play, allowedFields);
 
             if (ProjectionJson.Integer(play.Element("schemaVersion")) != 1) throw new FormatException("Invalid coop schema");
@@ -330,6 +346,8 @@ namespace Aetheria.Networking
                 fields.ChillReductionPm = Bounded(play.Element("chillReductionPm"), 0, MaxChillReductionPm);
             fields.Boss = ReadBoss(play.Element("boss"));
             fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion >= FunctionalVersion, advanced);
+            if (advanced && play.Element("jewelFeedback") is XElement jewelFeedback)
+                fields.JewelFeedback = ReadJewelFeedback(jewelFeedback, fields.Board, seatCount);
             fields.Participants = ReadParticipants(play.Element("participants"), seatCount, timed);
             fields.Pending = ReadPending(play.Element("pending"), seatCount);
             if (timed) ValidateTimedFields(fields);
@@ -384,6 +402,30 @@ namespace Aetheria.Networking
                     Bounded(item.Element("multiplier"), 1, advanced ? AdvancedMaxMultiplier : Cells), functional);
             }
             return tiles;
+        }
+
+        private static JewelEffect[] ReadJewelFeedback(XElement field, Tile[] board, int seats)
+        {
+            var upgraded = new HashSet<int>();
+            return ProjectionJson.Array(field, MaxJewelFeedback).Select(row =>
+            {
+                var kind = Token(row.Element("kind"), "nature-cleanse", "chill-armed", "chill-consumed", "astral-upgrade");
+                var astral = kind == "astral-upgrade";
+                var consumed = kind == "chill-consumed";
+                if (astral) ProjectionJson.ObjectFields(row, "kind", "seat", "value", "cell");
+                else ProjectionJson.ObjectFields(row, "kind", "seat", "value");
+
+                int? seat = consumed ? null : Bounded(row.Element("seat"), 0, seats - 1);
+                if (consumed && NullableUnsigned(row.Element("seat")).HasValue)
+                    throw new FormatException("Unexpected Chill feedback seat");
+                int? cell = astral ? Bounded(row.Element("cell"), 0, Cells - 1) : null;
+                var amount = astral ? Bounded(row.Element("value"), 2, AdvancedMaxMultiplier) :
+                    Bounded(row.Element("value"), 1, kind == "nature-cleanse" ? MaxJewelFeedback : MaxChillReductionPm);
+                if (cell.HasValue && (!upgraded.Add(cell.Value) ||
+                    board[cell.Value]?.Multiplier != amount || !TileKinds.Contains(board[cell.Value].Kind)))
+                    throw new FormatException("Invalid Astral feedback cell");
+                return new JewelEffect(kind, seat, amount, cell);
+            }).ToArray();
         }
 
         private static Participant[] ReadParticipants(XElement participants, int seatCount, bool allowV3Fields)
@@ -553,6 +595,7 @@ namespace Aetheria.Networking
             public int FireZoneActiveTurns;
             public int ChillReductionPm;
             public int[] FireZoneCells;
+            public JewelEffect[] JewelFeedback = Array.Empty<JewelEffect>();
         }
     }
 }
