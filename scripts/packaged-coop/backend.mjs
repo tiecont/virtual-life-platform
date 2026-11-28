@@ -5,6 +5,7 @@ import {randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
+import {performance} from 'node:perf_hooks';
 import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from '../../scripts/runtime-admission-test-tls.mjs';
 const require=createRequire(import.meta.url);

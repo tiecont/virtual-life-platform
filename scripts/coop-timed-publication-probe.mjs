@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {performance} from 'node:perf_hooks';
 import {setTimeout as pause} from 'node:timers/promises';
 
 const SYSTEM_ACTOR='00000000-0000-0000-0000-000000000000';

@@ -14,8 +14,14 @@ afterEach(async()=>{for(const r of opened.splice(0)){for(const app of r.apps)awa
 afterAll(async()=>{await admin.end();});
 async function fixture(){
  const schema='schema_compat_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const address=new URL(process.env.TEST_DATABASE_URL!);address.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:address.toString()}),directory=await mkdtemp(join(tmpdir(),'city-schema-compat-')),apps:Awaited<ReturnType<typeof createApp>>[]=[];opened.push({pool,schema,directory,apps});await migrate(pool);
- const own=await migrationManifest(),expansionName=String(Object.keys(own).length+1).padStart(4,'0')+'_expand_probe.sql',expansion=await readFile('tests/fixtures/schema-compat/0039_expand_probe.sql'),checksum=createHash('sha256').update(expansion).digest('hex');
- const policy={schemaVersion:1,policyVersion:1,mode:'expand-compatible',journal:'city_schema_migrations',metadataVersion:1,runtimeManifestSha256:migrationSetDigest(own),minimumDatabaseMigrations:Object.keys(own).length,maximumDatabaseMigrations:Object.keys(own).length+1,reviewRef:'evidence:synthetic-expand-only',migrations:[...Object.entries(own).map(([name,checksum])=>({name,checksum})),{name:expansionName,checksum}]};
+ const own=await migrationManifest();
+ const migrations=Object.entries(own).map(([name,checksum])=>({name,checksum}));
+ // The migration journal can have gaps and repeated numeric prefixes.
+ const lastPrefix=migrations.at(-1)!.name.match(/^\d+/)![0];
+ const expansionName=String(Number(lastPrefix)+1).padStart(lastPrefix.length,'0')+'_expand_probe.sql';
+ const expansion=await readFile('tests/fixtures/schema-compat/0039_expand_probe.sql');
+ const checksum=createHash('sha256').update(expansion).digest('hex');
+ const policy={schemaVersion:1,policyVersion:1,mode:'expand-compatible',journal:'city_schema_migrations',metadataVersion:1,runtimeManifestSha256:migrationSetDigest(own),minimumDatabaseMigrations:migrations.length,maximumDatabaseMigrations:migrations.length+1,reviewRef:'evidence:synthetic-expand-only',migrations:[...migrations,{name:expansionName,checksum}]};
  const file=join(directory,'compatibility.json');await writeFile(file,JSON.stringify(policy));const expanded=join(directory,'migrations');await cp('apps/platform-api/src/shared/database/migrations',expanded,{recursive:true});await writeFile(join(expanded,expansionName),expansion);
  const start=async(compatible=true)=>{const app=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:'synthetic-schema-compat-secret-'.repeat(2),...compatible?{SCHEMA_COMPATIBILITY_FILE:file}:{}}),pool);apps.push(app);return app;};
  return {pool,start,expanded,own,policy,file,expansionName};
