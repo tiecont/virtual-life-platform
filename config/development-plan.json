@@ -10891,6 +10891,11 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "waitingRoomRefresh": {
+          "sourceRevision": "f56a9e75db3637145002dd62d4140cc83d021778",
+          "verification": "Direct Unity PlayMode: 18 of 18 passed. Linux development player built. Four real packaged clients with the 7c68e227 capture harness did not reach the opening; host Ready control was not found in run-wrAAGgE2.",
+          "remaining": "Reproduce the host Ready failure and verify the same committed opening on four distinct player surfaces."
+        },
         "compactFireSkillInput": {
           "sourceRevision": "80c76ae9d4602f945c63e4e1cd1a234b3d870e0f",
           "integratedRevision": "095cdf37",
@@ -11387,6 +11392,11 @@
         "VL-184"
       ],
       "implementation": {
+        "routePolicyOperator": {
+          "sourceRevision": "beb5e795ec96905aea0ca703e9dafe92f282eb15",
+          "verification": "Admin typecheck passed. Isolated actual Chromium/Next/Nest/PostgreSQL operator session covered 48 authored routes, rejected a cycle with 422, published v2 and rolled back to v1. Anonymous overview returned 401. Schema-7 engine validated publication.",
+          "remaining": "Local verification. Production publication requires the owner."
+        },
         "naturalSoloCampaign": {
           "sourceRevision": "4bae21f514aae4f51519a77f7a6c8e2631af2256",
           "integratedRevision": "562fc8dba22c17410d6ce7cad52ab2bbc85fc481",
@@ -11648,6 +11658,16 @@
       ],
       "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. At eb7314d1, all nine R04-derived jewel icons matched provider pixels, 85 EditMode and 43 PlayMode cases passed with two skips. The Linux package at ae93b774 rendered all six functional designs in a four-seat Fire fixture at 1280×720. The host swapped, rejoined the pinned board across restart and committed skill and signature actions. At e9aacee9 the packaged Fire-to-Water verifier passed end to end, including all five host action types, Fire victory at v46, four reward rows and the Water start and swap at v1 and v2. Four-seat timed player recovery and owner art approval remain open.",
       "implementation": {
+        "localizedAbilityControls": {
+          "sourceRevision": "e01446a973df6b49f3ac67132a0211274088cc2b",
+          "verification": "Direct Unity 6000.3.14f1 PlayMode CoopNativeHudTests: 25 passed, zero failed or skipped. Shared skill and training controls include EN/VI/JA/KO/ZH.",
+          "remaining": "Ability names still fall back to stable IDs where authored translations are absent. Font and visual layout acceptance on target hardware remains open."
+        },
+        "frostAstralEncounterEvidence": {
+          "sourceRevision": "9c45f3da8b379adf5f3ce42d06b7785ceebc140d",
+          "verification": "The ordinary Ghost encounter in the f56a9e75 Linux player finished before its natural Frost and Astral cues in run-TbomSA. A separate optional technical encounter can extend only the local Ghost HP when testing the native effects.",
+          "remaining": "Record ordinary-encounter and extended-fixture results separately; verify effects against the committed Rust journal."
+        },
         "battleSettlementHud": {
           "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
           "testRevision": "f78f723c9ea827c15f22ff3e3d9a072d05332e4e",
