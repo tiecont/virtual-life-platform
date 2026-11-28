@@ -354,18 +354,21 @@ elif stage == 'four-battle':
     assert condition('four-allocation.json'), 'Missing actual room allocation'
 
     def admit(img):
-        if board := populated_board(img):
-            return board
-        if start := start_button(img):
-            return start if seat == 0 else None
-        # Members must refresh the started room before their Enter button appears.
-        if enter := word_button(img, {'enter'}, center_band(375,465)):
-            click(*enter)
-        elif refresh := word_button(img, {'refresh'}, center_band(360,402)):
-            click(*refresh)
-        elif recover := status_button(img):
+        # Refresh moves from y379 to y336 when the server marks the room
+        # started. Enter then occupies y379. Read complete, centered rows.
+        for top in (360, 317, 403):
+            row = center_band(top, top + 37, 170)
+            enter = word_button(img, {'enter'}, row, mode='7')
+            if enter:
+                click(*enter)
+                return
+        for top in (360, 317):
+            refresh = word_button(img, {'refresh'}, center_band(top, top + 37), mode='7')
+            if refresh:
+                click(*refresh)
+                return
+        if recover := status_button(img):
             click(*recover)
-        return None
 
     if seat == 0:
         until = monotonic() + 100
