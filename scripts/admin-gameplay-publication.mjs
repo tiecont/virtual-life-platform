@@ -581,8 +581,8 @@ try{
    return {ws,next,sequence:2,expiresAt:ticket.expiresAt};
   }catch(error){ws.terminate();throw error;}
  }
- async function native(match,seat,expectedVersion,action){
-  const errors=[],commandId=randomBytes(16);
+ async function native(match,seat,expectedVersion,action,commandId=randomBytes(16)){
+  const errors=[];
   for(let attempt=0;attempt<3;attempt++){
    try{
     const reply=await sendNative(match,seat,expectedVersion,action,commandId);
@@ -616,10 +616,14 @@ try{
    const response=await connection.next();
    if(Buffer.compare(Buffer.from(response.commandId),id)!==0)continue;
    if(response.body.case==='rejection')return {code:response.body.value.code};
-   if(response.body.case==='receipt')return {
-    state:JSON.parse(Buffer.from(response.body.value.authorizedProjection).toString('utf8')).state,
-    version:Number(response.canonicalVersion),committed:response.body.value.committed,
-   };
+   if(response.body.case==='receipt'){
+    const projection=Buffer.from(response.body.value.authorizedProjection);
+    return {
+     state:JSON.parse(projection.toString('utf8')).state,
+     version:Number(response.canonicalVersion),committed:response.body.value.committed,
+     ...(advancedCoop?{projectionHash:createHash('sha256').update(projection).digest('hex')}:{}),
+    };
+   }
   }
   throw Error('Native command did not return a matching result');
  }
@@ -794,6 +798,7 @@ try{
   await verifyAdvancedCoopPublication({
    pool,host,members,outsider:await guest('QA unseated account','ground-clodkin'),
    published:A,mark,post,publish,createRoom,prepareRoom,allocate,allocationRow,native,connections,restart,
+   sendOnce:(match,seat,version,action)=>sendNative(match,seat,version,action,randomBytes(16)),
   });
  }else if(timedCoop){
   const outsider=await guest('QA unseated account','ground-clodkin');
