@@ -91,3 +91,64 @@ export async function verifyGhostNatureReceipt(pool,directory,published,fixture,
  const verified={candidate,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,sample,receipts,frames};
  await writeFile(join(directory,'solo-shared-nature-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
+
+export async function verifyGhostAdvancedReceipts(pool,directory,published,fixture,bundle,candidate){
+ const read=async name=>JSON.parse(await readFile(join(directory,name),'utf8'));
+ const player=await read('native-facts.json');
+ assert.equal(player.status,'ok');
+ assert.equal(player.ruleset,'arena8-functional-pve');
+ assert.equal(player.participantCount,1);
+ const {samples}=await read('advanced-samples.json');
+ assert.deepEqual(samples.map(sample=>sample.kind),['chill-armed','chill-consumed','astral-upgrade']);
+ const [armed,consumed,astral]=samples;
+ assert.equal(armed.afterChill,armed.value);
+ assert.ok(bundle.advancedJewels.frostReductionPm.includes(armed.value));
+ assert.equal(consumed.beforeChill,armed.value);
+ assert.equal(consumed.value,armed.value);
+ assert.equal(consumed.afterChill,0);
+ assert.equal(consumed.first,-1);
+ assert.ok(astral.value>=2&&astral.cell>=0&&astral.cell<64);
+ assert.equal(astral.afterMultipliers[astral.cell],astral.value);
+ const earlyMax=Math.max(...bundle.multiplier.schedule.filter(stage=>stage.from<=astral.beforeTurn)
+  .flatMap(stage=>stage.tiers.map(row=>row.multiplier)));
+ assert.ok(astral.value<=earlyMax);
+ assert.deepEqual(samples.map(sample=>sample.hudLabel),
+  ['−'+armed.value/10+'%','−'+armed.value/10+'%','×'+astral.value]);
+
+ const {rows:[match]}=await pool.query(
+  `SELECT account_id,content_hash,functional_config_version::int AS version,functional_config_digest AS digest,
+     functional_allocation->>'bossId' AS encounter FROM platform_native_arena8_matches WHERE match_id=$1`,[player.matchId]);
+ assert.deepEqual(match,{
+  account_id:fixture.accountId,content_hash:astral.contentHash,version:published.version,digest:published.digest,encounter,
+ });
+ const {rows:receipts}=await pool.query(
+  `SELECT committed_version::int AS version,actor_id,command_id,encode(receipt_hash,'hex') AS hash
+     FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version`,[player.matchId]);
+ assert.deepEqual(receipts.map(row=>row.version),Array.from({length:astral.version},(_,index)=>index+1));
+ assert.ok(receipts.every(row=>row.actor_id===fixture.accountId));
+ const known=new Set(bundle.board.functionalTiles.spawnWeights.map(row=>row.kind));
+ const frames=[];
+ for(const sample of samples){
+  assert.equal(sample.matchId,player.matchId);
+  assert.equal(sample.configDigest,published.digest);
+  assert.equal(sample.contentHash,match.content_hash);
+  assert.equal(sample.version,sample.beforeVersion+1);
+  assert.equal(receipts[sample.version-1].command_id,commandUuid(sample.receiptId));
+  for(const board of [sample.beforeKinds,sample.afterKinds]){
+   assert.equal(board.length,64);
+   assert.ok(board.every(kind=>known.has(kind)));
+  }
+  for(const multipliers of [sample.beforeMultipliers,sample.afterMultipliers])
+   assert.equal(multipliers.length,64);
+  const name='advanced-solo-'+sample.kind+'.png';
+  const image=await readFile(join(directory,name));
+  assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+  assert.equal(image.readUInt32BE(16),1280);
+  assert.equal(image.readUInt32BE(20),720);
+  frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
+ }
+ assert.equal(astral.version,player.version);
+ assert.equal(new Set(frames.map(frame=>frame.sha256)).size,frames.length);
+ const verified={candidate,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,samples,receipts,frames};
+ await writeFile(join(directory,'solo-shared-frost-astral-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
+}

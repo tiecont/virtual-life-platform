@@ -33,19 +33,7 @@ namespace Aetheria.PetArena.Presentation
             if (!UsesFunctionalBoard)
                 throw new InvalidOperationException("The Nature capture requires the shared functional board.");
             var token = lifetime.Token;
-            string proof = Path.Combine(nativeCaptureDirectory, "nature-map-access-ready");
-            File.WriteAllText(Path.Combine(nativeCaptureDirectory, "nature-guest-ready"), "ordinary starter initialized\n");
-            for (var wait = 0; !File.Exists(proof); wait++)
-            {
-                if (wait >= 120) throw new InvalidOperationException("The disposable map-access fixture did not become ready.");
-                await Task.Delay(250, token);
-            }
-
-            await AllocateFunctional(map, map + "-regular", automated: true);
-            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
-            var view = (await functionalSession.StartAsync(token)).Coop;
-            if (view.RulesetVersion != 4 || view.BossId != map + "-regular" || view.Participants.Count != 1)
-                throw new InvalidOperationException("Expected the shared schema 6 Ghost regular solo projection.");
+            var view = await StartGhostCapture(map, token);
             functionalHud.Refresh();
             await CaptureNative("nature-solo-01-started.png");
 
@@ -114,6 +102,24 @@ namespace Aetheria.PetArena.Presentation
                 File.WriteAllLines(Path.Combine(nativeCaptureDirectory, "nature-timeline.jsonl"),
                     timeline.Select(frame => JsonUtility.ToJson(frame)));
             }
+        }
+
+        private async Task<CoopNativeView> StartGhostCapture(string map, System.Threading.CancellationToken token)
+        {
+            string proof = Path.Combine(nativeCaptureDirectory, "nature-map-access-ready");
+            File.WriteAllText(Path.Combine(nativeCaptureDirectory, "nature-guest-ready"), "ordinary starter initialized\n");
+            for (var wait = 0; !File.Exists(proof); wait++)
+            {
+                if (wait >= 120) throw new InvalidOperationException("The disposable map-access fixture did not become ready.");
+                await Task.Delay(250, token);
+            }
+
+            await AllocateFunctional(map, map + "-regular", automated: true);
+            if (functionalSession.RequiresReconnect) await functionalSession.ReconnectAsync(token);
+            var view = (await functionalSession.StartAsync(token)).Coop;
+            if (view.RulesetVersion != 4 || view.BossId != map + "-regular" || view.Participants.Count != 1)
+                throw new InvalidOperationException("Expected the shared schema 6 Ghost regular solo projection.");
+            return view;
         }
 
         private static NatureFrame SnapshotNature(CoopNativeView view)
