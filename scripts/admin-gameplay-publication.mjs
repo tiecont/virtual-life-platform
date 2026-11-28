@@ -191,7 +191,7 @@ try{
  });
  async function startApi(){
   const config=configForRuntime();
-  app=await createApp(config,pool,false,solo?{petArena8Native:{
+  app=await createApp(config,pool,false,solo?{petArtifacts:{enabled:waterCampaign},petArena8Native:{
    enabled:true,binary:runtimeBinary,databaseUrl:runtime.toString(),role,caFile:tls.caFile,
    storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,
    httpsOrigin:nativeOrigin,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE,
@@ -729,7 +729,7 @@ try{
  if(waterCampaign){
   await verifySoloWaterCampaign({
    pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
-   dbConfig,post,soloAdmission,native,connections,closeMatch,restart,legalSwap,
+   dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,legalSwap,
   });
  }else if(solo){
   const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:'cinder-terraces',encounterId:'cinder-terraces-boss'};

@@ -3,7 +3,7 @@ import {createHash,randomUUID} from 'node:crypto';
 
 export async function verifySoloWaterCampaign({
   pool, published, seedBytes, engineHash, host, otherAccount, mark,
-  dbConfig, post, soloAdmission, native, connections, closeMatch, restart, legalSwap,
+  dbConfig, get, post, soloAdmission, native, connections, closeMatch, restart, legalSwap,
 }) {
   const electric='pet-v31-electric-quorion';
   const level=Number(process.env.WATER_CAMPAIGN_LEVEL??'1');
@@ -14,8 +14,13 @@ export async function verifySoloWaterCampaign({
   });
   await pool.query('UPDATE pet_wave_one_owned SET level=$2 WHERE account_id=$1',[host.accountId,level]);
   await pool.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,$3,0,'gacha')",[host.accountId,electric,level]);
-  mark('fixture owns two manually provisioned solo Pet instances, with no artifacts or clear rows',{
-   firePet:host.petId,waterPet:electric,level,artifacts:[],partySize:1,
+  // Initialize the ordinary starter wallet before measuring battle grants.
+  const artifactResponse=await get(host,'/v1/pets/artifacts/state');
+  assert.equal(artifactResponse.statusCode,200,JSON.stringify(artifactResponse.json()));
+  const artifacts=artifactResponse.json();
+  assert.ok(artifacts.inventory.every(artifact=>artifact.equipped===null));
+  mark('fixture owns two manually provisioned solo Pet instances, with no equipped artifacts or clear rows',{
+   firePet:host.petId,waterPet:electric,level,startingMaterials:artifacts.materials,equippedArtifacts:[],partySize:1,
   });
   const allocateUrl='/v1/pets/wave-a/arena8/native/allocate';
   const waterId='tideglass-lagoon';
