@@ -109,7 +109,10 @@ async function verifySharedRng(){
    const effects=[...playerLog.matchAll(new RegExp('^Aetheria jewel HUD v'+turn.version+' ([a-z-]+) (\\d+)$','gm'))]
     .map(([,kind,value])=>({kind,value:Number(value)}));
    const frames=await verifyScreenshots([label+'-before.png',label+'-after.png']);
-   additionalHostTurns.push({...turn,displayedEffects:effects,frames});
+   const cropTool=fileURLToPath(new URL('./multiplier_crops.py',import.meta.url));
+   const multiplierReview=JSON.parse(execFileSync('python3',[cropTool,
+    join(root,label+'-before.png'),join(root,label+'.json')],{encoding:'utf8'}));
+   additionalHostTurns.push({...turn,displayedEffects:effects,frames,multiplierReview});
   }
  }
  verifyPerformance(performance);
