@@ -1,5 +1,6 @@
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,28 +15,28 @@ namespace Aetheria.Icarus
     // This sampler is opt-in and only compiled into development players.
     internal sealed class CharacterFrameBenchmark : MonoBehaviour
     {
-        const int Warmup = 60, SampleCount = 240;
+        const int Warmup = 60, MinimumSamples = 240;
         [Serializable] sealed class Sample
         {
-            public double frameIntervalMs, cpuFrameMs, gpuFrameMs;
+            public double timelineSeconds, frameIntervalMs, cpuFrameMs, gpuFrameMs;
             public long drawCalls, allocatedBytes, graphicsBytes;
         }
         [Serializable] sealed class Report
         {
             public string scene, unity, cpu, gpu, api, os, assetRevision;
             public int width, height, processors, systemMemoryMB, graphicsMemoryMB, warmupFrames = Warmup;
-            public double p50Ms, p95Ms, p99Ms;
+            public double timelineDurationSeconds, coveredTimelineSeconds, p50Ms, p95Ms, p99Ms;
             public int over60HzBudget, reportedCpuFrames, reportedGpuFrames;
             public Sample[] frames;
         }
-        readonly Sample[] samples = new Sample[SampleCount];
+        readonly List<Sample> samples = new List<Sample>(MinimumSamples);
         readonly FrameTiming[] timings = new FrameTiming[1];
         readonly Stopwatch clock = new Stopwatch();
         ProfilerRecorder draws, gfx;
         string target, revision;
         PlayableDirector director;
         int count;
-        double last;
+        double last, previousPhase, covered;
         ulong previousTiming;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -75,8 +76,12 @@ namespace Aetheria.Icarus
             double interval = now - last;
             last = now;
             FrameTimingManager.CaptureFrameTimings();
+            double phase = director.time % director.duration;
+            double advanced = phase - previousPhase;
+            previousPhase = phase;
             if (count++ < Warmup) return;
-            var row = new Sample { frameIntervalMs = interval,
+            covered += advanced < 0 ? advanced + director.duration : advanced;
+            var row = new Sample { timelineSeconds = phase, frameIntervalMs = interval,
                 allocatedBytes = Profiler.GetTotalAllocatedMemoryLong(),
                 drawCalls = draws.Valid && draws.Count > 0 ? draws.LastValue : -1,
                 graphicsBytes = gfx.Valid && gfx.Count > 0 ? gfx.LastValue : -1 };
@@ -86,9 +91,17 @@ namespace Aetheria.Icarus
                 row.cpuFrameMs = timings[0].cpuFrameTime;
                 row.gpuFrameMs = timings[0].gpuFrameTime;
             }
-            int index = count - Warmup - 1;
-            samples[index] = row;
-            if (index + 1 != SampleCount) return;
+            samples.Add(row);
+            if (samples.Count < MinimumSamples || covered < director.duration)
+            {
+                if (clock.Elapsed.TotalSeconds > Math.Max(120, director.duration * 4))
+                {
+                    UnityEngine.Debug.LogError("Incomplete Timeline coverage during character benchmark.");
+                    enabled = false;
+                    Application.Quit(3);
+                }
+                return;
+            }
             double[] sorted = samples.Select(s => s.frameIntervalMs).OrderBy(value => value).ToArray();
             double Percentile(double fraction) => sorted[(int)Math.Ceiling(sorted.Length * fraction)-1];
             var result = new Report { scene = SceneManager.GetActiveScene().name, unity = Application.unityVersion,
@@ -97,7 +110,8 @@ namespace Aetheria.Icarus
                 graphicsMemoryMB = SystemInfo.graphicsMemorySize, width = Screen.width, height = Screen.height,
                 p50Ms = Percentile(.50), p95Ms = Percentile(.95), p99Ms = Percentile(.99),
                 reportedCpuFrames = samples.Count(s => s.cpuFrameMs > 0), reportedGpuFrames = samples.Count(s => s.gpuFrameMs > 0),
-                over60HzBudget = sorted.Count(ms => ms > 1000.0/60), assetRevision = revision, frames = samples };
+                over60HzBudget = sorted.Count(ms => ms > 1000.0/60), timelineDurationSeconds = director.duration,
+                coveredTimelineSeconds = covered, assetRevision = revision, frames = samples.ToArray() };
             enabled = false;
             using (var output = new StreamWriter(new FileStream(target, FileMode.CreateNew)))
                 output.Write(JsonUtility.ToJson(result, true));
