@@ -240,25 +240,22 @@ def room_control(image, word):
     return word_button(image, {word}, lobby_buttons)
 
 def room_ready(map_name, filename):
-    box = (2, 215, 140, 242)
+    # Read the full seat label across the supported lobby layouts.
+    box = (0, 185, 190, 300)
     for _ in range(20):
         img = capture(filename)
-        if re.search(r'4\s*/\s*4', ocr(img, box, '7')):
+        if re.search(r'seats?\s*[:.]?\s*4\s*/\s*4\b', ocr(img, box, '6'), re.I):
             break
-        # The native lobby uses fixed-height rows at all supported resolutions.
-        # Read only the Refresh row so the labels on adjacent rows cannot win OCR.
-        refresh = word_button(img, {'refresh'}, center_band(362, 396, 90), mode='7')
-        if refresh is None:
-            refresh = word_button(img, {'refresh'}, lobby_buttons)
+        refresh = room_control(img, 'refresh')
         if refresh:
             click(*refresh)
         sleep(.4)
     else:
         raise RuntimeError(f'{map_name} room did not render four seats')
-    click(*label(filename, 'ready', center_band(265, 319)))
+    click(*wait_for(filename, lambda img: room_control(img, 'ready'))[0])
     for attempt in range(18):
         img = capture(map_name + '-room-ready')
-        start = word_button(img, {'start'}, center_band(315, 360))
+        start = room_control(img, 'start')
         if start and min(Image.open(img).convert('RGB').getpixel((40, start[1]))) >= 130:
             click(*start)
             return
