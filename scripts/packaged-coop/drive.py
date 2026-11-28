@@ -69,6 +69,26 @@ def word_button(image, words, box, mode='11'):
             return box[0]+(x+width//2)//2, box[1]+(y+height//2)//2
     return None
 
+def join_button(image, field_y):
+    # Start from the observed Room id label and read only the next button row.
+    # Sparse OCR across the UUID form may discard the short Join label.
+    row = center_band(field_y + 29, field_y + 58, 110)
+    position = word_button(image, {'join'}, row, mode='7')
+    if position:
+        return position, 'single-line-word'
+
+    # Some versions omit per-word boxes for this small label. A separate
+    # raw-line pass can still recognize both words before using the row center.
+    heard = ocr(image, row, mode='13').strip().lower()
+    if re.search(r'\bj[o0]in\s+r[o0][o0]m\b', heard):
+        return (screen_middle, (row[1] + row[3]) // 2), 'single-line-text'
+
+    # A different UI scale can shift the row. Use the recognized word's
+    # coordinates in the wider vertical band rather than a blind click.
+    position = word_button(image, {'join'}, center_band(field_y + 17, field_y + 75, 124), mode='11')
+    return (position, 'visible-row-fallback') if position else None
+
+
 def start_button(image):
     # Start spans the viewport above the footer. Excluding the surrounding scene
     # lets single-line OCR read the label on both compact and desktop panels.
@@ -307,6 +327,15 @@ elif stage == 'read-shared-label':
     for image in sys.argv[2:]:
         visible, heard = shared_hud_turn(image)
         print(f'{Path(image).name}: {visible} {heard}', flush=True)
+elif stage == 'read-join-button':
+    for filename in sys.argv[2:]:
+        image = Path(filename)
+        room_id = word_button(image, {'room'}, (0, 315, 160, 430))
+        result = join_button(image, room_id[1]) if room_id else None
+        if not result:
+            raise RuntimeError(f'Join room was not recognized in {image.name}')
+        position, method = result
+        print(f'{image}: field_y={room_id[1]} x={position[0]} y={position[1]} method={method}', flush=True)
 elif stage == 'four-lobby':
     seat = int(environ['PACKAGED_QA_SEAT'])
     shared = output.parent
@@ -328,7 +357,9 @@ elif stage == 'four-lobby':
         room_label = label('04-join-form','room',(0,315,160,430))
         click(max(220,screen_middle//2),room_label[1])
         run(['python3', root/'x11.py', 'replace-text', room_id], check=True)
-        click(*label('04-join-form-filled','join',center_band(315,465)))
+        (position, method), _ = wait_for('04-join-form-filled', lambda image: join_button(image, room_label[1]))
+        print(f'Join room recognized at x={position[0]} y={position[1]} ({method}, field_y={room_label[1]})', flush=True)
+        click(*position)
     def visible_seat(img):
         match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,225,360,286),'6').lower())
         return match.group(1) if match else None
