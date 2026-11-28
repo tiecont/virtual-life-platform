@@ -140,6 +140,7 @@ namespace Aetheria.Editor
                         uv = entry.Clip.MaterialUVBindings.Length,
                         transform = entry.Clip.NodeTransformBindings.Length
                     }).ToArray();
+                review.eyeRig = MeasureEyeRig(modelVrm, skins);
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
                     review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, modelVrm, output,
@@ -268,6 +269,45 @@ namespace Aetheria.Editor
                 return facts;
             }
             finally { Object.DestroyImmediate(mesh); }
+        }
+
+        // The exported LookAt uses empty expression presets. Measure each mapped
+        // joint independently on a stationary pose before evaluating any camera frames.
+        private static EyeRigSample[] MeasureEyeRig(Vrm10Instance model, SkinnedMeshRenderer[] skins)
+        {
+            var result = new List<EyeRigSample>();
+            var mesh = new Mesh();
+            try
+            {
+                foreach (var kind in new[] { HumanBodyBones.LeftEye, HumanBodyBones.RightEye })
+                {
+                    if (!model.TryGetBoneTransform(kind, out var eye)) continue;
+                    var rest = eye.localRotation;
+                    var sample = new EyeRigSample { bone = kind.ToString(), requestedYawDegrees = 10f };
+                    var before = skins.Select(skin => { skin.BakeMesh(mesh); return mesh.vertices; }).ToArray();
+                    try
+                    {
+                        eye.Rotate(Vector3.up, sample.requestedYawDegrees, Space.World);
+                        for (int i = 0; i < skins.Length; i++)
+                        {
+                            skins[i].BakeMesh(mesh);
+                            var after = mesh.vertices;
+                            Require(before[i].Length == after.Length, "Eye probe changed skinned topology.");
+                            for (int v = 0; v < after.Length; v++)
+                            {
+                                float delta = skins[i].transform.TransformVector(after[v] - before[i][v]).magnitude;
+                                if (delta <= .00001f) continue;
+                                sample.movedVertices++;
+                                sample.maxDisplacementMeters = Mathf.Max(sample.maxDisplacementMeters, delta);
+                            }
+                        }
+                    }
+                    finally { eye.localRotation = rest; }
+                    result.Add(sample);
+                }
+            }
+            finally { Object.DestroyImmediate(mesh); }
+            return result.ToArray();
         }
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
@@ -427,6 +467,14 @@ namespace Aetheria.Editor
         }
 
         [Serializable]
+        private sealed class EyeRigSample
+        {
+            public string bone;
+            public int movedVertices;
+            public float requestedYawDegrees, maxDisplacementMeters;
+        }
+
+        [Serializable]
         private sealed class ExpressionBindings
         {
             public string preset;
@@ -441,6 +489,7 @@ namespace Aetheria.Editor
             public float clipSeconds, maxMappedJointAngleDegrees, maxSkinnedVertexDelta;
             public bool productionReady;
             public ExpressionBindings[] expressionBindings;
+            public EyeRigSample[] eyeRig;
             public float[] sampleFractions;
             public float[] clippedWhitePercent = Array.Empty<float>();
             public string[] frames = Array.Empty<string>();

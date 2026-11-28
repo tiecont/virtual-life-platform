@@ -126,3 +126,9 @@ Blender inspection of the original project's `work/character.blend` and
 eye.R, with no named jaw or eyelid controls. A speaking or blinking take
 requires an expression-capable revision. The private Unity capture also
 reported shader linking errors, so its material appearance remains under review.
+
+The original VRM selects expression-based LookAt. Direct inspection of its
+joint weights found 98 left-eye and 95 right-eye weighted vertex slots on
+Body. The private Unity review also probes the two joints independently with
+a 10-degree rotation and restores each original pose. Its displacement report
+qualifies bone-driven eye movement separately from expression playback.
