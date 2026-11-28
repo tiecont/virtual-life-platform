@@ -411,48 +411,51 @@ elif stage == 'four-host-room-start':
     click(*wait_for('07-fully-ready-room',ready_start, tries=45)[0])
 elif stage == 'four-battle':
     seat = int(environ['PACKAGED_QA_SEAT'])
+    # Four drivers run Tesseract alongside four rendered clients.
+    environ.setdefault('OMP_THREAD_LIMIT', '1')
     condition = lambda name: (output.parent / name).is_file()
     until = monotonic() + 100
     while not condition('four-allocation.json') and monotonic() < until:
         sleep(.25)
     assert condition('four-allocation.json'), 'Missing actual room allocation'
 
-    def admit(img):
+    def enter_native_from_lobby(img):
         if 'cooperative' in ocr(img, (0,0,290,34), '7').lower():
-            enter = room_control(img, 'enter')
-            if enter:
-                click(*enter)
-                return None
-            refresh = room_control(img, 'refresh')
-            if refresh:
-                click(*refresh)
-            return None
-        if recover := status_button(img):
-            click(*recover)
-            return None
-        return start_button(img) if seat == 0 else None
+            control = room_control(img, 'enter') or room_control(img, 'refresh')
+            if control:
+                click(*control)
+
+    observations = [output.parent/f'client-{slot}'/'native-hud-admission.json' for slot in range(4)]
+
+    def ready_huds():
+        latest = [read_marker(path) for path in observations]
+        now = time_ns() // 1_000_000
+        return all(frame and frame['ready'] and 0 <= now - frame['capturedUnixMs'] < 5_000
+                   for frame in latest)
 
     # Ticket consumption precedes the first readable native HUD. Wait for all
     # four real windows to finish transitioning from the lobby before Start.
     started = output.parent/'four-host-starting'
     until = monotonic() + 100
     while not started.exists() and monotonic() < until:
-        image = capture('08-native-admission')
-        start = admit(image)
-        ready = output/'native-hud-ready'
-        if status_button(image) is None and shared_hud_turn(image)[0] == (0, 0):
-            ready.touch()
-        else:
-            ready.unlink(missing_ok=True)
-        if seat == 0 and start and condition('four-native-ready.json'):
-            markers = [output.parent/f'client-{slot}'/'native-hud-ready' for slot in range(4)]
-            try:
-                observed_ns = [marker.stat().st_mtime_ns for marker in markers]
-                now_ns = time_ns()
-                fresh = all(0 <= now_ns - observed < 5_000_000_000 for observed in observed_ns)
-            except FileNotFoundError:
-                fresh = False
-            if fresh:
+        interval = {}
+        image = capture('08-native-admission', interval)
+        recover = status_button(image, with_word=True)
+        visible, heard = shared_hud_turn(image) if recover is None else (None, None)
+        ready = visible == (0, 0)
+        write_marker(observations[seat], {**interval, 'ready': ready, 'hudText': heard,
+                     'recoveryControl': recover[0] if recover else None})
+        if recover:
+            action, position = recover
+            copyfile(image, output/'08-native-admission-recovery.png')
+            click(*position)
+            print(f'Admission clicked {action} at {position}, frame={interval["capturedUnixMs"]}, '
+                  f'input={time_ns() // 1_000_000}', flush=True)
+        elif visible is None:
+            enter_native_from_lobby(image)
+        elif seat == 0 and ready and condition('four-native-ready.json') and ready_huds():
+            start = start_button(image)
+            if start and ready_huds():
                 copyfile(image, output/'08b-native-start.png')
                 started.touch()
                 click(*start)
@@ -568,7 +571,10 @@ elif stage == 'four-battle':
             if turn is not None and turn[0] > 0:
                 raise RuntimeError(f'The packaged client missed the shared opening: visible turn and seat {turn}')
         if seat != 0:
-            admit(img)
+            if recover := status_button(img):
+                click(*recover)
+            else:
+                enter_native_from_lobby(img)
         return None
 
     if rotating:
