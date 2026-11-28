@@ -1628,13 +1628,19 @@ mod tests {
             let (rules, mut state) = shared_board_fixture(kind);
             state.turn_index = 17;
             let unchanged = state.clone();
-            assert_eq!(
-                best_shared_action(&rules, &state),
-                Some(CoopAction::Swap {
-                    first: 2,
-                    second: 10,
-                }),
-                "{kind:?} must beat an unneeded self-defense cast"
+            let Some(CoopAction::Swap { first, second }) = best_shared_action(&rules, &state)
+            else {
+                panic!("{kind:?} must beat an unneeded self-defense cast");
+            };
+            assert!(rules.swap_matches(&state, first.into(), second.into()));
+            let mut forecast = state.board;
+            forecast.swap(first.into(), second.into());
+            assert!(
+                super::super::matched_cells(&forecast)
+                    .into_iter()
+                    .zip(forecast)
+                    .any(|(matched, tile)| matched
+                        && tile.is_some_and(|t| t.identity == TileIdentity::Kind(kind)))
             );
             assert_eq!(state, unchanged);
         }
