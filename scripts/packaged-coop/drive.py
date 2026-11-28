@@ -424,7 +424,6 @@ elif stage == 'four-battle':
     while not started.exists() and monotonic() < until:
         image = capture('08-native-admission')
         start = admit(image)
-        now = time_ns() / 1_000_000_000
         ready = output/'native-hud-ready'
         if status_button(image) is None and shared_hud_turn(image)[0] == (0, 0):
             ready.touch()
@@ -433,7 +432,9 @@ elif stage == 'four-battle':
         if seat == 0 and start and condition('four-native-ready.json'):
             markers = [output.parent/f'client-{slot}'/'native-hud-ready' for slot in range(4)]
             try:
-                fresh = all(0 <= now - marker.stat().st_mtime < 5 for marker in markers)
+                observed_ns = [marker.stat().st_mtime_ns for marker in markers]
+                now_ns = time_ns()
+                fresh = all(0 <= now_ns - observed < 5_000_000_000 for observed in observed_ns)
             except FileNotFoundError:
                 fresh = False
             if fresh:
