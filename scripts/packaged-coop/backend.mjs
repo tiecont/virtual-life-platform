@@ -74,9 +74,8 @@ const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=
 const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_REVISION};
 const root=resolve(process.env.PACKAGED_QA_RUN);
 const roster=['Unity player', 'Integration seat 2','Integration seat 3','Integration seat 4'];
-let releaseRun;
-let stopping=false;
-for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{stopping=true;releaseRun?.();});
+let stopping;
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{stopping??=signal;});
 const directory=await mkdtemp(join(root,'db-'));
 const schema='coop_process_'+randomUUID().replaceAll('-',''),role='coop_runtime_'+randomUUID().replaceAll('-',''),password=randomBytes(32).toString('hex');
 const address=new URL(validateTestDatabaseURL(process.env.TEST_DATABASE_URL));
@@ -386,6 +385,7 @@ try{
    }
    await new Promise(r=>setTimeout(r,650));
   }
+   if(stopping)throw new Error('Packaged acceptance was interrupted');
    assert.ok(froze,'Did not reach multiplier and restart hold');
    assert.ok(won,'Fixture expected a cooperative win');
    assert.ok(seatActions.every(count=>count>0));
@@ -473,9 +473,15 @@ const comparison=waterAllocation.seats.find(seat=>seat.account!==host&&seat.petI
  facts.result='PASS';console.log('reward rows verified',JSON.stringify(facts));
 
 }catch(error){
- facts.failure={name:error.name,message:String(error.message).slice(0,500)};
- facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);
- process.exitCode=1;
+ if(stopping){
+  facts.result='INTERRUPTED';
+  facts.signal=stopping;
+  process.exitCode=stopping==='SIGINT'?130:143;
+ }else{
+  facts.failure={name:error.name,message:String(error.message).slice(0,500)};
+  facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);
+  process.exitCode=1;
+ }
 }finally{
  try{await app?.app.close();}catch{/* Best-effort teardown after a failed assertion. */}
  try{await pool?.end();}catch{/* The pool may already be closing. */}
