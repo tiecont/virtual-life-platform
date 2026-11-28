@@ -11250,6 +11250,13 @@
     },
     {
       "id": "VL-204",
+      "campaignV4Verification": {
+        "sourceRevision": "e1deb43654fef592569b241624fc0d5c7ec37cb2",
+        "command": "Aetheria.Editor.IcarusCharakuruMotionReview.Verify (direct Unity 6000.3.14f1 batchmode, existing Charakuru walk)",
+        "exitCode": 0,
+        "result": "54 mapped humanoid bones and 11 actual skinned meshes. Timeline sampled a 1.292-second authored walk. Maximum mapped joint difference 36.40 degrees and measured skinned vertex displacement 0.4874 m. Four private OpenGLCore URP frames had zero near-white foreground pixels.",
+        "evidence": "artifacts/campaign-v4/icarus-motion-e1deb436-gpu/icarus-motion-review.json"
+      },
       "mvpMilestone": "M2",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
