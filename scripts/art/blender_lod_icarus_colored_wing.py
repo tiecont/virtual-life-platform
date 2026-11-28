@@ -59,7 +59,9 @@ def create(source, receipt, output, budget):
         raise ValueError("Packed color atlas differs from the approved master")
     counts = np.array([len(o.data.polygons) for o in objects])
     weights = np.sqrt(counts)
-    budgets = (30 + (budget - len(objects) * 30) * weights / weights.sum()).astype(int)
+    # Blender can retain extra faces at independent component boundaries.
+    # Reserve a small allowance before distributing the strict total.
+    budgets = (30 + (budget - len(objects) * 34) * weights / weights.sum()).astype(int)
     rects = {(r['part'], r['normalAxis'], r['normalSign']): r['rectanglePixels'] for r in meta['chartRectangles']}
     report = []
     for obj, count, allocated in zip(objects, counts, budgets):
@@ -82,7 +84,7 @@ def create(source, receipt, output, budget):
             raise ValueError(f"{obj.name}: no retained geometry")
         report.append({'part': obj.name, 'sourceTriangles': int(count), 'lodTriangles': actual})
     total = sum(p['lodTriangles'] for p in report)
-    if not .9*budget < total <= budget + len(objects):
+    if not .9*budget < total <= budget:
         raise ValueError(f"LOD produced {total} triangles for {budget} budget")
     output.mkdir(parents=True, exist_ok=False)
     bpy.ops.object.select_all(action='DESELECT')
