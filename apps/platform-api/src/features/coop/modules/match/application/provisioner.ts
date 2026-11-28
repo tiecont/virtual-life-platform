@@ -1,4 +1,4 @@
-import type {CoopAdmissionView} from '@aetheria/contracts';
+import {nativeClientBuildForBundle,type CoopAdmissionView} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
@@ -53,7 +53,7 @@ export type CoopStartInput=Readonly<{
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
 export type {CoopAdmissionView} from '@aetheria/contracts';
 type Lease={timer:ReturnType<typeof setInterval>;stop:()=>void};
-type ActiveMatch={record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
+type ActiveMatch={clientBuild?:'unity-native-v3';record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
 
 const unavailable=(message='Cooperative native runtime is unavailable')=>new DomainError('NOT_AVAILABLE',503,message);
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
@@ -180,7 +180,7 @@ export class CoopMatchProvisioner{
    if(!handle)throw startError;
    await this.options.store.activate(matchId,generation);
    const activated:CoopAllocationRecord=Object.freeze({...record,status:'ACTIVE',generation});
-   active={record:activated,scope,generation,handle,lease,stopped:false,exited:false};
+   active={clientBuild:nativeClientBuildForBundle(input.bundle.schemaVersion),record:activated,scope,generation,handle,lease,stopped:false,exited:false};
    handle.onExit(()=>{
     const current=this.active.get(matchId);
     if(current)current.exited=true;
@@ -217,6 +217,7 @@ export class CoopMatchProvisioner{
    wssUrl:'wss:'+this.origin.slice('https:'.length)+WSS_PATH,
    httpsOrigin:this.origin,ticket:issued.ticket,expiresAt:issued.expiresAt,
    contentHash:record.contentHash,
+   ...(current.clientBuild?{clientBuild:current.clientBuild}:{}),
   });
  }
 
@@ -252,7 +253,7 @@ export class CoopMatchProvisioner{
      const current=this.active.get(record.matchId);
      if(current)current.exited=true;
     });
-    this.active.set(record.matchId,{record:restored,scope,generation,handle,lease,stopped:false,exited:false});
+    this.active.set(record.matchId,{clientBuild:nativeClientBuildForBundle(bundle.schemaVersion),record:restored,scope,generation,handle,lease,stopped:false,exited:false});
     recovered+=1;
    }catch{
     failed+=1;

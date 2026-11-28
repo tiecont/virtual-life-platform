@@ -32,6 +32,11 @@ export function gameplayEngineBinding(schemaVersion:unknown){
   default:return undefined;
  }
 }
+// An absent hint keeps the hello compatible with archived native runtimes.
+export function nativeClientBuildForBundle(schemaVersion:unknown){
+ return gameplayEngineBinding(schemaVersion)?.capability===CoopEngineCapability.advancedTimedFunctional
+  ? 'unity-native-v3' as const : undefined;
+}
 export const GameplayConfigStateSchema=z.enum(['DRAFT','VALIDATED','PUBLISHED','SUPERSEDED','RETIRED']);
 export type GameplayConfigState=z.infer<typeof GameplayConfigStateSchema>;
 const hash=z.string().regex(/^[a-f0-9]{64}$/),version=z.number().int().positive().max(9007199254740991),revision=z.number().int().positive().max(9007199254740991),requestId=z.uuid().transform(value=>value.toLowerCase()),capability=z.string().regex(/^[a-z0-9][a-z0-9-]{2,63}$/),actor=z.string().min(1).max(256),count=z.number().int().min(0).max(1_000_000);

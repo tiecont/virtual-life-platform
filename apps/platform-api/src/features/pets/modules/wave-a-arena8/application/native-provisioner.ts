@@ -1,3 +1,4 @@
+import {nativeClientBuildForBundle} from '@aetheria/contracts';
 import {randomUUID} from 'node:crypto';
 import type {ArtifactSeat} from '../../../../coop/modules/match/domain/loadout';
 import type {RuntimeScope} from '../../../../identity/modules/runtime-access/application/runtime-tickets';
@@ -84,7 +85,7 @@ export type NativeArena8ProvisionerOptions=Readonly<{
 
 export type NativeArena8AllocationView=Readonly<{
   matchId:string;wssUrl:string;httpsOrigin:string;ticket:string;expiresAt:string;
-  contentHash:string;bootId:string;principal:string;ruleset?:typeof FUNCTIONAL_SOLO_RULESET;
+  contentHash:string;bootId:string;principal:string;clientBuild?:'unity-native-v3';ruleset?:typeof FUNCTIONAL_SOLO_RULESET;
   allocation:Readonly<{
     petId:string;mapId:string;encounterId:string;level:number;
     artifacts:readonly Arena8Artifact[];
@@ -97,6 +98,7 @@ type Lease={
   stop:()=>void;
 };
 type ActiveMatch={
+  clientBuild?:'unity-native-v3';
   record:NativeArena8MatchRecord;scope:RuntimeScope;generation:number;
   handle:NativeArena8RuntimeHandle;lease:Lease;
   stopped:boolean;exited:boolean;
@@ -326,6 +328,7 @@ export class NativeArena8Provisioner {
         throw new Error('Arena8 admission identity mismatch');
       if(leaseFailed)throw new Error('Arena8 lease failed during startup');
       active={
+        clientBuild:nativeClientBuildForBundle(bundle?.schemaVersion),
         record:Object.freeze({...record,generation,status:'ACTIVE'}),
         scope,generation,handle,lease,stopped:false,exited:false,
       };
@@ -373,7 +376,7 @@ export class NativeArena8Provisioner {
         await lease.work();
         if(leaseFailed)throw new Error('Functional solo lease failed during recovery');
         await matches.recovered(record.matchId,generation);
-        active={record,scope,generation,lease,handle,stopped:false,exited:false};
+        active={clientBuild:nativeClientBuildForBundle(bundle.schemaVersion),record,scope,generation,lease,handle,stopped:false,exited:false};
         this.active.set(record.matchId,active);
         handle.onExit(()=>this.runtimeExited(active!));
       }catch{
@@ -423,6 +426,7 @@ export class NativeArena8Provisioner {
       contentHash:record.contentHash,
       bootId:record.bootId,
       principal:record.accountId,
+      ...(active.clientBuild?{clientBuild:active.clientBuild}:{}),
       ...(record.functional?{ruleset:FUNCTIONAL_SOLO_RULESET}:{}),
       allocation:Object.freeze({
         petId:record.petId,mapId:record.mapId,encounterId:record.encounterId,
