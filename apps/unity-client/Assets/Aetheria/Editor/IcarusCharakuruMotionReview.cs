@@ -25,6 +25,7 @@ namespace Aetheria.Editor
         // Runs only against temporary scene objects and assets. The checked-in
         // prefab keeps its existing Generic Icarus review import contract.
         public static void Verify() => Verify(false);
+        public static void VerifySkirtClearance() => Verify(false, reviewSkirt: true);
         public static void VerifyArmClearance() => Verify(false, reviewArms: true);
         public static void VerifyPelvisDeformation() => Verify(false, reviewPelvis: true);
         public static void VerifyLayers() => Verify(false, reviewLayers: true);
@@ -34,7 +35,8 @@ namespace Aetheria.Editor
         public static void PrepareAccessoryRecorder() => Verify(true, true);
 
         private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false,
-            bool reviewChin = false, bool reviewLayers = false, bool reviewArms = false, bool reviewPelvis = false)
+            bool reviewChin = false, bool reviewLayers = false, bool reviewArms = false, bool reviewPelvis = false,
+            bool reviewSkirt = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -58,6 +60,12 @@ namespace Aetheria.Editor
                 Require(Path.IsPathRooted(pelvisSource ?? "") && File.Exists(pelvisSource) &&
                     pelvisSource.EndsWith(".vrm",StringComparison.OrdinalIgnoreCase) && Hash(pelvisSource)==pelvisSha,
                     "Use the exact pelvis review candidate and fingerprint environment variables.");
+            string skirtBaseline = reviewSkirt ? Environment.GetEnvironmentVariable("AETHERIA_ICARUS_SKIRT_BASE_ANIM") : null;
+            string skirtSha = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_SKIRT_BASE_SHA256");
+            if (reviewSkirt && !string.IsNullOrEmpty(skirtBaseline))
+                Require(Path.IsPathRooted(skirtBaseline) && File.Exists(skirtBaseline) &&
+                    skirtBaseline.EndsWith(".anim",StringComparison.OrdinalIgnoreCase) && Hash(skirtBaseline)==skirtSha,
+                    "Use the exact optional private skirt baseline AnimationClip fingerprint.");
             string sourceVrmFile = Path.Combine(Path.GetDirectoryName(Application.dataPath), VrmPath);
             Require(Hash(sourceVrmFile) == VrmSha256, "The owner-designated Icarus VRM has changed.");
             Directory.CreateDirectory(output);
@@ -142,6 +150,20 @@ namespace Aetheria.Editor
                     "Cinematic Studio did not bind the retargeted motion to the actual Icarus instance.");
                 if (reviewArms)
                     IcarusArmClearanceReview.Export(modelVrm,modelAnimator,director,take,bound,skins,folder,output);
+                if (reviewSkirt)
+                {
+                    AnimationClip baseline=bound;
+                    if (!string.IsNullOrEmpty(skirtBaseline))
+                    {
+                        string path=folder+"/PrivateSkirtBaseline.anim";
+                        File.Copy(skirtBaseline,Path.Combine(Application.dataPath,leaf,"PrivateSkirtBaseline.anim"));
+                        AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
+                        baseline=AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+                        Require(baseline!=null && Mathf.Abs(baseline.length-bound.length)<.0001f,
+                            "Private skirt baseline does not match the original walk duration.");
+                    }
+                    IcarusSkirtClearanceReview.Export(modelVrm,modelAnimator,director,take,bound,baseline,skins,folder,output);
+                }
                 if (reviewLayers)
                     IcarusLayerSurfaceExport.Write(Path.Combine(output, "original-layers.bin"), skins, director, take.start, bound.length);
                 IcarusWalkDeformationReview.Result deformation = null;
@@ -211,6 +233,7 @@ namespace Aetheria.Editor
                 review.deformation = deformation;
                 review.chin = chin;
                 review.pelvis = pelvis;
+                if (reviewSkirt) review.skirtBaselineClipSha256 = skirtSha;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
                     review.frames = Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,output,
@@ -650,6 +673,7 @@ namespace Aetheria.Editor
             public IcarusWalkDeformationReview.Result deformation;
             public IcarusChinWeightReview.Facts chin;
             public IcarusPelvisWeightReview.Facts pelvis;
+            public string skirtBaselineClipSha256;
             public string correctedClipSha256;
             public string[] correctedFrames = Array.Empty<string>();
             public float[] correctedClippedWhitePercent = Array.Empty<float>();
