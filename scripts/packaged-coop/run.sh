@@ -121,6 +121,8 @@ for ((attempt=0; attempt<120; attempt++)); do
 done
 export AETHERIA_COOP_API="$(cat "$qa_run/game-endpoint")"
 export AETHERIA_ARENA8_NATIVE_CA="$(cat "$qa_run/game-ca")"
+qa_pulse="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/pulse/native"
+if [[ -z "${PULSE_SERVER:-}" && -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi
 if [[ "$PACKAGED_QA_SCOPE" == four-clients ]]; then
   "$driver_dir/four-clients.sh" "$qa_player"
   wait "$qa_backend_pid"
@@ -129,8 +131,6 @@ if [[ "$PACKAGED_QA_SCOPE" == four-clients ]]; then
   exit 0
 fi
 qa_xdg_dir="$(mktemp -d "${TMPDIR:-/tmp}/aetheria-x11-XXXXXXXX")"
-qa_pulse="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/pulse/native"
-if [[ -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi
 export XDG_RUNTIME_DIR="$qa_xdg_dir" XDG_CONFIG_HOME="$qa_run/profile"
 mkdir -m 700 "$XDG_CONFIG_HOME"
 
