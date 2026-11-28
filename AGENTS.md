@@ -19,9 +19,12 @@ Agent owns integration and is the only writer of the canonical backlog.
 Workers return `summary`, `revision`, `files`, actual `checks` and
 `limitations` through the existing handoff contract.
 
-Use GPT-6 Luna or GPT-6.1 Terra for routine build, test and lint runs that
-only require executing known commands and reporting results. Use GPT-6.2 Sol
-for implementation, diagnosis and changes with significant regression risk.
+Only GPT-6 Luna and GPT-6.1 Terra may run execution-only assignments. This
+covers tests, builds, lint and experiments with supplied inputs and cases when
+the deliverable is the resulting output. Choose reasoning effort for the case.
+Apply this rule to the lead and every worker. If neither model is available,
+queue the run. Assign diagnosis or implementation separately when a result
+requires engineering judgment. Sol and Astra may take those engineering tasks.
 
 For delegated work, use Fast (2× speed) when the interface supports it.
 Choose reasoning effort independently for each assignment according to its
@@ -82,15 +85,21 @@ cannot use its existing license headlessly, record that failure and continue
 independent work. Leave system credential stores and license settings intact.
 For Git operations that might authenticate, disable terminal prompting,
 graphical askpass and the desktop credential helper for that invocation. Reuse
-one authorized Chrome debugging connection throughout a Gemini browser task.
+one authorized Chrome debugging connection throughout a browser-based production task.
 If Chrome asks for permission, preserve its consent boundary and continue
 independent production work. Reconcile the existing chat before resubmitting.
 
-## Gemini Pro for visual and audiovisual production
+## Hydrogen for visual and audiovisual production
 
-The lead and every sub-agent use the owner's authorized Gemini Pro tab first for image and asset generation. Select **Gemini Neon High**, the owner's requested mode, when the tab offers it. Check the visible mode before submitting and record the provider and mode actually used. Build prompts from Aetheria's gentle anime-fantasy art direction, the asset's canonical identity, its in-game purpose and approved references. Apply this to 3D reference plates, functional gem art, battle backgrounds, character studies, intro and animation storyboards, music and audiovisual inputs supported by the tab.
-
-Reuse the existing authorized browser connection and reconcile outstanding results before submitting again. If the connection or requested mode is unavailable, retain the brief, report the limitation and continue independent work. Obtain owner direction before substituting ImageGen or another generation provider. Keep source artwork, generated references, runtime renders and owner acceptance separately attributable.
+Use Hydrogen for every workflow previously assigned to Gemini, including 3D
+reference plates, jewel art, battle backgrounds, character studies, storyboards
+and supported music inputs. Build briefs from the canonical asset identity, its
+in-game purpose, approved references and Aetheria's gentle anime-fantasy direction.
+Verify available capabilities in the authorized Hydrogen session and record the
+actual provider, mode and costs. Reconcile outstanding jobs before resubmission.
+If Hydrogen is unavailable, keep the brief and continue independent work.
+Obtain owner direction before substituting a different provider. Keep historical
+Gemini outputs attributed to the provider that produced them.
 
 ## Gameplay Configuration Authority
 

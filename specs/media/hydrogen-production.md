@@ -1,6 +1,11 @@
-# Gemini Pro production inputs
+# Hydrogen production inputs
 
-Select the owner-requested Gemini Neon High mode when it is available in the authorized tab. Verify the visible mode before submitting and record its actual label. If unavailable, preserve the brief and seek owner direction before using another generation provider. Use the owner's existing Gemini Pro tab when an Aetheria production task needs an image, storyboard, video or music input. Start with a concrete gap in a named asset or playable scene. Check which creation tools the current account actually offers. Work within the included entitlement. If a tool asks for payment, account changes or renewed authentication, record the missing capability and continue independent local work.
+Use the authorized Hydrogen workflow for images, storyboards, video and music
+inputs that previously used Gemini. Start from a specific gap in a named asset
+or playable scene. Verify the available tool, model, entitlement and cost before
+submitting. Preserve the brief if access or capability is unavailable. Record
+the actual provider on each new receipt and retain the original attribution on
+earlier work.
 
 ## Build a brief from Aetheria
 
@@ -8,7 +13,7 @@ Read the [Wave 1 art bible](../pet-arena/art-bible-mvp-wave1.md), [Dragon and Bi
 
 Use gentle fantasy in the lighting, pacing and character acting. Preserve the original anime monster-tamer silhouettes, the element's material and motion cues, and one readable focal point. A calm Water scene can still use saturated wet blues, pale mint caustics and crisply separated masses. Give every prompt an asset ID, purpose, one concrete composition or action, identity constraints, deliverable format and a visible or audible success condition.
 
-| Input needed | Request in the tab | Handoff and review |
+| Input needed | Request in Hydrogen | Handoff and review |
 | --- | --- | --- |
 | Standard Pet or hero reference | A clean plate for one canonical ID with an exact limb count, neutral pose, scale and material boundaries. Request a separate profile or rear view to resolve a specific ambiguity. For Icarus preserve her adult human identity, 168 cm body, pastel-pink hair, white/gold costume, and separate wing, halo and bow studies. | Compare front/profile landmarks, folds and contact points against approved references. Mark inferred surfaces. Route the accepted reference through the applicable 3D skill. |
 | Environment, prop or UI artwork | Ask for the actual map landmark, camera and interaction footprint. For a symbol specify the distinct silhouette at final display size. The [Coalwhisk action sheet brief](gemini-briefs/coalwhisk-actions.txt) uses the published actions to distinguish personal Guard, party shielding and two attacks at 32 pixels. For battle use the [Tideglass](gemini-briefs/tideglass-battle.txt) and [Stormcoil](gemini-briefs/stormcoil-battle.txt) fixed-camera briefs. The earlier arrival-path study belongs to navigation development. | Identify materials, modular pieces, negative space, value contrast and Unity camera scale. Check the new in-game render beside the original. |

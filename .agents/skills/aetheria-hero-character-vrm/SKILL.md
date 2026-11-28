@@ -43,7 +43,7 @@ publishable rights, or deployment permission.
 
 ## Reference concept inputs
 
-Use the [Gemini Pro production workflow](../../../specs/media/gemini-production.md) for optional clean plates, pose studies, reference gaps and cinematic keyframes. Preserve the approved H0 identity and each dependent H1–H4 gate.
+Use the [Hydrogen production workflow](../../../specs/media/hydrogen-production.md) for optional clean plates, pose studies, reference gaps and cinematic keyframes. Preserve the approved H0 identity and each dependent H1–H4 gate.
 
 For the free Tripo alternative, use the authenticated English Tripo Studio Image tab.
 Select the exact model **`GPT Image 2.5`** and use the free image quota only.

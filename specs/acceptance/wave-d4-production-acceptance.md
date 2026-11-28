@@ -11,7 +11,7 @@ The canonical backlog is [development-plan.json](../../config/development-plan.j
 | Balance / Performance | `artifacts/wave-d4-measures/{balance-summary.json,performance-summary.json}` |
 | Character | `artifacts/wave-d4-art/icarus-H1-R3/gates/H1/` |
 | Media / Local stage receipt | `artifacts/wave-d4-media/{original-score-r1,opening-animatic-r2,private-art-stage-receipt-r2.json}` |
-| Gemini workflow | [Production inputs and prompt handoffs](../media/gemini-production.md) |
+| Hydrogen workflow | [Production inputs and prompt handoffs](../media/hydrogen-production.md) |
 | Gallery | [Guest and equipment](../../assets/review/wave-d4/baseline/), [combat](../../assets/review/wave-d4/combat/), [six maps](../../assets/review/wave-d4/world/) |
 
 ![Functional Fire regular battle with its participant HP meter at 720p](../../assets/review/wave-d4/combat/fire-functional-regular-hp-720.webp)
