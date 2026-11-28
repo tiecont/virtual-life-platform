@@ -19,6 +19,7 @@ namespace Aetheria.Editor
     {
         const string Source = "Assets/Aetheria/ArtStudies/Icarus/Source/Icarus.vrm";
         const string BodyHash = "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a";
+        const string BaselineHash = "fc3d6f0bd88750a0f811873234c753457609a2a318c5b07bdd3b761fe3618d70";
         const string WalkHash = "44a08db1ae92bb4093be2d8cfccded2a65b86ac42803fc5160beb1ddd607a251";
         const int SkirtVertices = 6718, BodyVertices = 23922, Frames = 32;
         [Serializable] sealed class Mask
@@ -48,7 +49,7 @@ namespace Aetheria.Editor
             var corrected = Path.Combine(receipt, "localized-skirt.bin");
             var mask = JsonUtility.FromJson<Mask>(File.ReadAllText(Path.Combine(receipt, "localized-skirt.json")));
             if (!Application.isBatchMode || Directory.Exists(output) || File.Exists(output) || Hash(sourceWalk) != WalkHash ||
-                mask.sourceSha256 != BodyHash || Hash(Path.Combine(Application.dataPath, Source.Substring(7))) != BodyHash || Hash(baseline) != mask.baselineSha256 ||
+                mask.sourceSha256 != BodyHash || Hash(Path.Combine(Application.dataPath, Source.Substring(7))) != BodyHash || mask.baselineSha256 != BaselineHash || Hash(baseline) != BaselineHash ||
                 Hash(corrected) != mask.cacheSha256 || mask.vertices == null || mask.vertices.Length == 0 ||
                 mask.vertices.Any(i => i < 0 || i >= SkirtVertices) || mask.vertices.Distinct().Count() != mask.vertices.Length)
                 throw new InvalidDataException("Invalid local garment intake, receipt, archive or output directory.");
@@ -85,6 +86,15 @@ namespace Aetheria.Editor
                 director.RebuildGraph();
                 var poses = LoadSkirt(baseline);
                 var target = LoadSkirt(corrected);
+                var selected = new bool[SkirtVertices];
+                foreach (int index in mask.vertices) selected[index] = true;
+                for (int frame = 0; frame < Frames; frame++)
+                    for (int v = 0; v < SkirtVertices; v++)
+                    {
+                        float difference = Vector3.Distance(target[frame][v], poses[frame][v]);
+                        if (!float.IsFinite(difference) || difference > (selected[v] ? .01201f : .000001f))
+                            throw new InvalidDataException("The cache moved a protected vertex or exceeded the 12 mm limit.");
+                    }
                 var report = new Report { scene = folder + "/Garment.unity", affectedVertices = mask.vertices.Length };
                 var joints = skirt.bones;
                 var weights = mesh.boneWeights;
