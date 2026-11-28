@@ -28,7 +28,7 @@ class TestMailSink implements PrelaunchMailSink {
 describe('prelaunch double opt-in',()=>{
   let pool:Pool,schema:string,server:Awaited<ReturnType<typeof createApp>>,campaignId:string,now:number,mail:TestMailSink;
 
-  beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
+  beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');admin=new Pool({connectionString:url.toString()});});
   beforeEach(async()=>{
     schema='prelaunch_'+randomUUID().replaceAll('-','');
     await admin.query(`CREATE SCHEMA "${schema}"`);

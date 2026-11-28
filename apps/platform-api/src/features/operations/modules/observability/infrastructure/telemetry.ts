@@ -47,7 +47,7 @@ export class OperationalTelemetry{
  private prune(){const at=this.elapsed();this.records=at<this.lastElapsed?[]:this.records.filter(record=>record.until>at);this.lastElapsed=at;}
  private span(kind:'http'|'room-command',operation:string,attributes:Record<string,string|number>={}){
   if(this.closed||!this.provider)return; if(this.active>=128){this.dropped++;return;}
-  this.active++;try{return this.provider.getTracer('virtual-life-platform.operations','1.0.0').startSpan(kind,{kind:SpanKind.SERVER,attributes:{kind,operation,startedAt:this.now(),...attributes}},ROOT_CONTEXT);}catch{this.active--;this.dropped++;return;}
+  this.active++;try{return this.provider.getTracer('aetheria-soulbound.operations','1.0.0').startSpan(kind,{kind:SpanKind.SERVER,attributes:{kind,operation,startedAt:this.now(),...attributes}},ROOT_CONTEXT);}catch{this.active--;this.dropped++;return;}
  }
  private end(span:Span|undefined,error:boolean){if(!span)return;try{span.setStatus({code:error?SpanStatusCode.ERROR:SpanStatusCode.UNSET});span.end();}catch{this.dropped++;}finally{this.active--;}}
  beginHttp(requestId:string,pattern:string,url:string,rawMethod:string){
@@ -67,16 +67,16 @@ export class OperationalTelemetry{
  async close(){this.closed=true;await this.provider?.shutdown();this.records=[];}
 }
 export function prometheus(snapshot:Awaited<ReturnType<OperationalTelemetry['snapshot']>>){
- const lines=['# HELP virtual_life_http_duration_ms Process-lifetime fixed buckets; derive rate-window histograms in the collector, never an exact rolling percentile.','# HELP virtual_life_room_command_p95_upper_bound_ms Process-lifetime fixed-bucket upper-bound approximation; +Inf observations have no finite bound.','# HELP virtual_life_event_loop_delay_p95_ms Node histogram approximation since monitoring started; not a rolling window.','# TYPE virtual_life_http_requests_total counter','# TYPE virtual_life_http_errors_total counter','# TYPE virtual_life_http_duration_ms histogram','# TYPE virtual_life_trace_dropped_total counter','virtual_life_trace_dropped_total '+snapshot.http.droppedTraces,'# TYPE virtual_life_online_memberships gauge','virtual_life_online_memberships '+snapshot.gauges.online.memberships,'# TYPE virtual_life_orders gauge'];
- for(const item of snapshot.http.series){const labels='route_group="'+item.group+'",method="'+item.method+'"';lines.push('virtual_life_http_requests_total{'+labels+'} '+item.count,'virtual_life_http_errors_total{'+labels+'} '+item.errors);let cumulative=0;for(const bucket of item.buckets){cumulative+=bucket.count;lines.push('virtual_life_http_duration_ms_bucket{'+labels+',le="'+(bucket.upperMs===null?'+Inf':bucket.upperMs)+'"} '+cumulative);}lines.push('virtual_life_http_duration_ms_sum{'+labels+'} '+item.totalMs,'virtual_life_http_duration_ms_count{'+labels+'} '+item.count);}
- for(const [phase,count]of Object.entries(snapshot.gauges.orders.phases))lines.push('virtual_life_orders{phase="'+phase+'"} '+count);
- for(const [command,item]of Object.entries(snapshot.rooms.commands)){lines.push('virtual_life_room_commands_total{command="'+command+'"} '+item.count);if(item.p95UpperBoundMs!==null)lines.push('virtual_life_room_command_p95_upper_bound_ms{command="'+command+'"} '+item.p95UpperBoundMs);}
- lines.push('# TYPE virtual_life_room_phase_duration_ms histogram');
+ const lines=['# HELP aetheria_http_duration_ms Process-lifetime fixed buckets; derive rate-window histograms in the collector, never an exact rolling percentile.','# HELP aetheria_room_command_p95_upper_bound_ms Process-lifetime fixed-bucket upper-bound approximation; +Inf observations have no finite bound.','# HELP aetheria_event_loop_delay_p95_ms Node histogram approximation since monitoring started; not a rolling window.','# TYPE aetheria_http_requests_total counter','# TYPE aetheria_http_errors_total counter','# TYPE aetheria_http_duration_ms histogram','# TYPE aetheria_trace_dropped_total counter','aetheria_trace_dropped_total '+snapshot.http.droppedTraces,'# TYPE aetheria_online_memberships gauge','aetheria_online_memberships '+snapshot.gauges.online.memberships,'# TYPE aetheria_orders gauge'];
+ for(const item of snapshot.http.series){const labels='route_group="'+item.group+'",method="'+item.method+'"';lines.push('aetheria_http_requests_total{'+labels+'} '+item.count,'aetheria_http_errors_total{'+labels+'} '+item.errors);let cumulative=0;for(const bucket of item.buckets){cumulative+=bucket.count;lines.push('aetheria_http_duration_ms_bucket{'+labels+',le="'+(bucket.upperMs===null?'+Inf':bucket.upperMs)+'"} '+cumulative);}lines.push('aetheria_http_duration_ms_sum{'+labels+'} '+item.totalMs,'aetheria_http_duration_ms_count{'+labels+'} '+item.count);}
+ for(const [phase,count]of Object.entries(snapshot.gauges.orders.phases))lines.push('aetheria_orders{phase="'+phase+'"} '+count);
+ for(const [command,item]of Object.entries(snapshot.rooms.commands)){lines.push('aetheria_room_commands_total{command="'+command+'"} '+item.count);if(item.p95UpperBoundMs!==null)lines.push('aetheria_room_command_p95_upper_bound_ms{command="'+command+'"} '+item.p95UpperBoundMs);}
+ lines.push('# TYPE aetheria_room_phase_duration_ms histogram');
  for(const series of snapshot.rooms.phases)for(const [phase,item]of Object.entries(series.timings)){
   const labels='command="'+series.command+'",outcome="'+series.outcome+'",phase="'+phase+'"';let cumulative=0;
-  for(const bucket of item.buckets){cumulative+=bucket.count;lines.push('virtual_life_room_phase_duration_ms_bucket{'+labels+',le="'+(bucket.upperMs===null?'+Inf':bucket.upperMs)+'"} '+cumulative);}
-  lines.push('virtual_life_room_phase_duration_ms_sum{'+labels+'} '+item.totalMs,'virtual_life_room_phase_duration_ms_count{'+labels+'} '+item.count);
+  for(const bucket of item.buckets){cumulative+=bucket.count;lines.push('aetheria_room_phase_duration_ms_bucket{'+labels+',le="'+(bucket.upperMs===null?'+Inf':bucket.upperMs)+'"} '+cumulative);}
+  lines.push('aetheria_room_phase_duration_ms_sum{'+labels+'} '+item.totalMs,'aetheria_room_phase_duration_ms_count{'+labels+'} '+item.count);
  }
- if(snapshot.rooms.eventLoop.p95Ms!==null)lines.push('virtual_life_event_loop_delay_p95_ms '+snapshot.rooms.eventLoop.p95Ms);
+ if(snapshot.rooms.eventLoop.p95Ms!==null)lines.push('aetheria_event_loop_delay_p95_ms '+snapshot.rooms.eventLoop.p95Ms);
  return lines.join('\n')+'\n';
 }

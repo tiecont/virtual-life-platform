@@ -12,6 +12,8 @@ const Env = z.object({
     return ['postgres:', 'postgresql:'].includes(url.protocol);
   }),
   WEB_ORIGIN: z.string().url().default('http://127.0.0.1:3300'),
+  DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(50).default(10),
+  DATABASE_MIGRATION_ROLE:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-z_][a-z0-9_]{0,62}$/).optional()),
   OPERATOR_AUTH_KEY:z.string().regex(/^[a-f0-9]{64}$/).optional(),
   ADMIN_ORIGIN:z.string().url().optional(),
   TRUSTED_PROXY_IP:z.ipv4().refine(value=>!['0.0.0.0','255.255.255.255'].includes(value)).optional(),
@@ -35,6 +37,26 @@ const Env = z.object({
   LOCAL_LANTERN_LODGE_WORLD:z.enum(['0','1']).default('0'),
   LOCAL_GAME_LOBBY:z.enum(['0','1']).default('0'),
   LOCAL_GAME_JOURNAL:z.enum(['0','1']).default('0'),
+  LOCAL_PET_ARENA_WAVE1:z.enum(['0','1']).default('0'),
+  LOCAL_PET_ARTIFACTS:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8_SUPERVISOR_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_SUPERVISOR_TOKEN:z.preprocess(value=>value===''?undefined:value,z.string().min(32).max(256).optional()),
+  LOCAL_ARENA8_NATIVE:z.enum(['0','1']).default('0'),
+  LOCAL_ARENA8_NATIVE_BINARY:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_DATABASE_URL:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_NATIVE_DB_ROLE:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-z_][a-z0-9_]{0,62}$/).optional()),
+  LOCAL_ARENA8_NATIVE_CA_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
+  LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID:z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/).default('local-v1'),
+  LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN:z.preprocess(value=>value===''?undefined:value,z.string().url().optional()),
+  LOCAL_ARENA8_NATIVE_TLS_CERT_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_ARENA8_NATIVE_TLS_KEY_FILE:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
+  LOCAL_COOP_ROOMS:z.enum(['0','1']).default('0'),
+  LOCAL_COOP_NATIVE:z.enum(['0','1']).default('0'),
+  // Absolute path to the Rust runtime binary used as the authoritative
+  // gameplay-configuration validator. Absence disables publication (fail closed).
+  GAMEPLAY_CONFIG_VALIDATOR_BINARY:z.preprocess(value=>value===''?undefined:value,z.string().min(1).max(4096).optional()),
   GAME_STATE_KEY:z.preprocess(value=>value===''?undefined:value,z.string().regex(/^[a-f0-9]{64}$/i).optional()),
   GAME_STATE_KEY_ID:z.string().regex(/^game-[a-z0-9-]{1,27}$/).default('game-local-v1'),
   LOCAL_DEADLINE_IDENTITY:z.enum(['0','1']).default('0'),
@@ -50,6 +72,59 @@ const Env = z.object({
   PRELAUNCH_EMAIL_KEY_ID:z.string().regex(/^[a-z0-9-]{1,32}$/).default('prelaunch-local-v1'),
 }).superRefine((env, ctx) => {
   const origin = new URL(env.WEB_ORIGIN);
+  if(env.LOCAL_PET_ARENA_WAVE1==='1'&&(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)){
+    ctx.addIssue({code:'custom',path:['LOCAL_PET_ARENA_WAVE1'],message:'Wave 1 requires a local/test loopback listener'});
+  }
+  if(env.LOCAL_PET_ARTIFACTS==='1'&&(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)){
+    ctx.addIssue({code:'custom',path:['LOCAL_PET_ARTIFACTS'],message:'Wave A artifacts require a local/test loopback listener'});
+  }
+  if(env.LOCAL_ARENA8==='1'){
+    if(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8'],message:'Arena8 requires a local/test loopback listener'});
+    if(!env.LOCAL_ARENA8_SUPERVISOR_URL||!env.LOCAL_ARENA8_SUPERVISOR_TOKEN)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8'],message:'Arena8 supervisor URL and token are required'});
+    if(env.LOCAL_ARENA8_SUPERVISOR_URL){
+      const supervisor=new URL(env.LOCAL_ARENA8_SUPERVISOR_URL);
+      if(supervisor.protocol!=='http:'||!['127.0.0.1','[::1]'].includes(supervisor.hostname)||supervisor.username||supervisor.password||supervisor.search||supervisor.hash)
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_SUPERVISOR_URL'],message:'Expected an exact loopback HTTP supervisor URL'});
+    }
+  }
+  if(env.LOCAL_COOP_NATIVE==='1'&&env.LOCAL_COOP_ROOMS!=='1')ctx.addIssue({code:'custom',path:['LOCAL_COOP_NATIVE'],message:'Cooperative native matches require cooperative rooms'});
+  if(env.LOCAL_ARENA8_NATIVE==='1'||env.LOCAL_COOP_NATIVE==='1'){
+    if(env.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(env.HOST)||env.TRUSTED_PROXY_IP)
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE'],message:'Native Arena8 requires a local/test loopback listener'});
+    const requiredNative:readonly [string,string|undefined][]=[
+      ['LOCAL_ARENA8_NATIVE_BINARY',env.LOCAL_ARENA8_NATIVE_BINARY],
+      ['LOCAL_ARENA8_NATIVE_DATABASE_URL',env.LOCAL_ARENA8_NATIVE_DATABASE_URL],
+      ['LOCAL_ARENA8_NATIVE_DB_ROLE',env.LOCAL_ARENA8_NATIVE_DB_ROLE],
+      ['LOCAL_ARENA8_NATIVE_CA_FILE',env.LOCAL_ARENA8_NATIVE_CA_FILE],
+      ['LOCAL_ARENA8_NATIVE_STORAGE_KEY',env.LOCAL_ARENA8_NATIVE_STORAGE_KEY],
+      ['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN',env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN],
+      ['LOCAL_ARENA8_NATIVE_TLS_CERT_FILE',env.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE],
+      ['LOCAL_ARENA8_NATIVE_TLS_KEY_FILE',env.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE],
+    ];
+    for(const [field,value] of requiredNative)
+      if(!value)ctx.addIssue({code:'custom',path:[field],message:'Native Arena8 runtime configuration is required'});
+    if(env.LOCAL_ARENA8_NATIVE_DATABASE_URL){
+      let runtime:URL|undefined;
+      try{runtime=new URL(env.LOCAL_ARENA8_NATIVE_DATABASE_URL);}catch{ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DATABASE_URL'],message:'Expected a loopback PostgreSQL URL'});}
+      if(runtime&&(!['postgres:','postgresql:'].includes(runtime.protocol)||!['127.0.0.1','localhost','[::1]'].includes(runtime.hostname)||runtime.search||runtime.hash||!runtime.username||!runtime.password||runtime.password.length<16||!/^[a-z][a-z0-9_]{2,63}$/.test(runtime.pathname.slice(1))))
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DATABASE_URL'],message:'Expected an exact loopback PostgreSQL URL with restricted credentials'});
+      let runtimeUser:string|undefined;
+      try{runtimeUser=runtime&&env.LOCAL_ARENA8_NATIVE_DB_ROLE?decodeURIComponent(runtime.username):undefined;}
+      catch{runtimeUser=undefined;}
+      if(runtime&&env.LOCAL_ARENA8_NATIVE_DB_ROLE&&runtimeUser!==env.LOCAL_ARENA8_NATIVE_DB_ROLE)
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_DB_ROLE'],message:'Restricted role must match the database URL user'});
+    }
+    if(env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN){
+      let origin:URL|undefined;
+      try{origin=new URL(env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN);}catch{ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN'],message:'Expected an exact loopback HTTPS origin'});}
+      if(origin&&(origin.protocol!=='https:'||origin.origin!==env.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN||!['127.0.0.1','[::1]'].includes(origin.hostname)))
+        ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN'],message:'Expected an exact loopback HTTPS origin'});
+    }
+    if(env.LOCAL_ARENA8_NATIVE_STORAGE_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY,env.GAME_STATE_KEY].some(value=>value?.toLowerCase()===env.LOCAL_ARENA8_NATIVE_STORAGE_KEY?.toLowerCase()))
+      ctx.addIssue({code:'custom',path:['LOCAL_ARENA8_NATIVE_STORAGE_KEY'],message:'Separate native storage key required'});
+  }
   if(env.LOCAL_GAME_LOBBY==='1'&&env.LOCAL_LANTERN_LODGE_WORLD!=='1')ctx.addIssue({code:'custom',path:['LOCAL_GAME_LOBBY'],message:'Local Lodge installation required'});
   if(env.LOCAL_GAME_JOURNAL==='1'&&(env.LOCAL_GAME_LOBBY!=='1'||!env.GAME_STATE_KEY||env.NODE_ENV==='production'))ctx.addIssue({code:'custom',path:['LOCAL_GAME_JOURNAL'],message:'Local lobby and separate journal encryption key required'});
   if(env.GAME_STATE_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY].some(value=>value?.toLowerCase()===env.GAME_STATE_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['GAME_STATE_KEY'],message:'Separate game-state encryption key required'});
@@ -75,6 +150,7 @@ const Env = z.object({
   }
   if (env.NODE_ENV === 'production' && env.LOCAL_TRAVEL_FIXTURES === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_TRAVEL_FIXTURES'], message: 'Local travel fixtures cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_ADMISSION_UX==='1')ctx.addIssue({code:'custom',path:['LOCAL_ADMISSION_UX'],message:'Queue preview cannot run in production'});
+  if(env.NODE_ENV==='production'&&env.LOCAL_COOP_ROOMS==='1')ctx.addIssue({code:'custom',path:['LOCAL_COOP_ROOMS'],message:'Cooperative rooms are local/test only'});
   if (env.NODE_ENV === 'production' && env.LOCAL_LIBRARY_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LIBRARY_WORLD'], message: 'Local library activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_PARK_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_PARK_WORLD'], message: 'Local park activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DEADLINE_WORLD==='1')ctx.addIssue({code:'custom',path:['LOCAL_DEADLINE_WORLD'],message:'Local Deadline activation cannot run in production'});
@@ -85,12 +161,13 @@ const Env = z.object({
   if (env.NODE_ENV === 'production' && env.LOCAL_RESTAURANT_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_RESTAURANT_WORLD'], message: 'Local restaurant activation cannot run in production' });
   if (env.NODE_ENV === 'production' && env.LOCAL_LOUNGE_WORLD === '1') ctx.addIssue({ code: 'custom', path: ['LOCAL_LOUNGE_WORLD'], message: 'Local lounge activation cannot run in production' });
   if(env.NODE_ENV==='production'&&env.LOCAL_DATING_PROTOTYPE==='1')ctx.addIssue({code:'custom',path:['LOCAL_DATING_PROTOTYPE'],message:'Local dating prototype cannot run in production'});
-  if(env.DATING_TEST_PROOFS==='1'){const url=new URL(env.DATABASE_URL);if(env.NODE_ENV!=='test'||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))ctx.addIssue({code:'custom',path:['DATING_TEST_PROOFS'],message:'Synthetic proofs require disposable local test runtime'});}
+  if(env.GAMEPLAY_CONFIG_VALIDATOR_BINARY&&!env.GAMEPLAY_CONFIG_VALIDATOR_BINARY.startsWith('/'))ctx.addIssue({code:'custom',path:['GAMEPLAY_CONFIG_VALIDATOR_BINARY'],message:'Absolute validator binary path required'});
+  if(env.DATING_TEST_PROOFS==='1'){const url=new URL(env.DATABASE_URL);if(env.NODE_ENV!=='test'||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))ctx.addIssue({code:'custom',path:['DATING_TEST_PROOFS'],message:'Synthetic proofs require disposable local test runtime'});}
   if(env.PRELAUNCH_REGISTRATION_ENABLED==='1'){
     if(!env.PRELAUNCH_EMAIL_KEY)ctx.addIssue({code:'custom',path:['PRELAUNCH_EMAIL_KEY'],message:'Separate prelaunch email key required'});
     if(env.NODE_ENV==='production')ctx.addIssue({code:'custom',path:['PRELAUNCH_REGISTRATION_ENABLED'],message:'Production prelaunch acceptance is not release-qualified'});
   }
-  if(env.PRELAUNCH_EMAIL_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY,env.GAME_STATE_KEY].some(value=>value?.toLowerCase()===env.PRELAUNCH_EMAIL_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['PRELAUNCH_EMAIL_KEY'],message:'Distinct prelaunch email key required'});
+  if(env.PRELAUNCH_EMAIL_KEY&&[env.SESSION_SECRET,env.NATIVE_AUTH_KEY,env.OPERATOR_AUTH_KEY,env.SAFETY_EVIDENCE_KEY,env.DATING_PROFILE_KEY,env.GAME_STATE_KEY,env.LOCAL_ARENA8_NATIVE_STORAGE_KEY].some(value=>value?.toLowerCase()===env.PRELAUNCH_EMAIL_KEY?.toLowerCase()))ctx.addIssue({code:'custom',path:['PRELAUNCH_EMAIL_KEY'],message:'Distinct prelaunch email key required'});
 });
 export type Config = z.infer<typeof Env>;
 export function readConfig(env: Record<string, string | undefined> = process.env): Config {

@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import type {SceneManifest} from '@virtual-city/contracts';
+import type {SceneManifest} from '@aetheria/contracts';
 export const TILE_METERS=.5;
 export function createRoomArt(manifest?:SceneManifest,theme?:'deadline'|'maid'){
  const group=new T.Group(),geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>(),textures=new Set<T.Texture>();

@@ -2,7 +2,7 @@ import {test,expect,type BrowserContext,type Page,type WebSocketRoute} from '@pl
 import {request} from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {MeSchema} from '@virtual-city/contracts';
+import {MeSchema} from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300',enhanced=process.env.UX_SHELL_MODE==='scene-first',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid evidence run');let serial=0;
 async function guest(context:BrowserContext,name:string){
  const body=JSON.stringify({requestId:randomUUID(),displayName:name,avatarKey:'mint'});
@@ -37,7 +37,7 @@ test('graphics failure leaves actual seat and independent leave controls usable'
 test('a late successful identity response cannot restore a logged-out identity',async({page,context})=>{
  const me=await guest(context,'UX Previous Identity');let release!:()=>void,seen!:()=>void,held=false;const gate=new Promise<void>(ok=>release=ok),observed=new Promise<void>(ok=>seen=ok);
  await page.route('**/v1/me',async route=>{if(held){await route.continue();return;}held=true;const actual=await route.fetch();expect(actual.status()).toBe(200);seen();await gate;await route.fulfill({response:actual}).catch(()=>{});});
- try{await page.goto('/worlds/sdk-sandbox',{waitUntil:'domcontentloaded'});await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText('UX Previous Identity',{exact:true})).toHaveCount(0);await expect(page.locator('[aria-label="Private focus timer"]')).toHaveCount(0);await layout(page);await evidence(page,'identity-late');}finally{release();}
+ try{await page.goto('/worlds/sdk-sandbox',{waitUntil:'domcontentloaded'});await observed;expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText('UX Previous Identity',{exact:true})).toHaveCount(0);await expect(page.locator('[aria-label="Private focus timer"]')).toHaveCount(0);await layout(page);await evidence(page,'identity-late');}finally{release();}
 });
 
 test('actual transport interruption hides stale seat state and resyncs one membership',async({page,context})=>{

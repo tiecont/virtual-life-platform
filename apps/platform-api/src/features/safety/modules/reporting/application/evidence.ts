@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
-import { ChatMessageSchema, type ChatMessage } from '@virtual-city/contracts';
+import { ChatMessageSchema, type ChatMessage } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 export type SealedEvidence = { keyId: string; iv: Buffer; tag: Buffer; ciphertext: Buffer };
 export class EvidenceCipher {

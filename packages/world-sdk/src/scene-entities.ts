@@ -1,4 +1,4 @@
-import { RoomSnapshotSchema, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
+import { RoomSnapshotSchema, type RoomSnapshot, type SceneManifest } from '@aetheria/contracts';
 import { tileCenter, motionPosition, isWalkable } from './scene';
 
 export function sceneEntities(scene: SceneManifest, input: RoomSnapshot) {

@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { ReportInputSchema, ReportStatusSchema, CaseAssignmentSchema, CaseSearchSchema, WorldSlugSchema } from '@virtual-city/contracts';
+import { ReportInputSchema, ReportStatusSchema, CaseAssignmentSchema, CaseSearchSchema, WorldSlugSchema } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';

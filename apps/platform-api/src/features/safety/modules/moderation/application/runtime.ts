@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { SafetyPolicySchema } from '@virtual-city/contracts';
+import { SafetyPolicySchema } from '@aetheria/contracts';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';

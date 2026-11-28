@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
-import type {RoomSnapshot} from '@virtual-city/contracts';
-import {sandboxScene,sceneEntities} from '@virtual-city/world-sdk';
+import type {RoomSnapshot} from '@aetheria/contracts';
+import {sandboxScene,sceneEntities} from '@aetheria/world-sdk';
 import {RoomProjection,selectRoomLods} from '../src/projection';
 const self='00000000-0000-4000-8000-000000000001',peer='00000000-0000-4000-8000-000000000002';
 function snapshot():RoomSnapshot{return{schemaVersion:1,type:'snapshot',epoch:self,roomId:peer,worldSlug:'sdk-sandbox',roomVersion:1,capacity:20,occupancy:8,membershipId:self,self:{accountId:self,seatId:null},seats:sandboxScene.seats.map(seat=>({seatId:seat.seatId,state:'available',mine:false})),participants:[{profile:{id:peer,displayName:'Public peer',avatarKey:'fern'},seatId:null,state:'active',outfit:'cafe-apron'}]};}

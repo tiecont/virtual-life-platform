@@ -4,7 +4,7 @@
 
 - Repo source: `AGENTS.md`, `README.md`, `config/development-plan.json` and current `specs/pet-arena/` contracts.
 - Icarus uses `pet-v3-fire-icarus` and `FIRE_ZONE`. Use the eight original images under `Aetheria_Icarus_V4_Decoupled_Asset_Kit/00_ORIGINALS` for V4. Preserve the earlier H0 receipt and treat the kit's AI reconstruction study as exploratory.
-- Existing source: `assets/characters/icarus/`, `scripts/art/`, `apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/`, `specs/pet-arena/references/icarus/`. Keep original GUIDs and actual provenances. Experimental variants go under ignored `artifacts/`.
+- Existing source: `assets/characters/icarus/`, `scripts/art/`, `apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/`, `specs/pet-arena/references/icarus/`. Keep original GUIDs and actual provenances. Experimental variants go under ignored `artifacts/`.
 - Read `specs/pet-arena/meshy-character-pipeline.md` and current production-v3/v4 records for actual paid job history. Record spent credits; avoid duplicate expensive calls.
 
 ## Meshy component production

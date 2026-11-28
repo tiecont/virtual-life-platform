@@ -1,8 +1,8 @@
 use super::domain::{Rules, State};
+use aetheria_game_core::Reducer;
+use aetheria_persistence::{Completion, Error, Game};
+use aetheria_pet_arena::combat::{Action, Phase, State as CombatState};
 use serde::{Deserialize, Serialize};
-use vl_game_core::Reducer;
-use vl_persistence::{Completion, Error, Game};
-use vl_pet_arena::combat::{Action, Phase, State as CombatState};
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -11,7 +11,7 @@ struct Snapshot {
     combat: Vec<u8>,
 }
 impl Game for Rules {
-    fn completion(&self, state: &State) -> vl_persistence::Result<Completion> {
+    fn completion(&self, state: &State) -> aetheria_persistence::Result<Completion> {
         self.validate(state).map_err(|_| Error::Integrity)?;
         match state.combat.phase() {
             Phase::Won => Ok(Completion::PetArena { won: true }),
@@ -19,14 +19,14 @@ impl Game for Rules {
             _ => Err(Error::Invalid),
         }
     }
-    fn encode(&self, state: &State) -> vl_persistence::Result<Vec<u8>> {
+    fn encode(&self, state: &State) -> aetheria_persistence::Result<Vec<u8>> {
         serde_json::to_vec(&Snapshot {
             player: state.player.clone(),
             combat: state.combat.encode().map_err(|_| Error::Invalid)?,
         })
         .map_err(|_| Error::Invalid)
     }
-    fn decode(&self, bytes: &[u8]) -> vl_persistence::Result<State> {
+    fn decode(&self, bytes: &[u8]) -> aetheria_persistence::Result<State> {
         let raw: Snapshot = serde_json::from_slice(bytes).map_err(|_| Error::Integrity)?;
         let state = State {
             player: raw.player,
@@ -41,12 +41,12 @@ impl Game for Rules {
     fn authorize(&self, state: &State, account: &str, _: &Action) -> bool {
         self.member(state, account)
     }
-    fn project(&self, state: &State, account: &str) -> vl_persistence::Result<Vec<u8>> {
+    fn project(&self, state: &State, account: &str) -> aetheria_persistence::Result<Vec<u8>> {
         if !self.member(state, account) {
             return Err(Error::Unauthorized);
         }
         let combat = &state.combat;
-        let statuses = |values: &[vl_pet_arena::status::Status]| {
+        let statuses = |values: &[aetheria_pet_arena::status::Status]| {
             values.iter().map(|status|
             serde_json::json!({"kind": status.kind as u8, "potency": status.potency.raw(), "remaining": status.remaining_turns})
         ).collect::<Vec<_>>()

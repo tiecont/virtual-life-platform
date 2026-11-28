@@ -4,6 +4,19 @@ import {registerAdmissionQueue} from './features/admission/modules/allocation/pr
 import {RuntimePolicyStore} from './features/operations/modules/controls/infrastructure/runtime-policy-store';
 import {OperatorRuntimeControls} from './features/operations/modules/controls/application/operator-runtime';
 import {registerRuntimeControls} from './features/operations/modules/controls/presentation/operator-http';
+import {GameplayConfigStore} from './features/gameplay/modules/config/infrastructure/version-store';
+import {EngineGameplayBundleValidator,type GameplayBundleValidator} from './features/gameplay/modules/config/infrastructure/engine-validator';
+import {EngineGameplaySimulator,type GameplaySimulator} from './features/gameplay/modules/config/infrastructure/engine-simulator';
+import {OperatorGameplayConfig} from './features/gameplay/modules/config/application/operator-gameplay-config';
+import {registerGameplayConfig} from './features/gameplay/modules/config/presentation/operator-http';
+import {CoopSettlement} from './features/coop/modules/settlement/application/service';
+import {CoopSkillService} from './features/coop/modules/skills/application/service';
+import {CoopRoomService} from './features/coop/modules/rooms/application/service';
+import {registerCoopRooms} from './features/coop/modules/rooms/presentation/http';
+import {CoopMatchProvisioner} from './features/coop/modules/match/application/provisioner';
+import {CoopMatchStore} from './features/coop/modules/match/infrastructure/match-store';
+import {CoopRoomStore} from './features/coop/modules/rooms/infrastructure/store';
+import {LocalNativeCoopRuntime} from './features/coop/modules/match/infrastructure/local-runtime';
 import {OperatorEventCalendar} from './features/events/modules/calendar/application/operator-calendar';
 import {registerOperatorEvents} from './features/events/modules/calendar/presentation/operator-http';
 import {registerPrivacyRequests} from './features/identity/modules/privacy/presentation/privacy-http';
@@ -12,13 +25,13 @@ import 'reflect-metadata';
 import { DeadlineIdentityLinks } from './features/identity/modules/legacy/application/service';
 import { DeadlineHttpIdentityPort,type DeadlineIdentityPort } from './features/identity/modules/legacy/application/deadline-port';
 import { registerDeadlineIdentity } from './features/identity/modules/legacy/presentation/http';
-import { randomUUID } from 'node:crypto';
+import { generateKeyPairSync,randomUUID } from 'node:crypto';
 import { Module, Catch, HttpException, type ExceptionFilter, type ArgumentsHost } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { Pool } from 'pg';
-import { SCHEMA_VERSION, SanctionChangedSchema } from '@virtual-city/contracts';
+import { SCHEMA_VERSION, SanctionChangedSchema } from '@aetheria/contracts';
 import type { Config } from './shared/config/environment';
 import { IdentityService } from './features/identity/modules/accounts/application/service';
 import { registerIdentity } from './features/identity/modules/accounts/presentation/http';
@@ -101,8 +114,23 @@ import {GameJournal} from './features/games/modules/persistence/infrastructure/j
 import {GameJournalCrypto} from './features/games/modules/persistence/infrastructure/journal-crypto';
 import {createGameJournalHost} from './features/games/modules/sessions/application/room-host';
 import type {GameInitialFactory} from './features/games/modules/persistence/infrastructure/journal-host';
-import {GameRulesEngine} from '@virtual-city/boardgame-core';
+import {GameRulesEngine} from '@aetheria/boardgame-core';
 import { registerStudy } from './features/library/modules/study/presentation/http';
+import {registerWave1Mvp} from './features/pets/modules/wave1/presentation/http';
+import {Wave1Service, type Wave1Entropy} from './features/pets/modules/wave1/application/service';
+import {Wave1Store} from './features/pets/modules/wave1/infrastructure/store';
+import {registerArtifacts} from './features/pets/modules/wave-a-artifacts/presentation/http';
+import {ArtifactService} from './features/pets/modules/wave-a-artifacts/application/service';
+import {ArtifactStore} from './features/pets/modules/wave-a-artifacts/infrastructure/store';
+import {registerArena8} from './features/pets/modules/wave-a-arena8/presentation/http';
+import {Arena8Service} from './features/pets/modules/wave-a-arena8/application/service';
+import {readOwnedArena8Allocation} from './features/pets/modules/wave-a-arena8/application/allocation';
+import {ARENA8_NATIVE_TICKET_KEY_ID,NativeArena8Provisioner} from './features/pets/modules/wave-a-arena8/application/native-provisioner';
+import {NativeArena8MatchStore} from './features/pets/modules/wave-a-arena8/infrastructure/native-match-store';
+import {LocalNativeArena8Runtime} from './features/pets/modules/wave-a-arena8/infrastructure/native-runtime';
+import {registerNativeArena8} from './features/pets/modules/wave-a-arena8/presentation/native-http';
+import {RuntimeAdmissionStore} from './features/identity/modules/runtime-access/application/runtime-admission';
+import {RuntimeTicketIssuer} from './features/identity/modules/runtime-access/application/runtime-tickets';
 class SafeHttpErrors implements ExceptionFilter {
   catch(error: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
@@ -117,8 +145,12 @@ class SafeHttpErrors implements ExceptionFilter {
 Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
-export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};prelaunch?:{mail?:PrelaunchMailSink} } = {}) {
-  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^virtual_city_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
+export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string};gameplayConfig?:{validator?:GameplayBundleValidator;simulator?:GameplaySimulator};coopProvisioner?:CoopMatchProvisioner;prelaunch?:{mail?:PrelaunchMailSink} } = {}) {
+  if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
+  if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
+  if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
+  if(options.petArena8Native?.enabled&&config.NODE_ENV==='production')throw Error('Native Arena8 allocation is local/test only');
+  if(options.games){const target=new URL(config.DATABASE_URL);if(config.NODE_ENV!=='test'||!['127.0.0.1','localhost','[::1]'].includes(target.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(target.pathname.slice(1)))throw Error('Synthetic game rules require disposable local test runtime');}
   const safetyPolicy = await loadSafetyPolicy(options.safety?.policy,config.SAFETY_POLICY_FILE);
   const mediaClearance=await MediaClearanceGate.create(await loadMediaClearance(),[],options.now);
   const requiredMigrations = await migrationManifest();
@@ -181,6 +213,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const worlds = await createWorldRuntime(config, identity, { ...options.worlds, runtimeControls:runtimeStore,safety: safetyGuard,safetyPolicy, membership: options.worlds?.membership ?? { permits: async (actor, slug, membershipId) => roomService?.permits(actor, slug, membershipId) ?? false } });
   const runtimeControls=new OperatorRuntimeControls(runtimeStore,operator,worlds.releasePolicy?.controls);
   registerRuntimeControls(http,config,runtimeControls,options.now);
+  const gameplayValidator=options.gameplayConfig?.validator??(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY?new EngineGameplayBundleValidator(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY):undefined);
+  const gameplaySimulator=options.gameplayConfig?.simulator??(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY?new EngineGameplaySimulator(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY):undefined);
+  const gameplayConfig=new OperatorGameplayConfig(new GameplayConfigStore(),operator,gameplayValidator,gameplaySimulator);
+  registerGameplayConfig(http,config,gameplayConfig,options.now);
   const roomAuthority = new RoomAuthority(db);
   // No allocator timer, room hook or production activation in this UI slice.
   const admission=config.NODE_ENV!=='production'&&config.LOCAL_ADMISSION_UX==='1'?new AdmissionStore(db,identity,{epoch:randomUUID(),assert:()=>roomAuthority.assert()}):undefined;
@@ -285,6 +321,88 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerStudy(http,config,identity,study,options.now);
+  const wave1=new Wave1Service(new Wave1Store(db),options.petArenaWave1?.entropy);
+  registerWave1Mvp(http,config,identity,wave1,options.petArenaWave1?.enabled??false,options.now);
+  identity.registerExportOwner('petArenaWave1',(account,transaction)=>wave1.exportAccount(transaction,account));
+  // Wave A Artifacts stay default-off: no route and no export domain is added
+  // unless the local composition opts in.
+  const artifactsEnabled=options.petArtifacts?.enabled??false;
+  const artifacts=new ArtifactService(new ArtifactStore(db));
+  if(artifactsEnabled){
+    registerArtifacts(http,config,identity,artifacts,true,options.now);
+    identity.registerExportOwner('petArtifacts',(account,transaction)=>artifacts.exportAccount(transaction,account));
+  }
+  const coopSettlement=new CoopSettlement(db);
+  identity.registerDeletionOwner('coopSettlement',(account,transaction)=>coopSettlement.settleBeforeErasure(account,transaction));
+  const coopSkills=new CoopSkillService(db);
+  identity.registerExportOwner('coopSkillLevels',(account,transaction)=>coopSkills.exportAccount(transaction,account));
+  if(config.LOCAL_COOP_ROOMS==='1'){
+    let provisioner:CoopMatchProvisioner|undefined=options.coopProvisioner,ownedProvisioner=false;
+    if(!provisioner&&config.LOCAL_COOP_NATIVE==='1'){
+      const binary=config.LOCAL_ARENA8_NATIVE_BINARY,databaseUrl=config.LOCAL_ARENA8_NATIVE_DATABASE_URL;
+      const role=config.LOCAL_ARENA8_NATIVE_DB_ROLE,caFile=config.LOCAL_ARENA8_NATIVE_CA_FILE;
+      const storageKey=config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId=config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID;
+      const httpsOrigin=config.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN;
+      const certFile=config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile=config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE;
+      if(!binary||!databaseUrl||!role||!caFile||!storageKey||!httpsOrigin||!certFile||!keyFile)
+        throw Error('Cooperative native runtime configuration is required');
+      if(!gameplayValidator)
+        throw Error('Cooperative native matches require the gameplay configuration validator');
+      const admission=new RuntimeAdmissionStore(db,identity),keys=generateKeyPairSync('ed25519');
+      const keyId='coop-native-v1';
+      provisioner=new CoopMatchProvisioner({
+        store:new CoopMatchStore(db),admission,
+        issuer:new RuntimeTicketIssuer(identity,keyId,keys.privateKey,admission.admission),
+        runtime:new LocalNativeCoopRuntime({
+          binary,databaseUrl,role,caFile,storageKey,storageKeyId,
+          publicKey:keys.publicKey.export({format:'jwk'}).x!,keyId,origin:httpsOrigin,
+          certFile,keyFile,
+        }),
+        validator:gameplayValidator,httpsOrigin,
+        loadBundle:async record=>new CoopRoomStore().pinnedBundle(db,record.configVersion,record.configDigest),
+      });
+      ownedProvisioner=true;
+    }
+    if(provisioner)await provisioner.recover();
+    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner);
+    registerCoopRooms(http,config,identity,coopRooms,coopSkills,options.now);
+    if(ownedProvisioner&&provisioner){
+      const owned=provisioner;
+      http.addHook('preClose',async()=>{await owned.close();});
+    }
+  }
+  if(options.petArena8?.enabled){
+    registerArena8(http,config,identity,new Arena8Service(
+      db,options.petArena8.supervisorUrl,options.petArena8.supervisorToken,
+    ),true,options.now);
+  }
+  // Native allocation is a separate default-off composition. It reuses the
+  // existing admission/ticket authority and restricted runtime database path.
+  if(options.petArena8Native?.enabled){
+    const native=options.petArena8Native;
+    const admission=new RuntimeAdmissionStore(db,identity);
+    const keys=generateKeyPairSync('ed25519');
+    const provisioner=new NativeArena8Provisioner({
+      ownership:(account,input)=>readOwnedArena8Allocation(db,account,input),
+      matches:new NativeArena8MatchStore(db),
+      admission,
+      issuer:new RuntimeTicketIssuer(
+        identity,ARENA8_NATIVE_TICKET_KEY_ID,keys.privateKey,admission.admission,
+      ),
+      runtime:new LocalNativeArena8Runtime({
+        binary:native.binary,databaseUrl:native.databaseUrl,role:native.role,
+        caFile:native.caFile,publicKey:keys.publicKey.export({format:'jwk'}).x!,
+        keyId:ARENA8_NATIVE_TICKET_KEY_ID,origin:native.httpsOrigin,
+        storageKey:native.storageKey,storageKeyId:native.storageKeyId,
+        certFile:native.certFile,keyFile:native.keyFile,
+      }),
+      httpsOrigin:native.httpsOrigin,
+    });
+    registerNativeArena8(http,config,identity,provisioner,
+      new Arena8Service(db,'http://127.0.0.1:1','native-settlement-only'.padEnd(32,'x')),
+      true,options.now);
+    http.addHook('preClose',async()=>{await provisioner.close();});
+  }
   const avatarParts=new AvatarPartsService(db,identity,accounts=>rooms.refreshAccounts(accounts),options.now);
   rooms.setPartsProjection((account,palette,uniform)=>avatarParts.project(account,palette,uniform));
   registerProgression(http, config, identity, progression, appearance, options.now,avatarParts);

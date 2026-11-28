@@ -1,4 +1,4 @@
-import {defineWorld,WorldError} from '@virtual-city/world-sdk';
+import {defineWorld,WorldError} from '@aetheria/world-sdk';
 import {lodgeScene} from './scene';
 export {lodgeScene,lodgeAreas} from './scene';
 export const lodgeWorldVersion='1.0.0';

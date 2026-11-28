@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
-import {PetContentManifestV3Schema,PetMatchContentPinV3Schema,PetContentHashSchema,type PetContentManifestV3,type PetMatchContentPinV3} from '@virtual-city/contracts';
+import {PetContentManifestV3Schema,PetMatchContentPinV3Schema,PetContentHashSchema,type PetContentManifestV3,type PetMatchContentPinV3} from '@aetheria/contracts';
 
 function canonical(value:unknown):unknown{
  if(Array.isArray(value))return value.map(canonical);

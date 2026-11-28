@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
-import { FriendsPageSchema,InvitationsPageSchema,WorldCatalogSchema,InvitationChangedSchema,type FriendsPage,type InvitationsPage,type WorldCard } from '@virtual-city/contracts';
+import { FriendsPageSchema,InvitationsPageSchema,WorldCatalogSchema,InvitationChangedSchema,type FriendsPage,type InvitationsPage,type WorldCard } from '@aetheria/contracts';
 import GroupInvitations from '../../../../invitations/modules/invitations/presentation/GroupInvitations';
 import type { RoomChildContext } from '../../../../rooms/modules/rooms/presentation/WorldRoomPanel';
 import '../../../../invitations/modules/invitations/presentation/invitations.css';

@@ -3,6 +3,6 @@ ENV NEXT_TELEMETRY_DISABLED=1 NODE_ENV=development
 WORKDIR /app
 RUN npm install --global pnpm@11.28.5
 COPY --chown=node:node . .
-RUN pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @virtual-city/platform-api build
+RUN pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @aetheria/platform-api build
 USER node
 CMD ["node", "apps/platform-api/dist/main.js"]

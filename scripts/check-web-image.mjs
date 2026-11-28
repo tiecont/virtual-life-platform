@@ -14,7 +14,7 @@ try {
   const context = resolve(directory, 'source'); await mkdir(context);
   await run('source', 'git', ['archive', '--format=tar', '--output', resolve(directory, 'source.tar'), revision]);
   await run('source', 'tar', ['-xf', resolve(directory, 'source.tar'), '-C', context]);
-  const tag = 'vlp-web:source-' + revision.slice(0, 12) + '-' + randomUUID().slice(0, 8);
+  const tag = 'aetheria-web:source-' + revision.slice(0, 12) + '-' + randomUUID().slice(0, 8);
   await run('build-web', 'docker', ['build', '--pull=false', '--build-arg', 'SOURCE_REVISION=' + revision, '-f', resolve(context, 'infra/docker/Dockerfile.web'), '--target', 'runtime', '-t', tag, context]);
   const image = JSON.parse((await run('metadata', 'docker', ['image', 'inspect', tag])).stdout)[0];
   assert.equal(image.Config.User, 'node'); assert.equal(image.Config.Labels['org.opencontainers.image.revision'], revision); assert.deepEqual(image.Config.Cmd, ['node', 'start-runtime.mjs']);

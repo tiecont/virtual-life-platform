@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { WorldError } from '@virtual-city/world-sdk';
-import { MediaReadSchema,MediaViewSchema } from '@virtual-city/contracts';
+import { WorldError } from '@aetheria/world-sdk';
+import { MediaReadSchema,MediaViewSchema } from '@aetheria/contracts';
 import { z } from 'zod';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';

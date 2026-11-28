@@ -3,8 +3,8 @@ import type {PoolClient} from 'pg';
 import type {IdentityService} from '../../accounts/application/service';
 
 export const RUNTIME_TICKET_TTL_SECONDS=30;
-export const RUNTIME_TICKET_ISSUER='vl-platform-v1';
-export const RUNTIME_TICKET_AUDIENCE='vl-native-runtime-v1';
+export const RUNTIME_TICKET_ISSUER='aetheria-platform-v1';
+export const RUNTIME_TICKET_AUDIENCE='aetheria-native-runtime-v1';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const hash=/^[a-f0-9]{64}$/;
 const label=/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/;
@@ -43,7 +43,7 @@ export class RuntimeTicketIssuer {
    const nowMs=this.now(),iat=Math.floor(nowMs/1000);
    const exp=Math.min(iat+RUNTIME_TICKET_TTL_SECONDS,Math.floor(current.expiresAt/1000),Math.floor(policy.validUntilMs/1000));
    if(!Number.isSafeInteger(nowMs)||nowMs<0||policy.accountId!==current.accountId||policy.sessionId!==current.sessionId||!Number.isSafeInteger(policy.generation)||policy.generation<1||!Number.isSafeInteger(exp)||exp<=iat)throw new RuntimeTicketError();
-   const header=Buffer.from(JSON.stringify({alg:'EdDSA',typ:'vl-runtime-ticket+jwt',kid:this.kid})).toString('base64url');
+   const header=Buffer.from(JSON.stringify({alg:'EdDSA',typ:'aetheria-runtime-ticket+jwt',kid:this.kid})).toString('base64url');
    const claims={v:1,iss:RUNTIME_TICKET_ISSUER,aud:RUNTIME_TICKET_AUDIENCE,sub:current.accountId,sid:current.sessionId,jti:randomBytes(16).toString('hex'),iat,nbf:iat,exp,world:target.worldId,boot:target.runtimeBootId,content:target.contentHash,protocol:1,scope:'world.connect game.command',generation:String(policy.generation)};
    const payload=Buffer.from(JSON.stringify(claims)).toString('base64url');
    const input=header+'.'+payload;

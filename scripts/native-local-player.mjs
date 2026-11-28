@@ -7,11 +7,11 @@ import {toolEnvironment} from './test-environment.mjs';
 
 export async function nativeLocalPlayer({directory,origin,scope,matchId,loginName,password,worker}){
  assert.equal(process.platform,'linux');
- const binary=resolve('apps/unity-client/Builds/Linux/VirtualLife');await access(binary);
+ const binary=resolve('apps/unity-client/Builds/Linux/Aetheria');await access(binary);
  // The extensionless development executable still needs its own Mono config.
  // Fail before allocating a player with an unusable identity serializer.
  await access(binary+'.config');
- const files=[binary,binary+'.config',resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.Native.dll'),resolve('apps/unity-client/Builds/Linux/VirtualLife_Data/Managed/VirtualLife.NativeScene.dll'),resolve('artifacts/rust/target/debug/vl-game-runtime')];
+ const files=[binary,binary+'.config',resolve('apps/unity-client/Builds/Linux/Aetheria_Data/Managed/Aetheria.Native.dll'),resolve('apps/unity-client/Builds/Linux/Aetheria_Data/Managed/Aetheria.NativeScene.dll'),resolve('artifacts/rust/target/debug/aetheria-game-runtime')];
  const hashes=[];
  for(const file of files)hashes.push({file,sha256:createHash('sha256').update(await readFile(file)).digest('hex')});
  await writeFile(resolve(directory,'player-runtime-hashes.json'),JSON.stringify({hashes},null,2)+'\n');
@@ -19,7 +19,7 @@ export async function nativeLocalPlayer({directory,origin,scope,matchId,loginNam
  await writeFile(scopeFile,JSON.stringify({httpsOrigin:origin,wssOrigin:origin.replace('https:','wss:')+'/rt/v1',contentHash:scope.contentHash,bootId:scope.runtimeBootId,matchId,movement:true,ruleset:'pet-arena-pve',developmentCaFile:resolve(directory,'tls/ca.pem')}),{mode:0o600});
  await writeFile(credentials,'Account: '+loginName+'\nPassword: '+password+'\n',{mode:0o600});
  console.log('Linux Pet Arena ready. Private local login: '+credentials+'\nWASD: move; E: enter the purple Arena gate. Close the player to remove the disposable backend.');
- const child=spawn(binary,['-screen-width','1280','-screen-height','900','-screen-fullscreen','0','-logFile',resolve(directory,'player.log')],{env:{...toolEnvironment(process.env),VL_NATIVE_DEV_CONFIG:scopeFile},stdio:'ignore'});
+ const child=spawn(binary,['-screen-width','1280','-screen-height','900','-screen-fullscreen','0','-logFile',resolve(directory,'player.log')],{env:{...toolEnvironment(process.env),AETHERIA_NATIVE_DEV_CONFIG:scopeFile},stdio:'ignore'});
  let done=false,workerError;
  const closed=new Promise((ok,no)=>{child.once('error',no);child.once('close',ok);}).finally(()=>{done=true;});
  const stop=()=>child.kill('SIGTERM');process.on('SIGINT',stop);process.on('SIGTERM',stop);

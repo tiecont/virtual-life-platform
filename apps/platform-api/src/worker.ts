@@ -13,21 +13,23 @@ import {ProgressionLedger} from './features/progression/modules/rewards/applicat
 import {IncidentPolicy} from './features/safety/modules/incidents/application/incidents';
 import {SanctionPolicy} from './features/safety/modules/sanctions/application/sanctions';
 import {RuntimeLifecycle} from './features/operations/modules/lifecycle/application/runtime-lifecycle';
+import {CoopSettlement} from './features/coop/modules/settlement/application/service';
 
 // Independent composition root. No HTTP/socket, session secret or RoomAuthority.
 export async function runDurableWorker(env = process.env, args = process.argv.slice(2)) {
   const action = readWorkerAction(args), config = readWorkerConfig(env);
   const policy = await loadProgressionPolicy(config.PROGRESSION_POLICY_FILE);
   const nativeRewardPolicy = await loadNativeRewardPolicy(config.NATIVE_REWARD_POLICY_FILE);
-  if (!policy?.enabled && !nativeRewardPolicy) throw Error('Worker requires an explicit enabled consumer policy');
+  if (!policy?.enabled && !nativeRewardPolicy && config.COOP_SETTLEMENT_ENABLED !== '1') throw Error('Worker requires an explicit enabled consumer policy');
   const compatibility = await loadSchemaCompatibility(config.SCHEMA_COMPATIBILITY_FILE, await migrationManifest());
-  const pool = new Pool({connectionString: config.DATABASE_URL, max: 4, connectionTimeoutMillis: 2000, application_name: 'virtual-life-platform-durable-worker'});
+  const pool = new Pool({connectionString: config.DATABASE_URL, max: 4, connectionTimeoutMillis: 2000, application_name: 'aetheria-soulbound-durable-worker'});
   pool.on('error', () => console.error('Durable worker database unavailable'));
   const eligible = async (db: Pick<PoolClient, 'query'>, account: string, world: string) =>
     await new IncidentPolicy(db).permits(account, world) && await new SanctionPolicy(db).permits(account, world);
   const sinks = policy?.enabled ? [new ProgressionLedger(eligible, policy).hospitalitySink()] : [];
   const native = nativeRewardPolicy ? new NativeSettlements(pool, nativeRewardPolicy, eligible) : undefined;
   const outbox = new HospitalityOutbox(pool, {lockAccounts}, sinks, Date.now, config.WORKER_RETRY_LIMIT);
+  const coop = config.COOP_SETTLEMENT_ENABLED === '1' ? new CoopSettlement(pool) : undefined;
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {}, closeApp: () => outbox.close(), closePool: () => pool.end()});
   let failed = false, signalled = false, resolveStop!: () => void;
   const stopped = new Promise<void>(resolve => {resolveStop = resolve;});
@@ -47,14 +49,14 @@ export async function runDurableWorker(env = process.env, args = process.argv.sl
   const unavailable = () => {failed = true; console.error('Durable worker batch unavailable');};
   const batch = async () => {
     await assertSchema();
-    const results = await Promise.allSettled([outbox.drain(), native?.drain()]);
+    const results = await Promise.allSettled([outbox.drain(), native?.drain(), coop?.drain()]);
     if (results.some(result => result.status === 'rejected')) throw Error('Durable worker consumer unavailable');
     console.log(JSON.stringify({event: 'durable-worker.batch-complete', sampledAt: new Date().toISOString()}));
   };
   try {
     await assertSchema(); // Read-only validation; worker never runs migrations.
     process.once('SIGTERM', stop); process.once('SIGINT', stop);
-    console.log(JSON.stringify({event: 'durable-worker.ready', consumer: sinks.length ? 'progression-completion-v1' : 'native-completion-v1', policySha256: createHash('sha256').update(JSON.stringify({progression: policy ?? null, native: nativeRewardPolicy ?? null})).digest('hex'), retryLimit: config.WORKER_RETRY_LIMIT}));
+    console.log(JSON.stringify({event: 'durable-worker.ready', consumer: sinks.length ? 'progression-completion-v1' : nativeRewardPolicy ? 'native-completion-v1' : 'coop-settlement-v1', policySha256: createHash('sha256').update(JSON.stringify({progression: policy ?? null, native: nativeRewardPolicy ?? null})).digest('hex'), retryLimit: config.WORKER_RETRY_LIMIT}));
     if (action.kind === 'run') {
       await lifecycle.run(batch, unavailable);
       if (lifecycle.state === 'running') lifecycle.every(config.WORKER_INTERVAL_MS, batch, unavailable, true);

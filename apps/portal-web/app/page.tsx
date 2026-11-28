@@ -1,4 +1,4 @@
-import { ReadinessSchema } from '@virtual-city/contracts';
+import { ReadinessSchema } from '@aetheria/contracts';
 import CityMap from '../features/city/modules/city/presentation/CityMap';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
@@ -8,7 +8,7 @@ export default async function Home() {
     const result = ReadinessSchema.parse(await response.json());
     ready = response.ok && result.status === 'ready';
   } catch { /* Truthful unavailable state; never expose infrastructure details. */ }
-  return <main><header><span className="mark" aria-hidden="true">VC</span><span className="brand-name">VIRTUAL LIFE PLATFORM</span><span className="tag">LOCAL FOUNDATION</span></header>
+  return <main><header><span className="mark" aria-hidden="true">AS</span><span className="brand-name">AETHERIA: SOULBOUND</span><span className="tag">LOCAL FOUNDATION</span></header>
     <section><p className="eyebrow">A shared place, taking shape.</p><h1>A city begins<br/>with a connection.</h1><p className="intro">Explore places listed for your session. Real world rollout remains closed while local experiences are verified.</p>
     <div className="status-card"><div className="status-heading"><span className={ready ? 'dot ready' : 'dot'} aria-hidden="true"/><h2>Platform status</h2></div>
       <p role="status">{ready ? 'Database connected · schema v1' : 'Platform unavailable · try again shortly'}</p>

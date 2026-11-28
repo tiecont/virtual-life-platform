@@ -13,7 +13,7 @@ export function adminClientImports(code,publicPresentation=false){
   }
   ts.forEachChild(node,visit);
  }visit(source);
- for(const specifier of imports){assert(!specifier.endsWith('.json'),'Draft data must remain server-only');assert(specifier.startsWith('.')||['react','next/link','next/navigation','@virtual-city/contracts',...(publicPresentation?['three']:[])].includes(specifier),'Admin client dependency not allowlisted');}return imports;
+ for(const specifier of imports){assert(!specifier.endsWith('.json'),'Draft data must remain server-only');assert(specifier.startsWith('.')||['react','next/link','next/navigation','@aetheria/contracts',...(publicPresentation?['three']:[])].includes(specifier),'Admin client dependency not allowlisted');}return imports;
 }
 export async function checkAdminBoundary(root=process.cwd()){
  const base=resolve(root,'apps/admin-web'),files=new Map();

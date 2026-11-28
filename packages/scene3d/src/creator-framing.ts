@@ -1,5 +1,5 @@
 import * as T from 'three';
-import type {AvatarFraming} from '@virtual-city/client-sdk';
+import type {AvatarFraming} from '@aetheria/client-sdk';
 
 // Read the current skinned model, not fixed cat proportions. Long rabbit ears,
 // changed bodies and the selected pose must remain inside the inspection view.

@@ -1,4 +1,4 @@
-import { RoomDeltaSchema, RoomSnapshotSchema, RoomEndedSchema, type RoomDelta, type RoomSnapshot } from '@virtual-city/contracts';
+import { RoomDeltaSchema, RoomSnapshotSchema, RoomEndedSchema, type RoomDelta, type RoomSnapshot } from '@aetheria/contracts';
 
 export type RoomSyncResult = { state: RoomSnapshot; applied: boolean; gap: boolean };
 export function applyRoomSnapshot(input: unknown): RoomSnapshot {

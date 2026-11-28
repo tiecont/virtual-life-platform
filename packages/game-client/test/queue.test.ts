@@ -1,5 +1,5 @@
 import {afterEach,it,expect,vi} from 'vitest';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import type {ClientPlatform} from '@aetheria/client-sdk';
 import {QueueController} from '../src/queue-controller';
 const first='11111111-1111-4111-8111-111111111111',second='22222222-2222-4222-8222-222222222222',ticket='33333333-3333-4333-8333-333333333333';
 const me=(id=first)=>({profile:{id,displayName:'Synthetic queue visitor',avatarKey:'mint'},kind:'guest',expiresAt:'2027-01-01T00:00:00.000Z',csrfToken:'a'.repeat(64)});

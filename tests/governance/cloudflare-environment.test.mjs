@@ -48,12 +48,17 @@ test('production example selects Upstash REST and Cloudflare R2 through placehol
   );
 });
 
-test('Cloudflare templates cannot publish or embed a live tunnel identity', async () => {
+test('Cloudflare targets expose only Access-protected private edge proxies', async () => {
   for (const app of ['portal-web', 'admin-web']) {
     const config = await readFile(`infra/cloudflare/${app}/wrangler.jsonc`, 'utf8');
-    assert.match(config, /"workers_dev": false/u);
+    assert.match(config, new RegExp(`"name": "aetheria-soulbound-${app}"`, 'u'));
+    assert.match(config, /"main": "\.\.\/\.\.\/\.\.\/infra\/northflank\/worker\.mjs"/u);
+    assert.match(config, /"workers_dev": true/u);
     assert.match(config, /"preview_urls": false/u);
-    assert.match(config, /REPLACE_WITH_BUILD_ASSETS/u);
+    assert.match(config, /"binding": "FRONTEND"/u);
+    assert.match(config, /"service_id": "[a-f0-9-]{36}"/u);
+    assert.doesNotMatch(config, /^\s*"routes?":/mu);
+    assert.doesNotMatch(config, /custom_domain/u);
     assert.doesNotMatch(config, /[a-f0-9]{32}\.r2\.cloudflarestorage\.com/u);
   }
   const tunnel = await readFile('infra/cloudflare/cloudflared/config.yml', 'utf8');

@@ -4,7 +4,7 @@ import { writeFile,symlink,rm,mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { MediaClearanceGate,loadMediaClearance } from './media-clearance';
-import { MediaReadSchema,MediaViewSchema } from '@virtual-city/contracts';
+import { MediaReadSchema,MediaViewSchema } from '@aetheria/contracts';
 const at=Date.parse('2026-11-04T10:00:00Z'),eventId=randomUUID(),bytes=new TextEncoder().encode('Synthetic review evidence for gate tests only.'),hash=createHash('sha256').update(bytes).digest('hex');
 const c={id:'synthetic-only',worldSlug:'lounge',eventId,state:'APPROVED',basis:'original',sourceHash:'a'.repeat(64),rightsEvidence:'config/media-clearance/synthetic-only.md',rightsEvidenceHash:hash,reviewedBy:'synthetic-reviewer',reviewedAt:new Date(at-1000).toISOString(),validFrom:new Date(at-500).toISOString(),expiresAt:new Date(at+10000).toISOString(),adapterId:'synthetic-hls',transport:'external-https-hls',deliveryOrigin:'https://media.invalid'};
 const adapter={id:c.adapterId,transport:c.transport,deliveryOrigin:c.deliveryOrigin,reviewReference:c.rightsEvidence,reviewEvidenceHash:hash,reviewedAt:c.reviewedAt,expiresAt:c.expiresAt};

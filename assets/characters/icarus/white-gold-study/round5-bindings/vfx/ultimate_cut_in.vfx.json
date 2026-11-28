@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-presentation-vfx",
+  "action": "ultimate_cut_in",
+  "family": "signature",
+  "cue": "FIRE_ZONE",
+  "intensity": 1,
+  "durationSeconds": 1.4,
+  "palette": "phoenix-gold",
+  "authoredIndex": 14,
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

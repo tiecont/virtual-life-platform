@@ -1,5 +1,5 @@
 import { it,expect } from 'vitest';
-import type { WorldCard } from '@virtual-city/contracts';
+import type { WorldCard } from '@aetheria/contracts';
 import { ownVisitLabel } from './own-visit';
 it('labels only own approved public visit and conceals hidden or separately protected context',()=>{
  const world:WorldCard={slug:'sdk-sandbox',version:'1.0.0',title:'Local cafe',kind:'sandbox',sceneRef:{key:'sdk-sandbox',version:'1.0.0'},capacity:8,capabilities:['presence'],map:{region:'sandbox',position:{x:.5,y:.5},icon:'flask'},accessHint:'session-required',availability:'available',discoverability:'listed'};

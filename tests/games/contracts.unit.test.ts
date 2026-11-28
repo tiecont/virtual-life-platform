@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
-import {GameAckSchema,GameCommandSchema,GameOwnViewSchema,GamePublicViewSchema,GameSpectatorViewSchema} from '@virtual-city/contracts';
-import {GameRulesEngine,abortGame,projectGameOwn,projectGamePublic,projectGameSpectator,shuffleWithWords} from '@virtual-city/boardgame-core';
+import {GameAckSchema,GameCommandSchema,GameOwnViewSchema,GamePublicViewSchema,GameSpectatorViewSchema} from '@aetheria/contracts';
+import {GameRulesEngine,abortGame,projectGameOwn,projectGamePublic,projectGameSpectator,shuffleWithWords} from '@aetheria/boardgame-core';
 import {assertPureGameSource} from '../../scripts/boardgame-boundary.mjs';
 import {command,context,fixtureRules,gameState,id,transition} from './fixtures';
 const modes=['lantern-colors','mask-and-tell','mistbound-routes']as const;
@@ -65,6 +65,6 @@ it('state cycles,accessors,prototype objects and duplicate private ownership fai
 });
 it('pure source guard rejects network,DB,React,app imports,system clocks/RNG and escape paths',()=>{
  for(const source of ["import 'node:fs'","import x from 'pg'","import React from 'react'","import x from '../../../apps/platform-api/src/app'","const x=Date.now()","const x=Math.random()","const x=Math['random']()","const {random}=Math","const rng=Math; rng.random()","const x=globalThis.crypto","fetch('/v1/me')","setTimeout(()=>{},1)","import(name)","const x=Function('return process')()"]){expect(()=>assertPureGameSource(source)).toThrow();}
- expect(()=>assertPureGameSource("import {GameModeSchema} from '@virtual-city/contracts';export const f=(clock:number)=>clock+1;")).not.toThrow();
- for(const source of ["import * as contracts from '@virtual-city/contracts'","import {sceneManifestHash} from '@virtual-city/contracts'","export * from '@virtual-city/contracts'","import fs = require('node:fs')","console.log('secret')","import {x} from '../escape'"])expect(()=>assertPureGameSource(source)).toThrow();
+ expect(()=>assertPureGameSource("import {GameModeSchema} from '@aetheria/contracts';export const f=(clock:number)=>clock+1;")).not.toThrow();
+ for(const source of ["import * as contracts from '@aetheria/contracts'","import {sceneManifestHash} from '@aetheria/contracts'","export * from '@aetheria/contracts'","import fs = require('node:fs')","console.log('secret')","import {x} from '../escape'"])expect(()=>assertPureGameSource(source)).toThrow();
 });

@@ -2,8 +2,8 @@ import { beforeAll, afterAll, beforeEach, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@virtual-city/contracts';
-import { RoomRecovery, defineWorld } from '@virtual-city/world-sdk';
+import { MeSchema, RoomAckSchema, type RoomSnapshot } from '@aetheria/contracts';
+import { RoomRecovery, defineWorld } from '@aetheria/world-sdk';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 import { ROOM_OWNER_LOCK_CLASS } from '../../apps/platform-api/src/features/rooms/modules/presence/application/authority';
 import { createApp } from '../../apps/platform-api/src/app';
@@ -15,7 +15,7 @@ const secret = 'room-owner-test-only-session-secret-0000001'; const origin = 'ht
 const processes = new Set<Awaited<ReturnType<typeof startRoomProcess>>>(); const clients = new Set<Socket>();
 beforeAll(() => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Local test DB only');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Local test DB only');
   admin = new Pool({ connectionString: url.toString() });
 });
 beforeEach(async () => {

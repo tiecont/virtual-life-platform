@@ -1,0 +1,18 @@
+{
+  "name": "Aetheria.PlayMode",
+  "references": [
+    "Aetheria.Blockout",
+    "Aetheria.Icarus.Presentation",
+    "Aetheria.Native",
+    "Aetheria.NativeScene",
+    "Aetheria.PetArena.Domain",
+    "Aetheria.PetArena.Infrastructure",
+    "Aetheria.PetArena.Presentation",
+    "Aetheria.PetArena.Vfx",
+    "Aetheria.Pets",
+    "Aetheria.RemoteContent",
+    "Aetheria.World.Domain",
+    "Aetheria.World.Presentation"
+  ],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

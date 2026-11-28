@@ -1,5 +1,5 @@
 import { it,expect } from 'vitest';
-import { findScenePath,isWalkable } from '@virtual-city/world-sdk';
+import { findScenePath,isWalkable } from '@aetheria/world-sdk';
 import { maidScene,maidAreas,maidSeatIds,maidCatalog,createMaidWorld } from './index';
 it('all24service chairs are unique,reachable around solid furniture and identical to authoritative Maid seat metadata',()=>{
  expect(maidScene.seats.map(seat=>seat.seatId)).toEqual(maidSeatIds);expect(new Set(maidSeatIds).size).toBe(maidCatalog.maxCustomer);expect(createMaidWorld().definition.sceneRef).toEqual({key:maidScene.key,version:maidScene.version});expect(createMaidWorld().definition.capacity).toBe(30);

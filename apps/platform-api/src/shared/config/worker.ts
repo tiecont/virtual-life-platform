@@ -4,12 +4,13 @@ const WorkerEnv = z.object({
   DATABASE_URL: z.string().url().refine(value => ['postgres:', 'postgresql:'].includes(new URL(value).protocol)),
   DURABLE_JOB_ROLE: z.literal('worker'),
   NATIVE_REWARD_POLICY_FILE: z.string().min(1).max(4096).optional(),
+  COOP_SETTLEMENT_ENABLED: z.enum(['0', '1']).default('0'),
   PROGRESSION_POLICY_FILE: z.string().min(1).max(4096).optional(),
   SCHEMA_COMPATIBILITY_FILE: z.string().min(1).max(4096).optional(),
   WORKER_INTERVAL_MS: z.coerce.number().int().min(100).max(60000).default(3000),
   WORKER_RETRY_LIMIT: z.coerce.number().int().min(1).max(30).default(30),
 }).superRefine((env, ctx) => {
-  if (!env.PROGRESSION_POLICY_FILE && !env.NATIVE_REWARD_POLICY_FILE)
+  if (!env.PROGRESSION_POLICY_FILE && !env.NATIVE_REWARD_POLICY_FILE && env.COOP_SETTLEMENT_ENABLED !== '1')
     ctx.addIssue({code: 'custom', message: 'Explicit worker consumer policy required'});
   if (env.NODE_ENV === 'production' && env.WORKER_INTERVAL_MS < 1000) ctx.addIssue({code: 'custom', path: ['WORKER_INTERVAL_MS'], message: 'Production interval below bound'});});
 export function readWorkerConfig(env: Record<string, string | undefined> = process.env) {

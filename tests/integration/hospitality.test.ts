@@ -2,8 +2,8 @@ import { beforeAll, afterAll, afterEach, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io, type Socket } from 'socket.io-client';
-import { MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
+import { MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
@@ -14,7 +14,7 @@ import {BoundedObservationRead} from '../../apps/platform-api/src/features/opera
 import {RuntimeLifecycle} from '../../apps/platform-api/src/features/operations/modules/lifecycle/application/runtime-lifecycle';
 const origin = 'http://127.0.0.1:3300'; let admin: Pool, serial = 0;
 const opened: { app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string }[] = [], sockets = new Set<Socket>();
-beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
+beforeAll(async () => { const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test database'); admin = new Pool({ connectionString: url.toString() }); });
 afterEach(async () => { for (const socket of sockets) socket.close(); sockets.clear(); for (const r of opened.splice(0)) { await r.app.app.close(); await r.pool.end(); await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`); } });
 afterAll(async () => { await admin.end(); });
 async function open(allowStaff = true, maxQueue = 50, voluntary = false, maxStaff = 32, service?: 'coffee' | 'dining' | 'mocktail', progression = false,startAt?:number) {

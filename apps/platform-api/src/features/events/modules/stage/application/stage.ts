@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
 import { z } from 'zod';
-import { StageReadSchema,StageJoinSchema,StageAcceptSchema,StageEndSchema,StageSlotSchema,StageResultSchema,StageOwnSchema,StageStoppedSchema,StageViewSchema,TravelSourceSchema,type TravelSource } from '@virtual-city/contracts';
-import { WorldError,type WorldRegistry } from '@virtual-city/world-sdk';
+import { StageReadSchema,StageJoinSchema,StageAcceptSchema,StageEndSchema,StageSlotSchema,StageResultSchema,StageOwnSchema,StageStoppedSchema,StageViewSchema,TravelSourceSchema,type TravelSource } from '@aetheria/contracts';
+import { WorldError,type WorldRegistry } from '@aetheria/world-sdk';
 import type { IdentityService,IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';

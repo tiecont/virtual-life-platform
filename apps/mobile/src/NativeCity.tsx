@@ -1,8 +1,8 @@
 import {useEffect,useMemo,useState} from 'react';
-import type {Me} from '@virtual-city/contracts';
-import {WorldRoomPanel,TravelPanel,type RoomExperience,type RoomWidgets} from '@virtual-city/game-client';
-import {deadlineScene,deadlineWorldVersion,deadlineAreas} from '@virtual-city/deadline-world';
-import {maidScene,maidWorldVersion,maidAreas} from '@virtual-city/maid-world';
+import type {Me} from '@aetheria/contracts';
+import {WorldRoomPanel,TravelPanel,type RoomExperience,type RoomWidgets} from '@aetheria/game-client';
+import {deadlineScene,deadlineWorldVersion,deadlineAreas} from '@aetheria/deadline-world';
+import {maidScene,maidWorldVersion,maidAreas} from '@aetheria/maid-world';
 import {NativeAccountPanel} from './NativeAccountPanel';
 import {NativeAvatarCreator} from './NativeAvatarCreator';
 import {NativeSafetyPanel} from './NativeSafetyPanel';
@@ -10,7 +10,7 @@ import {androidSession} from './native-session';
 import {nativeWorldPlatform} from './world-platform';
 import {bindMobileBack} from './platform';
 import {bindLandscape} from './orientation';
-const supported=['deadline','maid']as const,empty=()=>null,renderer=()=>import('@virtual-city/scene3d');
+const supported=['deadline','maid']as const,empty=()=>null,renderer=()=>import('@aetheria/scene3d');
 const rooms:Record<typeof supported[number],RoomExperience>={
  deadline:{slug:'deadline',worldVersion:deadlineWorldVersion,scene:deadlineScene,title:'Deadline Cafe',eyebrow:'FOCUS TOGETHER',badge:'DEADLINE',noun:'cafe',theme:'deadline',sceneLabel:'Deadline cafe desks,counter and garden. Accessible movement and seating controls are available in Room actions.',caption:'WINDOW · CENTER · GARDEN DESKS',destinations:[{label:'Entrance',x:12,y:14},{label:'Window aisle',x:1,y:8},{label:'Central aisle',x:12,y:8},{label:'Counter front',x:10,y:3}],areas:deadlineAreas,focus:false,wardrobe:false,capacity:40},
  maid:{slug:'maid',worldVersion:maidWorldVersion,scene:maidScene,title:'Maid Cafe Social',eyebrow:'CAFE SAKURA',badge:'CAFE SAKURA',noun:'cafe',theme:'maid',sceneLabel:'Cafe Sakura tables,counter and garden. Accessible movement and seating controls are available in Room actions.',caption:'CAFE SAKURA · GARDEN & WINDOW TABLES',destinations:[{label:'Entrance',x:12,y:16},{label:'Central aisle',x:12,y:10},{label:'Window aisle',x:3,y:8},{label:'Counter front',x:12,y:3}],areas:maidAreas,focus:false,wardrobe:false,capacity:30},

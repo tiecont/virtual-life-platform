@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { ReportInputSchema, ReportReceiptSchema, ReportEvidenceSchema, CaseSummarySchema, CasePageSchema, CaseDetailSchema, CaseAssignmentSchema, CaseSearchSchema, type ReportInput, type ReportReceipt, type ReportEvidence, type SafetyPolicy } from '@virtual-city/contracts';
+import { ReportInputSchema, ReportReceiptSchema, ReportEvidenceSchema, CaseSummarySchema, CasePageSchema, CaseDetailSchema, CaseAssignmentSchema, CaseSearchSchema, type ReportInput, type ReportReceipt, type ReportEvidence, type SafetyPolicy } from '@aetheria/contracts';
 import type { IdentityService, IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

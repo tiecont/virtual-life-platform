@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
-import { ChatAckSchema,ChatMessageSchema,type ChatMessage,type ChatSend } from '@virtual-city/contracts';
+import { ChatAckSchema,ChatMessageSchema,type ChatMessage,type ChatSend } from '@aetheria/contracts';
 import type { RoomChildContext } from './WorldRoomPanel';
 
 const choices:{label:string;content:ChatSend['content']}[]=[

@@ -1,5 +1,5 @@
 import type { Pool,PoolClient } from 'pg';
-import { LegacyIdentityLinkInputSchema,LegacyIdentityUnlinkInputSchema,LegacyIdentityViewSchema,type LegacyIdentityView } from '@virtual-city/contracts';
+import { LegacyIdentityLinkInputSchema,LegacyIdentityUnlinkInputSchema,LegacyIdentityViewSchema,type LegacyIdentityView } from '@aetheria/contracts';
 import type { IdentityService } from '../../accounts/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
 import { WindowLimiter } from '../../accounts/domain/limits';

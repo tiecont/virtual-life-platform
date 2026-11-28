@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { ProgressionPolicySchema, RewardObservationSchema } from '@virtual-city/contracts';
+import { ProgressionPolicySchema, RewardObservationSchema } from '@aetheria/contracts';
 import { DEFAULT_PROGRESSION_POLICY, assessReward } from './policy';
 const id = '7233ef20-8ff6-4ed8-a493-7dff1d465001', partner = '7233ef20-8ff6-4ed8-a493-7dff1d465002';
 const now = Date.parse('2026-11-03T12:00:00.000Z'), event = { schemaVersion: 1 as const, accountId: id, sourceId: id, worldSlug: 'deadline' as const, kind: 'focus-completed' as const, completedAt: new Date(now).toISOString() };

@@ -10,7 +10,7 @@ function fail(status=403){respond({status:String(status),message:'Synthetic fixt
 try{
  if(tool==='docker'){
   assert.equal(role,'read');state.calls.push({tool,role,args});
-  const image=args.find(a=>a.startsWith('ghcr.io/tiecont/vlp-'));assert(image);const target=image.match(/\/vlp-(api|web|admin)@/)?.[1];assert(target);assert.equal(image,state.manifest.artifacts[target].image);
+  const image=args.find(a=>a.startsWith('ghcr.io/tiecont/aetheria-'));assert(image);const target=image.match(/\/aetheria-(api|web|admin)@/)?.[1];assert(target);assert.equal(image,state.manifest.artifacts[target].image);
   if(args[0]==='buildx')respond({digest:image.split('@')[1]});
   if(args[0]==='pull')respond();
   if(args[0]==='image'&&args[1]==='inspect')respond([{Id:state.manifest.artifacts[target].localImageId,Config:{Labels:{'org.opencontainers.image.revision':state.revision}}}]);
@@ -25,8 +25,8 @@ try{
  }
  assert.equal(args[0],'api');const endpoint=args.slice(1).find(a=>a.startsWith('repos/')||a==='installation/repositories');assert(endpoint);
  const method=args.includes('--method')?args[args.indexOf('--method')+1]:'GET',body=args.includes('--input')?JSON.parse(fs.readFileSync(args[args.indexOf('--input')+1],'utf8')):null;
- state.calls.push({tool,role,endpoint,method,body});const repo='repos/tiecont/virtual-life-platform/';
- if(endpoint==='installation/repositories'){assert.equal(role,'write');respond({total_count:state.installationCount??1,repositories:[{full_name:'tiecont/virtual-life-platform'}]});}
+ state.calls.push({tool,role,endpoint,method,body});const repo='repos/tiecont/aetheria-soulbound/';
+ if(endpoint==='installation/repositories'){assert.equal(role,'write');respond({total_count:state.installationCount??1,repositories:[{full_name:'tiecont/aetheria-soulbound'}]});}
  if(endpoint===repo+'actions/runs/456'){assert.equal(role,'read');respond(state.publisher);}
  if(endpoint===repo+'actions/runs/456/artifacts?per_page=100'){assert.equal(role,'read');respond({total_count:1,artifacts:[{name:'release-candidate-'+state.revision+'-2',expired:false}]});}
  if(endpoint===repo+'actions/runs/123/attempts/2'){assert.equal(role,'read');respond(state.qualityRun);}
@@ -49,7 +49,7 @@ try{
  if(method==='POST'&&endpoint===repo+'pulls'){
   assert.equal(body.draft,true);assert.equal(body.base,'main');assert.equal(body.head,state.ref.ref.slice('refs/heads/'.length));
   if(state.failPrOnce){state.failPrOnce=false;fail(503);}
-  assert.equal(state.pr,undefined);state.pr={draft:true,user:{type:'Bot',login:'synthetic-promoter[bot]'},base:{ref:'main'},head:{ref:body.head,sha:state.ref.sha},html_url:'https://github.com/tiecont/virtual-life-platform/pull/999'};respond(state.pr);
+  assert.equal(state.pr,undefined);state.pr={draft:true,user:{type:'Bot',login:'synthetic-promoter[bot]'},base:{ref:'main'},head:{ref:body.head,sha:state.ref.sha},html_url:'https://github.com/tiecont/aetheria-soulbound/pull/999'};respond(state.pr);
  }
  fail();
 }catch{fail();}

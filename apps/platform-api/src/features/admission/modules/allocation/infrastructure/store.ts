@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { AdmissionCommandSchema, AdmissionOwnStateSchema, AdmissionCapacitySchema, AdmissionQueueViewSchema, type AdmissionOwnState } from '@virtual-city/contracts';
+import { AdmissionCommandSchema, AdmissionOwnStateSchema, AdmissionCapacitySchema, AdmissionQueueViewSchema, type AdmissionOwnState } from '@aetheria/contracts';
 import type { IdentityService, IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
 type Owner = {

@@ -1,5 +1,5 @@
 import * as T from 'three';
-import type {SceneManifest,RoomSnapshot} from '@virtual-city/contracts';
+import type {SceneManifest,RoomSnapshot} from '@aetheria/contracts';
 import {TILE_METERS} from './room';
 
 // The circles are coplanar and never overlap: one double-sided pass preserves

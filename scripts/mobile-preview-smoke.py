@@ -2,7 +2,7 @@
 from pathlib import Path
 import datetime, hashlib, json, os, re, subprocess, time, uuid, xml.etree.ElementTree as ET
 
-app = 'life.virtualcity.spike'
+app = 'life.aetheriasoulbound.spike'
 adb = os.environ.get('ADB_PATH')
 if not adb or not Path(adb).is_file():
     raise SystemExit('Set ADB_PATH to the reviewed executable for the authorized USB device')
@@ -46,7 +46,7 @@ def snapshot(label, expected):
     deadline = time.monotonic() + 30
     for attempt in range(4):
         foreground()
-        temporary = '/data/local/tmp/vlp-preview-' + uuid.uuid4().hex + '.xml'
+        temporary = '/data/local/tmp/aetheria-preview-' + uuid.uuid4().hex + '.xml'
         ready = False
         try:
             run('dump-' + label, ['shell', 'uiautomator', 'dump', temporary])

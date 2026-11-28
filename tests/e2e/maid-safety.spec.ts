@@ -2,8 +2,8 @@ import {evidenceOutput} from '../../scripts/evidence-output.mjs';
 import { test,expect,devices,type Page,type BrowserContext } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
-import { MeSchema } from '@virtual-city/contracts';
-import { deadlineWorldVersion } from '@virtual-city/deadline-world';
+import { MeSchema } from '@aetheria/contracts';
+import { deadlineWorldVersion } from '@aetheria/deadline-world';
 import { guest,headers,testDb,origin,friends,allowInvites,own } from '../support/deadline-safety-fixtures';
 async function visible(context:BrowserContext,me:Awaited<ReturnType<typeof guest>>){expect((await context.request.patch('/v1/me/privacy',{headers:headers(me),data:{presence:'hidden',analyticsConsent:false,worldVisibility:{dating:'hidden',maid:'public',deadline:'public'}}})).status()).toBe(200);}
 async function enter(page:Page){await page.goto('/worlds/maid');await page.getByRole('button',{name:'Enter cafe',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');}

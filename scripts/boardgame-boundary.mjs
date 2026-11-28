@@ -9,7 +9,7 @@ export function assertPureGameSource(code,file='packages/boardgame-core/src/core
  function visit(node){
   assert(!ts.isImportEqualsDeclaration(node),'CommonJS import escape in pure source');
   if(ts.isImportDeclaration(node)||ts.isExportDeclaration(node)&&node.moduleSpecifier){const specifier=node.moduleSpecifier;assert(ts.isStringLiteralLike(specifier));const name=specifier.text;
-   if(name==='@virtual-city/contracts'){
+   if(name==='@aetheria/contracts'){
     const clause=ts.isImportDeclaration(node)?node.importClause:node.exportClause;
     assert(clause&&!clause.name,'Pure source uses named data imports only');const bindings=ts.isImportDeclaration(node)?clause.namedBindings:clause;assert(bindings&&(ts.isNamedImports(bindings)||ts.isNamedExports(bindings)),'Contract namespace/barrel escape in pure source');
     for(const element of bindings.elements)if(!node.isTypeOnly&&!clause.isTypeOnly&&!element.isTypeOnly)assert(/^Game[A-Za-z]+Schema$/.test((element.propertyName??element.name).text),'Only reviewed game data schemas may be imported as values');
@@ -24,7 +24,7 @@ export function assertPureGameSource(code,file='packages/boardgame-core/src/core
  }visit(tree);
 }
 export async function checkBoardgameBoundary(){
- const base='packages/boardgame-core',manifest=JSON.parse(await readFile(base+'/package.json'));assert.deepEqual(manifest.dependencies,{'@virtual-city/contracts':'workspace:*'});let files=0;
+ const base='packages/boardgame-core',manifest=JSON.parse(await readFile(base+'/package.json'));assert.deepEqual(manifest.dependencies,{'@aetheria/contracts':'workspace:*'});let files=0;
  assert.equal(manifest.main,'dist/index.js');assert.deepEqual(manifest.exports,{'.':{types:'./dist/index.d.ts',default:'./dist/index.js'}});
  async function walk(path){for(const entry of await readdir(path,{withFileTypes:true})){const ref=path+'/'+entry.name;if(entry.isDirectory())await walk(ref);else if(/\.[cm]?[jt]s$/.test(entry.name)){assertPureGameSource(await readFile(ref,'utf8'),ref);files++;}}}await walk(base+'/src');
  return {files,scope:'Static pure core source/import boundary;not authentication,game rules,privacy enforcement or a security sandbox'};

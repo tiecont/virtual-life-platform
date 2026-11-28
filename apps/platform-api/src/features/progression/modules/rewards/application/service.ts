@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Pool, PoolClient } from 'pg';
-import { ProgressionCorrectionReasonSchema, CosmeticsInventorySchema, ProgressionViewSchema, ProgressionWorldSchema, type ProgressionPolicy } from '@virtual-city/contracts';
+import { ProgressionCorrectionReasonSchema, CosmeticsInventorySchema, ProgressionViewSchema, ProgressionWorldSchema, type ProgressionPolicy } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { FocusService } from '../../../../focus/modules/timers/application/service';
 import type { HospitalityCompletionSink } from '../../../../hospitality/modules/service/infrastructure/outbox';

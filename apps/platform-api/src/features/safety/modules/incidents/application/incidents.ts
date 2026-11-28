@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { IncidentInputSchema, IncidentResultSchema, IncidentPageSchema, ModerationSessionSchema } from '@virtual-city/contracts';
+import { IncidentInputSchema, IncidentResultSchema, IncidentPageSchema, ModerationSessionSchema } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { ReportService } from '../../reporting/application/reports';

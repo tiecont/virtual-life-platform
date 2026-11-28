@@ -5,14 +5,14 @@ import {readFile,mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {join as joinPath} from 'node:path';
 import {tmpdir} from 'node:os';
 import {io,type Socket} from 'socket.io-client';
-import {MeSchema,RoomAckSchema,ChatAckSchema,type RoomSnapshot,type Me} from '@virtual-city/contracts';
+import {MeSchema,RoomAckSchema,ChatAckSchema,type RoomSnapshot,type Me} from '@aetheria/contracts';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
 import {releasePolicyFixture} from '../support/release-policy-fixture';
 const origin='https://synthetic.example.invalid',clients=new Set<Socket>();let admin:Pool,serial=0;
 const opened:{app:Awaited<ReturnType<typeof createApp>>;pool:Pool;schema:string;directory:string}[]=[];
-beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const socket of clients)socket.close();clients.clear();for(const r of opened.splice(0)){await r.app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA IF EXISTS "${r.schema}" CASCADE`);await rm(r.directory,{recursive:true,force:true});}});
 afterAll(async()=>{await admin.end();});
 async function open(closed=false){

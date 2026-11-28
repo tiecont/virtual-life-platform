@@ -3,7 +3,7 @@ import {mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {readFileSync} from 'node:fs';
-import {EnvironmentSafetyPolicySchema} from '@virtual-city/contracts';
+import {EnvironmentSafetyPolicySchema} from '@aetheria/contracts';
 import type {ReleasePolicy,RuntimeWorldPolicy} from '../../../../../shared/config/release-policy';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
 import {readConfig} from '../../../../../shared/config/environment';
@@ -13,7 +13,7 @@ const releasePolicyFixture=()=>JSON.parse(readFileSync('tests/fixtures/release-p
 async function fixture(work:(input:{data:ReturnType<typeof releasePolicyFixture>;releaseFile:string;runtimeFile:string;config:ReturnType<typeof readConfig>;start:()=>Promise<Awaited<ReturnType<typeof createWorldRuntime>>>})=>Promise<void>){
  const dir=await mkdtemp(join(tmpdir(),'city-release-install-')),data=releasePolicyFixture(),releaseFile=join(dir,'release.json'),runtimeFile=join(dir,'runtime.json'),opened:Awaited<ReturnType<typeof createWorldRuntime>>[]=[];
  await writeFile(releaseFile,JSON.stringify(data.release));await writeFile(runtimeFile,JSON.stringify(data.runtime));
- const config=readConfig({NODE_ENV:'production',DATABASE_URL:'postgres://localhost/virtual_city_test_unit',SESSION_SECRET:'synthetic-unit-release-'.repeat(3),WEB_ORIGIN:'https://synthetic.example.invalid',RELEASE_ENVIRONMENT:'production',RELEASE_POLICY_FILE:releaseFile,RUNTIME_WORLD_POLICY_FILE:runtimeFile,SAFETY_EVIDENCE_KEY:'ab'.repeat(32)});
+ const config=readConfig({NODE_ENV:'production',DATABASE_URL:'postgres://localhost/aetheria_soulbound_test_unit',SESSION_SECRET:'synthetic-unit-release-'.repeat(3),WEB_ORIGIN:'https://synthetic.example.invalid',RELEASE_ENVIRONMENT:'production',RELEASE_POLICY_FILE:releaseFile,RUNTIME_WORLD_POLICY_FILE:runtimeFile,SAFETY_EVIDENCE_KEY:'ab'.repeat(32)});
  const identity={authenticate:async()=>({accountId:'synthetic-account',sessionId:'synthetic-session',kind:'guest' as const,expiresAt:Date.now()+60000})} as unknown as IdentityService;
  const start=async()=>{const world=await createWorldRuntime(config,identity,{safetyPolicy:data.safety});opened.push(world);return world;};
  try{await work({data,releaseFile,runtimeFile,config,start});}finally{for(const world of opened)await world.registry.close();await rm(dir,{recursive:true,force:true});}

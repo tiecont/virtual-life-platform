@@ -1,8 +1,8 @@
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import type {RuntimeControlSnapshot} from '@virtual-city/contracts';
+import type {RuntimeControlSnapshot} from '@aetheria/contracts';
 import type {RuntimeControlReader} from '../../../../operations/modules/controls/infrastructure/runtime-policy-store';
-import {WorldRegistry,type WorldPorts} from '@virtual-city/world-sdk';
+import {WorldRegistry,type WorldPorts} from '@aetheria/world-sdk';
 import type {Config} from '../../../../../shared/config/environment';
 import {parseReleasePolicy,evaluateReleasePolicy,assertRuntimeTransition,assertReleaseSafety,type EvaluatedReleasePolicy,type RuntimeWorldPolicy} from '../../../../../shared/config/release-policy';
 import {worldInstallers} from './installers';

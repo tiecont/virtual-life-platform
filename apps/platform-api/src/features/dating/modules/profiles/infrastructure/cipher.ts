@@ -1,5 +1,5 @@
 import { createCipheriv,createDecipheriv,randomBytes } from 'node:crypto';
-import { DatingProfileDataSchema,type DatingProfileData } from '@virtual-city/contracts';
+import { DatingProfileDataSchema,type DatingProfileData } from '@aetheria/contracts';
 export type PrivateProfileBlob={key_id:string;iv:Buffer;tag:Buffer;ciphertext:Buffer};
 export class DatingProfileCipher{
  private key:Buffer;

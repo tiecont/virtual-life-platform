@@ -1,10 +1,10 @@
 import {test,expect,type Page,type Locator} from '@playwright/test';
 import {Pool} from 'pg';
-import {OperatorObservationViewSchema,OperatorSystemViewSchema} from '@virtual-city/contracts';
+import {OperatorObservationViewSchema,OperatorSystemViewSchema} from '@aetheria/contracts';
 import {totp} from '../../apps/platform-api/src/features/identity/modules/operators/infrastructure/operator-crypto';
 const secret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',password='synthetic-admin-browser-password-only',serviceToken='e'.repeat(64);
 let pool:Pool;
-test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(address.hostname)||!/^virtual_city_test(?:_|$)/.test(address.pathname.slice(1))||address.search)throw Error('Disposable local test DB required');pool=new Pool({connectionString:address.toString()});});
+test.beforeAll(()=>{const address=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost'].includes(address.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(address.pathname.slice(1))||address.search)throw Error('Disposable local test DB required');pool=new Pool({connectionString:address.toString()});});
 // Synthetic seed reset is test-owner SQL, never an application endpoint.
 test.beforeEach(async()=>{await pool.query('UPDATE identity_operator SET totp_counter=-1,failures=0,locked_until=NULL');await pool.query('UPDATE identity_operator_sessions SET revoked_at=clock_timestamp() WHERE revoked_at IS NULL');});
 test.afterAll(async()=>{await pool.end();});

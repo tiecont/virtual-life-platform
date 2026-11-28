@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { HospitalityMenuSchema,OrderPageSchema,OrderResultSchema,OrderRefusedSchema,StaffStateSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { HospitalityMenuSchema,OrderPageSchema,OrderResultSchema,OrderRefusedSchema,StaffStateSchema,type Me,type TravelSource } from '@aetheria/contracts';
 export type Orders=ReturnType<typeof OrderPageSchema.parse>;
 type Data={menu:ReturnType<typeof HospitalityMenuSchema.parse>|null;own:Orders|null;queue:Orders|null;staff:ReturnType<typeof StaffStateSchema.parse>|null};
 type Change={path:string;body:object;key:string;withdraw?:boolean;refusal?:boolean};

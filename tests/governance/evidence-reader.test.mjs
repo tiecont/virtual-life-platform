@@ -10,7 +10,7 @@ import {createArchive} from '../../scripts/evidence-store.mjs';
 import {createEvidenceReader} from '../../scripts/evidence-reader.mjs';
 const name='docs/agent/evidence/result.json';
 async function fixture(work){
- const root=await mkdtemp(join(tmpdir(),'vlp-index-reader-')),options={root,store:'artifacts/store',key:'artifacts/keys/archive.key'};
+ const root=await mkdtemp(join(tmpdir(),'aetheria-index-reader-')),options={root,store:'artifacts/store',key:'artifacts/keys/archive.key'};
  const git=args=>execFileSync('git',args,{cwd:root}).toString().trim();
  try{
   git(['init','-q']);await mkdir(join(root,'docs/agent/evidence'),{recursive:true});await mkdir(join(root,'config/evidence'),{recursive:true});

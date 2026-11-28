@@ -1,4 +1,4 @@
-import {PetContentManifestV3Schema,type PetContentDraft} from '@virtual-city/contracts';
+import {PetContentManifestV3Schema,type PetContentDraft} from '@aetheria/contracts';
 
 export function petManifestFixture(draft:PetContentDraft){
  return PetContentManifestV3Schema.parse({...draft,schemaVersion:3,ruleset:'pet-arena-pve-v3',release:'OFFLINE_ONLY',rulesHash:'a'.repeat(64),

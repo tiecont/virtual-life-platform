@@ -1,7 +1,7 @@
 import type { Pool,PoolClient } from 'pg';
 import { z } from 'zod';
-import { AudienceReadSchema,AudienceSendSchema,AudienceControlSchema,AudienceViewSchema,AudienceResultSchema,TravelSourceSchema,type TravelSource } from '@virtual-city/contracts';
-import type { WorldRegistry } from '@virtual-city/world-sdk';
+import { AudienceReadSchema,AudienceSendSchema,AudienceControlSchema,AudienceViewSchema,AudienceResultSchema,TravelSourceSchema,type TravelSource } from '@aetheria/contracts';
+import type { WorldRegistry } from '@aetheria/world-sdk';
 import type { IdentityService,IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';

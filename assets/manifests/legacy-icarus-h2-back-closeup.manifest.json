@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-h2-back-closeup",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-h2-back-closeup/1.0.0/03-back-closeup.png",
+  "sha256": "c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b",
+  "sizeBytes": 861969,
+  "contentType": "image/png",
+  "localCachePath": ".cache/assets/legacy-icarus-h2-back-closeup/1.0.0/03-back-closeup.png"
+}

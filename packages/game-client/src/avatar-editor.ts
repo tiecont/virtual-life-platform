@@ -1,5 +1,5 @@
-import {AVATAR_CATALOG_VERSION,AvatarOwnStateSchema,AvatarSaveResultSchema,AvatarPartsSchema,AVATAR_COMPATIBILITY,starterAvatarParts,type AvatarParts,type AvatarOwnState,type AvatarSaveInput,type AvatarSaveResult} from '@virtual-city/contracts';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import {AVATAR_CATALOG_VERSION,AvatarOwnStateSchema,AvatarSaveResultSchema,AvatarPartsSchema,AVATAR_COMPATIBILITY,starterAvatarParts,type AvatarParts,type AvatarOwnState,type AvatarSaveInput,type AvatarSaveResult} from '@aetheria/contracts';
+import type {ClientPlatform} from '@aetheria/client-sdk';
 export interface AvatarStorePort {read():Promise<AvatarOwnState>;save(input:AvatarSaveInput,requestId:string):Promise<AvatarSaveResult>}
 export class AvatarStoreError extends Error {constructor(readonly status:number,readonly code:string){super('Character request unavailable');}}
 export function browserAvatarStore(platform:ClientPlatform,accountId:string,csrf:string):AvatarStorePort{

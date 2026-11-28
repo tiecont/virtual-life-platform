@@ -6,7 +6,7 @@ import {createHash,randomUUID} from 'node:crypto';
 
 const root=process.cwd(),config=JSON.parse(await readFile('config/mobile/android-emulator.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
 const mode=process.argv[2]??'auth';assert(['auth','default-off'].includes(mode));
-const paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json')),adb=paths.sdkRoot+'/platform-tools/adb',serial='emulator-'+config.port,app='life.virtualcity.spike';
+const paths=JSON.parse(await readFile('artifacts/vnext/n10-02/android-native/local-env.json')),adb=paths.sdkRoot+'/platform-tools/adb',serial='emulator-'+config.port,app='life.aetheriasoulbound.spike';
 assert(process.argv.length===2||process.argv.length===3);assert.equal(instance.serial,serial);assert.equal(instance.avdName,config.avdName);assert.equal(instance.sdk,paths.sdkRoot);
 assert.equal((await readFile('/proc/'+instance.pid+'/stat','utf8')).split(') ').at(-1).split(' ')[19],instance.startTicks);
 const argv=(await readFile('/proc/'+instance.pid+'/cmdline','utf8')).split('\0');assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));

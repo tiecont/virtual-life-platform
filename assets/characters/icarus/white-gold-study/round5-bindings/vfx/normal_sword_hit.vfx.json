@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "assetType": "icarus-presentation-vfx",
+  "action": "normal_sword_hit",
+  "family": "normal",
+  "cue": "ICARUS_NORMAL",
+  "intensity": 0.55,
+  "durationSeconds": 0.65,
+  "palette": "warm-fire",
+  "authoredIndex": 5,
+  "rights": "PENDING_REVIEW",
+  "runtimeEnabled": false,
+  "productionReady": false
+}

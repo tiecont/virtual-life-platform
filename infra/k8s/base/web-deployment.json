@@ -2,10 +2,10 @@
   "apiVersion": "apps/v1",
   "kind": "Deployment",
   "metadata": {
-    "name": "vlp-web",
+    "name": "aetheria-web",
     "labels": {
-      "app.kubernetes.io/part-of": "virtual-life-platform",
-      "app.kubernetes.io/name": "vlp-web"
+      "app.kubernetes.io/part-of": "aetheria-soulbound",
+      "app.kubernetes.io/name": "aetheria-web"
     }
   },
   "spec": {
@@ -21,19 +21,19 @@
     },
     "selector": {
       "matchLabels": {
-        "app.kubernetes.io/part-of": "virtual-life-platform",
-        "app.kubernetes.io/name": "vlp-web"
+        "app.kubernetes.io/part-of": "aetheria-soulbound",
+        "app.kubernetes.io/name": "aetheria-web"
       }
     },
     "template": {
       "metadata": {
         "labels": {
-          "app.kubernetes.io/part-of": "virtual-life-platform",
-          "app.kubernetes.io/name": "vlp-web"
+          "app.kubernetes.io/part-of": "aetheria-soulbound",
+          "app.kubernetes.io/name": "aetheria-web"
         }
       },
       "spec": {
-        "serviceAccountName": "vlp-runtime",
+        "serviceAccountName": "aetheria-runtime",
         "automountServiceAccountToken": false,
         "enableServiceLinks": false,
         "hostNetwork": false,
@@ -43,7 +43,7 @@
         },
         "imagePullSecrets": [
           {
-            "name": "vlp-registry-pull"
+            "name": "aetheria-registry-pull"
           }
         ],
         "terminationGracePeriodSeconds": 20,
@@ -59,7 +59,7 @@
         "containers": [
           {
             "name": "web",
-            "image": "registry.invalid/vlp-web:release-required",
+            "image": "registry.invalid/aetheria-web:release-required",
             "imagePullPolicy": "Always",
             "command": [
               "node",
@@ -90,13 +90,13 @@
               },
               {
                 "name": "API_INTERNAL_URL",
-                "value": "http://vlp-api:4300"
+                "value": "http://aetheria-api:4300"
               },
               {
                 "name": "PUBLIC_SOCKET_ORIGIN",
                 "valueFrom": {
                   "configMapKeyRef": {
-                    "name": "vlp-runtime",
+                    "name": "aetheria-runtime",
                     "key": "WEB_ORIGIN"
                   }
                 }

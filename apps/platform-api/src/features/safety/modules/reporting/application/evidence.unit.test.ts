@@ -1,7 +1,7 @@
 import { it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { EvidenceCipher, MessageEvidenceCache } from './evidence';
-import type { ChatMessage } from '@virtual-city/contracts';
+import type { ChatMessage } from '@aetheria/contracts';
 
 it('AES-GCM rejects modified ciphertext, key identity, swapped context and wrong keys', () => {
   const cipher = new EvidenceCipher('12'.repeat(32), 'test-v1'); const sealed = cipher.seal('case:one', { note: 'Private evidence' });

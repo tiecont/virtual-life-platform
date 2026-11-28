@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {collectInventory,writeInventory} from '../../scripts/evidence-inventory.mjs';
 
 async function fixture(work) {
- const root=await mkdtemp(join(tmpdir(),'vlp-inventory-'));
+ const root=await mkdtemp(join(tmpdir(),'aetheria-inventory-'));
  try {execFileSync('git',['init','-q'],{cwd:root});await writeFile(join(root,'.gitignore'),'artifacts/\n');await work(root);}finally{await rm(root,{recursive:true,force:true});}
 }
 async function put(root,path,content){await mkdir(join(root,path,'..'),{recursive:true});await writeFile(join(root,path),content);}
@@ -38,6 +38,6 @@ test('output refuses traversal, symlink escape and overwrite of an existing inve
  await assert.rejects(()=>writeInventory(root,'../outside.json',{}),/artifacts/);
  await writeInventory(root,'artifacts/first.json',{original:true});await assert.rejects(()=>writeInventory(root,'artifacts/first.json',{original:false}),/exist/i);
  assert.deepEqual(JSON.parse(await readFile(join(root,'artifacts/first.json'),'utf8')),{original:true});
- const elsewhere=await mkdtemp(join(tmpdir(),'vlp-inventory-external-'));
+ const elsewhere=await mkdtemp(join(tmpdir(),'aetheria-inventory-external-'));
  try {await symlink(elsewhere,join(root,'artifacts','escape'));await assert.rejects(()=>writeInventory(root,'artifacts/escape/output.json',{}),/escape|symlink/i);}finally{await rm(elsewhere,{recursive:true,force:true});}
 }));

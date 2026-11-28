@@ -1,5 +1,5 @@
 import { it,expect } from 'vitest';
-import { findScenePath,isWalkable,tileCenter } from '@virtual-city/world-sdk';
+import { findScenePath,isWalkable,tileCenter } from '@aetheria/world-sdk';
 import { deadlineLayout } from './baseline';
 import { deadlineScene,deadlineAreas } from './scene';
 it('all adapted source seats retain identity and pixel bounds and are reachable around solid cafe furniture',()=>{

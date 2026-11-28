@@ -1,6 +1,6 @@
 import type { Pool } from 'pg';
 import { z } from 'zod';
-import { AvatarOutfitSchema,TravelSourceSchema,type WorldDefinition,type TravelSource,type AvatarAppearance } from '@virtual-city/contracts';
+import { AvatarOutfitSchema,TravelSourceSchema,type WorldDefinition,type TravelSource,type AvatarAppearance } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { HospitalityService } from '../../../../hospitality/modules/service/application/service';

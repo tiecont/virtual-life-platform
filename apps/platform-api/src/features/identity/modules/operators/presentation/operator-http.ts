@@ -1,6 +1,6 @@
 import type {FastifyInstance,FastifyRequest,FastifyReply} from 'fastify';
 import {z} from 'zod';
-import {OperatorLoginSchema,OperatorRecoverySchema} from '@virtual-city/contracts';
+import {OperatorLoginSchema,OperatorRecoverySchema} from '@aetheria/contracts';
 import type {Config} from '../../../../../shared/config/environment';
 import {DomainError} from '../../../../../shared/common/errors';
 import {apiErrorHandler} from '../../../../../shared/common/http-errors';

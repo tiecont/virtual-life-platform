@@ -3,7 +3,19 @@
   "maxTrackedBinaryBytes": 512000,
   "legacy": [
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Modular/Accessories/Icarus_Bow.glb",
+      "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Modular/Accessories/Icarus_Wings.glb",
+      "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Source/Icarus.vrm",
+      "sha256": "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx",
       "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db"
     },
     {
@@ -45,6 +57,10 @@
     {
       "path": "assets/characters/icarus/design-v5/wing-articulation.png",
       "sha256": "dcb749f06350a3b075cffd0645a85275dbfc0d8012b14ef5e8ede7392a093567"
+    },
+    {
+      "path": "assets/characters/icarus/h2-review/03-back-closeup.png",
+      "sha256": "c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b"
     },
     {
       "path": "assets/characters/icarus/white-gold-study/icarus-blockout.glb",

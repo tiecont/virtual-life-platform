@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import type { WorldCard } from '@virtual-city/contracts';
+import type { WorldCard } from '@aetheria/contracts';
 import { ACTIVITY_MAX_AGE_MS,activityFresh,roomActivity,scheduledActivity } from '../../../../city/modules/city/domain/city-activity';
 import Link from 'next/link';
 import { travelHref } from '../../../../travel/modules/travel/application/destination-link';

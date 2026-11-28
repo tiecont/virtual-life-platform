@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-white-gold-study-reduced-motion",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-white-gold-study-reduced-motion/1.0.0/reduced-motion.mp4",
+  "sha256": "0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e",
+  "sizeBytes": 201186,
+  "contentType": "video/mp4",
+  "localCachePath": ".cache/assets/legacy-icarus-white-gold-study-reduced-motion/1.0.0/reduced-motion.mp4"
+}

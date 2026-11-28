@@ -2,8 +2,8 @@ import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,type Me } from '@virtual-city/contracts';
-import { defineWorld } from '@virtual-city/world-sdk';
+import { MeSchema,RoomAckSchema,type Me } from '@aetheria/contracts';
+import { defineWorld } from '@aetheria/world-sdk';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import {BoundedObservationRead,SystemObservations} from '../../apps/platform-api/src/features/operations/modules/observability/application/system-observation';
@@ -11,7 +11,7 @@ import { migrate,migrationManifest } from '../../apps/platform-api/src/shared/da
 
 const origin='http://127.0.0.1:3300',operatorToken='79'.repeat(32);
 let admin:Pool;const opened:Awaited<ReturnType<typeof open>>[]=[],sockets=new Set<Socket>();
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const socket of sockets)socket.close();sockets.clear();for(const r of opened.splice(0)){await r.app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);}});
 afterAll(async()=>{await admin.end();});
 async function open(enabled=true,logging=false,backlog=false){
@@ -45,7 +45,7 @@ it('actual HTTP and authenticated room commands export real spans,pseudonymous r
  const room=data.traces.find((span:{operation:string})=>span.operation==='room.join');expect(room).toBeTruthy();expect(room.roomKey).toMatch(/^[a-f0-9]{32}$/);expect(room.roomKey).not.toBe(v.source.roomId.replaceAll('-',''));
  expect(data.rooms.commands['room.join'].p95UpperBoundMs).toBeGreaterThan(0);
  const serialized=JSON.stringify(data);for(const value of [operatorToken,u.me.profile.id,u.me.csrfToken,u.cookie,v.source.roomId,v.source.membershipId,'Private operator fixture'])expect(serialized.includes(value)).toBe(false);
- const text=await operator(r,'/internal/metrics');expect(text.statusCode).toBe(200);expect(text.headers['content-type']).toContain('text/plain');expect(text.body).toContain('virtual_life_online_memberships 1');expect(text.body).toContain('virtual_life_orders{phase="PENDING"} 1');
+ const text=await operator(r,'/internal/metrics');expect(text.statusCode).toBe(200);expect(text.headers['content-type']).toContain('text/plain');expect(text.body).toContain('aetheria_online_memberships 1');expect(text.body).toContain('aetheria_orders{phase="PENDING"} 1');
 });
 
 it('unknown-path flooding stays finite,dating calls stay excluded,and actual Pino records never include raw caller fields or error messages',async()=>{

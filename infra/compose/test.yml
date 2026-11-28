@@ -2,13 +2,15 @@ services:
   db:
     image: postgres:17.7-alpine
     environment:
-      POSTGRES_USER: virtual_city_test
-      POSTGRES_PASSWORD: ${CITY_TEST_DB_PASSWORD:?Test harness must supply ephemeral password}
-      POSTGRES_DB: virtual_city_test
+      POSTGRES_USER: aetheria_soulbound_test
+      POSTGRES_PASSWORD: ${AETHERIA_TEST_DB_PASSWORD:?Test harness must supply ephemeral password}
+      POSTGRES_DB: aetheria_soulbound_test
+      # Concurrent isolated schema migrations hold locks on their relation indexes.
+      POSTGRES_INITDB_ARGS: "--set=max_locks_per_transaction=256"
     ports: ["127.0.0.1::5432"]
     tmpfs: ["/var/lib/postgresql/data"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U virtual_city_test -d virtual_city_test"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U aetheria_soulbound_test -d aetheria_soulbound_test"]
       interval: 1s
       timeout: 3s
       retries: 30

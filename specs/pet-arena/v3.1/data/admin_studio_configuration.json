@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "system": "existing VirtualLife operator console",
+  "system": "existing Aetheria operator console",
   "permissions": [
     "pet_view",
     "pet_draft_edit",

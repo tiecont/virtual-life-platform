@@ -2,7 +2,7 @@
 
 Editable Blender source and a rigged GLB for the owner-supplied Icarus visual
 target. The imported FBX and study shader are under
-`apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/`. This folder is not a
+`apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/`. This folder is not a
 runtime content import or a completed Limited character.
 
 The study replaces the initial crimson costume with pink hair, white/gold dress,
@@ -43,7 +43,7 @@ node scripts/unity-native-prepare.mjs
 After reviewing and copying the exported FBX to the maintained Unity study path:
 
 ```sh
-VL_ICARUS_RENDER_OUTPUT="$PWD/artifacts/icarus-render-new" VL_ICARUS_PACKAGE_OUTPUT="$PWD/artifacts/Icarus-Review-new.unitypackage" "$UNITY_EDITOR" -batchmode -projectPath "$PWD/apps/unity-client" -logFile "$PWD/artifacts/icarus-render-new.log" -executeMethod VirtualLife.Editor.IcarusStudyRender.Render -quit
+AETHERIA_ICARUS_RENDER_OUTPUT="$PWD/artifacts/icarus-render-new" AETHERIA_ICARUS_PACKAGE_OUTPUT="$PWD/artifacts/Icarus-Review-new.unitypackage" "$UNITY_EDITOR" -batchmode -projectPath "$PWD/apps/unity-client" -logFile "$PWD/artifacts/icarus-render-new.log" -executeMethod Aetheria.Editor.IcarusStudyRender.Render -quit
 python3 scripts/art/verify-study-preview.py artifacts/icarus-render-new
 ffmpeg -framerate 20 -i artifacts/icarus-render-new/frame-%04d.png -c:v libx264 -pix_fmt yuv420p -crf 18 -movflags +faststart artifacts/icarus-render-new/icarus-study.mp4
 node --import tsx scripts/pet-asset-check.mjs --limited-v31 assets/characters/icarus/white-gold-study/bindings.json

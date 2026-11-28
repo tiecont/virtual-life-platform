@@ -4,7 +4,7 @@ Status: source implementation for `VL-164`; campaign acceptance, real mail
 delivery, production routing and public registration remain OFF.
 
 The registration API is part of `apps/platform-api` and uses the existing
-PostgreSQL journal. Migration `0056_prelaunch_registration.sql` adds only
+PostgreSQL journal. Migration `0067_prelaunch_registration.sql` adds only
 prelaunch campaigns, encrypted registrations, challenges, consent events,
 idempotency receipts, rate limits, suppressions, a mail outbox and sanitized
 audit. It creates no identity account, session, beta entitlement, purchase,

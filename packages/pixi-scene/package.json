@@ -1,5 +1,5 @@
 {
-  "name": "@virtual-city/pixi-scene",
+  "name": "@aetheria/pixi-scene",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
@@ -33,8 +33,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@virtual-city/contracts": "workspace:*",
-    "@virtual-city/world-sdk": "workspace:*",
+    "@aetheria/contracts": "workspace:*",
+    "@aetheria/world-sdk": "workspace:*",
     "pixi.js": "8.22.0"
   }
 }

@@ -14,7 +14,7 @@ import {
   PrelaunchWithdrawSchema,
   type PrelaunchCampaign,
   type PrelaunchRegistrationView,
-} from '@virtual-city/contracts';
+} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import type {IdentityService} from '../../accounts/application/service';
 import type {OperatorService} from '../../operators/application/operator-service';

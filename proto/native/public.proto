@@ -1,6 +1,6 @@
 syntax = "proto3";
-package virtuallife.public.v1;
-option csharp_namespace = "VirtualLife.Native.Public.V1";
+package aetheria.public.v1;
+option csharp_namespace = "Aetheria.Native.Public.V1";
 
 // Client input only. Identity, authority, damage and rewards have no public fields.
 message ClientEnvelope {

@@ -6,9 +6,9 @@ import { mkdtemp,writeFile,rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join as pathJoin } from 'node:path';
 import { io,type Socket } from 'socket.io-client';
-import { RoomAckSchema } from '@virtual-city/contracts';
-import { deadlineWorldVersion } from '@virtual-city/deadline-world';
-import { MeSchema,LegacyIdentityViewSchema,type Me } from '@virtual-city/contracts';
+import { RoomAckSchema } from '@aetheria/contracts';
+import { deadlineWorldVersion } from '@aetheria/deadline-world';
+import { MeSchema,LegacyIdentityViewSchema,type Me } from '@aetheria/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
@@ -17,7 +17,7 @@ import { DeadlineIdentityLinks } from '../../apps/platform-api/src/features/iden
 import { openDeadlineLegacyFixture } from '../support/deadline-legacy-fixture';
 const origin='http://127.0.0.1:3300',schema='deadline_identity_'+randomUUID().replaceAll('-','');
 let admin:Pool,pool:Pool,app:Awaited<ReturnType<typeof createApp>>,legacy:Awaited<ReturnType<typeof openDeadlineLegacyFixture>>,serial=0,proofs=0;
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(url.hostname!=='127.0.0.1'||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local test DB only');legacy=await openDeadlineLegacyFixture();admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);const actual=new DeadlineHttpIdentityPort(legacy.url);app=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'deadline-identity-test-only-secret-000000',LOCAL_DEADLINE_IDENTITY:'1',DEADLINE_LEGACY_API_URL:legacy.url}),pool,false,{deadlineIdentity:{authenticate:async(token,signal)=>{const result=await actual.authenticate(token,signal);proofs++;return result;}}});await app.app.listen(0,'127.0.0.1');});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(url.hostname!=='127.0.0.1'||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local test DB only');legacy=await openDeadlineLegacyFixture();admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString()});await migrate(pool);const actual=new DeadlineHttpIdentityPort(legacy.url);app=await createApp(readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'deadline-identity-test-only-secret-000000',LOCAL_DEADLINE_IDENTITY:'1',DEADLINE_LEGACY_API_URL:legacy.url}),pool,false,{deadlineIdentity:{authenticate:async(token,signal)=>{const result=await actual.authenticate(token,signal);proofs++;return result;}}});await app.app.listen(0,'127.0.0.1');});
 afterAll(async()=>{await app?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}await legacy?.close();});
 type City={me:Me;cookie:string};
 async function city(displayName='Legacy city visitor'):Promise<City>{const response=await app.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.112.0.'+(++serial),headers:{origin},payload:{requestId:randomUUID(),displayName,avatarKey:'fern'}});expect(response.statusCode).toBe(201);return {me:MeSchema.parse(response.json()),cookie:String(response.headers['set-cookie']).split(';')[0]};}

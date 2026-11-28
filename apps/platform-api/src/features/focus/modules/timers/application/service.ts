@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, FocusHistoryQuerySchema, FocusHistorySchema, FocusSummaryQuerySchema, FocusSummarySchema, type FocusSession } from '@virtual-city/contracts';
+import { FocusStartSchema, FocusResultSchema, FocusSessionSchema, FocusHistoryQuerySchema, FocusHistorySchema, FocusSummaryQuerySchema, FocusSummarySchema, type FocusSession } from '@aetheria/contracts';
 import type { IdentityContext, IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

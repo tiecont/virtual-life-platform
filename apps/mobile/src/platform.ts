@@ -1,5 +1,5 @@
 import {App} from '@capacitor/app';import {Capacitor,type PluginListenerHandle} from '@capacitor/core';
-import {internalPath,type ClientPlatform} from '@virtual-city/client-sdk';
+import {internalPath,type ClientPlatform} from '@aetheria/client-sdk';
 // Back navigation belongs to the shell: a fallback route unmounts the room.
 export function bindMobileBack(navigate:(path:string)=>void):()=>void{
  let disposed=false;let handle:PluginListenerHandle|undefined;

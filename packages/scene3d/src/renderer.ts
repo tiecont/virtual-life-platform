@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {SceneManifestSchema,AvatarOutfitSchema,type SceneManifest,type RoomSnapshot} from '@virtual-city/contracts';
-import type {RoomSceneFactory,RoomSceneOptions,SceneQuality} from '@virtual-city/client-sdk';
+import {SceneManifestSchema,AvatarOutfitSchema,type SceneManifest,type RoomSnapshot} from '@aetheria/contracts';
+import type {RoomSceneFactory,RoomSceneOptions,SceneQuality} from '@aetheria/client-sdk';
 import {createAnimalVariants,animalResourceSummary,animalCachedGeometries} from './animal';
 import {createRoomArt,TILE_METERS} from './room';
 import {RoomProjection,selectRoomLods,type RoomActor} from './projection';

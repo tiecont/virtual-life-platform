@@ -3,13 +3,13 @@ import {readFile,writeFile,rename,stat,rm} from 'node:fs/promises';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {io,type Socket} from 'socket.io-client';
-import {defineWorld} from '@virtual-city/world-sdk';
-import {RoomAckSchema,ChatAckSchema,type RoomSnapshot} from '@virtual-city/contracts';
+import {defineWorld} from '@aetheria/world-sdk';
+import {RoomAckSchema,ChatAckSchema,type RoomSnapshot} from '@aetheria/contracts';
 import {createApp} from '../apps/platform-api/src/app';
 import {readConfig} from '../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../apps/platform-api/src/shared/database/migrations';
 async function main(){
- const root='artifacts/vnext/n11-03/safety-v1/tls',url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
+ const root='artifacts/vnext/n11-03/safety-v1/tls',url=new URL(process.env.TEST_DATABASE_URL??'');if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable DB required');
  const admin=new Pool({connectionString:url.toString()}),schema='native_safety_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});
  const facts={reportStarts:0,blockStarts:0,droppedReportAcknowledgements:0,witnessDeliveries:0,peerWaveAccepted:false,commandId:'',cases:0,blocks:0,result:'RUNNING',cleanupComplete:false};let writes=Promise.resolve();const flush=()=>{const body=JSON.stringify(facts,null,2)+'\n';writes=writes.then(async()=>{await writeFile(root+'/stats.next',body,{mode:0o600});await rename(root+'/stats.next',root+'/stats.json');});};
  const sockets=new Set<Socket>();let api:Awaited<ReturnType<typeof createApp>>|undefined,https:ReturnType<typeof createServer>|undefined;

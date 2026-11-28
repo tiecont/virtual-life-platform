@@ -1,5 +1,5 @@
 syntax = "proto3";
-package virtuallife.internal.v1;
+package aetheria.internal.v1;
 
 // Service-to-service data only. These claims are NOT proof of authentication.
 // VL-013 must authenticate service+signature and derive verified runtime context.

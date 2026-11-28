@@ -5,7 +5,7 @@ import {
  NativeRefreshInputSchema,NativeRefreshTokenSchema,NativeAccessTokenSchema,NativeSocketTicketSchema,
  NativeDevicesSchema,NativeTicketInputSchema,NativeAccountDeleteInputSchema,ClientProtocolOfferSchema,negotiateClientProtocol,
  type NativeClient,type NativeTokens,type ClientProtocolOffer,type NegotiatedSession,
-} from '@virtual-city/contracts';
+} from '@aetheria/contracts';
 import type {IdentityService} from '../../accounts/application/service';
 import {IdentityError,unauthorized} from '../../accounts/domain/errors';
 import {NativeCredentialsCrypto} from '../infrastructure/native-crypto';

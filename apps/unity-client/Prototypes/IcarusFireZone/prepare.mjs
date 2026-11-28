@@ -11,9 +11,9 @@ await cp(resolve(source, 'Assets'), resolve(project, 'Assets'), {recursive: true
 
 // Stage only review art and the pinned URP assets. Asset paths and GUIDs survive the copy.
 for (const entry of [
-  'Assets/VirtualLife.meta', 'Assets/VirtualLife/ArtStudies.meta',
-  'Assets/VirtualLife/ArtStudies/Icarus.meta', 'Assets/VirtualLife/ArtStudies/Icarus',
-  'Assets/VirtualLife/Settings.meta', 'Assets/VirtualLife/Settings',
+  'Assets/Aetheria.meta', 'Assets/Aetheria/ArtStudies.meta',
+  'Assets/Aetheria/ArtStudies/Icarus.meta', 'Assets/Aetheria/ArtStudies/Icarus',
+  'Assets/Aetheria/Settings.meta', 'Assets/Aetheria/Settings',
   'ProjectSettings/ProjectVersion.txt', 'ProjectSettings/GraphicsSettings.asset',
 ]) {
   const destination = resolve(project, entry);

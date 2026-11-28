@@ -1,4 +1,4 @@
-import {SystemObservationSchema,OperatorSystemViewSchema,type SystemObservation} from '@virtual-city/contracts';
+import {SystemObservationSchema,OperatorSystemViewSchema,type SystemObservation} from '@aetheria/contracts';
 import type {AdminConfig} from './runtime-config.mjs';
 type Fetch=(input:string,init?:RequestInit)=>Promise<Response>;
 export function createSystemReader(config:AdminConfig,fetcher:Fetch,now=Date.now){

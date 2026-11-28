@@ -23,7 +23,7 @@ test('private focus recovers a lost start response and sleep,requires explicit s
   await page.evaluate(() => { Date.now = () => 9999999999999; }); await page.waitForTimeout(1100); await expect(focus.getByText('Focus in progress', { exact: true })).toBeVisible(); await expect(focus.getByRole('timer')).not.toHaveText('00:00');
   await page.getByRole('button', { name: 'Leave cafe', exact: true }).click(); await page.reload(); await expect(focus.getByText('Focus in progress', { exact: true })).toBeVisible(); await expect(focus).toHaveAttribute('data-focus-id', timerId);
   // Move the trusted persisted test fixture deadline; browser time never authorizes completion.
-  const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test DB');
+  const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw new Error('Refusing non-local/non-test DB');
   const db = new Pool({ connectionString: url.toString() }); try { await db.query("UPDATE engine_focus_sessions SET started_at=now()-interval '901 seconds',changed_at=now()-interval '901 seconds',ends_at=now()-interval '1 second' WHERE id=$1 AND account_id=$2 AND phase='active'", [timerId, me.profile.id]); } finally { await db.end(); }
   await page.evaluate(() => { document.dispatchEvent(new Event('visibilitychange')); });
   await expect(focus.getByText('Timer completed', { exact: true })).toBeVisible(); await expect(focus.getByRole('timer')).toHaveText('00:00'); await expect(focus.getByLabel('Completion summary', { exact: true })).toHaveCount(0);
@@ -36,6 +36,6 @@ test('private focus recovers a lost start response and sleep,requires explicit s
   await sharing.uncheck(); await expect(focus.getByLabel('Completion summary', { exact: true })).toHaveCount(0);
   await page.reload(); await expect(focus.getByText('Timer completed', { exact: true })).toBeVisible(); await expect(focus.getByRole('checkbox', { name: 'Create a completion summary', exact: true })).not.toBeChecked();
   expect((await context.request.post('/v1/session/logout', { headers: { origin, 'x-csrf-token': me.csrfToken, 'idempotency-key': randomUUID() }, data: {} })).status()).toBe(200);
-  await page.evaluate(() => { const bus = new BroadcastChannel('virtual-city-identity'); bus.postMessage({ changed: true }); bus.close(); }); await expect(focus).toHaveCount(0); expect(errors).toEqual([]);
+  await page.evaluate(() => { const bus = new BroadcastChannel('aetheria-soulbound-identity'); bus.postMessage({ changed: true }); bus.close(); }); await expect(focus).toHaveCount(0); expect(errors).toEqual([]);
   await writeFile(`artifacts/focus-recovery-${test.info().project.name}.json`, JSON.stringify({ lostCommittedResponse: aborted, sameRetryKey: keys.length === 2 && keys[0] === keys[1], historyRowsAfterRetry: 1, sleepVisibilityResync: true, privateSharingOptIn: true, noPerSecondAnnouncements: true, targets, pageErrors: errors }, null, 2));
 });

@@ -1,5 +1,5 @@
 {
-  "name": "@virtual-city/game-client",
+  "name": "@aetheria/game-client",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,10 +17,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@virtual-city/client-sdk": "workspace:*",
-    "@virtual-city/contracts": "workspace:*",
-    "@virtual-city/world-sdk": "workspace:*",
-    "@virtual-city/pixi-scene": "workspace:*",
+    "@aetheria/client-sdk": "workspace:*",
+    "@aetheria/contracts": "workspace:*",
+    "@aetheria/world-sdk": "workspace:*",
+    "@aetheria/pixi-scene": "workspace:*",
     "react": "19.3.1",
     "socket.io-client": "4.8.4"
   }

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { ReservationPlaceSchema, ReservationResultSchema, ReservationViewSchema, ReservationPageSchema, WaitlistResultSchema, TravelSourceSchema, type EventSchedule, type ReservationPhase, type TravelSource } from '@virtual-city/contracts';
+import { ReservationPlaceSchema, ReservationResultSchema, ReservationViewSchema, ReservationPageSchema, WaitlistResultSchema, TravelSourceSchema, type EventSchedule, type ReservationPhase, type TravelSource } from '@aetheria/contracts';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';

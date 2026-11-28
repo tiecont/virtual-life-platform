@@ -28,9 +28,9 @@ try{
   assert(!adbRun('existing-reverses',['reverse','--list']).split('\n').some(line=>line.split(/\s+/).includes('tcp:18443')),'Refusing to replace an existing reverse');
   adbRun('own-tls-reverse',['reverse','tcp:18443','tcp:18443']);reverse=true;
  }
- adbRun('stop-own-app',['shell','am','force-stop','life.virtualcity.spike']);
- const testClass=mode==='avatar'||mode==='world'?['NativeSessionStoreTest','NativeSessionHttpsTest','NativeAvatarHttpsTest',...(mode==='world'?['NativeWorldHttpsTest']:[])].map(name=>'life.virtualcity.spike.'+name).join(','):'life.virtualcity.spike.'+(mode==='storage'?'NativeSessionStoreTest':'NativeSessionHttpsTest');
- const output=adbRun('run-instrumentation',['shell','am','instrument','-w','-r','-e','class',testClass,'life.virtualcity.spike.test/androidx.test.runner.AndroidJUnitRunner'],240000);
+ adbRun('stop-own-app',['shell','am','force-stop','life.aetheriasoulbound.spike']);
+ const testClass=mode==='avatar'||mode==='world'?['NativeSessionStoreTest','NativeSessionHttpsTest','NativeAvatarHttpsTest',...(mode==='world'?['NativeWorldHttpsTest']:[])].map(name=>'life.aetheriasoulbound.spike.'+name).join(','):'life.aetheriasoulbound.spike.'+(mode==='storage'?'NativeSessionStoreTest':'NativeSessionHttpsTest');
+ const output=adbRun('run-instrumentation',['shell','am','instrument','-w','-r','-e','class',testClass,'life.aetheriasoulbound.spike.test/androidx.test.runner.AndroidJUnitRunner'],240000);
  await writeFile(directory+'/instrumentation.log',output+'\n',{mode:0o600});
  assert(!/FAILURES|INSTRUMENTATION_FAILED|INSTRUMENTATION_ABORTED|shortMsg=/.test(output),'Android instrumentation failed');
  const match=output.match(/OK \((\d+) tests?\)/);assert(match,'No complete JUnit result');facts.tests=Number(match[1]);if(mode==='avatar'||mode==='world')await assertAvatarSourceUnchanged(facts.sourceFiles);facts.result='PASS';

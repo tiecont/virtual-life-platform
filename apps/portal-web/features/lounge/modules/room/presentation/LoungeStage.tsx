@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { EventCatalogSchema,StageOwnSchema,StageViewSchema,StageResultSchema,StageStoppedSchema,type Me,type TravelSource } from '@virtual-city/contracts';
+import { EventCatalogSchema,StageOwnSchema,StageViewSchema,StageResultSchema,StageStoppedSchema,type Me,type TravelSource } from '@aetheria/contracts';
 type Own=ReturnType<typeof StageOwnSchema.parse>;
 type View=ReturnType<typeof StageViewSchema.parse>;
 type Command={path:string;body:unknown;key:string;stop:boolean};

@@ -4,13 +4,116 @@ Open this project with Unity 6000.3.14f1 and URP 17.3.0. The pinned
 manifest uses Unity Test Framework 1.6.0. The Editor prepares URP settings,
 a resource material and the scene build list on import. The package lock,
 project settings and generated developer materials are resolved by the pinned
-Editor and maintained in source. Temporary art stays under VirtualLife.
+Editor and maintained in source. Temporary art stays under Aetheria.
 
-Open Assets/VirtualLife/Scenes/AuroraBlockout.unity and enter Play mode.
+Open Assets/Aetheria/Scenes/AuroraBlockout.unity and enter Play mode.
 WASD moves the capsule. Approach the blue terminal and press E for the local
 three-turn input rehearsal. The scene uses temporary developer primitives.
 The client displays its offline mode. The explicitly configured development connection panel routes terminal input
 to the native synthetic match. Windows player qualification remains separate.
+
+## Playable Pet Arena MVP
+
+Wave A targets the **8x8** tactical board. The developer training scene now builds
+an 8x8 board and keeps Icarus on the approved base silhouette at every level.
+Every authored skill is usable from Pet Lv1; Pet level grows stats, raises the
+Skill-Level upgrade cap and gates Artifacts (D1/C10/B20/A40/S60), not skill access.
+The action-based Wave 1 campaign remains a frozen local compatibility slice. See
+[the Wave A specification](../../specs/pet-arena/mvp-wave-a.md).
+
+From the repository root, start local PostgreSQL, apply the migrations and run
+the platform API on loopback:
+
+```sh
+pnpm setup:local
+pnpm db:up
+pnpm db:migrate
+pnpm build:packages
+LOCAL_PET_ARENA_WAVE1=1 node --env-file=.env --import tsx apps/platform-api/src/main.ts
+```
+
+From a shell with `AETHERIA_WAVE1_API=http://127.0.0.1:4300`, open the Unity
+project and play `Assets/Aetheria/Scenes/PetArenaPve.unity`. The Linux or Windows
+development player also opens that scene automatically when launched with
+this variable. Set `AETHERIA_WAVE1_WEB_ORIGIN` if the API's `WEB_ORIGIN`
+differs from `http://127.0.0.1:3300`. The session screen offers guest access
+and sign-in for an existing local account. Use Tab and Enter to navigate,
+and select an active Pet from the saved party before entering a map.
+
+The campaign uses the PostgreSQL-backed Wave 1 API for combat previews and
+settlement, wallet, collection, evolution and gacha. The stage uses developer
+primitives, reduced-motion elemental marks and procedural audio. See the
+[Wave 1 rules and API](../../specs/pet-arena/mvp-phase2.md).
+
+Opening PetArenaPve without the client environment variable runs the original
+offline training scene. Its keyboard controls are `1` Intro, `N` Normal,
+`R` Rage, `F` FIRE_ZONE, `Tab` next opponent, `L` next evolution stage and
+`X` reset. Rebuild its scene and profile/settings assets through
+`Aetheria > Pet Arena > Build playable MVP scene`.
+
+To verify the entire local loop and restart recovery on Linux,
+set `UNITY_EDITOR` to the licensed Unity 6000.3.14f1 executable and run from
+the repository root:
+
+```sh
+pnpm build:packages
+node scripts/unity-native-prepare.mjs
+node scripts/with-test-db.mjs node --import tsx scripts/wave1-unity-smoke.mjs
+```
+
+Future Pets and Arena Maps are loaded through Addressables groups delivered
+from the private R2 asset pipeline. `R2RemoteContentSettings.asset` is disabled
+by default so the local scene remains playable without network access. Its
+manifest is strict, HTTPS-only, bounded to 96 entries and keyed by stable Pet
+and map IDs. A published Addressables remote catalog and manifest must be
+uploaded together under an immutable content version; changing remote entries
+does not require a new client binary. No production R2 endpoint, content or
+credentials are committed here.
+
+## Central Plaza and developer arenas
+
+Wave B adds a playable **Central Plaza** hub and two developer arena
+compositions: **Cinder Terraces** (Fire) and **Tideglass Lagoon** (Water). The
+three committed scenes are built from one reusable modular kit:
+
+- `Assets/Aetheria/Scenes/CentralPlaza.unity`
+- `Assets/Aetheria/Scenes/CinderTerraces.unity`
+- `Assets/Aetheria/Scenes/TideglassLagoon.unity`
+
+Open a scene and enter Play mode. WASD walks the local `CharacterController`
+inside authored bounds; **E** uses a portal or return gate; **M** toggles
+ambient movement (reduced motion is on by default). The hub has a spawn pad,
+walkable collision, a framed camera, modular props, two active arena portals and
+four **foundation-only** map bindings (Stormcoil Fields, Lantern Necropolis,
+Ochre Labyrinth, Dawn Prism Sanctum). Those four reuse the same kit and palette
+data but have no scene, no build entry and no claim of completion.
+
+Each arena composes an 8x8 developer board with 64 contrasting tiles, a raised
+plinth, a Pet and enemy presentation, a rendered return gate back to the matching
+hub spawn anchor, authored fog/lighting and bounded ambient movement. Geometry
+and materials are **intermediate developer primitives**, not production art and
+not a finished map. This work adds no combat, reward or movement authority; the
+Rust ruleset and existing Pet Arena PvE scene are unchanged.
+
+Rebuild the scenes and their URP materials after changing layout data:
+
+```sh
+UNITY_EDITOR=/absolute/path/to/6000.3.14f1/Editor/Unity
+"$UNITY_EDITOR" -batchmode -nographics -projectPath apps/unity-client \
+  -executeMethod Aetheria.Editor.WorldSceneBuilder.BuildAll -quit
+```
+
+Validate and capture rendered evidence from a Linux development player:
+
+```sh
+node scripts/unity-validate.mjs tests
+node scripts/unity-validate.mjs world
+```
+
+`world` builds the Linux development player, loads the hub and both arenas,
+walks the real portal/return flow, renders 1280x720 screenshots and writes
+`facts.json` under the ignored `artifacts/unity/` run directory. It requires a
+real Linux graphics device and does not qualify Windows.
 
 ## Native protocol adapter
 
@@ -21,7 +124,7 @@ Unity folders. .NET Standard 2.1 supplies Memory/Span APIs. `unzip` and access
 to NuGet are required on the first preparation; subsequent runs use the
 verified cache under artifacts/unity-packages. Do not edit staged bindings.
 
-`VirtualLife.Native` has no UnityEngine dependency. `PlatformSession` logs in
+`Aetheria.Native` has no UnityEngine dependency. `PlatformSession` logs in
 over HTTPS with an in-memory cookie container, then posts the CSRF-protected
 empty runtime-ticket request. The server chooses world/boot/session scope.
 Pass `session.TicketAsync` to `NativeConnection` together with the configured
@@ -43,8 +146,8 @@ Standalone validation uses SDK 8.0.428 (`DOTNET=/absolute/path/to/dotnet`):
 node scripts/native-csharp.mjs
 export PATH="$(dirname "$DOTNET"):$PATH"
 pnpm build:packages
-pnpm --filter @virtual-city/platform-api build
-cargo build --locked --package vl-game-runtime
+pnpm --filter @aetheria/platform-api build
+cargo build --locked --package aetheria-game-runtime
 node scripts/with-test-db.mjs node --import tsx scripts/native-wss-interop.mjs --runtime-gameplay --csharp-client
 ```
 
@@ -172,6 +275,27 @@ SDK. Record signing, install/update, input, graphics and crash acceptance
 with build hashes on the related Windows tasks.
 [Windows build requirements](https://docs.unity.com/en-us/engine/6000.3/manual/platform-specific/windows/requirements-and-compatibility)
 
+## Local cooperative player
+
+Build the existing Linux player with the local Unity validation runner. Launch
+it with `AETHERIA_COOP_API` set to the loopback Nest API and
+`AETHERIA_ARENA8_NATIVE_CA` set to the local TLS bridge's public CA file.
+Enable the existing local Pet collection and cooperative routes for that API
+and publish a validated cooperative bundle with the Fire and Water map
+bindings. Keep the publication and all accounts in a disposable environment.
+
+The player opens Central Plaza and offers guest login. Walk to the Fire or
+Water portal and interact to open that arena's lobby. Select an owned Pet,
+create a room or join by room UUID, and ready each account. The host starts
+the room once all four seats are ready. Other seats can refresh the room to
+enter the match. A returning guest can resume the saved account and use the
+existing room UUID to obtain a fresh admission. Published room eligibility
+still applies to the host.
+
+`node scripts/with-test-db.mjs node --import tsx scripts/native-coop-process.mjs`
+exercises the native process with its own test-only publication and accounts.
+Packaged and four-human acceptance are recorded separately in the backlog.
+
 ## Play Pet Arena on Linux
 
 From the repository root, with Docker available, Node/pnpm/Rust pinned as above
@@ -179,8 +303,8 @@ and the licensed Editor named by `UNITY_EDITOR`:
 
 ```sh
 pnpm build:packages
-pnpm --filter @virtual-city/platform-api build
-cargo build --locked -p vl-game-runtime
+pnpm --filter @aetheria/platform-api build
+cargo build --locked -p aetheria-game-runtime
 node scripts/unity-validate.mjs linux
 pnpm play:linux
 ```
@@ -224,7 +348,7 @@ development player. The separate adapter fixture retains wrong-CA rejection.
 
 The `NativeSceneController` source wires the scene to the existing adapters via
 `NativePlaySession` (`SyntheticPlaySession` or `PetArenaPlaySession`). It is enabled only in the Editor or a development build
-of `AuroraBlockout`, and only when `VL_NATIVE_DEV_CONFIG` names an external JSON
+of `AuroraBlockout`, and only when `AETHERIA_NATIVE_DEV_CONFIG` names an external JSON
 file. No login happens automatically. The file must remain outside `Assets/` and
 the packaged player's data directory; it contains scope only:
 

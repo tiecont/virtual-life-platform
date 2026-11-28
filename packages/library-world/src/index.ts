@@ -1,5 +1,5 @@
-import { SceneManifestSchema } from '@virtual-city/contracts';
-import { defineWorld,WorldError } from '@virtual-city/world-sdk';
+import { SceneManifestSchema } from '@aetheria/contracts';
+import { defineWorld,WorldError } from '@aetheria/world-sdk';
 
 // Original project-authored geometry. Desks are grouped into areas of the same
 // quiet layout; no isolated/private room or copyrighted reading material implied.

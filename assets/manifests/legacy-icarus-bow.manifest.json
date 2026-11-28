@@ -1,0 +1,10 @@
+{
+  "id": "legacy-icarus-bow",
+  "version": "1.0.0",
+  "stage": "review",
+  "s3Key": "assets/legacy-icarus-bow/1.0.0/Icarus_Bow.glb",
+  "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4",
+  "sizeBytes": 3535720,
+  "contentType": "model/gltf-binary",
+  "localCachePath": ".cache/assets/legacy-icarus-bow/1.0.0/Icarus_Bow.glb"
+}

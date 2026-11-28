@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "specId": "aetheria-mvp-wave1-concepts-v4",
+  "title": "Aetheria Wave 1 S Off-rate Summon Pets (batch v4)",
+  "state": "CONCEPT_REVIEW_REQUIRED",
+  "releaseState": "DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC",
+  "purpose": "Six S off-rate summon Pets, one per element: three large imposing Pets and three small cute Pets with a disproportionately strong aura.",
+  "provider": {
+    "service": "Tripo Studio Image",
+    "model": "GPT Image 2.5",
+    "settings": {
+      "aspectRatio": "4:3",
+      "imagesPerRequest": 1,
+      "resolutionMode": "standard (4K off)",
+      "width": 1536,
+      "height": 1152,
+      "format": "PNG"
+    },
+    "costPolicy": "FREE_QUOTA_ONLY_NO_PAID_FALLBACK"
+  },
+  "quotaAccounting": {
+    "freeQuotaLimit": 100,
+    "freeQuotaUsedBefore": 75,
+    "freeQuotaUsedAfter": 90,
+    "freeQuotaConsumed": 15,
+    "freeQuotaRemaining": 10,
+    "imagesProduced": 6,
+    "correctiveRegenerations": 9,
+    "paidBalanceBefore": 1910,
+    "paidBalanceAfter": 1910,
+    "paidCreditsConsumed": 0,
+    "note": "6 first pass + 6 after the repeated three-ring regalia was rejected + 3 after the large/small split and elephant replacement. Solenne's image was replaced with owner-provided art at zero cost."
+  },
+  "scaleSplit": {
+    "large": [
+      "Vulcaryn (ember lion)",
+      "Fulgarys (thunder beetle)",
+      "Jaderyx (jade qilin)"
+    ],
+    "small": [
+      "Nerivelle (tide otter)",
+      "Umbryss (grave kitten)",
+      "Solenne (prism fox)"
+    ],
+    "rule": "Three large imposing Pets and three small, cute Pets whose aura reads far above their size."
+  },
+  "revisionHistory": [
+    {
+      "filename": "s-offrate-fire-vulcaryn.png",
+      "reason": "Repeated three-ring regalia rejected; unique flame mane, kiln-horn crest and ember cape."
+    },
+    {
+      "filename": "s-offrate-water-nerivelle.png",
+      "reason": "Repeated rings rejected; then reframed as a small cute tide otter with coral-pearl tiara and bubble aura."
+    },
+    {
+      "filename": "s-offrate-electric-fulgarys.png",
+      "reason": "Repeated three-ring regalia rejected; unique chrome antenna prongs, elytra and arc sparks."
+    },
+    {
+      "filename": "s-offrate-ghost-umbryss.png",
+      "reason": "Repeated rings rejected; then reframed as a small cute grave kitten with bell cowl and wisp lanterns."
+    },
+    {
+      "filename": "s-offrate-ground-jaderyx.png",
+      "reason": "Elephant rejected as not fantasy enough; replaced with a large jade qilin, plus unique antlers and floating jade tablets."
+    },
+    {
+      "filename": "s-offrate-light-solenne.png",
+      "reason": "Repeated three-ring regalia rejected; unique nine prism tails, ivory-ray diadem and prism shards."
+    }
+  ],
+  "powerClasses": {
+    "counts": {
+      "S": 6,
+      "A": 0,
+      "B": 0
+    },
+    "ladder": "S > A > B",
+    "spec": "specs/pet-arena/power-tiers-mvp-wave1.md"
+  },
+  "familyRule": "Large group: lion, beetle, qilin. Small group: otter, kitten, fox. Each one has unique regalia; no shared rings, crowns or satellites; wingless, weaponless, pet-scale.",
+  "reviewSheet": {
+    "unified": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/review-all.html",
+    "v2": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v2/review.html",
+    "v3": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v3/review.html",
+    "ledger": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/ledger.json",
+    "prompts": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/ledgers/concepts-v4/prompts.json",
+    "pngsCommittedToGit": false
+  },
+  "ownerReview": {
+    "required": true,
+    "decisions": "APPROVE | REVISE | REJECT per concept",
+    "productionApproval": false
+  },
+  "assets": [
+    {
+      "order": 1,
+      "filename": "s-offrate-fire-vulcaryn.png",
+      "canonicalId": "pet-s-fire-vulcaryn",
+      "name": "Vulcaryn",
+      "element": "fire",
+      "archetype": "ember lion",
+      "scale": "large",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": "243bb897-fea6-4dd7-bd01-4f1a6f18cb68",
+      "freeCounterBefore": 81,
+      "freeCounterAfter": 82,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2426855,
+      "sha256": "110cc2d65380e7502e1fa0c1fe27748f8540ab609da13413e5711b631684b341",
+      "promptSha256": "65fa744a3f0e4cc1ce64febed7c7473484c23a90ab2389b453d8f9175686e177",
+      "regenerations": 1,
+      "generatedAtUtc": "2026-11-24T12:53:48.181Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-fire-vulcaryn.png"
+    },
+    {
+      "order": 2,
+      "filename": "s-offrate-water-nerivelle.png",
+      "canonicalId": "pet-s-water-nerivelle",
+      "name": "Nerivelle",
+      "element": "water",
+      "archetype": "tide otter",
+      "scale": "small",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": "fc68687e-4b7f-4207-805d-514064609d88",
+      "freeCounterBefore": 89,
+      "freeCounterAfter": 90,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2904332,
+      "sha256": "da4ff346aeaa04d586c149d787bcf7213405a17cfbeee5b34a75af715c558ad4",
+      "promptSha256": "beacf2d87249ec02eb7891e37bdf95584fc95966523b5d1cf07693b4349dc914",
+      "regenerations": 2,
+      "generatedAtUtc": "2026-11-24T13:00:06.806Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-water-nerivelle.png"
+    },
+    {
+      "order": 3,
+      "filename": "s-offrate-electric-fulgarys.png",
+      "canonicalId": "pet-s-electric-fulgarys",
+      "name": "Fulgarys",
+      "element": "electric",
+      "archetype": "thunder beetle",
+      "scale": "large",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": "74a9b729-b526-4c4c-9008-0d960d7f1401",
+      "freeCounterBefore": 83,
+      "freeCounterAfter": 84,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2626109,
+      "sha256": "41ee456e86406225f978b58022d47d804e11a3feb84f8601f62c80e4a804c6e5",
+      "promptSha256": "5afd58c4f92de83d2b1c47ea800dd516da57f412f2c4d58c867a4fa93fad64c6",
+      "regenerations": 1,
+      "generatedAtUtc": "2026-11-24T12:54:46.430Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-electric-fulgarys.png"
+    },
+    {
+      "order": 4,
+      "filename": "s-offrate-ghost-umbryss.png",
+      "canonicalId": "pet-s-ghost-umbryss",
+      "name": "Umbryss",
+      "element": "ghost",
+      "archetype": "grave kitten",
+      "scale": "small",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": "5cb2eaa2-e323-4fd2-ae46-9c19832664a7",
+      "freeCounterBefore": 88,
+      "freeCounterAfter": 89,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2556395,
+      "sha256": "fbb8f37addef6abfc707b9f59710b6d652ad57770793501a4906dcf099669040",
+      "promptSha256": "966ca917b1fd3d99041b0e184827e451ce14e1bc53f3f1ff296f4d784d031210",
+      "regenerations": 2,
+      "generatedAtUtc": "2026-11-24T12:59:31.422Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ghost-umbryss.png"
+    },
+    {
+      "order": 5,
+      "filename": "s-offrate-ground-jaderyx.png",
+      "canonicalId": "pet-s-ground-jaderyx",
+      "name": "Jaderyx",
+      "element": "ground",
+      "archetype": "jade qilin",
+      "scale": "large",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": "5ddcf19f-97c6-4e57-8e26-afb4f4dd61c3",
+      "freeCounterBefore": 87,
+      "freeCounterAfter": 88,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2624893,
+      "sha256": "284c93de29fd735dd414374bf168a759e0df55e7d5876a4ba7f05f985dda0fbe",
+      "promptSha256": "aea830f88896b9ca30464d68e1d81b64ea67222184fc6c6bbb2bdf91c68a3fb2",
+      "regenerations": 1,
+      "generatedAtUtc": "2026-11-24T12:58:58.472Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-ground-jaderyx.png"
+    },
+    {
+      "order": 6,
+      "filename": "s-offrate-light-solenne.png",
+      "canonicalId": "pet-s-light-solenne",
+      "name": "Solenne",
+      "element": "light",
+      "archetype": "prism fox",
+      "scale": "small",
+      "powerClass": "S",
+      "classLabel": "S \u00b7 Off-rate",
+      "taskId": null,
+      "freeCounterBefore": 86,
+      "freeCounterAfter": 87,
+      "paidCreditsConsumed": 0,
+      "width": 1536,
+      "height": 1152,
+      "bytes": 2346191,
+      "sha256": "3d0f994cc491e3757cee46fdb06de5e8b1ba47a416c5557c3c30e9151a2bce92",
+      "promptSha256": "6d2b1406fed5557eaa1414eb836259dcdad5d1c89926fa020c8266a2f8a2dcda",
+      "regenerations": 1,
+      "generatedAtUtc": "2026-11-24T13:04:03.980Z",
+      "ownerDecision": null,
+      "ownerNote": null,
+      "sourceFile": "/home/tiecont/Downloads/cao-chin-duoi.webp",
+      "replacement": true,
+      "generatedInBatch": false,
+      "originalTaskId": "a63a3353-0ce1-46cc-bd5e-ab368dde92c3",
+      "rights": "PENDING_REVIEW",
+      "note": "Owner-provided replacement art: nine-tailed crystal fox from Downloads/cao-chin-duoi.webp. Not generated in this batch; rights remain pending review.",
+      "cdnUrl": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1/concepts-v4/s-offrate-light-solenne.png"
+    }
+  ],
+  "cdn": {
+    "publicBase": "https://pub-c8ea928ecd544b928a0fb17184408871.r2.dev/aetheria/mvp-wave1/v1",
+    "prefix": "aetheria/mvp-wave1/v1",
+    "manifest": "specs/pet-arena/mvp-wave1-cdn-assets.json"
+  }
+}

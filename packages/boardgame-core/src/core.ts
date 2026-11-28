@@ -1,4 +1,4 @@
-import {GameCommandSchema,GameErrorCodeSchema,GameIdSchema,GameModeSchema,GameOwnViewSchema,GamePublicViewSchema,GameRulesetVersionSchema,GameSourceSchema,GameSpectatorViewSchema,GameTimeSchema,GameVersionSchema,type GameCommand,type GameErrorCode,type GameMode,type GameOwnView,type GamePrivateState,type GamePublicBoard,type GamePublicView,type PublicProfile,type AvatarAppearanceV2} from '@virtual-city/contracts';
+import {GameCommandSchema,GameErrorCodeSchema,GameIdSchema,GameModeSchema,GameOwnViewSchema,GamePublicViewSchema,GameRulesetVersionSchema,GameSourceSchema,GameSpectatorViewSchema,GameTimeSchema,GameVersionSchema,type GameCommand,type GameErrorCode,type GameMode,type GameOwnView,type GamePrivateState,type GamePublicBoard,type GamePublicView,type PublicProfile,type AvatarAppearanceV2} from '@aetheria/contracts';
 import {immutableJson,type Json,type ReadonlyJson} from './json';
 export type DeepReadonly<T>=T extends object?{readonly[K in keyof T]:DeepReadonly<T[K]>}:T;
 export interface GameMember {accountId:string;membershipId:string;seatIndex:number;ready:boolean;connected:boolean;handCount:number}

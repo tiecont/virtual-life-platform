@@ -1,8 +1,18 @@
 use super::application::{Commands, NativeGame};
 use crate::features::{
+    pet_arena::arena8::domain as bound,
+    pet_arena::coop as coordinated,
     pet_arena::domain as pet,
     synthetic::domain::{Rules, State},
 };
+use aetheria_gateway::{Options, durable::PgAdmission};
+use aetheria_persistence::{Host, Keys, Owner, Scope};
+use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
+use aetheria_pet_arena::arena8::coop::{ArtifactLoadout, SEATS, SeatInput, SkillLevelBinding};
+use aetheria_security::{
+    RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
+};
+use aetheria_world::ZoneHandle;
 use axum::{Router, extract::State as AxumState, http::StatusCode, routing::get};
 use jsonwebtoken::DecodingKey;
 use serde::Deserialize;
@@ -17,12 +27,50 @@ use std::{
 use tokio::{sync::Mutex, task::JoinHandle};
 use tokio_postgres::{Client, Config};
 use uuid::Uuid;
-use vl_gateway::{Options, durable::PgAdmission};
-use vl_persistence::{Host, Keys, Owner, Scope};
-use vl_security::{
-    RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
-};
-use vl_world::ZoneHandle;
+
+/// Server-authored Arena8 allocation. A client never sends these fields.
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Arena8Settings {
+    pet_id: String,
+    owned_pet_id: Uuid,
+    level: u8,
+    encounter_id: String,
+    binding_version: u32,
+    #[serde(default)]
+    artifacts: Vec<Arena8Artifact>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Arena8Artifact {
+    definition_id: String,
+    upgrade_level: u8,
+}
+
+/// Server-authored cooperative seat allocation. Accounts, Pets and levels are
+/// never read from an intent payload.
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CoopSeat {
+    account: Uuid,
+    pet_id: String,
+    /// Distinct owned pet instance identifier. Allows multiple accounts to bring
+    /// the same canonical pet species if each owns a separate authorized instance.
+    owned_pet_instance_id: Uuid,
+    level: u8,
+    artifact_power_pm: Option<u16>,
+    loadout: Option<ArtifactLoadout>,
+    #[serde(default)]
+    skill_levels: Vec<SkillLevelBinding>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CoopSettings {
+    seats: Vec<CoopSeat>,
+    boss_id: String,
+}
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -33,6 +81,10 @@ struct Settings {
     ruleset: String,
     pet: Option<u8>,
     stage: Option<u8>,
+    #[serde(default)]
+    arena8: Option<Arena8Settings>,
+    #[serde(default)]
+    coop: Option<CoopSettings>,
     world: String,
     boot: Uuid,
     match_id: Uuid,
@@ -64,7 +116,13 @@ pub struct NativeRuntime {
     task: JoinHandle<()>,
 }
 impl NativeRuntime {
-    pub async fn start(file: &str, database: &str) -> Result<Self, &'static str> {
+    /// `bundle` is the validated, published gameplay configuration supplied by
+    /// the server-owned allocator. Only the cooperative ruleset consumes it.
+    pub async fn start(
+        file: &str,
+        database: &str,
+        bundle: Option<Vec<u8>>,
+    ) -> Result<Self, &'static str> {
         let bytes = fs::read(file).map_err(|_| "Native configuration unavailable")?;
         if bytes.len() > 65_536 {
             return Err("Native configuration too large");
@@ -79,6 +137,9 @@ impl NativeRuntime {
         {
             return Err("Explicit native ruleset and scope required");
         }
+        if settings.ruleset != coordinated::domain::RULESET_ID && settings.coop.is_some() {
+            return Err("Cooperative allocation is not valid for this ruleset");
+        }
         match settings.ruleset.as_str() {
             "headless-counter" if settings.pet.is_none() && settings.stage.is_none() => {
                 let game = Rules {
@@ -92,12 +153,97 @@ impl NativeRuntime {
                 Self::compose(settings, database, game, initial).await
             }
             "pet-arena-pve" => {
+                if settings.arena8.is_some() {
+                    return Err("Arena8 allocation is not valid for pet-arena-pve");
+                }
                 let game = pet::Rules {
                     player: settings.player.to_string(),
                     pet: settings.pet.ok_or("Server-selected pet required")?,
                     stage: settings.stage.ok_or("Server-selected stage required")?,
                 };
                 let initial = game.initial().map_err(|_| "Invalid Pet Arena allocation")?;
+                Self::compose(settings, database, game, initial).await
+            }
+            "arena8-pve" => {
+                if settings.pet.is_some() || settings.stage.is_some() {
+                    return Err("Arena8 requires an explicit snapshot allocation");
+                }
+                let (game, initial) = {
+                    let allocation = settings
+                        .arena8
+                        .as_ref()
+                        .ok_or("Server-selected Arena8 allocation required")?;
+                    if allocation.binding_version != binding::BINDING_VERSION {
+                        return Err("Unsupported Arena8 binding version");
+                    }
+                    let game = bound::Rules::allocate(Allocation {
+                        account: settings.player.to_string(),
+                        owned_pet_id: allocation.owned_pet_id.to_string(),
+                        pet_id: allocation.pet_id.clone(),
+                        level: allocation.level,
+                        encounter_id: allocation.encounter_id.clone(),
+                        artifacts: allocation
+                            .artifacts
+                            .iter()
+                            .map(|artifact| ArtifactSelection {
+                                definition_id: artifact.definition_id.clone(),
+                                upgrade_level: artifact.upgrade_level,
+                            })
+                            .collect(),
+                    })
+                    .map_err(|_| "Invalid Arena8 allocation")?;
+                    let initial = game.initial().map_err(|_| "Invalid Arena8 allocation")?;
+                    (game, initial)
+                };
+                Self::compose(settings, database, game, initial).await
+            }
+            "arena8-coop-pve" => {
+                if settings.pet.is_some() || settings.stage.is_some() || settings.arena8.is_some() {
+                    return Err("Cooperative match requires an explicit four-seat allocation");
+                }
+                let allocation = settings
+                    .coop
+                    .as_ref()
+                    .ok_or("Server-selected cooperative allocation required")?;
+                let [first, second, third, fourth] = allocation.seats.as_slice() else {
+                    return Err("Four cooperative seats required");
+                };
+                if allocation.seats.iter().any(|seat| {
+                    seat.account.is_nil()
+                        || seat.pet_id.is_empty()
+                        || seat.owned_pet_instance_id.is_nil()
+                        || seat.artifact_power_pm.is_some() == seat.loadout.is_some()
+                }) {
+                    return Err("Invalid cooperative allocation");
+                }
+                let roster = [first, second, third, fourth];
+                let loadouts = if roster.iter().all(|seat| seat.loadout.is_some()) {
+                    Some(roster.map(|seat| seat.loadout.clone().expect("every seat has a loadout")))
+                } else if roster.iter().all(|seat| seat.artifact_power_pm.is_some()) {
+                    None
+                } else {
+                    return Err("Invalid cooperative Artifact allocation");
+                };
+                let seats: [SeatInput; SEATS] = roster.map(|seat| SeatInput {
+                    account: seat.account.to_string(),
+                    pet_id: seat.pet_id.clone(),
+                    owned_pet_instance_id: seat.owned_pet_instance_id.to_string(),
+                    level: seat.level,
+                    artifact_power_pm: seat.artifact_power_pm.unwrap_or_default(),
+                });
+                let bundle = bundle.ok_or("Published gameplay configuration required")?;
+                let boss_id = allocation.boss_id.clone();
+                let skill_levels =
+                    [first, second, third, fourth].map(|seat| seat.skill_levels.clone());
+                let game = coordinated::domain::Rules::load_with_skill_levels(
+                    &bundle,
+                    seats,
+                    boss_id,
+                    loadouts.as_ref(),
+                    &skill_levels,
+                )
+                .map_err(|_| "Invalid cooperative gameplay configuration")?;
+                let initial = game.initial();
                 Self::compose(settings, database, game, initial).await
             }
             _ => Err("Unknown or incomplete native ruleset"),
@@ -166,9 +312,9 @@ impl NativeRuntime {
             )
             .map_err(|_| "Native ticket scope unavailable")?,
         );
-        let (zone, actor) = vl_world::zone(32, 64).map_err(|_| "Native zone unavailable")?;
+        let (zone, actor) = aetheria_world::zone(32, 64).map_err(|_| "Native zone unavailable")?;
         let (actor, collision) = if settings.movement {
-            let collision = vl_world::collision::Collision::aurora()
+            let collision = aetheria_world::collision::Collision::aurora()
                 .map_err(|_| "Native collision unavailable")?;
             let epoch = u64::from_le_bytes(Uuid::new_v4().as_bytes()[..8].try_into().unwrap()) >> 1;
             (
@@ -187,7 +333,7 @@ impl NativeRuntime {
         if let Some(collision) = collision {
             admission = admission.with_movement(collision);
         }
-        let gateway = vl_gateway::router(
+        let gateway = aetheria_gateway::router(
             Options {
                 enabled: true,
                 origins: vec![settings.origin],
@@ -235,7 +381,7 @@ impl NativeRuntime {
             .route("/health/ready", get(ready::<G>))
             .route("/metrics", get(metrics::<G>))
             .with_state(health)
-            .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"vl-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
+            .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"aetheria-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
             .merge(gateway);
         Ok(Self { router, zone, task })
     }
@@ -292,7 +438,7 @@ async fn metrics<G: NativeGame>(
     (
         [("content-type", "text/plain; version=0.0.4")],
         format!(
-            "# TYPE vl_native_command_receipts_total counter\nvl_native_command_receipts_total {committed}\n# TYPE vl_native_command_rejections_total counter\nvl_native_command_rejections_total {rejected}\n"
+            "# TYPE aetheria_native_command_receipts_total counter\naetheria_native_command_receipts_total {committed}\n# TYPE aetheria_native_command_rejections_total counter\naetheria_native_command_rejections_total {rejected}\n"
         ),
     )
 }

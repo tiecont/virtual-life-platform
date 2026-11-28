@@ -1,4 +1,4 @@
-import { SceneManifestSchema } from '@virtual-city/contracts';
+import { SceneManifestSchema } from '@aetheria/contracts';
 import { deadlineLayout } from './baseline';
 
 // Selected source coordinates mapped to40px tiles (at most20px displacement).

@@ -1,0 +1,328 @@
+using System;
+using Aetheria.Networking;
+using Aetheria.PetArena.Vfx;
+using Aetheria.PetArena.Infrastructure;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Aetheria.PetArena.Presentation
+{
+    // Scene adapter for the cooperative HUD. A lobby supplies the admitted
+    // CoopNativePlaySession; this component renders only committed projections
+    // and forwards intents. It never computes damage, rewards or turn order.
+    [RequireComponent(typeof(UIDocument))]
+    public sealed class CoopNativeHud : MonoBehaviour
+    {
+        [SerializeField] private UIDocument document;
+        private CoopNativePlaySession session;
+        private int selected = -1;
+        private Action returnToHub;
+        private float nextRefresh;
+        private bool reading, renderedReconnect, loadingReward;
+        private bool recovering, leaving, submitting;
+        private Func<Task<CoopLobbyClient.Reward>> loadReward;
+        private CoopLobbyClient.Reward reward;
+        private string rewardNotice, feedback;
+        private CoopNativeView previous;
+        private ArenaPresentationKit effects;
+        public void SetRewardLoader(Func<Task<CoopLobbyClient.Reward>> loader) { loadReward = loader; Refresh(); }
+
+        private ulong renderedVersion = ulong.MaxValue;
+
+        // Scene bootstrap may create the component before assigning the document.
+        public void Attach(UIDocument target) { document = target; }
+
+        public void Bind(CoopNativePlaySession admitted, Action returnAction = null)
+        {
+            reward = null; rewardNotice = null; loadReward = null;
+            loadingReward = false;
+            submitting = false;
+            previous = null;
+            feedback = null;
+            recovering = false;
+            leaving = false;
+            if (admitted != null && Application.isPlaying)
+            {
+                effects = ArenaPresentationKit.Ensure(gameObject);
+                effects.SetReducedMotion(true);
+                effects.PlayBgm(ArenaBgm.Battle);
+            }
+            else if (effects != null) effects.StopAll();
+            session = admitted;
+            returnToHub = returnAction;
+            selected = -1;
+            renderedVersion = ulong.MaxValue;
+            Refresh();
+        }
+
+        private void Update()
+        {
+            var view = session?.State?.Coop;
+            if (view == null || recovering || leaving) return;
+            if (!view.Terminal && session.NeedsRefresh && !session.HasPendingCommand && !reading)
+            {
+                _ = RecoverAsync(renewal: true);
+                return;
+            }
+            if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect) Refresh();
+            if (view.Terminal || reading || !CanSubmit ||
+                view.ActiveSeat == view.You || Time.unscaledTime < nextRefresh) return;
+            nextRefresh = Time.unscaledTime + 1f;
+            _ = ReadSharedBoardAsync();
+        }
+
+        private async System.Threading.Tasks.Task ReadSharedBoardAsync()
+        {
+            reading = true;
+            try { await session.RefreshAsync(); }
+            catch (NativeFailure failure) when (failure.Reason == Failure.Busy) { }
+            catch (NativeFailure)
+            {
+                Refresh();
+            }
+            catch (OperationCanceledException) { }
+            finally { reading = false; }
+        }
+
+        private void Refresh()
+        {
+            var view = session?.State?.Coop;
+            if (view == null) return;
+            if (previous != null && view.Version > previous.Version)
+            {
+                selected = -1;
+                feedback = null;
+                if (view.Terminal)
+                {
+                    feedback = view.Phase == "won" ? "Victory" : "Defeat";
+                    effects?.PlaySfx(view.Phase == "won" ? ArenaSfx.Victory : ArenaSfx.Defeat);
+                }
+                else if (view.BossState.Phase > previous.BossState.Phase)
+                {
+                    feedback = "The Boss transformed";
+                    effects?.PlaySfx(ArenaSfx.Ultimate);
+                }
+                else
+                {
+                    for (var seat = 0; seat < view.Participants.Count; seat++)
+                    {
+                        var now = view.Participants[seat];
+                        var prior = previous.Participants[seat];
+                        var healed = now.Contribution.Healing - Math.Min(now.Contribution.Healing, prior.Contribution.Healing);
+                        var shielded = now.Contribution.Shielding - Math.Min(now.Contribution.Shielding, prior.Contribution.Shielding);
+                        if (healed > 0) feedback = now.PetId + " restored " + healed + " HP";
+                        else if (shielded > 0) feedback = now.PetId + " granted " + shielded + " shield";
+                    }
+                    if (feedback != null) effects?.PlaySfx(ArenaSfx.Skill);
+                    else if (view.BossState.Health < previous.BossState.Health) effects?.PlaySfx(ArenaSfx.Attack);
+                }
+            }
+            previous = view;
+            renderedReconnect = session.RequiresReconnect;
+            renderedVersion = view.Version;
+            Render(view);
+        }
+
+        public void Render(CoopNativeView view)
+        {
+            if (view == null) return;
+            var target = document != null ? document.rootVisualElement : null;
+            if (target == null) return;
+            var body = target.Q<ScrollView>("coop-hud-scroll");
+            if (body == null)
+            {
+                target.Clear();
+                body = new ScrollView { name = "coop-hud-scroll" };
+                body.AddToClassList("coop-hud-scroll");
+                target.Add(body);
+            }
+            else
+            {
+                body.Clear();
+                for (var index = target.childCount - 1; index >= 0; index--)
+                    if (target[index] != body) target.RemoveAt(index);
+            }
+
+            var presentation = CoopNativePresentation.Build(view, Select, Cast, selected);
+            if (session != null && !CanSubmit)
+            {
+                presentation.Q("coop-board").SetEnabled(false);
+                presentation.Q("coop-actions").SetEnabled(false);
+            }
+            var turn = presentation.Q<Label>(CoopNativePresentation.TurnName);
+            target.Insert(0, turn);
+            body.Add(presentation);
+            if (submitting) target.Add(new Label("Sending action…") { name = "coop-network" });
+            else if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
+            if (view.Terminal && loadReward != null)
+            {
+                if (reward != null)
+                    target.Add(new Label("Rewards received · " + reward.Summary) { name = "coop-reward" });
+                else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
+                else if (rewardNotice != null)
+                    target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
+            }
+            if (session != null && view.Phase == "ready" && view.ActiveSeat == view.You)
+            {
+                var start = new Button(() => Cast("start")) { name = "coop-battle-start", text = "Start battle" };
+                start.SetEnabled(CanSubmit);
+                target.Add(start);
+            }
+            if (returnToHub != null || session != null) target.Add(BuildFooter());
+        }
+
+        private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&
+            !session.RequiresReconnect && !session.HasPendingCommand;
+
+        private VisualElement BuildFooter()
+        {
+            var footer = new VisualElement { name = "coop-footer" };
+            footer.AddToClassList("coop-footer");
+            var leave = new Button(Leave) { name = "coop-return", text = "Return to Central Plaza" };
+            leave.AddToClassList("coop-footer-button");
+            leave.SetEnabled(!recovering && !leaving);
+            if (returnToHub == null) leave.AddToClassList("coop-footer-hidden");
+            footer.Add(leave);
+
+            var retry = session?.HasPendingCommand == true;
+            var needsRecovery = !submitting && (retry || session?.RequiresReconnect == true);
+            var recover = new Button(() => _ = RecoverAsync())
+            {
+                name = retry ? "coop-retry" : "coop-reconnect",
+                text = retry ? "Retry pending command" : "Reconnect",
+            };
+            recover.AddToClassList("coop-footer-button");
+            recover.SetEnabled(needsRecovery && !recovering && !leaving);
+            if (!needsRecovery && !recovering) recover.AddToClassList("coop-footer-hidden");
+            footer.Add(recover);
+            return footer;
+        }
+
+        private void Leave()
+        {
+            var exit = returnToHub;
+            if (exit == null || recovering || leaving) return;
+            leaving = true;
+            Refresh();
+            exit();
+        }
+
+        private async Task ReadRewardAsync()
+        {
+            if (loadingReward || loadReward == null) return;
+            loadingReward = true;
+            var loader = loadReward;
+            try
+            {
+                var receipt = await loader();
+                if (loadReward == loader) reward = receipt;
+            }
+            catch (Exception)
+            {
+                if (loadReward == loader) rewardNotice = "Check settlement receipt";
+            }
+            finally
+            {
+                if (this != null && loadReward == loader)
+                {
+                    loadingReward = false;
+                    Refresh();
+                }
+            }
+        }
+
+        private async Task RecoverAsync(bool renewal = false)
+        {
+            var current = session;
+            var retry = current?.HasPendingCommand == true;
+            if (current == null || recovering || leaving || (!retry && !current.RequiresReconnect)) return;
+            recovering = true;
+            if (!renewal)
+            {
+                selected = -1;
+                Refresh();
+            }
+
+            try
+            {
+                if (retry) await current.RetryAsync();
+                else await current.ReconnectAsync();
+            }
+            catch (NativeFailure failure)
+            {
+                Debug.LogWarning("Coop recovery failed: " + failure.Reason);
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                if (this != null && session == current)
+                {
+                    recovering = false;
+                    if (!renewal || current.RequiresReconnect || current.State?.Coop?.Version != renderedVersion)
+                        Refresh();
+                }
+            }
+        }
+
+        private void Select(int cell)
+        {
+            if (!CanSubmit) return;
+            var view = session?.State?.Coop;
+            if (view == null || view.Terminal || !CoopNativePresenter.CanAct(view)) return;
+            if (selected < 0)
+            {
+                selected = cell;
+                Render(view);
+                return;
+            }
+            if (selected == cell) { selected = -1; Render(view); return; }
+            if (!view.CanSwap(selected, cell))
+            {
+                selected = cell;
+                Render(view);
+                return;
+            }
+            var first = selected;
+            selected = -1;
+            Submit(current => current.SwapAsync(first, cell));
+        }
+
+        private void Cast(string kind)
+        {
+            switch (kind)
+            {
+                case "start": Submit(current => current.StartAsync()); break;
+                case "guard": Submit(current => current.GuardAsync()); break;
+                case "skill": Submit(current => current.SkillAsync()); break;
+                case "signature": Submit(current => current.SignatureAsync()); break;
+                case "fire-zone": Submit(current => current.FireZoneAsync()); break;
+                case "ultimate": Submit(current => current.UltimateAsync()); break;
+            }
+        }
+
+        private async void Submit(Func<CoopNativePlaySession, Task<PlayState>> send)
+        {
+            if (!CanSubmit) return;
+            var current = session;
+            submitting = true;
+            Refresh();
+            try { await send(current); }
+            catch (NativeFailure failure)
+            {
+                if (session == current)
+                    feedback = current.HasPendingCommand ? "Confirmation interrupted. Retry the pending command." :
+                        "Action was not committed · " + failure.Reason;
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                if (this != null && session == current)
+                {
+                    submitting = false;
+                    Refresh();
+                }
+            }
+        }
+    }
+}

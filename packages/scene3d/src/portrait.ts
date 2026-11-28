@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {AvatarPartsSchema,type AvatarParts} from '@virtual-city/contracts';
+import {AvatarPartsSchema,type AvatarParts} from '@aetheria/contracts';
 import {createAnimal} from './animal';
 // Static portrait from the same composer/rig/materials as creator and rooms.
 // No network URLs,animation loop,authority or saved-selection mutation.

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import type { Me } from '@virtual-city/contracts';
-import { maidScene,maidAreas,maidWorldVersion,maidServicePolicy } from '@virtual-city/maid-world';
+import type { Me } from '@aetheria/contracts';
+import { maidScene,maidAreas,maidWorldVersion,maidServicePolicy } from '@aetheria/maid-world';
 import WorldRoomPanel,{type RoomExperience,type RoomChildContext} from '../../../../rooms/modules/rooms/presentation/WorldRoomPanel';
 import VoluntaryStaffControls from '../../../../hospitality/modules/hospitality/presentation/VoluntaryStaffControls';
 import RoomGreetings from '../../../../rooms/modules/rooms/presentation/RoomGreetings';
@@ -14,7 +14,7 @@ function MaidActivity({me,...context}:RoomChildContext&{me:Me}){
  // Only a newly confirmed voluntary start/switch creates a fresh service lifetime.
  return <><VoluntaryStaffControls me={me} source={context.source} worldSlug="maid" venue="cafe" policy={maidServicePolicy} onStopIntent={()=>setWorkAllowed(false)} onPositiveConfirmed={()=>{setWorkRevision(value=>value+1);setWorkAllowed(true);}} introduction="Customer and Maid are gameplay choices. Starting work is voluntary and gives no moderation or administration powers. Your clothing does not grant permission." footer="At most six volunteers share the same thirty-place room. Stop works outside the room and during a pending reply;unfinished assigned work returns to the queue."/><MaidService key={workRevision} me={me} source={retained} active={!!context.active} workAllowed={workAllowed} seated={context.seated}/></>;
 }
-const renderer=()=>import('@virtual-city/scene3d');
+const renderer=()=>import('@aetheria/scene3d');
 export default function MaidRoom({socketOrigin,modular3d=false}:{socketOrigin:string;modular3d?:boolean}){return <WorldRoomPanel socketOrigin={socketOrigin} experience={experience} {...(modular3d?{rendererLoader:renderer,modularAppearance:true,sceneFirst:true,artLabel:'3D character integration · room art under review'}:{})}>{context=>{
  const retained=context.retainedSource??context.source,key=[context.me?.profile.id,context.me?.csrfToken,retained?.membershipId].join(':');return <>{context.me&&<MaidActivity key={'activity:'+key} {...context} me={context.me}/>}<RoomGreetings key={'greetings:'+key} {...context} source={retained} venue="Cafe"/></>;
  }}</WorldRoomPanel>;}

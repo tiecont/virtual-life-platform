@@ -7,12 +7,12 @@ import {createRequire} from 'node:module';
 import {packageApiRuntime} from '../../scripts/package-api-runtime.mjs';
 
 async function fixture() {
-  const root = await mkdtemp(resolve(tmpdir(), 'vlp-package-')), source = resolve(root, 'source'), api = resolve(source, 'apps/platform-api');
+  const root = await mkdtemp(resolve(tmpdir(), 'aetheria-package-')), source = resolve(root, 'source'), api = resolve(source, 'apps/platform-api');
   async function file(path, text) {await mkdir(dirname(path), {recursive: true}); await writeFile(path, text);}
   async function pkg(path, name, dependencies = {}, extra = {}) {await file(resolve(path, 'package.json'), JSON.stringify({name, version: '1.0.0', main: 'index.js', dependencies, ...extra}));}
   await mkdir(resolve(source, 'packages'), {recursive: true});
   await file(resolve(source, 'pnpm-lock.yaml'), 'synthetic frozen fixture lock\n');
-  await pkg(api, '@virtual-city/platform-api', {prod: '1.0.0'}, {main: 'dist/main.js'});
+  await pkg(api, '@aetheria/platform-api', {prod: '1.0.0'}, {main: 'dist/main.js'});
   await file(resolve(api, 'dist/main.js'), 'module.exports=require("prod");');
   await file(resolve(api, 'dist/private.unit.test.js'), 'throw Error("test output must not ship");');
   await file(resolve(api, 'src/private.ts'), 'synthetic source only');
@@ -32,7 +32,7 @@ test('packaged runtime uses frozen local bindings, excludes global dev/optional 
   const f = await fixture();
   try {
     const output = resolve(f.root, 'runtime'), summary = await packageApiRuntime(f.source, output);
-    assert.deepEqual(summary.packages.map(pkg => pkg.name).sort(), ['@virtual-city/platform-api', 'leaf', 'prod']);
+    assert.deepEqual(summary.packages.map(pkg => pkg.name).sort(), ['@aetheria/platform-api', 'leaf', 'prod']);
     assert.deepEqual(createRequire(resolve(output, 'package.json'))('./dist/main.js'), {leaf: 'frozen bound leaf', vendor: 'required vendor file'});
     for (const path of ['src/private.ts', 'dist/private.unit.test.js']) await assert.rejects(readFile(resolve(output, path)), error => error.code === 'ENOENT');
     await assert.rejects(packageApiRuntime(f.source, output), error => error.code === 'EEXIST');

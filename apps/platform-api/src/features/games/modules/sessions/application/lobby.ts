@@ -1,11 +1,11 @@
 import {randomUUID} from 'node:crypto';
-import {GameLobbyInputSchema,GameLobbyLeaveSchema,GameLobbyViewSchema,type GameLobbyView,type GameMode} from '@virtual-city/contracts';
+import {GameLobbyInputSchema,GameLobbyLeaveSchema,GameLobbyViewSchema,type GameLobbyView,type GameMode} from '@aetheria/contracts';
 import type {IdentityService} from '../../../../identity/modules/accounts/application/service';
 import type {RoomService} from '../../../../rooms/modules/presence/application/service';
 import type {SocialService} from '../../../../social/modules/relationships/application/service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {z} from 'zod';
-import {GameIdSchema,TravelSourceSchema} from '@virtual-city/contracts';
+import {GameIdSchema,TravelSourceSchema} from '@aetheria/contracts';
 import type {GameAdmission} from '../../persistence/infrastructure/journal-host';
 type Lease=Awaited<ReturnType<RoomService['gameProjection']>>;
 type Player={account:string;seat:number;ready:boolean;lease:Lease};

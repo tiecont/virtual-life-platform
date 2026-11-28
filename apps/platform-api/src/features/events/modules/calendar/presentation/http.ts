@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { EventCalendarInputSchema, EventRsvpInputSchema, EventPerformerReadySchema, EventInviteRespondSchema } from '@virtual-city/contracts';
-import { WorldError } from '@virtual-city/world-sdk';
+import { EventCalendarInputSchema, EventRsvpInputSchema, EventPerformerReadySchema, EventInviteRespondSchema } from '@aetheria/contracts';
+import { WorldError } from '@aetheria/world-sdk';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { readSessionToken } from '../../../../identity/modules/accounts/presentation/http';
@@ -33,6 +33,6 @@ export function registerEvents(http: FastifyInstance, config: Config, identity: 
     api.post('/events/:id/performer-ready', req => { const input = EventPerformerReadySchema.parse(req.body); return events.performerReady(write(req), id(req), key(req), input.ready); });
     api.post('/events/:id/rsvp', async (req, reply) => { EventRsvpInputSchema.parse(req.body); return reply.code(201).send(await events.rsvp(write(req), id(req), key(req))); });
     api.post('/events/:id/withdraw', req => { EventRsvpInputSchema.parse(req.body); return events.withdraw(write(req), id(req), key(req)); });
-    api.post('/events/:id/calendar', async (req, reply) => { EventCalendarInputSchema.parse(req.body); const value = write(req); key(req); const content = await events.calendar(value, id(req)); return reply.type('text/calendar; charset=utf-8').header('content-disposition', 'attachment; filename="virtual-life-event.ics"').send(content); });
+    api.post('/events/:id/calendar', async (req, reply) => { EventCalendarInputSchema.parse(req.body); const value = write(req); key(req); const content = await events.calendar(value, id(req)); return reply.type('text/calendar; charset=utf-8').header('content-disposition', 'attachment; filename="aetheria-soulbound-event.ics"').send(content); });
   }, { prefix: '/v1' });
 }

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
-import { DiscoveryViewSchema,type DiscoveryView,type WorldCard } from '@virtual-city/contracts';
+import { DiscoveryViewSchema,type DiscoveryView,type WorldCard } from '@aetheria/contracts';
 import { travelHref } from '../../../../travel/modules/travel/application/destination-link';
 const utc=(value:string)=>new Date(value).toLocaleString('en-GB',{timeZone:'UTC',timeZoneName:'short'});
 export default function FeaturedPlaces({worlds,onAccessChanged}:{worlds:WorldCard[];onAccessChanged:()=>void}){

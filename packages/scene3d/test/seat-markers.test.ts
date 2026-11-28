@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import * as T from 'three';
-import type {RoomSnapshot,SceneManifest} from '@virtual-city/contracts';
+import type {RoomSnapshot,SceneManifest} from '@aetheria/contracts';
 import {createSeatMarkers} from '../src/seat-markers';
 import {TILE_METERS} from '../src/room';
 

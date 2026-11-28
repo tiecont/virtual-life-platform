@@ -1,7 +1,7 @@
-use vl_game_core::{
+use aetheria_game_core::{
     Canonical, Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng, Value, canonical,
 };
-use vl_pet_arena::combat::{Action, Combat, Phase, State as CombatState};
+use aetheria_pet_arena::combat::{Action, Combat, Phase, State as CombatState};
 
 // The wrapper pins account membership and terminal signaling without changing
 // the verified combat reducer or allowing client-supplied outcomes or entropy.
@@ -27,7 +27,7 @@ pub fn content_hash() -> [u8; 32] {
     canonical::hash(
         "vl.pet-native.v1",
         &Value::List(vec![
-            Value::Bytes(vl_pet_arena::combat::rules_hash().to_vec()),
+            Value::Bytes(aetheria_pet_arena::combat::rules_hash().to_vec()),
             Value::Text(
                 "single-player;server-pet-stage;terminal-win-loss;owner-view-v2;completion-v1"
                     .into(),

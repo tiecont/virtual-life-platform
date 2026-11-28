@@ -1,0 +1,7 @@
+{
+  "name": "Aetheria.PetArena.Infrastructure",
+  "rootNamespace": "Aetheria.PetArena.Infrastructure",
+  "references": [
+    "Aetheria.Native"
+  ]
+}

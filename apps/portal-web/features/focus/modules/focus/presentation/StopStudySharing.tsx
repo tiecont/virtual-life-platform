@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
-import { StudySharingStateSchema,type Me } from '@virtual-city/contracts';
+import { StudySharingStateSchema,type Me } from '@aetheria/contracts';
 // Always available independently of an event card/read/room membership.
 export default function StopStudySharing({me}:{me:Me}){
  const [busy,setBusy]=useState(false),[message,setMessage]=useState('');const pending=useRef<string|null>(null),stop=useRef<()=>Promise<void>>(async()=>{});

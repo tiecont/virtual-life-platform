@@ -9,12 +9,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace VirtualLife.Editor
+namespace Aetheria.Editor
 {
     // Explicit offline review command; the pilot never enters a gameplay scene.
     public static class IcarusPilotReview
     {
-        private const string Root = "Assets/VirtualLife/ArtStudies/IcarusV3Pilot";
+        private const string Root = "Assets/Aetheria/ArtStudies/IcarusV3Pilot";
         private const string Model = Root + "/icarus-review.fbx";
         [Serializable] private sealed class ClipFact
         {
@@ -47,7 +47,7 @@ namespace VirtualLife.Editor
         {
             if (Application.unityVersion != "6000.3.14f1") throw new InvalidOperationException("Pinned Editor required");
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) throw new InvalidOperationException("Real GPU rendering required");
-            string output = Environment.GetEnvironmentVariable("VL_ICARUS_RENDER_OUTPUT");
+            string output = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_RENDER_OUTPUT");
             if (string.IsNullOrWhiteSpace(output) || !Path.IsPathRooted(output) || Directory.Exists(output))
                 throw new InvalidOperationException("New absolute output directory required");
             Directory.CreateDirectory(output);
@@ -95,7 +95,7 @@ namespace VirtualLife.Editor
             }
             importer.SaveAndReimport();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/VirtualLife/Settings/BlockoutURP.asset");
+            var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/Aetheria/Settings/BlockoutURP.asset");
             if (pipeline == null) throw new InvalidOperationException("Existing URP pipeline missing");
             GraphicsSettings.defaultRenderPipeline = pipeline;
             QualitySettings.renderPipeline = pipeline;

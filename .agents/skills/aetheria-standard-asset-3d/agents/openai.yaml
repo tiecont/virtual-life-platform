@@ -1,6 +1,6 @@
 interface:
   display_name: "Aetheria Standard Asset 3D"
   short_description: "Tripo to normalized Unity props and Pets"
-  default_prompt: "Use $aetheria-standard-asset-3d to produce a normalized Aetheria accessory, Standard Pet, weapon, environment, or prop with measured game budgets."
+  default_prompt: "Use $aetheria-standard-asset-3d to produce an approved Aetheria accessory, Standard Pet, weapon, environment, or prop using free GPT Image 2.5 concepts, Tripo production, and Blender 5.3 normalization with measured game budgets."
 policy:
   allow_implicit_invocation: true

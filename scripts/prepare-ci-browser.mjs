@@ -12,18 +12,26 @@ const manifest=JSON.parse(await readFile('package.json'));
 assert.equal(manifest.devDependencies['@playwright/test'],'1.64.1');
 const root=resolve('artifacts/ci-browser'),browsers=resolve(root,'browsers'),fonts=resolve(root,'fonts');
 await mkdir(root,{recursive:true});await mkdir(browsers,{recursive:true});await mkdir(fonts,{recursive:true});
+const marker=resolve(root,'image.sha256');
+let cached=false;
+try{
+ cached=(await readFile(marker,'utf8')).trim()===image&&(await readdir(browsers)).length>0&&(await readdir(fonts)).length>0;
+}catch{/* A missing or unreadable marker forces a pinned extraction. */}
 function run(command,args){
  const result=spawnSync(command,args,{stdio:'inherit',timeout:180000});
  assert(!result.error&&result.status===0,'Browser dependency preparation failed: '+command);
 }
-run('docker',['pull',image]);
-const container='vl-ci-browser-'+randomUUID();
-let created=false;
-try{
- run('docker',['create','--name',container,'--network','none',image,'/bin/true']);created=true;
- run('docker',['cp',container+':/ms-playwright/.',browsers]);
- run('docker',['cp',container+':/usr/share/fonts/.',fonts]);
-}finally{if(created)run('docker',['rm',container]);}
+if(!cached){
+ run('docker',['pull',image]);
+ const container='aetheria-ci-browser-'+randomUUID();
+ let created=false;
+ try{
+  run('docker',['create','--name',container,'--network','none',image,'/bin/true']);created=true;
+  run('docker',['cp',container+':/ms-playwright/.',browsers]);
+  run('docker',['cp',container+':/usr/share/fonts/.',fonts]);
+ }finally{if(created)run('docker',['rm',container]);}
+ await writeFile(marker,image+'\n');
+}
 // Keep font configuration and caches in ignored artifacts, including locally.
 const xml=value=>value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const fontconfig=resolve(root,'fonts.conf');
@@ -35,14 +43,26 @@ assert((await readdir(fonts)).length>0,'Pinned font assets missing');
 // Chromium installation fail before any application check can claim success.
 const {chromium}=await import('@playwright/test');
 run('ldd',[chromium.executablePath()]);
-const browser=await chromium.launch({headless:true});
-try{
- const page=await browser.newPage();
- await page.setContent('<!doctype html><p style="font:24px sans-serif">Browser preflight: A city begins. 012345</p>');
- await page.evaluate(()=>document.fonts.ready);
- assert.equal(await page.locator('p').innerText(),'Browser preflight: A city begins. 012345');
- assert((await page.screenshot()).length>1000);
- await writeFile(resolve(root,'result.json'),JSON.stringify({result:'PASS',image,browser:browser.version(),scope:'Host Chromium launch, fonts and render only; application suites remain required'},null,2));
-}finally{await browser.close();}
+let browserVersion;
+for(let attempt=1;attempt<=2;attempt++){
+ const browser=await chromium.launch({headless:true});
+ try{
+  const page=await browser.newPage();
+  await page.setContent('<!doctype html><p style="font:24px sans-serif">Browser preflight: A city begins. 012345</p>');
+  await page.evaluate(()=>document.fonts.ready);
+  assert.equal(await page.locator('p').innerText(),'Browser preflight: A city begins. 012345');
+  try{
+   assert((await page.screenshot()).length>1000);
+  }catch(error){
+   // A hosted Chromium may fail capture before any application code runs.
+   if(attempt!==1||!String(error.message).includes('Protocol error (Page.captureScreenshot): Unable to capture screenshot'))throw error;
+   console.warn('Chromium preflight screenshot failed; retrying once with a fresh browser.');
+   continue;
+  }
+  browserVersion=browser.version();
+  break;
+ }finally{await browser.close();}
+}
+await writeFile(resolve(root,'result.json'),JSON.stringify({result:'PASS',image,cached,browser:browserVersion,scope:'Host Chromium launch, fonts and render only; application suites remain required'},null,2));
 if(process.env.GITHUB_ENV)await appendFile(process.env.GITHUB_ENV,'PLAYWRIGHT_BROWSERS_PATH='+browsers+'\nFONTCONFIG_FILE='+fontconfig+'\n');
 console.log('Pinned Playwright browser/font assets prepared; actual application checks still required.');

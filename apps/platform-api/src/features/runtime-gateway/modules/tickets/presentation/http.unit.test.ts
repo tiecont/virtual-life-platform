@@ -10,7 +10,7 @@ import {DomainError} from '../../../../../shared/common/errors';
 afterEach(()=>vi.restoreAllMocks());
 async function fixture(){
  let now=Date.now();vi.spyOn(Date,'now').mockImplementation(()=>now);
- const http=Fastify(),config=readConfig({NODE_ENV:'test',DATABASE_URL:'postgresql://fixture@127.0.0.1/virtual_city_test',SESSION_SECRET:'ticket-route-test-only-secret-00000000001'});
+ const http=Fastify(),config=readConfig({NODE_ENV:'test',DATABASE_URL:'postgresql://fixture@127.0.0.1/aetheria_soulbound_test',SESSION_SECRET:'ticket-route-test-only-secret-00000000001'});
  const issue=vi.fn(async()=>({ticket:'opaque-fixture-ticket',expiresAt:new Date(now+5000).toISOString()}));
  const identity={hash:(key:string)=>key,verifyCsrf:(credential:string,csrf:unknown)=>{
   if(credential!=='ab'.repeat(32)||csrf!=='fixture-csrf')throw new DomainError('FORBIDDEN',403,'Denied');

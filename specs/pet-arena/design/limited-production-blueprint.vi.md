@@ -23,8 +23,8 @@ này cũng không tạo hoặc sửa asset Icarus.
 | [Limited animation profiles](../v3.1/data/limited_animation_profiles.json) | 16 action/Pet, normal/rage cue, signature opcode và yêu cầu companion |
 | [Asset manifest](../v3.1/data/pet_asset_manifest_240.json) | Đường dẫn dự kiến, LOD0/1/2; các entry vẫn MISSING, productionReady=false |
 | [V3.1](../v3.1.md), [art direction](../art-direction.md) | Bàn 10×10 dự kiến, authority, visibility, provenance và kiểm tra; budget creature v2 không thay budget Limited |
-| [Rust v1](../../../crates/vl-pet-arena/README.md), [reducer](../../../crates/vl-pet-arena/src/combat.rs) | Gameplay hiện có: 8 Pet, 6 stage, bàn 6×6/4 element, Start/Swap/Skill/Pass, snapshot/replay riêng |
-| [Unity view](../../../apps/unity-client/Assets/VirtualLife/Features/Native/Domain/PetArenaView.cs), [Unity README](../../../apps/unity-client/README.md) | Projection v1 kiểm đúng 36 ô, 8 Pet/6 stage; Unity 6000.3.14f1, URP 17.3.0 |
+| [Rust v1](../../../crates/aetheria-pet-arena/README.md), [reducer](../../../crates/aetheria-pet-arena/src/combat.rs) | Gameplay hiện có: 8 Pet, 6 stage, bàn 6×6/4 element, Start/Swap/Skill/Pass, snapshot/replay riêng |
+| [Unity view](../../../apps/unity-client/Assets/Aetheria/Features/Native/Domain/PetArenaView.cs), [Unity README](../../../apps/unity-client/README.md) | Projection v1 kiểm đúng 36 ô, 8 Pet/6 stage; Unity 6000.3.14f1, URP 17.3.0 |
 | [Lore/prompt hiện có](pet-lore-design-240.json) | Đề xuất biên tập; không phải canon truyện đã duyệt, reference ngoại hình hay quyền tạo asset |
 
 Gameplay v1 không có sáu opcode Limited được triển khai bằng việc viết tài liệu

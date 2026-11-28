@@ -27,7 +27,7 @@ class SkillChecks(unittest.TestCase):
     def test_only_two_canonical_aetheria_3d_skills(self):
         names = {path.name for path in SKILLS.iterdir() if path.is_dir()}
         self.assertEqual(
-            {name for name in names if name.startswith("aetheria-")},
+            {name for name in names if name.startswith("aetheria-") and name != "aetheria-engineering-harness"},
             {"aetheria-hero-character-vrm", "aetheria-standard-asset-3d"},
         )
 

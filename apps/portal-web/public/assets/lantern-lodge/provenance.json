@@ -5,7 +5,7 @@
   "sources": [
     {
       "path": "packages/lantern-lodge-world/src/scene.ts",
-      "sha256": "9f4b8ca97626fc9c3610357d0037e173e7d8f665506eb8a88b7a6a6ed09c23bf"
+      "sha256": "b26732891ac91af7d9d05f00316d03ed79be20ae8f9c9b7122fe4308017eb08f"
     }
   ],
   "avatar": "Existing shared modular animal catalog; separate qualification/provenance applies",

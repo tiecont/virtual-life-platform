@@ -2,7 +2,7 @@ import {expect,it} from 'vitest';
 import * as T from 'three';
 import {createFurAtlas,createClothWeave,createTailoredApron,groomFlow} from '../src/surfaces';
 import {createAnimal,animalResourceSummary} from '../src/animal';
-import {starterAvatarParts} from '@virtual-city/contracts';
+import {starterAvatarParts} from '@aetheria/contracts';
 
 function textureBytes(texture:T.Texture){if(!(texture instanceof T.DataTexture)||!texture.image.data)throw Error('Expected live data texture');return texture.image.data;}
 

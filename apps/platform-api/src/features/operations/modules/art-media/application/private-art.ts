@@ -1,4 +1,4 @@
-import {PrivateArtDraftSchema,PrivateArtIntakeSchema,PrivateArtQuerySchema} from '@virtual-city/contracts';
+import {PrivateArtDraftSchema,PrivateArtIntakeSchema,PrivateArtQuerySchema} from '@aetheria/contracts';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';
 

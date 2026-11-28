@@ -9,12 +9,12 @@ import {workloadHash as hash,workloadSourceFiles} from './scene3d-workload-evide
 
 // Task-owned AVD and own DEBUG WebView only; no USB/personal-app fallback.
 const config=JSON.parse(await readFile('config/mobile/android-emulator.json')),instance=JSON.parse(await readFile('artifacts/vnext/n10-05/runtime/instance.json'));
-const adb=process.env.ADB_PATH,serial=process.env.VLP_EMULATOR_SERIAL,apk=resolve(process.env.VLP_EMULATOR_APK??''),root=process.cwd(),app='life.virtualcity.spike';
+const adb=process.env.ADB_PATH,serial=process.env.AETHERIA_EMULATOR_SERIAL,apk=resolve(process.env.AETHERIA_EMULATOR_APK??''),root=process.cwd(),app='life.aetheriasoulbound.spike';
 assert(adb&&serial==='emulator-'+config.port&&instance.serial===serial&&instance.avdName===config.avdName);
 assert.equal(readFileSync('/proc/'+instance.pid+'/stat','utf8').split(') ').at(-1).split(' ')[19],instance.startTicks);
 const argv=readFileSync('/proc/'+instance.pid+'/cmdline','utf8').split('\0');assert(argv.includes(config.avdName)&&argv.includes(String(config.port)));
 assert((apk.startsWith(root+'/artifacts/')||apk.startsWith(root+'/apps/mobile/android/app/build/outputs/apk/'))&&apk.endsWith('.apk'));
-const evidenceSet=process.env.VLP_RENDERER_EVIDENCE_SET??'workload-v1';assert(['workload-v1','serve-v1','cache-v1','groom-v1'].includes(evidenceSet),'Unknown renderer evidence set');
+const evidenceSet=process.env.AETHERIA_RENDERER_EVIDENCE_SET??'workload-v1';assert(['workload-v1','serve-v1','cache-v1','groom-v1'].includes(evidenceSet),'Unknown renderer evidence set');
 const output=resolve('artifacts/vnext/n06-11/'+evidenceSet+'/android-'+randomUUID().slice(0,8));await mkdir(output,{recursive:true,mode:0o700});
 const budget=JSON.parse(await readFile('config/rendering/budgets-v1.json')),profile=JSON.parse(await readFile('tests/renderer-workload/PROFILE.json')),commands=[];
 const facts={scope:profile.scope,sourceRevision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),trackedDiffSha256:hash(execFileSync('git',['diff','--binary','HEAD'],{maxBuffer:32*1024*1024})),sourceFiles:await workloadSourceFiles(),budgetSHA256:hash(await readFile('config/rendering/budgets-v1.json')),profileSHA256:hash(await readFile('tests/renderer-workload/PROFILE.json')),startedAt:new Date().toISOString(),commands,tiers:[],physicalPerformanceQualified:false,physicalDevice:false,distributed:false};

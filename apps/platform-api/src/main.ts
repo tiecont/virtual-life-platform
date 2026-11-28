@@ -4,9 +4,14 @@ import { createApp } from './app';
 import { RuntimeLifecycle } from './features/operations/modules/lifecycle/application/runtime-lifecycle';
 async function main() {
   const config = readConfig();
-  const pool = new Pool({ connectionString: config.DATABASE_URL, max: 10, connectionTimeoutMillis: 2000 });
+  const pool = new Pool({ connectionString: config.DATABASE_URL, max: config.DATABASE_POOL_MAX, connectionTimeoutMillis: 2000 });
   pool.on('error', () => console.error('Database pool unavailable'));
-  const { app, beginDrain,identity,privacyRequests,prelaunch,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true);
+  const { app, beginDrain,identity,privacyRequests,prelaunch,runtimeControls, deadlineIdentity, social, worlds, rooms, gameJournal, reports, sanctions, travel, invitations, focus, hospitality, hospitalityOutbox, events, stage, audience, datingProfiles, datingMatching, datingDates, datingContinuations, progression } = await createApp(config, pool, true, {
+    petArenaWave1:{enabled:config.LOCAL_PET_ARENA_WAVE1==='1'},
+    petArtifacts:{enabled:config.LOCAL_PET_ARTIFACTS==='1'},
+    ...(config.LOCAL_ARENA8==='1'?{petArena8:{enabled:true,supervisorUrl:config.LOCAL_ARENA8_SUPERVISOR_URL!,supervisorToken:config.LOCAL_ARENA8_SUPERVISOR_TOKEN!}}:{}),
+    ...(config.LOCAL_ARENA8_NATIVE==='1'?{petArena8Native:{enabled:true,binary:config.LOCAL_ARENA8_NATIVE_BINARY!,databaseUrl:config.LOCAL_ARENA8_NATIVE_DATABASE_URL!,role:config.LOCAL_ARENA8_NATIVE_DB_ROLE!,caFile:config.LOCAL_ARENA8_NATIVE_CA_FILE!,storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY!,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,httpsOrigin:config.LOCAL_ARENA8_NATIVE_HTTPS_ORIGIN!,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE!,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE!}}:{}),
+  });
   await app.listen(config.PORT, config.HOST);
   const reloadWorlds = () => { void lifecycle.run(() => worlds.reloadFlags(), () => console.error('World flag reload failed; check local configuration and world health.')); };
   const lifecycle = new RuntimeLifecycle({beginDrain: () => {beginDrain(); process.removeListener('SIGHUP', reloadWorlds);}, closeApp: () => app.close(), closePool: () => pool.end()});

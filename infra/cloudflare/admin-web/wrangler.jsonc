@@ -1,15 +1,19 @@
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
-  // TEMPLATE ONLY. Replace this name and asset path after a reviewed
-  // Workers-compatible Next.js build exists. Do not deploy this file as-is.
-  "name": "aetheria-soulbound-admin-web-template",
+  "name": "aetheria-soulbound-admin-web",
+  "main": "../../../infra/northflank/worker.mjs",
   "compatibility_date": "2026-11-23",
-  "workers_dev": false,
+  "workers_dev": true,
   "preview_urls": false,
-  "assets": {
-    "directory": "../../../artifacts/cloudflare/admin-web/REPLACE_WITH_BUILD_ASSETS",
-    "binding": "ASSETS"
+  "vars": {
+    "SITE": "admin"
   },
+  "vpc_services": [
+    {
+      "binding": "FRONTEND",
+      "service_id": "01a20bdc-2cb1-7720-8d9e-0acebf3fe7d0"
+    }
+  ],
   "observability": {
     "enabled": true
   }

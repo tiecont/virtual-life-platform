@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { FriendRequestResultSchema, SocialSettingsSchema, SharedActivitySchema, type FriendRequestResult, type SharedActivity, type SocialSettings } from '@virtual-city/contracts';
+import { FriendRequestResultSchema, SocialSettingsSchema, SharedActivitySchema, type FriendRequestResult, type SharedActivity, type SocialSettings } from '@aetheria/contracts';
 import { IdentityService, type IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import { DomainError } from '../../../../../shared/common/errors';
 export interface SocialPresencePort { visibleActivity(viewerId: string, targetId: string): Promise<SharedActivity | null> }

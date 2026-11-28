@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { TravelRequestSchema, TravelAckSchema } from '@virtual-city/contracts';
-import { WorldError } from '@virtual-city/world-sdk';
+import { TravelRequestSchema, TravelAckSchema } from '@aetheria/contracts';
+import { WorldError } from '@aetheria/world-sdk';
 import type { createIdentityGateway } from '../../../../identity/modules/accounts/presentation/socket';
 import { IdentityError } from '../../../../identity/modules/accounts/domain/errors';
 import { DomainError } from '../../../../../shared/common/errors';

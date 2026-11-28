@@ -3,8 +3,8 @@ import { test,expect,devices,type BrowserContext,type WebSocketRoute } from '@pl
 import { request as httpRequest } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
-import { MeSchema } from '@virtual-city/contracts';
-import { libraryWorldVersion } from '@virtual-city/library-world';
+import { MeSchema } from '@aetheria/contracts';
+import { libraryWorldVersion } from '@aetheria/library-world';
 import { Pool } from 'pg';
 const origin='http://127.0.0.1:3300';
 let guestSerial=0;
@@ -73,7 +73,7 @@ test('Library uses the private shared timer with exact-key retry,pause and durab
  await timer.getByRole('button',{name:'Cancel timer',exact:true}).click();await expect(timer.getByText('Timer cancelled',{exact:true})).toBeVisible();expect((await (await context.request.get('/v1/focus/history?worldSlug=library')).json()).items.filter((item:{id:string})=>item.id===committedId)).toHaveLength(1);
 });
 async function scheduleFixtures(accountId:string){
- const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');const db=new Pool({connectionString:url.toString()}),ids=[randomUUID(),randomUUID()],at=new Date(),starts=new Date(+at+120000),ends=new Date(+at+7200000);
+ const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Refusing non-local/non-test DB');const db=new Pool({connectionString:url.toString()}),ids=[randomUUID(),randomUUID()],at=new Date(),starts=new Date(+at+120000),ends=new Date(+at+7200000);
  // Rendering fixtures only;authorized schedule creation is verified separately
  // through the actual owner API and a scoped synthetic organizer port.
  try{for(const [index,visibility] of ['listed','private'].entries())await db.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at) VALUES($1,$2,'library',$3,'1.0.0',$4,'silent',$5,2,'Asia/Ho_Chi_Minh',$6,$7,$8,$9,'OPEN',$10::timestamptz-interval '120 seconds',$10)",[ids[index],accountId,libraryWorldVersion,index===0?'Quiet study fixture':'Private reading secret',visibility,new Date(+at-60000),starts,new Date(+at+3600000),ends,at]);}catch(error){await db.query('DELETE FROM engine_events WHERE id=ANY($1::uuid[])',[ids]).catch(()=>{});await db.end();throw error;}
@@ -93,7 +93,7 @@ test('listed quiet study RSVP uses canonical receipts,private schedules stay hid
 test('late study schedules cannot restore the previous identity after logout',async({page,context})=>{
  const me=await guest(context),fixture=await scheduleFixtures(me.profile.id);let release!:()=>void,seen!:()=>void;const held=new Promise<void>(resolve=>release=resolve),observed=new Promise<void>(resolve=>seen=resolve);
  try{await page.route(/\/v1\/events\?worldSlug=library$/,async route=>{const response=await route.fetch();seen();await held;await route.fulfill({response}).catch(()=>{});});await page.goto('/worlds/library');await observed;
-  expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('virtual-city-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('region',{name:'Quiet study sessions'})).toHaveCount(0);release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText('Quiet study fixture',{exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();
+  expect((await context.request.post('/v1/session/logout',{headers:{origin,'x-csrf-token':me.csrfToken,'idempotency-key':randomUUID()},data:{}})).status()).toBe(200);await page.evaluate(()=>{const bus=new BroadcastChannel('aetheria-soulbound-identity');bus.postMessage({changed:true});bus.close();});await expect(page.getByRole('region',{name:'Quiet study sessions'})).toHaveCount(0);release();await page.unrouteAll({behavior:'wait'});await expect(page.getByText('Quiet study fixture',{exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Open identity',exact:true})).toBeVisible();
  }finally{release?.();await fixture.close();}
 });
 test('study progress is opt-in,phase-only,expires quickly,and an interrupted choice can be retried or stopped',async({page,context,browser},info)=>{

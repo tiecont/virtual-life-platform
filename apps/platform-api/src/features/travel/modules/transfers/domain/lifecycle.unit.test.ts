@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { TravelPhaseSchema } from '@virtual-city/contracts';
+import { TravelPhaseSchema } from '@aetheria/contracts';
 import { advanceTravelLifecycle, createTravelLifecycle, TravelLifecycleSchema, TRAVEL_MAX_TTL_MS, type TravelLifecycle, type TravelLifecycleEvent } from './lifecycle';
 
 const created = createTravelLifecycle(1000), ready = advanceTravelLifecycle(created, 'TARGET_READY', 1001);

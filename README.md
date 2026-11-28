@@ -1,4 +1,4 @@
-# VirtualLife
+# Aetheria: SoulBound
 
 Shared identity, social safety and activities across virtual worlds. The primary
 client direction is Windows Unity/URP, with Rust for new gameplay and NestJS for
@@ -32,6 +32,12 @@ launcher prints the path to a private local login file. Closing the player
 removes those services and the disposable match. See the Unity README for build
 prerequisites and controls.
 
+## Engineering Harness
+
+Use the [engineering harness runbook](specs/engineering/harness.md) to start a
+Codex session, run scoped verification workflows, or recover a task after a
+restart. The workflow and recovery CLIs also run directly under other harnesses.
+
 ## Local UI Preview
 
 Run the existing server runtimes together on an isolated local database:
@@ -43,7 +49,7 @@ pnpm preview:status
 pnpm preview:test
 ```
 
-The first build includes Node and Rust dependencies. Open the Aetheria VI/EN
+The first build includes Node and Rust dependencies. Open the Aetheria: SoulBound VI/EN
 preview at http://127.0.0.1:4900, the portal at http://127.0.0.1:4800 and the
 private console at http://127.0.0.1:4900/admin. The API is on loopback port 4700
 and the native foundation on 4600. PostgreSQL, migrations, API, durable worker,
@@ -66,7 +72,7 @@ port values before starting if the defaults are occupied. Use `preview:logs` for
 diagnostics, `preview:stop` to pause or `preview:down` to remove this stack's
 containers/network while retaining its database volume. Keep its original
 environment for that database; do not reuse production data or credentials.
-The separate existing `vc-*` production-artifact stack is unaffected.
+The separate existing `aetheria-*` production-artifact stack is unaffected.
 
 ## Source Layout
 
@@ -95,6 +101,24 @@ enforced by config/architecture/. Cross-feature consumers use those entry files;
 world packages cannot import another world's persistence or SQL drivers.
 
 ## Work Plan
+
+[config/development-plan.json](config/development-plan.json) contains the MVP
+roadmap, deferred scope, dependencies, acceptance and evidence. The live
+summary is generated directly from the backlog.
+
+```sh
+pnpm plan:status --summary
+pnpm plan:status --milestone M3
+pnpm plan:status --workstream D3-A
+node scripts/engineering-harness/state.mjs list
+```
+
+The seven milestones cover scope, combat, production foundations, integrated
+play, full content, human balance and Windows qualification. M3 packaged
+automation uses the existing Unity game and representative assets. M4 qualifies
+the full production catalog independently. M5 records human playtest and
+balance acceptance. See the [engineering harness](specs/engineering/harness.md)
+for checkpoints, verification workflows, roles and permission profiles.
 
 The repository has two canonical 3D-production skills. Use
 [Aetheria Hero Character VRM](.agents/skills/aetheria-hero-character-vrm/SKILL.md)
@@ -166,7 +190,7 @@ Public rollout, production operations, restricted worlds, content clearance and
 signing require their existing explicit approvals. Merging source does not turn
 those features on.
 
-## Aetheria: Soulbound prelaunch
+## Aetheria: SoulBound prelaunch
 
 The public presentation uses the existing `apps/admin-web` runtime. The private
 operator login is now `/admin`; `/api/admin/*` retains the existing Nest identity,
@@ -174,7 +198,7 @@ session and CSRF boundary. Update operator bookmarks and health probes to
 `/admin`. `ADMIN_ORIGIN` remains an origin (no `/admin` path).
 
 For a local, development-only homepage preview, run
-`AETHERIA_SITE_PREVIEW=1 pnpm --filter @virtual-city/admin-web dev`.
+`AETHERIA_SITE_PREVIEW=1 pnpm --filter @aetheria/admin-web dev`.
 Vietnamese is the default; `?lang=en` selects English. The homepage and closed
 preregistration page return 404 by default and always in production, including
 when the preview variable is set. Preview HTML is private/no-store and noindex;

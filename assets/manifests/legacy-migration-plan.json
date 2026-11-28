@@ -10,7 +10,7 @@
     "Pull the object back through the managed cache and pass the existing asset/Unity checks before changing tracked source assets."
   ],
   "roots": [
-    "apps/unity-client/Assets/VirtualLife/ArtStudies/",
+    "apps/unity-client/Assets/Aetheria/ArtStudies/",
     "assets/characters/icarus/",
     "integrations/legacy-snapshots/",
     "specs/pet-arena/references/"
@@ -21,11 +21,42 @@
     ".glb",
     ".mp4",
     ".tar",
-    ".png"
+    ".png",
+    ".vrm"
   ],
   "files": [
     {
-      "path": "apps/unity-client/Assets/VirtualLife/ArtStudies/Icarus/icarus-study.fbx",
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Modular/Accessories/Icarus_Bow.glb",
+      "sizeBytes": 3535720,
+      "sha256": "7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4",
+      "contentType": "model/gltf-binary",
+      "s3Key": "assets/legacy/v1/7de768381b161037f3e6a549938cd006f45fb72617b4d8140f295424635eebd4/Icarus_Bow.glb",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "GLTF_BINARY"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Modular/Accessories/Icarus_Wings.glb",
+      "sizeBytes": 3497684,
+      "sha256": "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262",
+      "contentType": "model/gltf-binary",
+      "s3Key": "assets/legacy/v1/34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262/Icarus_Wings.glb",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "GLTF_BINARY"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/Source/Icarus.vrm",
+      "sizeBytes": 16892316,
+      "sha256": "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a",
+      "contentType": "model/gltf-binary",
+      "s3Key": "assets/legacy/v1/f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a/Icarus.vrm",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "VRM_BINARY"
+    },
+    {
+      "path": "apps/unity-client/Assets/Aetheria/ArtStudies/Icarus/icarus-study.fbx",
       "sizeBytes": 8322540,
       "sha256": "f9fe114cd53ba29b39a51285df27da33f3dd8bfd8480d05eaa804d3c46c345db",
       "contentType": "application/vnd.autodesk.fbx",
@@ -135,6 +166,46 @@
       "class": "PNG_IMAGE"
     },
     {
+      "path": "assets/characters/icarus/h2-review/01-idle-wings-off.png",
+      "sizeBytes": 327066,
+      "sha256": "cc217497342bd20d8ec6c2ead222a88e44f9dd0fff2439ab205ac4442a95abc7",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/cc217497342bd20d8ec6c2ead222a88e44f9dd0fff2439ab205ac4442a95abc7/01-idle-wings-off.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/h2-review/02-ultimate-wings-bow-fire-zone.png",
+      "sizeBytes": 358430,
+      "sha256": "6b6f49f7194b43300189329a5148aec09953ba02cc3a820f4d4023c99fda11ee",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/6b6f49f7194b43300189329a5148aec09953ba02cc3a820f4d4023c99fda11ee/02-ultimate-wings-bow-fire-zone.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/h2-review/03-back-closeup.png",
+      "sizeBytes": 861969,
+      "sha256": "c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/c008c61d3eea6c3ca883fd964445a0d76e92d1da17698d8118f105374d268a2b/03-back-closeup.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
+      "path": "assets/characters/icarus/h2-review/04-side-profile.png",
+      "sizeBytes": 277683,
+      "sha256": "c0fca8439f608ccdddb0f5cc038f2a9033d1c59501caa76beb428818fe8e86d6",
+      "contentType": "image/png",
+      "s3Key": "assets/legacy/v1/c0fca8439f608ccdddb0f5cc038f2a9033d1c59501caa76beb428818fe8e86d6/04-side-profile.png",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "PNG_IMAGE"
+    },
+    {
       "path": "assets/characters/icarus/white-gold-study/back.png",
       "sizeBytes": 226311,
       "sha256": "96eab5c33a0bd8b6db53a1e18dcbd891d133e18389a8461ec786fb57b830a4f9",
@@ -230,6 +301,16 @@
       "sha256": "1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a",
       "contentType": "video/mp4",
       "s3Key": "assets/legacy/v1/1623b451f713dd18967c1bdaf9c1a871c31070c88190221dacc1ead2d2d5928a/icarus-study.mp4",
+      "status": "QUEUED",
+      "migrationWave": 1,
+      "class": "MP4_VIDEO"
+    },
+    {
+      "path": "assets/characters/icarus/white-gold-study/reduced-motion.mp4",
+      "sizeBytes": 201186,
+      "sha256": "0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e",
+      "contentType": "video/mp4",
+      "s3Key": "assets/legacy/v1/0d11344947022df56b75038a544f43e3f228b226bdc47325e310fc29395ff72e/reduced-motion.mp4",
       "status": "QUEUED",
       "migrationWave": 1,
       "class": "MP4_VIDEO"

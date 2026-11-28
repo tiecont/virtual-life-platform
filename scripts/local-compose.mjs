@@ -43,8 +43,8 @@ export async function prepareLocal({root = defaultRoot, api, web, name = 'vc', p
   const inspected = JSON.parse(command('docker', ['image', 'inspect', api, web]));
   const revisions = inspected.map(image => image.Config.Labels?.['org.opencontainers.image.revision']);
   assert(revisions.every(value => /^[a-f0-9]{40}$/.test(value)) && revisions[0] === revisions[1], 'API/web source revisions differ');
-  assert.equal(inspected[0].Config.Labels?.['org.opencontainers.image.title'], 'vlp-api');
-  assert.equal(inspected[1].Config.Labels?.['org.opencontainers.image.title'], 'vlp-web');
+  assert.equal(inspected[0].Config.Labels?.['org.opencontainers.image.title'], 'aetheria-api');
+  assert.equal(inspected[1].Config.Labels?.['org.opencontainers.image.title'], 'aetheria-web');
   assert(inspected.every(image => image.Config.User === 'node'));
   const names = new Set(command('docker', ['ps', '-a', '--format', '{{.Names}}']).trim().split('\n'));
   for (const service of ['db', 'migrate', 'api', 'web', 'edge']) assert(!names.has(name + '-' + service), 'Container name already owned; choose another prefix');
@@ -59,8 +59,8 @@ export async function prepareLocal({root = defaultRoot, api, web, name = 'vc', p
   const tls = resolve(root, 'tls'); await mkdir(tls, {mode: 0o700});
   command('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', resolve(tls, 'key.pem'), '-out', resolve(tls, 'cert.pem'), '-days', '90', '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1']);
   await chmod(resolve(tls, 'key.pem'), 0o600);
-  const environment = {VC_NAME: name, VC_PORT: String(port), VC_UID: String(process.getuid()), VC_GID: String(process.getgid()), VC_API_IMAGE: api, VC_WEB_IMAGE: web, VC_DB_PASSWORD: randomBytes(32).toString('hex'),
-    VC_SESSION_SECRET: randomBytes(48).toString('hex'), VC_SUBNET: network.subnet, VC_DYNAMIC_RANGE: network.dynamic, VC_PROXY_IP: network.proxy, VC_TLS_DIRECTORY: tls};
+  const environment = {AETHERIA_NAME: name, AETHERIA_PORT: String(port), AETHERIA_UID: String(process.getuid()), AETHERIA_GID: String(process.getgid()), AETHERIA_API_IMAGE: api, AETHERIA_WEB_IMAGE: web, AETHERIA_DB_PASSWORD: randomBytes(32).toString('hex'),
+    AETHERIA_SESSION_SECRET: randomBytes(48).toString('hex'), AETHERIA_SUBNET: network.subnet, AETHERIA_DYNAMIC_RANGE: network.dynamic, AETHERIA_PROXY_IP: network.proxy, AETHERIA_TLS_DIRECTORY: tls};
   assert(Object.values(environment).every(value => !/[\r\n$#'"\s]/.test(value)), 'Unsupported local environment path');
   await writeFile(resolve(root, 'runtime.env'), Object.entries(environment).map(([key, value]) => key + '=' + value).join('\n') + '\n', {mode: 0o600, flag: 'wx'});
   const facts = {sourceRevision: revisions[0], api, web, name, port, origin: 'https://localhost:' + port, publicRelease: false};

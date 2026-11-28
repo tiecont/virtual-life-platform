@@ -1,10 +1,15 @@
 {
   "dependencies": {
+    "com.unity.addressables": "2.7.6",
     "com.unity.render-pipelines.universal": "17.3.0",
     "com.unity.test-framework": "1.6.0",
+    "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Packages/UniGLTF#efd20f62f1bf0ac3fcc34de1e497324c5197d146",
+    "com.vrmc.vrm": "https://github.com/vrm-c/UniVRM.git?path=/Packages/VRM10#efd20f62f1bf0ac3fcc34de1e497324c5197d146",
+    "jp.lilxyzw.liltoon": "https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon#e698a2f791bd28dd1aabf227c74f14bedeca3587",
     "com.unity.modules.imgui": "1.0.0",
-    "com.unity.modules.physics": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
-    "com.unity.modules.screencapture": "1.0.0"
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.screencapture": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0"
   }
 }

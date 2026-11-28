@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "catalogId": "virtual-life-pet-arena-catalog-draft-v3.1",
+  "catalogId": "aetheria-soulbound-pet-arena-catalog-draft-v3.1",
   "sourceRepoMainSha": "afd914e089fe097f858bb4ce573cc315790480d4",
   "sourcePath": "specs/pet-arena/catalog-v2.json",
   "state": "DRAFT_ONLY",

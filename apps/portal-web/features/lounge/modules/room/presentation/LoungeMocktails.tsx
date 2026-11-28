@@ -1,6 +1,6 @@
 'use client';
-import type { Me,TravelSource } from '@virtual-city/contracts';
-import { loungeServicePolicy } from '@virtual-city/lounge-world';
+import type { Me,TravelSource } from '@aetheria/contracts';
+import { loungeServicePolicy } from '@aetheria/lounge-world';
 import VoluntaryStaffControls from '../../../../hospitality/modules/hospitality/presentation/VoluntaryStaffControls';
 import useHospitalityOrders,{type Orders} from '../../../../hospitality/modules/hospitality/application/use-hospitality-orders';
 export function LoungeBartender({me,source}:{me:Me;source:TravelSource|null}){return <VoluntaryStaffControls me={me} source={source} worldSlug="lounge" venue="lounge" policy={loungeServicePolicy} introduction="Bartending is voluntary and separate from performer or host permissions. Start a shift explicitly;stop at any time. Everything served is a virtual mocktail. No alcohol,payment,tip or score is involved." footer="At most two voluntary bartenders share the room's existing capacity. Stop is available outside the room and while a shift request is pending. A shift does not move your avatar or grant stage/moderator authority."/>;}

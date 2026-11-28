@@ -1,4 +1,4 @@
-import { WorldCatalogSchema } from '@virtual-city/contracts';
+import { WorldCatalogSchema } from '@aetheria/contracts';
 export const cityPlots = [6,15,24].flatMap(y=>[7,18,30,41].map(x=>({x,y})));
 // Schematic display slots, not authoritative rooms or physical-world coordinates.
 export function layoutCityWorlds(raw:unknown) {

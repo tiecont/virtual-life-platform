@@ -1,4 +1,4 @@
-import {RuntimeControlContextSchema,RuntimeControlViewSchema,RuntimeControlSnapshotSchema,RuntimeControlCommandSchema,RuntimeControlResultSchema,RuntimeControlAuditSchema} from '@virtual-city/contracts';
+import {RuntimeControlContextSchema,RuntimeControlViewSchema,RuntimeControlSnapshotSchema,RuntimeControlCommandSchema,RuntimeControlResultSchema,RuntimeControlAuditSchema} from '@aetheria/contracts';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {RuntimePolicyStore,type RuntimeControlPort} from '../infrastructure/runtime-policy-store';

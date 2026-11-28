@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AvatarKeySchema } from '@virtual-city/contracts';
+import { AvatarKeySchema } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 export const DeadlinePrincipalSchema=z.strictObject({subject:z.uuid(),expiresAt:z.iso.datetime()});
 export type DeadlinePrincipal=z.infer<typeof DeadlinePrincipalSchema>;

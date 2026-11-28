@@ -3,7 +3,7 @@ import {guest,enter} from '../support/sandbox-browser-fixtures';
 import { test, expect, type Page, type BrowserContext, type WebSocketRoute } from '@playwright/test';
 import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { isWalkable, sandboxScene } from '@virtual-city/world-sdk';
+import { isWalkable, sandboxScene } from '@aetheria/world-sdk';
 import { armScenePositions } from '../support/scene-cadence';
 
 const origin = 'http://127.0.0.1:3300';
@@ -183,7 +183,7 @@ test('identity replacement clears sprites and a remounted scene owns only one ca
     await expect(page.getByText('Old Scene Identity', { exact: true })).toHaveCount(0);
     await guest(context, 'New Scene Identity');
     // The real guest HTTP setup changed cookies; trigger the same identity notification as the identity UI.
-    await identity.evaluate(() => { const bus = new BroadcastChannel('virtual-city-identity'); bus.postMessage({ type: 'session' }); bus.close(); });
+    await identity.evaluate(() => { const bus = new BroadcastChannel('aetheria-soulbound-identity'); bus.postMessage({ type: 'session' }); bus.close(); });
     // The shared header also shows the current identity. Assert the room's own
     // refreshed identity rather than racing two legitimate copies of the name.
     await expect(page.getByRole('complementary',{name:'Your room'}).getByText('New Scene Identity', { exact: true })).toBeVisible();

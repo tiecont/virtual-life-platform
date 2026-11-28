@@ -3,7 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import {releaseTargets} from './artifact-targets.mjs';
 
-export const repository = 'tiecont/virtual-life-platform';
+export const repository = 'tiecont/aetheria-soulbound';
 export const qualityWorkflow = '.github/workflows/quality.yml';
 export const shaPattern = /^[a-f0-9]{40}$/;
 export const digestPattern = /^sha256:[a-f0-9]{64}$/;
@@ -14,7 +14,7 @@ export function validateArtifactPolicy(value) {
   assert.equal(value.branch, 'main'); assert.equal(value.qualityWorkflow, qualityWorkflow);
   assert.equal(typeof value.publishEnabled, 'boolean');
   assert.equal(value.autoMerge, false); assert.equal(value.productionAutoPromotion, false); assert.equal(value.ownerPromotionRequired, true);
-  assert.deepEqual(value.images,Object.fromEntries(targets.map(target=>[target,'ghcr.io/tiecont/vlp-'+target])));
+  assert.deepEqual(value.images,Object.fromEntries(targets.map(target=>[target,'ghcr.io/tiecont/aetheria-'+target])));
   assert(value.candidate === null || /^releases\/[a-z0-9-]+$/.test(value.candidate));
   return value;
 }
@@ -28,11 +28,13 @@ export function imageChanges(files) {
 }
 
 export function artifactCiResult(needs) {
-  if (!needs || typeof needs !== 'object' || Array.isArray(needs) || Object.keys(needs).sort().join(',') !== 'browser,core,images,plan') return false;
-  if (!['plan', 'core', 'browser'].every(job => needs[job]?.result === 'success')) return false;
+  if (!needs || typeof needs !== 'object' || Array.isArray(needs) || Object.keys(needs).sort().join(',') !== 'browser,core,images,integration,plan') return false;
+  if (!['plan', 'core', 'integration', 'browser'].every(job => needs[job]?.result === 'success')) return false;
   const images = needs.plan.outputs?.images;
   return images === 'true' ? needs.images?.result === 'success' : images === 'false' && needs.images?.result === 'skipped';
 }
+
+export const integrationJobNames = Array.from({length: 4}, (_, index) => `integration (${index + 1}/4)`);
 
 export function trustedRun(run, jobs, groups, {allowNoImages = false} = {}) {
   assert(run && run.repository?.full_name === repository && run.head_repository?.full_name === repository);
@@ -40,7 +42,7 @@ export function trustedRun(run, jobs, groups, {allowNoImages = false} = {}) {
   assert.equal(run.event, 'push'); assert.equal(run.head_branch, 'main'); assert(shaPattern.test(run.head_sha));
   assert.equal(run.status, 'completed'); assert.equal(run.conclusion, 'success');
   assert(Number.isSafeInteger(run.id) && run.id > 0 && Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0);
-  const names = ['change-plan', 'core-checks', 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')];
+  const names = ['change-plan', 'core-checks', ...integrationJobNames, 'runtime-images', 'quality', ...groups.map(group => 'browser (' + group + ')')];
   assert(Array.isArray(jobs));
   for (const name of names) {
     const matches = jobs.filter(job => job.name === name);

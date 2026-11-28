@@ -12,7 +12,7 @@ static class UnitySyntax
     {
         var options = new CSharpParseOptions(LanguageVersion.CSharp9,
             preprocessorSymbols: new[] { "UNITY_EDITOR", "UNITY_STANDALONE_LINUX", "DEVELOPMENT_BUILD" });
-        var files = Directory.GetFiles("apps/unity-client/Assets/VirtualLife", "*.cs", SearchOption.AllDirectories)
+        var files = Directory.GetFiles("apps/unity-client/Assets/Aetheria", "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.Contains(Path.DirectorySeparatorChar + "Generated" + Path.DirectorySeparatorChar))
             .OrderBy(path => path).ToArray();
         if (files.Length == 0) throw new InvalidOperationException("No authored Unity source found");

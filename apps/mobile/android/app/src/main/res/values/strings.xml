@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Virtual Life Platform</string>
-    <string name="title_activity_main">Virtual Life Platform</string>
-    <string name="package_name">life.virtualcity.spike</string>
-    <string name="custom_url_scheme">life.virtualcity.spike</string>
+    <string name="app_name">Aetheria: SoulBound</string>
+    <string name="title_activity_main">Aetheria: SoulBound</string>
+    <string name="package_name">life.aetheriasoulbound.spike</string>
+    <string name="custom_url_scheme">life.aetheriasoulbound.spike</string>
 </resources>

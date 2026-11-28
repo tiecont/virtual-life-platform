@@ -12,7 +12,7 @@ let admin:Pool,pool:Pool,identity:IdentityService,store:RuntimeAdmissionStore;
 const keys=generateKeyPairSync('ed25519');
 beforeAll(async()=>{
  const url=new URL(process.env.TEST_DATABASE_URL??'');
- if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');
+ if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))||url.search||url.hash)throw Error('Disposable local DB required');
  admin=new Pool({connectionString:url.toString()});await admin.query(`CREATE SCHEMA "${schema}"`);
  url.searchParams.set('options','-c search_path='+schema);pool=new Pool({connectionString:url.toString(),max:12});await migrate(pool);
  identity=new IdentityService(pool,readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'native-admission-test-only-secret-000001'}));

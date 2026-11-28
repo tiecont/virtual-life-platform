@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { RoomMotionSchema, WorldDefinitionSchema } from '@virtual-city/contracts';
+import { RoomMotionSchema, WorldDefinitionSchema } from '@aetheria/contracts';
 import { sandboxScene, findScenePath, isWalkable, motionPosition, createSandboxWorld } from '../src';
 
 it('routes around solid tables with bounded adjacent orthogonal tiles and rejects unreachable destinations', () => {

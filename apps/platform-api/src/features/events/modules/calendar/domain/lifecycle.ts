@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EventScheduleSchema, EventCapacityPolicySchema, EventPhaseSchema, ReservationPhaseSchema, type EventSchedule, type EventCapacityPolicy, type EventPhase } from '@virtual-city/contracts';
+import { EventScheduleSchema, EventCapacityPolicySchema, EventPhaseSchema, ReservationPhaseSchema, type EventSchedule, type EventCapacityPolicy, type EventPhase } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 
 const time = z.number().int().nonnegative().max(8640000000000000);

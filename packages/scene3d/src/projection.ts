@@ -1,6 +1,6 @@
-import type {RoomSnapshot,SceneManifest} from '@virtual-city/contracts';
-import type {SceneQuality} from '@virtual-city/client-sdk';
-import {sceneEntities,motionPosition,isWalkable} from '@virtual-city/world-sdk';
+import type {RoomSnapshot,SceneManifest} from '@aetheria/contracts';
+import type {SceneQuality} from '@aetheria/client-sdk';
+import {sceneEntities,motionPosition,isWalkable} from '@aetheria/world-sdk';
 
 export type RoomActor=ReturnType<RoomProjection['actors']>[number];
 export type PointerCandidate={seatId:string}|{point:{x:number;y:number}};

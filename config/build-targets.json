@@ -5,8 +5,8 @@
   "packageManager": "pnpm@11.28.5",
   "rootBuild": "pnpm -r build",
   "packagesBuild": "pnpm --filter './packages/*' -r build",
-  "lockSha256": "12af420f5bad228a794d13ea7a87059644ae0e404f41d4df00260d15d042be38",
-  "workspaceConfigSha256": "0c79bdd36e2d8eac11365b4cba92045f1d494d8e191f41de14298de2263d0ec1",
+  "lockSha256": "6d301a51b361916791fc7edb2202d946f94f9939c9d45770d06c32ac4a969115",
+  "workspaceConfigSha256": "53ca1869bbadbc2959d38db10d7e45bf61416de45c57e8267fa1b619ea50c225",
   "rootDependencies": {
     "dependencies": {},
     "devDependencies": {
@@ -20,55 +20,56 @@
       "@types/react": "19.3.0",
       "@types/react-dom": "19.3.0",
       "@playwright/test": "1.64.1",
+      "wrangler": "4.167.0",
       "vitest": "4.1.12",
       "tsx": "4.21.0",
       "pg": "8.23.1",
-      "@virtual-city/contracts": "workspace:*",
-      "@virtual-city/boardgame-core": "workspace:*",
-      "@virtual-city/library-world": "workspace:*",
-      "@virtual-city/park-world": "workspace:*",
-      "@virtual-city/deadline-world": "workspace:*",
-      "@virtual-city/maid-world": "workspace:*",
-      "@virtual-city/restaurant-world": "workspace:*",
-      "@virtual-city/lounge-world": "workspace:*",
-      "@virtual-city/world-sdk": "workspace:*",
+      "@aetheria/contracts": "workspace:*",
+      "@aetheria/boardgame-core": "workspace:*",
+      "@aetheria/library-world": "workspace:*",
+      "@aetheria/park-world": "workspace:*",
+      "@aetheria/deadline-world": "workspace:*",
+      "@aetheria/maid-world": "workspace:*",
+      "@aetheria/restaurant-world": "workspace:*",
+      "@aetheria/lounge-world": "workspace:*",
+      "@aetheria/world-sdk": "workspace:*",
       "socket.io-client": "4.8.4"
     },
     "peerDependencies": {},
     "optionalDependencies": {}
   },
   "buildOrder": [
-    "@virtual-city/contracts",
-    "@virtual-city/admin-web",
-    "@virtual-city/boardgame-core",
-    "@virtual-city/client-sdk",
-    "@virtual-city/world-sdk",
-    "@virtual-city/deadline-world",
-    "@virtual-city/focus-ui",
-    "@virtual-city/pixi-scene",
-    "@virtual-city/game-client",
-    "@virtual-city/lantern-lodge-world",
-    "@virtual-city/library-world",
-    "@virtual-city/lounge-world",
-    "@virtual-city/maid-world",
-    "@virtual-city/scene3d",
-    "@virtual-city/mobile",
-    "@virtual-city/native-protocol",
-    "@virtual-city/park-world",
-    "@virtual-city/restaurant-world",
-    "@virtual-city/platform-api",
-    "@virtual-city/portal-web"
+    "@aetheria/contracts",
+    "@aetheria/admin-web",
+    "@aetheria/boardgame-core",
+    "@aetheria/client-sdk",
+    "@aetheria/world-sdk",
+    "@aetheria/deadline-world",
+    "@aetheria/focus-ui",
+    "@aetheria/pixi-scene",
+    "@aetheria/game-client",
+    "@aetheria/lantern-lodge-world",
+    "@aetheria/library-world",
+    "@aetheria/lounge-world",
+    "@aetheria/maid-world",
+    "@aetheria/scene3d",
+    "@aetheria/mobile",
+    "@aetheria/native-protocol",
+    "@aetheria/park-world",
+    "@aetheria/restaurant-world",
+    "@aetheria/platform-api",
+    "@aetheria/portal-web"
   ],
   "projects": [
     {
-      "name": "@virtual-city/admin-web",
+      "name": "@aetheria/admin-web",
       "path": "apps/admin-web",
       "kind": "application",
       "build": "next build --webpack",
       "typecheck": "tsc --noEmit",
       "dependencies": [
-        "@virtual-city/contracts",
-        "@virtual-city/ui"
+        "@aetheria/contracts",
+        "@aetheria/ui"
       ],
       "configurationDependencies": [],
       "compilerInputs": [
@@ -79,7 +80,7 @@
       ],
       "externalPins": {
         "dependencies": {
-          "next": "16.4.4",
+          "next": "16.4.6",
           "react": "19.3.1",
           "react-dom": "19.3.1",
           "three": "0.187.0",
@@ -94,17 +95,17 @@
       "applicationConsumers": []
     },
     {
-      "name": "@virtual-city/boardgame-core",
+      "name": "@aetheria/boardgame-core",
       "path": "packages/boardgame-core",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts"
+        "@aetheria/config",
+        "@aetheria/contracts"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -123,21 +124,21 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api"
+        "@aetheria/platform-api"
       ]
     },
     {
-      "name": "@virtual-city/client-sdk",
+      "name": "@aetheria/client-sdk",
       "path": "packages/client-sdk",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts"
+        "@aetheria/config",
+        "@aetheria/contracts"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -156,12 +157,12 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/config",
+      "name": "@aetheria/config",
       "path": "packages/config",
       "kind": "source-only",
       "build": null,
@@ -181,23 +182,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/admin-web",
-        "@virtual-city/mobile",
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/admin-web",
+        "@aetheria/mobile",
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/contracts",
+      "name": "@aetheria/contracts",
       "path": "packages/contracts",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -218,25 +219,25 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/admin-web",
-        "@virtual-city/mobile",
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/admin-web",
+        "@aetheria/mobile",
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/deadline-world",
+      "name": "@aetheria/deadline-world",
       "path": "packages/deadline-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -255,23 +256,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/focus-ui",
+      "name": "@aetheria/focus-ui",
       "path": "packages/focus-ui",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts"
+        "@aetheria/config",
+        "@aetheria/contracts"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -294,24 +295,24 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/portal-web"
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/game-client",
+      "name": "@aetheria/game-client",
       "path": "packages/game-client",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/client-sdk",
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/pixi-scene",
-        "@virtual-city/world-sdk"
+        "@aetheria/client-sdk",
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/pixi-scene",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -333,23 +334,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/lantern-lodge-world",
+      "name": "@aetheria/lantern-lodge-world",
       "path": "packages/lantern-lodge-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -368,23 +369,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/library-world",
+      "name": "@aetheria/library-world",
       "path": "packages/library-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -403,23 +404,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/lounge-world",
+      "name": "@aetheria/lounge-world",
       "path": "packages/lounge-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -438,23 +439,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/maid-world",
+      "name": "@aetheria/maid-world",
       "path": "packages/maid-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -473,29 +474,29 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/mobile",
+      "name": "@aetheria/mobile",
       "path": "apps/mobile",
       "kind": "application",
       "build": "tsc --noEmit && vite build",
       "typecheck": "tsc --noEmit",
       "dependencies": [
-        "@virtual-city/client-sdk",
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/deadline-world",
-        "@virtual-city/game-client",
-        "@virtual-city/maid-world",
-        "@virtual-city/pixi-scene",
-        "@virtual-city/scene3d"
+        "@aetheria/client-sdk",
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/deadline-world",
+        "@aetheria/game-client",
+        "@aetheria/maid-world",
+        "@aetheria/pixi-scene",
+        "@aetheria/scene3d"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -525,16 +526,16 @@
       "applicationConsumers": []
     },
     {
-      "name": "@virtual-city/native-protocol",
+      "name": "@aetheria/native-protocol",
       "path": "packages/native-protocol",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -557,18 +558,18 @@
       "applicationConsumers": []
     },
     {
-      "name": "@virtual-city/park-world",
+      "name": "@aetheria/park-world",
       "path": "packages/park-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -587,23 +588,23 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/pixi-scene",
+      "name": "@aetheria/pixi-scene",
       "path": "packages/pixi-scene",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -624,31 +625,31 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/platform-api",
+      "name": "@aetheria/platform-api",
       "path": "apps/platform-api",
       "kind": "application",
       "build": "node ../../scripts/clean-api-output.mjs && tsc -p tsconfig.json && node ../../scripts/copy-migrations.mjs",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/boardgame-core",
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/deadline-world",
-        "@virtual-city/lantern-lodge-world",
-        "@virtual-city/library-world",
-        "@virtual-city/lounge-world",
-        "@virtual-city/maid-world",
-        "@virtual-city/park-world",
-        "@virtual-city/restaurant-world",
-        "@virtual-city/world-sdk"
+        "@aetheria/boardgame-core",
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/deadline-world",
+        "@aetheria/lantern-lodge-world",
+        "@aetheria/library-world",
+        "@aetheria/lounge-world",
+        "@aetheria/maid-world",
+        "@aetheria/park-world",
+        "@aetheria/restaurant-world",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -685,26 +686,26 @@
       "applicationConsumers": []
     },
     {
-      "name": "@virtual-city/portal-web",
+      "name": "@aetheria/portal-web",
       "path": "apps/portal-web",
       "kind": "application",
       "build": "next build --webpack",
       "typecheck": "tsc --noEmit",
       "dependencies": [
-        "@virtual-city/client-sdk",
-        "@virtual-city/contracts",
-        "@virtual-city/deadline-world",
-        "@virtual-city/focus-ui",
-        "@virtual-city/game-client",
-        "@virtual-city/lantern-lodge-world",
-        "@virtual-city/library-world",
-        "@virtual-city/lounge-world",
-        "@virtual-city/maid-world",
-        "@virtual-city/park-world",
-        "@virtual-city/pixi-scene",
-        "@virtual-city/restaurant-world",
-        "@virtual-city/scene3d",
-        "@virtual-city/world-sdk"
+        "@aetheria/client-sdk",
+        "@aetheria/contracts",
+        "@aetheria/deadline-world",
+        "@aetheria/focus-ui",
+        "@aetheria/game-client",
+        "@aetheria/lantern-lodge-world",
+        "@aetheria/library-world",
+        "@aetheria/lounge-world",
+        "@aetheria/maid-world",
+        "@aetheria/park-world",
+        "@aetheria/pixi-scene",
+        "@aetheria/restaurant-world",
+        "@aetheria/scene3d",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [],
       "compilerInputs": [
@@ -715,7 +716,7 @@
       ],
       "externalPins": {
         "dependencies": {
-          "next": "16.4.4",
+          "next": "16.4.6",
           "react": "19.3.1",
           "react-dom": "19.3.1",
           "socket.io-client": "4.8.4"
@@ -727,18 +728,18 @@
       "applicationConsumers": []
     },
     {
-      "name": "@virtual-city/restaurant-world",
+      "name": "@aetheria/restaurant-world",
       "path": "packages/restaurant-world",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -757,24 +758,24 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/scene3d",
+      "name": "@aetheria/scene3d",
       "path": "packages/scene3d",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/client-sdk",
-        "@virtual-city/config",
-        "@virtual-city/contracts",
-        "@virtual-city/world-sdk"
+        "@aetheria/client-sdk",
+        "@aetheria/config",
+        "@aetheria/contracts",
+        "@aetheria/world-sdk"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -797,12 +798,12 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/portal-web"
       ]
     },
     {
-      "name": "@virtual-city/ui",
+      "name": "@aetheria/ui",
       "path": "packages/ui",
       "kind": "source-only",
       "build": null,
@@ -817,21 +818,21 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/admin-web"
+        "@aetheria/admin-web"
       ]
     },
     {
-      "name": "@virtual-city/world-sdk",
+      "name": "@aetheria/world-sdk",
       "path": "packages/world-sdk",
       "kind": "compiled-package",
       "build": "tsc -p tsconfig.json",
       "typecheck": "tsc -p tsconfig.json --noEmit",
       "dependencies": [
-        "@virtual-city/config",
-        "@virtual-city/contracts"
+        "@aetheria/config",
+        "@aetheria/contracts"
       ],
       "configurationDependencies": [
-        "@virtual-city/config"
+        "@aetheria/config"
       ],
       "compilerInputs": [
         {
@@ -850,9 +851,9 @@
         "optionalDependencies": {}
       },
       "applicationConsumers": [
-        "@virtual-city/mobile",
-        "@virtual-city/platform-api",
-        "@virtual-city/portal-web"
+        "@aetheria/mobile",
+        "@aetheria/platform-api",
+        "@aetheria/portal-web"
       ]
     }
   ]

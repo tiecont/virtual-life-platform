@@ -1,11 +1,11 @@
+use aetheria_gateway::{Fault, GameReply, Task, durable::GameCommands};
+use aetheria_persistence::Game;
+use aetheria_persistence::{Error, Host, Request, RewardStatus};
+use aetheria_protocol::public;
+use aetheria_security::durable::{DurableSession, DurableTrust};
 use std::sync::atomic::{AtomicU64, Ordering};
 use tokio_postgres::Client;
 use uuid::Uuid;
-use vl_gateway::{Fault, GameReply, Task, durable::GameCommands};
-use vl_persistence::Game;
-use vl_persistence::{Error, Host, Request, RewardStatus};
-use vl_protocol::public;
-use vl_security::durable::{DurableSession, DurableTrust};
 
 pub trait NativeGame: Game {
     fn interaction(&self, _kind: &str) -> Option<&'static str> {

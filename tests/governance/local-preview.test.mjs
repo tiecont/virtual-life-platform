@@ -5,7 +5,7 @@ import {mkdtemp,mkdir,writeFile,readFile,rm,chmod,symlink} from 'node:fs/promise
 import {tmpdir} from 'node:os';
 import {join,delimiter} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {ProgressionPolicySchema} from '@virtual-city/contracts';
+import {ProgressionPolicySchema} from '@aetheria/contracts';
 import {readPreviewEnvironment} from '../../scripts/local-preview.mjs';
 const env={PREVIEW_DB_PASSWORD:'a'.repeat(64),PREVIEW_SESSION_SECRET:'b'.repeat(96),PREVIEW_OPERATOR_KEY:'c'.repeat(64),PREVIEW_METRICS_TOKEN:'d'.repeat(64),PREVIEW_WEB_PORT:'4800',PREVIEW_ADMIN_PORT:'4900',PREVIEW_API_PORT:'4700',PREVIEW_NATIVE_PORT:'4600'};
 const serialize=value=>Object.entries(value).map(([key,value])=>key+'='+value).join('\n');
@@ -44,7 +44,7 @@ test('all local server runtimes bind only loopback and preserve auth, migration 
   assert.equal(s.api.environment.ADMIN_ORIGIN,'http://127.0.0.1:4900');assert.equal(s.admin.environment.AETHERIA_SITE_PREVIEW,'1');assert.equal(s.admin.environment.NODE_ENV,'development');
   for(const key of ['DATABASE_URL','SESSION_SECRET','OPERATOR_AUTH_KEY'])assert(!Object.hasOwn(s.admin.environment,key));
   for(const key of ['SESSION_SECRET','OPERATOR_AUTH_KEY','NATIVE_REWARD_POLICY_FILE'])assert(!Object.hasOwn(s.worker.environment,key));
-  assert.equal(s['game-runtime'].environment.VL_GAMEPLAY_ENABLED,'0');
+  assert.equal(s['game-runtime'].environment.AETHERIA_GAMEPLAY_ENABLED,'0');
   const policy=ProgressionPolicySchema.parse(JSON.parse(await readFile('infra/compose/preview-worker.json','utf8')));for(const rule of Object.values(policy.worlds)){assert.deepEqual(rule.kinds,[]);assert.equal(rule.dailyXp,0);}
  }finally{await rm(root,{recursive:true,force:true});}
 });

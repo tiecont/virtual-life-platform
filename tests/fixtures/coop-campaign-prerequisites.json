@@ -1,0 +1,8 @@
+{
+  "cinder-terraces": null,
+  "tideglass-lagoon": "cinder-terraces",
+  "stormcoil-fields": "tideglass-lagoon",
+  "lantern-necropolis": "stormcoil-fields",
+  "ochre-labyrinth": "lantern-necropolis",
+  "dawn-prism-sanctum": "ochre-labyrinth"
+}

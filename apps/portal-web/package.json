@@ -1,5 +1,5 @@
 {
-  "name": "@virtual-city/portal-web",
+  "name": "@aetheria/portal-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,23 +9,23 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@virtual-city/scene3d":"workspace:*",
-    "@virtual-city/focus-ui": "workspace:*",
-    "@virtual-city/library-world": "workspace:*",
-    "@virtual-city/deadline-world": "workspace:*",
-    "@virtual-city/maid-world": "workspace:*",
-    "@virtual-city/park-world": "workspace:*",
-    "@virtual-city/restaurant-world": "workspace:*",
-    "@virtual-city/lounge-world": "workspace:*",
-    "@virtual-city/contracts": "workspace:*",
-    "@virtual-city/lantern-lodge-world": "workspace:*",
-    "@virtual-city/world-sdk": "workspace:*",
-    "@virtual-city/pixi-scene": "workspace:*",
-    "next": "16.4.4",
+    "@aetheria/scene3d":"workspace:*",
+    "@aetheria/focus-ui": "workspace:*",
+    "@aetheria/library-world": "workspace:*",
+    "@aetheria/deadline-world": "workspace:*",
+    "@aetheria/maid-world": "workspace:*",
+    "@aetheria/park-world": "workspace:*",
+    "@aetheria/restaurant-world": "workspace:*",
+    "@aetheria/lounge-world": "workspace:*",
+    "@aetheria/contracts": "workspace:*",
+    "@aetheria/lantern-lodge-world": "workspace:*",
+    "@aetheria/world-sdk": "workspace:*",
+    "@aetheria/pixi-scene": "workspace:*",
+    "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "socket.io-client": "4.8.4",
-    "@virtual-city/game-client": "workspace:*",
-    "@virtual-city/client-sdk": "workspace:*"
+    "@aetheria/game-client": "workspace:*",
+    "@aetheria/client-sdk": "workspace:*"
   }
 }

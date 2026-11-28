@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ChatSendSchema, ChatMessageSchema, ModerationDecisionSchema, SafetyPolicySchema, WorldSlugSchema, type ChatSend, type ChatMessage, type ChatAccepted, type ChatErrorCode, type SafetyPolicy } from '@virtual-city/contracts';
+import { ChatSendSchema, ChatMessageSchema, ModerationDecisionSchema, SafetyPolicySchema, WorldSlugSchema, type ChatSend, type ChatMessage, type ChatAccepted, type ChatErrorCode, type SafetyPolicy } from '@aetheria/contracts';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';
 import { WindowLimiter } from '../../../../identity/modules/accounts/domain/limits';

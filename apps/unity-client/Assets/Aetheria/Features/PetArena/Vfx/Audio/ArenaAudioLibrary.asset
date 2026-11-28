@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0f6eb398f53b6bbd8f00fc54bc9bed1, type: 3}
+  m_Name: ArenaAudioLibrary
+  m_EditorClassIdentifier: Aetheria.PetArena.Vfx::Aetheria.PetArena.Vfx.ArenaAudioLibrary
+  cues:
+  - cue: 1
+    clip: {fileID: 0}
+    volume: 0.6
+    pitch: {x: 1, y: 1}
+  - cue: 2
+    clip: {fileID: 0}
+    volume: 0.55
+    pitch: {x: 1, y: 1}
+  - cue: 3
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 4
+    clip: {fileID: 0}
+    volume: 0.55
+    pitch: {x: 1, y: 1}
+  - cue: 5
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 6
+    clip: {fileID: 0}
+    volume: 0.5
+    pitch: {x: 1, y: 1}
+  - cue: 7
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 8
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 9
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 10
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 11
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 12
+    clip: {fileID: 0}
+    volume: 0.95
+    pitch: {x: 1, y: 1}
+  - cue: 13
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 14
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 15
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 16
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 17
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 18
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 19
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 20
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 21
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 22
+    clip: {fileID: 0}
+    volume: 0.9
+    pitch: {x: 1, y: 1}
+  - cue: 23
+    clip: {fileID: 0}
+    volume: 0.85
+    pitch: {x: 1, y: 1}
+  - cue: 24
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 25
+    clip: {fileID: 0}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+  - cue: 26
+    clip: {fileID: 0}
+    volume: 0.7
+    pitch: {x: 1, y: 1}
+  ambiences:
+  - ambience: 1
+    clip: {fileID: 0}
+    volume: 0.32
+  - ambience: 2
+    clip: {fileID: 0}
+    volume: 0.4
+  - ambience: 3
+    clip: {fileID: 0}
+    volume: 0.36
+  music:
+  - score: 1
+    clip: {fileID: 0}
+    volume: 0.3
+  - score: 2
+    clip: {fileID: 0}
+    volume: 0.34

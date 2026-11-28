@@ -1,0 +1,10 @@
+{
+  "id": "legacy-maid-snapshot",
+  "version": "1.0.0",
+  "stage": "reference",
+  "s3Key": "assets/legacy-maid-snapshot/1.0.0/maid.tar",
+  "sha256": "599cc3945fcac7d82d9d998c7b0cecf0c8beb90a47accae5e034cb20ce977890",
+  "sizeBytes": 348160,
+  "contentType": "application/x-tar",
+  "localCachePath": ".cache/assets/legacy-maid-snapshot/1.0.0/maid.tar"
+}

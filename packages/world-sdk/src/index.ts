@@ -1,4 +1,4 @@
-import { SCHEMA_VERSION } from '@virtual-city/contracts';
+import { SCHEMA_VERSION } from '@aetheria/contracts';
 export * from './registry';
 export * from './sandbox';
 export * from './room-sync';

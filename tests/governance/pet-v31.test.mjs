@@ -12,7 +12,7 @@ test('V3.1 canonical catalog validates all240 drafts against actual upstream114'
  const result=check(source.pathname);assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/240 draft Pets/);
 });
 test('V3.1 rejects tampering and rehashed semantic violations',async()=>{
- const dir=await mkdtemp(join(tmpdir(),'vl-v31-'));
+ const dir=await mkdtemp(join(tmpdir(),'aetheria-v31-'));
  try{
   for(const [file,mutate,rehash] of [
    ['pets_initial_240.json',c=>{c.pets[0].name='Tampered';},false],

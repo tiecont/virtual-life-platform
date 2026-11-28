@@ -10,13 +10,57 @@
   "modules": {
     "pets": {
       "owner": "platform.pet-content",
-      "responsibility": "Default-off versioned Pet metadata drafts; no combat or platform reward writer",
+    "responsibility": "Default-off versioned Pet metadata drafts and local/test Wave 1 rules previews; no production match or platform reward writer",
       "currentPublicEntryFiles": [
         "features/pets/modules/content/infrastructure/draft-store",
         "features/pets/modules/content/infrastructure/manifest-store",
-        "features/pets/modules/content/infrastructure/acquisition-draft-store"
+      "features/pets/modules/content/infrastructure/acquisition-draft-store",
+      "features/pets/modules/wave1/application/service",
+      "features/pets/modules/wave1/domain/progression",
+      "features/pets/modules/wave1/infrastructure/store",
+      "features/pets/modules/wave1/presentation/http",
+      "features/pets/modules/wave-a-artifacts/application/service",
+      "features/pets/modules/wave-a-artifacts/infrastructure/store",
+      "features/pets/modules/wave-a-artifacts/presentation/http",
+      "features/pets/modules/wave-a-arena8/application/service",
+      "features/pets/modules/wave-a-arena8/application/allocation",
+      "features/pets/modules/wave-a-arena8/application/native-provisioner",
+      "features/pets/modules/wave-a-arena8/infrastructure/native-match-store",
+      "features/pets/modules/wave-a-arena8/infrastructure/native-runtime",
+      "features/pets/modules/wave-a-arena8/infrastructure/native-tls-bridge",
+      "features/pets/modules/wave-a-arena8/presentation/http",
+      "features/pets/modules/wave-a-arena8/presentation/native-http"
       ],
       "targetBoundary": "Nest owns content persistence through the existing journal; Rust gameplay and player settlement retain their existing writers"
+    },
+    "gameplay": {
+      "owner": "platform.gameplay-config",
+      "responsibility": "Operator-authored, engine-validated gameplay configuration versions: drafts, atomic publication, rollback and immutable audit",
+      "currentPublicEntryFiles": [
+        "features/gameplay/modules/config/infrastructure/version-store",
+        "features/gameplay/modules/config/infrastructure/engine-validator",
+        "features/gameplay/modules/config/infrastructure/engine-simulator",
+        "features/gameplay/modules/config/application/operator-gameplay-config",
+        "features/gameplay/modules/config/application/seed-gameplay-config",
+        "features/gameplay/modules/config/presentation/operator-http"
+      ],
+      "targetBoundary": "Rust owns the bundle schema, digest and rule execution; Nest stores and publishes only engine-validated bundles"
+    },
+    "coop": {
+      "owner": "platform.coop",
+      "responsibility": "Durable cooperative rooms, Achievement Point eligibility, match allocation identity, settlement and owned-Pet skill progression",
+      "currentPublicEntryFiles": [
+        "features/coop/modules/rooms/application/service",
+        "features/coop/modules/skills/application/service",
+        "features/coop/modules/rooms/infrastructure/store",
+        "features/coop/modules/rooms/presentation/http",
+        "features/coop/modules/match/application/provisioner",
+        "features/coop/modules/match/infrastructure/match-store",
+        "features/coop/modules/match/infrastructure/local-runtime",
+        "features/coop/modules/settlement/application/service",
+        "features/coop/modules/settlement/infrastructure/store"
+      ],
+      "targetBoundary": "Rust owns cooperative combat; Nest owns authorization, eligibility, allocation, settlement and progression"
     },
     "runtime-gateway": {
       "owner": "platform.identity",
@@ -301,6 +345,8 @@
   ],
   "tableOwnerModules": {
     "platform.pet-content": "pets",
+    "platform.gameplay-config": "gameplay",
+    "platform.coop": "coop",
     "native.game-storage": "db",
     "platform.operations": "operations",
     "platform.foundation": "db",

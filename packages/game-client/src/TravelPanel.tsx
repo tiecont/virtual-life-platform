@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { ApiErrorSchema, MeSchema,AvatarOwnStateSchema,NativeSocketHandshakeSchema,type ClientProtocolOffer, OwnRoomSchema, RoomAckSchema, RoomDeltaSchema, TravelAckSchema, TravelIntentReceiptSchema, WorldCatalogSchema, type Me, type RoomSnapshot, type TravelIntentInput, type WorldCard } from '@virtual-city/contracts';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
-import {acceptSessionCompatibility,createClientProtocolOffer,resolveClientCompatibility} from '@virtual-city/world-sdk';
+import { ApiErrorSchema, MeSchema,AvatarOwnStateSchema,NativeSocketHandshakeSchema,type ClientProtocolOffer, OwnRoomSchema, RoomAckSchema, RoomDeltaSchema, TravelAckSchema, TravelIntentReceiptSchema, WorldCatalogSchema, type Me, type RoomSnapshot, type TravelIntentInput, type WorldCard } from '@aetheria/contracts';
+import type {ClientPlatform} from '@aetheria/client-sdk';
+import {acceptSessionCompatibility,createClientProtocolOffer,resolveClientCompatibility} from '@aetheria/world-sdk';
 import type {RoomWidgets} from './WorldRoomPanel';
 type DestinationLink={kind:'none'}|{kind:'invalid'}|{kind:'preferred';worldSlug:string;roomId?:string};
 type Pending = { createKey: string; requestId: string; input: TravelIntentInput; intentId?: string; capability?: string };

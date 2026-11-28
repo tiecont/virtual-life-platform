@@ -8,8 +8,8 @@ import {join as joinPath} from 'node:path';
 import {createServer} from 'node:net';
 import {Pool} from 'pg';
 import {io, type Socket} from 'socket.io-client';
-import {MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource} from '@virtual-city/contracts';
-import {defineWorld} from '@virtual-city/world-sdk';
+import {MeSchema, RoomAckSchema, OrderResultSchema, type Me, type TravelSource} from '@aetheria/contracts';
+import {defineWorld} from '@aetheria/world-sdk';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {migrate,migrationManifest} from '../../apps/platform-api/src/shared/database/migrations';
@@ -18,7 +18,7 @@ import {ROOM_OWNER_LOCK_CLASS} from '../../apps/platform-api/src/features/rooms/
 const origin = 'http://127.0.0.1:3300'; let admin: Pool;
 const opened: {app: Awaited<ReturnType<typeof createApp>>; pool: Pool; schema: string}[] = [];
 const workerChildren = new Set<ChildProcess>(), workerDirectories = new Set<string>(), sockets = new Set<Socket>();
-beforeAll(() => {const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['localhost','127.0.0.1','[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only'); admin = new Pool({connectionString:url.toString()});});
+beforeAll(() => {const url = new URL(process.env.TEST_DATABASE_URL ?? ''); if (!['localhost','127.0.0.1','[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only'); admin = new Pool({connectionString:url.toString()});});
 afterEach(async () => {
   for (const child of workerChildren) if (child.exitCode === null && child.signalCode === null) {const exited=once(child,'exit');child.kill('SIGKILL');await exited;} workerChildren.clear();
   for (const socket of sockets) socket.close(); sockets.clear();

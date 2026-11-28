@@ -114,8 +114,8 @@ services:
       dockerfile: apps/game-runtime/Dockerfile
     image: aetheria-preview-native:local
     environment:
-      VL_RUNTIME_BIND: 0.0.0.0:4400
-      VL_GAMEPLAY_ENABLED: '0'
+      AETHERIA_RUNTIME_BIND: 0.0.0.0:4400
+      AETHERIA_GAMEPLAY_ENABLED: '0'
     ports: ['127.0.0.1:${PREVIEW_NATIVE_PORT:-4600}:4400']
     read_only: true
     cap_drop: [ALL]

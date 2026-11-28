@@ -12,7 +12,7 @@ export class NativeCredentialsCrypto{
  #grant:Buffer;
  constructor(key:string){
   if(!/^[a-f0-9]{64}$/i.test(key))throw Error('Native credential configuration unavailable');
-  const root=Buffer.from(key,'hex'),derive=(purpose:string)=>Buffer.from(hkdfSync('sha256',root,'virtual-city/native-auth/v1',purpose,32));
+  const root=Buffer.from(key,'hex'),derive=(purpose:string)=>Buffer.from(hkdfSync('sha256',root,'aetheria-soulbound/native-auth/v1',purpose,32));
   this.#encryption=derive('core-at-rest');this.#bootstrap=derive('bootstrap-refresh');this.#request=derive('identity-request-namespace');this.#grant=derive('internal-identity-grant');root.fill(0);
  }
  private aad(binding:NativeCredentialBinding){return Buffer.from(JSON.stringify(['native-core-v1',binding.deviceId,binding.accountId,binding.sessionId,binding.expiresAt]));}

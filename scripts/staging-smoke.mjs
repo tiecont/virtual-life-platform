@@ -9,7 +9,7 @@ import { chromium,expect } from '@playwright/test';
 import { io } from 'socket.io-client';
 import { verifyStackEnv } from './verify-infra.mjs';
 
-const id=randomUUID().slice(0,8),project='virtual-city-stage-test-'+id,dir=resolve('artifacts',project);
+const id=randomUUID().slice(0,8),project='aetheria-soulbound-stage-test-'+id,dir=resolve('artifacts',project);
 let stage='prepare',browser,started=false,commandSequence=0;
 const sockets=new Set();
 await mkdir(dir,{recursive:true,mode:0o700});
@@ -24,11 +24,11 @@ async function run(command,args,env=process.env,allowFailure=false){
 }
 async function unusedPort(){const server=net.createServer();await new Promise((ok,no)=>{server.once('error',no);server.listen(0,'127.0.0.1',ok);});const port=server.address().port;await new Promise(ok=>server.close(ok));return port;}
 const port=await unusedPort(),subnet=100+randomBytes(1)[0]%140,origin='https://localhost:'+port;
-const values={CITY_STACK_NAME:project,CITY_APP_IMAGE:process.env.CITY_SMOKE_IMAGE??'virtual-life-platform:m21-local',CITY_NETWORK_SUBNET:`172.30.${subnet}.0/24`,CITY_DYNAMIC_RANGE:`172.30.${subnet}.128/25`,CITY_PROXY_IP:`172.30.${subnet}.2`,CITY_TLS_PORT:String(port),WEB_ORIGIN:origin,CITY_TLS_CERT_FILE:resolve(dir,'cert.pem'),CITY_TLS_KEY_FILE:resolve(dir,'key.pem'),POSTGRES_USER:'city_stage_test',POSTGRES_DB:'city_stage_test',POSTGRES_PASSWORD:randomBytes(24).toString('base64url'),SESSION_SECRET:randomBytes(48).toString('base64url'),OPERATOR_TELEMETRY_TOKEN:randomBytes(32).toString('hex')};
+const values={AETHERIA_STACK_NAME:project,AETHERIA_APP_IMAGE:process.env.AETHERIA_SMOKE_IMAGE??'aetheria-soulbound:m21-local',AETHERIA_NETWORK_SUBNET:`172.30.${subnet}.0/24`,AETHERIA_DYNAMIC_RANGE:`172.30.${subnet}.128/25`,AETHERIA_PROXY_IP:`172.30.${subnet}.2`,AETHERIA_TLS_PORT:String(port),WEB_ORIGIN:origin,AETHERIA_TLS_CERT_FILE:resolve(dir,'cert.pem'),AETHERIA_TLS_KEY_FILE:resolve(dir,'key.pem'),POSTGRES_USER:'city_stage_test',POSTGRES_DB:'city_stage_test',POSTGRES_PASSWORD:randomBytes(24).toString('base64url'),SESSION_SECRET:randomBytes(48).toString('base64url'),OPERATOR_TELEMETRY_TOKEN:randomBytes(32).toString('hex')};
 const env={...process.env,...values},envPath=resolve(dir,'.env.staging'),composeArgs=['compose','--project-name',project,'--env-file',envPath,'-f','infra/compose/stack.yml'];
 const compose=(args,allowFailure=false)=>run('docker',[...composeArgs,...args],env,allowFailure);
-const rollbackImage=process.env.CITY_SMOKE_ROLLBACK_IMAGE;
-const replaceAPI=(image,allowFailure=false,override={})=>run('docker',[...composeArgs,'up','-d','--no-deps','--wait','--wait-timeout','60','api'],{...env,CITY_APP_IMAGE:image,...override},allowFailure);
+const rollbackImage=process.env.AETHERIA_SMOKE_ROLLBACK_IMAGE;
+const replaceAPI=(image,allowFailure=false,override={})=>run('docker',[...composeArgs,'up','-d','--no-deps','--wait','--wait-timeout','60','api'],{...env,AETHERIA_APP_IMAGE:image,...override},allowFailure);
 let cert;
 function request(path,method='GET',headers={},body){
  return new Promise((ok,no)=>{
@@ -40,16 +40,16 @@ const facts={taskID:rollbackImage?'M21-04':'M21-01',scope:'Disposable local prod
 try{
  verifyStackEnv(values);
  if(rollbackImage){
-  stage='rollback-compatibility';verifyStackEnv({...values,CITY_APP_IMAGE:rollbackImage});
+  stage='rollback-compatibility';verifyStackEnv({...values,AETHERIA_APP_IMAGE:rollbackImage});
   const inspectManifest=async image=>{
    const result=await run('docker',['run','--rm','--network','none','--read-only','--entrypoint','node',image,'--input-type=module','-e',"import{readdirSync,readFileSync}from'node:fs';import{createHash}from'node:crypto';const dir='apps/platform-api/dist/shared/database/migrations',names=readdirSync(dir).filter(n=>/^\\d+.*\\.sql$/.test(n)).sort();if(!names.length)throw Error('No migration files');const entries=names.map(n=>[n,createHash('sha256').update(readFileSync(dir+'/'+n)).digest('hex')]);console.log(JSON.stringify({count:names.length,digest:createHash('sha256').update(JSON.stringify(entries)).digest('hex')}));"]);return JSON.parse(result.output.trim());
   };
-  const currentManifest=await inspectManifest(values.CITY_APP_IMAGE),previousManifest=await inspectManifest(rollbackImage);assert.deepEqual(currentManifest,previousManifest,'Rollback requires identical bundled migrations');
+  const currentManifest=await inspectManifest(values.AETHERIA_APP_IMAGE),previousManifest=await inspectManifest(rollbackImage);assert.deepEqual(currentManifest,previousManifest,'Rollback requires identical bundled migrations');
   facts.rollbackCompatibility={...currentManifest,previousImage:(await run('docker',['image','inspect','--format','{{.Id}}',rollbackImage])).output.trim()};
  }
  await writeFile(envPath,Object.entries(values).map(([k,v])=>k+'='+v).join('\n')+'\n',{mode:0o600});
- await run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',values.CITY_TLS_KEY_FILE,'-out',values.CITY_TLS_CERT_FILE,'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1']);
- cert=await readFile(values.CITY_TLS_CERT_FILE);
+ await run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',values.AETHERIA_TLS_KEY_FILE,'-out',values.AETHERIA_TLS_CERT_FILE,'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1']);
+ cert=await readFile(values.AETHERIA_TLS_CERT_FILE);
  stage='compose-validation';await compose(['config','--quiet']);
  stage='compose-start';started=true;await compose(['up','-d','--wait','--wait-timeout','180']);
  facts.composeHealthy=true;
@@ -93,11 +93,11 @@ try{
   let timeout;const disconnected=new Promise(ok=>{timeout=setTimeout(()=>ok(false),8000);live.socket.once('disconnect',()=>{clearTimeout(timeout);ok(true);});});
   await compose(['stop','--timeout','12','api']);assert.equal(await disconnected,true,'Deployment socket must close');
   const cid=(await compose(['ps','-a','-q','api'])).output.trim(),exitCode=Number((await run('docker',['inspect','--format','{{.State.ExitCode}}',cid])).output.trim());assert.equal(exitCode,0,'Graceful API stop must exit0,not forced137');
-  stage='reject-bad-candidate';const bad=await replaceAPI(values.CITY_APP_IMAGE,true,{SESSION_SECRET:'invalid-test-candidate'});assert.notEqual(bad.code,0);assert.notEqual((await request('/health/ready')).status,200);
+  stage='reject-bad-candidate';const bad=await replaceAPI(values.AETHERIA_APP_IMAGE,true,{SESSION_SECRET:'invalid-test-candidate'});assert.notEqual(bad.code,0);assert.notEqual((await request('/health/ready')).status,200);
   stage='compatible-api-rollback';await replaceAPI(rollbackImage);
   assert.equal((await request('/health/ready')).status,200);const restored=await request('/v1/me','GET',{cookie:'__Host-city_session='+rotated.value});assert.equal(restored.status,200);assert(JSON.parse(restored.body).profile.id===me.profile.id);
   const previous=await connect({origin});assert.equal(previous.ok,true);assert.equal((await previous.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()})).ok,true);previous.socket.close();
-  stage='api-roll-forward';await replaceAPI(values.CITY_APP_IMAGE);assert.equal((await request('/health/ready')).status,200);
+  stage='api-roll-forward';await replaceAPI(values.AETHERIA_APP_IMAGE);assert.equal((await request('/health/ready')).status,200);
   const latest=await connect({origin});assert.equal(latest.ok,true);assert.equal((await latest.socket.timeout(5000).emitWithAck('session.check',{schemaVersion:1,requestId:randomUUID()})).ok,true);latest.socket.close();
   const refreshed=await browser.newContext({baseURL:origin});await refreshed.addCookies([rotated]);const recoveredPage=await refreshed.newPage();await recoveredPage.goto('/identity');await expect(recoveredPage.getByRole('status')).toHaveText('Welcome, Local TLS fixture.');await recoveredPage.screenshot({path:resolve(dir,'deployment-identity-https.png'),fullPage:true});await refreshed.close();
   facts.deployment={gracefulExitCode:exitCode,existingSocketClosed:true,badCandidateExitCode:bad.code,badCandidateNeverReady:true,rollbackReady:true,sessionIdentityPreserved:true,rollbackSocketReauthenticated:true,rollForwardReady:true,rollForwardBrowserReload:true,sameMigrationsOnly:true,databaseRollback:false};
@@ -111,7 +111,7 @@ try{
  stage='private-operator-telemetry';
  const publicOps=await request('/internal/telemetry','GET',{authorization:'Bearer '+values.OPERATOR_TELEMETRY_TOKEN});assert.equal(publicOps.status,404);
  assert.equal((await request('/v1/me')).status,401);
- const privateOps=await compose(['exec','-T','api','node','--input-type=module','-e',"const headers={authorization:'Bearer '+process.env.OPERATOR_TELEMETRY_TOKEN};const response=await fetch('http://127.0.0.1:4300/internal/telemetry',{headers});if(response.status!==200)throw Error('Internal telemetry failed');const data=await response.json();if(!data.traces.length||data.gauges.online.memberships!==0||data.http.errors<1)throw Error('Internal telemetry is not actual/isolated');const text=await fetch('http://127.0.0.1:4300/internal/metrics',{headers});if(!text.ok||!(await text.text()).includes('virtual_life_http_duration_ms_bucket'))throw Error('Internal metrics failed');console.log(JSON.stringify({actualSpans:data.traces.length,online:data.gauges.online.memberships,httpRequests:data.http.requests,httpErrors:data.http.errors,errorsIncludeExpectedDenials:true,metrics:true}));"]);
+ const privateOps=await compose(['exec','-T','api','node','--input-type=module','-e',"const headers={authorization:'Bearer '+process.env.OPERATOR_TELEMETRY_TOKEN};const response=await fetch('http://127.0.0.1:4300/internal/telemetry',{headers});if(response.status!==200)throw Error('Internal telemetry failed');const data=await response.json();if(!data.traces.length||data.gauges.online.memberships!==0||data.http.errors<1)throw Error('Internal telemetry is not actual/isolated');const text=await fetch('http://127.0.0.1:4300/internal/metrics',{headers});if(!text.ok||!(await text.text()).includes('aetheria_http_duration_ms_bucket'))throw Error('Internal metrics failed');console.log(JSON.stringify({actualSpans:data.traces.length,online:data.gauges.online.memberships,httpRequests:data.http.requests,httpErrors:data.http.errors,errorsIncludeExpectedDenials:true,metrics:true}));"]);
  facts.privateOperatorTelemetry={publicEdgeDenied:true,...JSON.parse(privateOps.output.trim())};
  stage='browser-guest-signout';
  const signingOut=await browser.newContext({baseURL:origin});await signingOut.addCookies([rotated]);
@@ -126,7 +126,7 @@ try{
  stage='proxy-error-redaction';await compose(['stop','api']);
  const marker='private-path-'+randomUUID(),secret='private-cookie-'+randomUUID(),failed=await request('/v1/dating/continuations/'+marker,'GET',{cookie:secret});assert.equal(failed.status,502);
  const edgeLog=(await compose(['logs','--no-color','edge'])).output;assert(!edgeLog.includes(marker)&&!edgeLog.includes(secret));facts.upstreamErrorOmitsPrivateURIAndCookie=true;
- facts.appImage=(await run('docker',['image','inspect','--format','{{.Id}}',values.CITY_APP_IMAGE])).output.trim();
+ facts.appImage=(await run('docker',['image','inspect','--format','{{.Id}}',values.AETHERIA_APP_IMAGE])).output.trim();
  facts.result='PASS';await writeFile(resolve(dir,'facts.json'),JSON.stringify(facts,null,2)+'\n');console.log(JSON.stringify({...facts,artifactDirectory:dir},null,2));
 }catch(error){
  if(started)await compose(['logs','--no-color'],true).catch(()=>{});
@@ -134,6 +134,6 @@ try{
  console.error('Local staging smoke failed during '+stage+';see ignored artifact '+dir);process.exitCode=1;
 }finally{
  for(const socket of sockets)socket.close();await browser?.close();
- if(started){try{assert(project.startsWith('virtual-city-stage-test-'));await compose(['down','--volumes','--remove-orphans']);}catch{console.error('Disposable staging cleanup failed: '+project);process.exitCode=1;}}
- await Promise.all([envPath,values.CITY_TLS_CERT_FILE,values.CITY_TLS_KEY_FILE].map(path=>rm(path,{force:true})));
+ if(started){try{assert(project.startsWith('aetheria-soulbound-stage-test-'));await compose(['down','--volumes','--remove-orphans']);}catch{console.error('Disposable staging cleanup failed: '+project);process.exitCode=1;}}
+ await Promise.all([envPath,values.AETHERIA_TLS_CERT_FILE,values.AETHERIA_TLS_KEY_FILE].map(path=>rm(path,{force:true})));
 }

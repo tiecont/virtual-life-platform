@@ -1,5 +1,5 @@
-import {MeSchema,AdmissionQueueViewSchema,AdmissionQueueReceiptSchema,type Me,type AdmissionQueueView,type AdmissionQueueCommand} from '@virtual-city/contracts';
-import type {ClientPlatform} from '@virtual-city/client-sdk';
+import {MeSchema,AdmissionQueueViewSchema,AdmissionQueueReceiptSchema,type Me,type AdmissionQueueView,type AdmissionQueueCommand} from '@aetheria/contracts';
+import type {ClientPlatform} from '@aetheria/client-sdk';
 
 export interface QueuePresentation {
  phase:'checking'|'connected'|'offline'|'signed-out'|'unavailable'|'stale';

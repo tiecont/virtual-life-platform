@@ -8,7 +8,7 @@ import {randomBytes} from 'node:crypto';
 import {createArchive,checkArchive,restoreArchive,readEvidenceBytes,validateIndex} from '../../scripts/evidence-store.mjs';
 
 async function fixture(work) {
- const root=await mkdtemp(join(tmpdir(),'vlp-evidence-store-'));
+ const root=await mkdtemp(join(tmpdir(),'aetheria-evidence-store-'));
  try {
   execFileSync('git',['init','-q'],{cwd:root});await mkdir(join(root,'docs/agent/evidence'),{recursive:true});
   await writeFile(join(root,'.gitignore'),'artifacts/\n');

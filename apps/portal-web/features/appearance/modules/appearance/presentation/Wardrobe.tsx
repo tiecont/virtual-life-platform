@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { ApiErrorSchema, AvatarOutfitSchema, CosmeticsInventorySchema, type AvatarAppearance, type Me, type TravelSource } from '@virtual-city/contracts';
-import { avatarAtlasSpec, avatarFrame } from '@virtual-city/pixi-scene';
+import { ApiErrorSchema, AvatarOutfitSchema, CosmeticsInventorySchema, type AvatarAppearance, type Me, type TravelSource } from '@aetheria/contracts';
+import { avatarAtlasSpec, avatarFrame } from '@aetheria/pixi-scene';
 import './wardrobe.css';
 type Inventory = ReturnType<typeof CosmeticsInventorySchema.parse>;
 type Outfit = AvatarAppearance['outfit'];

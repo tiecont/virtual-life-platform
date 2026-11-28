@@ -3,7 +3,7 @@ import {request} from 'node:http';
 import {randomUUID} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {io,type Socket} from 'socket.io-client';
-import {MeSchema,RoomAckSchema,GameLobbyViewSchema,type RoomSnapshot} from '@virtual-city/contracts';
+import {MeSchema,RoomAckSchema,GameLobbyViewSchema,type RoomSnapshot} from '@aetheria/contracts';
 const origin='http://127.0.0.1:3300',api='http://127.0.0.1:4300',route='/worlds/lantern-lodge',runId=process.env.UX_EVIDENCE_RUN??randomUUID().slice(0,8);let serial=0;const peers:Socket[]=[];
 if(!/^[a-f0-9]{8}$/.test(runId))throw Error('Invalid evidence run');
 async function guest(context?:BrowserContext){const n=++serial,payload=JSON.stringify({requestId:randomUUID(),displayName:'Lodge browser visitor '+n,avatarKey:'mint'}),result=await new Promise<{cookie:string;body:unknown}>((ok,no)=>{const req=request(api+'/v1/session/guest',{method:'POST',localAddress:'127.140.0.'+n,headers:{origin,'content-type':'application/json','content-length':Buffer.byteLength(payload)}},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>{try{expect(res.statusCode).toBe(201);ok({cookie:res.headers['set-cookie']![0].split(';')[0],body:JSON.parse(body)});}catch(error){no(error);}});});req.on('error',no);req.end(payload);});if(context){const at=result.cookie.indexOf('=');await context.addCookies([{name:result.cookie.slice(0,at),value:result.cookie.slice(at+1),url:origin,httpOnly:true,sameSite:'Lax'}]);}return {me:MeSchema.parse(result.body),cookie:result.cookie};}

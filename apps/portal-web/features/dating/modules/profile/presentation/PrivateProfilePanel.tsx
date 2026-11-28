@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
 import { io } from 'socket.io-client';
-import { DatingProfileViewSchema,DatingProfileDataSchema,DatingAliasSchema,DatingTopicSchema,MeSchema,type DatingProfileData,type Me } from '@virtual-city/contracts';
+import { DatingProfileViewSchema,DatingProfileDataSchema,DatingAliasSchema,DatingTopicSchema,MeSchema,type DatingProfileData,type Me } from '@aetheria/contracts';
 import PrivateWithdraw from './PrivateWithdraw';
 type View=ReturnType<typeof DatingProfileViewSchema.parse>;
 type Change={key:string;body:Record<string,unknown>};

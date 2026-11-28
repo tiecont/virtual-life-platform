@@ -20,7 +20,7 @@
         "ghost"
       ],
       "order": 0,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/normal.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/normal.png",
       "activeForV3": true
     },
     {
@@ -46,7 +46,7 @@
       ],
       "noEffectAgainst": [],
       "order": 1,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fire.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/fire.png",
       "activeForV3": true
     },
     {
@@ -70,7 +70,7 @@
       ],
       "noEffectAgainst": [],
       "order": 2,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/water.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/water.png",
       "activeForV3": true
     },
     {
@@ -99,7 +99,7 @@
       ],
       "noEffectAgainst": [],
       "order": 3,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/grass.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/grass.png",
       "activeForV3": true
     },
     {
@@ -124,7 +124,7 @@
         "ground"
       ],
       "order": 4,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/electric.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/electric.png",
       "activeForV3": true
     },
     {
@@ -150,7 +150,7 @@
       ],
       "noEffectAgainst": [],
       "order": 5,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ice.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/ice.png",
       "activeForV3": true
     },
     {
@@ -180,7 +180,7 @@
         "ghost"
       ],
       "order": 6,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fighting.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/fighting.png",
       "activeForV3": true
     },
     {
@@ -206,7 +206,7 @@
         "steel"
       ],
       "order": 7,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/poison.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/poison.png",
       "activeForV3": true
     },
     {
@@ -233,7 +233,7 @@
         "flying"
       ],
       "order": 8,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ground.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/ground.png",
       "activeForV3": true
     },
     {
@@ -257,7 +257,7 @@
       ],
       "noEffectAgainst": [],
       "order": 9,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/flying.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/flying.png",
       "activeForV3": true
     },
     {
@@ -281,7 +281,7 @@
         "dark"
       ],
       "order": 10,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/psychic.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/psychic.png",
       "activeForV3": true
     },
     {
@@ -309,7 +309,7 @@
       ],
       "noEffectAgainst": [],
       "order": 11,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/bug.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/bug.png",
       "activeForV3": true
     },
     {
@@ -334,7 +334,7 @@
       ],
       "noEffectAgainst": [],
       "order": 12,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/rock.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/rock.png",
       "activeForV3": true
     },
     {
@@ -358,7 +358,7 @@
         "normal"
       ],
       "order": 13,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/ghost.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/ghost.png",
       "activeForV3": true
     },
     {
@@ -380,7 +380,7 @@
         "fairy"
       ],
       "order": 14,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/dragon.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/dragon.png",
       "activeForV3": true
     },
     {
@@ -404,7 +404,7 @@
       ],
       "noEffectAgainst": [],
       "order": 15,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/dark.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/dark.png",
       "activeForV3": true
     },
     {
@@ -430,7 +430,7 @@
       ],
       "noEffectAgainst": [],
       "order": 16,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/steel.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/steel.png",
       "activeForV3": true
     },
     {
@@ -454,7 +454,7 @@
       ],
       "noEffectAgainst": [],
       "order": 17,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/fairy.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/fairy.png",
       "activeForV3": true
     },
     {
@@ -477,7 +477,7 @@
       ],
       "noEffectAgainst": [],
       "order": 18,
-      "assetIcon": "Assets/VirtualLife/PetArena/Icons/Elements/light.png",
+      "assetIcon": "Assets/Aetheria/PetArena/Icons/Elements/light.png",
       "activeForV3": true
     }
   ]

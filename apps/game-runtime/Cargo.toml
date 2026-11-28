@@ -1,20 +1,20 @@
 [package]
-name = "vl-game-runtime"
+name = "aetheria-game-runtime"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish.workspace = true
 
 [dependencies]
-axum.workspace = true
+axum = { workspace = true, features = ["json"] }
 tokio.workspace = true
-vl-gateway = { path = "../../crates/vl-gateway" }
-vl-security = { path = "../../crates/vl-security" }
-vl-game-core = { path = "../../crates/vl-game-core" }
-vl-persistence = { path = "../../crates/vl-persistence" }
-vl-pet-arena = { path = "../../crates/vl-pet-arena" }
-vl-world = { path = "../../crates/vl-world" }
-vl-protocol = { path = "../../crates/vl-protocol" }
+aetheria-gateway = { path = "../../crates/aetheria-gateway" }
+aetheria-security = { path = "../../crates/aetheria-security" }
+aetheria-game-core = { path = "../../crates/aetheria-game-core" }
+aetheria-persistence = { path = "../../crates/aetheria-persistence" }
+aetheria-pet-arena = { path = "../../crates/aetheria-pet-arena" }
+aetheria-world = { path = "../../crates/aetheria-world" }
+aetheria-protocol = { path = "../../crates/aetheria-protocol" }
 tokio-postgres = "=0.7.18"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.154"

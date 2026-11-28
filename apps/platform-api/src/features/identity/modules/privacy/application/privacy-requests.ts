@@ -1,6 +1,6 @@
 import {createHmac,randomBytes,randomUUID,timingSafeEqual} from 'node:crypto';
 import type {PoolClient} from 'pg';
-import {PrivacyRequestCreateSchema,PrivacyCompleteSchema,PrivacyCompleteResultSchema,PrivacyCloseSchema,PrivacyRequestViewSchema,PrivacyOwnerStateSchema,OperatorPrivacyReviewSchema,OperatorPrivacyRequestsSchema,OperatorAccountQuerySchema,type PrivacyRequestView} from '@virtual-city/contracts';
+import {PrivacyRequestCreateSchema,PrivacyCompleteSchema,PrivacyCompleteResultSchema,PrivacyCloseSchema,PrivacyRequestViewSchema,PrivacyOwnerStateSchema,OperatorPrivacyReviewSchema,OperatorPrivacyRequestsSchema,OperatorAccountQuerySchema,type PrivacyRequestView} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import type {IdentityService} from '../../accounts/application/service';
 import type {OperatorService} from '../../operators/application/operator-service';

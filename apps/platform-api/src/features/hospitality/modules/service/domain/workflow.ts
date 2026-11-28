@@ -1,4 +1,4 @@
-import type { OrderPhase, OrderWorkflowStrategy } from '@virtual-city/contracts';
+import type { OrderPhase, OrderWorkflowStrategy } from '@aetheria/contracts';
 import { DomainError } from '../../../../../shared/common/errors';
 import { nextOrderPhase } from './lifecycle';
 export type ServiceAction = 'prepare' | 'ready' | 'serve';

@@ -3,8 +3,8 @@ import { test,expect,devices,type BrowserContext } from '@playwright/test';
 import { request as httpRequest } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { mkdir,writeFile } from 'node:fs/promises';
-import { MeSchema } from '@virtual-city/contracts';
-import { restaurantWorldVersion } from '@virtual-city/restaurant-world';
+import { MeSchema } from '@aetheria/contracts';
+import { restaurantWorldVersion } from '@aetheria/restaurant-world';
 import { Pool } from 'pg';
 const origin='http://127.0.0.1:3300';
 let guestSerial=0;
@@ -24,7 +24,7 @@ test('asset failure preserves native dining controls and unavailable shift reads
  const me=await guest(context);await page.reload();await page.getByRole('radio',{name:'Server',exact:true}).check();await expect(page.getByText('Your shift could not be confirmed. Refresh to try again.',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Enter restaurant',exact:true}).click();await expect(page.getByRole('status')).toHaveText('Connected');await page.getByRole('button',{name:'Window dining 05',exact:true}).click();await expect(page.getByRole('button',{name:'Window dining 05, your seat',exact:true})).toBeVisible();const own=(await (await context.request.get('/v1/me/room')).json()).snapshot;expect(own.self).toMatchObject({accountId:me.profile.id,seatId:'seat-5'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.getByRole('button',{name:'Leave restaurant',exact:true}).click();
 });
 async function scheduleFixture(account:string){
- const connection=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(connection.hostname)||!/^virtual_city_test(?:_|$)/.test(connection.pathname.slice(1)))throw Error('Refusing non-local/non-test database');const db=new Pool({connectionString:connection.toString()}),ids=[randomUUID(),randomUUID()],at=new Date();
+ const connection=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(connection.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(connection.pathname.slice(1)))throw Error('Refusing non-local/non-test database');const db=new Pool({connectionString:connection.toString()}),ids=[randomUUID(),randomUUID()],at=new Date();
  // Rendering fixtures only. Authorized scheduling/overlap/holds/check-in use
  // actual engine APIs in integration; no real operator grants are provisioned.
  try{for(const[index,visibility]of ['listed','private'].entries())await db.query("INSERT INTO engine_events(id,organizer_id,world_slug,world_version,policy_version,title,audience,visibility,capacity,time_zone,opens_at,starts_at,check_in_closes_at,ends_at,phase,created_at,changed_at,resource_key) VALUES($1,$2,'restaurant',$12,'1.0.0',$3,'silent',$4,4,'Asia/Ho_Chi_Minh',$5,$6,$7,$8,'OPEN',$9,$10,$11)",[ids[index],account,index===0?'Garden dinner fixture':'Private dinner secret',visibility,new Date(+at-60000),new Date(+at+600000),new Date(+at+1200000),new Date(+at+1800000),new Date(+at-120000),at,index===0?'garden-table':'window-table',restaurantWorldVersion]);}catch(error){await db.query('DELETE FROM engine_events WHERE id=ANY($1::uuid[])',[ids]).catch(()=>{});await db.end();throw error;}return {db,ids,close:async()=>{await db.query('DELETE FROM engine_events WHERE id=ANY($1::uuid[])',[ids]);await db.end();}};

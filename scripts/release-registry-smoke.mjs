@@ -6,7 +6,7 @@ import {imageTestTools} from './image-test-tools.mjs';
 import {checkManifest, jsonBytes} from './release-manifest.mjs';
 
 const args = process.argv.slice(2); assert(args.length === 4 && args[0] === '--bundle' && args[2] === '--output');
-const directory = resolve(args[3]), tools = await imageTestTools(directory), name = 'vlp-release-registry-' + randomUUID().slice(0, 8);
+const directory = resolve(args[3]), tools = await imageTestTools(directory), name = 'aetheria-release-registry-' + randomUUID().slice(0, 8);
 const facts = {scope: 'Disposable loopback OCI registry; real tested-image load/push/digest-pull and unsigned metadata verification; hosted/GHCR publish NOT_RUN', result: 'FAIL', cleanupComplete: false};
 let created = false;
 try {
@@ -42,7 +42,7 @@ try {
     await writeFile(resolve(negative, 'release.json'), jsonBytes(wrongSource)); await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
     facts.missingAdminAndWrongSourceDenied = true;
   }
-  await writeFile(resolve(negative, 'release.json'), jsonBytes({...manifest, artifacts: {...manifest.artifacts, api: {...manifest.artifacts.api, image: registry + '/vlp-api:latest'}}}));
+  await writeFile(resolve(negative, 'release.json'), jsonBytes({...manifest, artifacts: {...manifest.artifacts, api: {...manifest.artifacts.api, image: registry + '/aetheria-api:latest'}}}));
   await assert.rejects(() => checkManifest(negative, {rehearsal: true}));
   await rm(negative, {recursive: true});
   facts.corruptSbomDenied = true; facts.mutableTagDenied = true; facts.rehearsalNotProduction = true; facts.result = 'PASS';

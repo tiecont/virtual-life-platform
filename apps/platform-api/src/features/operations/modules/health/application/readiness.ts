@@ -1,5 +1,5 @@
 import type { Pool,PoolClient,QueryResultRow } from 'pg';
-import { SCHEMA_VERSION } from '@virtual-city/contracts';
+import { SCHEMA_VERSION } from '@aetheria/contracts';
 import type { RoomAuthority } from '../../../../rooms/modules/presence/application/authority';
 import {resolveSchemaCompatibility,isSchemaCompatible,type SchemaCompatibility} from '../../../../../shared/config/schema-compatibility';
 

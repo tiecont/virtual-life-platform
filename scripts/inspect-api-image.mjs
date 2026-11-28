@@ -37,7 +37,7 @@ export async function inspectApiImage() {
         assert(typeof pkg.name === 'string' && typeof pkg.version === 'string');
         const purl = 'pkg:npm/' + pkg.name.replace('@', '%40') + '@' + pkg.version;
         components.set(purl, {type: 'library', name: pkg.name, version: pkg.version, purl, 'bom-ref': purl});
-        if (pkg.name.startsWith('@virtual-city/')) {
+        if (pkg.name.startsWith('@aetheria/')) {
           assert(entries.every(name => ['package.json', 'dist', 'node_modules'].includes(name)), 'First-party source leaked into runtime');
           own.push({name: pkg.name, path: actual});
         }
@@ -63,9 +63,9 @@ export async function inspectApiImage() {
   for (const name of ['typescript', 'vitest', 'tsx', 'eslint', '@playwright/test', 'next', 'react', 'pixi.js']) assert(!names.has(name), 'Development/web dependency leaked: ' + name);
   const migrationDirectory = resolve(root, 'dist/shared/database/migrations'), migrations = {};
   for (const name of (await readdir(migrationDirectory)).filter(name => name.endsWith('.sql')).sort()) migrations[name] = sha(await readFile(resolve(migrationDirectory, name)));
-  assert(own.some(pkg => pkg.name === '@virtual-city/platform-api'));
+  assert(own.some(pkg => pkg.name === '@aetheria/platform-api'));
   const sbom = {bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, serialNumber: 'urn:uuid:' + randomUUID(),
-    metadata: {component: {type: 'application', name: 'vlp-api', version: '0.1.0'}}, components: [...components.values()].sort((a, b) => a.purl < b.purl ? -1 : 1)};
+    metadata: {component: {type: 'application', name: 'aetheria-api', version: '0.1.0'}}, components: [...components.values()].sort((a, b) => a.purl < b.purl ? -1 : 1)};
   return {uid: process.getuid(), node: process.versions.node, filesystemWriteDenied: denied,
     firstPartyPackages: own.map(pkg => pkg.name).sort(), inventory, inventorySha256: sha(JSON.stringify(inventory)), migrations,
     credentialScan: {scannedTextFiles, patterns: ['PEM private key body', 'AWS access key ID', 'GitHub classic token', 'credential filenames'], findings: 0, scope: 'Application dependency filesystem; bounded text files; not a CVE or universal secret certification'},

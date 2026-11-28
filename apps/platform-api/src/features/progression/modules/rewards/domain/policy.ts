@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProgressionPolicySchema, RewardObservationSchema, type ProgressionPolicy } from '@virtual-city/contracts';
+import { ProgressionPolicySchema, RewardObservationSchema, type ProgressionPolicy } from '@aetheria/contracts';
 const focus = { kinds: ['focus-completed'], xp: 2, dailyXp: 10 }, service = { kinds: ['hospitality-completed'], xp: 2, dailyXp: 10 }, none = { kinds: [], xp: 2, dailyXp: 0 };
 export const DEFAULT_PROGRESSION_POLICY: ProgressionPolicy = ProgressionPolicySchema.parse({ schemaVersion: 1, version: '1.0.0', enabled: false, accountDailyXp: 20, partnerDailyCompletions: 2, cooldownSeconds: 60, maxObservationAgeSeconds: 86400, tradable: false, monetaryValue: false, publicLeaderboard: false, worlds: { deadline: focus, library: focus, maid: service, restaurant: service, lounge: service, park: none, dating: none }, cosmetics: [{ key: 'casual', lifetimeXp: 0 }, { key: 'cafe-apron', lifetimeXp: 10 }] });
 const usageSchema = z.strictObject({ day: z.iso.date(), accountXp: z.number().int().nonnegative().max(1000000), worldXp: z.number().int().nonnegative().max(1000000), partnerCompletions: z.number().int().nonnegative().max(1000000), lastAt: z.number().int().nonnegative().max(8640000000000000).nullable() });

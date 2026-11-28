@@ -1,12 +1,12 @@
 import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
-import { MeSchema,type Me } from '@virtual-city/contracts';
+import { MeSchema,type Me } from '@aetheria/contracts';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300';let admin:Pool,serial=0;const runtimes:Awaited<ReturnType<typeof open>>[]=[];
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const r of runtimes.splice(0)){await r.app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);}});afterAll(async()=>{await admin.end();});
 async function open(){const schema='private_match_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});await migrate(pool);let now=Date.parse('2026-11-04T10:00:00Z');const config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'synthetic-private-matching-secret-'.repeat(3),LOCAL_DATING_PROTOTYPE:'1',DATING_TEST_PROOFS:'1',DATING_PROFILE_KEY:'26'.repeat(32),DATING_PROFILE_KEY_ID:'synthetic-match'}),options={now:()=>now},app=await createApp(config,pool,false,options);await app.app.listen(0,'127.0.0.1');const r={schema,pool,app,config,options,url:await app.app.getUrl(),now:()=>now,advance:(ms:number)=>{now+=ms;}};runtimes.push(r);return r;}
 type Runtime=Awaited<ReturnType<typeof open>>;type User={me:Me;cookie:string};

@@ -1,6 +1,6 @@
 import { Application, Assets, Container, Graphics, Sprite, Text, Texture, Rectangle } from 'pixi.js';
-import { SceneManifestSchema, AvatarOutfitSchema, type RoomMotion, type AvatarAppearance, type AnimationState, type RoomSnapshot, type SceneManifest } from '@virtual-city/contracts';
-import { motionPosition } from '@virtual-city/world-sdk';
+import { SceneManifestSchema, AvatarOutfitSchema, type RoomMotion, type AvatarAppearance, type AnimationState, type RoomSnapshot, type SceneManifest } from '@aetheria/contracts';
+import { motionPosition } from '@aetheria/world-sdk';
 import { tileCenter } from './spec';
 import { fitSceneCamera } from './camera';
 import { sceneEntities } from './entities';

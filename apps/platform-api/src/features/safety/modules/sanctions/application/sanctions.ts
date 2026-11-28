@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import { SanctionInputSchema, SanctionRevokeSchema, SanctionSummarySchema, SanctionResultSchema, OwnSanctionsSchema, CaseSanctionsSchema, AppealInputSchema, AppealReceiptSchema, CaseAppealsSchema, AppealReviewInputSchema, AppealDispositionSchema, type SafetyPolicy } from '@virtual-city/contracts';
+import { SanctionInputSchema, SanctionRevokeSchema, SanctionSummarySchema, SanctionResultSchema, OwnSanctionsSchema, CaseSanctionsSchema, AppealInputSchema, AppealReceiptSchema, CaseAppealsSchema, AppealReviewInputSchema, AppealDispositionSchema, type SafetyPolicy } from '@aetheria/contracts';
 import type { IdentityService, IdentityContext } from '../../../../identity/modules/accounts/application/service';
 import type { RoomService } from '../../../../rooms/modules/presence/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

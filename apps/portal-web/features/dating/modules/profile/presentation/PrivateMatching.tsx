@@ -1,7 +1,7 @@
 'use client';
 import { useEffect,useRef,useState } from 'react';
 import { io } from 'socket.io-client';
-import { MeSchema,DatingMatchViewSchema,DatingMatchStoppedSchema,type Me } from '@virtual-city/contracts';
+import { MeSchema,DatingMatchViewSchema,DatingMatchStoppedSchema,type Me } from '@aetheria/contracts';
 import PrivateDate from './PrivateDate';
 import PrivateConnections from './PrivateConnections';
 type View=ReturnType<typeof DatingMatchViewSchema.parse>;

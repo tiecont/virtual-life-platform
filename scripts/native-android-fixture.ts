@@ -8,7 +8,7 @@ import {migrate} from '../apps/platform-api/src/shared/database/migrations';
 
 async function main(){
  const root='artifacts/vnext/n10-03/tls',url=new URL(process.env.TEST_DATABASE_URL??'');
- if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
+ if(!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local DB required');
  const admin=new Pool({connectionString:url.toString()}),schema='native_android_'+randomUUID().replaceAll('-','');
  await admin.query(`CREATE SCHEMA "${schema}"`);url.searchParams.set('options','-c search_path='+schema);
  const pool=new Pool({connectionString:url.toString()}),counts:Record<string,number>={};let api:Awaited<ReturnType<typeof createApp>>|undefined,https:ReturnType<typeof createServer>|undefined;

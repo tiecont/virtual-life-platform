@@ -24,9 +24,9 @@ it('rejects oversized, malformed, unsupported and bodyless frames',()=>{
 });
 it('rejects out-of-bounds movement, excessive action data and forged schema acceptance',()=>{
   const base=decodeClient(fixture('client-hello'));
-  base.body={case:'moveIntent',value:{$typeName:'virtuallife.public.v1.MoveIntent',inputSequence:1n,directionX:1001,directionZ:0,authorityEpoch:0n,expectedTick:0n,sentAtUnixMs:0n}};
+  base.body={case:'moveIntent',value:{$typeName:'aetheria.public.v1.MoveIntent',inputSequence:1n,directionX:1001,directionZ:0,authorityEpoch:0n,expectedTick:0n,sentAtUnixMs:0n}};
   expect(()=>decodeClient(toBinary(ClientEnvelopeSchema,base))).toThrow('INVALID_ENVELOPE');
-  base.body={case:'gameIntent',value:{$typeName:'virtuallife.public.v1.GameIntent',gameSessionId:new Uint8Array(16),expectedStateVersion:1n,kind:'card.draw',actionPayload:new Uint8Array(MAX_ACTION_BYTES+1)}};
+  base.body={case:'gameIntent',value:{$typeName:'aetheria.public.v1.GameIntent',gameSessionId:new Uint8Array(16),expectedStateVersion:1n,kind:'card.draw',actionPayload:new Uint8Array(MAX_ACTION_BYTES+1)}};
   expect(()=>decodeClient(toBinary(ClientEnvelopeSchema,base))).toThrow('INVALID_ENVELOPE');
   const server=create(ServerEnvelopeSchema,{protocolVersion:2,commandId:new Uint8Array(16)});
   expect(()=>decodeServer(toBinary(ServerEnvelopeSchema,server))).toThrow('UNSUPPORTED_VERSION');

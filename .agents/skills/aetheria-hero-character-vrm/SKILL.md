@@ -14,8 +14,10 @@ Before production, read the root `AGENTS.md`, `README.md`,
 `config/development-plan.json`, the character's art direction and animation
 contracts, then run `pnpm plan:status`. Preserve owner-provided identity,
 rights/provenance, canonical IDs, opcodes, action names, import contracts, and
-release state. Skill installation does not establish an accepted benchmark,
-owner approval, publishable rights, or deployment permission.
+release state. Keep new source artwork and editable production handoffs under
+`/home/tiecont/Projects/Aetheria-Workspace/`; commit only source-safe files.
+Skill installation does not establish an accepted benchmark, owner approval,
+publishable rights, or deployment permission.
 
 ## H0 source and reference preflight
 
@@ -39,6 +41,24 @@ owner approval, publishable rights, or deployment permission.
    `STRUCTURAL_PREFLIGHT_PASS_NOT_ART_APPROVAL` proves structure only, never
    likeness, pose quality, ownership, or rights.
 
+## Priority-1 zero-cost reference concepts
+
+When a deliberately non-authoritative concept proposal is useful, use the
+authenticated English Tripo Studio Image tab before considering paid generation.
+Select the exact model **`GPT Image 2.5`** and use the free image quota only.
+Before each submission, visibly verify the model and that the run has zero paid
+credit cost; use one submitted prompt per generated file so provenance and
+canonical identity cannot be mixed. Stop when the free quota is exhausted,
+authentication changes, or the UI would charge credits. Never fall back to a
+paid run without a new explicit model, quote, and budget approval.
+
+Save concept PNGs with descriptive canonical IDs in the production workspace and
+record the actual prompt, free-quota counter, task ID when exposed, file SHA-256,
+and review state. A generated concept is an unapproved design proposal. It does
+not replace an owner-authorized A-pose body reference, approve likeness, or
+replace the mandatory 11-view Meshy gate below. Generic or invented views remain
+proposals until the owner accepts them.
+
 ## Mandatory 11-view Meshy gate
 
 Use the connected **Meshy MCP `image-to-image`** workflow and the model ID
@@ -54,8 +74,12 @@ Generate one view per call from the approved A-pose source and save the
 decoded RGB PNGs under:
 
 ```text
-/home/tiecont/Projects/Aetheria/assets/<character_id>/charakuru_views/
+/home/tiecont/Projects/Aetheria-Workspace/characters/<character_id>/charakuru_views/
 ```
+
+An existing reviewed checkout may retain its already-approved source path. New
+binary intake defaults to the production workspace so images and editable
+sources do not enter Git accidentally.
 
 The exact 11 files are:
 
@@ -79,6 +103,12 @@ the fresh app request. Use this exact sequence:
 
 **Charakuru registration → Tripo Smart Mesh → Segment → Smart UV → 4K
 Retexture → Blender 5.3 weight transfer → SpringBone → Expressions → VRM 1.0**
+
+Use Blender 5.3 for new retopology, weight transfer, accessory fitting, and
+export. Existing Icarus sources authored in Blender 4.5 remain valid source
+history; opening, saving, or upgrading them is a version migration that requires
+an explicit owner/technical decision and a new hash. Do not silently replace the
+pinned source.
 
 1. Run `node scripts/agent-session.mjs begin <url> <exact_request_id>` exactly
    **once only per request ID**. Require a confirmed save and the returned
@@ -145,6 +175,11 @@ tests, and owner decision before staging.
 - Keep wings, halo, and held weapons as separate modular assets. Attach wings to
   `UpperChest`, the floating halo to `Head`, and weapons to the approved hand
   socket (`Hand`; use the right/left hand required by the action contract).
+- Cap a separately generated Hero/Limited S wing candidate at **28,000
+  triangles** at LOD0. Measure and report wing-only versus assembled totals;
+  28K is a provider candidate ceiling, not an assembled-character allowance.
+  Retopology must still meet the current per-character contract. Icarus remains
+  26,000-29,500 assembled LOD0 triangles including approved modular accessories.
 - Wings default **OFF**. Enable them only while the authoritative Ultimate
   presentation is active (`Signature` / `FIRE_ZONE`). Do not invent an event,
   damage state, target, or gameplay outcome in VFX.

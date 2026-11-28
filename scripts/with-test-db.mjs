@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { toolEnvironment,testEnvironment,validateTestDatabaseURL } from './test-environment.mjs';
 import { validateDockerEndpoint } from './postgres-backup.mjs';
-const root=fileURLToPath(new URL('../',import.meta.url)),args=process.argv.slice(2),project='virtual-city-test-'+randomUUID().slice(0,8),compose=['compose','-p',project,'-f','infra/compose/test.yml'];
-const tools={...toolEnvironment(process.env),CITY_TEST_DB_PASSWORD:randomUUID()};
+const root=fileURLToPath(new URL('../',import.meta.url)),args=process.argv.slice(2),project='aetheria-soulbound-test-'+randomUUID().slice(0,8),compose=['compose','-p',project,'-f','infra/compose/test.yml'];
+const tools={...toolEnvironment(process.env),AETHERIA_TEST_DB_PASSWORD:randomUUID()};
 let active,started=false,cleaning=false,cancelled=0,phase='validate',stopping=Promise.resolve();
 function killGroup(pid,signal){try{process.kill(-pid,signal);}catch{ /* Already exited group. */ }}
 function stopGroup(pid){killGroup(pid,'SIGTERM');return new Promise(resolve=>{setTimeout(()=>{killGroup(pid,'SIGKILL');resolve();},5000);});}
@@ -29,7 +29,7 @@ try {
     started = true;
     await run('docker', [...compose, 'up', '-d', '--wait','--wait-timeout','60'], tools);
     phase='mapping';const mapping = (await run('docker', [...compose, 'port', 'db', '5432'], tools, true)).trim(),matched=/^127\.0\.0\.1:(\d+)$/.exec(mapping);if(!matched)throw Error('Invalid owned DB mapping');
-    url = validateTestDatabaseURL(`postgresql://virtual_city_test:${tools.CITY_TEST_DB_PASSWORD}@127.0.0.1:${matched[1]}/virtual_city_test`);
+    url = validateTestDatabaseURL(`postgresql://aetheria_soulbound_test:${tools.AETHERIA_TEST_DB_PASSWORD}@127.0.0.1:${matched[1]}/aetheria_soulbound_test`);
   }
   phase='command';await run(args[0], args.slice(1), testEnvironment(process.env,url,started?project:'external'));
 } catch (error) {

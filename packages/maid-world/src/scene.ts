@@ -1,4 +1,4 @@
-import { SceneManifestSchema } from '@virtual-city/contracts';
+import { SceneManifestSchema } from '@aetheria/contracts';
 const tables=[4,8,12].flatMap(y=>[4,15].map(x=>({x,y})));
 const seats=tables.flatMap((table,i)=>[{x:table.x,y:table.y-1,facing:'south' as const},{x:table.x+3,y:table.y-1,facing:'south' as const},{x:table.x,y:table.y+2,facing:'north' as const},{x:table.x+3,y:table.y+2,facing:'north' as const}].map((point,j)=>{const n=String(i*4+j+1).padStart(2,'0');return {...point,seatId:'seat-'+n,label:'Sakura chair '+n};}));
 export const maidScene=SceneManifestSchema.parse({schemaVersion:1,key:'maid',version:'1.0.0',projection:'orthogonal',tileSize:40,columns:24,rows:18,spawn:{x:12,y:16},

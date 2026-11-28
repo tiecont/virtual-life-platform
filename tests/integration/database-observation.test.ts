@@ -8,7 +8,7 @@ import {RoomMetrics} from '../../apps/platform-api/src/features/rooms/modules/pr
 
 function pool() {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
+  if (!['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
   return new Pool({connectionString: url.toString(), max: 1});
 }
 it('observes real pool waiting, SQL Promise/callback success and failure without retaining payloads or changing release semantics', async () => {

@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile,readdir } from 'node:fs/promises';
 
 export function ciResult(needs){
- if(!needs||typeof needs!=='object'||Array.isArray(needs)||Object.keys(needs).sort().join(',')!=='browser,core')return false;
- return ['core','browser'].every(job=>needs[job]?.result==='success');
+ if(!needs||typeof needs!=='object'||Array.isArray(needs)||Object.keys(needs).sort().join(',')!=='browser,core,integration')return false;
+ return ['core','integration','browser'].every(job=>needs[job]?.result==='success');
 }
 export function validateBrowserGroups(plan,files){
  assert(plan?.schemaVersion===1&&plan.groups&&typeof plan.groups==='object'&&!Array.isArray(plan.groups));

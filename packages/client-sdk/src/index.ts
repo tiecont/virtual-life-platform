@@ -1,4 +1,4 @@
-import type {ClientProtocolOffer,NativeSocketHandshake} from '@virtual-city/contracts';
+import type {ClientProtocolOffer,NativeSocketHandshake} from '@aetheria/contracts';
 export interface ClientPlatform {
   request(path:string,init?:RequestInit):Promise<Response>;
   navigate(path:string):void;
@@ -16,7 +16,7 @@ export function internalPath(path:string){
 // stay in their existing adapters; this port never stores or logs credentials.
 export function browserPlatform(visitChanged:()=>void,navigate?:(path:string)=>void):ClientPlatform{
  return {request:(path,init)=>fetch(internalPath(path),init),navigate:path=>{const safe=internalPath(path);if(navigate)navigate(safe);else window.location.assign(safe);},visitChanged,
-  watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('virtual-city-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
+  watchIdentity(listener){const bus=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('aetheria-soulbound-identity');if(bus)bus.onmessage=listener;return()=>bus?.close();}};
 }
 export type {RoomSceneHandle,RoomSceneOptions,RoomSceneFactory,SceneQuality,AnimalStudyHandle,AnimalCreatorHandle,AvatarFraming} from './scene';
 export type {NativeSessionCustodyPort,NativeSessionState,NativeWorldCall} from './native-session';

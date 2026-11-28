@@ -2,7 +2,7 @@ import {afterAll, afterEach, beforeAll, expect, it} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {io, type Socket} from 'socket.io-client';
-import {MeSchema, RoomAckSchema, type RoomSnapshot} from '@virtual-city/contracts';
+import {MeSchema, RoomAckSchema, type RoomSnapshot} from '@aetheria/contracts';
 import {createApp} from '../../apps/platform-api/src/app';
 import {readConfig} from '../../apps/platform-api/src/shared/config/environment';
 import {migrate} from '../../apps/platform-api/src/shared/database/migrations';
@@ -14,7 +14,7 @@ const opened: Runtime[] = [];
 const sockets = new Set<Socket>();
 beforeAll(() => {
   const url = new URL(process.env.TEST_DATABASE_URL ?? '');
-  if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) || !/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
+  if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) || !/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1))) throw Error('Disposable local database only');
   admin = new Pool({connectionString: url.toString()});
 });
 afterEach(async () => {

@@ -1,4 +1,4 @@
-import { WorldDefinitionSchema, WorldInvocationSchema, WorldCatalogSchema, type WorldDefinition, type WorldInvocation, type WorldCard, type WorldCatalog } from '@virtual-city/contracts';
+import { WorldDefinitionSchema, WorldInvocationSchema, WorldCatalogSchema, type WorldDefinition, type WorldInvocation, type WorldCard, type WorldCatalog } from '@aetheria/contracts';
 
 export type WorldActor = Readonly<{ accountId: string; sessionId: string; kind: 'guest' | 'registered'; expiresAt: number }>;
 export interface WorldPorts {

@@ -1,5 +1,5 @@
 import type { FastifyInstance,FastifyRequest } from 'fastify';
-import { WorldError } from '@virtual-city/world-sdk';
+import { WorldError } from '@aetheria/world-sdk';
 import { z } from 'zod';
 import type { Config } from '../../../../../shared/config/environment';
 import type { IdentityService } from '../../../../identity/modules/accounts/application/service';

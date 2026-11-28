@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { z } from 'zod';
-import { InvitationInputSchema, InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, InvitationGroupInputSchema, InvitationGroupSchema, type InvitationDestination, type InvitationReceipt } from '@virtual-city/contracts';
-import { WorldError, type WorldRegistry } from '@virtual-city/world-sdk';
+import { InvitationInputSchema, InvitationReceiptSchema, InvitationSettingsSchema, InvitationsPageSchema, InvitationGroupInputSchema, InvitationGroupSchema, type InvitationDestination, type InvitationReceipt } from '@aetheria/contracts';
+import { WorldError, type WorldRegistry } from '@aetheria/world-sdk';
 import type { IdentityContext, IdentityService } from '../../../../identity/modules/accounts/application/service';
 import type { SocialService } from '../../../../social/modules/relationships/application/service';
 import { DomainError } from '../../../../../shared/common/errors';

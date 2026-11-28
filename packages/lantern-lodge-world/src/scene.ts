@@ -1,4 +1,4 @@
-import {SceneManifestSchema} from '@virtual-city/contracts';
+import {SceneManifestSchema} from '@aetheria/contracts';
 // Original code-authored geometry. Room chairs are navigation/seating only;
 // table consent is a separate server operation, never inferred from a chair.
 export const lodgeScene=SceneManifestSchema.parse({schemaVersion:1,key:'lantern-lodge',version:'1.0.0',projection:'orthogonal',tileSize:48,columns:18,rows:14,spawn:{x:9,y:12},

@@ -1,4 +1,4 @@
-import { defineWorld } from '@virtual-city/world-sdk';
+import { defineWorld } from '@aetheria/world-sdk';
 // Explicit development/test fixtures only. These do not integrate either legacy
 // application and have no external resources, media, staff or progression.
 export function createTravelFixtures() {

@@ -2,14 +2,14 @@ import { beforeAll,afterAll,afterEach,it,expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { io,type Socket } from 'socket.io-client';
-import { MeSchema,RoomAckSchema,type Me } from '@virtual-city/contracts';
-import { loungeWorldVersion } from '@virtual-city/lounge-world';
+import { MeSchema,RoomAckSchema,type Me } from '@aetheria/contracts';
+import { loungeWorldVersion } from '@aetheria/lounge-world';
 import { createApp } from '../../apps/platform-api/src/app';
 import { readConfig } from '../../apps/platform-api/src/shared/config/environment';
 import { migrate } from '../../apps/platform-api/src/shared/database/migrations';
 const origin='http://127.0.0.1:3300';let admin:Pool,serial=0;const runtimes:Awaited<ReturnType<typeof open>>[]=[],sockets=new Set<Socket>();
 const fetch:typeof globalThis.fetch=async(...args)=>{const response=await globalThis.fetch(...args);if(!response.ok)console.info(JSON.stringify({scope:'Lounge report TCP failure',status:response.status,code:(await response.clone().json()).error?.code}));return response;};
-beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^virtual_city_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
+beforeAll(async()=>{const url=new URL(process.env.TEST_DATABASE_URL??'');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||!/^aetheria_soulbound_test(?:_|$)/.test(url.pathname.slice(1)))throw Error('Disposable local test DB only');admin=new Pool({connectionString:url.toString()});});
 afterEach(async()=>{for(const socket of sockets)socket.close();sockets.clear();for(const r of runtimes.splice(0)){await r.app.app.close();await r.pool.end();await admin.query(`DROP SCHEMA "${r.schema}" CASCADE`);}});afterAll(async()=>{await admin.end();});
 async function open(){const schema='lounge_ops_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA "${schema}"`);const url=new URL(process.env.TEST_DATABASE_URL!);url.searchParams.set('options','-c search_path='+schema);const pool=new Pool({connectionString:url.toString()});await migrate(pool);let now=Date.parse('2026-11-04T10:00:00Z');const config=readConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),SESSION_SECRET:'lounge-operations-test-secret-'.repeat(3),SAFETY_EVIDENCE_KEY:'13'.repeat(32),SAFETY_EVIDENCE_KEY_ID:'synthetic-ops',LOCAL_LOUNGE_WORLD:'1'}),app=await createApp(config,pool,false,{now:()=>now});await app.app.listen(0,'127.0.0.1');await app.worlds.registry.setEnabled('lounge',true);const r={schema,pool,app,url:await app.app.getUrl(),now:()=>now,advance:(ms:number)=>{now+=ms;}};runtimes.push(r);return r;}
 type Runtime=Awaited<ReturnType<typeof open>>;type User={me:Me;cookie:string};

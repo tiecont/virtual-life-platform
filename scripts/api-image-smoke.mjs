@@ -4,7 +4,7 @@ import {resolve, sep} from 'node:path';
 import net from 'node:net';
 import {Pool} from 'pg';
 import {io} from 'socket.io-client';
-import {OperationalObservationSchema,SystemObservationSchema} from '@virtual-city/contracts';
+import {OperationalObservationSchema,SystemObservationSchema} from '@aetheria/contracts';
 import {validateTestDatabaseURL} from './test-environment.mjs';
 import {imageTestTools} from './image-test-tools.mjs';
 
@@ -37,7 +37,7 @@ async function stop(name) {
   await run('docker', ['rm', name]); owned.delete(name);
 }
 async function start() {
-  const name = 'vlp-api-check-' + id + '-' + randomUUID().slice(0, 8), values = {...common, PORT: String(await port())};
+  const name = 'aetheria-api-check-' + id + '-' + randomUUID().slice(0, 8), values = {...common, PORT: String(await port())};
   owned.add(name);
   await run('docker', ['run', '--detach', '--name', name, ...flags, ...environment(values), image], {env: values});
   const fields = '{"user":{{json .Config.User}},"readonly":{{json .HostConfig.ReadonlyRootfs}},"security":{{json .HostConfig.SecurityOpt}}}';
@@ -54,7 +54,7 @@ async function start() {
   await run('docker', ['logs', name], {allowFailure: true}); throw Error('API did not become live');
 }
 async function migrate(allowFailure = false) {
-  const name = 'vlp-api-check-' + id + '-migration-' + randomUUID().slice(0, 8); owned.add(name);
+  const name = 'aetheria-api-check-' + id + '-migration-' + randomUUID().slice(0, 8); owned.add(name);
   const value = await run('docker', ['run', '--rm', '--name', name, ...flags, ...environment(common), '--entrypoint', 'node', image, 'dist/shared/database/migrate.js'], {env: common, allowFailure});
   if (!signal.aborted) owned.delete(name); return value;
 }
