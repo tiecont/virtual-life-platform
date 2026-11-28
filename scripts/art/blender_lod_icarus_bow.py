@@ -100,6 +100,44 @@ def simplify(obj, budget):
         obj.modifiers.remove(reduction)
 
 
+def retain_upper_string_join(source_vertices, source_faces, reduced_vertices, reduced_faces, anchor):
+    # Isolate the actual narrow circumference directly above the fixed string
+    # join. The much larger limb drives the global collapse away from this seam.
+    def corridor(points):
+        return np.linalg.norm(points[..., :2] - anchor[:2], axis=-1) <= .006
+
+    reduced_z = reduced_vertices[:, 2]
+    surviving = reduced_z[corridor(reduced_vertices) & (reduced_z > anchor[2])]
+    if not len(surviving):
+        raise ValueError('The upper continuation lost its actual string surface')
+    cutoff = min(float(surviving.min()) + .003, anchor[2] + .030)
+    source_points = source_vertices[source_faces]
+    keep = (corridor(source_points).all(axis=1) & (source_points[..., 2].min(axis=1) >= anchor[2] - .003)
+            & (source_points[..., 2].max(axis=1) <= cutoff))
+    trimmed_faces = source_faces[keep]
+    if len(trimmed_faces) < 32:
+        raise ValueError('No original surface patch was found for the fixed seam')
+    used, index = np.unique(trimmed_faces.ravel(), return_inverse=True)
+    mesh = bpy.data.meshes.new('Original upper continuation seam')
+    mesh.from_pydata(source_vertices[used].tolist(), [], index.reshape(-1, 3).tolist())
+    patch = bpy.data.objects.new(mesh.name, mesh)
+    bpy.context.collection.objects.link(patch)
+    try:
+        patch_vertices, patch_faces = simplify(patch, 56)
+    finally:
+        bpy.data.objects.remove(patch, do_unlink=True)
+        bpy.data.meshes.remove(mesh)
+
+    reduced_points = reduced_vertices[reduced_faces]
+    overlapping = (corridor(reduced_points).all(axis=1)
+                   & (reduced_points[..., 2].min(axis=1) >= anchor[2] - .003)
+                   & (reduced_points[..., 2].max(axis=1) <= cutoff))
+    return (np.concatenate((reduced_vertices, patch_vertices)),
+            np.concatenate((reduced_faces[~overlapping], patch_faces + len(reduced_vertices))),
+            {'sourceFaces': len(trimmed_faces), 'lodFaces': len(patch_faces), 'upperCutoffMeters': cutoff,
+             'replacedOverlapFaces': int(overlapping.sum())})
+
+
 def string_rings(obj, approved):
     basis, draw = obj.data.shape_keys.key_blocks
     if basis.name != 'Basis' or draw.name != DRAW or draw.value != 0:
@@ -235,12 +273,17 @@ def main():
     base_vertices = base_faces = 0
     source_low, source_high = np.full(3, np.inf), np.full(3, -np.inf)
     anchors = {}
+    upper_join = None
     for name, obj in sorted(parts.items(), key=lambda row: int(row[0].rsplit('_', 1)[1])):
         source_vertices, source_faces, _ = mesh_arrays(obj)
         points, modes, _ = groups(source_vertices, source_faces)
         charts = source_charts(name, points, modes, rectangles)
         del points, modes
         reduced_vertices, reduced_faces = simplify(obj, budgets[name])
+        if name == 'tripo_part_1':
+            reduced_vertices, reduced_faces, upper_join = retain_upper_string_join(
+                source_vertices, source_faces, reduced_vertices, reduced_faces,
+                np.asarray(draw_review['endSourceWorldBlenderMeters']))
         reduced_faces = reduced_faces[groups(reduced_vertices, reduced_faces)[2] > 0]
         if not len(reduced_faces):
             raise ValueError(f"The budget removed the visible {name} source part")
@@ -323,7 +366,8 @@ def main():
               'string': {'sourcePart': STRING, 'shape': DRAW, 'lodTriangles': len(string_faces),
                  'lodZeroAreaUVFaces': zero_uv, 'maxDrawMeters': float(string_delta.max()),
                  'maxEndpointDeviationMeters': float(endpoint_delta.max()), 'startSourceBlenderMeters': start.tolist(),
-                 'endSourceBlenderMeters': end.tolist(), 'anchorSurfaceClearance': anchors, **distance},
+                 'endSourceBlenderMeters': end.tolist(), 'anchorSurfaceClearance': anchors,
+                 'retainedUpperContinuationPatch': upper_join, **distance},
               'files': {path.name: file_hash(path) for path in (editable, exported)}}
     (args.output / 'bow-lod-receipt.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f"BOW_LOD_READY {lod_faces} tris grip {grip.tolist()} max draw {string_delta.max():.6f}", flush=True)
