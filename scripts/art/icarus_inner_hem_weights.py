@@ -60,19 +60,20 @@ def ornament_component(positions, triangles):
     return vertices, face_ids, welded[vertices]
 
 
-def read_exact_body(path):
-    body = []
+def read_exact_renderers(path, renderer_sizes):
+    samples = {name: [] for name in renderer_sizes}
     with path.open("rb") as capture:
         for _ in CAMERA_FRACTIONS:
             for _ in range(11):
                 count, = struct.unpack("<i", capture.read(4))
                 values = np.fromfile(capture, "<f4", 3 * count).reshape(count, 3)
                 name = capture.read(ord(capture.read(1))).decode()
-                if name == "Body":
-                    body.append(values)
-        if capture.read(1) or np.shape(body) != (len(CAMERA_FRACTIONS), 23922, 3):
+                if name in samples:
+                    samples[name].append(values)
+        if capture.read(1) or any(np.shape(samples[name]) != (len(CAMERA_FRACTIONS), size, 3)
+                                for name, size in renderer_sizes.items()):
             raise ValueError("Unexpected exact camera pose capture")
-    return np.asarray(body, dtype=float)
+    return {name: np.asarray(values, dtype=float) for name, values in samples.items()}
 
 
 def bone_weights(joints, weights, bones):
@@ -173,7 +174,7 @@ def build(source, dense_path, exact_path, output):
     verify_hash(dense_path, DENSE_SHA)
     verify_hash(exact_path, EXACT_SHA)
     unity_thighs, dense = read_poses(dense_path)
-    exact = read_exact_body(exact_path)
+    exact = read_exact_renderers(exact_path, {"Body": 23922})["Body"]
     if dense.shape != (32, 23922, 3):
         raise ValueError("Expected the original dense walk capture")
 
