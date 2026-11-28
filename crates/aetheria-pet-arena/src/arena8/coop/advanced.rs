@@ -1,5 +1,5 @@
-//! Schema 5 conversions run only on an explicitly bound encounter or cast.
-//! No conversion, cleanse, chill or amplification consumes entropy.
+//! Schema 5 supports explicitly bound conversions. Schema 6 uses shared natural spawns.
+//! The jewel effects and legacy conversions do not consume entropy.
 use super::{
     CELLS, ConfigError, CoopConfig, CoopRules, CoopState, Participant, SIDE, StatusKind, Tile,
     TileIdentity, TileKind, event, matched_cells,
@@ -15,8 +15,10 @@ pub struct AdvancedJewels {
     pub nature_ally_limit_at_five: u8,
     pub frost_reduction_pm: [u16; 3],
     pub astral_upgrade_limits: [u8; 3],
-    pub occupancy_limit: u8,
-    pub encounters: Vec<AdvancedEncounter>,
+    #[serde(default, deserialize_with = "present_value")]
+    pub occupancy_limit: Option<u8>,
+    #[serde(default, deserialize_with = "present_value")]
+    pub encounters: Option<Vec<AdvancedEncounter>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize)]
@@ -50,10 +52,10 @@ impl Conversion {
     }
 }
 
-pub(super) fn present_policy<'de, D: serde::Deserializer<'de>>(
+pub(super) fn present_value<'de, T: Deserialize<'de>, D: serde::Deserializer<'de>>(
     deserializer: D,
-) -> Result<Option<AdvancedJewels>, D::Error> {
-    AdvancedJewels::deserialize(deserializer).map(Some)
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 
 impl AdvancedJewels {
@@ -66,7 +68,6 @@ impl AdvancedJewels {
             || !(1..=4).contains(&self.nature_ally_limit_at_five)
             || !tiered(self.frost_reduction_pm, 1, 999)
             || !tiered(self.astral_upgrade_limits, 1, CELLS as u8)
-            || !(3..=CELLS as u8).contains(&self.occupancy_limit)
             || config
                 .multiplier
                 .schedule
@@ -76,8 +77,21 @@ impl AdvancedJewels {
         {
             return Err(ConfigError::FunctionalTiles);
         }
+        if config.shared_jewel_rng() {
+            return if self.occupancy_limit.is_none() && self.encounters.is_none() {
+                Ok(())
+            } else {
+                Err(ConfigError::FunctionalTiles)
+            };
+        }
+        let (Some(limit), Some(encounters)) = (self.occupancy_limit, &self.encounters) else {
+            return Err(ConfigError::FunctionalTiles);
+        };
+        if !(3..=CELLS as u8).contains(&limit) {
+            return Err(ConfigError::FunctionalTiles);
+        }
         let mut encounter_ids = BTreeSet::new();
-        for enc in &self.encounters {
+        for enc in encounters {
             if !encounter_ids.insert(enc.encounter_id.as_str())
                 || !config.bosses().iter().any(|boss| {
                     boss.id == enc.encounter_id
@@ -104,7 +118,7 @@ impl AdvancedJewels {
             {
                 if !conversion.kind.advanced()
                     || !(3..=5).contains(&conversion.count)
-                    || conversion.count > self.occupancy_limit
+                    || conversion.count > limit
                 {
                     return Err(ConfigError::FunctionalTiles);
                 }
@@ -114,26 +128,34 @@ impl AdvancedJewels {
     }
 
     pub(super) fn to_value(&self) -> Value {
-        let encs = self.encounters.iter().map(|enc| {
-            list([
-                Value::Text(enc.encounter_id.clone()),
-                enc.opening.map_or(Value::Null, Conversion::to_value),
-                list(
-                    enc.skills
-                        .iter()
-                        .map(|s| list([Value::Text(s.skill_id.clone()), s.conversion.to_value()])),
-                ),
-            ])
-        });
-        list([
-            Value::Text("advanced-jewels-v1".into()),
+        let legacy = self.occupancy_limit.zip(self.encounters.as_ref());
+        let name = if legacy.is_some() {
+            "advanced-jewels-v1"
+        } else {
+            "shared-jewel-effects-v1"
+        };
+        let mut fields = vec![
+            Value::Text(name.into()),
             list(self.nature_actor_limits.map(|n| Value::Uint(n.into()))),
             Value::Uint(self.nature_ally_limit_at_five.into()),
             list(self.frost_reduction_pm.map(|n| Value::Uint(n.into()))),
             list(self.astral_upgrade_limits.map(|n| Value::Uint(n.into()))),
-            Value::Uint(self.occupancy_limit.into()),
-            list(encs),
-        ])
+        ];
+        if let Some((limit, encounters)) = legacy {
+            fields.push(Value::Uint(limit.into()));
+            fields.push(list(encounters.iter().map(|enc| {
+                list([
+                    Value::Text(enc.encounter_id.clone()),
+                    enc.opening.map_or(Value::Null, Conversion::to_value),
+                    list(
+                        enc.skills.iter().map(|s| {
+                            list([Value::Text(s.skill_id.clone()), s.conversion.to_value()])
+                        }),
+                    ),
+                ])
+            })));
+        }
+        Value::List(fields)
     }
 }
 
@@ -243,6 +265,7 @@ impl CoopRules {
             .advanced_jewels
             .as_ref()?
             .encounters
+            .as_ref()?
             .iter()
             .find(|enc| enc.encounter_id == self.encounter_id())
     }
@@ -257,10 +280,11 @@ impl CoopRules {
         };
         let encounter = self.advanced_encounter();
         let allowed = |kind| {
-            encounter.is_some_and(|enc| {
-                enc.opening.is_some_and(|c| c.kind == kind)
-                    || enc.skills.iter().any(|s| s.conversion.kind == kind)
-            })
+            self.config.shared_jewel_rng()
+                || encounter.is_some_and(|enc| {
+                    enc.opening.is_some_and(|c| c.kind == kind)
+                        || enc.skills.iter().any(|s| s.conversion.kind == kind)
+                })
         };
         if state.chill_reduction_pm.is_some_and(|chill| {
             !allowed(TileKind::Frost)
@@ -269,10 +293,18 @@ impl CoopRules {
         }) {
             return false;
         }
+        let Some(limit) = policy.occupancy_limit else {
+            return self.config.shared_jewel_rng()
+                && state
+                    .board
+                    .iter()
+                    .flatten()
+                    .all(|tile| advanced_kind(Some(*tile)).is_none() || tile.multiplier == 1);
+        };
         let mut count = 0;
         for kind in state.board.iter().filter_map(|tile| advanced_kind(*tile)) {
             count += 1;
-            if !allowed(kind) || count > policy.occupancy_limit {
+            if !allowed(kind) || count > limit {
                 return false;
             }
         }
@@ -300,7 +332,12 @@ impl CoopRules {
         conversion: Conversion,
         events: &mut Vec<Value>,
     ) {
-        let Some(policy) = &self.config.advanced_jewels else {
+        let Some(limit) = self
+            .config
+            .advanced_jewels
+            .as_ref()
+            .and_then(|policy| policy.occupancy_limit)
+        else {
             return;
         };
         let occupied = state
@@ -308,8 +345,7 @@ impl CoopRules {
             .iter()
             .filter(|tile| advanced_kind(**tile).is_some())
             .count();
-        let applied = occupied + usize::from(conversion.count)
-            <= usize::from(policy.occupancy_limit)
+        let applied = occupied + usize::from(conversion.count) <= usize::from(limit)
             && place_conversion(&mut state.board, conversion);
         events.push(event(
             &format!("generated-{}", conversion.kind.name()),

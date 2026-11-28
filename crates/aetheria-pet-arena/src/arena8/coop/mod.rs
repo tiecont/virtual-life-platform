@@ -62,6 +62,8 @@ pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
 pub const V3_RULESET_VERSION: u32 = 3;
 pub const ADVANCED_RULESET_VERSION: u32 = 4;
 pub const ADVANCED_SOLO_RULESET_VERSION: u32 = 3;
+pub const SHARED_RNG_RULESET_VERSION: u32 = 5;
+pub const SHARED_RNG_SOLO_RULESET_VERSION: u32 = 4;
 pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
 pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
 pub const V3_SOLO_RULESET_VERSION: u32 = 2;
@@ -271,6 +273,9 @@ pub struct CoopState {
     pub pending: Option<PendingAttack>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chill_reduction_pm: Option<u16>,
+    /// Independent board entropy position for shared-jewel matches.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    board_rng_cursor: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub turn_started_ms: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -410,7 +415,7 @@ impl CoopError {
 pub struct CoopRules {
     config: CoopConfig,
     digest: [u8; 32],
-    spawn_table: [u32; 6],
+    spawn_table: [u32; TileKind::SHARED.len()],
     spawn_total: u32,
     board_tiers: u64,
     effectiveness: [[u16; 6]; 6],
@@ -527,18 +532,17 @@ impl CoopRules {
             .cloned();
         let (boss_profile, solo_round_limit) = match (solo, &regular_profile) {
             (true, Some(profile)) => (selected.clone(), profile.max_rounds),
+            (true, None) if config.shared_jewel_rng() => (selected.clone(), None),
             (true, None) => {
                 let profile = selected.solo.as_ref().ok_or(ConfigError::Boss)?;
                 (selected.solo_profile(profile), profile.max_rounds)
             }
             (false, _) => (selected.clone(), None),
         };
-        let (spawn_table, spawn_total) = config.board.spawn_table()?;
-        let mut effectiveness = [[1_000u16; 6]; 6];
-        for (index, profile) in config.elements.iter().enumerate() {
-            let attacker = config::parse_element(&profile.element)?;
-            effectiveness[attacker.index()] = profile.effectiveness_table()?;
-            debug_assert_eq!(index, attacker.index());
+        let (spawn_table, spawn_total) = config.board.spawn_table(config.shared_jewel_rng())?;
+        let mut effectiveness = [[0u16; 6]; 6];
+        for (attacker, profile) in config.element_index()?.into_iter().enumerate() {
+            effectiveness[attacker] = profile.effectiveness_table()?;
         }
         let board_tiers = config
             .multiplier
@@ -617,6 +621,33 @@ impl CoopRules {
     }
 
     pub fn ruleset(&self) -> Ruleset {
+        if self.config.shared_jewel_rng() {
+            let (id, version, domain) = if self.solo {
+                (
+                    FUNCTIONAL_SOLO_RULESET_ID,
+                    SHARED_RNG_SOLO_RULESET_VERSION,
+                    "aetheria.arena8-functional-native.v4",
+                )
+            } else {
+                (
+                    COOP_RULESET_ID,
+                    SHARED_RNG_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v5",
+                )
+            };
+            return Ruleset {
+                id: id.into(),
+                version,
+                rng_version: RNG_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    version,
+                    domain,
+                    "timed-turns-v1;shared-nine-jewel-rng-v1;fixed-boss-v1",
+                    self.seat_count(),
+                ),
+            };
+        }
         if self.config.advanced_jewels.is_some() {
             let (id, version, domain) = if self.solo {
                 (
@@ -805,6 +836,7 @@ impl CoopRules {
             round_index: 1,
             pending: None,
             chill_reduction_pm: None,
+            board_rng_cursor: self.config.shared_jewel_rng().then_some(0),
             turn_started_ms: None,
             turn_deadline_ms: None,
         };
@@ -973,7 +1005,11 @@ impl CoopRules {
     pub fn validate(&self, state: &CoopState) -> Result<(), CoreError> {
         let versioned = self.config.versioned_roster();
         let expected_boss = versioned.then_some(self.encounter_id());
-        if !self.valid_advanced_state(state)
+        if state.board_rng_cursor.is_some() != self.config.shared_jewel_rng()
+            || state
+                .board_rng_cursor
+                .is_some_and(|cursor| (cursor == 0) != (state.phase == CoopPhase::Ready))
+            || !self.valid_advanced_state(state)
             || state.config_digest != self.digest
             || state.boss.curse.is_some_and(|curse| {
                 !(1..=32).contains(&curse.turns)
@@ -1162,16 +1198,25 @@ impl CoopRules {
         }
         let mut next = state.clone();
         let mut events = Vec::new();
+        let mut board_rng = if matches!(action, CoopAction::Start | CoopAction::Swap { .. }) {
+            state
+                .board_rng_cursor
+                .map(|cursor| rng.substream("aetheria.arena8-coop.board.v1", cursor))
+                .transpose()?
+        } else {
+            None
+        };
         match action {
             CoopAction::Start => {
                 if next.phase != CoopPhase::Ready {
                     return Err(CoreError::InvalidAction);
                 }
-                // Historical bundles keep their original reducer and RNG stream.
+                // Historical bundles use the original stream for every draw.
+                let board_entropy = board_rng.as_mut().unwrap_or(rng);
                 match self.config.board.initial_board_policy {
-                    None => self.fill_board(&mut next, rng)?,
+                    None => self.fill_board(&mut next, board_entropy)?,
                     Some(config::InitialBoardPolicy::Constructive) => {
-                        next.board = self.construct_board(rng)?;
+                        next.board = self.construct_board(board_entropy)?;
                     }
                 }
                 if let Some(opening) = self
@@ -1201,7 +1246,13 @@ impl CoopRules {
                     return Err(CoreError::InvalidAction);
                 }
                 next.board = board;
-                self.resolve_cascades(&mut next, rng, &mut events, observation)?;
+                self.resolve_cascades(
+                    &mut next,
+                    rng,
+                    board_rng.as_mut(),
+                    &mut events,
+                    observation,
+                )?;
             }
             CoopAction::EndTurn => {
                 self.require_turn(&next)?;
@@ -1230,6 +1281,9 @@ impl CoopRules {
             ability => {
                 self.act_ability(&mut next, ability, rng, &mut events)?;
             }
+        }
+        if let Some(board_rng) = board_rng {
+            next.board_rng_cursor = Some(board_rng.cursor());
         }
         if !matches!(action, CoopAction::Start) {
             observation.shield_absorbed = self.complete_turn(&mut next, rng, &mut events);
@@ -1822,6 +1876,7 @@ impl CoopRules {
         &self,
         state: &mut CoopState,
         rng: &mut TurnRng,
+        mut board_rng: Option<&mut TurnRng>,
         events: &mut Vec<Value>,
         observation: &mut TurnObservation,
     ) -> Result<(), CoreError> {
@@ -1854,7 +1909,12 @@ impl CoopRules {
             if state.phase.terminal() {
                 return Ok(());
             }
-            observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
+            let board_entropy = board_rng.as_deref_mut().unwrap_or(rng);
+            observation.record_refill(self.gravity_and_refill(
+                state,
+                board_entropy,
+                &mut survivors,
+            )?);
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
@@ -1873,9 +1933,13 @@ impl CoopRules {
                         state.board[index] = None;
                     }
                 }
-                observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
+                observation.record_refill(self.gravity_and_refill(
+                    state,
+                    board_entropy,
+                    &mut survivors,
+                )?);
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
-                    self.dead_board(state, rng)?;
+                    self.dead_board(state, board_entropy)?;
                     observation.forced_cascade_regenerations += 1;
                     survivors = 0;
                 }
@@ -2112,15 +2176,12 @@ impl CoopRules {
     }
 
     fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {
-        opening_board::construct(self.identities(), self.spawn_table, self.spawn_total, rng)
-    }
-
-    fn identities(&self) -> [TileIdentity; 6] {
-        if self.functional_board() {
-            TileKind::ALL.map(TileIdentity::Kind)
-        } else {
-            crate::arena8::ELEMENTS.map(TileIdentity::Element)
-        }
+        opening_board::construct(
+            self.functional_board(),
+            self.spawn_table,
+            self.spawn_total,
+            rng,
+        )
     }
 
     fn fill_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
@@ -2131,7 +2192,7 @@ impl CoopRules {
                 // refill draws the escalating multiplier distribution.
                 let roll = rng.below(self.spawn_total)?;
                 state.board[index] = Some(Tile {
-                    identity: spawn_identity(self.identities(), self.spawn_table, roll),
+                    identity: spawn_identity(self.functional_board(), &self.spawn_table, roll),
                     multiplier: 1,
                 });
             }
@@ -2154,7 +2215,7 @@ impl CoopRules {
     fn spawn_tile(&self, state: &CoopState, rng: &mut TurnRng) -> Result<Tile, CoreError> {
         let clock = self.escalation_clock(state);
         let roll = rng.below(self.spawn_total)?;
-        let identity = spawn_identity(self.identities(), self.spawn_table, roll);
+        let identity = spawn_identity(self.functional_board(), &self.spawn_table, roll);
         let budget = self
             .config
             .multiplier
@@ -2166,9 +2227,15 @@ impl CoopRules {
             .multiplier
             .tier_for(clock, tier_roll)
             .map_err(|_| CoreError::InvalidState)?;
+        // Advanced yields are tiered by the number of matched cells. Only
+        // basic jewels have multiplier weights in their effect formulas.
+        let multiplier = match identity {
+            TileIdentity::Kind(kind) if self.config.shared_jewel_rng() && kind.advanced() => 1,
+            _ => tier.multiplier,
+        };
         Ok(Tile {
             identity,
-            multiplier: tier.multiplier,
+            multiplier,
         })
     }
 
@@ -2628,11 +2695,19 @@ pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     matched
 }
 
-fn spawn_identity(identities: [TileIdentity; 6], table: [u32; 6], roll: u32) -> TileIdentity {
+fn spawn_identity(
+    functional: bool,
+    table: &[u32; TileKind::SHARED.len()],
+    roll: u32,
+) -> TileIdentity {
     let mut point = roll;
-    for (identity, weight) in identities.into_iter().zip(table) {
+    for (index, &weight) in table.iter().enumerate() {
         if point < weight {
-            return identity;
+            return if functional {
+                TileIdentity::Kind(TileKind::SHARED[index])
+            } else {
+                TileIdentity::Element(crate::arena8::ELEMENTS[index])
+            };
         }
         point -= weight;
     }
@@ -2768,6 +2843,12 @@ impl Canonical for CoopState {
                 Value::Text("turn-clock".into()),
                 self.turn_started_ms.map_or(Value::Null, Value::Uint),
                 self.turn_deadline_ms.map_or(Value::Null, Value::Uint),
+            ]));
+        }
+        if let Some(cursor) = self.board_rng_cursor {
+            fields.push(list([
+                Value::Text("board-rng-cursor".into()),
+                Value::Uint(cursor),
             ]));
         }
         Value::List(fields)

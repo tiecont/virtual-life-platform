@@ -2311,3 +2311,5 @@ fn v3_icarus_fire_zone_tracks_turns_and_clears_on_expiry() {
 }
 
 mod advanced;
+
+mod shared_rng;

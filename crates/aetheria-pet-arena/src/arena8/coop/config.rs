@@ -10,7 +10,10 @@
 //! MVP elements and the minimum match run) lives in the engine. Everything an
 //! author tunes lives here.
 
-use super::{functional::FunctionalTiles, loadout::ArtifactCatalog};
+use super::{
+    functional::{FunctionalTiles, TileKind},
+    loadout::ArtifactCatalog,
+};
 use crate::arena8::{
     Element,
     binding::{IDENTITIES, RosterState},
@@ -31,6 +34,8 @@ pub const V3_SCHEMA_VERSION: u32 = 4;
 pub const V3_ENGINE_CAPABILITY: &str = "arena8-coop-v3";
 pub const ADVANCED_SCHEMA_VERSION: u32 = 5;
 pub const ADVANCED_ENGINE_CAPABILITY: &str = "arena8-coop-v4";
+pub const SHARED_RNG_SCHEMA_VERSION: u32 = 6;
+pub const SHARED_RNG_ENGINE_CAPABILITY: &str = "arena8-coop-v5";
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
@@ -47,7 +52,7 @@ pub struct CoopConfig {
     pub config_id: String,
     pub content_revision: u32,
     pub board: BoardConfig,
-    #[serde(default, deserialize_with = "super::advanced::present_policy")]
+    #[serde(default, deserialize_with = "super::advanced::present_value")]
     pub advanced_jewels: Option<super::advanced::AdvancedJewels>,
     pub party: PartyConfig,
     pub resources: ResourceConfig,
@@ -388,7 +393,7 @@ impl RegularEncounterConfig {
     fn validate(&self, parent: &BossConfig, schema_version: u32) -> Result<(), ConfigError> {
         let map = parent.map_id.as_deref().ok_or(ConfigError::Boss)?;
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION, None) => true,
+            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION, None) => true,
             (
                 FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION,
                 Some(rounds),
@@ -713,10 +718,18 @@ impl CoopConfig {
                 self.engine_capability == ADVANCED_ENGINE_CAPABILITY
                     && self.board.functional_tiles.is_some()
             }
+            SHARED_RNG_SCHEMA_VERSION => {
+                self.engine_capability == SHARED_RNG_ENGINE_CAPABILITY
+                    && self.board.functional_tiles.is_some()
+            }
             _ => false,
         };
         if !capability_matches
-            || self.advanced_jewels.is_some() != (self.schema_version == ADVANCED_SCHEMA_VERSION)
+            || self.advanced_jewels.is_some()
+                != matches!(
+                    self.schema_version,
+                    ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION
+                )
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -730,7 +743,7 @@ impl CoopConfig {
         {
             return Err(ConfigError::Identity);
         }
-        self.board.validate()?;
+        self.board.validate(self.shared_jewel_rng())?;
         if let Some(functional) = &self.board.functional_tiles {
             functional.validate(&self.resources)?;
             if self.resources.mana_per_tile != 0
@@ -755,18 +768,21 @@ impl CoopConfig {
         }
         let elements = self.element_index()?;
         let mut immunity = false;
-        for profile in &self.elements {
+        for (attacker, profile) in elements.iter().enumerate() {
             if self.schema_version == HISTORICAL_SCHEMA_VERSION
                 && profile.boss_crit_damage_bonus_bp.is_some()
             {
                 return Err(ConfigError::ElementSet);
             }
             profile.validate()?;
-            // The MVP matrix intentionally carries at least one immunity across
-            // the whole attacker/defender graph, not one per attacker row.
-            immunity |= profile.effectiveness_table()?.contains(&0);
+            let table = profile.effectiveness_table()?;
+            if self.shared_jewel_rng() && (table[attacker] != 1_000 || table.contains(&0)) {
+                return Err(ConfigError::Effectiveness);
+            }
+            immunity |= table.contains(&0);
         }
-        if !immunity {
+        // Historical bundles required at least one immunity in the matrix.
+        if !self.shared_jewel_rng() && !immunity {
             return Err(ConfigError::Effectiveness);
         }
         self.multiplier.validate()?;
@@ -779,7 +795,8 @@ impl CoopConfig {
                 CONFIG_SCHEMA_VERSION
                 | FUNCTIONAL_SCHEMA_VERSION
                 | V3_SCHEMA_VERSION
-                | ADVANCED_SCHEMA_VERSION,
+                | ADVANCED_SCHEMA_VERSION
+                | SHARED_RNG_SCHEMA_VERSION,
                 None,
                 Some(bosses),
             ) if !bosses.is_empty() && bosses.len() <= 6 => bosses,
@@ -795,7 +812,8 @@ impl CoopConfig {
                     CONFIG_SCHEMA_VERSION
                     | FUNCTIONAL_SCHEMA_VERSION
                     | V3_SCHEMA_VERSION
-                    | ADVANCED_SCHEMA_VERSION,
+                    | ADVANCED_SCHEMA_VERSION
+                    | SHARED_RNG_SCHEMA_VERSION,
                     Some(map),
                 ) if stable_id(map) && map_ids.insert(map) => {}
                 _ => return Err(ConfigError::Boss),
@@ -828,7 +846,10 @@ impl CoopConfig {
             if let Some(regular) = &boss.regular {
                 if !matches!(
                     self.schema_version,
-                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION
+                    FUNCTIONAL_SCHEMA_VERSION
+                        | V3_SCHEMA_VERSION
+                        | ADVANCED_SCHEMA_VERSION
+                        | SHARED_RNG_SCHEMA_VERSION
                 ) || !self.has_artifact_catalog()
                     || !boss_ids.insert(&regular.id)
                 {
@@ -908,8 +929,12 @@ impl CoopConfig {
     pub fn is_v3(&self) -> bool {
         matches!(
             self.schema_version,
-            V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION
+            V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION
         )
+    }
+
+    pub fn shared_jewel_rng(&self) -> bool {
+        self.schema_version == SHARED_RNG_SCHEMA_VERSION
     }
 
     pub fn has_artifact_catalog(&self) -> bool {
@@ -1080,7 +1105,8 @@ impl CoopConfig {
                     CONFIG_SCHEMA_VERSION
                     | FUNCTIONAL_SCHEMA_VERSION
                     | V3_SCHEMA_VERSION
-                    | ADVANCED_SCHEMA_VERSION,
+                    | ADVANCED_SCHEMA_VERSION
+                    | SHARED_RNG_SCHEMA_VERSION,
                     Some(catalog),
                 ) if catalog.name.trim() == catalog.name
                     && !catalog.name.is_empty()
@@ -1095,9 +1121,7 @@ impl CoopConfig {
                             | "map-regular"
                             | "family-exploration"
                     )
-                    && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
-                        identity.roster_state == crate::arena8::binding::RosterState::Candidate
-                    }) => {}
+                    && self.valid_catalog_identity(pet, catalog) => {}
                 _ => return Err(ConfigError::Pet),
             }
             if pet.crit_rate_bp > 10_000 || pet.crit_damage_bp == 0 {
@@ -1140,16 +1164,37 @@ impl CoopConfig {
         }
         Ok(())
     }
+
+    fn valid_catalog_identity(&self, pet: &PetConfig, catalog: &PetCatalog) -> bool {
+        let Some(identity) = crate::arena8::binding::identity(&pet.id) else {
+            return true;
+        };
+        if identity.roster_state == RosterState::Candidate {
+            return self.shared_jewel_rng()
+                && pet.element() == Ok(identity.element)
+                && pet.rarity == "standard-s"
+                && pet.power_class == "s"
+                && catalog.map_id.is_none();
+        }
+        if self.shared_jewel_rng() && matches!(identity.family, "dragon" | "bird") {
+            return pet.element() == Ok(identity.element)
+                && MAPS.iter().any(|map| {
+                    map.element.index() == identity.element.index()
+                        && Some(map.id) == catalog.map_id.as_deref()
+                });
+        }
+        true
+    }
 }
 
 impl BoardConfig {
-    fn validate(&self) -> Result<(), ConfigError> {
-        if self.functional_tiles.is_some() {
-            return if self.spawn_weights.is_empty() && self.generation_attempts > 0 {
-                Ok(())
-            } else {
-                Err(ConfigError::SpawnWeights)
-            };
+    fn validate(&self, shared_jewel_rng: bool) -> Result<(), ConfigError> {
+        if let Some(functional) = &self.functional_tiles {
+            if !self.spawn_weights.is_empty() || self.generation_attempts == 0 {
+                return Err(ConfigError::SpawnWeights);
+            }
+            functional.spawn_table(shared_jewel_rng)?;
+            return Ok(());
         }
         if self.spawn_weights.len() != 6 {
             return Err(ConfigError::SpawnWeights);
@@ -1172,11 +1217,14 @@ impl BoardConfig {
     }
 
     /// Weighted spawn table in the canonical order for the bundle's board capability.
-    pub fn spawn_table(&self) -> Result<([u32; 6], u32), ConfigError> {
+    pub(super) fn spawn_table(
+        &self,
+        shared_jewel_rng: bool,
+    ) -> Result<([u32; TileKind::SHARED.len()], u32), ConfigError> {
         if let Some(functional) = &self.functional_tiles {
-            return functional.spawn_table();
+            return functional.spawn_table(shared_jewel_rng);
         }
-        let mut table = [0u32; 6];
+        let mut table = [0u32; TileKind::SHARED.len()];
         for weight in &self.spawn_weights {
             table[parse_element(&weight.element)?.index()] = weight.weight;
         }
@@ -1219,7 +1267,8 @@ impl BoardConfig {
 impl PartyConfig {
     fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION, None) => true,
+            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION | SHARED_RNG_SCHEMA_VERSION, None) => true,
+            (SHARED_RNG_SCHEMA_VERSION, Some(_)) => false,
             (_, Some(rounds)) => (1..=1_000).contains(&rounds),
             _ => false,
         };

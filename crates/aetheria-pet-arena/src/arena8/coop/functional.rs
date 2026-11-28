@@ -20,6 +20,7 @@ pub enum TileKind {
 }
 
 impl TileKind {
+    /// The six natural kinds in historical functional bundles.
     pub const ALL: [Self; 6] = [
         Self::Sword,
         Self::Mana,
@@ -27,6 +28,19 @@ impl TileKind {
         Self::Heart,
         Self::Shield,
         Self::Special,
+    ];
+
+    /// The shared natural spawn pool beginning with schema 6.
+    pub const SHARED: [Self; 9] = [
+        Self::Sword,
+        Self::Mana,
+        Self::Rage,
+        Self::Heart,
+        Self::Shield,
+        Self::Special,
+        Self::Nature,
+        Self::Frost,
+        Self::Astral,
     ];
 
     pub const fn advanced(self) -> bool {
@@ -122,7 +136,6 @@ pub enum SpecialPolicy {
 
 impl FunctionalTiles {
     pub(super) fn validate(&self, resources: &ResourceConfig) -> Result<(), ConfigError> {
-        self.spawn_table()?;
         let SpecialPolicy::ResourceCombo { mana, rage } = self.special;
         if !(1..=10_000).contains(&self.sword_contribution_pm)
             || !(1..=resources.mana_cap).contains(&self.mana_per_tile)
@@ -139,17 +152,32 @@ impl FunctionalTiles {
         Ok(())
     }
 
-    pub(super) fn spawn_table(&self) -> Result<([u32; 6], u32), ConfigError> {
-        if self.spawn_weights.len() != TileKind::ALL.len() {
+    pub(super) fn spawn_table(
+        &self,
+        shared_jewel_rng: bool,
+    ) -> Result<([u32; TileKind::SHARED.len()], u32), ConfigError> {
+        // Limit the shared table's integer precision while preserving legacy weights.
+        const MAX_SHARED_WEIGHT: u32 = 1_000_000;
+        let count = if shared_jewel_rng {
+            TileKind::SHARED.len()
+        } else {
+            TileKind::ALL.len()
+        };
+        if self.spawn_weights.len() != count {
             return Err(ConfigError::SpawnWeights);
         }
-        let mut table = [0u32; 6];
+        let mut table = [0; TileKind::SHARED.len()];
         let mut total = 0u32;
         for weight in &self.spawn_weights {
-            if weight.kind.advanced() || weight.weight == 0 || table[weight.kind.index()] != 0 {
+            let index = weight.kind.index();
+            if index >= count
+                || weight.weight == 0
+                || (shared_jewel_rng && weight.weight > MAX_SHARED_WEIGHT)
+                || table[index] != 0
+            {
                 return Err(ConfigError::SpawnWeights);
             }
-            table[weight.kind.index()] = weight.weight;
+            table[index] = weight.weight;
             total = total
                 .checked_add(weight.weight)
                 .ok_or(ConfigError::Arithmetic)?;

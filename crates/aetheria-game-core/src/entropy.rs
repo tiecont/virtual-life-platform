@@ -44,6 +44,7 @@ impl SecretSeed {
 
 /// Ephemeral, server-only stream. Failed turns discard it and consume no durable entropy.
 pub struct TurnRng {
+    key: Zeroizing<[u8; 32]>,
     rng: ChaCha20Rng,
     start: u64,
     cursor: u64,
@@ -54,15 +55,33 @@ impl TurnRng {
     /// the secret seed can construct one; no client value is accepted.
     #[doc(hidden)]
     pub fn new(seed: &SecretSeed, binding: Value, cursor: u64) -> Result<Self, Error> {
-        let key = Zeroizing::new(seed.key(binding)?);
+        Ok(Self::from_key(Zeroizing::new(seed.key(binding)?), cursor))
+    }
+
+    fn from_key(key: Zeroizing<[u8; 32]>, cursor: u64) -> Self {
         let mut rng = ChaCha20Rng::from_seed(*key);
         rng.set_word_pos(u128::from(cursor));
-        Ok(Self {
+        Self {
+            key,
             rng,
             start: cursor,
             cursor,
-        })
+        }
     }
+
+    /// Open a deterministic, independently positioned stream for a reducer-owned purpose.
+    /// The purpose must be a stable protocol label and the caller persists its cursor.
+    pub fn substream(&self, purpose: &'static str, cursor: u64) -> Result<Self, Error> {
+        let mut mac =
+            Hmac::<Sha256>::new_from_slice(self.key.as_ref()).map_err(|_| Error::InvalidState)?;
+        mac.update(&canonical::encode(&list([
+            Value::Text("vl.rng-substream.v1".into()),
+            Value::Text(purpose.into()),
+        ]))?);
+        let key = Zeroizing::new(mac.finalize().into_bytes().into());
+        Ok(Self::from_key(key, cursor))
+    }
+
     pub fn cursor(&self) -> u64 {
         self.cursor
     }

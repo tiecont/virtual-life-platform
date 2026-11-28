@@ -1,21 +1,21 @@
-use super::{CELLS, SIDE, Tile, TileIdentity, spawn_identity};
+use super::{CELLS, SIDE, Tile, TileKind, spawn_identity};
 use aetheria_game_core::{Error, TurnRng};
 
 /// Create a full board with no existing matches and at least one legal swap.
 /// The opening motif has two equal tiles beside a distinct one, with a third
 /// matching tile beside the distinct one. Its location and orientation are randomized.
 pub(super) fn construct(
-    identities: [TileIdentity; 6],
-    spawn_table: [u32; 6],
+    functional: bool,
+    spawn_table: [u32; TileKind::SHARED.len()],
     spawn_total: u32,
     rng: &mut TurnRng,
 ) -> Result<[Option<Tile>; CELLS], Error> {
-    let a = spawn_identity(identities, spawn_table, rng.below(spawn_total)?);
+    let a = spawn_identity(functional, &spawn_table, rng.below(spawn_total)?);
     let mut alternatives = spawn_table;
     alternatives[a.index()] = 0;
     let b = spawn_identity(
-        identities,
-        alternatives,
+        functional,
+        &alternatives,
         rng.below(spawn_total - spawn_table[a.index()])?,
     );
     let row = rng.below((SIDE - 1) as u32)? as usize;
@@ -48,11 +48,11 @@ pub(super) fn construct(
         let mut allowed = spawn_table;
         exclude_triples(&board, index, 1, index % SIDE, &mut allowed);
         exclude_triples(&board, index, SIDE, index / SIDE, &mut allowed);
-        // Each axis can exclude at most two distinct elements. All six
+        // Each axis can exclude at most two distinct elements. At least six
         // authored weights are positive, so this sum is always nonzero.
         let roll = rng.below(allowed.iter().sum())?;
         board[index] = Some(Tile {
-            identity: spawn_identity(identities, allowed, roll),
+            identity: spawn_identity(functional, &allowed, roll),
             multiplier: 1,
         });
     }
@@ -64,7 +64,7 @@ fn exclude_triples(
     index: usize,
     stride: usize,
     position: usize,
-    allowed: &mut [u32; 6],
+    allowed: &mut [u32; TileKind::SHARED.len()],
 ) {
     let mut exclude_equal_pair = |left: usize, right: usize| {
         if let (Some(left), Some(right)) = (board[left], board[right])
