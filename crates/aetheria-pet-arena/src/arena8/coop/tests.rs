@@ -1401,12 +1401,27 @@ fn functional_candidate_requires_separate_typed_identities_and_progressive_weigh
 
 #[test]
 fn functional_tile_effects_scale_only_their_authored_function() {
-    let rules = functional_rules();
+    let coop = functional_rules();
+    let initial = coop.allocate(seats()).unwrap();
+    assert_weighted_tile_effects(&coop, &initial, 1);
+    for encounter in ["cinder-terraces-warden", "cinder-terraces-regular"] {
+        let solo = CoopRules::load_solo(functional_bundle(), encounter.into()).unwrap();
+        let seat = seats()[0].clone();
+        let loadout = ArtifactLoadout {
+            digest: ArtifactLoadout::digest(solo.digest(), &seat, &[]),
+            entries: vec![],
+        };
+        let initial = solo.allocate_solo(seat, &loadout).unwrap();
+        assert_weighted_tile_effects(&solo, &initial, 0);
+    }
+}
+
+fn assert_weighted_tile_effects(rules: &CoopRules, initial: &CoopState, wounded_seat: usize) {
     let policy = rules.config().board.functional_tiles.as_ref().unwrap();
     for kind in TileKind::ALL {
-        let mut state = rules.allocate(seats()).unwrap();
+        let mut state = initial.clone();
         state.participants[0].crit_rate_bp = 0;
-        state.participants[1].hp = 10;
+        state.participants[wounded_seat].hp = 10;
         let hp = state.boss.hp;
         for (index, multiplier) in [1, 2, 1].into_iter().enumerate() {
             state.board[index] = Some(Tile {
@@ -1447,12 +1462,12 @@ fn functional_tile_effects_scale_only_their_authored_function() {
         );
         assert_eq!(actor.contribution_shielding, u64::from(actor.shield));
         assert_eq!(
-            state.participants[1].hp,
+            state.participants[wounded_seat].hp,
             if kind == TileKind::Heart { 52 } else { 10 }
         );
         assert_eq!(
             actor.contribution_healing,
-            u64::from(state.participants[1].hp - 10)
+            u64::from(state.participants[wounded_seat].hp - 10)
         );
         if kind == TileKind::Sword {
             let boss = rules.selected_boss();
@@ -1464,8 +1479,10 @@ fn functional_tile_effects_scale_only_their_authored_function() {
             let elemental = raw
                 * u32::from(rules.effectiveness(Element::Fire, boss.element().unwrap()))
                 / 1_000;
-            assert_eq!(outcome.damage, elemental);
-            assert_eq!(hp - state.boss.hp, elemental);
+            // Apply encounter-specific phase and lethal caps to the expected hit.
+            let expected = rules.damage_boss(&mut initial.clone(), elemental).unwrap();
+            assert_eq!(outcome.damage, expected);
+            assert_eq!(hp - state.boss.hp, expected);
         } else {
             assert_eq!(outcome.damage, 0);
             assert_eq!(hp, state.boss.hp);
