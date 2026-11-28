@@ -11135,6 +11135,13 @@
       ],
       "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision.",
       "implementation": {
+        "timedSettlement": {
+          "sourceRevision": "d32252c219b0056aae3ff089c5a6b7d2a516cd65",
+          "integratedAt": "c8e7039d",
+          "command": "scripts/with-test-db.mjs with Vitest integration tests/integration/coop-settlement.test.ts",
+          "result": "All 14 PostgreSQL settlement tests passed. Cases cover schema 4 cooperative settlement, rejection of mismatched cooperative and solo versions, duplicate delivery, player erasure and six paired campaign clears.",
+          "evidence": "artifacts/campaign-v2/receipts/settlement-d32252c2.log"
+        },
         "historicalFunctionalSettlement": {
           "sourceRevision": "9ab5beac",
           "command": "admin-gameplay-publication.mjs --direct with historical and current binaries, then --solo. PostgreSQL 18.7 with private loopback TLS.",
