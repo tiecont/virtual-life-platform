@@ -1161,6 +1161,11 @@
     },
     {
       "id": "VL-171",
+      "icarusOwnerWingSource": {
+        "url": "https://studio.tripo3d.ai/workspace/segmentation/a061ea26-294a-49f9-89f8-e4954ed11c21",
+        "taskId": "a061ea26-294a-49f9-89f8-e4954ed11c21",
+        "scope": "Owner-selected replacement source for the Icarus wings. Previous 34030b8d wing and its animated derivative are historical studies. Verify export and part fidelity before fitting to the original Charakuru VRM."
+      },
       "icarusTripoMotionReview": {
         "sourceRevision": "479de194",
         "command": "Blender 5.3 blender_icarus_accessory_motion.py on pinned Tripo exports",
