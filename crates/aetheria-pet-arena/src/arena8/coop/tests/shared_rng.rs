@@ -249,3 +249,43 @@ fn icarus_fire_zone_retains_combat_effect_and_never_mutates_board() {
     assert!(resolved.state.boss.dot_damage > 0);
     assert!(resolved.state.boss.dot_turns > 0);
 }
+
+#[test]
+fn warden_attack_stat_is_effective_only_in_the_new_schema() {
+    fn charge_warden(rules: &CoopRules) -> u32 {
+        let mut ready = rules.allocate(seats()).unwrap();
+        rules.boss_turn(&mut ready, &mut rng(0), &mut Vec::new());
+        ready.pending.unwrap().damage
+    }
+    fn authored(legacy: bool, attack_increase: u32) -> Vec<u8> {
+        let source = if legacy { V3_BUNDLE } else { BUNDLE };
+        let mut bundle: Json = serde_json::from_slice(source).unwrap();
+        let boss = &mut bundle["bosses"][0];
+        let attack = boss["attack"].as_u64().unwrap();
+        boss["attack"] = json!(attack + u64::from(attack_increase));
+        boss["critRateBp"] = json!(0);
+        serde_json::to_vec(&bundle).unwrap()
+    }
+    let load = |legacy, attack_increase| {
+        let bytes = authored(legacy, attack_increase);
+        CoopRules::load(&bytes, FIRE.into()).unwrap()
+    };
+    let historical = charge_warden(&load(true, 0));
+    assert_eq!(historical, charge_warden(&load(true, 36)));
+    assert_eq!(historical, charge_warden(&load(false, 0)));
+    assert_eq!(historical + 36, charge_warden(&load(false, 36)));
+
+    let charge_regular = |attack_increase| {
+        let bytes = authored(false, attack_increase);
+        let regular = CoopRules::load_solo(&bytes, "cinder-terraces-regular".into()).unwrap();
+        let seat = seats()[0].clone();
+        let loadout = ArtifactLoadout {
+            digest: ArtifactLoadout::digest(regular.digest(), &seat, &[]),
+            entries: Vec::new(),
+        };
+        let mut ready = regular.allocate_solo(seat, &loadout).unwrap();
+        regular.boss_turn(&mut ready, &mut rng(0), &mut Vec::new());
+        ready.pending.unwrap().damage
+    };
+    assert_eq!(charge_regular(0), charge_regular(36));
+}

@@ -428,6 +428,7 @@ pub struct CoopRules {
 struct Opponent<'a> {
     element: &'a str,
     max_hp: u32,
+    attack_addend: u32,
     defense: u32,
     crit_rate_bp: u16,
     crit_damage_bp: u16,
@@ -588,6 +589,7 @@ impl CoopRules {
             Opponent {
                 element: &regular.element,
                 max_hp: regular.max_hp,
+                attack_addend: 0,
                 defense: regular.defense,
                 crit_rate_bp: regular.crit_rate_bp,
                 crit_damage_bp: regular.crit_damage_bp,
@@ -599,6 +601,13 @@ impl CoopRules {
             Opponent {
                 element: &boss.element,
                 max_hp: boss.max_hp,
+                // Historical Wardens and standalone regular encounters use
+                // the authored flat attack model without a separate ATK term.
+                attack_addend: if self.config.shared_jewel_rng() {
+                    boss.attack
+                } else {
+                    0
+                },
                 defense: boss.defense,
                 crit_rate_bp: boss.crit_rate_bp,
                 crit_damage_bp: boss.crit_damage_bp,
@@ -2389,7 +2398,7 @@ impl CoopRules {
         } else {
             1_000
         };
-        let base = u64::from(model.base_damage)
+        let base = (u64::from(model.base_damage) + u64::from(opponent.attack_addend))
             .saturating_add(
                 u64::from(model.per_round_damage).saturating_mul(u64::from(state.round_index)),
             )

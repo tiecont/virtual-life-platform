@@ -6413,7 +6413,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 180,
+        "baseDamage": 60,
         "perRoundDamage": 12,
         "defenseDivisor": 8,
         "minimumDamage": 5
@@ -6505,7 +6505,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 170,
+        "baseDamage": 60,
         "perRoundDamage": 10,
         "defenseDivisor": 8,
         "minimumDamage": 5
@@ -6597,7 +6597,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 200,
+        "baseDamage": 65,
         "perRoundDamage": 15,
         "defenseDivisor": 8,
         "minimumDamage": 5
@@ -6690,7 +6690,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 175,
+        "baseDamage": 60,
         "perRoundDamage": 12,
         "defenseDivisor": 8,
         "minimumDamage": 5,
@@ -6791,7 +6791,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 160,
+        "baseDamage": 60,
         "perRoundDamage": 8,
         "defenseDivisor": 8,
         "minimumDamage": 5
@@ -6884,7 +6884,7 @@
         "attackTargets": 2
       },
       "attackModel": {
-        "baseDamage": 185,
+        "baseDamage": 60,
         "perRoundDamage": 13,
         "defenseDivisor": 8,
         "minimumDamage": 5
