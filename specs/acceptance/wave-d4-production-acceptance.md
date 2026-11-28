@@ -123,6 +123,64 @@ actual heals with their capacity on valid targets. Vitality jewel healing is
 included in effective healing. Shield efficiency reports actual absorption as
 a fraction of granted shielding.
 
+#### Discovery and held-out results
+
+The release simulation example at `9f0aecdd` ran the same five bundle digests
+on seeds 4001–4002 and 5001–5002. Each range covered 9,840 matches across six
+elements, five cooperative party cases and eighteen solo Pet/loadout cases.
+The matrix used levels 10, 20 and 40, unmodified and equipped Pets, all six
+Wardens and six solo regular opponents. The two ranges use four policies and
+two seeds per matrix cell.
+
+| Bundle | Digest prefix | Co-op Warden wins out of 240 per range | Solo Warden wins out of 864 per range | Solo regular wins out of 864 per range |
+| --- | --- | ---: | ---: | ---: |
+| Timed six-kind baseline | `a7f7ca28` | 0 / 0 | 285 / 342 | 606 / 712 |
+| Quarter cooperative Warden HP and attack | `50bb2377` | 148 / 146 | 385 / 265 | 693 / 691 |
+| Advanced control | `8ba10bc1` | 0 / 0 | 352 / 324 | 673 / 676 |
+| Skill conversion only | `eea5920c` | 0 / 0 | 387 / 406 | 709 / 711 |
+| Opening conversion only | `c8663739` | 0 / 0 | 379 / 265 | 704 / 710 |
+
+Each cell lists discovery, then held-out wins. The quarter-Warden bundle
+preserves the solo opponent and progression values. Differences in its solo
+results reflect a changed digest and sample stream. The quarter-Warden co-op
+tactical level-20 starters still lost all four Tideglass runs. The owner can
+consider the pressure reduction for further tuning while keeping Tideglass
+starter viability and progression open.
+
+Across both ranges the rates and counts were:
+
+- 0 swapless playing turns out of 1,422,290 observations. The reducer
+  regenerated 240 transient dead boards in 1,278,168 refill swap checks
+  (0.0188%). Another 9 regenerations occurred after the cascade cap. The
+  longest scored chain was eight waves including the initial match.
+- 1,986,638 Mana and 3,454,635 Rage generated after caps, 9,552,612 HP healed,
+  and 7,279,636 damage absorbed from 23,446,860 shielding granted. The row-level
+  results retain denominators for comparisons by mode, level and policy.
+- Opening generation yielded advanced matches in 135 co-op and 198 solo runs.
+  Skill conversion yielded advanced matches in 3 co-op and 109 solo runs,
+  reached the configured nine-tile occupancy cap and logged 1,708 no-op
+  conversions. The combined skill-only rows recorded 10 statuses cleansed,
+  109 chilled enemy actions, and 1,130 Astral upgrades. Opening-only rows
+  recorded 11 cleanses, 102 chilled actions and 25 upgrades.
+- All 245 unresolved matches exhausted the evaluation budget with zero
+  damage against a same-element solo Warden. Light Dawnarchon and Aurelune
+  accounted for 195 Dawn runs. Ghost Vesperyn accounted for 50 Lantern runs.
+  There were zero round-limit defeats or stalls from a lack of accepted
+  actions. These immunity and sustain combinations warrant a separate
+  decision before live qualification.
+
+Opening groups saw more use in co-op than these skill bindings. Skill-only
+Astral upgrades concentrated in solo play. Preserve both as unpublished
+experiments while the owner reviews match access, conversion caps and
+attainable support Pets. The small per-cell samples and concentrated
+immunity stalls limit balance conclusions.
+
+The complete commands, full digests and row metrics are in the ignored
+`artifacts/jewel-study-4001/` and `artifacts/jewel-study-5001/` outputs.
+The same source passed the observer equivalence check and all 80 Pet Arena
+library unit tests. The engine's typed skill audit at authored advanced
+digest `059f60a8` found 221 unique skill bindings.
+
 #### Canonical skill audit
 
 The typed catalog binds 221 unique abilities across 55 active Pets. The
