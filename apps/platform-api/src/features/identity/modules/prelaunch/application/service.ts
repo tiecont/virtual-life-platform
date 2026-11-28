@@ -340,11 +340,44 @@ export class PrelaunchRegistrationService {
     if(!this.operator)throw unavailable();
     const value=OperatorPrelaunchQuerySchema.parse(input);
     return this.operator.controlRead(operatorToken,async db=>{
-      const campaign=await this.campaignRow(db,value.campaignId);
-      const counts=(await db.query<{pending:number;withdrawn:number;suppressed:number}>("SELECT count(*) FILTER(WHERE state='PENDING')::int AS pending,count(*) FILTER(WHERE state='WITHDRAWN')::int AS withdrawn,count(*) FILTER(WHERE state='SUPPRESSED')::int AS suppressed FROM prelaunch_registrations WHERE campaign_id=$1",[campaign.id])).rows[0];
-      const outbox=(await db.query<{pending:number;sent:number;failed:number;suppressed:number}>("SELECT count(*) FILTER(WHERE state IN ('PENDING','SENDING'))::int AS pending,count(*) FILTER(WHERE state='SENT')::int AS sent,count(*) FILTER(WHERE state='FAILED')::int AS failed,count(*) FILTER(WHERE state='SUPPRESSED')::int AS suppressed FROM prelaunch_outbox WHERE registration_id IN(SELECT id FROM prelaunch_registrations WHERE campaign_id=$1)",[campaign.id])).rows[0];
-      const recentAudit=(await db.query<{action:'registration.requested'|'email.confirmed'|'registration.withdrawn'|'mail.suppressed';actor:'system'|'operator'|'owner';occurred_at:Date}>('SELECT action,actor,occurred_at FROM prelaunch_audit WHERE campaign_id=$1 ORDER BY sequence DESC LIMIT 20',[campaign.id])).rows.map(row=>({action:row.action,actor:row.actor,occurredAt:row.occurred_at.toISOString()}));
-      return OperatorPrelaunchSummarySchema.parse({schemaVersion:1,campaignId:campaign.id,slug:campaign.slug,state:this.state(campaign),capacity:campaign.capacity,confirmed:campaign.admissions,remaining:campaign.capacity-campaign.admissions,pending:counts.pending,withdrawn:counts.withdrawn,suppressed:counts.suppressed,outbox,recentAudit});
+      const campaign=(await db.query<CampaignRow&{
+        currentConfirmed:number;pending:number;withdrawn:number;suppressed:number;
+        outbox: {pending:number;sent:number;failed:number;suppressed:number};
+        recentAudit:unknown;
+      }>(`
+        WITH registrations AS (
+          SELECT id,state FROM prelaunch_registrations WHERE campaign_id=$1
+        )
+        SELECT c.id,c.slug,c.capacity,c.admissions,c.phase,c.opens_at,c.closes_at,
+          counts."currentConfirmed",counts.pending,counts.withdrawn,counts.suppressed,
+          (SELECT json_build_object(
+            'pending',count(*) FILTER(WHERE o.state IN ('PENDING','SENDING'))::int,
+            'sent',count(*) FILTER(WHERE o.state='SENT')::int,
+            'failed',count(*) FILTER(WHERE o.state='FAILED')::int,
+            'suppressed',count(*) FILTER(WHERE o.state='SUPPRESSED')::int
+          ) FROM prelaunch_outbox o JOIN registrations r ON r.id=o.registration_id) AS outbox,
+          COALESCE((
+            SELECT json_agg(json_build_object(
+              'action',action,'actor',actor,'occurredAt',to_char(occurred_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+            ) ORDER BY sequence DESC)
+            FROM (SELECT sequence,action,actor,occurred_at FROM prelaunch_audit
+                  WHERE campaign_id=$1 ORDER BY sequence DESC LIMIT 20) AS recent
+          ),'[]'::json) AS "recentAudit"
+        FROM prelaunch_campaigns c
+        CROSS JOIN (
+          SELECT count(*) FILTER(WHERE state='CONFIRMED')::int AS "currentConfirmed",
+            count(*) FILTER(WHERE state='PENDING')::int AS pending,
+            count(*) FILTER(WHERE state='WITHDRAWN')::int AS withdrawn,
+            count(*) FILTER(WHERE state='SUPPRESSED')::int AS suppressed
+          FROM registrations
+        ) AS counts
+        WHERE c.id=$1`,[value.campaignId])).rows[0];
+      if(!campaign)throw unavailable();
+      return OperatorPrelaunchSummarySchema.parse({
+        schemaVersion:1,campaignId:campaign.id,slug:campaign.slug,state:this.state(campaign),capacity:campaign.capacity,
+        confirmed:campaign.admissions,currentConfirmed:campaign.currentConfirmed,remaining:campaign.capacity-campaign.admissions,
+        pending:campaign.pending,withdrawn:campaign.withdrawn,suppressed:campaign.suppressed,outbox:campaign.outbox,recentAudit:campaign.recentAudit
+      });
     });
   }
 }

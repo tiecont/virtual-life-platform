@@ -32,7 +32,7 @@ describe('prelaunch registration contracts',()=>{
   });
 
   it('operator aggregate output contains no personal or mail fields',()=>{
-    const value={schemaVersion:1,campaignId,slug:'launch-5000',state:'OPEN',capacity:5000,confirmed:12,remaining:4988,pending:3,withdrawn:1,suppressed:0,outbox:{pending:2,sent:12,failed:0,suppressed:0},recentAudit:[{action:'registration.requested',actor:'system',occurredAt:'2026-11-24T00:00:00.000Z'}]};
+    const value={schemaVersion:1,campaignId,slug:'launch-5000',state:'OPEN',capacity:5000,confirmed:12,currentConfirmed:11,remaining:4988,pending:3,withdrawn:1,suppressed:0,outbox:{pending:2,sent:12,failed:0,suppressed:0},recentAudit:[{action:'registration.requested',actor:'system',occurredAt:'2026-11-24T00:00:00.000Z'}]};
     expect(OperatorPrelaunchSummarySchema.safeParse(value).success).toBe(true);
     for(const extra of [{email:'private@example.com'},{registrations:[]},{token:'a'.repeat(64)}])expect(OperatorPrelaunchSummarySchema.safeParse({...value,...extra}).success).toBe(false);
   });

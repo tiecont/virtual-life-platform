@@ -61,14 +61,15 @@ it('account results must be bounded strict projections; private upstream fields 
 
 it('returns bounded prelaunch aggregates through the authenticated operator route',async()=>{
  const campaignId=session.subject;
- const summary={schemaVersion:1,campaignId,slug:'launch-preview',state:'CLOSED',capacity:5000,confirmed:7,
-  remaining:4993,pending:2,withdrawn:1,suppressed:0,outbox:{pending:1,sent:10,failed:1,suppressed:0},recentAudit:[]};
+ const summary={schemaVersion:1,campaignId,slug:'launch-preview',state:'CLOSED',capacity:5000,confirmed:7,currentConfirmed:6,
+  remaining:4993,pending:2,withdrawn:1,suppressed:0,outbox:{pending:1,sent:10,failed:1,suppressed:0}};
+ const upstream={...summary,recentAudit:[{action:'email.confirmed',actor:'system',occurredAt:'2026-11-24T00:00:00.000Z'}]};
  let calls=0;
  const handler=createAdminHandler(config(),async(url,init)=>{
   expect(url).toBe(api+'/v1/operator/prelaunch-summary?campaignId='+campaignId);
   expect(new Headers(init?.headers).get('cookie')).toBe(cookie);
   calls++;
-  return Response.json(calls===1?summary:{...summary,email:'private@example.invalid'});
+  return Response.json(calls===1?upstream:{...upstream,email:'private@example.invalid'});
  });
  const path=origin+'/api/admin/prelaunch-summary?campaignId='+campaignId;
  expect((await handler(new Request(path))).status).toBe(401);

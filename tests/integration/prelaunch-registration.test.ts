@@ -107,9 +107,23 @@ describe('prelaunch double opt-in',()=>{
     const login=await server.http.inject({method:'POST',url:'/v1/operator/login',remoteAddress:ip(),headers:{origin:adminOrigin},payload:{password:operatorPassword,code:totp(totpSecret,now)}});
     expect(login.statusCode).toBe(200);
     const cookie=String(login.headers['set-cookie']).split(';')[0],summary=await server.http.inject({url:'/v1/operator/prelaunch-summary?campaignId='+campaignId,remoteAddress:ip(),headers:{cookie}});
-    expect(summary.statusCode).toBe(200);expect(summary.json()).toMatchObject({capacity:5000,confirmed:0,pending:1,recentAudit:expect.any(Array)});
+    expect(summary.statusCode).toBe(200);expect(summary.json()).toMatchObject({capacity:5000,confirmed:0,currentConfirmed:0,pending:1,recentAudit:expect.arrayContaining([{action:'registration.requested',actor:'system',occurredAt:new Date(now).toISOString()}])});
     for(const privateValue of ['repeat@example.com','suppressed@example.com',requestId,body.requestId])expect(summary.body).not.toContain(privateValue);
     expect((await server.http.inject({url:'/v1/operator/prelaunch-summary?campaignId='+campaignId,remoteAddress:ip()})).statusCode).toBe(401);
+    await drain();
+    const confirmed=await post('confirm',{schemaVersion:1,token:confirmationCode()});
+    expect(confirmed.statusCode).toBe(200);
+    const summaryPath='/v1/operator/prelaunch-summary?campaignId='+campaignId;
+    const readSummary=()=>server.http.inject({url:summaryPath,remoteAddress:ip(),headers:{cookie}});
+    expect((await readSummary()).json()).toMatchObject({confirmed:1,currentConfirmed:1,pending:0,remaining:4999});
+    const withdrawal=await server.http.inject({method:'POST',url:'/v1/prelaunch/withdraw',remoteAddress:ip(),
+      headers:{origin,authorization:'Bearer '+confirmed.json().managementToken},payload:{schemaVersion:1,requestId:randomUUID(),expectedVersion:1}});
+    expect(withdrawal.statusCode).toBe(200);
+    expect((await readSummary()).json()).toMatchObject({confirmed:1,currentConfirmed:0,withdrawn:1,remaining:4999});
+    now+=5*60000;
+    expect((await readSummary()).statusCode).toBe(403);
+    now+=10*60000;
+    expect((await readSummary()).statusCode).toBe(401);
   });
 
   it('retries a retryable sink failure and suppresses an existing pending registration without exposing mail',async()=>{

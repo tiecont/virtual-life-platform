@@ -70,6 +70,7 @@ export const OperatorPrelaunchSummarySchema=z.strictObject({
   state:PrelaunchCampaignStateSchema,
   capacity:z.number().int().min(1).max(5000),
   confirmed:z.number().int().min(0).max(5000),
+  currentConfirmed:z.number().int().min(0).max(5000),
   remaining:z.number().int().min(0).max(5000),
   pending:z.number().int().min(0),
   withdrawn:z.number().int().min(0),
@@ -87,6 +88,9 @@ export const OperatorPrelaunchSummarySchema=z.strictObject({
   })).max(20),
 });
 
+export const OperatorPrelaunchCampaignViewSchema=OperatorPrelaunchSummarySchema.omit({recentAudit:true});
+
+export type OperatorPrelaunchCampaignView=z.infer<typeof OperatorPrelaunchCampaignViewSchema>;
 export type PrelaunchRegister=z.infer<typeof PrelaunchRegisterSchema>;
 export type PrelaunchRegistrationView=z.infer<typeof PrelaunchRegistrationViewSchema>;
 export type PrelaunchCampaign=z.infer<typeof PrelaunchCampaignSchema>;
