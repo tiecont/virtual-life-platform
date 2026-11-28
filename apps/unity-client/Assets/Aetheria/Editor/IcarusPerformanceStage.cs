@@ -32,7 +32,7 @@ namespace Aetheria.Editor
             public string scene, modelSha256 = BodyHash, walkSha256 = WalkHash, voiceAsset = Voice, graphics, unity;
             public string status = "PROTOTYPE", expressions, exportProfile;
             public double duration, cueStart, walkStart = PerformanceSequence.WalkStart, overlap = PerformanceSequence.Transition;
-            public float idleHeadDegrees, idleEyeDegrees, plantedFootDeltaMeters, walkLegDegrees;
+            public float idleHeadDegrees, idleEyeDegrees, plantedFootDeltaMeters, walkLegDegrees, walkBodyVertexDeltaMeters;
             public int morphTargets, trackedBones, frameWidth, frameHeight, fps, frames;
             public string[] stills;
         }
@@ -114,7 +114,9 @@ namespace Aetheria.Editor
                 var audio = new GameObject("Signature vocal").AddComponent<AudioSource>();
                 audio.playOnAwake = false;
                 audio.outputAudioMixerGroup = Asset<AudioMixer>(Mixer).FindMatchingGroups("Voice").Single();
-                var particles = ElementCue(folder, center + new Vector3(-.31f, .08f, .12f) * height, height);
+                var wrist = Bone(HumanBodyBones.LeftHand);
+                var particles = ElementCue(folder, wrist.position + actor.transform.forward * (.05f * height), height);
+                particles.transform.SetParent(wrist, true);
                 LightRig();
                 var director = PerformanceSequence.Create(actor, idle, walk, rig, shot, audio, voice, particles, folder + "/Performance.playable");
                 var preview = director.gameObject.AddComponent<Aetheria.Icarus.CharacterPerformancePreview>();
@@ -153,7 +155,7 @@ namespace Aetheria.Editor
                     throw new InvalidDataException("Performance scene failed joint motion or idle foot-lock verification. " + JsonUtility.ToJson(report));
                 if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null && export != "stills")
                     throw new InvalidOperationException("Frame export requires a private graphics device.");
-                if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null) Capture(camera, director, output, report);
+                if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null) Capture(camera, director, model.GetComponentsInChildren<SkinnedMeshRenderer>(), output, report);
                 File.WriteAllText(Path.Combine(output, "performance-report.json"), JsonUtility.ToJson(report, true));
                 Debug.Log("Saved private body performance study " + report.scene);
             }
@@ -180,11 +182,13 @@ namespace Aetheria.Editor
             var keys = new[] {
                 (0f, eyes - Vector3.up * height * .055f, new Vector3(-.21f, .025f, .89f)),
                 (2.15f, eyes - Vector3.up * height * .045f, new Vector3(.07f, .018f, .78f)),
-                (3.5f, center, new Vector3(.19f, .09f, 2.08f)),
-                (cue - .55f, center, new Vector3(.29f, .09f, 2.05f)),
-                (cue + .42f, center + Vector3.up * height * .1f, new Vector3(.07f, .06f, 1.64f)),
-                (end + .02f, center + Vector3.up * height * .12f, new Vector3(-.13f, .07f, 1.59f))
+                (3.5f, center, new Vector3(1.12f, .09f, 2.04f)),
+                (cue - .55f, center, new Vector3(1.08f, .09f, 2.04f)),
+                (cue + .42f, center, new Vector3(.53f, .07f, 2.26f)),
+                (end + .02f, center, new Vector3(.28f, .07f, 2.28f))
             };
+            camera.transform.SetPositionAndRotation(keys[0].Item2 + keys[0].Item3 * height,
+                Quaternion.LookRotation(-keys[0].Item3, Vector3.up));
             var channels = Enumerable.Range(0, 7).Select(_ => new AnimationCurve()).ToArray();
             foreach (var (time, target, offset) in keys)
             {
@@ -216,7 +220,7 @@ namespace Aetheria.Editor
             main.duration = 1.2f;
             main.startLifetime = new ParticleSystem.MinMaxCurve(.32f, .72f);
             main.startSpeed = new ParticleSystem.MinMaxCurve(height * .14f, height * .45f);
-            main.startSize = new ParticleSystem.MinMaxCurve(height * .012f, height * .026f);
+            main.startSize = new ParticleSystem.MinMaxCurve(height * .022f, height * .045f);
             main.startColor = new ParticleSystem.MinMaxGradient(ArenaPresentationKit.ElementColor(ArenaElement.Fire), new Color(1, .83f, .34f));
             var emission = fx.emission;
             emission.rateOverTime = 0;
@@ -254,7 +258,7 @@ namespace Aetheria.Editor
             Light("Cool fill", new Color(.75f, .83f, 1), .14f, new Vector3(12, 223, 0));
         }
 
-        static void Capture(Camera camera, PlayableDirector director, string output, Report report)
+        static void Capture(Camera camera, PlayableDirector director, SkinnedMeshRenderer[] skins, string output, Report report)
         {
             report.frameWidth = report.exportProfile == "4k60" ? 3840 : 960;
             report.frameHeight = report.exportProfile == "4k60" ? 2160 : 540;
@@ -263,14 +267,42 @@ namespace Aetheria.Editor
             var pixels = new Texture2D(texture.width, texture.height, TextureFormat.RGB24, false);
             var previous = RenderTexture.active;
             var previousTarget = camera.targetTexture;
+            // In a synchronous batch seek the GPU may still present its previous skinning buffer.
+            // Bake the posed original vertices and preserve the original submeshes, UVs and materials.
+            // These frame-local renderers are created only after the real playable scene has been saved.
+            var samples = new System.Collections.Generic.List<(SkinnedMeshRenderer skin, MeshFilter draw, Mesh mesh)>();
             try
             {
                 if (!texture.Create()) throw new IOException("Could not allocate the offline render target.");
                 camera.targetTexture = texture;
-                void Frame(double time, string file)
+                foreach (var skin in skins.Where(skin => skin.enabled))
+                {
+                    var sampled = new GameObject(skin.name + " posed sample");
+                    sampled.transform.SetParent(skin.transform, false);
+                    sampled.layer = skin.gameObject.layer;
+                    var draw = sampled.AddComponent<MeshFilter>();
+                    var surface = sampled.AddComponent<MeshRenderer>();
+                    surface.sharedMaterials = skin.sharedMaterials;
+                    surface.shadowCastingMode = skin.shadowCastingMode;
+                    surface.receiveShadows = skin.receiveShadows;
+                    var mesh = new Mesh();
+                    samples.Add((skin, draw, mesh));
+                    skin.enabled = false;
+                }
+                void Frame(double time, string file, Pose? fixedCamera = null)
                 {
                     director.time = time;
                     director.Evaluate();
+                    if (fixedCamera.HasValue)
+                        camera.transform.SetPositionAndRotation(fixedCamera.Value.position, fixedCamera.Value.rotation);
+                    foreach (var (skin, draw, mesh) in samples)
+                    {
+                        skin.BakeMesh(mesh);
+                        if (mesh.vertexCount != skin.sharedMesh.vertexCount)
+                            throw new InvalidDataException("Sampled geometry differs from the source vertex count.");
+                        mesh.RecalculateBounds();
+                        draw.sharedMesh = mesh;
+                    }
                     camera.Render();
                     RenderTexture.active = texture;
                     pixels.ReadPixels(new Rect(0, 0, texture.width, texture.height), 0, 0);
@@ -280,6 +312,17 @@ namespace Aetheria.Editor
                 report.stills = new[] { "portrait.png", "glance.png", "walk.png", "fire-cue.png" };
                 var times = new[] { .05, 1.55, PerformanceSequence.WalkStart + .70, report.cueStart + .24 };
                 for (int i = 0; i < times.Length; i++) Frame(times[i], report.stills[i]);
+                var walkView = new Pose(camera.transform.position, camera.transform.rotation);
+                var body = samples.Single(sample => sample.skin.name == "Body");
+                Frame(PerformanceSequence.WalkStart + .45, "fixed-walk-a.png", walkView);
+                var first = body.mesh.vertices;
+                Frame(PerformanceSequence.WalkStart + .85, "fixed-walk-b.png", walkView);
+                var second = body.mesh.vertices;
+                for (int i = 0; i < first.Length; i++)
+                    report.walkBodyVertexDeltaMeters = Mathf.Max(report.walkBodyVertexDeltaMeters,
+                        body.skin.transform.TransformVector(first[i] - second[i]).magnitude);
+                if (report.walkBodyVertexDeltaMeters < .01f)
+                    throw new InvalidDataException("The walk did not deform the captured Body.");
                 if (report.exportProfile != "stills")
                 {
                     report.frames = (int)Math.Ceiling(report.duration * report.fps);
@@ -289,6 +332,12 @@ namespace Aetheria.Editor
             }
             finally
             {
+                foreach (var (skin, draw, mesh) in samples)
+                {
+                    skin.enabled = true;
+                    Object.DestroyImmediate(draw.gameObject);
+                    Object.DestroyImmediate(mesh);
+                }
                 camera.targetTexture = previousTarget;
                 RenderTexture.active = previous;
                 texture.Release();
