@@ -96,6 +96,7 @@ TRANSLATIONS = {
     "coop.room_state": {"vi": "Phòng {0} · {1}", "en": "Room {0} · {1}", "ja": "部屋 {0} · {1}", "ko": "방 {0} · {1}", "zh": "房间 {0} · {1}"},
     "coop.state.OPEN": {"vi": "Đang mở", "en": "OPEN", "ja": "募集中", "ko": "모집 중", "zh": "开放中"},
     "coop.state.LOCKED": {"vi": "Đã khóa", "en": "LOCKED", "ja": "締切", "ko": "잠김", "zh": "已锁定"},
+    "coop.state.CLOSED": {"vi": "Đã đóng", "en": "CLOSED", "ja": "終了", "ko": "종료", "zh": "已关闭"},
     "coop.state.STARTED": {"vi": "Đã bắt đầu", "en": "STARTED", "ja": "開始済み", "ko": "시작됨", "zh": "已开始"},
     "coop.room_meta": {"vi": "Boss {0} · cấu hình v{1} · {2} điểm", "en": "Boss {0} · config v{1} · points {2}", "ja": "ボス {0} · 設定 v{1} · {2} ポイント", "ko": "보스 {0} · 설정 v{1} · {2}점", "zh": "首领 {0} · 配置 v{1} · {2} 点"},
     "coop.seat_count": {"vi": "Số chỗ: {0}/4", "en": "Seats: {0}/4", "ja": "参加人数: {0}/4", "ko": "참가 인원: {0}/4", "zh": "人数：{0}/4"},

@@ -103,7 +103,7 @@ namespace Aetheria.PetArena.Presentation
                 {
                     row.Add(new Label("Room hosting locked.") { name = "coop-availability-status" });
                     if (catalog.points < encounter.requiredPoints)
-                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.points_needed", "Achievement Points still needed \u00b7 {0}"), encounter.requiredPoints - catalog.points))
+                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.points_needed", "Achievement Points still needed · {0}"), encounter.requiredPoints - catalog.points))
                             { name = "coop-availability-points-lock" });
                     if (encounter.prerequisite != null && !encounter.prerequisite.cleared)
                         row.Add(new Label(string.Format(CampaignLocale.Text("coop.map_needed", "Clear {0} first."), encounter.prerequisite.mapName))
@@ -175,8 +175,11 @@ namespace Aetheria.PetArena.Presentation
                 }
                 return;
             }
-            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_state", "Room {0} \u00b7 {1}"), room.roomId, CampaignLocale.Text("coop.state." + room.status, room.status))) { name = "coop-room-status" });
-            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_meta", "Boss {0} \u00b7 config v{1} \u00b7 points {2}"), room.bossId, room.configVersion, room.requiredPoints)) { name = "coop-room-meta" });
+            var state = CampaignLocale.Text("coop.state." + room.status, room.status);
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_state", "Room {0} · {1}"), room.roomId, state))
+                { name = "coop-room-status" });
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_meta", "Boss {0} · config v{1} · points {2}"),
+                room.bossId, room.configVersion, room.requiredPoints)) { name = "coop-room-meta" });
             var seats = new Label(string.Format(CampaignLocale.Text("coop.seat_count", "Seats: {0}/4"), room.seats?.Length ?? 0));
             seats.name = "coop-room-seats";
             root.Add(seats);

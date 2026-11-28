@@ -25,7 +25,7 @@
   "fontValidation": {
     "regularBytes": 135936,
     "boldBytes": 136332,
-    "cjkSubsetBytes": 326924,
+    "cjkSubsetBytes": 327120,
     "languages": {
       "vi": {
         "uniqueCodepoints": 121,
@@ -48,7 +48,7 @@
         "validated": true
       },
       "zh": {
-        "uniqueCodepoints": 323,
+        "uniqueCodepoints": 324,
         "missingCodepoints": [],
         "validated": true
       }
@@ -845,6 +845,13 @@
       "ja": "先に{0}をクリアしてください。",
       "ko": "먼저 {0} 지역을 클리어하세요.",
       "zh": "请先通关{0}。"
+    },
+    "coop.state.CLOSED": {
+      "vi": "Đã đóng",
+      "en": "CLOSED",
+      "ja": "終了",
+      "ko": "종료",
+      "zh": "已关闭"
     }
   }
 }

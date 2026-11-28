@@ -38,6 +38,29 @@ namespace Aetheria.Tests
             });
         }
 
+        [TestCase("vi", "Hãy vượt qua Cinder Terraces trước.")]
+        [TestCase("en", "Clear Cinder Terraces first.")]
+        [TestCase("ja", "先にCinder Terracesをクリアしてください。")]
+        [TestCase("ko", "먼저 Cinder Terraces 지역을 클리어하세요.")]
+        [TestCase("zh", "请先通关Cinder Terraces。")]
+        public void ShowsTheRequiredMapInTheSelectedLanguage(string language, string expected)
+        {
+            const string preference = "aetheria.campaign.language";
+            var previous = PlayerPrefs.HasKey(preference) ? PlayerPrefs.GetString(preference) : null;
+            try
+            {
+                PlayerPrefs.SetString(preference, language);
+                WithLobby(CoopCampaignCatalog.Decode(CatalogJson(5000, LockedEncounter)),
+                    WorldMapCatalog.TideglassLagoon, true,
+                    root => Assert.That(root.Q<Label>("coop-availability-map-lock").text, Is.EqualTo(expected)));
+            }
+            finally
+            {
+                if (previous == null) PlayerPrefs.DeleteKey(preference);
+                else PlayerPrefs.SetString(preference, previous);
+            }
+        }
+
         [TestCase(false, "Campaign availability could not be loaded.")]
         [TestCase(true, "No published Boss encounter for this map.")]
         public void FailsClosedWhenAvailabilityIsMissing(bool loaded, string expected)
