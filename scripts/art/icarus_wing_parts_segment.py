@@ -179,9 +179,23 @@ def write_parts(path, source, source_binary, attributes, triangles, material, na
     return groups
 
 
-def render_groups(candidate, directory, groups):
+def import_groups(candidate, groups):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.gltf(filepath=str(candidate))
+    if bpy.ops.import_scene.gltf(filepath=str(candidate)) != {"FINISHED"}:
+        raise RuntimeError("Blender did not reimport the grouped source")
+    names = {group["name"]: group for group in groups}
+    meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+    for obj in meshes:
+        group = names[obj.name]
+        obj.data.calc_loop_triangles()
+        if len(obj.data.loop_triangles) != group["triangles"]:
+            raise RuntimeError(f"Blender did not reimport the exact {obj.name} membership")
+    if {mesh.name for mesh in meshes} != set(names):
+        raise RuntimeError("Blender did not reimport every declared part")
+    return meshes
+
+
+def render_groups(meshes, directory, groups):
     names = {group["name"]: group for group in groups}
     colors = [
         (.78, .50, .20), (.78, .79, .95), (.95, .40, .42), (.97, .67, .26),
@@ -189,24 +203,14 @@ def render_groups(candidate, directory, groups):
         (.40, .45, .91), (.61, .39, .91), (.85, .40, .78), (.87, .65, .72),
     ]
     all_corners = []
-    seen = set()
-    for obj in bpy.context.scene.objects:
-        if obj.type != "MESH":
-            continue
-        group = names[obj.name]
-        obj.data.calc_loop_triangles()
-        if len(obj.data.loop_triangles) != group["triangles"]:
-            raise RuntimeError(f"Blender did not reimport the exact {obj.name} membership")
-        seen.add(obj.name)
-        slot = group["id"]
+    for obj in meshes:
+        slot = names[obj.name]["id"]
         color = colors[slot if slot < len(colors) else slot - 11]
         diagnostic = bpy.data.materials.new("Review color " + obj.name)
         diagnostic.diffuse_color = (*color, 1)
         obj.data.materials.clear()
         obj.data.materials.append(diagnostic)
         all_corners.extend(obj.matrix_world @ Vector(corner) for corner in obj.bound_box)
-    if seen != set(names):
-        raise RuntimeError("Blender did not reimport every declared part")
     minimum = Vector(tuple(min(point[axis] for point in all_corners) for axis in range(3)))
     maximum = Vector(tuple(max(point[axis] for point in all_corners) for axis in range(3)))
     center = (minimum + maximum) / 2
@@ -240,6 +244,9 @@ def main():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
+    stage = parser.add_mutually_exclusive_group()
+    stage.add_argument("--candidate-only", action="store_true", help="Build and reimport on CPU without rendering")
+    stage.add_argument("--render-existing", action="store_true", help="Render the existing verified candidate with the same input pin")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Private source regrouping requires Blender 5.3")
@@ -248,6 +255,19 @@ def main():
     payload = source.read_bytes()
     if checksum(payload) != SOURCE_SHA:
         raise ValueError("The exact owner-selected wing export is required")
+    candidate = output / "icarus-wing-primary-regions.glb"
+    report = output / "wing-primary-region-review.json"
+    if args.render_existing:
+        reviewed = json.loads(report.read_text())
+        if reviewed["sourceSha256"] != SOURCE_SHA or checksum(candidate.read_bytes()) != reviewed["candidateSha256"]:
+            raise ValueError("The prior private candidate or its source binding changed")
+        meshes = import_groups(candidate, reviewed["parts"])
+        renders = output / "renders"
+        renders.mkdir(exist_ok=False, mode=0o700)
+        capture = {"candidateSha256": reviewed["candidateSha256"],
+                   "frames": render_groups(meshes, renders, reviewed["parts"])}
+        (renders / "wing-primary-region-capture.json").write_text(json.dumps(capture, indent=2) + "\n")
+        return
     document, binary = parse_glb(payload)
     (mesh,) = document["meshes"]
     (primitive,) = mesh["primitives"]
@@ -258,7 +278,6 @@ def main():
     triangles = accessor(document, binary, primitive["indices"], 1, {5123, 5125}).reshape(-1, 3)
     names, assigned, seeds, orphans = part_field(attributes["POSITION"], triangles, attributes["NORMAL"])
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
-    candidate = output / "icarus-wing-primary-regions.glb"
     groups = write_parts(candidate, document, binary, attributes, triangles, primitive["material"], names, assigned)
     staged, staged_binary = parse_glb(candidate.read_bytes())
     if bytes(staged_binary[:len(binary)]) != bytes(binary) or staged["materials"] != document["materials"]:
@@ -278,9 +297,10 @@ def main():
         "exactPositionsNormalsUvsAndEmbeddedTextures": True,
         "partitionScope": "Root/mount and primary feather regions on the fused surface. Fine feather separation remains an art review question.",
     }
-    report = output / "wing-primary-region-review.json"
     report.write_text(json.dumps(preflight, indent=2) + "\n")
-    preflight["frames"] = render_groups(candidate, output, groups)
+    meshes = import_groups(candidate, groups)
+    preflight["blenderReimportedParts"] = len(meshes)
+    preflight["frames"] = [] if args.candidate_only else render_groups(meshes, output, groups)
     if checksum(source.read_bytes()) != SOURCE_SHA:
         raise RuntimeError("Original wing source changed during the private review")
     report.write_text(json.dumps(preflight, indent=2) + "\n")
