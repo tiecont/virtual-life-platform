@@ -4,14 +4,18 @@
 //! order and lets the reducer reject illegal, unaffordable or out-of-turn ones,
 //! so no cost, cooldown or balance rule is duplicated here.
 use super::{ArtifactLoadout, EquippedArtifact, SkillLevelBinding};
-use aetheria_game_core::{Command, LogicalClock, SecretSeed, Value, apply, begin};
+use aetheria_game_core::{
+    Command, Decision, Error, LogicalClock, Reducer, Ruleset, SecretSeed, TurnRng, Value, apply,
+    begin,
+};
 use serde::{Deserialize, Serialize};
+use std::cell::Cell;
 use std::collections::BTreeMap;
 
 use super::config::EffectKind;
 use super::{
     CELLS, CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput, Tile,
-    TileIdentity, TileKind,
+    TileIdentity, TileKind, TurnObservation,
 };
 
 const LOGICAL_ACTION_MS: u64 = 1_000;
@@ -119,6 +123,9 @@ pub struct BoardDiagnostics {
     pub match_waves_per_swap: BTreeMap<usize, u64>,
     pub cascade_cap_events: u64,
     pub advanced_tiles_per_turn: BTreeMap<usize, u64>,
+    pub refill_swap_checks: u64,
+    pub dead_board_regenerations: u64,
+    pub forced_cascade_regenerations: u64,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
@@ -131,6 +138,7 @@ pub struct CombatDiagnostics {
     pub healing_effective: u64,
     pub skill_healing_effective: u64,
     pub shielding_granted: u64,
+    pub shield_absorbed: u64,
     pub first_skill_turns_sum: u64,
     pub matches_with_skill: u32,
     pub first_ultimate_turns_sum: u64,
@@ -172,6 +180,43 @@ struct Sample {
     casts_by_skill: BTreeMap<String, u64>,
     mana_spent: u64,
     rage_spent: u64,
+}
+
+/// The engine still applies and hashes the same decision. This captures only
+/// transient measurements the durable state and events cannot represent.
+struct ObservedReducer<'a> {
+    rules: &'a CoopRules,
+    last: Cell<TurnObservation>,
+}
+
+impl Reducer for ObservedReducer<'_> {
+    type State = CoopState;
+    type Action = CoopAction;
+
+    fn ruleset(&self) -> Ruleset {
+        self.rules.ruleset()
+    }
+
+    fn validate(&self, state: &CoopState) -> Result<(), Error> {
+        self.rules.validate(state)
+    }
+
+    fn reduce(
+        &self,
+        state: &CoopState,
+        action: &CoopAction,
+        _clock: LogicalClock,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<CoopState>, Error> {
+        // Mirror the CoopRules Reducer contract. Its stamped command entry
+        // point is exercised independently by authenticated runtime tests.
+        let mut observation = TurnObservation::default();
+        let decision = self
+            .rules
+            .reduce_observed(state, *action, None, rng, &mut observation)?;
+        self.last.set(observation);
+        Ok(decision)
+    }
 }
 
 struct SplitMix(u64);
@@ -604,6 +649,10 @@ fn play(
     let mut stalled = false;
     let mut used_advanced = false;
     let mut previous_board = None;
+    let observer = diagnostics.is_some().then(|| ObservedReducer {
+        rules,
+        last: Cell::default(),
+    });
     for step in 0..eval_budget {
         if checkpoint.state.phase.terminal() {
             break;
@@ -673,16 +722,14 @@ fn play(
                 action,
             };
             let step = u64::from(step) + 1;
-            let result = apply(
-                rules,
-                &checkpoint,
-                &command,
-                &secret,
-                LogicalClock {
-                    server_tick: step,
-                    logical_time_ms: step * LOGICAL_ACTION_MS,
-                },
-            );
+            let clock = LogicalClock {
+                server_tick: step,
+                logical_time_ms: step * LOGICAL_ACTION_MS,
+            };
+            let result = match &observer {
+                Some(observer) => apply(observer, &checkpoint, &command, &secret, clock),
+                None => apply(rules, &checkpoint, &command, &secret, clock),
+            };
             let Ok(transition) = result else {
                 continue;
             };
@@ -722,6 +769,15 @@ fn play(
                 aetheria_game_core::Value::List(fields) if matches!(fields.first(),Some(aetheria_game_core::Value::Text(kind)) if kind=="critical"))).count() as u64;
             if let Some(diagnostics) = diagnostics.as_deref_mut() {
                 let next = &transition.next.state;
+                if let Some(observer) = &observer {
+                    let observation = observer.last.take();
+                    diagnostics.board.refill_swap_checks += observation.refill_swap_checks;
+                    diagnostics.board.dead_board_regenerations +=
+                        observation.dead_board_regenerations;
+                    diagnostics.board.forced_cascade_regenerations +=
+                        observation.forced_cascade_regenerations;
+                    diagnostics.combat.shield_absorbed += observation.shield_absorbed;
+                }
                 used_advanced |=
                     record_action(diagnostics, state, next, action, costs, &transition.events);
                 if matches!(action, CoopAction::Skill) {
@@ -1152,4 +1208,65 @@ fn run_samples(
     report.average_logical_duration_ms =
         report.total_actions * LOGICAL_ACTION_MS / u64::from(seeds);
     Ok(report)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn observations_preserve_committed_decisions_and_distinguish_budget_exhaustion() {
+        let bundle = include_bytes!(
+            "../../../../../config/gameplay/arena8-coop-functional-v2.candidate.json"
+        );
+        let rules = CoopRules::load(bundle, "cinder-terraces-warden".into()).unwrap();
+        let initial = rules
+            .allocate(std::array::from_fn(|index| SeatInput {
+                account: format!("sample-account-{index}"),
+                pet_id: "fire-coalwhisk".into(),
+                owned_pet_instance_id: format!("sample-pet-{index}"),
+                level: 20,
+                artifact_power_pm: 0,
+            }))
+            .unwrap();
+        let secret = SecretSeed::from_host_entropy([7; 32]);
+        let clock = LogicalClock {
+            server_tick: 1,
+            logical_time_ms: 1000,
+        };
+        let checkpoint = begin(&rules, [2; 16], initial, &secret, clock).unwrap();
+        let observer = ObservedReducer {
+            rules: &rules,
+            last: Cell::default(),
+        };
+        let command = Command {
+            id: command_id(0, 0),
+            match_id: checkpoint.match_id,
+            expected_version: checkpoint.version,
+            ruleset: rules.ruleset(),
+            action: CoopAction::Start,
+        };
+        let opening = apply(&rules, &checkpoint, &command, &secret, clock).unwrap();
+        let swap = rules.legal_swap(&opening.next.state).unwrap();
+        let command = Command {
+            id: command_id(1, 0),
+            expected_version: opening.next.version,
+            action: CoopAction::Swap {
+                first: swap.0,
+                second: swap.1,
+            },
+            ..command
+        };
+        let original = apply(&rules, &opening.next, &command, &secret, clock).unwrap();
+        let observed = apply(&observer, &opening.next, &command, &secret, clock).unwrap();
+        assert_eq!(observed.next.audit_hash, original.next.audit_hash);
+        assert_eq!(observed.next.rng_cursor, original.next.rng_cursor);
+        assert_eq!(observed.events, original.events);
+        assert!(observer.last.take().refill_swap_checks > 0);
+
+        let analysis = analyze_party_with_budget(&rules, Policy::Basic, 1, 1, None, 1).unwrap();
+        assert_eq!(analysis.report.unresolved, 1);
+        assert_eq!(analysis.report.losses, 0);
+        assert_eq!(analysis.diagnostics.combat.budget_exhausted, 1);
+    }
 }

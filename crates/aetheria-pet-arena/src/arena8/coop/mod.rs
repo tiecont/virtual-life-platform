@@ -1121,6 +1121,23 @@ impl CoopRules {
         server_timestamp_ms: Option<u64>,
         rng: &mut TurnRng,
     ) -> Result<Decision<CoopState>, CoreError> {
+        self.reduce_observed(
+            state,
+            action,
+            server_timestamp_ms,
+            rng,
+            &mut TurnObservation::default(),
+        )
+    }
+
+    fn reduce_observed(
+        &self,
+        state: &CoopState,
+        action: CoopAction,
+        server_timestamp_ms: Option<u64>,
+        rng: &mut TurnRng,
+        observation: &mut TurnObservation,
+    ) -> Result<Decision<CoopState>, CoreError> {
         if self.functional_board()
             || state.config_digest != self.digest
             || state.participants.len() != self.seat_count()
@@ -1184,8 +1201,7 @@ impl CoopRules {
                     return Err(CoreError::InvalidAction);
                 }
                 next.board = board;
-                self.resolve_cascades(&mut next, rng, &mut events)?;
-                self.complete_turn(&mut next, rng, &mut events);
+                self.resolve_cascades(&mut next, rng, &mut events, observation)?;
             }
             CoopAction::EndTurn => {
                 self.require_turn(&next)?;
@@ -1194,7 +1210,6 @@ impl CoopRules {
                     Some(next.active_seat as u8),
                     u64::from(next.turn_index),
                 ));
-                self.complete_turn(&mut next, rng, &mut events);
             }
             CoopAction::ExpireTurn { turn_index } => {
                 self.require_turn(&next)?;
@@ -1211,12 +1226,13 @@ impl CoopRules {
                     Some(next.active_seat as u8),
                     u64::from(next.turn_index),
                 ));
-                self.complete_turn(&mut next, rng, &mut events);
             }
             ability => {
                 self.act_ability(&mut next, ability, rng, &mut events)?;
-                self.complete_turn(&mut next, rng, &mut events);
             }
+        }
+        if !matches!(action, CoopAction::Start) {
+            observation.shield_absorbed = self.complete_turn(&mut next, rng, &mut events);
         }
         if self.is_v3() {
             if next.phase.terminal() {
@@ -1807,6 +1823,7 @@ impl CoopRules {
         state: &mut CoopState,
         rng: &mut TurnRng,
         events: &mut Vec<Value>,
+        observation: &mut TurnObservation,
     ) -> Result<(), CoreError> {
         let max = u32::from(self.config.party.max_cascades);
         let seat = state.active_seat;
@@ -1830,7 +1847,7 @@ impl CoopRules {
             if state.phase.terminal() {
                 return Ok(());
             }
-            self.gravity_and_refill(state, rng, &mut survivors)?;
+            observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
@@ -1849,9 +1866,10 @@ impl CoopRules {
                         state.board[index] = None;
                     }
                 }
-                self.gravity_and_refill(state, rng, &mut survivors)?;
+                observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
                     self.dead_board(state, rng)?;
+                    observation.forced_cascade_regenerations += 1;
                     survivors = 0;
                 }
                 break;
@@ -2013,7 +2031,7 @@ impl CoopRules {
         state: &mut CoopState,
         rng: &mut TurnRng,
         surviving_cells: &mut u64,
-    ) -> Result<(), CoreError> {
+    ) -> Result<RefillResult, CoreError> {
         let mut next = [None; CELLS];
         let mut moved_survivors = 0;
         for column in 0..SIDE {
@@ -2042,11 +2060,15 @@ impl CoopRules {
         *surviving_cells = moved_survivors;
         let still_matching =
             self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
-        if !still_matching && self.legal_swap(state).is_none() {
+        if still_matching {
+            Ok(RefillResult::StillMatching)
+        } else if self.legal_swap(state).is_none() {
             self.dead_board(state, rng)?;
             *surviving_cells = 0;
+            Ok(RefillResult::Regenerated)
+        } else {
+            Ok(RefillResult::Playable)
         }
-        Ok(())
     }
 
     fn dead_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
@@ -2175,7 +2197,12 @@ impl CoopRules {
         }
     }
 
-    fn complete_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
+    fn complete_turn(
+        &self,
+        state: &mut CoopState,
+        rng: &mut TurnRng,
+        events: &mut Vec<Value>,
+    ) -> u64 {
         state.turn_index = state.turn_index.saturating_add(1);
         let boss_defeat_first = self.config.terminal_outcome_policy
             == Some(config::TerminalOutcomePolicy::BossDefeatFirst);
@@ -2186,7 +2213,7 @@ impl CoopRules {
             // A defeat by the player's action or by the final DoT tick
             // cancels the Boss's queued attack before it can deal damage.
             state.pending = None;
-            return;
+            return 0;
         }
         if let Some(active) = state.boss.curse.as_mut() {
             active.turns -= 1;
@@ -2194,9 +2221,9 @@ impl CoopRules {
                 state.boss.curse = None;
             }
         }
-        self.tick_pending(state, events);
+        let mut shield_absorbed = self.tick_pending(state, events);
         if state.phase.terminal() {
-            return;
+            return shield_absorbed;
         }
         let current = state.active_seat;
         let seats = state.participants.len();
@@ -2207,7 +2234,7 @@ impl CoopRules {
             Some(next) => {
                 if next <= current {
                     state.round_index = state.round_index.saturating_add(1);
-                    self.boss_turn(state, rng, events);
+                    shield_absorbed += self.boss_turn(state, rng, events);
                 }
                 // Durations tick at the start of the affected participant's own
                 // turn, so a cooldown, buff or shield authored for N turns lasts
@@ -2230,6 +2257,7 @@ impl CoopRules {
         if !self.is_v3() && state.turn_index > MAX_TURNS {
             state.phase = CoopPhase::Lost;
         }
+        shield_absorbed
     }
 
     /// Advance one participant's authored durations exactly once per own turn.
@@ -2273,9 +2301,9 @@ impl CoopRules {
         }
     }
 
-    fn boss_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) {
+    fn boss_turn(&self, state: &mut CoopState, rng: &mut TurnRng, events: &mut Vec<Value>) -> u64 {
         if state.pending.is_some() {
-            return;
+            return 0;
         }
         let opponent = self.opponent();
         let model = opponent.attack_model;
@@ -2309,7 +2337,7 @@ impl CoopRules {
             1
         };
         if opponent.telegraph_turns <= 1 {
-            self.apply_boss_attack(state, targets, damage, events);
+            self.apply_boss_attack(state, targets, damage, events)
         } else {
             state.pending = Some(PendingAttack {
                 targets,
@@ -2321,21 +2349,23 @@ impl CoopRules {
                 None,
                 u64::from(opponent.telegraph_turns),
             ));
+            0
         }
     }
 
-    fn tick_pending(&self, state: &mut CoopState, events: &mut Vec<Value>) {
+    fn tick_pending(&self, state: &mut CoopState, events: &mut Vec<Value>) -> u64 {
         let Some(mut pending) = state.pending else {
-            return;
+            return 0;
         };
         if pending.remaining > 0 {
             pending.remaining -= 1;
         }
         if pending.remaining == 0 {
             state.pending = None;
-            self.apply_boss_attack(state, pending.targets, pending.damage, events);
+            self.apply_boss_attack(state, pending.targets, pending.damage, events)
         } else {
             state.pending = Some(pending);
+            0
         }
     }
 
@@ -2345,7 +2375,7 @@ impl CoopRules {
         targets: u8,
         damage: u32,
         events: &mut Vec<Value>,
-    ) {
+    ) -> u64 {
         let model = self.opponent().attack_model;
         // Resolve from the committed party at impact. Historical bundles rank by HP ratio.
         let mut order: Vec<usize> = (0..state.participants.len())
@@ -2363,6 +2393,7 @@ impl CoopRules {
         if let Some(reduction) = chill {
             events.push(event("chill-consumed", None, reduction.into()));
         }
+        let mut shield_absorbed = 0;
         for target in order.into_iter().take(usize::from(targets)) {
             let seat = &state.participants[target];
             let defense_buff = self.status_permille(seat, StatusKind::DefenseBuff);
@@ -2394,6 +2425,7 @@ impl CoopRules {
                 let absorbed = seat.shield.min(taken);
                 seat.shield -= absorbed;
                 taken -= absorbed;
+                shield_absorbed += u64::from(absorbed);
             }
             seat.hp = seat.hp.saturating_sub(taken);
             seat.rage = seat
@@ -2431,6 +2463,7 @@ impl CoopRules {
         if state.participants.iter().all(|seat| !seat.alive) {
             state.phase = CoopPhase::Lost;
         }
+        shield_absorbed
     }
 
     /// Canonical settlement payload. The economy owner validates and commits it
@@ -2466,6 +2499,28 @@ fn event(kind: &str, seat: Option<u8>, value: u64) -> Value {
 struct MatchOutcome {
     damage: u32,
     critical: bool,
+}
+
+enum RefillResult {
+    StillMatching,
+    Playable,
+    Regenerated,
+}
+
+/// Measurements outside the durable state and event stream.
+#[derive(Clone, Copy, Default)]
+struct TurnObservation {
+    refill_swap_checks: u64,
+    dead_board_regenerations: u64,
+    forced_cascade_regenerations: u64,
+    shield_absorbed: u64,
+}
+
+impl TurnObservation {
+    fn record_refill(&mut self, result: RefillResult) {
+        self.refill_swap_checks += u64::from(!matches!(result, RefillResult::StillMatching));
+        self.dead_board_regenerations += u64::from(matches!(result, RefillResult::Regenerated));
+    }
 }
 
 /// Native content hash bound into tickets and the match snapshot. It commits to
@@ -2785,7 +2840,7 @@ pub mod test_support {
             state: &mut CoopState,
             rng: &mut TurnRng,
         ) -> Result<(), aetheria_game_core::Error> {
-            self.gravity_and_refill(state, rng, &mut 0)
+            self.gravity_and_refill(state, rng, &mut 0).map(|_| ())
         }
 
         /// Apply raw damage to the Boss through the authored phase policy.

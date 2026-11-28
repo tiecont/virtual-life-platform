@@ -224,6 +224,8 @@ def summarize_row(item, row):
             "observedTurns": observed,
             "averageLegalSwaps": rate(sum(int(count) * turns for count, turns in distribution.items()), observed),
             "committedSwaplessRate": rate(distribution.get("0", 0), observed),
+            "refillDeadBoardRate": rate(board["deadBoardRegenerations"], board["refillSwapChecks"])
+            if "refillSwapChecks" in board else None,
         }
     if combat is not None:
         turns = combat["playerTurns"]
@@ -237,6 +239,8 @@ def summarize_row(item, row):
             "averageFirstSkillTurnWhenCast": rate(combat["firstSkillTurnsSum"], combat["matchesWithSkill"]),
             "averageFirstUltimateTurnWhenCast": rate(combat["firstUltimateTurnsSum"], combat["matchesWithUltimate"]),
             "skillHealingEfficiency": rate(combat["skillHealingEffective"], diagnostics["healingCapacity"]),
+            "shieldAbsorptionEfficiency": rate(combat["shieldAbsorbed"], combat["shieldingGranted"])
+            if "shieldAbsorbed" in combat else None,
         }
     return row_summary
 
