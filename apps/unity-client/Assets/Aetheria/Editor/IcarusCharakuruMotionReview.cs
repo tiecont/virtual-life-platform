@@ -128,9 +128,17 @@ namespace Aetheria.Editor
                 review.skinnedMeshes = skins.Length;
                 review.editorVersion = Application.unityVersion;
                 review.productionReady = false;
+                review.expressionBindings = modelVrm.Vrm.Expression.Clips.Where(entry => entry.Clip != null)
+                    .Select(entry => new ExpressionBindings {
+                        preset = entry.Preset.ToString(),
+                        morph = entry.Clip.MorphTargetBindings.Length,
+                        color = entry.Clip.MaterialColorBindings.Length,
+                        uv = entry.Clip.MaterialUVBindings.Length,
+                        transform = entry.Clip.NodeTransformBindings.Length
+                    }).ToArray();
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
-                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, output,
+                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, modelVrm, output,
                         out review.clippedWhitePercent);
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
                 Debug.Log($"Charakuru Icarus motion verified on Timeline. {review.mappedHumanoidBones} mapped bones, " +
@@ -254,7 +262,7 @@ namespace Aetheria.Editor
         }
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
-            SkinnedMeshRenderer[] skins, Transform reviewRoot, string output, out float[] clippedWhitePercent)
+            SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent)
         {
             Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
                 "A graphics capture requires the project's URP pipeline.");
@@ -356,6 +364,22 @@ namespace Aetheria.Editor
                     frames.Add(name);
                     exposure.Add(whitePercent);
                 }
+                if (modelVrm.TryGetBoneTransform(HumanBodyBones.LeftEye, out var leftEye) &&
+                    modelVrm.TryGetBoneTransform(HumanBodyBones.RightEye, out var rightEye))
+                {
+                    var eyes = (leftEye.position + rightEye.position) * .5f;
+                    var separation = Vector3.Distance(leftEye.position, rightEye.position);
+                    Require(separation > .001f, "Cannot frame the mapped eye bones.");
+                    camera.orthographicSize = separation * 3f;
+                    var focus = eyes + Vector3.down * (separation * .45f);
+                    camera.transform.position = focus + new Vector3(0, 0, 1);
+                    camera.transform.LookAt(focus);
+                    RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                    RenderTexture.active = target;
+                    image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
+                    image.Apply();
+                    File.WriteAllBytes(Path.Combine(output, "icarus-face-neutral.png"), image.EncodeToPNG());
+                }
                 clippedWhitePercent = exposure.ToArray();
                 return frames.ToArray();
             }
@@ -394,12 +418,20 @@ namespace Aetheria.Editor
         }
 
         [Serializable]
+        private sealed class ExpressionBindings
+        {
+            public string preset;
+            public int morph, color, uv, transform;
+        }
+
+        [Serializable]
         private sealed class ReviewFacts
         {
             public string modelSha256, sourceMotionSha256, sourceMotionFile, sourceMotionClip, editorVersion, graphicsDevice;
             public int mappedHumanoidBones, skinnedMeshes;
             public float clipSeconds, maxMappedJointAngleDegrees, maxSkinnedVertexDelta;
             public bool productionReady;
+            public ExpressionBindings[] expressionBindings;
             public float[] sampleFractions;
             public float[] clippedWhitePercent = Array.Empty<float>();
             public string[] frames = Array.Empty<string>();
