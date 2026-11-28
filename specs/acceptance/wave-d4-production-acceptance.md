@@ -510,87 +510,87 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-J01 | VL-210 | Exact nine owner-approved artworks located and hashed. | PASS | Both private R04 master hashes match the [provenance record](../media/hydrogen-production.md). |
 | V3-J02 | VL-210 | Explicit owner visual approval recorded. | PASS | Owner approved the six-jewel and three-jewel sheets in the Campaign V3 directive. |
 | V3-J03 | VL-210 | Nine individual transparent sprite assets verified. | PASS | eb7314d1 · independent exact pixel comparisons on nine transparent derivatives. |
-| V3-J04 | VL-210 | Runtime atlas preserves artwork fidelity and compatible sprite identifiers. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J05 | VL-210 | Jewels occupy the full usable square cell. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J06 | VL-210 | No clipping, distortion, redundant borders or atlas bleeding. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J04 | VL-210 | Runtime atlas preserves artwork fidelity and compatible sprite identifiers. | PASS | 6fc183f4 · nine stable sprite identifiers, 396×396 extruded atlas from the approved masters. |
+| V3-J05 | VL-210 | Jewels occupy the full usable square cell. | IN_PROGRESS | 6fc183f4 · measured atlas occupancy 96.9–98.4% on both axes; inspect packaged layout at target sizes. |
+| V3-J06 | VL-210 | No clipping, distortion, redundant borders or atlas bleeding. | IN_PROGRESS | 6fc183f4 · measured atlas occupancy 96.9–98.4% on both axes; inspect packaged layout at target sizes. |
 | V3-J07 | VL-210 | All 64 cells are visible and interactive. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-J08 | VL-210 | Multiplier badges do not obscure jewel symbols. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-J09 | VL-210 | Actual 720p and 1080p packaged screenshots captured. | IN_PROGRESS | e9aacee9 · historical 720p package; capture new full-cell layout at both resolutions. |
 | V3-J10 | VL-210 | Higher-resolution visual checks executed where supported. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J11 | VL-176 | Strike resolves normal attack correctly. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J12 | VL-176 | Mana restores individual Mana within its cap. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J13 | VL-176 | Rage restores individual Rage within its cap. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J14 | VL-176 | Vitality heals the correct eligible target. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J15 | VL-176 | Aegis applies bounded shield and duration. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J16 | VL-176 | Soul grants both Mana and Rage correctly. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J17 | VL-176 | Utility-only matches deal zero implicit normal damage. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J18 | VL-176 | Functional jewel identity remains independent of Pet element. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J19 | VL-176 | Six-kind default board remains compatible. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J20 | VL-176 | Nature cleanses eligible statuses deterministically. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J21 | VL-176 | Protected and non-cleansable effects remain intact. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J22 | VL-176 | Nature Match-3/4/5+ policies and solo fallback verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J23 | VL-176 | Frost mitigation magnitude and consumption verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J24 | VL-176 | Frost cannot skip enemy turns or alter committed targets. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J25 | VL-176 | Frost cannot stack without bounds. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J26 | VL-176 | Astral upgrades valid surviving jewel targets. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J27 | VL-176 | Astral respects the unlocked tier and x8 cap. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J28 | VL-176 | Astral cannot recursively amplify itself. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J29 | VL-176 | No-target and resource-cap edge cases verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J30 | VL-176 | Advanced jewel generation works through authored skills or encounter configurations. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J31 | VL-176 | Default natural spawning remains limited to six basic kinds. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J32 | VL-176 | Advanced jewel availability and occupancy remain bounded. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J33 | VL-176 | Initial boards contain no pre-existing matches and have legal moves. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J34 | VL-176 | Adjacent swap validation is correct. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J35 | VL-176 | Match-3, Match-4 and Match-5 resolution verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J36 | VL-176 | T, L and Cross matches deduplicate shared cells. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J37 | VL-176 | Cascades, refill and dead-board recovery remain deterministic. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J38 | VL-176 | Progressive x2–x8 tier behavior verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J39 | VL-176 | Damage and utility multiplier weights resolve correctly. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J40 | VL-176 | No uncontrolled amplification or infinite cascade. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J11 | VL-176 | Strike resolves normal attack correctly. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J12 | VL-176 | Mana restores individual Mana within its cap. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J13 | VL-176 | Rage restores individual Rage within its cap. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J14 | VL-176 | Vitality heals the correct eligible target. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J15 | VL-176 | Aegis applies bounded shield and duration. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J16 | VL-176 | Soul grants both Mana and Rage correctly. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J17 | VL-176 | Utility-only matches deal zero implicit normal damage. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J18 | VL-176 | Functional jewel identity remains independent of Pet element. | PASS | 9f0aecdd · identical_sword_matches_follow_the_six_pet_elements_against_each_warden and historical bundle digest/replay regressions. |
+| V3-J19 | VL-176 | Six-kind default board remains compatible. | PASS | 9f0aecdd · identical_sword_matches_follow_the_six_pet_elements_against_each_warden and historical bundle digest/replay regressions. |
+| V3-J20 | VL-176 | Nature cleanses eligible statuses deterministically. | PASS | 9f0aecdd · nature_groups_cleanse_only_eligible_slots_and_one_living_ally_without_healing checks stable status slots, excluded buff and defeated ally. |
+| V3-J21 | VL-176 | Protected and non-cleansable effects remain intact. | PASS | 9f0aecdd · nature_groups_cleanse_only_eligible_slots_and_one_living_ally_without_healing checks stable status slots, excluded buff and defeated ally. |
+| V3-J22 | VL-176 | Nature Match-3/4/5+ policies and solo fallback verified. | IN_PROGRESS | 9f0aecdd · committed tests cover two triples, five-cell cross and one-seat fallback. Isolated four-cell Nature check remains open. |
+| V3-J23 | VL-176 | Frost mitigation magnitude and consumption verified. | PASS | 9f0aecdd · frost_strongest_persists_until_one_committed_multi_target_impact checks unchanged target count and one-time reduction. |
+| V3-J24 | VL-176 | Frost cannot skip enemy turns or alter committed targets. | PASS | 9f0aecdd · frost_strongest_persists_until_one_committed_multi_target_impact checks unchanged target count and one-time reduction. |
+| V3-J25 | VL-176 | Frost cannot stack without bounds. | PASS | 9f0aecdd · frost_strongest_persists_until_one_committed_multi_target_impact checks unchanged target count and one-time reduction. |
+| V3-J26 | VL-176 | Astral upgrades valid surviving jewel targets. | PASS | 9f0aecdd · astral_uses_row_major_survivors_once_after_settling_and_obeys_current_ceiling verifies survivor order, eligible kinds and unlocked tier limit. |
+| V3-J27 | VL-176 | Astral respects the unlocked tier and x8 cap. | PASS | 9f0aecdd · astral_uses_row_major_survivors_once_after_settling_and_obeys_current_ceiling verifies survivor order, eligible kinds and unlocked tier limit. |
+| V3-J28 | VL-176 | Astral cannot recursively amplify itself. | PASS | 9f0aecdd · astral_uses_row_major_survivors_once_after_settling_and_obeys_current_ceiling verifies survivor order, eligible kinds and unlocked tier limit. |
+| V3-J29 | VL-176 | No-target and resource-cap edge cases verified. | PASS | 9f0aecdd · focused advanced tests cover zero conversion on a full board, skill authority, deterministic opening groups, resource caps and unchanged historical generation. |
+| V3-J30 | VL-176 | Advanced jewel generation works through authored skills or encounter configurations. | PASS | 9f0aecdd · focused advanced tests cover zero conversion on a full board, skill authority, deterministic opening groups, resource caps and unchanged historical generation. |
+| V3-J31 | VL-176 | Default natural spawning remains limited to six basic kinds. | PASS | 9f0aecdd · focused advanced tests cover zero conversion on a full board, skill authority, deterministic opening groups, resource caps and unchanged historical generation. |
+| V3-J32 | VL-176 | Advanced jewel availability and occupancy remain bounded. | PASS | 9f0aecdd · focused advanced tests cover zero conversion on a full board, skill authority, deterministic opening groups, resource caps and unchanged historical generation. |
+| V3-J33 | VL-176 | Initial boards contain no pre-existing matches and have legal moves. | PASS | 9f0aecdd · initial_board_is_matchless_and_playable, swaps_require_bounds_adjacency_different_elements_and_a_new_match, gravity and dead-board recovery. |
+| V3-J34 | VL-176 | Adjacent swap validation is correct. | PASS | 9f0aecdd · initial_board_is_matchless_and_playable, swaps_require_bounds_adjacency_different_elements_and_a_new_match, gravity and dead-board recovery. |
+| V3-J35 | VL-176 | Match-3, Match-4 and Match-5 resolution verified. | IN_PROGRESS | 9f0aecdd · full-run and crossing deduplication passed. Separate all-shapes/all-lengths acceptance cases remain to confirm. |
+| V3-J36 | VL-176 | T, L and Cross matches deduplicate shared cells. | IN_PROGRESS | 9f0aecdd · full-run and crossing deduplication passed. Separate all-shapes/all-lengths acceptance cases remain to confirm. |
+| V3-J37 | VL-176 | Cascades, refill and dead-board recovery remain deterministic. | PASS | 9f0aecdd · initial_board_is_matchless_and_playable, swaps_require_bounds_adjacency_different_elements_and_a_new_match, gravity and dead-board recovery. |
+| V3-J38 | VL-176 | Progressive x2–x8 tier behavior verified. | PASS | 9f0aecdd · timed uncapped rounds crossed 4,096 turns with x7/x8. Cascade cap regenerated after 16 passes. |
+| V3-J39 | VL-176 | Damage and utility multiplier weights resolve correctly. | PASS | 9f0aecdd · functional_tile_effects_scale_only_their_authored_function and functional_utility_caps_and_shield_credit_hold_when_yields_exceed_capacity. |
+| V3-J40 | VL-176 | No uncontrolled amplification or infinite cascade. | PASS | 9f0aecdd · timed uncapped rounds crossed 4,096 turns with x7/x8. Cascade cap regenerated after 16 passes. |
 | V3-J41 | VL-210 | Authoritative 15-second countdown is correct. | PASS | 660475d0 · 12 timed co-op WSS scenarios on schema 4, including restart. |
 | V3-J42 | VL-210 | EndTurn and timeout advance without free resources or automated actions. | PASS | c8698d6a and 660475d0 · native WSS pass, preserved resources and background expiry. |
 | V3-J43 | VL-210 | Jewel VFX consume committed gameplay events. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-J44 | VL-210 | Damage, resources, healing and shielding match authoritative results. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-J45 | VL-210 | Cleanse, Chill and Amplify presentation match authoritative results. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-J46 | VL-210 | Reduced motion and x1/x2 speed preserve gameplay semantics. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J47 | VL-210 | Tooltips and localization explain all nine jewels. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J48 | VL-210 | Reconnect restores jewel identities, multipliers and advanced effects. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J49 | VL-203 | New gameplay capability and schema compatibility validated. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J50 | VL-203 | Historical six-kind matches and replays remain unchanged. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J51 | VL-203 | Identical inputs reproduce identical state and events. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J52 | VL-203 | Restart restores exact board and status state. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J53 | VL-203 | Active encounters retain their pinned configuration. | PASS | e9aacee9 · packaged reconnect preserved the pinned Fire board after runtime restart. |
-| V3-J54 | VL-203 | Admin rejects unsupported jewel configurations. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J55 | VL-203 | Duplicate, stale and unauthorized actions are rejected. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J47 | VL-210 | Tooltips and localization explain all nine jewels. | IN_PROGRESS | 6fc183f4 · nine localized names/descriptions in five locales and Chill presentation. Packaged interaction inspection remains open. |
+| V3-J48 | VL-210 | Reconnect restores jewel identities, multipliers and advanced effects. | PASS | ec4b2cfe · native four-seat schema 5 Water swap matched three Frost and applied 150‰ Chill; restart restored committed state, deadline and pinned digest after publication B. |
+| V3-J49 | VL-203 | New gameplay capability and schema compatibility validated. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
+| V3-J50 | VL-203 | Historical six-kind matches and replays remain unchanged. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
+| V3-J51 | VL-203 | Identical inputs reproduce identical state and events. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
+| V3-J52 | VL-203 | Restart restores exact board and status state. | PASS | ec4b2cfe · native four-seat schema 5 Water swap matched three Frost and applied 150‰ Chill; restart restored committed state, deadline and pinned digest after publication B. |
+| V3-J53 | VL-203 | Active encounters retain their pinned configuration. | PASS | ec4b2cfe · native four-seat schema 5 Water swap matched three Frost and applied 150‰ Chill; restart restored committed state, deadline and pinned digest after publication B. |
+| V3-J54 | VL-203 | Admin rejects unsupported jewel configurations. | PASS | 9f0aecdd · engine regression suite and historical digest fixtures pass. Engine CLI accepted schemas 1–5 at 1f319c73; invalid candidates rejected in tests. |
+| V3-J55 | VL-203 | Duplicate, stale and unauthorized actions are rejected. | IN_PROGRESS | ec4b2cfe · outsider denied with HTTP 403 on private schema 5 probe. Duplicate/stale schema 5 cases need separate evidence. |
 | V3-J56 | VL-203 | Reward settlement remains exactly-once. | PASS | 660475d0 · concurrent and repeated settlement across Nest restart; four seats paid once. |
-| V3-J57 | VL-203 | No unauthorized production configuration publication occurs. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J58 | VL-211 | Six-kind baseline reproduced. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J59 | VL-211 | Advanced-jewel variants simulated. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J60 | VL-211 | Multiple compositions, levels and loadouts evaluated. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J61 | VL-211 | Legal move availability and dead-board rates measured. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J62 | VL-211 | Resource generation and survivability measured. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J63 | VL-211 | Advanced mechanic utilization and exploit risks evaluated. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J64 | VL-211 | Held-out seed validation completed. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-J65 | VL-211 | Owner balance decision package prepared. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-J57 | VL-203 | No unauthorized production configuration publication occurs. | PASS | 9822cd51 · private migration and publication tests use disposable databases; source migration creates no published candidate. |
+| V3-J58 | VL-211 | Six-kind baseline reproduced. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J59 | VL-211 | Advanced-jewel variants simulated. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J60 | VL-211 | Multiple compositions, levels and loadouts evaluated. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J61 | VL-211 | Legal move availability and dead-board rates measured. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J62 | VL-211 | Resource generation and survivability measured. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J63 | VL-211 | Advanced mechanic utilization and exploit risks evaluated. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J64 | VL-211 | Held-out seed validation completed. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
+| V3-J65 | VL-211 | Owner balance decision package prepared. | PASS | 9f0aecdd · 19,680 matches, disjoint discovery and holdout seeds. See the Campaign V3 balance decision package in this ledger. Numerical publication awaits owner decision. |
 | V3-P01 | VL-203 | Current integration PRs and CI reconciled. | PASS | f6ddd3d8 · PR 90 inspected. Core lint and shard 1 failed. Corrective source 55252788 awaits hosted checks. |
 | V3-P02 | VL-203 | Combat v3 cross-layer integration advanced and verified. | PASS | 660475d0 · authenticated timed co-op and durable per-seat settlement. |
 | V3-P03 | VL-204 | Icarus production advanced through the next authorized gate. | OWNER_REVIEW_REQUIRED | Icarus H1 face and hair review is open. |
 | V3-P04 | VL-205 | Representative starter Pet and Fire Boss production advanced. | IN_PROGRESS | Existing Coalwhisk and Cinder Warden candidates are private. Reference-faithful models await admission. |
 | V3-P05 | VL-206 | Production battle UI and environment improvements verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-P06 | VL-171 | Cinematic infrastructure advanced using canonical assets or labeled test fixtures. | IN_PROGRESS | Unity lock resolves Timeline 1.8.12. Cinemachine and Recorder are absent from the lock; canonical production model remains gated. |
+| V3-P06 | VL-171 | Cinematic infrastructure advanced using canonical assets or labeled test fixtures. | IN_PROGRESS | f0b02337 · model-bound Cinematic Studio Timeline authoring compiled in direct Editor. Canonical cast, capture, Recorder and Cinemachine remain open. |
 | V3-P07 | VL-208 | Wallet, progression and Admin work advanced. | PASS | 2f208d0c · combined operator build, 16 focused tests, 12 DB proxy cases and four desktop/mobile browser journeys. |
 | V3-P08 | VL-170 | Private asset delivery and retrieval advanced where authorized. | BLOCKED | Private staging receipts exist; authorized remote target and independent retrieval receipt remain open. |
-| V3-P09 | VL-106 | Audio and localization improvements verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-P10 | VL-210 | Additional eligible campaign work completed without duplicating earlier work. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-Q01 | VL-212 | Focused Rust and TypeScript regression suites pass. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-Q02 | VL-212 | PostgreSQL integration and historical migration checks pass. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-Q03 | VL-212 | Unity EditMode and PlayMode checks pass. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-P09 | VL-106 | Audio and localization improvements verified. | IN_PROGRESS | 6fc183f4 · localized all nine jewels in five locales, with Chill coverage. Production audio review remains open. |
+| V3-P10 | VL-210 | Additional eligible campaign work completed without duplicating earlier work. | PASS | ec4b2cfe · new schema 5 publication/restart WSS probe and disjoint 19,680-match comparison both completed. |
+| V3-Q01 | VL-212 | Focused Rust and TypeScript regression suites pass. | PASS | 9f0aecdd · 80 Rust library tests; 9822cd51 · 37 focused TS unit tests; 80215b43 · Admin build passed. |
+| V3-Q02 | VL-212 | PostgreSQL integration and historical migration checks pass. | PASS | 9822cd51 · 20 integration cases and both archived migration probes passed in disposable PostgreSQL databases. |
+| V3-Q03 | VL-212 | Unity EditMode and PlayMode checks pass. | PASS | c3b71d88 · direct Editor, 88 EditMode and 48 PlayMode passed, two PlayMode skipped. |
 | V3-Q04 | VL-212 | Actual packaged solo gameplay verified. | IN_PROGRESS | 763461ac · historical solo packaged End Turn and expiry; advanced candidate awaits package. |
 | V3-Q05 | VL-212 | Four authenticated cooperative seats verified. | PASS | 660475d0 · four authenticated WSS seats; e9aacee9 · one Linux player and three authenticated peers. |
 | V3-Q06 | VL-212 | Advanced jewel effects verified in packaged gameplay when enabled in an experimental configuration. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-Q07 | VL-212 | Fire victory, reward settlement and Water admission verified. | PASS | e9aacee9 · packaged Fire win v46, four rewards, Water admission and swap v2. |
 | V3-Q08 | VL-212 | Performance and memory measurements recorded. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-Q09 | VL-212 | Independent security and compatibility review completed. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-Q09 | VL-212 | Independent security and compatibility review completed. | IN_PROGRESS | Independent mixed-version review identified legacy client admission to schema 5. Final compatibility retest remains open. |
 | V3-Q10 | VL-212 | Required exact-source hosted CI passes. | IN_PROGRESS | PR 90 failed at f6ddd3d8. Verify the final integrated revision before merge. |
-| V3-Q11 | VL-212 | Canonical backlog and acceptance ledger updated. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
+| V3-Q11 | VL-212 | Canonical backlog and acceptance ledger updated. | PASS | Campaign V3 verification entries in config/development-plan.json and this 87-gate ledger. |
 | V3-Q12 | VL-212 | Durable resumable campaign checkpoint recorded. | PASS | SQLite run master-campaign-v3 recovers isolated ownership and pending work. |

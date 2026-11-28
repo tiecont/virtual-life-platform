@@ -1159,6 +1159,13 @@
     },
     {
       "id": "VL-171",
+      "campaignV3Verification": {
+        "sourceRevision": "c3b71d8856a709c656a88eaffd83b0766464212b",
+        "command": "node scripts/unity-validate.mjs tests",
+        "exitCode": 0,
+        "result": "Cinematic Studio editor compiled with Timeline 1.8.12. Intro, skill, ultimate and reveal tracks can bind an imported model and clip. Production capture and model approval remain open.",
+        "evidence": "artifacts/unity/2026-11-28T09-08-27-686Z-48e86c1e/result.json"
+      },
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -9989,6 +9996,13 @@
     },
     {
       "id": "VL-176",
+      "campaignV3Verification": {
+        "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
+        "command": "cargo test --locked -p aetheria-pet-arena --lib",
+        "exitCode": 0,
+        "result": "80 passed, including six advanced-jewel regressions. Schema 5 adds encounter/skill conversions and keeps the six-kind natural pool.",
+        "evidence": "artifacts/campaign-v3/qa-rust-lib-9f0aecdd.log"
+      },
       "mvpMilestone": "M1",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -10779,6 +10793,13 @@
     },
     {
       "id": "VL-198",
+      "campaignV3Verification": {
+        "sourceRevision": "1f319c737fd55f9bee541db65f033c779ce2a665",
+        "command": "aetheria-game-runtime --check-gameplay-config <bundle>",
+        "exitCode": 0,
+        "result": "Accepted source bundles for schemas 1 through 5. Active allocations keep their immutable configuration.",
+        "evidence": "artifacts/campaign-v3/qa-rust-cli-1f319c73.log"
+      },
       "mvpMilestone": "M4",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -11110,6 +11131,13 @@
     },
     {
       "id": "VL-203",
+      "campaignV3Verification": {
+        "sourceRevision": "9822cd51df1165279174efdbcacbaaa6a4afdfbc",
+        "command": "archived native and admission migration probes; focused PostgreSQL integration",
+        "exitCode": 0,
+        "result": "Both archived upgrade probes and 20 integration tests passed in disposable databases. Integration PR 90 still requires green hosted CI.",
+        "evidence": "artifacts/campaign-v3/qa-integration.log"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11404,6 +11432,13 @@
     },
     {
       "id": "VL-208",
+      "campaignV3Verification": {
+        "sourceRevision": "80215b43e569074959aebd4db4e7c6fa064a3392",
+        "command": "pnpm --filter @aetheria/admin-web build",
+        "exitCode": 0,
+        "result": "Admin advanced policy draft controls and schema-aware turn policy compiled successfully.",
+        "evidence": "artifacts/campaign-v3/qa-admin-build-80215b43.log"
+      },
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11518,6 +11553,13 @@
     },
     {
       "id": "VL-210",
+      "campaignV3Verification": {
+        "sourceRevision": "c3b71d8856a709c656a88eaffd83b0766464212b",
+        "command": "node scripts/unity-validate.mjs tests",
+        "exitCode": 0,
+        "result": "Owner approved both exact R04 sheets. Nine full-cell sprite regions preserve their IDs. Direct Editor passed 88 EditMode and 48 PlayMode tests, with two PlayMode skips.",
+        "evidence": "artifacts/unity/2026-11-28T09-08-27-686Z-48e86c1e/result.json"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11594,6 +11636,13 @@
     },
     {
       "id": "VL-211",
+      "campaignV3Verification": {
+        "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
+        "command": "scripts/coop-balance-study.py (discovery 4001–4002; holdout 5001–5002)",
+        "exitCode": 0,
+        "result": "19,680 reducer matches. Quarter Warden won 294/480 in co-op, while level-20 tactical starters lost 4/4 against Tideglass. 245 solo mirror matches reached the study ceiling. Balance remains unpublished.",
+        "evidence": "artifacts/jewel-study-5001/summary.json"
+      },
       "mvpMilestone": "M5",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11681,6 +11730,13 @@
     },
     {
       "id": "VL-212",
+      "campaignV3Verification": {
+        "sourceRevision": "d18d623893da732280acd0cb7105a65ddd7d17fa",
+        "command": "node scripts/unity-validate.mjs linux",
+        "exitCode": 0,
+        "result": "Direct Editor Linux package built successfully. Runtime interaction evidence is tracked separately in the acceptance ledger.",
+        "evidence": "artifacts/unity/2026-11-28T09-11-07-961Z-2918f38b/result.json"
+      },
       "mvpMilestone": "M5",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,

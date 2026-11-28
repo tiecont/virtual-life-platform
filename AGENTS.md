@@ -101,7 +101,9 @@ If Hydrogen is unavailable, keep the brief and continue independent work.
 Obtain owner direction before substituting a different provider. Keep historical
 Gemini outputs attributed to the provider that produced them.
 
-For jewel assets, use the owner's R04 battle image as a visual input to the
+The owner approved the two exact R04 sheets for all nine current jewel roles.
+Reuse their recorded master hashes and preserve their sprite identifiers when
+repacking. For a new jewel design, use the owner's R04 battle image as a visual input to the
 generator. Hydrogen, the authorized Gemini tab and repository-listed image tools
 are permitted for this workflow. Use Meshy only when a 3D deliverable is needed.
 Keep the reference hash, actual provider master and atlas mapping. Limit local
