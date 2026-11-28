@@ -61,24 +61,6 @@ TRANSLATIONS = {
     "battle.passive_badge": {"vi": "Bị động", "en": "Passive", "ja": "パッシブ", "ko": "패시브", "zh": "被动"},
     "battle.fire_zone": {"vi": "Vùng Lửa 4×4", "en": "Fire Zone 4×4", "ja": "炎獄ゾーン 4×4", "ko": "화염 지대 4×4", "zh": "烈焰领域 4×4"},
     "battle.combat_log": {"vi": "Nhật ký trận đấu", "en": "Combat Log", "ja": "戦闘ログ", "ko": "전투 기록", "zh": "战斗日志"},
-    "battle.jewel.sword": {"vi": "Tấn Công", "en": "Strike", "ja": "打撃", "ko": "타격", "zh": "打击"},
-    "battle.jewel.sword.effect": {"vi": "Gây sát thương đòn đánh thường.", "en": "Deal normal attack damage.", "ja": "通常攻撃でダメージを与える。", "ko": "일반 공격으로 피해를 줍니다.", "zh": "造成普通攻击伤害。"},
-    "battle.jewel.mana": {"vi": "Năng Lượng", "en": "Mana", "ja": "マナ", "ko": "마나", "zh": "法力"},
-    "battle.jewel.mana.effect": {"vi": "Hồi năng lượng cho Linh Thú đang hành động.", "en": "Restore the acting Pet’s Mana.", "ja": "行動中のペットのマナを回復する。", "ko": "행동 중인 펫의 마나를 회복합니다.", "zh": "恢复当前行动灵兽的法力。"},
-    "battle.jewel.rage": {"vi": "Nộ", "en": "Rage", "ja": "怒り", "ko": "분노", "zh": "怒气"},
-    "battle.jewel.rage.effect": {"vi": "Tăng nộ cho Linh Thú đang hành động.", "en": "Generate Rage for the acting Pet.", "ja": "行動中のペットの怒りを増やす。", "ko": "행동 중인 펫의 분노를 늘립니다.", "zh": "为当前行动的灵兽积攒怒气。"},
-    "battle.jewel.heart": {"vi": "Sinh Lực", "en": "Vitality", "ja": "活力", "ko": "활력", "zh": "活力"},
-    "battle.jewel.heart.effect": {"vi": "Hồi HP cho mục tiêu đủ điều kiện.", "en": "Restore HP to an eligible target.", "ja": "条件を満たす対象のHPを回復する。", "ko": "조건에 맞는 대상의 HP를 회복합니다.", "zh": "为符合条件的目标恢复生命值。"},
-    "battle.jewel.shield": {"vi": "Hộ Thuẫn", "en": "Aegis", "ja": "加護", "ko": "수호", "zh": "庇护"},
-    "battle.jewel.shield.effect": {"vi": "Tạo khiên bảo vệ mục tiêu đủ điều kiện.", "en": "Shield an eligible target.", "ja": "条件を満たす対象にシールドを付与する。", "ko": "조건에 맞는 대상에게 보호막을 부여합니다.", "zh": "为符合条件的目标施加护盾。"},
-    "battle.jewel.special": {"vi": "Linh Hồn", "en": "Soul", "ja": "魂", "ko": "영혼", "zh": "灵魂"},
-    "battle.jewel.special.effect": {"vi": "Vừa hồi năng lượng vừa tăng nộ.", "en": "Restore Mana and generate Rage.", "ja": "マナを回復し、怒りを増やす。", "ko": "마나를 회복하고 분노를 늘립니다.", "zh": "恢复法力并积攒怒气。"},
-    "battle.jewel.nature": {"vi": "Thiên Nhiên", "en": "Nature", "ja": "自然", "ko": "자연", "zh": "自然"},
-    "battle.jewel.nature.effect": {"vi": "Xóa hiệu ứng bất lợi có thể thanh tẩy.", "en": "Cleanse eligible negative statuses.", "ja": "解除可能な弱体効果を取り除く。", "ko": "해제 가능한 해로운 효과를 제거합니다.", "zh": "清除可净化的负面状态。"},
-    "battle.jewel.frost": {"vi": "Băng Giá", "en": "Frost", "ja": "霜", "ko": "서리", "zh": "冰霜"},
-    "battle.jewel.frost.effect": {"vi": "Giảm sát thương đòn tấn công kế tiếp của địch.", "en": "Reduce damage from the next enemy attack.", "ja": "次の敵の攻撃によるダメージを減らす。", "ko": "적의 다음 공격으로 받는 피해를 줄입니다.", "zh": "降低敌方下一次攻击造成的伤害。"},
-    "battle.jewel.astral": {"vi": "Tinh Tú", "en": "Astral", "ja": "星光", "ko": "별빛", "zh": "星辉"},
-    "battle.jewel.astral.effect": {"vi": "Tăng hệ số cho ngọc cơ bản đủ điều kiện.", "en": "Increase eligible basic jewel multipliers.", "ja": "条件を満たす基本ジュエルの倍率を上げる。", "ko": "조건에 맞는 기본 보석의 배율을 올립니다.", "zh": "提高符合条件的基础宝石倍率。"},
     "battle.jewel_chill": {
         "vi": "Băng Giá · Đòn kế tiếp của địch giảm {0} sát thương",
         "en": "Chill · Next enemy attack: −{0} damage",
@@ -98,12 +80,6 @@ TRANSLATIONS = {
     "battle.return_hub": {"vi": "Quay về Sảnh", "en": "Return to Hub", "ja": "ロビーへ戻る", "ko": "허브로 복귀", "zh": "返回大厅"},
     "map.enter_region": {"vi": "Vào Khu Vực >>", "en": "Enter Region >>", "ja": "エリア入場 >>", "ko": "지역 입장 >>", "zh": "进入区域 >>"},
     "map.challenge_warden": {"vi": "Khiêu Chiến Thủ Lĩnh >>", "en": "Challenge Warden >>", "ja": "守護者に挑戦 >>", "ko": "수호자 도전 >>", "zh": "挑战守护者 >>"},
-    "map.cinder_terraces": {"vi": "Bậc Thang Hỏa Diễm", "en": "Cinder Terraces", "ja": "紅蓮の段丘", "ko": "잿불 단구", "zh": "烬火阶台"},
-    "map.tideglass_lagoon": {"vi": "Đầm Thủy Tinh", "en": "Tideglass Lagoon", "ja": "潮騒の硝子礁", "ko": "조류유리 석호", "zh": "潮琉璃礁湖"},
-    "map.stormcoil_fields": {"vi": "Cánh Đồng Lôi Quang", "en": "Stormcoil Fields", "ja": "雷渦の平原", "ko": "폭풍코일 평원", "zh": "雷涡原野"},
-    "map.lantern_necropolis": {"vi": "Thành Cổ Linh Đăng", "en": "Lantern Necropolis", "ja": "霊灯の古都", "ko": "영혼등불 고도", "zh": "灵灯古都"},
-    "map.ochre_labyrinth": {"vi": "Mê Cung Hoàng Thổ", "en": "Ochre Labyrinth", "ja": "黄土の迷宮", "ko": "황토 미궁", "zh": "赭石迷宫"},
-    "map.dawn_prism_sanctum": {"vi": "Thánh Điện Lăng Kính", "en": "Dawn Prism Sanctum", "ja": "暁光の聖域", "ko": "여명 프리즘 성소", "zh": "晨曦棱镜圣所"},
     "settings.title": {"vi": "Cài Đặt Hệ Thống", "en": "System Settings", "ja": "システム設定", "ko": "시스템 설정", "zh": "系统设置"},
     "settings.tab_general": {"vi": "Chung", "en": "General", "ja": "一般", "ko": "일반", "zh": "通用"},
     "settings.tab_graphics": {"vi": "Đồ Họa", "en": "Graphics", "ja": "グラフィック", "ko": "그래픽", "zh": "画面"},
@@ -129,6 +105,9 @@ TRANSLATIONS = {
     "settings.restore_defaults": {"vi": "Khôi phục mặc định", "en": "Restore Defaults", "ja": "初期設定に戻す", "ko": "기본값 복원", "zh": "恢复默认"},
     "settings.save_apply": {"vi": "Lưu thay đổi", "en": "Save & Apply", "ja": "変更を保存", "ko": "변경사항 저장", "zh": "保存并应用"},
 }
+
+
+TRANSLATIONS.update(json.loads((REPO_ROOT / "specs/pet-arena/field-guide-localization.json").read_text()))
 
 
 def collect_required_chars() -> set[int]:

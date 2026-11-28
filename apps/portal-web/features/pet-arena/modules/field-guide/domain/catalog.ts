@@ -1,6 +1,6 @@
 import roster from '../../../../../../../specs/pet-arena/wave-a-canonical-roster-v1.json';
 import campaign from '../../../../../../../specs/pet-arena/campaign-v4-content.json';
-import localization from '../../../../../../unity-client/Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Localization/strings_waved4.json';
+import localization from '../../../../../../../specs/pet-arena/field-guide-localization.json';
 
 export const languages = {
   en: 'English',
@@ -17,7 +17,7 @@ export function guideLanguage(value: string | string[] | undefined): GuideLangua
 }
 
 const jewelKinds = ['sword', 'mana', 'rage', 'heart', 'shield', 'special', 'nature', 'frost', 'astral'] as const;
-const translations: Readonly<Record<string, Record<GuideLanguage, string>>> = localization.entries;
+const translations: Readonly<Record<string, Record<GuideLanguage, string>>> = localization;
 
 function required<T>(value: T | undefined, key: string): T {
   if (value === undefined) throw new Error('Missing Pet Arena field guide content for ' + key);
