@@ -547,6 +547,16 @@ fn candidates(
     if state.phase == CoopPhase::Ready {
         return vec![CoopAction::Start];
     }
+    if policy == Policy::Coordinated && rules.config.shared_jewel_rng() {
+        let action = visible_telegraph_response(rules, state)
+            .or_else(|| best_shared_action(rules, state))
+            .unwrap_or(CoopAction::Guard);
+        return if action == CoopAction::Guard {
+            vec![action]
+        } else {
+            vec![action, CoopAction::Guard]
+        };
+    }
     let (swap, priority_swap) = match policy {
         Policy::Random => (random_visible_swap(rules, state, prng), false),
         Policy::Tactical | Policy::Coordinated => visible_swap(rules, state)
@@ -582,13 +592,7 @@ fn candidates(
         }
         Policy::Tactical | Policy::Coordinated => {
             if policy == Policy::Coordinated {
-                if rules.config.shared_jewel_rng() {
-                    if let Some(action) = visible_telegraph_response(rules, state) {
-                        out.push(action);
-                    }
-                } else {
-                    prioritize_support(rules, state, &mut out);
-                }
+                prioritize_support(rules, state, &mut out);
             }
             if let Some(action) = swap.filter(|action| priority_swap && !out.contains(action)) {
                 out.push(action);
@@ -632,6 +636,156 @@ fn candidates(
     }
     out
 }
+/// Compare visible first-wave board effects and legal casts on disposable
+/// copies. Combat is scored without critical hits and the real seed is never
+/// available to this policy. Unseen refills and cascades do not enter the score.
+fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<CoopAction> {
+    let actor = state.active_seat;
+    let seed = SecretSeed::from_host_entropy([0; 32]);
+    let mut scratch_rng = seed
+        .stream(Value::Text("visible-action-score".into()), 0)
+        .ok()?;
+    let remaining = boss_work(rules, state)?;
+    let mut best: Option<(u64, CoopAction)> = None;
+    let mut consider = |action, mut preview: CoopState, upgraded: u32| {
+        if !preview.phase.terminal() {
+            rules.tick_dot(&mut preview, &mut Vec::new());
+        }
+        let Some(work) = boss_work(rules, &preview) else {
+            return;
+        };
+        let score = if preview.phase == CoopPhase::Won {
+            u64::MAX
+        } else {
+            remaining.saturating_sub(work) * 100
+                + shared_support_value(rules, state, &preview)
+                + u64::from(upgraded) * 2_000
+        };
+        if best.is_none_or(|(value, _)| score > value) {
+            best = Some((score, action));
+        }
+    };
+
+    // Evaluate committed identities after adjacency exchanges. The real
+    // reducer supplies exact authored jewel yields and phase damage.
+    for first in 0..CELLS {
+        for second in [first + 1, first + super::SIDE] {
+            if second >= CELLS
+                || !super::adjacent(first, second)
+                || state.board[first].map(|tile| tile.identity)
+                    == state.board[second].map(|tile| tile.identity)
+            {
+                continue;
+            }
+            let mut board = state.board;
+            board.swap(first, second);
+            let matched = super::matched_cells(&board);
+            if !matched[first] && !matched[second] {
+                continue;
+            }
+            let mut preview = state.clone();
+            preview.board = board;
+            preview.participants[actor].crit_rate_bp = 0;
+            let mut events = Vec::new();
+            let upgrades = rules.advanced_matches(&mut preview, &mut events);
+            if rules
+                .score_functional_match(
+                    &mut preview,
+                    actor,
+                    &matched,
+                    &mut scratch_rng,
+                    &mut events,
+                )
+                .is_err()
+            {
+                continue;
+            }
+            // Count currently eligible survivors. Their final cell targets and
+            // future scores depend on gravity and unobserved cascade outcomes.
+            let upgraded = if upgrades > 0 && !preview.phase.terminal() {
+                rules
+                    .amplify(&mut preview, u64::MAX, upgrades, &mut events)
+                    .count_ones()
+            } else {
+                0
+            };
+            consider(
+                CoopAction::Swap {
+                    first: first as u8,
+                    second: second as u8,
+                },
+                preview,
+                upgraded,
+            );
+        }
+    }
+
+    for action in [
+        CoopAction::Skill,
+        CoopAction::Signature,
+        CoopAction::Ultimate,
+        CoopAction::FireZone,
+        CoopAction::Guard,
+    ] {
+        let mut preview = state.clone();
+        preview.participants[actor].crit_rate_bp = 0;
+        if rules
+            .act_ability(&mut preview, action, &mut scratch_rng, &mut Vec::new())
+            .is_ok()
+        {
+            consider(action, preview, 0);
+        }
+    }
+    best.map(|(_, action)| action)
+}
+
+fn boss_work(rules: &CoopRules, state: &CoopState) -> Option<u64> {
+    if state.boss.phase != 1 || rules.regular_encounter() {
+        return Some(u64::from(state.boss.hp));
+    }
+    let boss = rules.selected_boss();
+    Some(
+        u64::from(state.boss.hp.saturating_sub(boss.phase_threshold()))
+            + u64::from(boss.phase2_current_hp().ok()?),
+    )
+}
+
+fn shared_support_value(rules: &CoopRules, before: &CoopState, after: &CoopState) -> u64 {
+    let opponent = rules.opponent();
+    let threat = before.pending.map_or_else(
+        || {
+            opponent
+                .attack_addend
+                .saturating_add(opponent.attack_model.base_damage)
+                .saturating_add(
+                    opponent
+                        .attack_model
+                        .per_round_damage
+                        .saturating_mul(u32::from(before.round_index)),
+                )
+        },
+        |pending| pending.damage,
+    );
+    let chill = after
+        .chill_reduction_pm
+        .unwrap_or(0)
+        .saturating_sub(before.chill_reduction_pm.unwrap_or(0));
+    let mut value = u64::from(threat) * u64::from(chill) / 10;
+    for (old, new) in before.participants.iter().zip(&after.participants) {
+        let wounded = u64::from(old.hp) * 2 < u64::from(old.max_hp);
+        value += u64::from(new.hp.saturating_sub(old.hp)) * if wounded { 100 } else { 55 };
+        value += u64::from(new.shield.saturating_sub(old.shield).min(threat))
+            * if wounded { 65 } else { 35 };
+        value += u64::from(new.mana.saturating_sub(old.mana)) * 28;
+        value += u64::from(new.rage.saturating_sub(old.rage)) * 22;
+        let vulnerability = rules
+            .status_permille(old, super::StatusKind::Vulnerability)
+            .saturating_sub(rules.status_permille(new, super::StatusKind::Vulnerability));
+        value += u64::from(threat) * u64::from(vulnerability) / 10;
+    }
+    value
+}
+
 /// A telegraph reveals its assigned damage and target count. Evaluate only the
 /// first visible support effect and the already committed impact, never a refill
 /// or future roll. Prefer a rescue, otherwise require appreciable mitigation.
@@ -1409,8 +1563,7 @@ fn run_samples(
 mod tests {
     use super::*;
 
-    #[test]
-    fn shared_policy_values_visible_frost_when_it_prevents_a_knockout() {
+    fn shared_board_fixture(match_kind: TileKind) -> (CoopRules, CoopState) {
         let bundle = include_bytes!(
             "../../../../../config/gameplay/arena8-coop-shared-rng-v1.candidate.json"
         );
@@ -1432,7 +1585,7 @@ mod tests {
             .state;
         state.board = std::array::from_fn(|index| {
             let kind = if [0, 1, 10].contains(&index) {
-                TileKind::Frost
+                match_kind
             } else {
                 TileKind::ALL[(index / super::super::SIDE + 2 * (index % super::super::SIDE)) % 6]
             };
@@ -1441,6 +1594,12 @@ mod tests {
                 multiplier: 1,
             })
         });
+        (rules, state)
+    }
+
+    #[test]
+    fn shared_policy_values_visible_frost_when_it_prevents_a_knockout() {
+        let (rules, mut state) = shared_board_fixture(TileKind::Frost);
         state.participants[0].hp = 100;
         state.participants[0].defense = 8;
         state.pending = Some(PendingAttack {
@@ -1461,6 +1620,24 @@ mod tests {
         // Exclude a nominal mitigation when the committed hit is still fatal.
         state.pending.as_mut().unwrap().damage = 400;
         assert_eq!(visible_telegraph_response(&rules, &state), None);
+    }
+
+    #[test]
+    fn shared_policy_values_sword_and_unlocked_astral_above_an_unneeded_guard() {
+        for kind in [TileKind::Sword, TileKind::Astral] {
+            let (rules, mut state) = shared_board_fixture(kind);
+            state.turn_index = 17;
+            let unchanged = state.clone();
+            assert_eq!(
+                best_shared_action(&rules, &state),
+                Some(CoopAction::Swap {
+                    first: 2,
+                    second: 10,
+                }),
+                "{kind:?} must beat an unneeded self-defense cast"
+            );
+            assert_eq!(state, unchanged);
+        }
     }
 
     #[test]
