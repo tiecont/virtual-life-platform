@@ -77,7 +77,7 @@ namespace Aetheria.Editor
             if (extent < .0001f) throw new InvalidDataException("Degenerate attachment extent.");
             model.transform.localScale *= height * (wing ? 1.20f : .78f) / extent;
             var anchor = model.GetComponentsInChildren<Transform>().Single(t => t.name == anchorName);
-            Vector3 Anchor() => VisibleBounds(anchor.gameObject).center;
+            Vector3 Anchor() => wing ? VisibleBounds(anchor.gameObject).center : anchor.position;
             Vector3 target = socket.position;
             if (!wing && vrm.TryGetBoneTransform(HumanBodyBones.RightMiddleProximal, out var fingers))
                 target = Vector3.Lerp(joint.position, fingers.position, .67f);
@@ -142,7 +142,7 @@ namespace Aetheria.Editor
                 if (!string.IsNullOrEmpty(report.bowSha256))
                 {
                     var bow = StageFile(folder, "AETHERIA_COLORED_BOW", "Bow.glb", report.bowSha256);
-                    Fit(actor, "Socket_Bow", bow, Environment.GetEnvironmentVariable("AETHERIA_COLORED_GRIP"), false, report);
+                    Fit(actor, "Socket_Bow", bow, "BowGrip", false, report);
                 }
                 var walk = StageFile(folder, "AETHERIA_ICARUS_REVIEW_MOTION", "Walk.vrma", WalkSha);
                 var vrm = actor.GetComponentInChildren<Vrm10Instance>();
