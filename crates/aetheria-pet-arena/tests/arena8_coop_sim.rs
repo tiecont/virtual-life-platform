@@ -155,3 +155,37 @@ fn offline_seed_ranges_preserve_existing_reports_and_classify_defeats() {
     assert!(analyze_party(&rules, Policy::Tactical, 0, 4, None).is_err());
     assert!(analyze_party(&rules, Policy::Tactical, 1, 26, None).is_err());
 }
+
+#[test]
+fn v3_simulation_budget_marks_unresolved_never_lost_and_uncapped_endurance_wins() {
+    use aetheria_pet_arena::arena8::coop::simulation::simulate_with_budget;
+
+    let v3_bytes =
+        include_bytes!("../../../config/gameplay/arena8-coop-functional-v2.candidate.json");
+    let v3 = CoopRules::load(v3_bytes, "cinder-terraces-warden".into()).unwrap();
+
+    // Tight evaluation budget leaves matches non-terminal => counted as unresolved, never Lost.
+    let tight = simulate_with_budget(&v3, Policy::Tactical, 4, 2).unwrap();
+    assert_eq!(tight.seeds, 4);
+    assert_eq!(tight.unresolved, 4);
+    assert_eq!(tight.losses, 0);
+    assert_eq!(tight.wins, 0);
+
+    // Uncapped high-HP endurance fight crossing round 40 finishes as Won without round-limit loss.
+    let mut endurance_cfg: serde_json::Value = serde_json::from_slice(v3_bytes).unwrap();
+    endurance_cfg["bosses"][0]["maxHp"] = 4_800.into();
+    endurance_cfg["bosses"][0]["defense"] = 200.into();
+    endurance_cfg["bosses"][0]["attackModel"]["baseDamage"] = 10.into();
+    endurance_cfg["bosses"][0]["attackModel"]["perRoundDamage"] = 0.into();
+    endurance_cfg["bosses"][0]["attackModel"]["minimumDamage"] = 2.into();
+    endurance_cfg["bosses"][0]["phase"]["thresholdBp"] = 2_500.into();
+    let endurance = CoopRules::load(
+        &serde_json::to_vec(&endurance_cfg).unwrap(),
+        "cinder-terraces-warden".into(),
+    )
+    .unwrap();
+    let report = simulate(&endurance, Policy::Tactical, 4).unwrap();
+    assert_eq!(report.unresolved, 0);
+    assert_eq!(report.losses, 0);
+    assert_eq!(report.wins, 4);
+}

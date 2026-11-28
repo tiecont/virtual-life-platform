@@ -136,6 +136,8 @@ def main():
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS])
     parser.add_argument("--stage", choices=["progression", "composition", "confirmation"], default="progression")
+    parser.add_argument("--bosses", nargs="+", help="Explicit boss IDs, or 'all' for all bosses in the bundle")
+    parser.add_argument("--summary-file", type=Path, help="Optional compact JSON summary path")
     args = parser.parse_args()
     if not 1 <= args.seed_count <= 25 or not 1 <= args.seed_start <= 2**32 - 1 or args.jobs < 1:
         parser.error("use 1–25 seeds per row, a nonzero u32 first seed and at least one worker")
@@ -146,9 +148,16 @@ def main():
         parser.error(f"build the Rust example, or set --binary: {binary}")
     base = json.loads(args.baseline.read_text())
     capability = base.get("engineCapability")
-    if capability not in ("arena8-coop-v1", "arena8-coop-v2"):
+    if capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
-    functional = capability == "arena8-coop-v2"
+    functional = capability in ("arena8-coop-v2", "arena8-coop-v3")
+    if args.bosses == ["all"] or (args.bosses is None and capability == "arena8-coop-v3"):
+        boss_ids = tuple(row["id"] for row in base["bosses"])
+    elif args.bosses:
+        boss_ids = tuple(args.bosses)
+    else:
+        boss_ids = BOSSES
+    boss_chunks = [boss_ids[i:i + 2] for i in range(0, len(boss_ids), 2)]
     variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
     selected = args.bundles or (["baseline"] if functional else ["baseline", *variants])
     if any(name != "baseline" and name not in variants for name in selected):
@@ -183,10 +192,16 @@ def main():
         bundle, (name, level, gear) = case
         stem = f"{args.stage}-{name}-{level}-{gear}"
         party_path = prefix / "parties" / f"{stem}.json"
-        command = [binary, bundles[bundle], party_path, str(args.seed_start), str(args.seed_count), *BOSSES]
+        rows = []
+        commands = []
+        for chunk in boss_chunks:
+            command = [binary, bundles[bundle], party_path, str(args.seed_start), str(args.seed_count), *chunk]
+            commands.append(list(map(str, command)))
+            rows.extend(json.loads(subprocess.check_output(command)))
         value = {"bundle": bundle, "engineCapability": capability, "party": name, "level": level, "gear": gear,
                  "seedStart": args.seed_start, "seedCount": args.seed_count,
-                 "command": list(map(str, command)), "rows": json.loads(subprocess.check_output(command))}
+                 "bosses": list(boss_ids),
+                 "command": commands[0], "commands": commands, "rows": rows}
         dump(prefix / f"{stem}-{bundle}.json", value)
         return value
 
@@ -197,6 +212,47 @@ def main():
         results = list(executor.map(run, ((bundle, case) for case in scenarios for bundle in bundles)))
     dump(prefix / f"{args.stage}-results.json", results)
     dump(prefix / f"{args.stage}-digests.json", {item["bundle"]: item["rows"][0]["contentDigest"] for item in results})
+    if args.summary_file:
+        rows = [
+            {
+                "bundle": item["bundle"],
+                "party": item["party"],
+                "level": item["level"],
+                "gear": item["gear"],
+                "bossId": row["bossId"],
+                "policy": row["policy"],
+                "seeds": row["seeds"],
+                "wins": row["wins"],
+                "losses": row["losses"],
+                "unresolved": row["unresolved"],
+                "roundLimitDefeats": row.get("diagnostics", {}).get("roundLimitDefeats", 0),
+                "teamWipes": row.get("diagnostics", {}).get("teamWipes", 0),
+                "averageRounds": round(row["averageRoundsMilli"] / 1000.0, 3),
+                "averageActions": round(row["averageActionsMilli"] / 1000.0, 3),
+                "matchesWithMultiplier": row["matchesWithMultiplier"],
+            }
+            for item in results
+            for row in item["rows"]
+        ]
+        summary = {
+            "engineCapability": capability,
+            "seedStart": args.seed_start,
+            "seedCount": args.seed_count,
+            "bossCount": len(boss_ids),
+            "scenarioCount": len(scenarios),
+            "totalRowCount": len(rows),
+            "totalMatches": sum(r["seeds"] for r in rows),
+            "totalWins": sum(r["wins"] for r in rows),
+            "totalLosses": sum(r["losses"] for r in rows),
+            "totalUnresolved": sum(r["unresolved"] for r in rows),
+            "totalRoundLimitDefeats": sum(r["roundLimitDefeats"] for r in rows),
+            "maxAverageRounds": max((r["averageRounds"] for r in rows), default=0),
+            "rowsBeyondRound40": [r for r in rows if r["averageRounds"] > 40],
+            "rows": rows,
+        }
+        summary_path = args.summary_file.resolve()
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        dump(summary_path, summary)
 
 if __name__ == "__main__":
     main()

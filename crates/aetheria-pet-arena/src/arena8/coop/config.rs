@@ -27,6 +27,8 @@ pub const ENGINE_CAPABILITY: &str = "arena8-coop-v1";
 pub const CONFIG_SCHEMA_VERSION: u32 = 2;
 pub const FUNCTIONAL_SCHEMA_VERSION: u32 = 3;
 pub const FUNCTIONAL_ENGINE_CAPABILITY: &str = "arena8-coop-v2";
+pub const V3_SCHEMA_VERSION: u32 = 4;
+pub const V3_ENGINE_CAPABILITY: &str = "arena8-coop-v3";
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
@@ -144,7 +146,7 @@ pub enum DeadBoardPolicy {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PartyConfig {
     pub seats: u8,
-    pub max_rounds: u16,
+    pub max_rounds: Option<u16>,
     pub max_cascades: u8,
     pub turn_timeout_ms: u32,
 }
@@ -325,10 +327,22 @@ pub struct SoloBossConfig {
     pub base_damage: u32,
     pub per_round_damage: u32,
     pub minimum_damage: u32,
-    pub max_rounds: u16,
+    pub max_rounds: Option<u16>,
 }
 
 impl SoloBossConfig {
+    fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
+        match (schema_version, self.max_rounds) {
+            (V3_SCHEMA_VERSION, None) => Ok(()),
+            (FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION, Some(rounds))
+                if (1..=super::MAX_TURNS).contains(&rounds) =>
+            {
+                Ok(())
+            }
+            _ => Err(ConfigError::Boss),
+        }
+    }
+
     fn to_value(&self) -> Value {
         list([
             Value::Text("solo".into()),
@@ -336,7 +350,8 @@ impl SoloBossConfig {
             Value::Uint(self.base_damage.into()),
             Value::Uint(self.per_round_damage.into()),
             Value::Uint(self.minimum_damage.into()),
-            Value::Uint(self.max_rounds.into()),
+            self.max_rounds
+                .map_or(Value::Null, |rounds| Value::Uint(rounds.into())),
         ])
     }
 }
@@ -354,7 +369,7 @@ pub struct RegularEncounterConfig {
     pub crit_damage_bp: u16,
     pub attack_model: BossAttackModel,
     pub telegraph_turns: u8,
-    pub max_rounds: u16,
+    pub max_rounds: Option<u16>,
     pub reward_policy: RegularRewardPolicy,
 }
 
@@ -367,8 +382,15 @@ pub struct RegularRewardPolicy {
 }
 
 impl RegularEncounterConfig {
-    fn validate(&self, parent: &BossConfig) -> Result<(), ConfigError> {
+    fn validate(&self, parent: &BossConfig, schema_version: u32) -> Result<(), ConfigError> {
         let map = parent.map_id.as_deref().ok_or(ConfigError::Boss)?;
+        let valid_rounds = match (schema_version, self.max_rounds) {
+            (V3_SCHEMA_VERSION, None) => true,
+            (FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION, Some(rounds)) => {
+                (1..=super::MAX_TURNS).contains(&rounds)
+            }
+            _ => false,
+        };
         if !stable_id(&self.id)
             || self.id.strip_suffix("-regular") != Some(map)
             || self.name.is_empty()
@@ -380,7 +402,7 @@ impl RegularEncounterConfig {
             || self.crit_rate_bp > 10_000
             || self.crit_damage_bp < 10_000
             || !(1..=8).contains(&self.telegraph_turns)
-            || !(1..=super::MAX_TURNS).contains(&self.max_rounds)
+            || !valid_rounds
         {
             return Err(ConfigError::Boss);
         }
@@ -407,7 +429,8 @@ impl RegularEncounterConfig {
             Value::Uint(self.crit_damage_bp.into()),
             self.attack_model.to_value(),
             Value::Uint(self.telegraph_turns.into()),
-            Value::Uint(self.max_rounds.into()),
+            self.max_rounds
+                .map_or(Value::Null, |rounds| Value::Uint(rounds.into())),
             list([
                 self.reward_policy.first_clear.to_value(),
                 self.reward_policy.repeat_clear.to_value(),
@@ -678,6 +701,10 @@ impl CoopConfig {
                 self.engine_capability == FUNCTIONAL_ENGINE_CAPABILITY
                     && self.board.functional_tiles.is_some()
             }
+            V3_SCHEMA_VERSION => {
+                self.engine_capability == V3_ENGINE_CAPABILITY
+                    && self.board.functional_tiles.is_some()
+            }
             _ => false,
         };
         if !capability_matches
@@ -707,7 +734,7 @@ impl CoopConfig {
                 return Err(ConfigError::FunctionalTiles);
             }
         }
-        self.party.validate()?;
+        self.party.validate(self.schema_version)?;
         self.resources.validate()?;
         self.damage.validate()?;
         match (&self.artifacts, self.damage.artifact_scale_pm) {
@@ -739,11 +766,11 @@ impl CoopConfig {
         }
         let bosses = match (self.schema_version, &self.boss, &self.bosses) {
             (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
-            (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, None, Some(bosses))
-                if !bosses.is_empty() && bosses.len() <= 6 =>
-            {
-                bosses
-            }
+            (
+                CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                None,
+                Some(bosses),
+            ) if !bosses.is_empty() && bosses.len() <= 6 => bosses,
             _ => return Err(ConfigError::Boss),
         };
         let mut boss_ids = BTreeSet::new();
@@ -752,8 +779,10 @@ impl CoopConfig {
         for boss in bosses {
             match (self.schema_version, boss.map_id.as_deref()) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
-                (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, Some(map))
-                    if stable_id(map) && map_ids.insert(map) => {}
+                (
+                    CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                    Some(map),
+                ) if stable_id(map) && map_ids.insert(map) => {}
                 _ => return Err(ConfigError::Boss),
             }
             if !stable_id(&boss.id) || !boss_ids.insert(&boss.id) {
@@ -771,22 +800,26 @@ impl CoopConfig {
             }
             boss.validate(elements)?;
             if let Some(solo) = &boss.solo {
-                if self.schema_version != FUNCTIONAL_SCHEMA_VERSION
-                    || !self.has_artifact_catalog()
-                    || !(1..=super::MAX_TURNS).contains(&solo.max_rounds)
+                if !matches!(
+                    self.schema_version,
+                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION
+                ) || !self.has_artifact_catalog()
                 {
                     return Err(ConfigError::Boss);
                 }
+                solo.validate(self.schema_version)?;
                 boss.solo_profile(solo).validate(elements)?;
             }
             if let Some(regular) = &boss.regular {
-                if self.schema_version != FUNCTIONAL_SCHEMA_VERSION
-                    || !self.has_artifact_catalog()
+                if !matches!(
+                    self.schema_version,
+                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION
+                ) || !self.has_artifact_catalog()
                     || !boss_ids.insert(&regular.id)
                 {
                     return Err(ConfigError::Boss);
                 }
-                regular.validate(boss)?;
+                regular.validate(boss, self.schema_version)?;
             }
             if let Some(pet_ids) = boss
                 .reward_policy
@@ -849,6 +882,10 @@ impl CoopConfig {
 
     pub(super) fn versioned_roster(&self) -> bool {
         self.schema_version != HISTORICAL_SCHEMA_VERSION
+    }
+
+    pub fn is_v3(&self) -> bool {
+        self.schema_version == V3_SCHEMA_VERSION
     }
 
     pub fn has_artifact_catalog(&self) -> bool {
@@ -1015,23 +1052,25 @@ impl CoopConfig {
             }
             match (self.schema_version, &pet.catalog) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
-                (CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION, Some(catalog))
-                    if catalog.name.trim() == catalog.name
-                        && !catalog.name.is_empty()
-                        && catalog.name.len() <= 128
-                        && catalog.map_id.as_deref().is_none_or(stable_id)
-                        && matches!(pet.power_class.as_str(), "s" | "a" | "b")
-                        && matches!(
-                            pet.rarity.as_str(),
-                            "limited-s"
-                                | "standard-s"
-                                | "map-legendary"
-                                | "map-regular"
-                                | "family-exploration"
-                        )
-                        && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
-                            identity.roster_state == crate::arena8::binding::RosterState::Candidate
-                        }) => {}
+                (
+                    CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                    Some(catalog),
+                ) if catalog.name.trim() == catalog.name
+                    && !catalog.name.is_empty()
+                    && catalog.name.len() <= 128
+                    && catalog.map_id.as_deref().is_none_or(stable_id)
+                    && matches!(pet.power_class.as_str(), "s" | "a" | "b")
+                    && matches!(
+                        pet.rarity.as_str(),
+                        "limited-s"
+                            | "standard-s"
+                            | "map-legendary"
+                            | "map-regular"
+                            | "family-exploration"
+                    )
+                    && !crate::arena8::binding::identity(&pet.id).is_some_and(|identity| {
+                        identity.roster_state == crate::arena8::binding::RosterState::Candidate
+                    }) => {}
                 _ => return Err(ConfigError::Pet),
             }
             if pet.crit_rate_bp > 10_000 || pet.crit_damage_bp == 0 {
@@ -1151,13 +1190,17 @@ impl BoardConfig {
 }
 
 impl PartyConfig {
-    fn validate(&self) -> Result<(), ConfigError> {
+    fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
+        let valid_rounds = match (schema_version, self.max_rounds) {
+            (V3_SCHEMA_VERSION, None) => true,
+            (_, Some(rounds)) => (1..=1_000).contains(&rounds),
+            _ => false,
+        };
         if usize::from(self.seats) != crate::arena8::coop::SEATS
-            || self.max_rounds == 0
-            || self.max_rounds > 1_000
+            || !valid_rounds
             || self.max_cascades == 0
             || self.max_cascades > MAX_CASCADE_LIMIT
-            || self.turn_timeout_ms < 1_000
+            || !(1_000..=300_000).contains(&self.turn_timeout_ms)
         {
             return Err(ConfigError::Party);
         }
@@ -1167,7 +1210,8 @@ impl PartyConfig {
     fn to_value(&self) -> Value {
         list([
             Value::Uint(u64::from(self.seats)),
-            Value::Uint(u64::from(self.max_rounds)),
+            self.max_rounds
+                .map_or(Value::Null, |rounds| Value::Uint(u64::from(rounds))),
             Value::Uint(u64::from(self.max_cascades)),
             Value::Uint(u64::from(self.turn_timeout_ms)),
         ])
@@ -1985,7 +2029,7 @@ const fn skill_kind_name(kind: SkillKind) -> &'static str {
     }
 }
 
-const fn effect_kind_name(kind: EffectKind) -> &'static str {
+pub const fn effect_kind_name(kind: EffectKind) -> &'static str {
     match kind {
         EffectKind::Damage => "damage",
         EffectKind::DamageOverTime => "damage-over-time",
@@ -2001,7 +2045,7 @@ const fn effect_kind_name(kind: EffectKind) -> &'static str {
     }
 }
 
-const fn effect_target_name(target: EffectTarget) -> &'static str {
+pub const fn effect_target_name(target: EffectTarget) -> &'static str {
     match target {
         EffectTarget::Boss => "boss",
         EffectTarget::SelfActor => "self-actor",
