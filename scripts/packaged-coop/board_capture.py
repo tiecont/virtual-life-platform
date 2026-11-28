@@ -13,7 +13,9 @@ def board_bounds(filename):
         width, height = image.size
         pixels = image.convert('RGB').load()
         center = width // 2
-        for y in range(32, min(height, 240)):
+        # The capped square is offset by half the spare vertical space.
+        # On tall, fixed-pixel panels the upper edge is below 240px.
+        for y in range(32, min(height, max(240, height // 2))):
             def is_edge(x):
                 return pixels[x, y] == (178, 123, 76)
             if not is_edge(center) or not is_edge(center - 100) or not is_edge(center + 100):

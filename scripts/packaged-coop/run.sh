@@ -14,7 +14,7 @@ if [[ ${1:-} == "--inside-disposable-db" ]]; then
   export PACKAGED_QA_SIZE="${7:?missing player size}" PACKAGED_QA_BOARD="${8:?missing board contract}"
 fi
 case "${PACKAGED_QA_SIZE:-1024x768}" in
-  1024x768|1280x720|1920x1080) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
+  1024x768|1280x720|1920x1080|2560x1440|3840x2160) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
   *) echo "Unsupported packaged player resolution" >&2; exit 2 ;;
 esac
 export PACKAGED_QA_WIDTH="${PACKAGED_QA_SIZE%x*}" PACKAGED_QA_HEIGHT="${PACKAGED_QA_SIZE#*x}"
@@ -65,8 +65,15 @@ export PACKAGED_QA_RUN="$1" PACKAGED_QA_ENGINE="$2" PACKAGED_QA_REVISION="$3" PA
 qa_player="$4"
 qa_backend_pid=''
 qa_game_pid=''
+qa_sampler_pid=''
 qa_xdg_dir=''
 cleanup() {
+  if [[ -n "$qa_sampler_pid" ]]; then
+    if ! touch "$PACKAGED_QA_RUN/player-sampling-stop"; then
+      kill "$qa_sampler_pid" 2>/dev/null || true
+    fi
+    wait "$qa_sampler_pid" || true
+  fi
   if [[ -n "$qa_game_pid" ]]; then kill "$qa_game_pid" 2>/dev/null || true; fi
   if [[ -n "$qa_backend_pid" ]]; then kill "$qa_backend_pid" 2>/dev/null || true; fi
   if [[ -n "$qa_game_pid" ]]; then wait "$qa_game_pid" || true; fi
@@ -92,9 +99,13 @@ if [[ -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi
 export XDG_RUNTIME_DIR="$qa_xdg_dir" XDG_CONFIG_HOME="$qa_run/profile"
 mkdir -m 700 "$XDG_CONFIG_HOME"
 
-gamescope --backend headless -w "$PACKAGED_QA_WIDTH" -h "$PACKAGED_QA_HEIGHT" -r 60 -- bash -ceu '
+python3 "$driver_dir/measure_player.py" "$qa_player" "$qa_run" "$PACKAGED_QA_SIZE" > "$qa_run/player-sampling.log" 2>&1 &
+qa_sampler_pid=$!
+gamescope --backend headless -w "$PACKAGED_QA_WIDTH" -h "$PACKAGED_QA_HEIGHT" \
+  -W "$PACKAGED_QA_WIDTH" -H "$PACKAGED_QA_HEIGHT" -r 60 -- bash -ceu '
   unset WAYLAND_DISPLAY
   export SDL_VIDEODRIVER=x11
+  printf "%s\n" "$$" > "$PACKAGED_QA_RUN/player-pid"
   printf "%s\n" "$DISPLAY" > "$PACKAGED_QA_RUN/display"
   exec "$1" -force-glcore -screen-width "$PACKAGED_QA_WIDTH" -screen-height "$PACKAGED_QA_HEIGHT" -screen-fullscreen 0 \
     -logFile "$PACKAGED_QA_RUN/game.log"

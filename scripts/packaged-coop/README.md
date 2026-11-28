@@ -15,7 +15,17 @@ Run both builds from the same clean revision. The runner requires a passing Linu
 
 One packaged player uses ordinary guest login, owned Pet selection, movement, room creation and battle actions. Three independently authenticated socket clients occupy the other seats. They use the committed board and authorized projections only. This fixture supplies the three partner Pets, uses reduced Fire difficulty and an earlier multiplier stage, and exercises the host's real reward settlement and starter Emberglass upgrade. The suite checks Fire victory, restart recovery from the same board, one fresh host admission, four payouts, and upgraded loadout binding in the Water lobby and native HUD. On the functional board the host then starts Water and swaps adjacent jewels. An authenticated peer reads both states, and the database journal verifies both commands came from the host.
 
-The process produces source and package metadata, screenshot evidence, event projections and a checked result in ignored `artifacts/packaged-coop-runs/`. It does not exercise four packaged windows, human controls, physical Windows, or production balance. Set `PACKAGED_QA_SIZE=1280x720` or `PACKAGED_QA_SIZE=1920x1080` to request a review resolution. The default remains 1024×768. The runner publishes the functional candidate to its disposable database. Use `PACKAGED_QA_BOARD=elemental` for a historical regression run. The receipt identifies the observed board contract.
+The process produces source and package metadata, screenshot evidence, event projections and a checked result in ignored `artifacts/packaged-coop-runs/`. It does not exercise four packaged windows, human controls, physical Windows, or production balance. Set `PACKAGED_QA_SIZE` to `1280x720`, `1920x1080`, `2560x1440` or `3840x2160` to request a 16:9 review resolution. The default is `1024x768`. The runner sets the Gamescope nested and output modes to that resolution and checks the native dimensions of each captured player window. The runner publishes the functional candidate to its disposable database. Use `PACKAGED_QA_BOARD=elemental` for a historical regression run. The receipt identifies the observed board contract.
+
+Read `player-performance.json` after the runner exits for the elapsed sampling
+interval, combined user and system CPU seconds, mean CPU use relative to one
+logical core, peak sampled RSS and the kernel RSS high-water mark. The runner
+samples the packaged Unity process through Linux procfs every 250 ms, from its
+first observed execution through cleanup or process exit. The measurements
+exclude Gamescope, the API, Rust and PostgreSQL. CPU percent can exceed 100 on
+multiple cores. Compare completed runs from the same build and fixture using
+the same board contract. The metrics describe this scripted journey with its
+input, OCR and recovery waits. Frame timing requires separate measurement.
 
 Set `PACKAGED_QA_BOARD=advanced-water` to publish the schema 5 Water candidate after Fire allocates. The packaged host uses its earned 333-point Water gate, opens a timed board with three authored Frost tiles, and swaps the projected pair through the HUD. The authenticated observer checks the six-kind spawn pool, the post-swap Chill reduction and the host's journal receipts. The two Water PNGs retain the board before and after that swap.
 
