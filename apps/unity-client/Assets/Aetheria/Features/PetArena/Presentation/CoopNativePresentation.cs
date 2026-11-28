@@ -25,6 +25,7 @@ namespace Aetheria.PetArena.Presentation
             if (cast == null) throw new ArgumentNullException(nameof(cast));
             var root = new VisualElement { name = "coop-hud" };
             root.AddToClassList("coop-panel");
+            CampaignLocale.ApplyFont(root);
             if (view.IsFunctionalBoard)
             {
                 var states = Resources.Load<StyleSheet>("FunctionalTiles/FunctionalGemStates");
@@ -190,7 +191,7 @@ namespace Aetheria.PetArena.Presentation
             if (view.IsTimed && view.Phase == "playing")
             {
                 var endTurn = new Button(() => cast(CoopNativeIntent.EndTurn))
-                    { name = ActionPrefix + "end-turn", text = "End Turn" };
+                    { name = ActionPrefix + "end-turn", text = CampaignLocale.Text("battle.end_turn", "End Turn") };
                 endTurn.AddToClassList("battle-primary-action");
                 endTurn.SetEnabled(inputAvailable && view.CanEndTurn && CoopNativePresenter.CanAct(view));
                 actions.Add(endTurn);

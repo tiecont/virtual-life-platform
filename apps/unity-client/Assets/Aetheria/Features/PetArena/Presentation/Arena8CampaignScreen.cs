@@ -116,6 +116,7 @@ namespace Aetheria.PetArena.Presentation
         {
             if (functionalHud != null) return;
             root.Clear();
+            CampaignLocale.ApplyFont(root);
             if (nativeMode && nativeView?.Terminal == false)
             {
                 DrawNativeCombat();
@@ -129,8 +130,8 @@ namespace Aetheria.PetArena.Presentation
             panelElement.style.paddingTop = 18;
             panelElement.style.paddingBottom = 18;
             root.Add(panelElement);
-            panelElement.Add(Label("AETHERIA / SOULBOUND", "arena-eyebrow"));
-            panelElement.Add(Label("Arena8 · authoritative 8×8", "arena-title"));
+            panelElement.Add(Label(CampaignLocale.Text("brand.title", "Aetheria: SoulBound"), "arena-eyebrow"));
+            panelElement.Add(Label(CampaignLocale.Text("brand.subtitle", "Pet Arena"), "arena-title"));
             var transport = nativeMode ? "native arena8.view.v1" : "HTTP compatibility bridge";
             var meta = state == null ? "Local authoritative campaign · " + transport :
                 state.wallet.coins + " coins · " + state.campaign.clearedMaps.Length + " chapters cleared · " + transport;
@@ -161,6 +162,7 @@ namespace Aetheria.PetArena.Presentation
             else if (!nativeMode && view != null && !view.terminal) DrawCombat();
             else if (!nativeMode && view != null) DrawTerminal();
             else DrawLobby();
+            if (!loadedSession || (view == null && nativeView == null)) CampaignLocale.AddSelector(content, Draw);
             FocusFirst();
         }
 
@@ -203,7 +205,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void DrawLobby()
         {
-            content.Add(Label("1 · Choose an owned Pet", "arena-title"));
+            content.Add(Label(CampaignLocale.Text("nav.my_pets", "My Pets"), "arena-title"));
             foreach (var pet in state.pets)
             {
                 var chosen = pet.petId == selectedPet;
@@ -211,20 +213,20 @@ namespace Aetheria.PetArena.Presentation
                     () => { selectedPet = pet.petId; Draw(); }, enabled: true);
             }
 
-            content.Add(Label("2 · Choose a chapter", "arena-title"));
+            content.Add(Label(CampaignLocale.Text("nav.campaign_regular", "Campaign Map"), "arena-title"));
             foreach (var chapter in chapterManifest.maps)
             {
                 var open = ChapterOpen(chapter.id);
                 foreach (var bossEncounter in new[] { false, true })
                 {
                     var selected = chapter.id == selectedMap && bossEncounter == boss;
-                    Button(chapter.name + (bossEncounter ? " · Boss" : " · Regular") +
+                    Button(CampaignLocale.Text("map." + chapter.id.Replace('-', '_'), chapter.name) + (bossEncounter ? " · Boss" : " · Regular") +
                         (open ? (selected ? " · selected" : "") : " · Locked"),
                         () => { selectedMap = chapter.id; boss = bossEncounter; Draw(); }, enabled: open);
                 }
             }
 
-            content.Add(Label("3 · Artifact loadout (optional)", "arena-title"));
+            content.Add(Label(CampaignLocale.Text("nav.artifacts", "Artifacts & Bag"), "arena-title"));
             var petArtifact = artifacts?.FindPet(selectedPet);
             content.Add(Label(petArtifact == null ? "No Artifact snapshot yet." :
                 "Equipped: core=" + (petArtifact.slots.core ?? "—") +
