@@ -10517,6 +10517,13 @@
     },
     {
       "id": "VL-192",
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "node scripts/admin-gameplay-publication.mjs --shared-admin",
+        "exitCode": 0,
+        "result": "Chromium and PostgreSQL confirmed operator authorization, 422 for mirror 99%, successful correction and new publication with the original immutable digest preserved.",
+        "evidence": "artifacts/campaign-v4/qa-shared-admin-f9e5b780.log"
+      },
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -11083,6 +11090,13 @@
     },
     {
       "id": "VL-202",
+      "campaignV4Verification": {
+        "sourceRevision": "66af0a44b1c531d831467b8e9cfe9b722c79cef6",
+        "command": "node --test scripts/campaign-v4-content.test.mjs",
+        "exitCode": 0,
+        "result": "Five candidate-roster tests passed. 61 identities and 245 bound abilities. 48 map opponents remain gated.",
+        "evidence": "artifacts/campaign-v4/qa-roster-66af0a44.log"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11131,6 +11145,13 @@
     },
     {
       "id": "VL-203",
+      "campaignV4Verification": {
+        "sourceRevision": "973c55a619eac42014f814b01557547738463191",
+        "command": "node scripts/admin-gameplay-publication.mjs --shared-coop --direct",
+        "exitCode": 0,
+        "result": "Four-seat WSS restart preserved pinned schema 6 digest, canonical board, absolute deadline and sealed receipt even after replacement publication.",
+        "evidence": "artifacts/campaign-v4/qa-recovery-973c55a6.log"
+      },
       "campaignV3Verification": {
         "sourceRevision": "fda59517be8b4cbf3bd7ec08f13374897439bb59",
         "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop",
@@ -11553,6 +11574,13 @@
     },
     {
       "id": "VL-210",
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
+        "exitCode": 0,
+        "result": "Packaged Fire board and host swap passed at 720p, 1080p, 1440p and 2160p. Unity executable at this source, Rust binary baf6b7dc; fixture waived Fire entry points.",
+        "evidence": "artifacts/packaged-coop-runs/run-5CTRMycE/board-acceptance.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "e038a40418548e5ce91399ee08730f119d818c19",
         "command": "PACKAGED_QA_BOARD=advanced-water PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
@@ -11636,6 +11664,13 @@
     },
     {
       "id": "VL-211",
+      "campaignV4Verification": {
+        "sourceRevision": "578944f5958d66c624255a43cd54c09ceee1324c",
+        "command": "python3 scripts/coop-balance-study.py (three distributions, seed pairs 6001–6002 and 7001–7002; high-tier 8001–8003)",
+        "exitCode": 0,
+        "result": "4,032 baseline/variant matches resolved. The additional 1,584 geared and trained matches yielded zero wins. Candidate remains unpublished.",
+        "evidence": "artifacts/campaign-v4/study-7001-final/summary.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
         "command": "scripts/coop-balance-study.py (discovery 4001–4002; holdout 5001–5002)",
@@ -11730,6 +11765,13 @@
     },
     {
       "id": "VL-212",
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
+        "exitCode": 0,
+        "result": "One real Linux player and three authenticated protocol peers. Actual captures, journal fingerprints, turn captions and process samples at four resolutions. Four-human playtest remains outstanding.",
+        "evidence": "artifacts/packaged-coop-runs/run-Q5Ro5QnE/board-acceptance.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "1aae6433520bb1a2b0d968b6f1948cf5700eef10",
         "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_SIZE=2560x1440 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",

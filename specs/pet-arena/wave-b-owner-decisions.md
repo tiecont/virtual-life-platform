@@ -219,6 +219,6 @@ Do not invent successful browser access or provider actions.
 
 Inspect actual provider entitlements, existing jobs, projects, services, buckets and deployment configuration.
 
-Use the existing authorized development or protected staging environment.
+The owner confirmed there is no staging environment. The main branch deploys to production. Use isolated local infrastructure and review branches for unpublished configurations.
 
 Do not open public release, public registration or unauthorized production deployment.
