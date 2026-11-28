@@ -196,8 +196,13 @@ namespace Aetheria.Tests
             var settings = ScriptableObject.CreateInstance<PanelSettings>();
             try
             {
+                settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("Wave1Theme");
                 var document = go.AddComponent<UIDocument>();
                 document.panelSettings = settings;
+                var root = document.rootVisualElement;
+                root.style.width = 1280;
+                root.style.height = 720;
+                root.styleSheets.Add(Resources.Load<StyleSheet>("Wave1"));
                 var hud = go.AddComponent<CoopNativeHud>();
                 hud.Attach(document);
                 var terminal = Projection().Replace("\"playing\"", "\"won\"").Replace("\"hp\":5000", "\"hp\":0");
@@ -207,15 +212,36 @@ namespace Aetheria.Tests
                 hud.Bind(null);
                 hud.SetRewardLoader(() => old.Task);
                 hud.Render(view);
-                hud.Bind(null);
+                hud.Bind(null, () => { }, "Return to roster", requireSettlement: true);
                 hud.SetRewardLoader(() => current.Task);
                 hud.Render(view);
+                yield return null;
+                yield return null;
+
+                var outcome = root.Q<Label>("coop-feedback");
+                var pending = root.Q<Label>("coop-reward-pending");
+                Assert.That(outcome.text, Is.EqualTo("Victory"));
+                Assert.That(pending.text, Is.EqualTo("Waiting for settlement…"));
+                foreach (var status in new[] { outcome, pending })
+                {
+                    Assert.That(status.resolvedStyle.color.grayscale, Is.GreaterThan(0.8f));
+                    Assert.That(status.resolvedStyle.backgroundColor.grayscale, Is.LessThan(0.2f));
+                    Assert.That(status.resolvedStyle.backgroundColor.a, Is.GreaterThan(0.9f));
+                }
+                Assert.That(root.Q<Button>("coop-return").enabledSelf, Is.False);
+
                 current.SetResult(new CoopLobbyClient.Reward { coins = 70 });
                 yield return null;
                 old.SetResult(new CoopLobbyClient.Reward { coins = 3 });
                 yield return null;
                 hud.Render(view);
-                Assert.That(document.rootVisualElement.Q<Label>("coop-reward").text, Does.Contain("70 coins"));
+                yield return null;
+                var receipt = root.Q<Label>("coop-reward");
+                Assert.That(receipt.text, Does.Contain("70 coins"));
+                Assert.That(receipt.resolvedStyle.color.grayscale, Is.GreaterThan(0.8f));
+                Assert.That(receipt.resolvedStyle.backgroundColor.a, Is.GreaterThan(0.9f));
+                Assert.That(root.Q("coop-reward-pending"), Is.Null);
+                Assert.That(root.Q<Button>("coop-return").enabledSelf, Is.True);
             }
             finally
             {

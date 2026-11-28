@@ -77,6 +77,13 @@
 }
 .coop-panel { flex-grow: 1; }
 .coop-hud-scroll { flex-grow: 1; min-height: 0; }
+#coop-network, #coop-feedback, #coop-reward, #coop-reward-pending {
+    flex-shrink: 0;
+    padding: 4px 6px;
+    background-color: rgba(20, 16, 28, 0.94);
+    color: rgb(245, 234, 213);
+    white-space: normal;
+}
 .coop-footer { flex-direction: row; flex-shrink: 0; }
 .coop-footer-button { flex-basis: 0; flex-grow: 1; }
 .coop-footer-hidden { visibility: hidden; }

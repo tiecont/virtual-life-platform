@@ -115,7 +115,6 @@ namespace Aetheria.PetArena.Presentation
                 feedback = null;
                 if (view.Terminal)
                 {
-                    feedback = view.Phase == "won" ? "Victory" : "Defeat";
                     battleAudio?.SetCombatScore(ArenaCombatScore.None);
                     battleAudio?.Play(view.Phase == "won" ? ArenaAudioCue.Victory : ArenaAudioCue.Defeat);
                 }
@@ -228,15 +227,30 @@ namespace Aetheria.PetArena.Presentation
             target.Insert(0, turn);
             body.Add(presentation);
             BattleScreenLayout.Size(body, body.contentViewport.contentRect.size);
+            var status = view.Terminal ? (view.Phase == "won" ? "Victory" : "Defeat") : feedback;
             if (submitting) target.Add(new Label("Sending action…") { name = "coop-network" });
-            else if (!string.IsNullOrEmpty(feedback)) target.Add(new Label(feedback) { name = "coop-feedback" });
+            else if (!string.IsNullOrEmpty(status)) target.Add(new Label(status) { name = "coop-feedback" });
+
+            var requestReward = false;
             if (view.Terminal && loadReward != null)
             {
                 if (reward != null)
                     target.Add(new Label("Rewards received · " + reward) { name = "coop-reward" });
-                else if (rewardNotice == null && !loadingReward) _ = ReadRewardAsync();
-                else if (rewardNotice != null)
-                    target.Add(new Button(() => _ = ReadRewardAsync()) { text = rewardNotice });
+                else if (loadingReward || rewardNotice == null)
+                {
+                    target.Add(new Label("Waiting for settlement…") { name = "coop-reward-pending" });
+                    requestReward = !loadingReward;
+                }
+                else
+                {
+                    var retryReward = new Button(() =>
+                    {
+                        rewardNotice = null;
+                        Render(view);
+                    }) { text = rewardNotice };
+                    retryReward.AddToClassList("battle-primary-action");
+                    target.Add(retryReward);
+                }
             }
             if (session != null && view.Phase == "ready" && view.ActiveSeat == view.You)
             {
@@ -246,6 +260,7 @@ namespace Aetheria.PetArena.Presentation
                 target.Add(start);
             }
             if (returnToHub != null || session != null) target.Add(BuildFooter(view));
+            if (requestReward) _ = ReadRewardAsync();
         }
 
         private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&
