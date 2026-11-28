@@ -27,6 +27,8 @@ namespace Aetheria.Editor
             public string[] wingImportedMaps, bowImportedMaps;
             public int wingTriangles, bowTriangles;
             public float wingSpanMeters, bowHeightMeters, wingAnchorErrorMeters, bowAnchorErrorMeters;
+            public IcarusBowGripFit.Evidence bowContact, bowWalkContact;
+            public Vector3 handFrontCameraDirection, handRearCameraDirection;
         }
 
         static string Hash(string path)
@@ -56,7 +58,7 @@ namespace Aetheria.Editor
             return bounds;
         }
 
-        static void Fit(GameObject actor, string socketName, string path, string anchorName, bool wing, Report report)
+        static GameObject Fit(GameObject actor, string socketName, string path, string anchorName, bool wing, Report report)
         {
             var socket = actor.GetComponentsInChildren<Transform>(true).Single(t => t.name == socketName);
             var vrm = actor.GetComponentInChildren<Vrm10Instance>();
@@ -104,10 +106,44 @@ namespace Aetheria.Editor
             }
             else
             {
+                report.bowContact = IcarusBowGripFit.Fit(model, anchor, vrm, true);
                 report.bowTriangles = triangles;
-                report.bowHeightMeters = size.y;
-                report.bowAnchorErrorMeters = Vector3.Distance(Anchor(), target);
+                report.bowHeightMeters = report.bowContact.bowLengthMeters;
+                report.bowAnchorErrorMeters = report.bowContact.riserPlacementErrorMeters;
                 report.bowGrip = anchorName;
+            }
+            return model;
+        }
+
+        static void CaptureGrip(GameObject actor, GameObject bow, Vrm10Instance vrm, Camera camera,
+            RenderTexture target, Texture2D pixels, string output, Report report)
+        {
+            var fit = report.bowContact;
+            var outside = Vector3.ProjectOnPlane(fit.wrist - actor.transform.position, Vector3.up).normalized;
+            report.handFrontCameraDirection = (outside + actor.transform.forward * .70f - Vector3.up * .12f).normalized;
+            report.handRearCameraDirection = (outside - actor.transform.forward * .85f - Vector3.up * .42f).normalized;
+            var contact = new Bounds(Vector3.Lerp(fit.riserCenter, fit.knuckleCenter, .4f), Vector3.one * .13f);
+            void View(string name, Bounds frame, Vector3 direction) =>
+                IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, frame, direction, Path.Combine(output, name + ".png"));
+
+            View("hand-grip-assembled", contact, report.handFrontCameraDirection);
+            View("hand-grip-assembled-opposite", contact, report.handRearCameraDirection);
+            var hidden = actor.GetComponentsInChildren<Renderer>()
+                .Where(r => r.enabled && !r.transform.IsChildOf(bow.transform)).ToArray();
+            var (hand, mesh, handTriangles) = IcarusBowGripFit.Isolate(vrm);
+            fit.isolatedHandTriangles = handTriangles;
+            try
+            {
+                foreach (var renderer in hidden) renderer.enabled = false;
+                View("hand-grip", contact, report.handFrontCameraDirection);
+                View("hand-grip-opposite", contact, report.handRearCameraDirection);
+                View("bow-side", VisibleBounds(bow), outside);
+            }
+            finally
+            {
+                foreach (var renderer in hidden) renderer.enabled = true;
+                Object.DestroyImmediate(hand);
+                Object.DestroyImmediate(mesh);
             }
         }
 
@@ -164,10 +200,13 @@ namespace Aetheria.Editor
                 clip.SampleAnimation(animator.gameObject, clip.length * .10f);
                 var wing = StageFile(folder, "AETHERIA_COLORED_WING", "Wings.glb", report.wingSha256);
                 Fit(actor, "Socket_Wings", wing, "tripo_part_56", true, report);
+                GameObject fittedBow = null;
+                Transform grip = null;
                 if (!string.IsNullOrEmpty(report.bowSha256))
                 {
                     var bow = StageFile(folder, "AETHERIA_COLORED_BOW", "Bow.glb", report.bowSha256);
-                    Fit(actor, "Socket_Bow", bow, "BowGrip", false, report);
+                    fittedBow = Fit(actor, "Socket_Bow", bow, "BowGrip", false, report);
+                    grip = fittedBow.GetComponentsInChildren<Transform>().Single(t => t.name == "BowGrip");
                 }
                 Directory.CreateDirectory(output);
                 camera.transform.position = actor.transform.position - actor.transform.forward * 4 + Vector3.up;
@@ -183,21 +222,11 @@ namespace Aetheria.Editor
                 }
                 Inspect("front", actor.transform.forward);
                 Inspect("back", -actor.transform.forward);
-                if (!string.IsNullOrEmpty(report.bowSha256))
-                {
-                    var grip = actor.GetComponentsInChildren<Transform>().Single(t => t.name == "BowGrip");
-                    var outside = grip.position - actor.transform.position;
-                    outside = Vector3.ProjectOnPlane(outside, Vector3.up).normalized;
-                    // BowGrip is an empty anchor. Frame its contact, then the whole bow from the same side.
-                    var contact = new Bounds(grip.position, Vector3.one * .28f);
-                    IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, contact, outside,
-                        Path.Combine(output, "hand-grip.png"));
-                    var model = actor.GetComponentsInChildren<Transform>().Single(t => t.name == "Color-reviewed bow");
-                    IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, VisibleBounds(model.gameObject),
-                        outside, Path.Combine(output, "bow-side.png"));
-                }
+                if (fittedBow) CaptureGrip(actor, fittedBow, vrm, camera, target, pixels, output, report);
                 Inspect("rear-quarter", -actor.transform.forward + actor.transform.right * .65f + Vector3.up * .12f);
                 clip.SampleAnimation(animator.gameObject, clip.length * .55f);
+                if (fittedBow)
+                    report.bowWalkContact = IcarusBowGripFit.Fit(fittedBow, grip, vrm, false);
                 draw.Refresh();
                 Inspect("walk-quarter", actor.transform.forward + actor.transform.right * .55f);
                 File.WriteAllText(Path.Combine(output, "fitting.json"), JsonUtility.ToJson(report, true));
