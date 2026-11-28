@@ -91,8 +91,25 @@ def occupied_components(vertices, faces, corridor):
     result = []
     for vertex_ids in components.values():
         ys = vertices[vertex_ids, 1]
-        result.append({"yExtent": [float(ys.min()), float(ys.max())], "vertices": len(ys)})
-    return sorted(result, key=lambda row: row["yExtent"][1] - row["yExtent"][0], reverse=True)
+        result.append(({"yExtent": [float(ys.min()), float(ys.max())], "vertices": len(ys)}, vertex_ids))
+    return sorted(result, key=lambda entry: entry[0]["yExtent"][1] - entry[0]["yExtent"][0], reverse=True)
+
+
+def upper_attachment(vertices, faces, vertex_ids):
+    keep = np.zeros(len(vertices), dtype=np.bool_)
+    keep[vertex_ids] = True
+    belong = keep[faces]
+    mixed = faces[belong.any(axis=1) & ~belong.all(axis=1)]
+    shared = np.unique(mixed.ravel())
+    heights = vertices[shared, 1]
+    return {
+        "mesh": key(1),
+        "corridorVertices": len(vertex_ids),
+        "wholeTrianglesInCorridorComponent": int(np.count_nonzero(belong.all(axis=1))),
+        "trianglesSharingComponentAndOutsideVertices": len(mixed),
+        "sharedTriangleYExtent": [] if not len(heights) else [float(heights.min()), float(heights.max())],
+        "canSeparateAsExistingLooseComponent": not len(mixed),
+    }
 
 
 def string_coverage(parts):
@@ -110,6 +127,7 @@ def string_coverage(parts):
     occupancy = np.zeros(len(edges) - 1, dtype=np.bool_)
     conservative_triangle_occupancy = np.zeros(len(occupancy), dtype=np.bool_)
     component_evidence = {}
+    upper_isolation = None
     for name, faces, vertices, low, high in parts:
         if high[1] < start_y or low[1] > end_y:
             continue
@@ -124,7 +142,11 @@ def string_coverage(parts):
             covered_by[name] = [int(value) for value in np.flatnonzero(hits)]
             occupancy |= hits
             components = occupied_components(vertices, faces, inside)
-            component_evidence[name] = {"components": len(components), "largestBySpan": components[:8]}
+            component_evidence[name] = {
+                "components": len(components), "largestBySpan": [row for row, _ in components[:8]],
+            }
+            if name == key(1):
+                upper_isolation = upper_attachment(vertices, faces, components[0][1])
         for batch in np.array_split(faces, max(1, len(faces) // 80000)):
             points = vertices[batch]
             low_corner = points.min(axis=1)
@@ -151,6 +173,7 @@ def string_coverage(parts):
         "binsIntersectingAnyTriangleBounds": np.flatnonzero(conservative_triangle_occupancy).tolist(),
         "partOccupancyBins": covered_by,
         "vertexEdgeComponentEvidence": component_evidence,
+        "upperContinuationIsolation": upper_isolation,
         "longestSpanWithNoTriangleBoundsY":
             None if longest is None else [float(edges[longest[0]]), float(edges[longest[-1] + 1])],
         "coverageScope": "Vertex and shared-index edge sampling in a straight 6 mm corridor, plus conservative triangle AABB overlap. AABB absence excludes any original triangle in that interval. Front-profile curvature is reviewed separately.",

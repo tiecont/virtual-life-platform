@@ -16,7 +16,9 @@ from blender_review_icarus_accessory_clay import array_values, file_hash, meshes
 
 SOURCE = SOURCES["bow"]
 FRAGMENT = key(52)
-NOCKS = (key(63), key(44))
+LOWER_NOCK = key(63)
+UPPER_NOCK = key(44)
+UPPER_CONTINUATION = key(1)
 DRAW = "Private fixed-nock draw diagnostic"
 
 
@@ -31,14 +33,13 @@ def local_points(obj, world):
     return (world @ inverse[:3, :3].T + inverse[:3, 3]).astype(np.float32)
 
 
-def nock_anchor(obj, transverse, fragment_height=None):
+def seam_anchor(obj, transverse, target_height):
     points = world_points(obj, obj.data)
     radial = np.linalg.norm(points[:, :2] - transverse, axis=1)
-    near = points[radial <= .004]
+    near = points[radial <= .006]
     if not len(near):
         raise ValueError(f"{obj.name} has no actual surface in the inherited string corridor.")
-    target_z = np.median(near[:, 2]) if fragment_height is None else fragment_height
-    distance = np.abs(near[:, 2] - target_z)
+    distance = np.abs(near[:, 2] - target_height)
     anchor = near[np.argsort(distance)[:min(len(near), 24)]].mean(axis=0)
     return anchor
 
@@ -47,19 +48,23 @@ def closure_evidence(raw):
     probe = raw["stringProbe"]
     empty = probe["longestSpanWithNoTriangleBoundsY"]
     fragment = probe["vertexEdgeComponentEvidence"][FRAGMENT]["largestBySpan"][0]
+    upper = probe["vertexEdgeComponentEvidence"][UPPER_CONTINUATION]["largestBySpan"][0]["yExtent"]
     if empty is None or empty[1] - empty[0] < .20 or fragment["yExtent"][1] - fragment["yExtent"][0] < .10:
         raise ValueError("A disconnected full-size string and usable generated fragment were not established.")
+    if abs(upper[0] - empty[1]) > .01 or upper[1] - upper[0] < .10:
+        raise ValueError("The evidence does not recover an upper continuation adjacent to the gap.")
     for part, row in probe["vertexEdgeComponentEvidence"].items():
-        if part in (*NOCKS, FRAGMENT):
+        if part in (LOWER_NOCK, UPPER_NOCK, UPPER_CONTINUATION, FRAGMENT):
             continue
         for item in row["largestBySpan"]:
             low, high = item["yExtent"]
             if high - low > .10:
                 raise ValueError(f"{part} has overlapping connected string-like geometry requiring separate review.")
-    return probe
+    return probe, upper
 
 
 def make_extended_string(objects, raw):
+    gap, upper = closure_evidence(raw)
     source = objects[FRAGMENT]
     if source.data.shape_keys is not None:
         raise ValueError("The fresh source fragment must consist of editable rest geometry.")
@@ -67,8 +72,10 @@ def make_extended_string(objects, raw):
     low, high = points.min(axis=0), points.max(axis=0)
     parameter = (points[:, 2] - low[2]) / (high[2] - low[2])
     transverse = (low[:2] + high[:2]) / 2
-    start = nock_anchor(objects[NOCKS[0]], transverse, float(low[2]))
-    end = nock_anchor(objects[NOCKS[1]], transverse)
+    start = seam_anchor(objects[LOWER_NOCK], transverse, float(low[2]))
+    # Preserve the fused provider upper continuation and reach its actual
+    # lower rim. A half-millimeter overlap seats rather than replaces it.
+    end = seam_anchor(objects[UPPER_CONTINUATION], transverse, upper[0] + .0005)
     if not end[2] - start[2] > .60:
         raise ValueError("The actual nock surfaces do not anchor a full-height string.")
     axis = start + parameter[:, None] * (end - start)
@@ -79,7 +86,8 @@ def make_extended_string(objects, raw):
     source.data.update()
     rest_key = source.shape_key_add(name="Basis")
     draw_key = source.shape_key_add(name=DRAW)
-    displacement = np.interp(parameter, [0, .5, 1], [0, .10, 0])
+    serving = np.clip((.50 - start[2]) / (end[2] - start[2]), .30, .70)
+    displacement = np.interp(parameter, [0, serving, 1], [0, .10, 0])
     drawn = extended.copy()
     # The source stave is toward negative Blender Y at the center.
     # Pull the string away from the recess in the same vertical bow plane.
@@ -97,7 +105,9 @@ def make_extended_string(objects, raw):
     diagnostic = exercise(source, parameter, evaluated_rest)
     return {
         "sourceFragment": FRAGMENT,
-        "recoveredNockCandidateParts": list(NOCKS),
+        "preservedNockCandidateParts": [LOWER_NOCK, UPPER_NOCK],
+        "preservedFusedUpperContinuationPart": UPPER_CONTINUATION,
+        "preservedFusedUpperContinuationY": upper,
         "startSourceWorldBlenderMeters": start.tolist(),
         "endSourceWorldBlenderMeters": end.tolist(),
         "newAnchorDistanceMeters": float(np.linalg.norm(end - start)),
@@ -107,7 +117,7 @@ def make_extended_string(objects, raw):
         "stretchMethod": "Longitudinal extension of the existing fresh provider mesh. Original transverse offsets and triangles are preserved.",
         "extendedPart": rest_receipt,
         "drawProbe": diagnostic,
-        "sourceEmptyStraightSpan": closure_evidence(raw)["longestSpanWithNoTriangleBoundsY"],
+        "sourceEmptyStraightSpan": gap["longestSpanWithNoTriangleBoundsY"],
     }
 
 
@@ -137,17 +147,19 @@ def exercise(source, parameter, rest):
         raise ValueError("Draw must move the actual string and exactly retain the endpoint/rest positions.")
     return {"maxDrawMeters": float(deviation.max()), "fixedEndpointVertices": int(np.count_nonzero(end_vertices)),
             "maxFixedEndpointDeviationMeters": anchor_error, "maxReleasedRestErrorMeters": release_error,
-            "scope": "Fixed-nock engineering deflection only. Limb flex, physical tension and hand contact remain unqualified."}
+            "scope": "Fixed lower nock and fused upper join. This center deflection does not qualify full nock-to-nock draw, limb flex, physical tension or hand contact."}
 
 
 def render_frames(editable, master, output):
     frames = []
+    framing = None
     for path in (master, editable):
         bpy.ops.wm.open_mainfile(filepath=str(path))
         objects = meshes()
         camera, center, scale, direction = stage_camera("bow", objects)
         if path == master:
-            frames.append(capture(camera, center, scale * 1.12, direction, output / "01-provider-original.png"))
+            framing = center, scale * 1.12, direction
+            frames.append(capture(camera, *framing, output / "01-provider-original.png"))
             continue
         string = next(obj for obj in objects if obj.name == FRAGMENT)
         shape = string.data.shape_keys.key_blocks[DRAW]
@@ -155,7 +167,7 @@ def render_frames(editable, master, output):
             for filename, weight in (("02-extended-at-rest.png", 0), ("03-draw.png", 1), ("04-release.png", 0)):
                 shape.value = weight
                 bpy.context.view_layer.update()
-                frames.append(capture(camera, center, scale * 1.12, direction, output / filename))
+                frames.append(capture(camera, *framing, output / filename))
         finally:
             shape.value = 0
     if frames[1]["sha256"] == frames[2]["sha256"]:
