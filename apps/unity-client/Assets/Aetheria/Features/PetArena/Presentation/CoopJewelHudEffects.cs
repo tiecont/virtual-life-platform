@@ -12,6 +12,7 @@ namespace Aetheria.PetArena.Presentation
     // the approved R04 sprites and existing arena audio cues are used here.
     internal sealed class CoopJewelHudEffects
     {
+        private readonly bool traceFeedback = Environment.GetEnvironmentVariable("AETHERIA_QA_JEWEL_FEEDBACK") == "1";
         private const int MaxActive = 64;
         private const float FlightSeconds = .35f;
         private const float HoldSeconds = .85f;
@@ -68,6 +69,8 @@ namespace Aetheria.PetArena.Presentation
                 destinationSlots.TryGetValue(destination, out var slot);
                 destinationSlots[destination] = slot + 1;
                 chips[next++].Show(kind, value, color, board, destination, slot);
+                if (traceFeedback)
+                    Debug.Log(FormattableString.Invariant($"Aetheria jewel HUD v{view.Version} {effect.Kind} {effect.Value}"));
             }
         }
 

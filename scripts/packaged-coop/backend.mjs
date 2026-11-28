@@ -7,6 +7,7 @@ import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
 import {performance} from 'node:perf_hooks';
 import {createRequire} from 'node:module';
+import {pureSwap} from '../coop-visible-kind-swap.mjs';
 import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-probe.mjs';
 import {prepareAdmissionTestTls} from '../../scripts/runtime-admission-test-tls.mjs';
 const require=createRequire(import.meta.url);
@@ -422,7 +423,10 @@ try{
     throw Error('Timed out observing shared RNG version '+version);
    }
    const started=await observeVersion(1);
-   const move=legalSwap(started.state.board);
+   // Prefer an advanced match when the unchanged natural opening offers one.
+   // No reroll, candidate weight change or generated jewel is involved.
+   const advanced=['astral','frost','nature'].map(kind=>pureSwap(started.state.board,kind,true)).find(Boolean);
+   const move=advanced?.action??legalSwap(started.state.board);
    await json('shared-started.json',{...started,move});
    const swapped=await observeVersion(2);
    const rows=(await pool.query(

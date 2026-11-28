@@ -90,13 +90,18 @@ async function verifySharedRng(){
   }
   return found;
  });
+ // A view receipt omits transient effect rows. Capture only chips that the
+ // packaged HUD attached for the committed host move, independent of peers.
+ const playerLog=await readFile(join(root,'game.log'),'utf8');
+ const displayedEffects=[...playerLog.matchAll(/^Aetheria jewel HUD v2 ([a-z-]+) (\d+)$/gm)]
+  .map(([,kind,value])=>({kind,value:Number(value)}));
  const screenshots=await verifyScreenshots(['06-shared-board-start.png','07-shared-board-host-swap.png']);
  verifyPerformance(performance);
  return {
   result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerSize:requestedSize,
   boardContract:'shared-rng-fire',boardTiles:64,
   fixture:run,ruleset:started.state.ruleset,startedVersion:started.version,hostSwapVersion:swapped.version,
-  observedTileCounts:{start:counts[0],afterHostSwap:counts[1]},
+  observedTileCounts:{start:counts[0],afterHostSwap:counts[1]},displayedEffects,
   timing:{startObservedUnixMs:started.observedUnixMs,swapObservedUnixMs:swapped.observedUnixMs,
    openingDeadlineUnixMs:started.state.turnDeadlineUnixMs,msToOpeningDeadlineAtSecondClick:started.state.turnDeadlineUnixMs-swapClicks[1].unixMs},
   receipts:swapped.receipts,clicks,visibleFrames:frames,screenshots,performance,

@@ -111,6 +111,7 @@ if [[ -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi
 export XDG_RUNTIME_DIR="$qa_xdg_dir" XDG_CONFIG_HOME="$qa_run/profile"
 mkdir -m 700 "$XDG_CONFIG_HOME"
 
+if [[ "$PACKAGED_QA_BOARD" == shared-rng ]]; then export AETHERIA_QA_JEWEL_FEEDBACK=1; fi
 python3 "$driver_dir/measure_player.py" "$qa_player" "$qa_run" "$PACKAGED_QA_SIZE" > "$qa_run/player-sampling.log" 2>&1 &
 qa_sampler_pid=$!
 gamescope --backend headless -w "$PACKAGED_QA_WIDTH" -h "$PACKAGED_QA_HEIGHT" \
