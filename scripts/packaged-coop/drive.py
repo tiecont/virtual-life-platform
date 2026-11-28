@@ -23,7 +23,7 @@ def center_band(top, bottom, half_width=170):
 def capture(name):
     # A hovered jewel opens a tooltip over the board frame. Observe the HUD
     # with the pointer parked in the window margin between real clicks.
-    if stage in ('first', 'recover', 'resume', 'water'):
+    if stage in ('first', 'recover', 'resume', 'water', 'shared-board'):
         run(['python3', root / 'x11.py', 'move', '3', '3'], check=True)
         sleep(.15)
     run([root / 'capture.sh', name], check=True)
@@ -359,16 +359,33 @@ elif stage == 'shared-board':
     else:
         raise RuntimeError('Shared jewel Start did not commit from the packaged HUD')
 
+    def capture_committed_board(name, projection):
+        state = projection['state']
+        target = (state['turn'], state['activeSeat'])
+        for attempt in range(1, 13):
+            image = capture(f'{name}-attempt-{attempt:02d}')
+            captured_at = time_ns() // 1_000_000
+            visible = live_turn(image)
+            board = populated_board(image)
+            print(f'Window {name} attempt={attempt} visible={visible} populated={board is not None}', flush=True)
+            if visible == target and board is not None and captured_at < state['turnDeadlineUnixMs']:
+                copyfile(image, output / f'{name}.png')
+                return board, {'turn': visible[0], 'activeSeat': visible[1], 'capturedUnixMs': captured_at}
+            if captured_at >= state['turnDeadlineUnixMs']:
+                break
+            sleep(.2)
+        raise RuntimeError(f'Expected visible populated board {target} before the deadline for {name}')
+
     assert initial['state']['activeSeat'] == 0 and initial['state']['turn'] == 0
-    board, _ = wait_for('06-shared-board-start', populated_board, tries=12)
+    board, opening_frame = capture_committed_board('06-shared-board-start', initial)
     for cell in (initial['move']['first'], initial['move']['second']):
         click_record('swap-cell', cell_center(board, cell), cell)
         sleep(.24)
 
     swapped = expect('shared-swapped', lambda result: result['version'] == 2, timeout=10)
-    target = (swapped['state']['turn'], swapped['state']['activeSeat'])
-    wait_for('07-shared-board-host-swap',
-             lambda image: live_turn(image) == target and populated_board(image), tries=14)
+    _, swapped_frame = capture_committed_board('07-shared-board-host-swap', swapped)
+    frames = {'start': opening_frame, 'afterHostSwap': swapped_frame}
+    (output / 'shared-visible-frames.json').write_text(json.dumps(frames, indent=2) + '\n')
     (output / 'shared-swap-observed').touch()
 
 elif stage=='first':

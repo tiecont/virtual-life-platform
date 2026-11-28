@@ -32,8 +32,9 @@ function verifyPerformance(performance){
  assert.ok(performance.snapshotCount>1);
 }
 async function verifySharedRng(){
- const [started,swapped,run,clicks,performance]=await Promise.all([
-  'shared-started.json','shared-swapped.json','shared-board-run.json','shared-input.json','player-performance.json',
+ const [started,swapped,run,clicks,frames,performance]=await Promise.all([
+  'shared-started.json','shared-swapped.json','shared-board-run.json','shared-input.json',
+  'shared-visible-frames.json','player-performance.json',
  ].map(read));
  assert.equal(run.authenticated,4);
  assert.equal(run.packagedClients,1);
@@ -63,6 +64,13 @@ async function verifySharedRng(){
  assert.ok(startClicks.every(click=>click.unixMs<=started.observedUnixMs));
  assert.ok(swapClicks.every(click=>click.unixMs>=started.observedUnixMs&&click.unixMs<=swapped.observedUnixMs));
  assert.ok(swapClicks[1].unixMs<started.state.turnDeadlineUnixMs);
+ for(const [frame,projection] of [[frames.start,started],[frames.afterHostSwap,swapped]]){
+  assert.equal(frame.turn,projection.state.turn);
+  assert.equal(frame.activeSeat,projection.state.activeSeat);
+  assert.ok(frame.capturedUnixMs>=projection.observedUnixMs);
+  assert.ok(frame.capturedUnixMs<projection.state.turnDeadlineUnixMs);
+ }
+ assert.ok(frames.start.capturedUnixMs<=swapClicks[0].unixMs);
  const kinds=['sword','mana','rage','heart','shield','special','nature','frost','astral'];
  const counts=[started,swapped].map(({state})=>{
   assert.equal(state.phase,'playing');
@@ -89,7 +97,7 @@ async function verifySharedRng(){
   observedTileCounts:{start:counts[0],afterHostSwap:counts[1]},
   timing:{startObservedUnixMs:started.observedUnixMs,swapObservedUnixMs:swapped.observedUnixMs,
    openingDeadlineUnixMs:started.state.turnDeadlineUnixMs,msToOpeningDeadlineAtSecondClick:started.state.turnDeadlineUnixMs-swapClicks[1].unixMs},
-  receipts:swapped.receipts,clicks,screenshots,performance,
+  receipts:swapped.receipts,clicks,visibleFrames:frames,screenshots,performance,
  };
 }
 
