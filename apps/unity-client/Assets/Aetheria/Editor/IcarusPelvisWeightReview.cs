@@ -56,7 +56,7 @@ namespace Aetheria.Editor
                     float delta = update.GetValueOrDefault(name)-old.GetValueOrDefault(name);
                     if (Mathf.Abs(delta)<.00001f) continue;
                     moved = true;
-                    if ((name=="hips" && delta>=0) || (name.StartsWith("upper_leg.",StringComparison.Ordinal) && delta<=0))
+                    if ((name=="hips" && delta>=0) || (name.StartsWith("upper_leg.",StringComparison.Ordinal)))
                         continue;
                     throw new InvalidOperationException("A pelvis transfer changed an unrelated influence.");
                 }
@@ -107,7 +107,8 @@ namespace Aetheria.Editor
                 originalMaximumLengthRatio=before[^1],correctedMaximumLengthRatio=after[^1],
                 originalP99EdgeMaximumRatio=before[(int)((before.Length-1)*.99f)],correctedP99EdgeMaximumRatio=after[(int)((after.Length-1)*.99f)],
                 originalEdgesAboveTwoTimes=beforeDouble,correctedEdgesAboveTwoTimes=afterDouble,
-                improved=after[^1]<before[^1]*.5f && afterDouble<beforeDouble,
+                improved=after[^1]<before[^1]*.5f && afterDouble<beforeDouble &&
+                    after[(int)((after.Length-1)*.99f)] <= before[(int)((before.Length-1)*.99f)]+.15f,
                 originalTriangleClassesRetained=true,
             };
 

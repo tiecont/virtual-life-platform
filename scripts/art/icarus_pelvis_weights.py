@@ -1,7 +1,7 @@
 """Correct a localized opposing-thigh weight jump in the original Icarus VRM.
 
 Use actual posed Body vertices exported by IcarusLayerSurfaceExport. Only
-the lower Body primitive's existing upper-leg influence may move to hips.
+a small pelvis seam can redistribute support among the original hips and thighs.
 The output retains the exact topology, materials, skin, bindpose and textures.
 """
 
@@ -140,13 +140,13 @@ def build(source,pose_path,pose_sha,output):
     if max(abs(low[0]),abs(high[0]))>.03 or not (.76<low[1]<high[1]<.94):
         raise ValueError("High strain exists beyond the measured pelvic seam")
 
-    # Use the observed breaking zone as the plateau. Fade the transfer into
-    # the adjoining lower-body surface and leave the other body primitive alone.
+    # Keep the original pelvis support and smooth the abrupt left/right
+    # split over this measured seam. Taper toward the actual adjacent vertices.
     x,y,z = positions.T
-    half_width = max(abs(low[0]),abs(high[0]))+.003
-    transfer_fraction = (1-ease(np.abs(x),half_width,half_width+.045))
-    transfer_fraction *= ease(y,low[1]-.030,low[1]-.002)*(1-ease(y,high[1]+.002,high[1]+.035))
-    transfer_fraction *= ease(z,low[2]-.035,low[2]-.002)*(1-ease(z,high[2]+.002,high[2]+.030))
+    transfer_fraction = 1-ease(np.abs(x),.024,.075)
+    transfer_fraction *= ease(y,low[1]-.045,low[1]-.005)*(1-ease(y,high[1]+.004,high[1]+.045))
+    transfer_fraction *= ease(z,low[2]-.050,low[2]-.005)*(1-ease(z,high[2]+.004,high[2]+.050))
+    left_support = ease(x,-.042,.042)
     points = np.column_stack((positions,np.ones(len(positions))))
     transform = {}
     fit_error = {}
@@ -157,37 +157,40 @@ def build(source,pose_path,pose_sha,output):
     output_bytes = bytearray(data)
     corrected = []
     topology_limited = 0
+    connected = [hip,*thighs]
     for vertex in np.flatnonzero(transfer_fraction>0):
-        ids = joints[vertex].tolist()
-        values = weights[vertex].tolist()
-        moved = {bone: transfer_fraction[vertex]*sum(value for joint,value in zip(ids,values) if joint==bone)
-                 for bone in thighs}
-        volume = sum(moved.values())
-        if volume<1e-7:
-            continue
-        existing = [index for index,(bone,weight) in enumerate(zip(ids,values)) if bone==hip and weight>0]
-        empty = [index for index,weight in enumerate(values) if weight==0]
-        if not existing and not empty:
+        prior = {int(bone):float(value) for bone,value in zip(joints[vertex],weights[vertex]) if value>0}
+        group = {bone:prior.get(bone,0.) for bone in connected}
+        total = sum(group.values())
+        pelvis = max(group[hip],.2*total)
+        targets = [pelvis,(total-pelvis)*left_support[vertex],(total-pelvis)*(1-left_support[vertex])]
+        updated = {bone:value for bone,value in prior.items() if bone not in connected}
+        for bone,target in zip(connected,targets):
+            value = group[bone]+(target-group[bone])*transfer_fraction[vertex]
+            if value>1e-9:
+                updated[bone] = value
+        if len(updated)>4:
             topology_limited += 1
             continue
-        to = (existing or empty)[0]
-        ids[to] = hip
-        for index,bone in enumerate(ids):
-            if bone in thighs:
-                values[index] *= 1-transfer_fraction[vertex]
-        values[to] += volume
-        if abs(sum(values)-sum(weights[vertex]))>1e-6 or min(values)<0:
+        if all(abs(updated.get(bone,0.)-group[bone])<1e-7 for bone in connected):
+            continue
+        if abs(sum(updated.values())-sum(prior.values()))>1e-6:
             raise ValueError("Pelvis transfer changed normalized weight mass")
-        struct.pack_into(joint_format,output_bytes,joint_offsets[vertex],*ids)
-        struct.pack_into("<4f",output_bytes,weight_offsets[vertex],*values)
-        for bone,fraction in moved.items():
-            difference = transform[hip]-transform[bone]
-            candidate[:,vertex] += fraction*np.einsum("j,fjk->fk",points[vertex],difference)
+        ids = sorted(updated)
+        values = np.asarray([updated[bone] for bone in ids],dtype=np.float32).tolist()
+        stored = dict(zip(ids,values))
+        struct.pack_into(joint_format,output_bytes,joint_offsets[vertex],*(ids+[0]*(4-len(ids))))
+        struct.pack_into("<4f",output_bytes,weight_offsets[vertex],*(values+[0.]*(4-len(values))))
+        for bone in thighs:
+            difference = transform[bone]-transform[hip]
+            change = stored.get(bone,0.)-group[bone]
+            candidate[:,vertex] += change*np.einsum("j,fjk->fk",points[vertex],difference)
         corrected.append(vertex)
 
     before,after = facts(stretch),facts(edge_stretch(candidate,edges,rest))
     if (not corrected or after["maximumLengthRatio"]>=before["maximumLengthRatio"]*.5 or
-            after["edgesAboveDoubleRestLength"]>=before["edgesAboveDoubleRestLength"]):
+            after["edgesAboveDoubleRestLength"]>=before["edgesAboveDoubleRestLength"] or
+            after["p99PerEdgeMaximumLengthRatio"]>before["p99PerEdgeMaximumLengthRatio"]+.15):
         raise ValueError(f"No qualifying local improvement: {before} -> {after}")
     maximum = np.unravel_index(stretch.argmax(),stretch.shape)
     worst = edges[maximum[1]]
@@ -203,7 +206,7 @@ def build(source,pose_path,pose_sha,output):
         "sampleFrames":len(poses),"comparedEdges":len(edges),"jointPoseFitMaximumErrorMeters":fit_error,
         "original":before,"correctedPredictionFromMeasuredPoses":after,"unityCandidateReimported":False,
         "affectedBoundsMeters":[positions[corrected].min(axis=0).tolist(),positions[corrected].max(axis=0).tolist()],
-        "scope":"Private pelvis support added only from existing thigh weights on the measured lower Body seam",
+        "scope":"Private continuity weights for the original hips/thighs on the measured lower Body seam",
     },indent=2)+"\n")
 
 
