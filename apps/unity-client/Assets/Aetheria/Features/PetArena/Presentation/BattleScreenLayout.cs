@@ -53,12 +53,14 @@ namespace Aetheria.PetArena.Presentation
             // Keep the grid square and reserve dedicated width for matching left and right sides.
             // Short editor windows retain a readable tile size and can scroll to the action row.
             var widthLimit = viewport.x * .53f;
-            var heightLimit = Mathf.Max(400f, viewport.y - 114f);
+            // Bundled locale fonts need room for the two-line skill labels and footer.
+            const float actionSpace = 132f;
+            var heightLimit = Mathf.Max(400f, viewport.y - actionSpace);
             var boardEdge = Mathf.Floor(Mathf.Min(704f, widthLimit, heightLimit) / 8f) * 8f;
             center.style.width = boardEdge;
             center[0].style.height = boardEdge;
             stage.EnableInClassList("battle-compact", viewport.x < 960f);
-            var upperMargin = 14f + Mathf.Max(0f, viewport.y - boardEdge - 110f) * .5f;
+            var upperMargin = 14f + Mathf.Max(0f, viewport.y - boardEdge - actionSpace) * .5f;
             stage.style.paddingTop = upperMargin;
             foreach (var element in stage.Children())
                 if (element.ClassListContains("battle-side")) element.style.top = upperMargin;
