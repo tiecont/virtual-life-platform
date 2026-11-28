@@ -123,6 +123,28 @@
 }
 .battle-enemy-side .battle-combatant { border-left-color: rgb(214, 137, 81); }
 .coop-active-member { border-left-width: 3px; border-left-color: rgb(255, 206, 104); }
+.battle-player-side .coop-seat-health {
+    height: 6px;
+    min-height: 6px;
+    flex-shrink: 0;
+    margin: 1px 0 2px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__container,
+.battle-player-side .coop-seat-health .unity-progress-bar__background {
+    height: 6px;
+    min-height: 6px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__background {
+    background-color: rgb(56, 43, 67);
+    border-width: 0;
+    border-radius: 3px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__progress {
+    background-color: rgb(124, 206, 170);
+    border-width: 0;
+    border-radius: 3px;
+}
+.battle-player-side .coop-seat-health .unity-progress-bar__title-container { display: none; }
 .battle-stage #coop-boss,
 .battle-stage #coop-telegraph { color: rgb(255, 217, 148); -unity-font-style: bold; }
 .battle-compact .battle-combatant { padding: 3px 2px; }

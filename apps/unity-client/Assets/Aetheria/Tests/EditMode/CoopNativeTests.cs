@@ -210,6 +210,30 @@ namespace Aetheria.Tests
         }
 
         [Test]
+        public void SeatHealthMetersPreserveExactHpAndDistinguishDuplicateSpecies()
+        {
+            var view = Coop(version: 2, phase: "playing", activeSeat: 0, customize: json =>
+                json.Replace("\"petId\":\"coralline\",\"level\":1,\"hp\":400", "\"petId\":\"icarus\",\"level\":1,\"hp\":127"));
+            var root = CoopNativePresentation.Build(view, _ => { }, _ => { });
+
+            for (var seat = 0; seat < view.Participants.Count; seat++)
+            {
+                var unit = view.Participants[seat];
+                var panel = root.Q("coop-seat-" + seat);
+                var health = panel.Q<ProgressBar>("coop-seat-health-" + seat);
+                Assert.That(health.value, Is.EqualTo(unit.Health));
+                Assert.That(health.highValue, Is.EqualTo(unit.MaxHealth));
+                Assert.That(health.title, Does.StartWith("Seat " + seat + " · "));
+                Assert.That(health.tooltip, Is.EqualTo(health.title));
+                Assert.That(panel.Q<Label>("coop-seat-label-" + seat).text,
+                    Does.Contain(unit.Health + "/" + unit.MaxHealth));
+            }
+
+            Assert.That(root.Q<ProgressBar>("coop-seat-health-1").value, Is.EqualTo(127));
+            Assert.That(root.Q<ProgressBar>("coop-seat-health-1").title, Does.Contain("icarus health"));
+        }
+
+        [Test]
         public void PresenterOffersActionsOnlyToTheActiveSeat()
         {
             var active = Coop(version: 3, phase: "playing", activeSeat: 0, you: 0);

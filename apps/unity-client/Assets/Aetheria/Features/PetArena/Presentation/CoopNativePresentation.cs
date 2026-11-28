@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Aetheria.Networking;
 using UnityEngine;
@@ -63,8 +64,24 @@ namespace Aetheria.PetArena.Presentation
                 panel.AddToClassList("coop-member");
                 panel.AddToClassList("battle-combatant");
                 if (seat == view.ActiveSeat) panel.AddToClassList("coop-active-member");
-                panel.Add(Label("coop-seat-label-" + seat, CoopNativePresenter.SeatLabel(view, seat)));
                 var own = view.Participants[seat];
+                var seatLabel = "Seat " + seat.ToString(CultureInfo.InvariantCulture) + " · " +
+                    CoopNativePresenter.SeatLabel(view, seat);
+                panel.Add(Label("coop-seat-label-" + seat, seatLabel));
+                var healthLabel = string.Format(CultureInfo.InvariantCulture,
+                    "Seat {0} · {1} health · {2}/{3} HP", seat, own.PetId, own.Health, own.MaxHealth);
+                var health = new ProgressBar
+                {
+                    name = "coop-seat-health-" + seat,
+                    lowValue = 0,
+                    highValue = own.MaxHealth,
+                    value = own.Health,
+                    title = healthLabel,
+                    tooltip = healthLabel,
+                    focusable = false
+                };
+                health.AddToClassList("coop-seat-health");
+                panel.Add(health);
                 panel.Add(Label("coop-seat-resources-" + seat,
                     "Mana " + own.Mana + " · Rage " + own.Rage +
                     (own.Shield > 0 ? " · Shield " + own.Shield : "")));

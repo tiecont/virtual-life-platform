@@ -158,6 +158,19 @@ namespace Aetheria.Tests
                         Assert.That(row.childCount, Is.EqualTo(8));
                     Assert.That(root.Q("coop-seats").worldBound.xMax, Is.LessThan(board.worldBound.xMin));
                     Assert.That(root.Q("coop-opponents").worldBound.xMin, Is.GreaterThan(board.worldBound.xMax));
+                    var side = root.Q("coop-seats");
+                    Assert.That(side.childCount, Is.EqualTo(4));
+                    for (var seat = 0; seat < side.childCount; seat++)
+                    {
+                        var panel = side[seat];
+                        var health = panel.Q<ProgressBar>("coop-seat-health-" + seat);
+                        Assert.That(health.worldBound.height, Is.EqualTo(6).Within(1));
+                        Assert.That(health.worldBound.xMax, Is.LessThanOrEqualTo(panel.worldBound.xMax));
+                        Assert.That(health.worldBound.yMax, Is.LessThanOrEqualTo(panel.worldBound.yMax));
+                        Assert.That(health.worldBound.yMin, Is.GreaterThanOrEqualTo(
+                            panel.Q<Label>("coop-seat-label-" + seat).worldBound.yMax));
+                    }
+                    Assert.That(side.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                     Assert.That(board.worldBound.yMax, Is.LessThanOrEqualTo(actions.worldBound.yMin));
                     Assert.That(actions.worldBound.yMax, Is.LessThanOrEqualTo(root.Q("coop-footer").worldBound.yMin));
                     Assert.That(actions.childCount, Is.EqualTo(4));
