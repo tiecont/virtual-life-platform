@@ -103,7 +103,7 @@ export async function verifySoloCampaign({
   dbConfig, get, post, soloAdmission, native, connections, closeMatch, restart, replaceActive, legalSwap,
 }) {
   const electric='pet-v31-electric-quorion';
-  const policy=natural?tacticalPolicy(published.bundle):null;
+  const tactical=natural?tacticalPolicy(published.bundle):null;
   assert.deepEqual((await dbConfig(published.version)).bundle,JSON.parse(seedBytes));
   mark('published the unchanged candidate through engine validation in disposable PostgreSQL',{
    version:published.version,digest:published.digest,sourceSha256:createHash('sha256').update(seedBytes).digest('hex'),engineSha256:engineHash,
@@ -216,7 +216,7 @@ export async function verifySoloCampaign({
    const moves=[];
    let restoreActive;
    while(cursor.state.phase==='playing'){
-    const action=policy?policy.chooseAction(cursor.state,regular?authored.regular:authored,authored):chooseAction(cursor.state,pet);
+    const action=tactical?tactical.chooseAction(cursor.state,regular?authored.regular:authored,authored):chooseAction(cursor.state,pet);
     const result=await native(match,0,cursor.version,action);
     assert.equal(result.committed,true,JSON.stringify({action,result}));
     cursor=result;
@@ -317,7 +317,7 @@ export async function verifySoloCampaign({
     const {mapId}=boss;
     const next=maps[index+1];
     const current=await progression();
-    const petId=policy.choosePet(current.pets,boss);
+    const petId=tactical.choosePet(current.pets,boss);
     if(petId!==equippedPet){
      if(equippedPet){
       const unequip=await post(host,'/v1/pets/artifacts/unequip',{requestId:randomUUID(),petId:equippedPet,slot:'core'});
