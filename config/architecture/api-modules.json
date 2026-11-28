@@ -144,6 +144,9 @@
         "features/identity/modules/privacy/presentation/privacy-http",
         "features/identity/modules/native-auth/application/native-service",
         "features/identity/modules/native-auth/presentation/native-http",
+        "features/identity/modules/prelaunch/application/service",
+        "features/identity/modules/prelaunch/infrastructure/mail-sink",
+        "features/identity/modules/prelaunch/presentation/http",
         "features/identity/modules/runtime-access/application/runtime-tickets",
         "features/identity/modules/runtime-access/application/runtime-admission"
       ],

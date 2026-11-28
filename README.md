@@ -60,10 +60,11 @@ The optional `preview:test` browser check requires Playwright Chromium installed
 locally (`pnpm exec playwright install chromium`).
 
 This stack uses Next development mode because product routes and concept scenes
-remain unavailable in production. Registration and email acceptance remain
-unimplemented; native gameplay stays disabled. The worker's local policy accepts
-no reward kinds and awards no XP. Operator accounts still require the existing
-out-of-band bootstrap CLI and MFA; no default operator credentials are created.
+remain unavailable in production. The double opt-in registration API is
+default-off and has no production mail provider or campaign acceptance; native
+gameplay stays disabled. The worker's local policy accepts no reward kinds and
+awards no XP. Operator accounts still require the existing out-of-band bootstrap
+CLI and MFA; no default operator credentials are created.
 
 `preview:prepare` creates independent random keys in ignored, private
 `artifacts/local-preview/runtime.env` and preserves them on reruns. Edit only its
@@ -202,7 +203,9 @@ Vietnamese is the default; `?lang=en` selects English. The homepage and closed
 preregistration page return 404 by default and always in production, including
 when the preview variable is set. Preview HTML is private/no-store and noindex;
 static framework assets retain Next.js caching. There is no signup API, live
-email delivery, 3D production asset or deployment authorization in this slice.
+email delivery, 3D production asset or deployment authorization in the preview.
+The separate registration API is default OFF; see
+[prelaunch registration](specs/prelaunch-registration.md) for its local/test gate.
 
 VL-163–167 in the master plan track this independent prelaunch workstream.
 Existing official-site/download and Windows qualification tasks remain intact.

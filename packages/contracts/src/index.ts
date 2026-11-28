@@ -15,6 +15,7 @@ export * from './pet-limited-assets';
 export * from './operator';
 export * from './operator-controls';
 export * from './privacy-requests';
+export * from './prelaunch';
 export * from './operator-events';
 export * from './runtime-controls';
 export * from './gameplay-config';
