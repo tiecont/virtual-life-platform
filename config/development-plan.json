@@ -1161,6 +1161,18 @@
     },
     {
       "id": "VL-171",
+      "characterPerformanceCampaign": {
+        "architecture": "specs/media/character-performance.md",
+        "workflow": "character-performance",
+        "baseline": "af07d142",
+        "skills": "VERIFIED. 8ca82c16 added executable source/skill/package inventory and harness workflow. Inventory across supplied host roots enumerated 72 entries.",
+        "scene": "IMPLEMENTED. be66e03e stages original Icarus, breathing, walk crossfade, camera, particle and voice cues. Director revision 1f1575f5 passed 10/10 CinematicStudioTests.",
+        "face": "PROTOTYPE. 3ab30568 private soft smile and 3999c26c timed face track. Source VRM has 18 expression preset entries and no bound morphs. H1 facial approval pending.",
+        "wingAndBow": "PROTOTYPE. 23 source wing regions preserve 788288 triangles. Bow segmentation has 46 parts. H2 color, articulation and fit remain under review. Two Tripo segmentation jobs consumed the approved 80 credits.",
+        "combat": "BLOCKED. Coordinated two-hand bow attack, elemental skill and Ultimate require approved H2 assets. Skirt clearance, foot plants and full animation review remain open.",
+        "benchmark": "VERIFIED for the private Recorder take on llvmpipe only. f65c168c, 1280x720, 60 warmup and 240 measured frames. p50/p95/p99 75.05/111.83/130.46 ms. GPU timing unavailable. Gameplay 60 FPS qualification open.",
+        "next": "Review exact-source garment clearance, matched wing lighting and face response. Obtain owner approval before dependent art stages and record the complete gameplay benchmark separately."
+      },
       "icarusOwnerWingSource": {
         "url": "https://studio.tripo3d.ai/workspace/segmentation/a061ea26-294a-49f9-89f8-e4954ed11c21",
         "taskId": "a061ea26-294a-49f9-89f8-e4954ed11c21",
