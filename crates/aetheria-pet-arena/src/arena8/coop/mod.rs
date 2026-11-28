@@ -1219,6 +1219,9 @@ impl CoopRules {
                         next.board = self.construct_board(board_entropy)?;
                     }
                 }
+                if let Some(spawns) = observation.natural_spawns.as_mut() {
+                    tally_board(&mut spawns.opening, &next.board);
+                }
                 if let Some(opening) = self
                     .advanced_encounter()
                     .and_then(|encounter| encounter.opening)
@@ -1910,11 +1913,7 @@ impl CoopRules {
                 return Ok(());
             }
             let board_entropy = board_rng.as_deref_mut().unwrap_or(rng);
-            observation.record_refill(self.gravity_and_refill(
-                state,
-                board_entropy,
-                &mut survivors,
-            )?);
+            self.gravity_and_refill(state, board_entropy, &mut survivors, observation)?;
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
@@ -1933,14 +1932,11 @@ impl CoopRules {
                         state.board[index] = None;
                     }
                 }
-                observation.record_refill(self.gravity_and_refill(
-                    state,
-                    board_entropy,
-                    &mut survivors,
-                )?);
+                self.gravity_and_refill(state, board_entropy, &mut survivors, observation)?;
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
                     self.dead_board(state, board_entropy)?;
                     observation.forced_cascade_regenerations += 1;
+                    observation.record_recovery(&state.board);
                     survivors = 0;
                 }
                 break;
@@ -2103,7 +2099,8 @@ impl CoopRules {
         state: &mut CoopState,
         rng: &mut TurnRng,
         surviving_cells: &mut u64,
-    ) -> Result<RefillResult, CoreError> {
+        observation: &mut TurnObservation,
+    ) -> Result<(), CoreError> {
         let mut next = [None; CELLS];
         let mut moved_survivors = 0;
         for column in 0..SIDE {
@@ -2125,22 +2122,27 @@ impl CoopRules {
                 .filter(|row| next[row * SIDE + column].is_none())
                 .count();
             for row in 0..empty {
-                next[row * SIDE + column] = Some(self.spawn_tile(state, rng)?);
+                let tile = self.spawn_tile(state, rng)?;
+                if let Some(spawns) = observation.natural_spawns.as_mut() {
+                    spawns.refill[tile.identity.index()] += 1;
+                }
+                next[row * SIDE + column] = Some(tile);
             }
         }
         state.board = next;
         *surviving_cells = moved_survivors;
         let still_matching =
             self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
-        if still_matching {
-            Ok(RefillResult::StillMatching)
-        } else if self.legal_swap(state).is_none() {
-            self.dead_board(state, rng)?;
-            *surviving_cells = 0;
-            Ok(RefillResult::Regenerated)
-        } else {
-            Ok(RefillResult::Playable)
+        if !still_matching {
+            observation.refill_swap_checks += 1;
+            if self.legal_swap(state).is_none() {
+                self.dead_board(state, rng)?;
+                *surviving_cells = 0;
+                observation.dead_board_regenerations += 1;
+                observation.record_recovery(&state.board);
+            }
         }
+        Ok(())
     }
 
     fn dead_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
@@ -2577,12 +2579,6 @@ struct MatchOutcome {
     critical: bool,
 }
 
-enum RefillResult {
-    StillMatching,
-    Playable,
-    Regenerated,
-}
-
 /// Measurements outside the durable state and event stream.
 #[derive(Clone, Copy, Default)]
 struct TurnObservation {
@@ -2593,12 +2589,20 @@ struct TurnObservation {
     forced_cascade_regenerations: u64,
     shield_absorbed: u64,
     amplified_cells: u64,
+    natural_spawns: Option<simulation::NaturalSpawnDiagnostics>,
 }
 
 impl TurnObservation {
-    fn record_refill(&mut self, result: RefillResult) {
-        self.refill_swap_checks += u64::from(!matches!(result, RefillResult::StillMatching));
-        self.dead_board_regenerations += u64::from(matches!(result, RefillResult::Regenerated));
+    fn record_recovery(&mut self, board: &[Option<Tile>; CELLS]) {
+        if let Some(spawns) = self.natural_spawns.as_mut() {
+            tally_board(&mut spawns.recovery, board);
+        }
+    }
+}
+
+fn tally_board(counts: &mut [u64; TileKind::SHARED.len()], board: &[Option<Tile>; CELLS]) {
+    for tile in board.iter().flatten() {
+        counts[tile.identity.index()] += 1;
     }
 }
 
@@ -2912,7 +2916,10 @@ pub mod test_support {
     //! Narrow hooks for the committed engine conformance tests. They expose
     //! engine algorithms on an already validated bundle and carry no defaults.
 
-    use super::{CELLS, CoopConfig, CoopError, CoopRules, CoopState, Tile, TurnRng, matched_cells};
+    use super::{
+        CELLS, CoopConfig, CoopError, CoopRules, CoopState, Tile, TurnObservation, TurnRng,
+        matched_cells,
+    };
 
     impl CoopRules {
         /// Rebuild a ruleset from a caller-supplied authored bundle.
@@ -2933,7 +2940,7 @@ pub mod test_support {
             state: &mut CoopState,
             rng: &mut TurnRng,
         ) -> Result<(), aetheria_game_core::Error> {
-            self.gravity_and_refill(state, rng, &mut 0).map(|_| ())
+            self.gravity_and_refill(state, rng, &mut 0, &mut TurnObservation::default())
         }
 
         /// Apply raw damage to the Boss through the authored phase policy.

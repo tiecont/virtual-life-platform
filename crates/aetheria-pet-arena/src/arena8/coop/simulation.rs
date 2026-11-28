@@ -126,6 +126,46 @@ pub struct BoardDiagnostics {
     pub refill_swap_checks: u64,
     pub dead_board_regenerations: u64,
     pub forced_cascade_regenerations: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub natural_spawns: Option<NaturalSpawnDiagnostics>,
+}
+
+/// Observations from schema 6 only. Every count vector follows `kind_order`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NaturalSpawnDiagnostics {
+    pub kind_order: [&'static str; TileKind::SHARED.len()],
+    /// Tiles placed by the valid opening builder.
+    pub opening: [u64; TileKind::SHARED.len()],
+    /// Fresh tiles drawn during all gravity and cascade passes.
+    pub refill: [u64; TileKind::SHARED.len()],
+    /// Tiles present on final recovered boards, excluding discarded attempts.
+    pub recovery: [u64; TileKind::SHARED.len()],
+}
+
+impl Default for NaturalSpawnDiagnostics {
+    fn default() -> Self {
+        Self {
+            kind_order: TileKind::SHARED.map(TileKind::name),
+            opening: [0; TileKind::SHARED.len()],
+            refill: [0; TileKind::SHARED.len()],
+            recovery: [0; TileKind::SHARED.len()],
+        }
+    }
+}
+
+impl NaturalSpawnDiagnostics {
+    fn accumulate(&mut self, counts: Self) {
+        for (totals, counts) in [
+            (&mut self.opening, counts.opening),
+            (&mut self.refill, counts.refill),
+            (&mut self.recovery, counts.recovery),
+        ] {
+            for (total, count) in totals.iter_mut().zip(counts) {
+                *total += count;
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
@@ -210,7 +250,14 @@ impl Reducer for ObservedReducer<'_> {
     ) -> Result<Decision<CoopState>, Error> {
         // Mirror the CoopRules Reducer contract. Its stamped command entry
         // point is exercised independently by authenticated runtime tests.
-        let mut observation = TurnObservation::default();
+        let mut observation = TurnObservation {
+            natural_spawns: self
+                .rules
+                .config()
+                .shared_jewel_rng()
+                .then(NaturalSpawnDiagnostics::default),
+            ..TurnObservation::default()
+        };
         let decision = self
             .rules
             .reduce_observed(state, *action, None, rng, &mut observation)?;
@@ -777,6 +824,13 @@ fn play(
                     diagnostics.board.forced_cascade_regenerations +=
                         observation.forced_cascade_regenerations;
                     diagnostics.combat.shield_absorbed += observation.shield_absorbed;
+                    if let Some(counts) = observation.natural_spawns {
+                        diagnostics
+                            .board
+                            .natural_spawns
+                            .get_or_insert_default()
+                            .accumulate(counts);
+                    }
                 }
                 used_advanced |=
                     record_action(diagnostics, state, next, action, costs, &transition.events);

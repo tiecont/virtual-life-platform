@@ -80,13 +80,21 @@ fn validates_all_element_pairs_and_removes_ordinary_immunity() {
 
 #[test]
 fn natural_opening_refill_and_recovery_draw_every_kind() {
-    fn observed(board: &[Option<Tile>; CELLS]) -> u16 {
-        board
-            .iter()
-            .flatten()
-            .map(|tile| 1 << tile.identity.index())
-            .fold(0, |mask, kind| mask | kind)
+    fn observed(counts: [u64; TileKind::SHARED.len()]) -> u16 {
+        counts
+            .into_iter()
+            .enumerate()
+            .fold(0, |mask, (index, count)| {
+                mask | (u16::from(count > 0) << index)
+            })
     }
+    let dead_board = std::array::from_fn(|index| {
+        let i = (index / SIDE + 2 * (index % SIDE)) % TileKind::SHARED.len();
+        Some(Tile {
+            identity: TileIdentity::Kind(TileKind::SHARED[i]),
+            multiplier: 1,
+        })
+    });
     let rules = load();
     let initial = rules.allocate(seats()).unwrap();
     let mut opening = 0;
@@ -96,8 +104,18 @@ fn natural_opening_refill_and_recovery_draw_every_kind() {
         let seed = SecretSeed::from_host_entropy([sample; 32]);
         let binding = Value::Text("shared-natural-spawns".into());
         let mut stream = seed.stream(binding, 0).unwrap();
+        let mut observation = TurnObservation {
+            natural_spawns: Some(simulation::NaturalSpawnDiagnostics::default()),
+            ..TurnObservation::default()
+        };
         let start = rules
-            .reduce(&initial, CoopAction::Start, &mut stream)
+            .reduce_observed(
+                &initial,
+                CoopAction::Start,
+                None,
+                &mut stream,
+                &mut observation,
+            )
             .unwrap();
         assert_eq!(
             start.events,
@@ -112,7 +130,9 @@ fn natural_opening_refill_and_recovery_draw_every_kind() {
                 .any(|matched| matched)
         );
         assert!(rules.legal_swap(&state).is_some());
-        opening |= observed(&state.board);
+        let opening_counts = observation.natural_spawns.unwrap().opening;
+        assert_eq!(opening_counts.iter().sum::<u64>(), CELLS as u64);
+        opening |= observed(opening_counts);
 
         let mut board_entropy = stream
             .substream(
@@ -122,18 +142,29 @@ fn natural_opening_refill_and_recovery_draw_every_kind() {
             .unwrap();
         state.board = [None; CELLS];
         rules
-            .gravity_and_refill(&mut state, &mut board_entropy, &mut 0)
+            .gravity_and_refill(&mut state, &mut board_entropy, &mut 0, &mut observation)
             .unwrap();
-        refill |= observed(&state.board);
+        let refill_counts = observation.natural_spawns.unwrap().refill;
+        assert_eq!(refill_counts.iter().sum::<u64>(), CELLS as u64);
+        refill |= observed(refill_counts);
 
-        rules.dead_board(&mut state, &mut board_entropy).unwrap();
+        let recoveries = observation.dead_board_regenerations;
+        state.board = dead_board;
+        assert!(rules.legal_swap(&state).is_none());
+        rules
+            .gravity_and_refill(&mut state, &mut board_entropy, &mut 0, &mut observation)
+            .unwrap();
+        assert_eq!(observation.dead_board_regenerations, recoveries + 1);
         assert!(
             !matched_cells(&state.board)
                 .into_iter()
                 .any(|matched| matched)
         );
         assert!(rules.legal_swap(&state).is_some());
-        recovery |= observed(&state.board);
+        assert_eq!(state.board.iter().flatten().count(), CELLS);
+        let counts = observation.natural_spawns.unwrap().recovery;
+        assert_eq!(counts.iter().sum::<u64>(), (recoveries + 1) * CELLS as u64);
+        recovery |= observed(counts);
     }
 
     let all_kinds = (1 << TileKind::SHARED.len()) - 1;

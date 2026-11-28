@@ -361,7 +361,12 @@ fn astral_uses_row_major_survivors_once_after_settling_and_obeys_current_ceiling
     assert_eq!((outcome.damage, entropy.cursor()), (0, 0));
     let mut survivors = u64::MAX;
     rules
-        .gravity_and_refill(&mut state, &mut entropy, &mut survivors)
+        .gravity_and_refill(
+            &mut state,
+            &mut entropy,
+            &mut survivors,
+            &mut TurnObservation::default(),
+        )
         .unwrap();
     assert_eq!(survivors, !0b1111u64);
     let mut manual = rules.allocate(seats()).unwrap();
