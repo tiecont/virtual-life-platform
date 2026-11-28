@@ -274,6 +274,10 @@ def walk_four_client_to_fire():
     for index, (axis, target) in enumerate(waypoints):
         for attempt in range(14):
             image = capture(f'03-plaza-waypoint-{index}')
+            if index >= 2 and 'cinder terraces' in ocr(image,(24,88,415,120),'7').lower():
+                copyfile(image,output/'03-plaza-fire-sign.png')
+                key('e',.18)
+                return
             position = plaza_position(image)
             error = target-position[axis]
             if abs(error) < .42:
