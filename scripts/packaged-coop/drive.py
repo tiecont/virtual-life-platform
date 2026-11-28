@@ -234,6 +234,11 @@ lobby_buttons = center_band(185, 520)
 pet_selection = (165, 67, 430, 101)
 pet_options = (165, 106, 430, 220)
 
+def room_control(image, word):
+    # UI Toolkit row heights change with the packaged theme scale. Recover
+    # the actual OCR coordinates from the lobby instead of clipping one row.
+    return word_button(image, {word}, lobby_buttons)
+
 def room_ready(map_name, filename):
     box = (2, 215, 140, 242)
     for _ in range(20):
@@ -361,17 +366,17 @@ elif stage == 'four-lobby':
         print(f'Join room recognized at x={position[0]} y={position[1]} ({method}, field_y={room_label[1]})', flush=True)
         click(*position)
     def visible_seat(img):
-        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,225,360,286),'6').lower())
+        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,195,360,325),'6').lower())
         return match.group(1) if match else None
     assigned, _ = wait_for('05-assigned-lobby-seat', visible_seat)
     (output/'assigned-seat').write_text(assigned + '\n')
-    click(*label('06-ready','ready',center_band(265,319)))
+    click(*wait_for('06-ready', lambda image: room_control(image, 'ready'))[0])
 elif stage == 'four-host-room-start':
     def ready_start(img):
-        start = word_button(img, {'start'}, center_band(315,360))
+        start = room_control(img, 'start')
         if start and min(Image.open(img).convert('RGB').getpixel((40,start[1]))) >= 130:
             return start
-        refresh = word_button(img, {'refresh'}, center_band(360,399))
+        refresh = room_control(img, 'refresh')
         if refresh:
             click(*refresh)
         return None
@@ -386,19 +391,13 @@ elif stage == 'four-battle':
 
     def admit(img):
         if 'cooperative' in ocr(img, (0,0,290,34), '7').lower():
-            # Refresh moves from y379 to y336 when the server marks the room
-            # started. Enter then occupies y379. Read complete, centered rows.
-            for top in (360, 317, 403):
-                row = center_band(top, top + 37, 170)
-                enter = word_button(img, {'enter'}, row, mode='7')
-                if enter:
-                    click(*enter)
-                    return
-            for top in (360, 317):
-                refresh = word_button(img, {'refresh'}, center_band(top, top + 37), mode='7')
-                if refresh:
-                    click(*refresh)
-                    return
+            enter = room_control(img, 'enter')
+            if enter:
+                click(*enter)
+                return None
+            refresh = room_control(img, 'refresh')
+            if refresh:
+                click(*refresh)
             return None
         if recover := status_button(img):
             click(*recover)
