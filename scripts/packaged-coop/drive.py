@@ -297,7 +297,8 @@ def walk_four_client_to_fire():
     # bench. Accept the actual portal label before interacting through E.
     waypoints = [(0,-10.2),(1,4.6),(0,-8.1),(1,6.6)]
     for index, (axis, target) in enumerate(waypoints):
-        for attempt in range(14):
+        previous, stalls = None, 0
+        for attempt in range(24):
             image = capture(f'03-plaza-waypoint-{index}')
             prompt = ocr(image,(24,88,415,120),'7').lower()
             if re.search(r'\bcinder\s+terraces\b',prompt):
@@ -312,10 +313,22 @@ def walk_four_client_to_fire():
                 sleep(.4)
                 continue
             error = target-position[axis]
-            if abs(error) < .42:
+            print(f'Plaza waypoint {index} attempt {attempt}: position={position} error={error:.2f}', flush=True)
+            if abs(error) < .55:
                 break
+            if previous is not None and abs(position[axis] - previous) < .12:
+                stalls += 1
+            else:
+                stalls = 0
+            previous = position[axis]
+            if index == 1 and stalls >= 2:
+                # Move toward the west aisle at x=-9.4, clear of both the
+                # x=-11 lamp foot and the x=-6.2 diagonal plaza benches.
+                key('d' if position[0] < -9.4 else 'a', min(.35, max(.12, abs(position[0]+9.4)/4.2)))
+                sleep(.35)
+                stalls = 0
             negative, positive = ('a','d') if axis == 0 else ('s','w')
-            key(negative if error < 0 else positive, min(1.3,max(.24,abs(error)/4.2)))
+            key(negative if error < 0 else positive, min(1.3,max(.10,abs(error)/4.2)))
             sleep(.4)
         else:
             raise RuntimeError(f'Plaza waypoint {index} stalled around {position}')
