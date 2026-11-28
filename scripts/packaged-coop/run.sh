@@ -12,7 +12,12 @@ export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=
 # Carry review inputs across that boundary as validated arguments.
 if [[ ${1:-} == "--inside-disposable-db" ]]; then
   export PACKAGED_QA_SIZE="${7:?missing player size}" PACKAGED_QA_BOARD="${8:?missing board contract}"
+  export PACKAGED_QA_SCOPE="${9:?missing acceptance scope}"
 fi
+case "${PACKAGED_QA_SCOPE:-full}" in
+  full|board) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
+  *) echo "Unsupported packaged acceptance scope" >&2; exit 2 ;;
+esac
 case "${PACKAGED_QA_SIZE:-1024x768}" in
   1024x768|1280x720|1920x1080|2560x1440|3840x2160) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
   *) echo "Unsupported packaged player resolution" >&2; exit 2 ;;
@@ -57,7 +62,7 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
   sha256sum "$qa_run/player-package.sha256" "$qa_engine" > "$qa_run/build.sha256"
   printf 'Acceptance evidence will be saved in %s\n' "$qa_run"
   exec node scripts/with-test-db.mjs bash "$driver_dir/run.sh" --inside-disposable-db \
-    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata" "$PACKAGED_QA_SIZE" "${PACKAGED_QA_BOARD:-functional}"
+    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata" "$PACKAGED_QA_SIZE" "${PACKAGED_QA_BOARD:-functional}" "$PACKAGED_QA_SCOPE"
 fi
 
 shift
@@ -117,7 +122,9 @@ for ((attempt=0; attempt<120; attempt++)); do
   sleep .25
 done
 
-for phase in fire first recover resume water; do
+phases=(fire first recover)
+if [[ "$PACKAGED_QA_SCOPE" == full ]]; then phases+=(resume water); fi
+for phase in "${phases[@]}"; do
   printf 'Running %s\n' "$phase" | tee -a "$qa_run/ui.log"
   # The full battle includes multiple button captures, OCR passes and a
   # packaged UI round-trip on every host turn.
@@ -127,6 +134,26 @@ for phase in fire first recover resume water; do
   esac
   timeout "$phase_timeout" python3 "$driver_dir/drive.py" "$phase" 2>&1 | tee -a "$qa_run/ui.log"
 done
+if [[ "$PACKAGED_QA_SCOPE" == board ]]; then
+  # The recovery driver releases the backend after observing the packaged HUD.
+  # Wait for proof that the authenticated host consumed a new ticket first.
+  for ((attempt=0; attempt<80; attempt++)); do
+    if [[ -s "$qa_run/host-renewed.json" ]]; then break; fi
+    kill -0 "$qa_backend_pid"
+    sleep .25
+  done
+  [[ -s "$qa_run/host-renewed.json" ]]
+  touch "$qa_run/player-sampling-stop"
+  wait "$qa_sampler_pid"
+  qa_sampler_pid=''
+  kill -TERM "$qa_backend_pid"
+  backend_status=0
+  wait "$qa_backend_pid" || backend_status=$?
+  qa_backend_pid=''
+  [[ "$backend_status" == 143 ]]
+  node "$driver_dir/verify-board.mjs" "$qa_run" "$PACKAGED_QA_SIZE" | tee "$qa_run/board-acceptance.json"
+  exit 0
+fi
 wait "$qa_backend_pid"
 qa_backend_pid=''
 node "$driver_dir/verify.mjs" "$qa_run" | tee "$qa_run/acceptance.json"
