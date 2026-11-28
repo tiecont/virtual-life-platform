@@ -387,3 +387,39 @@ fn astral_uses_row_major_survivors_once_after_settling_and_obeys_current_ceiling
     );
     assert_eq!(events.len(), 2);
 }
+
+#[test]
+fn nature_run_lengths_and_intersections_use_unique_cells_in_solo() {
+    let rules = advanced_rules(GHOST);
+    let vulnerability = Some(Status {
+        kind: StatusKind::Vulnerability,
+        value: 150,
+        turns: 3,
+    });
+    for (cells, cleanses) in [
+        (&[0, 1, 2][..], 1),
+        (&[0, 8, 16, 24][..], 2),
+        (&[0, 1, 2, 3, 4][..], 3),
+        (&[0, 1, 2, 9, 17][..], 3),  // T
+        (&[0, 8, 16, 17, 18][..], 3), // L
+        (&[1, 8, 9, 10, 17][..], 3),  // Cross
+    ] {
+        let mut state = rules.allocate(seats()).unwrap();
+        state.participants.truncate(1);
+        state.active_seat = 0;
+        state.participants[0].statuses = [vulnerability; 4];
+        state.board = [None; CELLS];
+        for &cell in cells {
+            state.board[cell] = tile(TileKind::Nature, 8);
+        }
+        let mut events = Vec::new();
+        rules.advanced_matches(&mut state, &mut events);
+        let mut expected = vec![event("matched-nature", Some(0), cells.len() as u64)];
+        expected.extend((0..cleanses).map(|_| event("nature-cleanse", Some(0), 1)));
+        assert_eq!(events, expected, "shape {cells:?}");
+        assert_eq!(
+            state.participants[0].statuses.iter().flatten().count(),
+            4 - cleanses
+        );
+    }
+}
