@@ -447,7 +447,7 @@ namespace Aetheria.Editor
             return result.ToArray();
         }
 
-        private static string[] Capture(PlayableDirector director, double lead, float length,
+        internal static string[] Capture(PlayableDirector director, double lead, float length,
             SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent,
             bool captureMovingChin = false, bool captureMovingPelvis = false)
         {

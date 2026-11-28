@@ -34,7 +34,10 @@ namespace Aetheria.Editor
             public float maxBaselineMismatchMeters, maxCorrectiveErrorMeters;
         }
 
-        public static void Build()
+        public static void Build() => BuildStudy(false);
+        public static void BuildRendered() => BuildStudy(true);
+
+        static void BuildStudy(bool render)
         {
             string Input(string variable)
             {
@@ -42,6 +45,8 @@ namespace Aetheria.Editor
                 if (!Path.IsPathRooted(value ?? "")) throw new ArgumentException("Missing absolute " + variable);
                 return value;
             }
+            if (render && SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                throw new InvalidOperationException("Rendering both garment layers requires a private graphics device.");
             var receipt = Input("AETHERIA_GARMENT_LOCAL");
             var output = Input("AETHERIA_GARMENT_OUTPUT");
             var baseline = Input("AETHERIA_GARMENT_BASE_POSES");
@@ -77,7 +82,8 @@ namespace Aetheria.Editor
                 vrm.UpdateType = Vrm10Instance.UpdateTypes.None;
                 var skins = actor.GetComponentsInChildren<SkinnedMeshRenderer>();
                 var skirt = skins.Single(s => s.name == "Spring_06_skirt");
-                var mesh = Object.Instantiate(skirt.sharedMesh);
+                var originalMesh = skirt.sharedMesh;
+                var mesh = Object.Instantiate(originalMesh);
                 mesh.name = "Original skirt with walk-only corrections";
                 AssetDatabase.CreateAsset(mesh, folder + "/Garment.asset");
                 var director = CinematicStudio.CreateBoundTimeline(animator, walk, CinematicStudio.Sequence.SkillShowcase, folder + "/Motion.playable");
@@ -160,6 +166,31 @@ namespace Aetheria.Editor
                             Vector3.Distance(target[frame][i], actual[frame][i]));
                 if (report.maxCorrectiveErrorMeters > .001f)
                     throw new InvalidDataException($"Native Timeline overlay differs from target ({report.maxCorrectiveErrorMeters} m).");
+                if (render)
+                {
+                    void CaptureWalk(string name)
+                    {
+                        string path = Path.Combine(output, name);
+                        Directory.CreateDirectory(path);
+                        var captureRoot = new GameObject("Private garment comparison");
+                        try
+                        {
+                            director.time = 0;
+                            director.Evaluate();
+                            IcarusCharakuruMotionReview.Capture(director, 0, walk.length, skins, captureRoot.transform,
+                                vrm, path, out _, captureMovingPelvis: true);
+                        }
+                        finally { Object.DestroyImmediate(captureRoot); }
+                    }
+                    layer.muted = true;
+                    skirt.sharedMesh = originalMesh;
+                    director.RebuildGraph();
+                    CaptureWalk("original");
+                    skirt.sharedMesh = mesh;
+                    layer.muted = false;
+                    director.RebuildGraph();
+                    CaptureWalk("corrected");
+                }
                 director.Stop();
                 director.playOnAwake = true;
                 if (!EditorSceneManager.SaveScene(scene, report.scene)) throw new IOException("Private garment study could not be saved.");
