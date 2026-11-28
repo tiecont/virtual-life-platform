@@ -95,6 +95,8 @@ objects such as rocks, chests, foliage, or furniture, or for authorized
 reference-image generation. It does not replace the full Tripo chain for
 multi-material Wings, Weapons, or Standard Pets.
 
+For a part-generated asset with Texture off, label an atlas projected from the approved concept in Blender as a local color projection. On Icarus the owner approved that palette for a private fitting. Record the separate Tripo Smart UV and 4K texture operation IDs, driving reference, settings, exported GLB and embedded-image hashes when those steps run. Compare the returned UV and part mapping with the corrected source and transfer the verified maps to the articulated LOD when necessary. Inspect both feather faces, string, grip, ornaments and silhouettes before production fitting. Keep a local material preview identifiable in its receipt and screenshots.
+
 ## 3. Normalize in Blender 5.3
 
 Reopen the exported geometry and verify:
