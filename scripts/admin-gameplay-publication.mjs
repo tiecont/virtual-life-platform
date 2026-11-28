@@ -22,6 +22,7 @@ import {verifyAdvancedCoopPublication} from './coop-advanced-publication-probe.m
 import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
 import {verifySharedCoopReplay} from './coop-shared-replay-probe.mjs';
 import {routeCandidate} from './campaign-route-candidate.mjs';
+import {verifyCampaignRouteAdmin} from './campaign-route-admin-probe.mjs';
 import {enableCampaignProbeRoutes,verifyCampaignRoute} from './campaign-route-e2e-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
@@ -73,6 +74,8 @@ const campaignSolo=process.argv.includes('--campaign-route');
 const campaignCoop=process.argv.includes('--campaign-route-coop');
 assert.ok(!(campaignSolo&&campaignCoop),'Select one campaign route seat mode');
 const campaignMode=campaignSolo?'campaign-route':campaignCoop?'campaign-route-coop':undefined;
+const routeAdmin=process.argv.includes('--route-admin');
+const authoredRoutes=Boolean(campaignMode)||routeAdmin;
 const sharedAdmin=process.argv.includes('--shared-admin');
 const sharedMode=process.argv.find(arg=>['--shared-solo','--shared-coop'].includes(arg))?.slice(2);
 const advancedCoop=process.argv.includes('--advanced-coop')||sharedMode==='shared-coop';
@@ -80,8 +83,9 @@ const advancedSoloArg=process.argv.find(arg=>arg.startsWith('--advanced-solo='))
 const advancedSolo=advancedSoloArg?.slice('--advanced-solo='.length);
 assert.ok(advancedSoloArg===undefined||['nature','astral'].includes(advancedSolo),'Select Nature or Astral for the solo advanced fixture');
 const advanced=advancedCoop||Boolean(advancedSolo)||Boolean(sharedMode)||Boolean(campaignMode);
-assert.ok(!(campaignMode&&(sharedMode||advancedCoop||advancedSolo||sharedAdmin||timedSolo||timedCoop||unchangedCandidate||process.argv.includes('--solo'))),
- 'A campaign route probe must use its own disposable publication');
+assert.ok(!(authoredRoutes&&(sharedMode||advancedCoop||advancedSolo||sharedAdmin||timedSolo||timedCoop||unchangedCandidate||process.argv.includes('--solo')))
+ && !(routeAdmin&&(campaignMode||process.argv.includes('--direct'))),
+ 'Select one campaign route probe with its own publication and transport');
 assert.ok(!(advancedSolo&&(timedSolo||unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
 assert.ok(!(advancedCoop&&timedCoop),'Select one cooperative fixture');
 assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
@@ -97,8 +101,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,campaignMode?campaignMode+'-':sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:(campaignMode??(sharedAdmin?'shared-admin':sharedMode))??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,routeAdmin?'route-admin-':campaignMode?campaignMode+'-':sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:(routeAdmin?'route-admin':campaignMode??(sharedAdmin?'shared-admin':sharedMode))??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -141,10 +145,10 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=campaignMode||sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=authoredRoutes||sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
  const shared=JSON.parse(seedBytes);
- const seed=campaignMode?routeCandidate(shared,...await Promise.all([
+ const seed=authoredRoutes?routeCandidate(shared,...await Promise.all([
   'specs/pet-arena/campaign-v4-content.json','config/gameplay/candidates/map-encounters.json',
  ].map(async path=>JSON.parse(await readFile(path,'utf8'))))):shared;
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
@@ -164,7 +168,7 @@ try{
   boss.regular.maxHp=1;
   boss.regular.defense=1;
   Object.assign(boss.regular.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
- }else if(!unchangedCandidate&&!advanced&&!sharedAdmin){
+ }else if(!unchangedCandidate&&!advanced&&!sharedAdmin&&!routeAdmin){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -188,7 +192,7 @@ try{
   }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  }
  const validator=new EngineGameplayBundleValidator(binary);
- const baseline=advanced&&!campaignMode?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
+ const baseline=advanced&&!authoredRoutes?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
  const installed=await installGameplayConfig(pool,ruleset,baseline,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
  const operatorPassword='synthetic-local-ab-operator-only',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
@@ -457,7 +461,11 @@ try{
   mark('published '+label+' through typed browser controls, engine validation and PostgreSQL selection',{version:created.version,digest:checked.digest,activeRevision:publishResult.activeRevision,fields});
   return configurations[label];
  }
- if(sharedAdmin){
+ if(routeAdmin){
+  await verifyCampaignRouteAdmin({
+   page,expect,artifact,installed,dbConfig,dbActive,validator,ruleset,mark,clickMutation,button,versionRow,activeEntry,auditSection,
+  });
+ }else if(sharedAdmin){
   const nature=page.getByLabel('Nature spawn weight',{exact:true});
   const matrix=page.getByRole('region',{name:'Elemental damage matrix'});
   await expect(nature).toBeDisabled();
