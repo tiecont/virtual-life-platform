@@ -101,7 +101,8 @@ namespace Aetheria.PetArena.Presentation
             }
             catch
             {
-                session.Dispose();
+                if (nativeSession == session) DisposeNative();
+                else session.Dispose();
                 throw;
             }
         }

@@ -98,6 +98,7 @@ namespace Aetheria.PetArena.Presentation
         {
             private readonly GameObject holder;
             private readonly Renderer[] fallback;
+            private bool disposed;
 
             internal Actor(GameObject holder, Renderer[] fallback)
             {
@@ -107,9 +108,13 @@ namespace Aetheria.PetArena.Presentation
 
             public void Dispose()
             {
-                if (holder == null || !holder.activeSelf) return;
-                holder.SetActive(false);
-                Object.Destroy(holder);
+                if (disposed) return;
+                disposed = true;
+                if (holder != null)
+                {
+                    holder.SetActive(false);
+                    Object.Destroy(holder);
+                }
                 foreach (var renderer in fallback)
                     if (renderer != null) renderer.forceRenderingOff = false;
             }
