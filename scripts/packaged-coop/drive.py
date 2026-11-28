@@ -280,25 +280,37 @@ elif stage == 'water':
                     raise
 
         def playing_board(img, state):
-            if status_button(img) or live_turn(img) != (state['turn'], state['activeSeat']):
+            if live_turn(img) != (state['turn'], state['activeSeat']):
                 return None
             return populated_board(img)
 
-        board, _ = wait_for('22-water-started-board', lambda img: playing_board(img, started['state']))
+        board, _ = wait_for('22-water-started-board',
+                            lambda img: not status_button(img) and playing_board(img, started['state']))
         for attempt in range(5):
+            recover = None
+            if attempt and not read('water-swapped'):
+                img = capture(f'water-swap-retry-{attempt}')
+                recover = status_button(img)
+                board = None if recover else playing_board(img, started['state'])
+            # The observer may publish the receipt while OCR reads the HUD.
             swapped = read('water-swapped')
             if swapped:
                 break
-            for tile in (started['move']['first'], started['move']['second']):
-                click(*cell_center(board, tile))
-                sleep(.42)
+            if recover:
+                print('Water recovery click', recover, flush=True)
+                click(*recover)
+            elif board:
+                for tile in (started['move']['first'], started['move']['second']):
+                    click(*cell_center(board, tile))
+                    sleep(.42)
             try:
                 swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=3)
                 break
             except RuntimeError:
                 if attempt == 4:
                     raise
-        wait_for('23-water-after-host-swap', lambda img: playing_board(img, swapped['state']))
+        wait_for('23-water-after-host-swap',
+                 lambda img: not status_button(img) and playing_board(img, swapped['state']))
         (output/'water-swap-observed').touch()
     else:
         text('21-water-equipped-native-hud', 'start battle', start_box, tries=28)
