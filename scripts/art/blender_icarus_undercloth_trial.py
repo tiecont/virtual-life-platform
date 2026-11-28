@@ -57,7 +57,8 @@ def study(source, baseline, witnesses, output):
             changed.tofile(target)
             frame[2*n:].tofile(target)
     (output / "undercloth-study.json").write_text(json.dumps({
-        "sourceSha256": SOURCE, "originalPosesSha256": sha(baseline), "posesSha256": sha(cache),
+        "sourceSha256": SOURCE, "baselineSha256": sha(baseline), "cacheSha256": sha(cache),
+        "thighVertices": indices.tolist(),
         "witnessesSha256": sha(witnesses), "vertices": indices[np.linalg.norm(field, axis=1) > 0].tolist(),
         "sourceContactFaces": len(groups), "maxThighDisplacementMeters": float(np.linalg.norm(field, axis=1).max()),
         "frames": len(poses), "garment": "All original posed garment vertices retained byte-for-byte",
