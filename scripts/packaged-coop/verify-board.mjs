@@ -11,7 +11,15 @@ const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const sourceRevision=(await readFile(join(root,'source-sha.txt'),'utf8')).trim();
 const build=await read('build-receipt.json');
 assert.match(sourceRevision,/^[0-9a-f]{40}$/);
-assert.equal(build.sourceRevision,sourceRevision);
+const playerRevision=(await readFile(join(root,'player-source-sha.txt'),'utf8')).trim();
+assert.match(playerRevision,/^[0-9a-f]{40}$/);
+assert.equal(build.sourceRevision,playerRevision);
+if(playerRevision!==sourceRevision){
+ assert.equal(process.env.PACKAGED_QA_SCOPE,'feedback');
+ // Recheck the same source boundary as run.sh, including offline receipt review.
+ execFileSync('git',['diff','--no-ext-diff','--exit-code',playerRevision,sourceRevision,
+  '--','.',':(top,exclude)scripts/packaged-coop/**'],{cwd:fileURLToPath(new URL('../../',import.meta.url))});
+}
 
 async function verifyScreenshots(filenames){
  const screenshots=await Promise.all(filenames.map(async name=>{
@@ -117,7 +125,7 @@ async function verifySharedRng(){
  }
  verifyPerformance(performance);
  return {additionalHostTurns,
-  result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerSize:requestedSize,
+  result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerRevision,playerSize:requestedSize,
   boardContract:'shared-rng-fire',boardTiles:64,
   fixture:run,ruleset:started.state.ruleset,startedVersion:started.version,hostSwapVersion:swapped.version,
   observedTileCounts:{start:counts[0],afterHostSwap:counts[1]},displayedEffects,

@@ -68,7 +68,7 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
     process.stdout.write(receipt.sourceRevision);
   ' "$qa_report")
   if [[ "$qa_build_revision" != "$qa_revision" ]]; then
-    [[ "$PACKAGED_QA_SCOPE" == four-clients ]] || { echo "Linux package requires current source SHA" >&2; exit 2; }
+    [[ "$PACKAGED_QA_SCOPE" == four-clients || "$PACKAGED_QA_SCOPE" == feedback ]] || { echo "Linux package requires current source SHA" >&2; exit 2; }
     # Driver-only corrections affect the fixture and its evidence, not the
     # packaged game under test. Reject any other source-tree difference.
     git diff --no-ext-diff --exit-code "$qa_build_revision" "$qa_revision" -- . ':(top,exclude)scripts/packaged-coop/**'
