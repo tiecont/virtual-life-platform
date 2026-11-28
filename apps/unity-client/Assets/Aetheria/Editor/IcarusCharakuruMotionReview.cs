@@ -130,7 +130,8 @@ namespace Aetheria.Editor
                 review.productionReady = false;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
-                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, output);
+                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, output,
+                        out review.clippedWhitePercent);
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
                 Debug.Log($"Charakuru Icarus motion verified on Timeline. {review.mappedHumanoidBones} mapped bones, " +
                     $"{review.maxMappedJointAngleDegrees:F2}° joint motion, {review.maxSkinnedVertexDelta:F4} m skin movement.");
@@ -253,32 +254,57 @@ namespace Aetheria.Editor
         }
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
-            SkinnedMeshRenderer[] skins, Transform reviewRoot, string output)
+            SkinnedMeshRenderer[] skins, Transform reviewRoot, string output, out float[] clippedWhitePercent)
         {
+            Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
+                "A graphics capture requires the project's URP pipeline.");
+            var sceneLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(light => light.enabled).ToArray();
             var camera = new GameObject("Icarus motion review camera").AddComponent<Camera>();
-            var light = new GameObject("Icarus motion review key").AddComponent<Light>();
             camera.transform.SetParent(reviewRoot, false);
-            light.transform.SetParent(reviewRoot, false);
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(.14f, .16f, .20f);
             camera.orthographic = true;
-            light.type = LightType.Directional;
-            light.intensity = 1.35f;
-            light.transform.rotation = Quaternion.Euler(30, 155, 0);
+            camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
+
+            AddPreviewLight("Key", new Color(1f, .95f, .91f), .57f, Quaternion.Euler(32, 155, 0));
+            AddPreviewLight("Fill", new Color(.75f, .83f, 1f), .14f, Quaternion.Euler(12, 223, 0));
+
+            void AddPreviewLight(string name, Color color, float intensity, Quaternion rotation)
+            {
+                var light = new GameObject("Icarus motion review " + name).AddComponent<Light>();
+                light.transform.SetParent(reviewRoot, false);
+                light.type = LightType.Directional;
+                light.color = color;
+                light.intensity = intensity;
+                light.transform.rotation = rotation;
+            }
             var bounds = skins[0].bounds;
             foreach (var skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
             camera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y) * 1.35f;
             camera.transform.position = bounds.center + new Vector3(1.45f, .18f, 5);
             camera.transform.LookAt(bounds.center);
-            Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
-                "A graphics capture requires the project's URP pipeline.");
             const int size = 720;
             var target = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
             var image = new Texture2D(size, size, TextureFormat.RGB24, false);
             var previous = RenderTexture.active;
+            var originalScene = SceneManager.GetActiveScene();
+            bool switchScene = originalScene != reviewRoot.gameObject.scene;
+            if (switchScene) SceneManager.SetActiveScene(reviewRoot.gameObject.scene);
+            var ambientMode = RenderSettings.ambientMode;
+            var sky = RenderSettings.ambientSkyColor;
+            var equator = RenderSettings.ambientEquatorColor;
+            var ground = RenderSettings.ambientGroundColor;
+            var reflection = RenderSettings.reflectionIntensity;
             var bakedSkins = new List<(SkinnedMeshRenderer Source, MeshFilter Filter, Mesh Mesh)>();
             try
             {
+                foreach (var light in sceneLights) light.enabled = false;
+                RenderSettings.ambientMode = AmbientMode.Trilight;
+                RenderSettings.ambientSkyColor = new Color(.36f, .39f, .47f);
+                RenderSettings.ambientEquatorColor = new Color(.19f, .21f, .26f);
+                RenderSettings.ambientGroundColor = new Color(.09f, .09f, .13f);
+                RenderSettings.reflectionIntensity = .25f;
                 foreach (var skin in skins)
                 {
                     var draw = new GameObject(skin.name + " sampled motion");
@@ -290,6 +316,7 @@ namespace Aetheria.Editor
                 }
                 Require(target.Create(), "Could not allocate the review render target.");
                 var frames = new List<string>();
+                var exposure = new List<float>();
                 for (int i = 0; i < ReviewSamples.Length; i++)
                 {
                     director.time = lead + ReviewSamples[i] * length;
@@ -307,17 +334,41 @@ namespace Aetheria.Editor
                     image.Apply();
                     var pixels = image.GetPixels32();
                     var background = pixels[0];
-                    Require(pixels.Count(pixel => !pixel.Equals(background)) > size * size / 20,
-                        "The review frame contains no readable character render.");
-                    string name = $"icarus-charakuru-walk-{i + 1:D2}.png";
+                    int foreground = 0;
+                    int clippedWhite = 0;
+                    foreach (var pixel in pixels)
+                    {
+                        if (pixel.Equals(background)) continue;
+                        foreground++;
+                        if (pixel.r >= 250 && pixel.g >= 250 && pixel.b >= 250) clippedWhite++;
+                    }
+                    Require(foreground > size * size / 20, "The review frame contains no readable character render.");
+                    float whitePercent = 100f * clippedWhite / foreground;
+                    Debug.Log($"Icarus review frame {i + 1}: {whitePercent:F2}% of foreground pixels are near-white.");
+                    string stem = $"icarus-charakuru-walk-{i + 1:D2}";
+                    string name = stem + ".png";
+                    if (whitePercent >= 25f)
+                    {
+                        File.WriteAllBytes(Path.Combine(output, stem + "-exposure-rejected.png"), image.EncodeToPNG());
+                        throw new InvalidOperationException($"Icarus frame {i + 1} exceeded the 25% near-white foreground limit.");
+                    }
                     File.WriteAllBytes(Path.Combine(output, name), image.EncodeToPNG());
                     frames.Add(name);
+                    exposure.Add(whitePercent);
                 }
+                clippedWhitePercent = exposure.ToArray();
                 return frames.ToArray();
             }
             finally
             {
                 RenderTexture.active = previous;
+                RenderSettings.ambientMode = ambientMode;
+                RenderSettings.ambientSkyColor = sky;
+                RenderSettings.ambientEquatorColor = equator;
+                RenderSettings.ambientGroundColor = ground;
+                RenderSettings.reflectionIntensity = reflection;
+                foreach (var light in sceneLights) light.enabled = true;
+                if (switchScene) SceneManager.SetActiveScene(originalScene);
                 foreach (var (source, filter, mesh) in bakedSkins)
                 {
                     source.enabled = true;
@@ -350,6 +401,7 @@ namespace Aetheria.Editor
             public float clipSeconds, maxMappedJointAngleDegrees, maxSkinnedVertexDelta;
             public bool productionReady;
             public float[] sampleFractions;
+            public float[] clippedWhitePercent = Array.Empty<float>();
             public string[] frames = Array.Empty<string>();
         }
     }
