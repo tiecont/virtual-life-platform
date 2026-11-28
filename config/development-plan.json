@@ -10836,7 +10836,7 @@
         "Run the packaged Linux executable in the licensed build environment."
       ],
       "workstream": "D3-B",
-      "remaining": "Verify corrected four-seat packaged combat with recovery and settlement, natural Fire-to-Water progression, and hosted CI.",
+      "remaining": "8ad6e6e6 packaged Fire and Water regular starts and swaps passed after fixing camera initialization. On 4fea54bb a disposable Admin fixture unlocked Water only after both Fire wins settled through Rust and Nest. Verify full four-seat settlement and hosted CI.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
@@ -11118,7 +11118,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Complete integrated security verification and green hosted CI.",
+      "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision.",
       "implementation": {
         "historicalFunctionalSettlement": {
           "sourceRevision": "9ab5beac",
