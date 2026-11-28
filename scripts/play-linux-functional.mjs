@@ -63,7 +63,8 @@ try{
  const capture=mode==='--shared-capture';
  const captureNature=mode==='--shared-nature-capture';
  const captureUltimate=mode==='--shared-ultimate-capture';
- const captureAdvanced=mode==='--shared-frost-astral-capture';
+ const captureExtended=mode==='--shared-frost-astral-extended-capture';
+ const captureAdvanced=mode==='--shared-frost-astral-capture'||captureExtended;
  const candidates={
   functional:'arena8-coop-functional-v1.candidate.json',
   '--timed':'arena8-coop-functional-v2.candidate.json',
@@ -72,6 +73,7 @@ try{
   '--shared-nature-capture':'arena8-coop-shared-rng-v1.candidate.json',
   '--shared-ultimate-capture':'arena8-coop-shared-rng-v1.candidate.json',
   '--shared-frost-astral-capture':'arena8-coop-shared-rng-v1.candidate.json',
+  '--shared-frost-astral-extended-capture':'arena8-coop-shared-rng-v1.candidate.json',
  };
  if(process.platform!=='linux'||process.argv.length>3||!Object.hasOwn(candidates,mode))
   throw Error('Use a supported functional, timed or shared Linux play mode');
@@ -106,6 +108,17 @@ try{
  const ruleset='arena8-coop-pve';
  const candidate=candidates[mode];
  const bundle=JSON.parse(await readFile('config/gameplay/'+candidate,'utf8'));
+ let encounterDurationFixture=null;
+ if(captureExtended){
+  const ghost=bundle.bosses.find(boss=>boss.mapId==='lantern-necropolis')?.regular;
+  assert.equal(bundle.schemaVersion,6);
+  assert.equal(ghost?.id,'lantern-necropolis-regular');
+  assert.ok(Number.isSafeInteger(ghost.maxHp)&&ghost.maxHp>0&&Number.isSafeInteger(ghost.maxHp*8));
+  // A level 60 starter can defeat the authored regular before three Frost
+  // jewels spawn. Keep the same combat and RNG inputs with a larger HP pool.
+  encounterDurationFixture={authoredMaxHp:ghost.maxHp,fixtureMaxHp:ghost.maxHp*8};
+  ghost.maxHp=encounterDurationFixture.fixtureMaxHp;
+ }
  const validator=new EngineGameplayBundleValidator(binary);
  const published=await installGameplayConfig(pool,ruleset,bundle,validator,'system:local-functional-play');
  if(!published.created)throw Error('Expected an empty local gameplay configuration store');
@@ -133,7 +146,7 @@ try{
  const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
  if(!stopping){
   phase='Unity development player';
-  console.log((captureUltimate?'Recording a packaged committed Ultimate.':captureAdvanced?'Recording natural packaged Frost and Astral feedback.':captureNature?'Recording a packaged natural Ghost Nature cleanse.':capture?'Recording a packaged guest turn.':'Create a guest with Enter local arena.')+' Player log: '+resolve(directory,'player.log'));
+  console.log((captureUltimate?'Recording a packaged committed Ultimate.':captureExtended?'Recording natural packaged Frost and Astral feedback with extended local encounter HP.':captureAdvanced?'Recording natural packaged Frost and Astral feedback on the authored encounter.':captureNature?'Recording a packaged natural Ghost Nature cleanse.':capture?'Recording a packaged guest turn.':'Create a guest with Enter local arena.')+' Player log: '+resolve(directory,'player.log'));
   player=spawn(playerBinary,[
    '-force-glcore','-screen-width','1280','-screen-height','720','-screen-fullscreen','0',
    '-logFile',resolve(directory,'player.log'),
@@ -165,7 +178,7 @@ try{
   }
   if(captureAdvanced&&!stopping){
    phase='verify packaged natural Frost and Astral';
-   await verifyGhostAdvancedReceipts(pool,directory,published,mapAccess,bundle,candidate);
+  await verifyGhostAdvancedReceipts(pool,directory,published,mapAccess,bundle,candidate,encounterDurationFixture);
   }
   if(captureNature&&!stopping){
    phase='verify packaged natural Ghost cleanse';

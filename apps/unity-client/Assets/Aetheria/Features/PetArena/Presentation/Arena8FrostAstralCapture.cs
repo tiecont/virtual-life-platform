@@ -31,6 +31,7 @@ namespace Aetheria.PetArena.Presentation
                 throw new InvalidOperationException("The Frost and Astral capture requires the shared functional board.");
             var token = lifetime.Token;
             var view = await StartGhostCapture("lantern-necropolis", token);
+            var encounterMaxHp = view.BossState.MaxHealth;
             functionalHud.Refresh();
             var samples = new List<AdvancedSample>();
             var timeline = new List<NatureFrame>();
@@ -71,11 +72,11 @@ namespace Aetheria.PetArena.Presentation
                         var effect = view.JewelFeedback.Where(row => row.Kind == desired)
                             .OrderByDescending(row => row.Value).FirstOrDefault();
                         if (effect == null) continue;
-                        if (desired == "chill-armed" && (guard || move.frost < 3)) break;
+                        if (desired == "chill-armed" && guard) break;
                         if (desired == "chill-consumed" &&
                             (samples.Count == 0 || samples[0].value != effect.Value || view.ChillReductionPm != 0))
                             continue;
-                        if (desired == "astral-upgrade" && (guard || move.astral < 3))
+                        if (desired == "astral-upgrade" && guard)
                             continue;
                         string label = desired == "astral-upgrade" ? "×" + effect.Value :
                             "−" + (effect.Value / 1000d).ToString("0.#%", CultureInfo.InvariantCulture);
@@ -102,7 +103,7 @@ namespace Aetheria.PetArena.Presentation
                     if (samples.Count == 3)
                     {
                         File.WriteAllText(Path.Combine(nativeCaptureDirectory, "advanced-samples.json"),
-                            JsonUtility.ToJson(new AdvancedEvidence { samples = samples.ToArray() }, true));
+                            JsonUtility.ToJson(new AdvancedEvidence { encounterMaxHp = encounterMaxHp, samples = samples.ToArray() }, true));
                         nativeFacts.status = "ok";
                         nativeFacts.matchId = matchId;
                         nativeFacts.phase = view.Phase;
@@ -125,6 +126,10 @@ namespace Aetheria.PetArena.Presentation
         }
 
         [Serializable]
-        private sealed class AdvancedEvidence { public AdvancedSample[] samples; }
+        private sealed class AdvancedEvidence
+        {
+            public uint encounterMaxHp;
+            public AdvancedSample[] samples;
+        }
     }
 }

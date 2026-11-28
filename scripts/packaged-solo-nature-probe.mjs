@@ -142,13 +142,15 @@ export async function verifyGhostNatureReceipt(pool,directory,published,fixture,
  await writeFile(join(directory,'solo-shared-nature-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
 
-export async function verifyGhostAdvancedReceipts(pool,directory,published,fixture,bundle,candidate){
+export async function verifyGhostAdvancedReceipts(pool,directory,published,fixture,bundle,candidate,encounterDurationFixture){
  const read=async name=>JSON.parse(await readFile(join(directory,name),'utf8'));
  const player=await read('native-facts.json');
  assert.equal(player.status,'ok');
  assert.equal(player.ruleset,'arena8-functional-pve');
  assert.equal(player.participantCount,1);
- const {samples}=await read('advanced-samples.json');
+ const {samples,encounterMaxHp}=await read('advanced-samples.json');
+ if(encounterDurationFixture)assert.equal(encounterMaxHp,encounterDurationFixture.fixtureMaxHp);
+ assert.equal(bundle.bosses.find(boss=>boss.regular?.id===encounter).regular.maxHp,encounterMaxHp);
  assert.deepEqual(samples.map(sample=>sample.kind),['chill-armed','chill-consumed','astral-upgrade']);
  const [armed,consumed,astral]=samples;
  assert.ok(bundle.advancedJewels.frostReductionPm.includes(armed.value));
@@ -220,9 +222,10 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
   frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
  }
  assert.equal(astral.version,player.version);
- const verified={candidate,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,
+ const qualification=encounterDurationFixture?'extended-duration-technical':'authored-encounter';
+ const verified={candidate,qualification,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,
   playerLevel:fixture.playerLevel,levelFixture:fixture.levelFixture,
-  samples,journalOrder:{frostMatch,frostConsumed,sameReceipt,astralMatch,astralUpgrade},receipts,frames};
+  encounterDurationFixture,samples,journalOrder:{frostMatch,frostConsumed,sameReceipt,astralMatch,astralUpgrade},receipts,frames};
  await writeFile(join(directory,'solo-shared-frost-astral-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
 
