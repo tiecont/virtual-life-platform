@@ -144,8 +144,20 @@ def shared_weights(bundle, weights):
         entry["weight"] = weights[entry["kind"]]
 
 
-# Study inputs only. Each variant changes the shared distribution and nothing else.
+def warden_defense_support(bundle):
+    """Isolate practical recovery between authored Warden impacts."""
+    bundle["configId"] = "arena8-warden-defense-support-v1"
+    bundle["contentRevision"] = 1
+    tiles = bundle["board"]["functionalTiles"]
+    # A plain match of three now has an authored yield of 90 healing or 105
+    # shielding before the existing missing-health and shield-cap constraints.
+    tiles["heart"]["amount"] = 30
+    tiles["shield"]["amount"] = 35
+
+
+# Study inputs only. None of these variants publishes an active configuration.
 SHARED_VARIANTS = {
+    "warden-defense-support": warden_defense_support,
     "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
         ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
     "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
