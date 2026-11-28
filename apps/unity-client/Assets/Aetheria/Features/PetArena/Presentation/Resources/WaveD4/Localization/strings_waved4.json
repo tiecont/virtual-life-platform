@@ -649,6 +649,27 @@
       "ja": "変更を保存",
       "ko": "변경사항 저장",
       "zh": "保存并应用"
+    },
+    "map.recruitment": {
+      "vi": "Chiêu mộ Linh Thú",
+      "en": "Recruitment encounters",
+      "ja": "仲間にする戦闘",
+      "ko": "영입 전투",
+      "zh": "招募战斗"
+    },
+    "map.no_recruitment": {
+      "vi": "Chưa có trận chiêu mộ.",
+      "en": "No recruitment encounters available.",
+      "ja": "参加できる仲間戦闘はありません。",
+      "ko": "현재 영입 전투가 없습니다.",
+      "zh": "暂无招募战斗。"
+    },
+    "map.requires_clear": {
+      "vi": "Cần vượt qua",
+      "en": "Requires clear",
+      "ja": "先にクリア",
+      "ko": "선행 클리어",
+      "zh": "需先通关"
     }
   }
 }

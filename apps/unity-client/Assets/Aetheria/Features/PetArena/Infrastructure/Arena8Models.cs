@@ -2,6 +2,18 @@ using System;
 
 namespace Aetheria.PetArena.Infrastructure
 {
+    [Serializable] public sealed class Arena8RecruitmentCatalog
+    {
+        public int configVersion;
+        public Arena8RecruitmentRoute[] routes;
+    }
+
+    [Serializable] public sealed class Arena8RecruitmentRoute
+    {
+        public string id, mapId, name, opponentPetId, prerequisiteEncounterId;
+        public bool cleared, canEnterSolo;
+    }
+
     [Serializable] public sealed class Arena8AllocateRequest
     {
         public string requestId, petId, mapId, encounterId;
