@@ -51,6 +51,46 @@ const functionalTargets=[
  ['all-allies','All living allies'],
 ] as const;
 
+function AdvancedJewelEditor({bundle,editable,change}:{
+ bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
+}){
+ const policy=read(bundle,['advancedJewels']);
+ if(bundle.schemaVersion!==5||!policy)return null;
+ const control=(key:string,label:string)=>{
+  const value=read(policy,[key]);
+  return typeof value==='number' && <Num label={label} value={value} onChange={n=>change(['advancedJewels',key],n)}/>;
+ };
+ const tierControls=(key:string,label:string)=>{
+  const values=read(policy,[key]);
+  if(!Array.isArray(values)||values.length!==3)return null;
+  return values.map((value,index)=><Num key={index} label={label+' · match '+['3','4','5+'][index]}
+   value={value} onChange={n=>change(['advancedJewels',key],values.map((old,j)=>index===j?n:old))}/>);
+ };
+ const encounters=read(policy,['encounters']);
+ function conversion(path:string[],label:string){
+  const data=read(bundle,path),kind=read(data,['kind']),count=read(data,['count']);
+  if(typeof kind!=='string'||typeof count!=='number')return null;
+  return <div className="fields"><label>{label} jewel<select className="aetheria-field" value={kind}
+   onChange={event=>change([...path,'kind'],event.target.value)}>
+   {['nature','frost','astral'].map(id=><option key={id}>{id}</option>)}</select></label>
+   <Num label={label+' conversion count'} value={count} onChange={n=>change([...path,'count'],n)}/></div>;
+ }
+ return <section><h3>Advanced jewel experiment</h3>
+  <fieldset disabled={!editable}><legend>Authored conversions and match effects</legend>
+   <div className="fields">{control('occupancyLimit','Maximum advanced jewels on board')}
+    {control('natureAllyLimitAtFive','Nature ally cleanse limit at match 5+')}
+    {tierControls('natureActorLimits','Nature self cleanse limit')}
+    {tierControls('frostReductionPm','Frost damage reduction (‰)')}
+    {tierControls('astralUpgradeLimits','Astral upgrade count')}</div>
+   {Array.isArray(encounters)&&encounters.map((encounter,i)=>{
+    const id=display(encounter,'encounterId'),path=['advancedJewels','encounters',String(i)];
+    const skills=read(encounter,['skills']);
+    return <details key={id}><summary>{id}</summary>{conversion([...path,'opening'],'Opening')}
+     {Array.isArray(skills)&&skills.map((skill,j)=><div key={j}>{conversion([...path,'skills',String(j),'conversion'],display(skill,'skillId'))}</div>)}</details>;
+   })}
+  </fieldset></section>;
+}
+
 function FunctionalBoardEditor({bundle,editable,change}:{
  bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
 }){
@@ -444,6 +484,7 @@ export default function GameplayConfig({request}:{request:Request}){
  </label>}
  <div className="fields">{timed?<p>Unlimited rounds · Turn duration {display(bundle,'party','turnTimeoutMs')} ms</p>:<Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/>}<Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
  {functional&&bundle&&<FunctionalBoardEditor bundle={bundle} editable={editable} change={change}/>}
+ {bundle&&<AdvancedJewelEditor bundle={bundle} editable={editable} change={change}/>}
  <h3>Boss phase configuration</h3>{bossCatalog.length?<label>Boss<select className="aetheria-field" value={bossPath[1]} onChange={event=>setBossIndex(Number(event.target.value))}>{bossCatalog.map((value,index)=>{
   const id=display(value,'id'),name=display(value,'name'),map=display(value,'mapId');
   return <option key={index} value={index}>{name==='—'?id:name}{map==='—'?'':' · '+map}</option>;
