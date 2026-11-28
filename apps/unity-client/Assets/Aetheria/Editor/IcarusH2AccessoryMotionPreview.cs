@@ -97,19 +97,26 @@ namespace Aetheria.Editor
                 Require(!model.GetComponentsInChildren<LineRenderer>(true).Any(),
                     "The review must use the actual imported bowstring geometry.");
 
+                int wingTriangles = Triangles(wing.Root), bowTriangles = Triangles(bow.Root), assembled = Triangles(model);
                 var camera = Studio(stage.transform, target);
+                using var draw = new SampledSurfaceDraw(model);
+                draw.Refresh();
                 var whole = BoundsFor(model);
-                Measure(wing, 0);
+                wing.Set(0);
+                draw.Refresh();
                 whole.Encapsulate(BoundsFor(model));
-                Measure(bow, 1);
+                bow.Set(1);
+                draw.Refresh();
                 var bowFrame = BoundsFor(bow.Root);
-                Measure(bow, 0);
+                bow.Set(0);
+                draw.Refresh();
                 bowFrame.Encapsulate(BoundsFor(bow.Root));
                 var shots = new System.Collections.Generic.List<string>();
-                void Shot(string name, Bounds frame, Vector3 direction, float fold, float draw)
+                void Shot(string name, Bounds frame, Vector3 direction, float fold, float bowWeight)
                 {
                     wing.Set(fold);
-                    bow.Set(draw);
+                    bow.Set(bowWeight);
+                    draw.Refresh();
                     Capture(camera, target, pixels, frame, direction, Path.Combine(output, name));
                     shots.Add(name);
                 }
@@ -121,10 +128,17 @@ namespace Aetheria.Editor
                 Shot("03-back-spread.png", whole, back, 0, 0);
                 Shot("04-three-quarter-spread.png", whole, quarter, 0, 0);
                 Shot("05-back-folded.png", whole, back, 1, 0);
-                Shot("06-bow-rest.png", bowFrame, quarter, 1, 0);
-                Shot("07-bow-draw.png", bowFrame, quarter, 1, 1);
-                Shot("08-bow-release-mid.png", bowFrame, quarter, 1, .4f);
-                Shot("09-bow-released.png", bowFrame, quarter, 1, 0);
+                wingSocket.gameObject.SetActive(false);
+                var bowAngle = new Vector3(-1, .12f, .4f);
+                Shot("06-bow-rest.png", bowFrame, bowAngle, 1, 0);
+                Shot("07-bow-draw.png", bowFrame, bowAngle, 1, 1);
+                Shot("08-bow-release-mid.png", bowFrame, bowAngle, 1, .4f);
+                Shot("09-bow-released.png", bowFrame, bowAngle, 1, 0);
+                wingSocket.gameObject.SetActive(true);
+                string FrameHash(int index) => Hash(Path.Combine(output, shots[index]));
+                Require(FrameHash(2) != FrameHash(4) && FrameHash(5) != FrameHash(6) &&
+                    FrameHash(6) != FrameHash(7) && FrameHash(7) != FrameHash(8),
+                    "The fixed cameras must show the actual different accessory morph states.");
 
                 Vector3 wingStart = wingSocket.position, bowStart = bowSocket.position;
                 float wingTravel = 0, bowTravel = 0;
@@ -133,6 +147,7 @@ namespace Aetheria.Editor
                     clip.SampleAnimation(animator.gameObject, pose.time * clip.length);
                     wingTravel = Mathf.Max(wingTravel, Vector3.Distance(wingStart, wingSocket.position));
                     bowTravel = Mathf.Max(bowTravel, Vector3.Distance(bowStart, bowSocket.position));
+                    draw.Refresh();
                     var movementFrame = whole;
                     movementFrame.Encapsulate(BoundsFor(model));
                     Shot($"{10 + shots.Count - 9:D2}-walk.png", movementFrame, quarter, pose.fold, 0);
@@ -141,7 +156,7 @@ namespace Aetheria.Editor
                 Require(Hash(path) == prefabHash, "The canonical prefab changed during private evidence capture.");
                 var facts = new Facts {
                     prefabSha256 = prefabHash, wingsSocketParent = wingSocket.parent.name, bowSocketParent = bowSocket.parent.name,
-                    wingsTriangles = Triangles(wing.Root), bowTriangles = Triangles(bow.Root), assembledTriangles = Triangles(model),
+                    wingsTriangles = wingTriangles, bowTriangles = bowTriangles, assembledTriangles = assembled,
                     wingFoldDeltaMeters = wingDelta, bowDrawDeltaMeters = drawDelta, releaseRestResidualMeters = releaseDelta,
                     walkWingSocketTravelMeters = wingTravel, walkBowSocketTravelMeters = bowTravel, mappedWalkJoints = joints,
                     frameCount = shots.Count, frames = shots.ToArray(),
@@ -256,6 +271,49 @@ namespace Aetheria.Editor
             return peak;
         }
 
+        // Edit-mode GPU skins can stay on their bind pose even after a new
+        // morph or clip has been sampled. Draw the actual CPU-sampled vertices
+        // with the source mesh's materials and discard the draw copies on exit.
+        private sealed class SampledSurfaceDraw : IDisposable
+        {
+            private readonly (SkinnedMeshRenderer skin, MeshFilter filter, Mesh sample)[] surfaces;
+
+            public SampledSurfaceDraw(GameObject root)
+            {
+                surfaces = root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(skin => skin.enabled && skin.sharedMesh != null)
+                    .Select(skin =>
+                    {
+                        var draw = new GameObject(skin.name + " sampled surface");
+                        draw.transform.SetParent(skin.transform, false);
+                        draw.AddComponent<MeshRenderer>().sharedMaterials = skin.sharedMaterials;
+                        var filter = draw.AddComponent<MeshFilter>();
+                        skin.enabled = false;
+                        return (skin, filter, new Mesh());
+                    }).ToArray();
+            }
+
+            public void Refresh()
+            {
+                foreach (var (skin, filter, sample) in surfaces)
+                {
+                    skin.BakeMesh(sample);
+                    Require(sample.vertexCount == skin.sharedMesh.vertexCount, "The sampled surface lost imported vertices.");
+                    sample.RecalculateBounds();
+                    filter.sharedMesh = sample;
+                }
+            }
+
+            public void Dispose()
+            {
+                foreach (var (_, filter, sample) in surfaces)
+                {
+                    if (filter != null) Object.DestroyImmediate(filter.gameObject);
+                    Object.DestroyImmediate(sample);
+                }
+            }
+        }
+
         private static Bounds BoundsFor(GameObject model)
         {
             var renderer = model.GetComponentsInChildren<Renderer>(false).Where(value => value.enabled).ToArray();
@@ -274,12 +332,13 @@ namespace Aetheria.Editor
         private static Camera Studio(Transform stage, RenderTexture target)
         {
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(.53f, .55f, .63f);
-            RenderSettings.ambientEquatorColor = new Color(.26f, .26f, .30f);
-            RenderSettings.ambientGroundColor = new Color(.12f, .12f, .14f);
+            RenderSettings.ambientSkyColor = new Color(.36f, .39f, .47f);
+            RenderSettings.ambientEquatorColor = new Color(.19f, .21f, .26f);
+            RenderSettings.ambientGroundColor = new Color(.09f, .09f, .13f);
+            RenderSettings.reflectionIntensity = .25f;
             foreach (var source in new[] {
-                (new Vector3(28, -32, 0), 1.15f, new Color(1, .93f, .82f)),
-                (new Vector3(24, 147, 0), .52f, new Color(.72f, .81f, 1)),
+                (new Vector3(28, -32, 0), .45f, new Color(1, .96f, .89f)),
+                (new Vector3(24, 147, 0), .14f, new Color(.72f, .81f, 1)),
             })
             {
                 var light = new GameObject("Studio light").AddComponent<Light>();
