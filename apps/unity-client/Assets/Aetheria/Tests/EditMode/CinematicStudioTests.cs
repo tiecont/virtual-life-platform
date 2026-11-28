@@ -147,6 +147,67 @@ namespace Aetheria.Tests
             Assert.That(rebound.GetGenericBinding(((TimelineAsset)timeline).GetOutputTracks().Single()), Is.EqualTo(model));
         }
 
+        [Test]
+        public void SavedPerformanceTakeBlendsThreeInstancesAndReopensWithItsOwnCueBindings()
+        {
+            var actor = AddModel("Body test fixture");
+            var camera = AddModel("Camera test fixture");
+            var source = actor.gameObject.AddComponent<AudioSource>();
+            var particles = camera.gameObject.AddComponent<ParticleSystem>();
+            var voice = AssetDatabase.LoadAssetAtPath<AudioClip>(
+                "Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Audio/Vocals/icarus_kit_signature.ogg");
+
+            AnimationClip Constant(string name, float value, float duration)
+            {
+                var motion = new AnimationClip {name = name};
+                AnimationUtility.SetEditorCurve(motion,
+                    EditorCurveBinding.FloatCurve(ProbePath, typeof(Transform), "m_LocalPosition.x"),
+                    AnimationCurve.Constant(0, duration, value));
+                AssetDatabase.CreateAsset(motion, folder + "/" + name + ".anim");
+                return motion;
+            }
+            var idle = Constant("Idle", 0, 4);
+            var walk = Constant("Walk", 2, 1);
+            var shot = Constant("Shot", 3, 12);
+            var timelinePath = folder + "/Performance.playable";
+            var director = PerformanceSequence.Create(actor, idle, walk, camera, shot, source, voice, particles, timelinePath);
+            Assert.Throws<InvalidOperationException>(() =>
+                PerformanceSequence.Create(actor, idle, walk, camera, shot, source, voice, particles, timelinePath));
+            var scenePath = folder + "/Performance.unity";
+            Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+            if (!replaceRunnerScene) EditorSceneManager.CloseScene(scene, true);
+            scene = EditorSceneManager.OpenScene(scenePath, replaceRunnerScene ? OpenSceneMode.Single : OpenSceneMode.Additive);
+
+            director = scene.GetRootGameObjects().Select(root => root.GetComponent<PlayableDirector>()).Single(item => item != null);
+            var timeline = (TimelineAsset)director.playableAsset;
+            var body = timeline.GetOutputTracks().OfType<AnimationTrack>().Single(track => track.name != "Choreography");
+            var clips = body.GetClips().OrderBy(instance => instance.start).ToArray();
+            Assert.That(clips.Select(instance => instance.animationClip), Is.EqualTo(new[] { idle, walk, idle }));
+            Assert.That(clips[0].end - clips[1].start, Is.EqualTo(PerformanceSequence.Transition).Within(.00001));
+            Assert.That(clips[1].end - clips[2].start, Is.EqualTo(PerformanceSequence.Transition).Within(.00001));
+            var vocal = timeline.GetOutputTracks().OfType<AudioTrack>().Single();
+            var burst = timeline.GetOutputTracks().OfType<ControlTrack>().Single().GetClips().Single();
+            Assert.That(vocal.GetClips().Single().start, Is.EqualTo(burst.start).Within(.00001));
+            var boundActor = (Animator)director.GetGenericBinding(body);
+            var boundCamera = (Animator)director.GetGenericBinding(timeline.GetOutputTracks().Single(track => track.name == "Choreography"));
+            Assert.That(((AudioSource)director.GetGenericBinding(vocal)).gameObject, Is.SameAs(boundActor.gameObject));
+            Assert.That(((ControlPlayableAsset)burst.asset).sourceGameObject.Resolve(director), Is.SameAs(boundCamera.gameObject));
+
+            director.RebuildGraph();
+            float Position(double time)
+            {
+                director.time = time;
+                director.Evaluate();
+                return boundActor.transform.Find(ProbePath).localPosition.x;
+            }
+            Assert.That(Position(clips[1].start - .01), Is.EqualTo(0).Within(.02));
+            Assert.That(Position(clips[1].start + PerformanceSequence.Transition / 2), Is.InRange(.25f, 1.75f));
+            Assert.That(Position(clips[1].start + .5), Is.EqualTo(2).Within(.02));
+            Assert.That(Position(clips[2].start + PerformanceSequence.Transition / 2), Is.InRange(.25f, 1.75f));
+            Assert.That(Position(clips[2].start + .5), Is.EqualTo(0).Within(.02));
+            director.Stop();
+        }
+
         private Animator AddModel(string label)
         {
             var root = new GameObject(label);
