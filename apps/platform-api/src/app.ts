@@ -118,6 +118,11 @@ import {GameRulesEngine} from '@aetheria/boardgame-core';
 import { registerStudy } from './features/library/modules/study/presentation/http';
 import {registerWave1Mvp} from './features/pets/modules/wave1/presentation/http';
 import {Wave1Service, type Wave1Entropy} from './features/pets/modules/wave1/application/service';
+import {registerWallet} from './features/pets/modules/wallet/presentation/http';
+import {WalletService} from './features/pets/modules/wallet/application/service';
+import {registerEconomyPolicy} from './features/pets/modules/economy/presentation/operator-http';
+import {OperatorEconomyPolicy} from './features/pets/modules/economy/application/operator-economy';
+import {EconomyPolicyStore} from './features/pets/modules/economy/infrastructure/policy-store';
 import {Wave1Store} from './features/pets/modules/wave1/infrastructure/store';
 import {registerArtifacts} from './features/pets/modules/wave-a-artifacts/presentation/http';
 import {ArtifactService} from './features/pets/modules/wave-a-artifacts/application/service';
@@ -146,6 +151,10 @@ Catch()(SafeHttpErrors);
 class AppModule {}
 Module({})(AppModule);
 export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connect'>, logging = false, options: { now?: () => number; logStream?: {write(message:string):void}; socialPresence?: SocialPresencePort; worlds?: WorldRuntimeOptions; safety?: SafetyRuntimeOptions; hospitality?: { staff?: HospitalityStaffPort; completionSinks?: readonly HospitalityCompletionSink[] }; events?: { organizers?: EventOrganizerPort }; progression?: { policy: unknown;correctionOperators?:readonly string[] };dating?:{eligibility?:SyntheticDatingEligibility};deadlineIdentity?:DeadlineIdentityPort;games?:{engine:GameRulesEngine;factories:readonly GameInitialFactory[]};petArenaWave1?:{enabled:boolean;entropy?:Wave1Entropy};petArtifacts?:{enabled:boolean};petArena8?:{enabled:boolean;supervisorUrl:string;supervisorToken:string};petArena8Native?:{enabled:boolean;binary:string;databaseUrl:string;role:string;caFile:string;storageKey:string;storageKeyId:string;httpsOrigin:string;certFile:string;keyFile:string};gameplayConfig?:{validator?:GameplayBundleValidator;simulator?:GameplaySimulator};coopProvisioner?:CoopMatchProvisioner;prelaunch?:{mail?:PrelaunchMailSink} } = {}) {
+  const walletEnabled=config.LOCAL_PET_WALLET==='1';
+  if(walletEnabled&&(config.NODE_ENV==='production'||!['127.0.0.1','::1'].includes(config.HOST)||config.TRUSTED_PROXY_IP)){
+    throw Error('Pet wallet requires a local/test loopback listener');
+  }
   if(options.petArenaWave1?.enabled&&config.NODE_ENV==='production')throw Error('Wave 1 Pet Arena preview is local/test only');
   if(options.petArtifacts?.enabled&&config.NODE_ENV==='production')throw Error('Wave A Artifacts preview is local/test only');
   if(options.petArena8?.enabled&&config.NODE_ENV==='production')throw Error('Arena8 local integration is local/test only');
@@ -217,6 +226,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const gameplaySimulator=options.gameplayConfig?.simulator??(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY?new EngineGameplaySimulator(config.GAMEPLAY_CONFIG_VALIDATOR_BINARY):undefined);
   const gameplayConfig=new OperatorGameplayConfig(new GameplayConfigStore(),operator,gameplayValidator,gameplaySimulator);
   registerGameplayConfig(http,config,gameplayConfig,options.now);
+  if(walletEnabled&&operator){
+    registerEconomyPolicy(http,config,new OperatorEconomyPolicy(new EconomyPolicyStore(),operator),options.now);
+  }
   const roomAuthority = new RoomAuthority(db);
   // No allocator timer, room hook or production activation in this UI slice.
   const admission=config.NODE_ENV!=='production'&&config.LOCAL_ADMISSION_UX==='1'?new AdmissionStore(db,identity,{epoch:randomUUID(),assert:()=>roomAuthority.assert()}):undefined;
@@ -321,6 +333,9 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   registerInvitations(http, config, identity, invitations, options.now);
   registerFocus(http, config, identity, focus, options.now);
   registerStudy(http,config,identity,study,options.now);
+  const wallet=new WalletService(db,identity,options.now);
+  if(walletEnabled)registerWallet(http,config,identity,wallet,options.now);
+  identity.registerExportOwner('petWallet',(account,transaction)=>wallet.exportAccount(transaction,account));
   const wave1=new Wave1Service(new Wave1Store(db),options.petArenaWave1?.entropy);
   registerWave1Mvp(http,config,identity,wave1,options.petArenaWave1?.enabled??false,options.now);
   identity.registerExportOwner('petArenaWave1',(account,transaction)=>wave1.exportAccount(transaction,account));
