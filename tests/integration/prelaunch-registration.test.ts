@@ -175,7 +175,20 @@ describe('prelaunch double opt-in',()=>{
     await pool.query(`INSERT INTO prelaunch_challenges(id,registration_id,token_hash,server_nonce,created_at,expires_at) VALUES ${challengeValues.join(',')}`,challengeParameters);
     const calls=[...tokens,...tokens.slice(0,5000)];
     const results=await Promise.allSettled(calls.map(token=>server.prelaunch!.confirm({schemaVersion:1,token})));
-    expect(results.filter(value=>value.status==='rejected').length).toBeGreaterThanOrEqual(1);
+    const fullTokens=new Set<string>();
+    const confirmedTokens=new Set<string>();
+    results.forEach((result,index)=>{
+      if(result.status==='rejected'){
+        expect(result.reason).toMatchObject({code:'NOT_AVAILABLE'});
+        fullTokens.add(calls[index]);
+      }else{
+        expect(result.value.state).toBe('CONFIRMED');
+        confirmedTokens.add(calls[index]);
+      }
+    });
+    expect(fullTokens.size).toBe(1);
+    expect(confirmedTokens.size).toBe(5000);
+    for(const rejected of fullTokens)expect(confirmedTokens.has(rejected)).toBe(false);
     expect((await pool.query('SELECT admissions FROM prelaunch_campaigns')).rows[0].admissions).toBe(5000);
     expect((await pool.query("SELECT count(*)::int AS n FROM prelaunch_registrations WHERE state='CONFIRMED'")).rows[0].n).toBe(5000);
     expect((await pool.query("SELECT count(*)::int AS n FROM prelaunch_registrations WHERE state='PENDING'")).rows[0].n).toBe(1);
