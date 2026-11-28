@@ -241,10 +241,10 @@ try{
   }
   throw Error('Timed out waiting for '+file);
  }
- async function until(query, values = []) {
+ async function until(query, values = [], observed = () => true) {
   for(let i=0;i<2400&&!stopping;i++){
    const result=await pool.query(query, values);
-   if(result.rows.length)return result.rows[0];
+   if(result.rows.length && observed(result.rows[0]))return result.rows[0];
    await new Promise(r=>setTimeout(r,500));
   }
   throw Error('Timed out waiting for player action');
@@ -298,9 +298,16 @@ try{
   assert.ok(seats.every(seat=>seat.ready&&seat.pet_id&&seat.owned_pet_instance_id));
   assert.equal(seats[0].account_id,host);
   await json('four-allocation.json',{roomId:room.roomId,matchId:allocation.match_id,seatCount:seats.length});
+  let lastSeats;
   await until(
-   'SELECT count(DISTINCT account_id) FROM platform_native_ticket_uses WHERE world_id=$1 HAVING count(DISTINCT account_id)=4',
-   [allocation.world_id]);
+   `SELECT ARRAY(SELECT s.seat FROM coop_room_seats s WHERE s.room_id=$2 AND EXISTS
+      (SELECT 1 FROM platform_native_ticket_uses t WHERE t.world_id=$1 AND t.account_id=s.account_id)
+      ORDER BY s.seat) AS admitted`, [allocation.world_id,room.roomId], ({admitted}) => {
+    const summary=admitted.join(',');
+    if(summary!==lastSeats)console.log('Four-player consumed ticket seats:',summary || 'none');
+    lastSeats=summary;
+    return admitted.length===4;
+   });
   const tickets=(await pool.query(
    `SELECT account_id, count(DISTINCT session_id)::int AS sessions, count(DISTINCT nonce)::int AS tickets,
       count(*) FILTER (WHERE boot_id=$2)::int AS matching_boot FROM platform_native_ticket_uses
