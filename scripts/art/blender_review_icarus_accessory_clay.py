@@ -1,7 +1,7 @@
 """Review a fresh provider geometry-only Icarus accessory before UV and color work."""
 
 from argparse import ArgumentParser
-from hashlib import sha256
+from hashlib import file_digest, sha256
 import json
 from pathlib import Path
 import struct
@@ -37,7 +37,8 @@ SUPERSEDED = {
 
 
 def file_hash(path):
-    return sha256(path.read_bytes()).hexdigest()
+    with path.open("rb") as file:
+        return file_digest(file, "sha256").hexdigest()
 
 
 def glb_document(path):
@@ -238,6 +239,30 @@ def verify_receipt(path, asset, source_sha, references):
     }
 
 
+def source_inventory(source, asset, actual, reference, provenance):
+    document = glb_document(source)
+    surface_nodes = provider_inventory(document)
+    triangle_counts = [sum(part["triangles"] for part in item["primitives"]) for item in surface_nodes]
+    return {
+        "classification": "PRIVATE_PRE_UV_CLAY_REVIEW",
+        "asset": asset,
+        "sourceBytes": source.stat().st_size,
+        "providerReceipt": provenance,
+        "sourceSha256": actual,
+        "referenceFiles": reference,
+        "declaredProviderSurfaceNodes": surface_nodes,
+        "sourceSceneNodes": len(document["nodes"]),
+        "sourceMaterialNames": [row.get("name") for row in document.get("materials", [])],
+        "sourceTextures": len(document.get("textures", [])),
+        "sourceEmbeddedImages": len(document.get("images", [])),
+        "sourceAnimations": len(document.get("animations", [])),
+        "sourceSkins": len(document.get("skins", [])),
+        "geometryOnly": not any(document.get(key) for key in ("images", "textures", "animations", "skins")),
+        "triangles": sum(triangle_counts),
+        "largestSourceObjectTriangles": max(triangle_counts),
+    }
+
+
 def main():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("asset", choices=REFERENCES)
@@ -245,7 +270,9 @@ def main():
     parser.add_argument("reference_directory", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--provider-receipt", type=Path, required=True)
-    parser.add_argument("--render-existing", action="store_true")
+    stage = parser.add_mutually_exclusive_group()
+    stage.add_argument("--render-existing", action="store_true")
+    stage.add_argument("--metadata-only", action="store_true", help="Check GLB declarations without starting an import")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Use Blender 5.3 for the private clay intake.")
@@ -272,48 +299,35 @@ def main():
         (renders / "clay-capture.json").write_text(json.dumps(capture_review, indent=2) + "\n")
         return
 
-    document = glb_document(source)
-    source_objects = provider_inventory(document)
-    source_triangles = sum(part["triangles"] for obj in source_objects for part in obj["primitives"])
-    geometry_only = not any(document.get(key) for key in ("images", "textures", "animations", "skins"))
+    facts = source_inventory(source, args.asset, actual, reference, provenance)
+    if args.metadata_only:
+        output.mkdir(parents=True, exist_ok=False, mode=0o700)
+        (output / "accessory-clay-source-inventory.json").write_text(json.dumps(facts, indent=2) + "\n")
+        return
     bpy.ops.wm.read_factory_settings(use_empty=True)
     if bpy.ops.import_scene.gltf(filepath=str(source)) != {"FINISHED"}:
         raise RuntimeError("Blender did not import the fresh provider GLB.")
     objects = meshes()
     bpy.context.view_layer.update()
     initial = {obj.name: rest_snapshot(obj) for obj in objects}
-    if sum(obj["triangles"] for obj in initial.values()) != source_triangles:
+    if sum(obj["triangles"] for obj in initial.values()) != facts["triangles"]:
         raise ValueError("Blender did not preserve the declared triangle count.")
     independence = probe_independence(objects, initial)
-    editing_ready = geometry_only and len(objects) >= 2 and all(row["independentlyMoveableAndEditable"] for row in independence)
+    editing_ready = facts["geometryOnly"] and len(objects) >= 2 and all(row["independentlyMoveableAndEditable"] for row in independence)
 
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
     bpy.ops.wm.save_as_mainfile(filepath=str(editable), compress=True)
     bpy.ops.wm.open_mainfile(filepath=str(editable))
     if initial != {obj.name: rest_snapshot(obj) for obj in meshes()} or file_hash(source) != actual:
         raise ValueError("Editable reload changed a provider input, rest pose or triangle data.")
-    facts = {
-        "classification": "PRIVATE_PRE_UV_CLAY_REVIEW",
-        "asset": args.asset,
-        "providerReceipt": provenance,
-        "sourceSha256": actual,
-        "referenceFiles": reference,
-        "declaredProviderSurfaceNodes": source_objects,
-        "sourceSceneNodes": len(document["nodes"]),
-        "sourceMaterialNames": [row.get("name") for row in document.get("materials", [])],
-        "sourceTextures": len(document.get("textures", [])),
-        "sourceEmbeddedImages": len(document.get("images", [])),
-        "sourceAnimations": len(document.get("animations", [])),
-        "sourceSkins": len(document.get("skins", [])),
-        "geometryOnly": geometry_only,
-        "triangles": source_triangles,
+    facts.update({
         "importedObjects": initial,
         "editProbes": independence,
         "editableBlendSha256": file_hash(editable),
         "multipartForVisualReview": editing_ready,
         "restGeometryAndTransformsRoundTrip": True,
         "nextGate": "Owner review of actual silhouette and intended mechanical components before any UV, colors or rigging.",
-    }
+    })
     review.write_text(json.dumps(facts, indent=2) + "\n")
     if not editing_ready:
         raise ValueError("Intake retained the diagnostic, but the provider did not deliver independently editable geometry-only parts.")
