@@ -2309,3 +2309,5 @@ fn v3_icarus_fire_zone_tracks_turns_and_clears_on_expiry() {
     assert_eq!(after_p3.participants[0].fire_zone_turns, 0);
     assert_eq!(after_p3.boss.dot_turns, 0);
 }
+
+mod advanced;
