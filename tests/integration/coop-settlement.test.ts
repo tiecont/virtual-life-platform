@@ -19,7 +19,7 @@ const contentHash=createHash('sha256').update('content:'+JSON.stringify(baseBund
 const engine:GameplayBundleValidator={async validate(){return {digest,engineCapability:'arena8-coop-v1',contentHash};}};
 const pets=['icarus','coralline','volt','terran'];
 let admin:Pool,pool:Pool,server:Awaited<ReturnType<typeof createApp>>,schema:string,address=1;
-type Account={accountId:string;petId:string;cookie:string;csrf:string};
+type Account={accountId:string;petId:string;cookie:string;csrf:string;remoteAddress:string};
 
 beforeAll(async()=>{
  const url=new URL(process.env.TEST_DATABASE_URL??'');
@@ -44,13 +44,14 @@ beforeAll(async()=>{
 });
 afterAll(async()=>{await server?.app.close();await pool?.end();if(admin){await admin.query(`DROP SCHEMA "${schema}" CASCADE`);await admin.end();}});
 async function guest(name:string,petId:string):Promise<Account>{
- const response=await server.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.213.1.'+address++,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
+ const remoteAddress='127.213.1.'+address++;
+ const response=await server.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
  expect(response.statusCode).toBe(201);
  const {profile:{id:accountId},csrfToken:csrf}=response.json() as {profile:{id:string};csrfToken:string};
  const cookie=String(response.headers['set-cookie']).split(';')[0]!;
  await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
  await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3)',[accountId,petId,'starter']);
- return {accountId,petId,cookie,csrf};
+ return {accountId,petId,cookie,csrf,remoteAddress};
 }
 async function deleteAccount(owner:Account,requestId=randomUUID()){
  return server.http.inject({
@@ -119,7 +120,7 @@ async function regularWin(account:Account,mapId='cinder-terraces'){
   [matchId,randomUUID(),canonicalProposalHash(proposal),JSON.stringify(proposal)],
  );
  return ()=>server.http.inject({
-  method:'POST',url:'/v1/pets/wave-a/arena8/native/matches/'+matchId+'/settle',
+  method:'POST',url:'/v1/pets/wave-a/arena8/native/matches/'+matchId+'/settle',remoteAddress:account.remoteAddress,
   headers:{origin,cookie:account.cookie,'x-csrf-token':account.csrf},payload:{requestId:randomUUID()},
  });
 }
@@ -167,7 +168,7 @@ async function functionalSoloWin(account:Account,mapId:string,kind:'regular'|'bo
   [randomUUID(),matchId,settlementId],
  );
  return ()=>server.http.inject({
-  method:'POST',url:'/v1/pets/wave-a/arena8/native/matches/'+matchId+'/settle',
+  method:'POST',url:'/v1/pets/wave-a/arena8/native/matches/'+matchId+'/settle',remoteAddress:account.remoteAddress,
   headers:{origin,cookie:account.cookie,'x-csrf-token':account.csrf},payload:{requestId:randomUUID()},
  });
 }
