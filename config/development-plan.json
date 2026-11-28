@@ -11262,7 +11262,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Packaged Fire and Tideglass regular encounters were verified at 8ad6e6e6. On 6a100b61 the Fire regular HUD displayed the new HP meter and 64 jewels after a committed swap. Extend the remaining encounter backgrounds and regular recruitment routes.",
+      "remaining": "The Cinder and Tideglass fixed-background concepts are available at 14af5af3. Packaged Fire and Tideglass regular encounters were verified at 8ad6e6e6. On 6a100b61 the Fire regular HUD displayed the new HP meter and 64 jewels after a committed swap. Revision 4 (7a6ae98e, engine digest e16b85f40f5766ad1e40fec70e105f60816f9c006336990ac15973809cc6dca2) adds Stormcoil regular/Warden and pins recruitment for the first three maps. The native WSS Water campaign probe passed 19 scenarios including exactly-once recruitment and Stormcoil admission. Validate Stormcoil completion, remaining maps and visual assets.",
       "qualificationDependencies": [
         "VL-183",
         "VL-184"
