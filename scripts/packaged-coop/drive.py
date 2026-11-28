@@ -142,10 +142,11 @@ def play(current):
         if observed != (turn,0):
             sleep(.45)
             continue
-        try:
-            board = board_bounds(image)
-        except RuntimeError:
-            sleep(.4)
+        # Ready and playing can both show turn 0. Wait for all 64 actual
+        # jewels before clicking or retaining this frame as swap evidence.
+        board = populated_board(image)
+        if board is None:
+            sleep(.3)
             continue
         print(f'UI action turn={turn} version={current["version"]} action={action} board={board}', flush=True)
         copyfile(image, output / f'player-turn-{turn:02d}-{action}.png')
