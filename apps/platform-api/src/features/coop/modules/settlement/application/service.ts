@@ -6,8 +6,7 @@ import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore} from '../../rooms/infrastructure/store';
 import {lockAccounts,tryLockAccounts} from '../../../../identity/modules/accounts/application/account-locks';
 import {levelIncrement} from '../../../../pets/modules/wave1/domain/progression';
-import {campaignRoute,isCampaignRoute} from '../../../../pets/modules/campaign-routes/domain/published-route';
-import {recordCampaignRouteClear} from '../../../../pets/modules/campaign-routes/infrastructure/progress-store';
+import {campaignRoute,isCampaignRoute,recordCampaignRouteClear} from '../../../../pets/modules/campaign-routes/application/platform';
 import {CoopSettlementStore,type CoopSettlementEvent} from '../infrastructure/store';
 
 const hash=z.string().regex(/^[a-f0-9]{64}$/),pet=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),count=z.number().int().min(0).max(1000000);

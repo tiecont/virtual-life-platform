@@ -11,8 +11,10 @@ import {bindArtifactLoadout} from '../../match/domain/loadout';
 import {readOwnedArtifactLoadouts} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 import {arena8CampaignMap} from '../../../../pets/modules/wave-a-arena8/application/allocation';
 import type {CoopSkillService} from '../../skills/application/service';
-import {campaignRoute,isCampaignRoute,publishedCampaignRoutes,type PublishedCampaignRoute} from '../../../../pets/modules/campaign-routes/domain/published-route';
-import {assertCampaignPrerequisite,hasCampaignRouteClear} from '../../../../pets/modules/campaign-routes/infrastructure/progress-store';
+import {
+ campaignRoute,isCampaignRoute,publishedCampaignRoutes,type PublishedCampaignRoute,
+ assertCampaignPrerequisite,hasCampaignRouteClear,listCampaignRouteClears,
+} from '../../../../pets/modules/campaign-routes/application/platform';
 
 type Queryable=Pick<PoolClient,'query'>;
 type ActiveConfiguration=Awaited<ReturnType<CoopRoomStore['activeConfiguration']>>;
@@ -154,10 +156,8 @@ export class CoopRoomService{
    const routes=publishedCampaignRoutes(active.bundle);
    if(routes.length===0)return CampaignRouteCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,routes:[]});
    const points=await this.store.achievementPoints(tx,accountId);
-   const cleared=new Set((await tx.query<{route_id:string}>(
-    'SELECT route_id FROM pet_arena_campaign_route_clears WHERE account_id=$1 AND route_id=ANY($2::text[])',
-    [accountId,[...new Set(routes.flatMap(route=>[route.id,...(route.prerequisiteEncounterId?[route.prerequisiteEncounterId]:[])]))]],
-   )).rows.map(row=>row.route_id));
+   const ids=routes.flatMap(route=>route.prerequisiteEncounterId?[route.id,route.prerequisiteEncounterId]:[route.id]);
+   const cleared=await listCampaignRouteClears(tx,accountId,ids);
    return CampaignRouteCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,routes:routes.map(route=>{
     const canEnterSolo=!route.prerequisiteEncounterId||cleared.has(route.prerequisiteEncounterId);
     return {id:route.id,mapId:route.mapId,opponentPetId:route.opponentPetId,tier:route.tier,

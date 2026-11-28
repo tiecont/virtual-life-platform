@@ -11,6 +11,13 @@ export type RouteSettlementPin=Readonly<{
   matchId:string;
 }>;
 
+export async function listCampaignRouteClears(tx:Queryable,accountId:string,routeIds:readonly string[]){
+  const {rows}=await tx.query<{route_id:string}>(
+    'SELECT route_id FROM pet_arena_campaign_route_clears WHERE account_id=$1 AND route_id=ANY($2::text[])',
+    [accountId,[...new Set(routeIds)]]);
+  return new Set(rows.map(row=>row.route_id));
+}
+
 export async function hasCampaignRouteClear(tx:Queryable,accountId:string,routeId:string){
   const {rowCount}=await tx.query(
     'SELECT 1 FROM pet_arena_campaign_route_clears WHERE account_id=$1 AND route_id=$2',[accountId,routeId]);
