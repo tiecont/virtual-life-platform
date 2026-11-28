@@ -12,6 +12,15 @@ const maxReportBytes = 64 * 1024;
 const maxCommandBytes = 1024 * 1024;
 const uuidPattern = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+const diagnosticPatterns = [
+  ['GITHUB_ERROR_ANNOTATION', /(?:^|\t| )##\[error\]/],
+  ['TEST_FAILURE', /(?:\bFAIL(?:ED)?\b|test result: FAILED|AssertionError)/],
+  ['COMPILER_ERROR', /\berror(?:\[[A-Z]\d+\])?:/],
+  ['PERMISSION_DENIED', /permission denied|access denied/i],
+  ['TIMEOUT', /timed? out|deadline exceeded/i],
+  ['MISSING_OFFLINE_DEPENDENCY', /no matching package named|--offline was specified/i],
+];
+const unsigned = value => Number.isSafeInteger(value) && value >= 0;
 
 export class WorkflowError extends Error {
   constructor(status, code) {
@@ -28,8 +37,9 @@ export function commandEnvironment({github = false, unity = false} = {}) {
   if (unity) keys.push('UNITY_EDITOR', 'DISPLAY', 'WAYLAND_DISPLAY', 'XAUTHORITY');
   const env = Object.fromEntries(keys.filter(key => typeof process.env[key] === 'string')
     .map(key => [key, process.env[key]]));
-  if (github && process.env.AETHERIA_HARNESS_GITHUB_TOKEN) {
-    env.GH_TOKEN = process.env.AETHERIA_HARNESS_GITHUB_TOKEN;
+  if (github) {
+    env.GH_HOST = 'github.com';
+    if (process.env.AETHERIA_HARNESS_GITHUB_TOKEN) env.GH_TOKEN = process.env.AETHERIA_HARNESS_GITHUB_TOKEN;
   }
   return {...env, CI: '1', NO_COLOR: '1', GH_PROMPT_DISABLED: '1', GH_NO_UPDATE_NOTIFIER: '1',
     GIT_TERMINAL_PROMPT: '0', GIT_OPTIONAL_LOCKS: '0', GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.fsmonitor',
@@ -90,19 +100,11 @@ function runCommand(root, command, args, {signal, env, timeoutMs, maxBytes}) {
 
 // Emit only fixed categories and offsets. No subprocess or remote log text crosses this boundary.
 export function projectDiagnostics(stdout, maxDiagnostics = 20) {
-  const patterns = [
-    ['GITHUB_ERROR_ANNOTATION', /(?:^|\t| )##\[error\]/],
-    ['TEST_FAILURE', /(?:\bFAIL(?:ED)?\b|test result: FAILED|AssertionError)/],
-    ['COMPILER_ERROR', /\berror(?:\[[A-Z]\d+\])?:/],
-    ['PERMISSION_DENIED', /permission denied|access denied/i],
-    ['TIMEOUT', /timed? out|deadline exceeded/i],
-    ['MISSING_OFFLINE_DEPENDENCY', /no matching package named|--offline was specified/i],
-  ];
   const lines = stdout.split('\n');
   const diagnostics = [];
-  const counts = Object.fromEntries(patterns.map(([kind]) => [kind, 0]));
+  const counts = Object.fromEntries(diagnosticPatterns.map(([kind]) => [kind, 0]));
   for (let index = 0; index < lines.length; index++) {
-    const category = patterns.find(([, pattern]) => pattern.test(lines[index]))?.[0];
+    const category = diagnosticPatterns.find(([, pattern]) => pattern.test(lines[index]))?.[0];
     if (category) {
       counts[category]++;
       if (diagnostics.length < maxDiagnostics) diagnostics.push({line: index + 1, category});
@@ -115,7 +117,8 @@ async function privateDirectory(root, directory) {
   const full = await safePath(root, directory);
   await mkdir(full, {recursive: true, mode: 0o700});
   const stat = await lstat(full);
-  if (!stat.isDirectory() || stat.isSymbolicLink() || (stat.mode & 0o077) !== 0) {
+  if (!stat.isDirectory() || stat.isSymbolicLink() || (stat.mode & 0o077) !== 0 ||
+    (process.getuid && stat.uid !== process.getuid())) {
     throw new WorkflowError('BLOCKED', 'UNSAFE_ARTIFACT_DIRECTORY');
   }
   return full;
@@ -183,10 +186,12 @@ export function newExecution(root, workflow, signal) {
         const raw = await runCommand(root, program, args, limits);
         recordAttempt(raw);
         const combined = raw.stderr + '\n' + raw.stdout;
-        const transient = options.retryRead && (raw.problem === 'TIMEOUT' || (raw.exitCode !== 0 && /HTTP (?:429|50[0234])\b/.test(combined)));
+        const transient = options.retryRead && !signal.aborted &&
+          (raw.problem === 'TIMEOUT' || (raw.exitCode !== 0 && /HTTP (?:429|50[0234])\b/.test(combined)));
         if (transient && attempt < maxAttempts) continue;
         if (raw.problem) {
-          const status = raw.problem === 'TOOL_UNAVAILABLE' ? 'BLOCKED' : 'FAIL';
+          const status = raw.problem === 'TOOL_UNAVAILABLE' ? 'BLOCKED'
+            : raw.problem === 'CANCELLED' ? 'NOT_RUN' : 'FAIL';
           throw new WorkflowError(status, raw.problem);
         }
         if (raw.exitCode !== 0) {
@@ -202,10 +207,10 @@ export function newExecution(root, workflow, signal) {
     });
   }
 
-  async function finish({revision, worktreeDirty, status, code, reproduce}) {
+  async function finish({revision, worktreeDirty, status, code, reproduce, sourceBinding}) {
     const recordedSteps = steps.map(({findings: projected, ...record}) => projected === undefined
       ? record : {...record, finding: record.id});
-    const result = {schemaVersion, runId, workflow, status, code, revision, worktreeDirty,
+    const result = {schemaVersion, runId, workflow, status, code, revision, worktreeDirty, sourceBinding,
       durationMs: Math.round(performance.now() - started), findings, steps: recordedSteps, reproduce};
     const bytes = Buffer.from(JSON.stringify(result, null, 2) + '\n');
     if (bytes.length > maxReportBytes) throw new WorkflowError('FAIL', 'REPORT_LIMIT');
@@ -220,7 +225,40 @@ export function newExecution(root, workflow, signal) {
   return {root, signal, findings, steps, command, step, finish};
 }
 
-export async function readEvidence(root, id, isKnownWorkflow, expectedSha256) {
+function projectedSteps(data) {
+  if (data.steps.length > 64 || !unsigned(data.durationMs) ||
+    !data.steps.every(step => step && Object.hasOwn(statusExitCodes, step.status) &&
+      unsigned(step.attempts) && unsigned(step.durationMs))) {
+    throw new WorkflowError('FAIL', 'INVALID_EVIDENCE');
+  }
+  return data.steps.map((step, index) => {
+    const result = {index: index + 1, status: step.status, attempts: step.attempts, durationMs: step.durationMs};
+    if (unsigned(step.exitCode) || step.exitCode === null) result.exitCode = step.exitCode;
+    if (unsigned(step.subprocessOutputBytes)) result.subprocessOutputBytes = step.subprocessOutputBytes;
+    const diagnostics = step.diagnostics?.diagnostics;
+    if (Array.isArray(diagnostics)) {
+      const kinds = new Set(diagnosticPatterns.map(([category]) => category));
+      result.diagnostics = diagnostics.slice(0, 20).filter(row => unsigned(row?.line) && row.line > 0 &&
+        kinds.has(row.category)).map(({line, category}) => ({line, category}));
+    }
+    return result;
+  });
+}
+
+function standardView(result, steps) {
+  const stepCounts = Object.fromEntries(Object.keys(statusExitCodes).map(status => [status, 0]));
+  for (const step of steps) stepCounts[step.status]++;
+  return {...result, stepCount: steps.length, stepCounts};
+}
+
+export function projectRunView(data, view) {
+  if (view === 'full') return data;
+  const {schemaVersion, runId, workflow, status, code, revision, worktreeDirty, sourceBinding, durationMs, evidence} = data;
+  const result = {schemaVersion, runId, workflow, status, code, revision, worktreeDirty, sourceBinding, durationMs, evidence};
+  return view === 'standard' ? standardView(result, data.steps) : result;
+}
+
+export async function readEvidence(root, id, isKnownWorkflow, expectedSha256, view = 'brief') {
   if (!uuidPattern.test(id)) throw new WorkflowError('FAIL', 'INVALID_RUN_ID');
   const path = artifactRoot + '/' + id + '/report.json';
   let bytes;
@@ -243,9 +281,13 @@ export async function readEvidence(root, id, isKnownWorkflow, expectedSha256) {
     (data.revision !== null && !/^[a-f0-9]{40}$/.test(data.revision))) {
     throw new WorkflowError('FAIL', 'INVALID_EVIDENCE');
   }
-  // Retrieval returns artifact metadata. Arbitrary fields in a stored report never enter model context.
-  return {schemaVersion, runId: id, workflow: data.workflow, status: data.status, revision: data.revision,
+  // Persisted text and arbitrary findings remain local, including in the full view.
+  const result = {schemaVersion, runId: id, workflow: data.workflow, status: data.status, revision: data.revision,
     evidence: [{path, sha256: digest, bytes: bytes.length}]};
+  if (view === 'brief') return result;
+  const steps = projectedSteps(data);
+  const standard = standardView({...result, durationMs: data.durationMs}, steps);
+  return view === 'full' ? {...standard, steps} : standard;
 }
 
 export async function withLocalLock(root, action) {

@@ -14,6 +14,7 @@ const meshyIdPattern = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
 const hashPattern = /^[a-f0-9]{64}$/;
 const repository = 'tiecont/virtual-life-platform';
 const launcher = 'node scripts/engineering-harness/workflow.mjs';
+const unsigned = value => Number.isSafeInteger(value) && value >= 0;
 const sourceStatus = ['--porcelain=v1', '-z', '--untracked-files=normal'];
 const buildTimeout = 20 * 60_000;
 const localOptIn = {type: 'boolean', default: false, description: 'Permit repository build/test scripts in this trusted workspace'};
@@ -58,14 +59,14 @@ function assertRevision(value) {
   return value;
 }
 
-export async function recordRevision(ctx) {
-  return ctx.command('source-revision', 'git', ['rev-parse', 'HEAD'], {
+export async function recordRevision(ctx, step = 'source-revision') {
+  return ctx.command(step, 'git', ['rev-parse', 'HEAD'], {
     project: stdout => ({revision: assertRevision(stdout.trim())}),
   });
 }
 
-export async function recordWorkingTree(ctx) {
-  return ctx.command('source-state', 'git', ['status', ...sourceStatus], {
+export async function recordWorkingTree(ctx, step = 'source-state') {
+  return ctx.command(step, 'git', ['status', ...sourceStatus], {
     project: stdout => {
       if (stdout && !stdout.endsWith('\0')) throw new WorkflowError('FAIL', 'INVALID_GIT_STATUS');
       // Porcelain renames include two path entries. Count records, without disclosing file names.
@@ -77,20 +78,21 @@ export async function recordWorkingTree(ctx) {
         entries++;
         if (/[RC]/.test(code)) i++;
       }
-      return {dirty: entries > 0, entries};
+      return {dirty: entries > 0, entries, statusSha256: createHash('sha256').update(stdout).digest('hex')};
     },
   });
 }
 
-async function repoInspect(ctx) {
+async function repoInspect(ctx, {limit = 0, offset = 0} = {}) {
   const summary = await ctx.command('development-plan', node, ['scripts/task-plan.mjs'], {
     project: stdout => {
-      const data = checkedJson(stdout, value => value && Number.isSafeInteger(value.total) &&
-        Number.isSafeInteger(value.remaining) && Array.isArray(value.ready) &&
-        Object.values(value.counts ?? {}).every(Number.isSafeInteger));
+      const data = checkedJson(stdout, value => value && unsigned(value.total) &&
+        unsigned(value.remaining) && Array.isArray(value.ready) && value.ready.length <= value.total &&
+        value.ready.every(task => typeof task?.id === 'string' && /^VL-\d{3}$/.test(task.id)) &&
+        value.counts && typeof value.counts === 'object' && Object.values(value.counts).every(unsigned));
       return {total: data.total, remaining: data.remaining, ready: data.ready.length, counts: {
         VERIFIED: data.counts.VERIFIED ?? 0, IN_PROGRESS: data.counts.IN_PROGRESS ?? 0, TODO: data.counts.TODO ?? 0,
-      }};
+      }, ...(limit > 0 ? {offset, readyTaskIds: data.ready.slice(offset, offset + limit).map(task => task.id)} : {})};
     },
   });
   return commandsOutcome(summary);
@@ -147,7 +149,7 @@ export function projectPullRequest(value, pr) {
 
 async function prCi(ctx, input) {
   if (!input.allowNetwork) return blocked('NETWORK_OPT_IN_REQUIRED');
-  const check = await ctx.command('github-pr-checks', 'gh', ['pr', 'view', '--repo', repository, String(input.pr),
+  const check = await ctx.command('github-pr-checks', 'gh', ['pr', 'view', '--repo', 'github.com/' + repository, String(input.pr),
     '--json', 'number,headRefOid,state,statusCheckRollup'], {...github, project: stdout =>
       projectPullRequest(checkedJson(stdout, value => value && typeof value === 'object'), input.pr)});
   if (check.status !== 'PASS') return check;
@@ -171,14 +173,14 @@ function projectJob(raw, id) {
 async function failedJobLog(ctx, input) {
   if (!input.allowNetwork) return blocked('NETWORK_OPT_IN_REQUIRED');
   const endpoint = 'repos/' + repository + '/actions/jobs/' + input.job;
-  const metadata = await ctx.command('github-failed-job', 'gh', ['api', '--method', 'GET', endpoint],
+  const metadata = await ctx.command('github-failed-job', 'gh', ['api', '--hostname', 'github.com', '--method', 'GET', endpoint],
     {...github, project: stdout => projectJob(stdout, input.job)});
   if (metadata.status !== 'PASS') return metadata;
   if (metadata.findings.outcome !== 'FAIL') return {status: 'NOT_RUN', code: 'JOB_DID_NOT_FAIL'};
   if (input.expectedRevision && input.expectedRevision !== metadata.findings.revision) {
     return {status: 'FAIL', code: 'JOB_REVISION_MISMATCH'};
   }
-  const log = await ctx.command('github-job-log', 'gh', ['api', '--method', 'GET', endpoint + '/logs'],
+  const log = await ctx.command('github-job-log', 'gh', ['api', '--hostname', 'github.com', '--method', 'GET', endpoint + '/logs'],
     {...github, maxBytes: 4 * 1024 * 1024, project: stdout => projectDiagnostics(stdout)});
   return commandsOutcome(log);
 }
@@ -423,10 +425,81 @@ async function summarizeReview(ctx, input) {
   return commandsOutcome(...results);
 }
 
+function toolchain(ctx) {
+  return ctx.command('toolchain', node, ['scripts/verify-toolchain.mjs'], {
+    timeoutMs: 60000,
+    project: stdout => {
+      const row = checkedJson(stdout, value => value && /^\d+\.\d+\.\d+$/.test(value.node) &&
+        /^\d+\.\d+\.\d+$/.test(value.pnpm) && unsigned(value.workspaces) && unsigned(value.buildTargets) &&
+        unsigned(value.installedDeclarations));
+      const {node, pnpm, workspaces, buildTargets, installedDeclarations} = row;
+      return {node, pnpm, workspaces, buildTargets, installedDeclarations};
+    },
+  });
+}
+
+function boundaries(ctx) {
+  return ctx.command('architecture-boundaries', node, ['scripts/check-boundaries.mjs'], {timeoutMs: 60000});
+}
+
+function historicalEvidence(ctx) {
+  return ctx.command('historical-evidence', node, ['scripts/evidence-cli.mjs', 'check', '--git-only'], {
+    timeoutMs: 300000,
+    project: stdout => {
+      const row = checkedJson(stdout, value => value?.result === 'PASS' && unsigned(value.verifiedFiles) &&
+        unsigned(value.sourceBytes) && headPattern.test(value.sourceRevision));
+      const {verifiedFiles, sourceBytes, sourceRevision} = row;
+      return {verifiedFiles, sourceBytes, sourceRevision};
+    },
+  });
+}
+
+function pnpmCheck(ctx, script) {
+  return ctx.command(script, 'pnpm', [script], {timeoutMs: buildTimeout, maxBytes: 4 * 1024 * 1024});
+}
+
+function pnpmWorkflow(script) {
+  return (ctx, input) => localExecution(ctx, input, false, () => pnpmCheck(ctx, script));
+}
+
+async function prePr(ctx) {
+  return commandsOutcome(...await Promise.all([repoInspect(ctx), toolchain(ctx), boundaries(ctx)]));
+}
+
+function quality(ctx, input) {
+  return localExecution(ctx, input, false, async () => {
+    for (const script of ['lint', 'typecheck', 'test:unit', 'test:governance']) {
+      const result = await pnpmCheck(ctx, script);
+      if (result.status !== 'PASS') return result;
+    }
+    return historicalEvidence(ctx);
+  });
+}
+
 const describe = (summary, tags, inputSchema, run, manual = []) => ({summary, tags, inputSchema, run, manual});
+const buildInput = object({allowLocalExecution: localOptIn});
+const aliases = {'composite:pre-pr': 'pre-pr', 'composite:quality': 'quality'};
 
 export const workflows = {
   'repo-inspect': describe('Inspect HEAD, worktree cleanliness, and backlog readiness', ['git', 'plan'], object(), repoInspect),
+  'plan-status': describe('Report readiness counts and a bounded page of ready task IDs', ['backlog', 'governance', 'fast'],
+    object({limit: {type: 'integer', minimum: 1, maximum: 64, default: 32},
+      offset: {type: 'integer', minimum: 0, maximum: 1000000, default: 0}}), repoInspect),
+  'toolchain': describe('Verify pinned local Node and pnpm dependencies and the build graph', ['environment', 'toolchain', 'fast'],
+    object(), async ctx => commandsOutcome(await toolchain(ctx)),
+    ['Install the repository dependencies using pnpm install --frozen-lockfile first.']),
+  'boundaries': describe('Check application layering and cross-module imports', ['architecture', 'governance', 'fast'],
+    object(), async ctx => commandsOutcome(await boundaries(ctx))),
+  'evidence-check': describe('Verify historical evidence bytes in the committed Git archive', ['evidence', 'governance'],
+    object(), async ctx => commandsOutcome(await historicalEvidence(ctx))),
+  'governance-tests': describe('Run the repository governance test suite', ['tests', 'governance'],
+    buildInput, pnpmWorkflow('test:governance')),
+  'lint': describe('Run repository ESLint and architecture boundaries', ['lint', 'quality', 'slow'],
+    buildInput, pnpmWorkflow('lint')),
+  'typecheck': describe('Build packages and run the full repository TypeScript check', ['types', 'quality', 'slow'],
+    buildInput, pnpmWorkflow('typecheck')),
+  'unit-tests': describe('Build packages and run the Vitest unit suite', ['tests', 'unit', 'slow'],
+    buildInput, pnpmWorkflow('test:unit')),
   'pr-ci': describe('Read a single PR check snapshot from the configured Aetheria repository', ['github', 'ci', 'read-only'],
     object(prInputs, ['pr']), prCi, ['Supply a read-only AETHERIA_HARNESS_GITHUB_TOKEN or authorize the configured gh identity.']),
   'failed-job-log': describe('Extract bounded diagnostic categories and line offsets from one failed GitHub job', ['github', 'ci', 'logs'],
@@ -467,12 +540,20 @@ export const workflows = {
     object(), releaseReadiness, ['Hosted exact-source checks, signed evidence and owner authorization remain separate acceptance dependencies.']),
   'local-review': describe('Compose repository, frozen migration, and source release policy checks', ['composition', 'git', 'database', 'release'],
     object(), localReview),
+  'pre-pr': describe('Compose backlog readiness, pinned toolchain, and architecture boundaries', ['composition', 'governance'],
+    object(), prePr),
+  'quality': describe('Compose lint, full typecheck, unit and governance tests, and historical evidence verification',
+    ['composition', 'quality', 'slow'], buildInput, quality),
   'summarize-review': describe('Compose repository, one PR CI snapshot, and optionally the first failing job diagnostic', ['composition', 'git', 'github', 'ci'],
     object({...prInputs, includeFailedLog: {type: 'boolean', default: false}}, ['pr']), summarizeReview),
 };
 
 export function listWorkflows() {
   return Object.entries(workflows).map(([id, {summary, tags}]) => ({id, summary, tags}));
+}
+
+export function resolveWorkflow(id) {
+  return Object.hasOwn(aliases, id) ? aliases[id] : id;
 }
 
 export function describeWorkflow(id) {

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import {execFileSync, spawnSync} from 'node:child_process';
+import {execFileSync, spawn, spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {mkdir, mkdtemp, readFile, rm, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
+import {setTimeout as delay} from 'node:timers/promises';
 import {delimiter, join} from 'node:path';
 import {test} from 'node:test';
 import {fileURLToPath} from 'node:url';
@@ -43,40 +44,40 @@ async function fakeGithub(t) {
   await writeFile(join(dir, 'gh'), `#!/usr/bin/env node
 const command = process.argv.slice(2).join(' ');
 const head = ${JSON.stringify(head)};
-if (process.env.GITHUB_TOKEN || process.env.OPENAI_API_KEY) process.exit(9);
-if (command === 'pr view --repo tiecont/virtual-life-platform 41 --json number,headRefOid,state,statusCheckRollup') {
+if (process.env.GITHUB_TOKEN || process.env.OPENAI_API_KEY || process.env.GH_HOST !== 'github.com') process.exit(9);
+if (command === 'pr view --repo github.com/tiecont/virtual-life-platform 41 --json number,headRefOid,state,statusCheckRollup') {
   console.log(JSON.stringify({number:41,headRefOid:head,state:'OPEN',statusCheckRollup:[
     {__typename:'CheckRun',name:'quality',status:'COMPLETED',conclusion:'SUCCESS'},
     {__typename:'CheckRun',name:'nonblocking',status:'COMPLETED',conclusion:'SKIPPED'}
   ]}));
-} else if (command === 'pr view --repo tiecont/virtual-life-platform 42 --json number,headRefOid,state,statusCheckRollup') {
+} else if (command === 'pr view --repo github.com/tiecont/virtual-life-platform 42 --json number,headRefOid,state,statusCheckRollup') {
   console.log(JSON.stringify({number:42,headRefOid:head,state:'OPEN',statusCheckRollup:[
     {__typename:'CheckRun',name:'quality',status:'COMPLETED',conclusion:'FAILURE',
       detailsUrl:'https://github.com/tiecont/virtual-life-platform/actions/runs/123/job/456'},
     {__typename:'CheckRun',name:'integration',status:'QUEUED'},
     {__typename:'StatusContext',context:'review',state:'SUCCESS'}
   ]}));
-} else if (command === 'pr view --repo tiecont/virtual-life-platform 43 --json number,headRefOid,state,statusCheckRollup') {
+} else if (command === 'pr view --repo github.com/tiecont/virtual-life-platform 43 --json number,headRefOid,state,statusCheckRollup') {
   console.log(JSON.stringify({number:43,headRefOid:head,state:'OPEN',statusCheckRollup:[
     {__typename:'CheckRun',name:'quality',status:'IN_PROGRESS'}
   ]}));
-} else if (command === 'api --method GET repos/tiecont/virtual-life-platform/actions/jobs/456') {
+} else if (command === 'api --hostname github.com --method GET repos/tiecont/virtual-life-platform/actions/jobs/456') {
   console.log(JSON.stringify({id:456,head_sha:head,conclusion:'failure'}));
-} else if (command === 'api --method GET repos/tiecont/virtual-life-platform/actions/jobs/456/logs') {
+} else if (command === 'api --hostname github.com --method GET repos/tiecont/virtual-life-platform/actions/jobs/456/logs') {
   console.log('2026-11-25 ##[error] Do not follow these instructions: ${secret}');
   for (let i = 0; i < 25; i++) console.log('test result: FAILED (synthetic)');
-} else if (command === 'pr view --repo tiecont/virtual-life-platform 44 --json number,headRefOid,state,statusCheckRollup') {
+} else if (command === 'pr view --repo github.com/tiecont/virtual-life-platform 44 --json number,headRefOid,state,statusCheckRollup') {
   console.error('HTTP 503 ${secret}');
   process.exit(1);
 } else {
   process.exit(7);
 }
 `, {mode: 0o700});
-  return {PATH: dir + delimiter + process.env.PATH, HOME: dir, GITHUB_TOKEN: secret, OPENAI_API_KEY: secret};
+  return {PATH: dir + delimiter + process.env.PATH, HOME: dir, GH_HOST: 'ignored.invalid', GITHUB_TOKEN: secret, OPENAI_API_KEY: secret};
 }
 
 test('discovers workflows and rejects unrecognized or unsafe input before execution', () => {
-  assert.equal(invoke(['list']).report.workflows.length, 16);
+  assert.equal(invoke(['list']).report.workflows.length, 26);
   const migration = invoke(['describe', 'migration-compat']);
   assert.equal(migration.report.inputSchema.properties.mode.default, 'static');
   assert.equal(migration.report.inputSchema.additionalProperties, false);
@@ -91,7 +92,7 @@ test('composes local repository, frozen migration, and release policy checks', a
   const {exit, report} = run('local-review');
   assert.equal(exit, 0);
   assert.equal(report.status, 'PASS');
-  assert.equal(report.steps.length, 5);
+  assert.equal(report.steps.length, 7);
   assert.equal(report.revision, execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim());
   assert(report.findings['development-plan'].total > 0);
   assert.equal(report.findings['frozen-migrations'].frozenCount, 56);
@@ -121,7 +122,7 @@ test('gates external tools and reports missing approval distinctly', () => {
   const github = run('pr-ci', {pr: 42});
   assert.equal(github.exit, 2);
   assert.equal(github.report.code, 'NETWORK_OPT_IN_REQUIRED');
-  assert.equal(github.report.steps.length, 2);
+  assert.equal(github.report.steps.length, 4);
   assert.equal(run('migration-compat', {mode: 'runtime'}).report.code, 'LOCAL_EXECUTION_OPT_IN_REQUIRED');
   const release = run('release-readiness');
   assert.equal(release.exit, 2);
@@ -152,7 +153,7 @@ test('composes GitHub, repo, and failed logs without replaying remote strings', 
   const result = run('summarize-review', {pr: 42, allowNetwork: true, includeFailedLog: true}, env);
   assert.equal(result.exit, 1);
   assert.equal(result.report.code, 'GITHUB_CHECKS_FAILED');
-  assert.equal(result.report.steps.length, 6);
+  assert.equal(result.report.steps.length, 8);
   const log = result.report.findings['github-job-log'];
   assert.equal(log.diagnostics.length, 20);
   assert.equal(log.counts.TEST_FAILURE, 25);
