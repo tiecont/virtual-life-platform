@@ -103,7 +103,7 @@ try {
     const errors=[];context.on('page',page=>page.on('pageerror',error=>errors.push(error.name)));
     let page=await context.newPage();assert.equal((await page.goto('/pets?lang=en')).status(),404);await expect(page.locator('canvas,form')).toHaveCount(0);
     facts.browserNavigations??=[];
-    const loaded=await navigateImagePage(page,'/admin',facts.browserNavigations);page=loaded.page;const navigation=loaded.response;
+    const loaded=await navigateImagePage(page,'/admin',facts.browserNavigations,origin);page=loaded.page;const navigation=loaded.response;
     facts.operatorNavigations??=[];facts.operatorNavigations.push({profile:profile.name,status:navigation?.status(),path:new URL(page.url()).pathname,title:await page.title(),passwordFields:await page.getByLabel('Password',{exact:true}).count(),browserErrorNames:errors});
     assert.equal(navigation?.status(),200,'Operator document must render successfully');
     if(!cookies){

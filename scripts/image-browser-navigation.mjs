@@ -29,20 +29,25 @@ export function observeImageBrowser(context, origin, observations) {
 // Docker interface changes can interrupt Chromium's read-only document request.
 // Only these GET navigations and their framework script/style loads may retry.
 // Application assertions and mutation requests never run inside this retry loop.
-export async function navigateImagePage(page, path, attempts) {
+export async function navigateImagePage(page, path, attempts, origin) {
   assert(['/', '/identity', '/admin'].includes(path), 'Only reviewed image smoke GET pages may retry');
+  const documentUrl = new URL(path, origin).href;
   for (let attempt = 1; attempt <= 3; attempt++) {
     const observedPage = page;
     const failures = [];
-    let interruptedAssets = 0, mutationStarted = false;
+    let interruptedAssets = 0, mutationStarted = false, documentFailure;
     const assetInterrupted = Error('Image framework asset interrupted by network change');
     const requested = request => {if (!['GET', 'HEAD'].includes(request.method())) mutationStarted = true;};
     const failed = request => {
-      if (request.isNavigationRequest() && request.frame() === observedPage.mainFrame() && failures.length < 4) {
-        const code = request.failure()?.errorText;
-        failures.push(/^net::ERR_[A-Z_]+$/.test(code ?? '') ? code : 'OTHER_NAVIGATION_FAILURE');
+      const code = request.failure()?.errorText;
+      if (request.isNavigationRequest() && request.frame() === observedPage.mainFrame()) {
+        if (failures.length < 4) failures.push(/^net::ERR_[A-Z_]+$/.test(code ?? '') ? code : 'OTHER_NAVIGATION_FAILURE');
+        // A failed original document can leave Playwright waiting for its load
+        // event even after Chromium has reported the specific network error.
+        if (request.method?.() === 'GET' && request.redirectedFrom?.() === null &&
+            request.url() === documentUrl) documentFailure = code;
       }
-      if (request.failure()?.errorText === 'net::ERR_NETWORK_CHANGED' &&
+      if (code === 'net::ERR_NETWORK_CHANGED' &&
           request.method?.() === 'GET' && ['script', 'stylesheet'].includes(request.resourceType?.()) &&
           request.frame() === observedPage.mainFrame()) {
         const asset = new URL(request.url());
@@ -64,9 +69,13 @@ export async function navigateImagePage(page, path, attempts) {
       assert(!observation.internalErrorDocument && response !== null, 'Image navigation did not return an application document');
       return {page, response};
     } catch (error) {
-      if (error !== assetInterrupted && !/^page\.goto: net::ERR_NETWORK_CHANGED(?: at |\n|$)/.test(error.message ?? '')) throw error;
+      const networkError = /^page\.goto: net::ERR_NETWORK_CHANGED(?: at |\n|$)/.test(error.message ?? '');
+      const interruptedLoad = error.name === 'TimeoutError' && documentFailure === 'net::ERR_NETWORK_CHANGED';
+      if (error !== assetInterrupted && !networkError && !interruptedLoad) throw error;
       assert(!mutationStarted, 'Image navigation cannot retry after a mutation request');
-      attempts.push({path, attempt, result: error === assetInterrupted ? 'ASSET_ERR_NETWORK_CHANGED' : 'ERR_NETWORK_CHANGED'});
+      const result = error === assetInterrupted ? 'ASSET_ERR_NETWORK_CHANGED'
+        : interruptedLoad ? 'ERR_NETWORK_CHANGED_LOAD_TIMEOUT' : 'ERR_NETWORK_CHANGED';
+      attempts.push({path, attempt, result});
       // Chromium may still commit its internal error document after goto rejects.
       // Retire that page before retrying; the context retains cookies and TLS policy.
       const context = page.context();
