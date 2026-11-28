@@ -38,12 +38,12 @@ namespace Aetheria.Tests
             });
         }
 
-        [TestCase("vi", "Hãy vượt qua Cinder Terraces trước.")]
-        [TestCase("en", "Clear Cinder Terraces first.")]
-        [TestCase("ja", "先にCinder Terracesをクリアしてください。")]
-        [TestCase("ko", "먼저 Cinder Terraces 지역을 클리어하세요.")]
-        [TestCase("zh", "请先通关Cinder Terraces。")]
-        public void ShowsTheRequiredMapInTheSelectedLanguage(string language, string expected)
+        [TestCase("vi", "Hãy vượt qua Cinder Terraces trước.", "Đấu trường phối hợp", "Bản xem thử cục bộ")]
+        [TestCase("en", "Clear Cinder Terraces first.", "Cooperative Arena8", "Local developer preview")]
+        [TestCase("ja", "先にCinder Terracesをクリアしてください。", "協力アリーナ", "ローカル開発プレビュー")]
+        [TestCase("ko", "먼저 Cinder Terraces 지역을 클리어하세요.", "협동 아레나", "로컬 개발 미리보기")]
+        [TestCase("zh", "请先通关Cinder Terraces。", "协作竞技场", "本地开发预览")]
+        public void ShowsTheRequiredMapInTheSelectedLanguage(string language, string expected, string title, string preview)
         {
             const string preference = "aetheria.campaign.language";
             var previous = PlayerPrefs.HasKey(preference) ? PlayerPrefs.GetString(preference) : null;
@@ -52,7 +52,7 @@ namespace Aetheria.Tests
                 PlayerPrefs.SetString(preference, language);
                 WithLobby(CoopCampaignCatalog.Decode(CatalogJson(5000, LockedEncounter)),
                     WorldMapCatalog.TideglassLagoon, true,
-                    root => Assert.That(root.Q<Label>("coop-availability-map-lock").text, Is.EqualTo(expected)));
+                    root => Assert.That(root.Q<Label>("coop-availability-map-lock").text, Is.EqualTo(expected)), title, preview);
             }
             finally
             {
@@ -120,7 +120,8 @@ namespace Aetheria.Tests
         private static string CatalogJson(int points, string encounters) =>
             "{\"ruleset\":\"arena8-coop-pve\",\"configVersion\":2,\"points\":" + points + ",\"encounters\":[" + encounters + "]}";
 
-        private static void WithLobby(CoopCampaignCatalog catalog, WorldMapDefinition map, bool owned, Action<VisualElement> assert)
+        private static void WithLobby(CoopCampaignCatalog catalog, WorldMapDefinition map, bool owned, Action<VisualElement> assert,
+            string title = "Cooperative Arena8", string preview = "Local developer preview")
         {
             var go = new GameObject("coop-campaign-test");
             var panel = ScriptableObject.CreateInstance<PanelSettings>();
@@ -138,8 +139,8 @@ namespace Aetheria.Tests
                 };
                 screen.Enter(api, new[] { pet }, map, () => { }, catalog);
                 var root = document.rootVisualElement;
-                Assert.That(root.Q<Label>("coop-lobby-title").text, Is.EqualTo("Cooperative Arena8"));
-                Assert.That(root.Q<Label>("coop-lobby-preview").text, Is.EqualTo("Local developer preview"));
+                Assert.That(root.Q<Label>("coop-lobby-title").text, Is.EqualTo(title));
+                Assert.That(root.Q<Label>("coop-lobby-preview").text, Is.EqualTo(preview));
                 Assert.That(root.Q<Button>("coop-join").enabledSelf, Is.True);
                 Assert.That(root.Q<Button>("coop-resume").enabledSelf, Is.True);
                 Assert.That(root.Q<TextField>("coop-room-id"), Is.Not.Null);
