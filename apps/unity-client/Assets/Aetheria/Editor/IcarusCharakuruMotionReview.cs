@@ -536,8 +536,8 @@ namespace Aetheria.Editor
                         var orthoSize = camera.orthographicSize;
                         var eyes = (left.position+right.position)*.5f;
                         float separation = Vector3.Distance(left.position,right.position);
-                        camera.orthographicSize = separation*2.6f;
-                        var chinFocus = eyes+Vector3.down*(separation*1.02f);
+                        camera.orthographicSize = separation*3.3f;
+                        var chinFocus = eyes+Vector3.down*(separation*1.36f);
                         camera.transform.position = chinFocus+new Vector3(.36f,.04f,1f);
                         camera.transform.LookAt(chinFocus);
                         RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = target });
