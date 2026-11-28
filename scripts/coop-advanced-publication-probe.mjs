@@ -59,6 +59,7 @@ export async function verifyAdvancedCoopPublication({
  assert.equal(swap.version,2);
  assert.equal(swap.state.activeSeat,1);
  checkWaterEffect(swap.state,bundle,move.matched);
+ assert.deepEqual(swap.state.jewelFeedback,[{kind:'chill-armed',seat:0,value:swap.state.chillReductionPm}]);
  assert.notEqual(swap.state.chillReductionPm,replacement.bundle.advancedJewels.frostReductionPm[0]);
  const journal=async()=>(await pool.query(
   "SELECT committed_version::int AS version,actor_id,encode(receipt_hash,'hex') AS hash FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version",
@@ -73,6 +74,7 @@ export async function verifyAdvancedCoopPublication({
  assert.deepEqual(view.state.ruleset,swap.state.ruleset);
  assert.equal(view.state.turnDeadlineUnixMs,swap.state.turnDeadlineUnixMs);
  checkWaterEffect(view.state,bundle,move.matched);
+ assert.ok(!Object.hasOwn(view.state,'jewelFeedback'),'Re-reading a state must not replay a prior animation');
  assert.deepEqual(await journal(),original);
  const row=await allocationRow(match.room);
  assert.equal(row.config_digest,published.digest);

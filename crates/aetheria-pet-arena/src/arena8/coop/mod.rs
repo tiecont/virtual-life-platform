@@ -1875,7 +1875,7 @@ impl CoopRules {
                 break;
             }
         }
-        self.amplify(state, survivors, upgrades, events);
+        observation.amplified_cells = self.amplify(state, survivors, upgrades, events);
         Ok(())
     }
 
@@ -2514,6 +2514,7 @@ struct TurnObservation {
     dead_board_regenerations: u64,
     forced_cascade_regenerations: u64,
     shield_absorbed: u64,
+    amplified_cells: u64,
 }
 
 impl TurnObservation {

@@ -190,6 +190,18 @@ impl Reducer for Rules {
         self.verify(state)
     }
 
+    fn reduce_for_receipt(
+        &self,
+        state: &CoopState,
+        action: &CoopCommand,
+        _clock: LogicalClock,
+        rng: &mut TurnRng,
+        feedback: &mut Vec<aetheria_game_core::Value>,
+    ) -> Result<Decision<CoopState>, Error> {
+        self.engine
+            .reduce_for_member_receipt(state, *action, rng, feedback)
+    }
+
     fn reduce(
         &self,
         state: &Self::State,

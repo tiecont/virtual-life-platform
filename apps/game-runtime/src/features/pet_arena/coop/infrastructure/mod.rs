@@ -146,6 +146,48 @@ impl Game for Rules {
         .map_err(|_| Error::Invalid)
     }
 
+    fn project_receipt(
+        &self,
+        state: &CoopState,
+        account: &str,
+        feedback: &[aetheria_game_core::Value],
+    ) -> aetheria_persistence::Result<Vec<u8>> {
+        use aetheria_game_core::Value;
+        let projection = self.project(state, account)?;
+        if self.engine().config().advanced_jewels.is_none() || feedback.is_empty() {
+            return Ok(projection);
+        }
+        let mut result: serde_json::Value =
+            serde_json::from_slice(&projection).map_err(|_| Error::Integrity)?;
+        let rows = feedback
+            .iter()
+            .filter_map(|e| {
+                let Value::List(row) = e else { return None };
+                let [Value::Text(kind), seat, Value::Uint(value), cell] = row.as_slice() else {
+                    return None;
+                };
+                let seat = match seat {
+                    Value::Null => None,
+                    Value::Uint(seat) => Some(*seat),
+                    _ => return None,
+                };
+                let mut entry = serde_json::json!({"kind":kind, "seat":seat, "value":value});
+                if let Value::Uint(cell) = cell {
+                    entry["cell"] = (*cell).into();
+                }
+                Some(entry)
+            })
+            .collect();
+        result["jewelFeedback"] = serde_json::Value::Array(rows);
+        let enriched = serde_json::to_vec(&result).map_err(|_| Error::Invalid)?;
+        // Purely presentational detail must never prevent a valid commitment.
+        Ok(if enriched.len() <= aetheria_persistence::MAX_PROJECTION {
+            enriched
+        } else {
+            projection
+        })
+    }
+
     fn project(&self, state: &CoopState, account: &str) -> aetheria_persistence::Result<Vec<u8>> {
         let seat = self.seat(state, account).ok_or(Error::Unauthorized)?;
         let ruleset = self.engine().ruleset();

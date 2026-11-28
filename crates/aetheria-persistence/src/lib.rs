@@ -43,7 +43,7 @@ impl From<aetheria_game_core::Error> for Error {
     }
 }
 const MAX_STATE: usize = 131_072;
-const MAX_PROJECTION: usize = 16_384;
+pub const MAX_PROJECTION: usize = 16_384;
 
 /// A reviewed domain must implement codecs, membership and recipient projection.
 /// Turn authorization is separate from membership so old receipts remain readable.
@@ -73,6 +73,16 @@ pub trait Game: Reducer + Send + Sync + 'static {
         Ok(action)
     }
     fn project(&self, state: &Self::State, account: &str) -> Result<Vec<u8>>;
+    /// New member commands may add transient feedback before the authorized
+    /// receipt is sealed. Read-only views and historical receipts remain stable.
+    fn project_receipt(
+        &self,
+        state: &Self::State,
+        account: &str,
+        _feedback: &[Value],
+    ) -> Result<Vec<u8>> {
+        self.project(state, account)
+    }
     fn project_system(&self, _state: &Self::State) -> Result<Vec<u8>> {
         Err(Error::Unauthorized)
     }
@@ -749,7 +759,11 @@ where
         let projection = if system_mode {
             self.game.project_system(&transition.next.state)?
         } else {
-            self.game.project(&transition.next.state, actor.account)?
+            self.game.project_receipt(
+                &transition.next.state,
+                actor.account,
+                &transition.receipt_feedback,
+            )?
         };
         if projection.is_empty() || projection.len() > MAX_PROJECTION {
             return Err(Error::Invalid);

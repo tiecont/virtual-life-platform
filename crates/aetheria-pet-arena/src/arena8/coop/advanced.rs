@@ -145,6 +145,60 @@ fn advanced_kind(tile: Option<Tile>) -> Option<TileKind> {
 }
 
 impl CoopRules {
+    /// Render only effects produced by this accepted authoritative command.
+    /// The sealed canonical snapshot and audit event encodings remain unchanged.
+    pub fn reduce_for_member_receipt(
+        &self,
+        state: &CoopState,
+        command: super::CoopCommand,
+        rng: &mut aetheria_game_core::TurnRng,
+        feedback: &mut Vec<Value>,
+    ) -> Result<aetheria_game_core::Decision<CoopState>, aetheria_game_core::Error> {
+        let Some(policy) = &self.config.advanced_jewels else {
+            return self.reduce_stamped(state, command.action, command.server_timestamp_ms, rng);
+        };
+        let mut observed = super::TurnObservation::default();
+        let decision = self.reduce_observed(
+            state,
+            command.action,
+            command.server_timestamp_ms,
+            rng,
+            &mut observed,
+        )?;
+        let mut cells = observed.amplified_cells;
+        let mut armed = state.chill_reduction_pm.unwrap_or(0);
+        for entry in &decision.events {
+            let Value::List(row) = entry else { continue };
+            let [Value::Text(kind), seat, Value::Uint(value)] = row.as_slice() else {
+                continue;
+            };
+            let (label, amount, cell) = match kind.as_str() {
+                "nature-cleanse" | "chill-consumed" => (kind.as_str(), *value, Value::Null),
+                "matched-frost" => {
+                    let tier = ((*value).clamp(3, 5) - 3) as usize;
+                    armed = armed.max(policy.frost_reduction_pm[tier]);
+                    ("chill-armed", u64::from(armed), Value::Null)
+                }
+                "astral-upgrade" if cells != 0 => {
+                    let cell = cells.trailing_zeros();
+                    cells &= cells - 1;
+                    (kind.as_str(), *value, Value::Uint(cell.into()))
+                }
+                _ => continue,
+            };
+            feedback.push(list([
+                Value::Text(label.into()),
+                seat.clone(),
+                Value::Uint(amount),
+                cell,
+            ]));
+            if feedback.len() >= CELLS {
+                break;
+            }
+        }
+        Ok(decision)
+    }
+
     pub(super) fn advanced_encounter(&self) -> Option<&AdvancedEncounter> {
         self.config
             .advanced_jewels
@@ -285,9 +339,9 @@ impl CoopRules {
         survivors: u64,
         mut count: usize,
         events: &mut Vec<Value>,
-    ) {
+    ) -> u64 {
         if count == 0 {
-            return;
+            return 0;
         }
         let clock = self.escalation_clock(state);
         let Some(stage) = self
@@ -298,8 +352,9 @@ impl CoopRules {
             .rev()
             .find(|s| s.from <= clock)
         else {
-            return;
+            return 0;
         };
+        let mut upgraded_cells = 0;
         for (index, cell) in state.board.iter_mut().enumerate() {
             if survivors & (1 << index) == 0 {
                 continue;
@@ -318,6 +373,7 @@ impl CoopRules {
                 .min()
             {
                 tile.multiplier = next;
+                upgraded_cells |= 1u64 << index;
                 events.push(event(
                     "astral-upgrade",
                     Some(state.active_seat as u8),
@@ -329,6 +385,7 @@ impl CoopRules {
                 }
             }
         }
+        upgraded_cells
     }
 }
 

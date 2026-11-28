@@ -925,3 +925,71 @@ fn v3_projection_timers_abilities_ultimate_and_fire_zone_contract() {
     assert_ne!(id0, system_expire_command_id(match_b, 0));
     assert!(!id0.is_nil());
 }
+
+#[test]
+fn member_receipt_reports_exact_astral_cell_without_changing_state_events_or_entropy() {
+    use aetheria_game_core::{LogicalClock, Reducer};
+    let bytes = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-advanced-v1.candidate.json"
+    ));
+    let roster = seats();
+    let bindings = bindings(bytes, &roster);
+    let rules = Rules::load(
+        bytes,
+        roster,
+        "dawn-prism-sanctum-warden".into(),
+        Some(&bindings),
+    )
+    .unwrap();
+    let seed = SecretSeed::from_host_entropy([9; 32]);
+    let stream = || {
+        seed.stream(Value::Text("astral-receipt".into()), 0)
+            .unwrap()
+    };
+    let mut state = rules
+        .engine()
+        .reduce(&rules.initial(), CoopAction::Start, &mut stream())
+        .unwrap()
+        .state;
+    state.turn_index = 42;
+    let action = CoopCommand::new(CoopAction::Swap {
+        first: 1,
+        second: 9,
+    });
+    let clock = LogicalClock {
+        server_tick: 1,
+        logical_time_ms: 1,
+    };
+    let mut baseline = stream();
+    let mut observed = stream();
+    let plain = rules.reduce(&state, &action, clock, &mut baseline).unwrap();
+    let mut feedback = Vec::new();
+    let detailed = rules
+        .reduce_for_receipt(&state, &action, clock, &mut observed, &mut feedback)
+        .unwrap();
+    assert_eq!(plain.state, detailed.state);
+    assert_eq!(plain.events, detailed.events);
+    assert_eq!(baseline.cursor(), observed.cursor());
+    let actor = &state.participants[0].account;
+    let receipt: serde_json::Value = serde_json::from_slice(
+        &rules
+            .project_receipt(&detailed.state, actor, &feedback)
+            .unwrap(),
+    )
+    .unwrap();
+    let rows = receipt["jewelFeedback"].as_array().unwrap();
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0]["kind"], "astral-upgrade");
+    assert_eq!(rows[0]["seat"], 0);
+    let index = rows[0]["cell"].as_u64().unwrap() as usize;
+    assert_eq!(receipt["board"][index]["multiplier"], rows[0]["value"]);
+    assert!(
+        rules
+            .project_receipt(&detailed.state, "foreign-account", &feedback)
+            .is_err()
+    );
+    let plain_view: serde_json::Value =
+        serde_json::from_slice(&rules.project(&detailed.state, actor).unwrap()).unwrap();
+    assert!(plain_view.get("jewelFeedback").is_none());
+}
