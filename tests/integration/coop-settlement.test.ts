@@ -623,13 +623,13 @@ describe('cooperative settlement',()=>{
 
  it('uses a qualifying solo route clear to unlock its prerequisite chain and recruits once from its pinned version',async()=>{
   const mapId='cinder-terraces',entry='recruit-fire-coalwhisk',advanced='recruit-fire-emberloom';
-  const route=(id:string,prerequisiteEncounterId:string|null,enabled=true)=>{
+  const route=(id:string,prerequisiteEncounterId:string|null,enabled=true,requiredRoomPoints=0)=>{
    const opponentPetId=id.slice('recruit-'.length);
    return {id,opponentPetId,mapId,tier:prerequisiteEncounterId?'advanced':'entry',prerequisiteEncounterId,
     enabled,mode:prerequisiteEncounterId?'either':'solo',
-    profile:{id,name:opponentPetId,requiredRoomPoints:0,rewardPolicy:fixtureRewardPolicy([opponentPetId])}};
+    profile:{id,name:opponentPetId,requiredRoomPoints,rewardPolicy:fixtureRewardPolicy([opponentPetId])}};
   };
-  const routes=[route(entry,null),route(advanced,entry),route('recruit-fire-kilnback',advanced,false)];
+  const routes=[route(entry,null),route(advanced,entry,true,287),route('recruit-fire-kilnback',advanced,false)];
   const pinned=await publishSettlementFixture([{...baseBundle.boss,mapId}],7,undefined,routes);
   const account=await guest('Solo recruit','icarus');
   const catalog=()=>server.http.inject({url:'/v1/coop/campaign-routes',headers:{cookie:account.cookie}});
@@ -641,8 +641,8 @@ describe('cooperative settlement',()=>{
   const initial=await catalog();
   expect(initial.statusCode,initial.body).toBe(200);
   expect(initial.json()).toMatchObject({configVersion:pinned.version,routes:[
-   {id:entry,canEnterSolo:true,canHostCoop:false,cleared:false},
-   {id:advanced,canEnterSolo:false,canHostCoop:false,cleared:false},
+   {id:entry,canEnterSolo:true,canHostCoop:false,cleared:false,hostPointsNeeded:0},
+   {id:advanced,canEnterSolo:false,canHostCoop:false,cleared:false,hostPointsNeeded:287},
   ]});
   await expect(allocate(advanced)).rejects.toThrow('Clear the required campaign encounter first');
   await expect(allocate('recruit-fire-kilnback')).rejects.toThrow('Campaign route is unavailable');
@@ -657,12 +657,13 @@ describe('cooperative settlement',()=>{
   expect(first.json()).toMatchObject({won:true,firstClear:true,recruitedPetId:'fire-coalwhisk',
    clearedMaps:[],exp:90,coins:120,materials:5});
   expect((await catalog()).json().routes).toMatchObject([
-   {id:entry,cleared:true},{id:advanced,canEnterSolo:true,cleared:false},
+   {id:entry,cleared:true},{id:advanced,canEnterSolo:true,cleared:false,hostPointsNeeded:37},
   ]);
   expect((await allocate(advanced)).pin).toMatchObject({bossId:advanced,configVersion:pinned.version,configDigest:pinned.digest});
   const repeated=await (await functionalSoloWin(account,mapId,entry,pinned,{native:4,proposal:4}))();
   expect(repeated.statusCode,repeated.body).toBe(200);
   expect(repeated.json()).toMatchObject({won:true,firstClear:false,recruitedPetId:null,materials:1});
+  expect((await catalog()).json().routes[1]).toMatchObject({id:advanced,hostPointsNeeded:0});
   expect((await pool.query('SELECT route_id FROM pet_arena_campaign_route_clears WHERE account_id=$1',
    [account.accountId])).rows).toEqual([{route_id:entry}]);
   expect((await pool.query("SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1 AND source='campaign'",

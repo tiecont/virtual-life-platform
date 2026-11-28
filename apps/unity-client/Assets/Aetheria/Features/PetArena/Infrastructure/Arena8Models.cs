@@ -12,6 +12,7 @@ namespace Aetheria.PetArena.Infrastructure
     {
         public string id, mapId, name, opponentPetId, prerequisiteEncounterId, mode;
         public bool cleared, canEnterSolo, canHostCoop;
+        public int hostPointsNeeded;
     }
 
     [Serializable] public sealed class Arena8AllocateRequest

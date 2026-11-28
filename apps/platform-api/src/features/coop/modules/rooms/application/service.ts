@@ -160,10 +160,11 @@ export class CoopRoomService{
    const cleared=await listCampaignRouteClears(tx,accountId,ids);
    return CampaignRouteCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,routes:routes.map(route=>{
     const canEnterSolo=!route.prerequisiteEncounterId||cleared.has(route.prerequisiteEncounterId);
+    const hostPointsNeeded=Math.max(0,route.profile.requiredRoomPoints-points);
     return {id:route.id,mapId:route.mapId,opponentPetId:route.opponentPetId,tier:route.tier,
      name:route.profile.name,mode:route.mode,prerequisiteEncounterId:route.prerequisiteEncounterId,
      cleared:cleared.has(route.id),canEnterSolo:canEnterSolo&&this.soloNativeAvailable,
-     canHostCoop:canEnterSolo&&!!this.provisioner&&route.mode==='either'&&points>=route.profile.requiredRoomPoints};
+     canHostCoop:canEnterSolo&&!!this.provisioner&&route.mode==='either'&&hostPointsNeeded===0,hostPointsNeeded};
    })});
   });
  }

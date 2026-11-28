@@ -169,6 +169,9 @@ namespace Aetheria.PetArena.Presentation
                         if (route.prerequisiteEncounterId != null &&
                             byId.TryGetValue(route.prerequisiteEncounterId, out var prerequisite) && !prerequisite.cleared)
                             label += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite.name;
+                        if (route.hostPointsNeeded > 0)
+                            label += " · " + string.Format(CampaignLocale.Text("coop.points_needed", "Achievement Points still needed · {0}"),
+                                route.hostPointsNeeded);
                         var host = new Button(() => _ = RunAsync(() => CreateEncounterAsync(route.id)))
                             { text = label, enableRichText = false };
                         host.SetEnabled(map.IsPlayable && route.canHostCoop && instanceId != null);
