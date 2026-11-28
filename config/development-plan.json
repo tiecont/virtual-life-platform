@@ -1161,6 +1161,12 @@
     },
     {
       "id": "VL-171",
+      "icarusTripoMotionReview": {
+        "sourceRevision": "479de194",
+        "command": "Blender 5.3 blender_icarus_accessory_motion.py on pinned Tripo exports",
+        "result": "Exported textured BowDrawRelease and WingSpreadBeatFold with animated morph weights. Bow retains all 40 original string vertices. Both private GLBs and 24 fps preview videos produced. No additional provider credits.",
+        "remaining": "Fit to the actual original VRM in Unity and review hand contact, clothing occlusion, chin stability and modular turnaround with the owner."
+      },
       "campaignV3Verification": {
         "sourceRevision": "8c252e592234a25faeb3b53da86ffdd3e1c5c430",
         "command": "Installed Unity Editor -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.CinematicStudioTests",
