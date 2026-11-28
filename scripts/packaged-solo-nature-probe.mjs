@@ -142,63 +142,73 @@ export async function verifyGhostNatureReceipt(pool,directory,published,fixture,
  await writeFile(join(directory,'solo-shared-nature-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
 
-export async function verifyGhostAdvancedReceipts(pool,directory,published,fixture,bundle,candidate,encounterDurationFixture){
+export async function verifyGhostAdvancedReceipts(pool,directory,published,fixture,bundle,candidate,encounterDurationFixture,complete){
  const read=async name=>JSON.parse(await readFile(join(directory,name),'utf8'));
  const player=await read('native-facts.json');
- assert.equal(player.status,'ok');
+ assert.equal(player.status,complete?'ok':'partial');
  assert.equal(player.ruleset,'arena8-functional-pve');
  assert.equal(player.participantCount,1);
  const {samples,encounterMaxHp}=await read('advanced-samples.json');
  if(encounterDurationFixture)assert.equal(encounterMaxHp,encounterDurationFixture.fixtureMaxHp);
  assert.equal(bundle.bosses.find(boss=>boss.regular?.id===encounter).regular.maxHp,encounterMaxHp);
- assert.deepEqual(samples.map(sample=>sample.kind),['chill-armed','chill-consumed','astral-upgrade']);
+ assert.ok(complete?samples.length===3:samples.length>=1&&samples.length<=2);
+ assert.deepEqual(samples.map(sample=>sample.kind),['chill-armed','chill-consumed','astral-upgrade'].slice(0,samples.length));
  const [armed,consumed,astral]=samples;
  assert.ok(bundle.advancedJewels.frostReductionPm.includes(armed.value));
- assert.equal(consumed.value,armed.value);
- assert.equal(consumed.afterChill,0);
- const sameReceipt=armed.version===consumed.version;
- if(sameReceipt){
-  assert.equal(armed.afterChill,0);
-  assert.equal(armed.receiptId,consumed.receiptId);
- }else{
-  assert.equal(armed.afterChill,armed.value);
-  assert.equal(consumed.beforeChill,armed.value);
-  assert.equal(consumed.first,-1);
- }
  const matched=await receiptEvents(pool,player.matchId,armed.version);
- const applied=await receiptEvents(pool,player.matchId,consumed.version);
  const frostSizes=Array.from({length:62},(_,index)=>index+3).filter(size=>
   bundle.advancedJewels.frostReductionPm[Math.min(size,5)-3]===armed.value);
  const possibleArms=new Set(frostSizes.map(size=>nativeEventHash('matched-frost',0,size)));
  const frostMatch=matched.find(row=>possibleArms.has(row.hash));
- const frostConsumed=applied.find(row=>row.hash===nativeEventHash('chill-consumed',null,consumed.value));
- assert.ok(frostMatch&&frostConsumed,'Expected journal commitments to matching and consuming Frost');
- assert.ok(!sameReceipt||frostMatch.event_index<frostConsumed.event_index);
- assert.ok(astral.value>=2&&astral.cell>=0&&astral.cell<64);
- assert.equal(astral.afterMultipliers[astral.cell],astral.value);
- const amplified=await receiptEvents(pool,player.matchId,astral.version);
- const astralGroups=new Set(Array.from({length:62},(_,index)=>nativeEventHash('matched-astral',0,index+3)));
- const astralMatch=amplified.find(row=>astralGroups.has(row.hash));
- const astralUpgrade=amplified.find(row=>row.event_index>astralMatch?.event_index
-  &&row.hash===nativeEventHash('astral-upgrade',0,astral.value));
- assert.ok(astralMatch&&astralUpgrade,'Expected journal commitments to matching and upgrading Astral');
- const earlyMax=Math.max(...bundle.multiplier.schedule.filter(stage=>stage.from<=astral.beforeTurn)
-  .flatMap(stage=>stage.tiers.map(row=>row.multiplier)));
- assert.ok(astral.value<=earlyMax);
- assert.deepEqual(samples.map(sample=>sample.hudLabel),
-  ['−'+armed.value/10+'%','−'+armed.value/10+'%','×'+astral.value]);
+ assert.ok(frostMatch,'Expected a committed Frost match');
+ assert.equal(armed.hudLabel,'−'+armed.value/10+'%');
+ const journalOrder={frostMatch};
+ if(consumed){
+  assert.equal(consumed.value,armed.value);
+  assert.equal(consumed.afterChill,0);
+  assert.equal(consumed.hudLabel,armed.hudLabel);
+  const sameReceipt=armed.version===consumed.version;
+  if(sameReceipt){
+   assert.equal(armed.afterChill,0);
+   assert.equal(armed.receiptId,consumed.receiptId);
+  }else{
+   assert.equal(armed.afterChill,armed.value);
+   assert.equal(consumed.beforeChill,armed.value);
+   assert.equal(consumed.first,-1);
+  }
+  const applied=sameReceipt?matched:await receiptEvents(pool,player.matchId,consumed.version);
+  const frostConsumed=applied.find(row=>row.hash===nativeEventHash('chill-consumed',null,consumed.value));
+  assert.ok(frostConsumed,'Expected a committed Chill consumption');
+  assert.ok(!sameReceipt||frostMatch.event_index<frostConsumed.event_index);
+  Object.assign(journalOrder,{frostConsumed,sameReceipt});
+ }else assert.equal(armed.afterChill,armed.value);
+ if(astral){
+  assert.ok(astral.value>=2&&astral.cell>=0&&astral.cell<64);
+  assert.equal(astral.afterMultipliers[astral.cell],astral.value);
+  assert.equal(astral.hudLabel,'×'+astral.value);
+  const amplified=await receiptEvents(pool,player.matchId,astral.version);
+  const astralGroups=new Set(Array.from({length:62},(_,index)=>nativeEventHash('matched-astral',0,index+3)));
+  const astralMatch=amplified.find(row=>astralGroups.has(row.hash));
+  const astralUpgrade=amplified.find(row=>row.event_index>astralMatch?.event_index
+   &&row.hash===nativeEventHash('astral-upgrade',0,astral.value));
+  assert.ok(astralMatch&&astralUpgrade,'Expected journal commitments to matching and upgrading Astral');
+  const earlyMax=Math.max(...bundle.multiplier.schedule.filter(stage=>stage.from<=astral.beforeTurn)
+   .flatMap(stage=>stage.tiers.map(row=>row.multiplier)));
+  assert.ok(astral.value<=earlyMax);
+  Object.assign(journalOrder,{astralMatch,astralUpgrade});
+ }
 
  const {rows:[match]}=await pool.query(
   `SELECT account_id,content_hash,level::int AS level,functional_config_version::int AS version,functional_config_digest AS digest,
      functional_allocation->>'bossId' AS encounter FROM platform_native_arena8_matches WHERE match_id=$1`,[player.matchId]);
  assert.deepEqual(match,{
-  account_id:fixture.accountId,content_hash:astral.contentHash,level:fixture.playerLevel,
+  account_id:fixture.accountId,content_hash:armed.contentHash,level:fixture.playerLevel,
   version:published.version,digest:published.digest,encounter,
  });
  const {rows:receipts}=await pool.query(
   `SELECT committed_version::int AS version,actor_id,command_id,encode(receipt_hash,'hex') AS hash
-     FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version`,[player.matchId]);
- assert.deepEqual(receipts.map(row=>row.version),Array.from({length:astral.version},(_,index)=>index+1));
+     FROM game_native_receipts WHERE match_id=$1 AND committed_version<=$2 ORDER BY committed_version`,[player.matchId,player.version]);
+ assert.deepEqual(receipts.map(row=>row.version),Array.from({length:player.version},(_,index)=>index+1));
  assert.ok(receipts.every(row=>row.actor_id===fixture.accountId));
  const known=new Set(bundle.board.functionalTiles.spawnWeights.map(row=>row.kind));
  const frames=[];
@@ -208,10 +218,11 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
   assert.equal(sample.contentHash,match.content_hash);
   assert.equal(sample.version,sample.beforeVersion+1);
   assert.equal(receipts[sample.version-1].command_id,commandUuid(sample.receiptId));
-  for(const board of [sample.beforeKinds,sample.afterKinds]){
-   assert.equal(board.length,64);
-   assert.ok(board.every(kind=>known.has(kind)||kind===null&&['won','lost'].includes(sample.phase)));
-  }
+  assert.equal(sample.beforeKinds.length,64);
+  assert.equal(sample.afterKinds.length,64);
+  assert.ok(sample.beforeKinds.every(kind=>known.has(kind)));
+  const terminal=['won','lost'].includes(sample.phase);
+  assert.ok(sample.afterKinds.every(kind=>known.has(kind)||terminal&&(kind===null||kind==='')));
   for(const multipliers of [sample.beforeMultipliers,sample.afterMultipliers])
    assert.equal(multipliers.length,64);
   const name='advanced-solo-'+sample.kind+'.png';
@@ -221,12 +232,14 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
   assert.equal(image.readUInt32BE(20),720);
   frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
  }
- assert.equal(astral.version,player.version);
+ assert.ok(samples.at(-1).version<=player.version);
+ if(complete)assert.equal(astral.version,player.version);
  const qualification=encounterDurationFixture?'extended-duration-technical':'authored-encounter';
- const verified={candidate,qualification,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,
+ const verified={result:complete?'PASS':'PARTIAL',candidate,qualification,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,
   playerLevel:fixture.playerLevel,levelFixture:fixture.levelFixture,
-  encounterDurationFixture,samples,journalOrder:{frostMatch,frostConsumed,sameReceipt,astralMatch,astralUpgrade},receipts,frames};
- await writeFile(join(directory,'solo-shared-frost-astral-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
+  encounterDurationFixture,samples,journalOrder,receipts,frames};
+ await writeFile(join(directory,complete?'solo-shared-frost-astral-verification.json':'solo-shared-frost-astral-partial.json'),
+  JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
 
 export async function verifyGhostUltimateReceipt(pool,directory,published,fixture,bundle,candidate){

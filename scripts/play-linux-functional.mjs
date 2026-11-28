@@ -171,14 +171,18 @@ try{
   }
   phase='Unity development player';
   const code=await exited;
+  if(captureAdvanced&&!stopping&&(code===0||await access(resolve(directory,'advanced-samples.json')).then(()=>true,error=>{
+   if(error.code==='ENOENT')return false;
+   throw error;
+  }))){
+   phase='verify packaged natural Frost and Astral';
+   await verifyGhostAdvancedReceipts(pool,directory,published,mapAccess,bundle,candidate,encounterDurationFixture,code===0);
+  }
+  phase='Unity development player';
   if(!stopping&&code!==0)throw Error('Check the local player log');
   if(captureUltimate&&!stopping){
    phase='verify packaged committed Ultimate';
    await verifyGhostUltimateReceipt(pool,directory,published,mapAccess,bundle,candidate);
-  }
-  if(captureAdvanced&&!stopping){
-   phase='verify packaged natural Frost and Astral';
-  await verifyGhostAdvancedReceipts(pool,directory,published,mapAccess,bundle,candidate,encounterDurationFixture);
   }
   if(captureNature&&!stopping){
    phase='verify packaged natural Ghost cleanse';
