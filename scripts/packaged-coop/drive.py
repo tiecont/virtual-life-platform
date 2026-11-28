@@ -286,7 +286,11 @@ def walk_four_client_to_fire():
     key('e',.18)
 
 stage = sys.argv[1]
-if stage == 'read-shared-label':
+if stage == 'read-plaza-position':
+    for image in sys.argv[2:]:
+        point = plaza_position(Path(image))
+        print(f'{Path(image).name}: x={point[0]:.2f} z={point[1]:.2f}', flush=True)
+elif stage == 'read-shared-label':
     for image in sys.argv[2:]:
         visible, heard = shared_hud_turn(image)
         print(f'{Path(image).name}: {visible} {heard}', flush=True)

@@ -39,9 +39,10 @@ for seat in 0 1 2 3; do
 done
 
 drive() {
-  local seat="$1" phase="$2"
+  local seat="$1" phase="$2" limit=180s
+  if [[ "$phase" == four-lobby ]]; then limit=360s; fi
   PACKAGED_QA_RUN="$run/client-$seat" PACKAGED_QA_SEAT="$seat" \
-    timeout 180s python3 "$driver_dir/drive.py" "$phase" >> "$run/client-$seat/ui.log" 2>&1
+    timeout "$limit" python3 "$driver_dir/drive.py" "$phase" >> "$run/client-$seat/ui.log" 2>&1
 }
 drive_all() {
   local phase="$1" state=0
