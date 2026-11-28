@@ -67,7 +67,8 @@ namespace Aetheria.Editor
             SkinnedMeshRenderer[] skins, PlayableDirector boundDirector, TimelineClip take)
         {
             Require(vrm.TryGetBoneTransform(HumanBodyBones.Hips, out var hipsBone), "Icarus Recorder requires mapped hips.");
-            Require(SceneManager.SetActiveScene(scene), "Could not activate the private recording scene.");
+            if (SceneManager.GetActiveScene() != scene)
+                Require(SceneManager.SetActiveScene(scene), "Could not activate the private recording scene.");
             foreach (var camera in scene.GetRootGameObjects().SelectMany(item => item.GetComponentsInChildren<Camera>()))
             {
                 camera.enabled = false;
