@@ -23,7 +23,7 @@ import type {PrelaunchMailSink} from '../infrastructure/mail-sink';
 
 type CampaignRow={id:string;slug:string;capacity:number;admissions:number;phase:'OPEN'|'CLOSED';opens_at:Date|null;closes_at:Date|null};
 type RegistrationRow={id:string;campaign_id:string;email_hash:string;email_sealed:string;email_key_id:string;management_token_hash:string;management_nonce:string;marketing_consent:boolean;state:'PENDING'|'CONFIRMED'|'WITHDRAWN'|'SUPPRESSED';version:number;created_at:Date;confirmed_at:Date|null;withdrawn_at:Date|null;suppressed_at:Date|null};
-type ChallengeRow={id:string;registration_id:string;token_hash:string;server_nonce:string;created_at:Date;expires_at:Date;used_at:Date|null};
+type ChallengeRow={id:string;registration_id:string;token_hash:string;server_nonce:string;created_at:Date;expires_at:Date;used_at:Date|null;confirmed:boolean};
 type OutboxRow={id:string;registration_id:string;challenge_id:string|null;kind:'confirmation'|'confirmed';state:'PENDING'|'SENDING'|'SENT'|'FAILED'|'SUPPRESSED'|'CANCELED';attempts:number;next_attempt_at:Date;locked_until:Date|null;created_at:Date;sent_at:Date|null};
 type DeliveryRow=OutboxRow&{email_hash:string;email_sealed:string;email_key_id:string;registration_state:RegistrationRow['state'];challenge_nonce:string|null;challenge_used_at:Date|null};
 type RequestRow={operation:'register'|'resend'|'withdraw';registration_id:string|null;fingerprint:string};
@@ -208,11 +208,13 @@ export class PrelaunchRegistrationService {
       const challenge=(await db.query<ChallengeRow>('SELECT * FROM prelaunch_challenges WHERE token_hash=$1 FOR UPDATE',[tokenHash])).rows[0];
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE id=$1 FOR UPDATE',[initial.registration_id])).rows[0];
       if(!challenge||!registration||challenge.registration_id!==registration.id)throw confirmationUnavailable();
-      if(registration.state==='CONFIRMED')return PrelaunchConfirmationSchema.parse({...this.view(registration),managementToken:this.managementToken(registration.id,registration.management_nonce)});
-      if(registration.state!=='PENDING'||challenge.used_at||challenge.expires_at.getTime()<=this.now())throw confirmationUnavailable();
+      if(challenge.expires_at.getTime()<=this.now())throw confirmationUnavailable();
+      if(registration.state==='CONFIRMED'&&challenge.confirmed)return PrelaunchConfirmationSchema.parse({...this.view(registration),managementToken:this.managementToken(registration.id,registration.management_nonce)});
+      if(registration.state!=='PENDING'||challenge.used_at)throw confirmationUnavailable();
       if(campaign.admissions>=campaign.capacity)throw new DomainError('NOT_AVAILABLE',409,'This campaign is full');
+      if(this.state(campaign)!=='OPEN')throw confirmationUnavailable();
       const at=new Date(this.now()),updated=(await db.query<RegistrationRow>("UPDATE prelaunch_registrations SET state='CONFIRMED',version=version+1,confirmed_at=$2 WHERE id=$1 RETURNING *",[registration.id,at])).rows[0];
-      await db.query('UPDATE prelaunch_challenges SET used_at=$2 WHERE id=$1',[challenge.id,at]);
+      await db.query('UPDATE prelaunch_challenges SET used_at=$2,confirmed=true WHERE id=$1',[challenge.id,at]);
       await db.query('UPDATE prelaunch_campaigns SET admissions=admissions+1,changed_at=$2 WHERE id=$1',[campaign.id,at]);
       await this.consent(db,registration.id,'email.confirmed');
       await db.query("INSERT INTO prelaunch_outbox(id,registration_id,kind,next_attempt_at,created_at) VALUES($1,$2,'confirmed',$3,$3)",[randomUUID(),registration.id,at]);

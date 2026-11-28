@@ -30,7 +30,7 @@ CREATE TABLE prelaunch_registrations (
   withdrawn_at timestamptz,
   suppressed_at timestamptz,
   UNIQUE(campaign_id,email_hash),
-  CHECK((state='PENDING')=(confirmed_at IS NULL AND withdrawn_at IS NULL AND suppressed_at IS NULL) OR state='CONFIRMED' AND confirmed_at IS NOT NULL AND withdrawn_at IS NULL AND suppressed_at IS NULL OR state='WITHDRAWN' AND withdrawn_at IS NOT NULL AND suppressed_at IS NULL OR state='SUPPRESSED' AND suppressed_at IS NOT NULL)
+  CHECK(state='PENDING' AND (confirmed_at IS NULL AND withdrawn_at IS NULL AND suppressed_at IS NULL) OR state='CONFIRMED' AND confirmed_at IS NOT NULL AND withdrawn_at IS NULL AND suppressed_at IS NULL OR state='WITHDRAWN' AND withdrawn_at IS NOT NULL AND suppressed_at IS NULL OR state='SUPPRESSED' AND suppressed_at IS NOT NULL)
 );
 CREATE INDEX prelaunch_registrations_campaign_state ON prelaunch_registrations(campaign_id,state,created_at);
 
@@ -42,6 +42,7 @@ CREATE TABLE prelaunch_challenges (
   created_at timestamptz NOT NULL,
   expires_at timestamptz NOT NULL,
   used_at timestamptz,
+  confirmed boolean NOT NULL DEFAULT false CHECK(NOT confirmed OR used_at IS NOT NULL),
   CHECK(expires_at>created_at AND expires_at<=created_at+interval '24 hours')
 );
 CREATE UNIQUE INDEX prelaunch_challenges_one_live ON prelaunch_challenges(registration_id) WHERE used_at IS NULL;

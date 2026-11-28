@@ -65,10 +65,16 @@ describe('prelaunch double opt-in',()=>{
     expect((await pool.query('SELECT count(*)::int AS n FROM prelaunch_registrations')).rows[0].n).toBe(1);
     expect(await drain()).toMatchObject({sent:1,failed:0});
     const message=mail.messages[0];expect(message.to).toBe('owner@example.com');expect(message.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
+    const previousToken=confirmationCode();
+    await post('resend',{schemaVersion:1,requestId:randomUUID(),campaignId,email:owner});
+    expect(await drain()).toMatchObject({sent:1,failed:0});
     const token=confirmationCode();
     expect((await pool.query('SELECT * FROM prelaunch_challenges')).rows).not.toEqual(expect.arrayContaining([expect.objectContaining({token_hash:token})]));
     const confirmed=await post('confirm',{schemaVersion:1,token});
     expect(confirmed.statusCode).toBe(200);expect(confirmed.json()).toMatchObject({state:'CONFIRMED',version:1,marketingConsent:false});
+    expect((await post('confirm',{schemaVersion:1,token:previousToken})).statusCode).toBe(404);
+    now+=30*60000;
+    expect((await post('confirm',{schemaVersion:1,token})).statusCode).toBe(404);
     const managementToken=confirmed.json().managementToken as string;
     expect(managementToken).toMatch(/^[a-f0-9]{64}$/);
     expect((await post('confirm',{schemaVersion:1,token})).json()).toEqual(confirmed.json());
