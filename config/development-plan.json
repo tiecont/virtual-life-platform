@@ -10517,6 +10517,7 @@
     },
     {
       "id": "VL-192",
+      "campaignV4ContinuationVerification": {"sourceRevision": "a97cc95a2c7a6cf699bcdfc2c9db628c6ef57497", "verifiedScope": "Chromium operator edits, invalid correction, publication, immutable digest check, rollback audit PASS."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
         "command": "node scripts/admin-gameplay-publication.mjs --shared-admin",
@@ -11090,6 +11091,7 @@
     },
     {
       "id": "VL-202",
+      "campaignV4ContinuationVerification": {"sourceRevision": "900431e969c915baee125ea0c843a2448642a6fc", "verifiedScope": "Disposable PostgreSQL campaign drafts and encounter settlement 24/24. Full schema7 route WSS qualification pending."},
       "campaignV4Verification": {
         "sourceRevision": "66af0a44b1c531d831467b8e9cfe9b722c79cef6",
         "command": "node --test scripts/campaign-v4-content.test.mjs",
@@ -11145,6 +11147,7 @@
     },
     {
       "id": "VL-203",
+      "campaignV4ContinuationVerification": {"sourceRevision": "f675c641ba7b443fcc44fafdd2aead74c8a7d422", "verifiedScope": "Hosted architecture failure diagnosed. Local architecture and Portal production build passed after moving shared localization to specs."},
       "campaignV4Verification": {
         "sourceRevision": "973c55a619eac42014f814b01557547738463191",
         "command": "node scripts/admin-gameplay-publication.mjs --shared-coop --direct",
@@ -11304,6 +11307,7 @@
     },
     {
       "id": "VL-205",
+      "campaignV4ContinuationVerification": {"sourceRevision": "9d824f915549d28e91cce7dd8ef0e5a000d0637c", "verifiedScope": "Blender 5.3 reimport and action deformation passed for Coalwhisk and Cinder Warden. Prototype material and silhouette review remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11329,6 +11333,7 @@
     },
     {
       "id": "VL-206",
+      "campaignV4ContinuationVerification": {"sourceRevision": "10989babf428572f6b378043993b259e0d789b45", "verifiedScope": "GPU Editor rendered original Icarus walk and neutral face. Expression presets have zero bindings. Shader-link errors remain."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11671,6 +11676,7 @@
     },
     {
       "id": "VL-211",
+      "campaignV4ContinuationVerification": {"sourceRevision": "7950040eae45ebc555d6d36570d78433f340c7dc", "verifiedScope": "Two paired solo regular control cohorts won all 384 samples apiece. No Warden victories. Unpublished survival candidate improved cooperative phase reach."},
       "campaignV4Verification": {
         "sourceRevision": "578944f5958d66c624255a43cd54c09ceee1324c",
         "command": "python3 scripts/coop-balance-study.py (three distributions, seed pairs 6001–6002 and 7001–7002; high-tier 8001–8003)",

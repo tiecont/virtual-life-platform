@@ -40,3 +40,9 @@ Pets. It records available references and current production stages. Draft
 composition performs no database writes and never grants player entitlements.
 Published gameplay and later eligible acquisition remain owned by the existing
 versioned PostgreSQL and Admin workflows.
+
+Generate the schema 7 operator draft with `node scripts/campaign-route-candidate.mjs`.
+It joins the 48 canonical routes to separate encounter profiles from
+`config/gameplay/candidates/map-encounters.json`. All routes start disabled.
+Admin can enable an encounter and its prerequisite chain in a validated version.
+An active allocation keeps its published version, encounter ID and digest.
