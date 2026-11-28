@@ -26,6 +26,7 @@ namespace Aetheria.Editor
         // prefab keeps its existing Generic Icarus review import contract.
         public static void Verify() => Verify(false);
         public static void VerifyArmClearance() => Verify(false, reviewArms: true);
+        public static void VerifyPelvisDeformation() => Verify(false, reviewPelvis: true);
         public static void VerifyLayers() => Verify(false, reviewLayers: true);
         public static void VerifyDeformation() => Verify(false, reviewDeformation: true);
         public static void VerifyChinDeformation() => Verify(false, reviewChin: true);
@@ -33,7 +34,7 @@ namespace Aetheria.Editor
         public static void PrepareAccessoryRecorder() => Verify(true, true);
 
         private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false,
-            bool reviewChin = false, bool reviewLayers = false, bool reviewArms = false)
+            bool reviewChin = false, bool reviewLayers = false, bool reviewArms = false, bool reviewPelvis = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -51,6 +52,12 @@ namespace Aetheria.Editor
                 Require(Path.IsPathRooted(chinSource ?? "") && File.Exists(chinSource) &&
                     chinSource.EndsWith(".vrm",StringComparison.OrdinalIgnoreCase) && Hash(chinSource)==chinSha,
                     "Use the exact authorized chin candidate in AETHERIA_ICARUS_REVIEW_CHIN_VRM and AETHERIA_ICARUS_REVIEW_CHIN_SHA256.");
+            string pelvisSource = reviewPelvis ? Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_PELVIS_VRM") : null;
+            string pelvisSha = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_PELVIS_SHA256");
+            if (reviewPelvis)
+                Require(Path.IsPathRooted(pelvisSource ?? "") && File.Exists(pelvisSource) &&
+                    pelvisSource.EndsWith(".vrm",StringComparison.OrdinalIgnoreCase) && Hash(pelvisSource)==pelvisSha,
+                    "Use the exact pelvis review candidate and fingerprint environment variables.");
             string sourceVrmFile = Path.Combine(Path.GetDirectoryName(Application.dataPath), VrmPath);
             Require(Hash(sourceVrmFile) == VrmSha256, "The owner-designated Icarus VRM has changed.");
             Directory.CreateDirectory(output);
@@ -157,6 +164,29 @@ namespace Aetheria.Editor
                         .Single(renderer=>renderer.name=="Head");
                     chin = IcarusChinWeightReview.Compare(modelVrm,originalHead,candidateHead,director,take.start,bound.length,chinSha);
                 }
+                IcarusPelvisWeightReview.Facts pelvis = null;
+                SkinnedMeshRenderer candidateBody = null;
+                SkinnedMeshRenderer originalBody = null;
+                if (reviewPelvis)
+                {
+                    string input = folder+"/PrivatePelvisCandidate.vrm";
+                    File.Copy(pelvisSource, Path.Combine(Application.dataPath,leaf,"PrivatePelvisCandidate.vrm"));
+                    AssetDatabase.ImportAsset(input, ImportAssetOptions.ForceSynchronousImport);
+                    var sourceCandidate = AssetDatabase.LoadAssetAtPath<GameObject>(input);
+                    Require(sourceCandidate != null,"The pelvis candidate did not import.");
+                    originalBody = skins.Single(renderer=>renderer.name=="Body");
+                    candidateBody = sourceCandidate.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Single(renderer=>renderer.name=="Body");
+                    pelvis = IcarusPelvisWeightReview.Compare(originalBody,candidateBody,director,take.start,bound.length,pelvisSha);
+                    var originalMesh = originalBody.sharedMesh;
+                    IcarusLayerSurfaceExport.Write(Path.Combine(output,"original-layers.bin"),skins,director,take.start,bound.length);
+                    try
+                    {
+                        originalBody.sharedMesh = candidateBody.sharedMesh;
+                        IcarusLayerSurfaceExport.Write(Path.Combine(output,"pelvis-layers.bin"),skins,director,take.start,bound.length,originalMesh);
+                    }
+                    finally { originalBody.sharedMesh=originalMesh; }
+                }
                 var review = Sample(director, take.start, bound.length, bones.Select(bone => bone.Joint).ToArray(), skins);
                 Require(review.maxMappedJointAngleDegrees > 1f && review.maxSkinnedVertexDelta > .001f,
                     $"The Timeline must move mapped joints and deform the actual skin. Joint degrees {review.maxMappedJointAngleDegrees}, mesh delta {review.maxSkinnedVertexDelta}.");
@@ -180,10 +210,11 @@ namespace Aetheria.Editor
                 review.eyeRig = MeasureEyeRig(modelVrm, skins);
                 review.deformation = deformation;
                 review.chin = chin;
+                review.pelvis = pelvis;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
                     review.frames = Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,output,
-                        out review.clippedWhitePercent, captureMovingChin: chin != null);
+                        out review.clippedWhitePercent, captureMovingChin: chin != null, captureMovingPelvis: pelvis != null);
                 if (chin != null && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
                 {
                     string chinOutput = Path.Combine(output,"chin-correction");
@@ -196,6 +227,19 @@ namespace Aetheria.Editor
                             out _, captureMovingChin: true);
                     }
                     finally { originalHead.sharedMesh = originalMesh; }
+                }
+                if (pelvis != null && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
+                {
+                    string correctedOutput = Path.Combine(output,"pelvis-correction");
+                    Directory.CreateDirectory(correctedOutput);
+                    var originalMesh = originalBody.sharedMesh;
+                    try
+                    {
+                        originalBody.sharedMesh = candidateBody.sharedMesh;
+                        Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,correctedOutput,
+                            out _,captureMovingPelvis: true);
+                    }
+                    finally { originalBody.sharedMesh=originalMesh; }
                 }
                 if (garmentCorrection != null)
                 {
@@ -382,7 +426,7 @@ namespace Aetheria.Editor
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
             SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent,
-            bool captureMovingChin = false)
+            bool captureMovingChin = false, bool captureMovingPelvis = false)
         {
             Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
                 "A graphics capture requires the project's URP pipeline.");
@@ -504,6 +548,27 @@ namespace Aetheria.Editor
                         camera.transform.SetPositionAndRotation(position,rotation);
                         camera.orthographicSize = orthoSize;
                     }
+                    if (captureMovingPelvis &&
+                        modelVrm.TryGetBoneTransform(HumanBodyBones.Hips,out var hips) &&
+                        modelVrm.TryGetBoneTransform(HumanBodyBones.LeftLowerLeg,out var leftKnee) &&
+                        modelVrm.TryGetBoneTransform(HumanBodyBones.RightLowerLeg,out var rightKnee))
+                    {
+                        var position = camera.transform.position;
+                        var rotation = camera.transform.rotation;
+                        var orthoSize = camera.orthographicSize;
+                        var midpoint = (leftKnee.position+rightKnee.position)*.5f;
+                        var focus = Vector3.Lerp(hips.position,midpoint,.18f);
+                        camera.orthographicSize = Vector3.Distance(hips.position,midpoint)*.78f;
+                        camera.transform.position = focus+new Vector3(.29f,.08f,1f);
+                        camera.transform.LookAt(focus);
+                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });
+                        RenderTexture.active = target;
+                        image.ReadPixels(new Rect(0,0,size,size),0,0);
+                        image.Apply();
+                        File.WriteAllBytes(Path.Combine(output,$"icarus-motion-pelvis-{i+1:D2}.png"),image.EncodeToPNG());
+                        camera.transform.SetPositionAndRotation(position,rotation);
+                        camera.orthographicSize = orthoSize;
+                    }
                 }
                 if (modelVrm.TryGetBoneTransform(HumanBodyBones.LeftEye, out var leftEye) &&
                     modelVrm.TryGetBoneTransform(HumanBodyBones.RightEye, out var rightEye))
@@ -584,6 +649,7 @@ namespace Aetheria.Editor
             public EyeRigSample[] eyeRig;
             public IcarusWalkDeformationReview.Result deformation;
             public IcarusChinWeightReview.Facts chin;
+            public IcarusPelvisWeightReview.Facts pelvis;
             public string correctedClipSha256;
             public string[] correctedFrames = Array.Empty<string>();
             public float[] correctedClippedWhitePercent = Array.Empty<float>();
