@@ -588,7 +588,8 @@ namespace Aetheria.Tests
                 hud.enabled = false;
                 hud.Attach(document);
                 var root = document.rootVisualElement;
-                var projection = Projection(withAbilities: true, timed: true, solo: solo);
+                var jewels = Enumerable.Range(0, 64).Select(index => JewelKinds[index % 6]).ToArray();
+                var projection = Projection(elements: jewels, withAbilities: true, timed: true, solo: solo);
                 var bytes = Encoding.UTF8.GetBytes(projection);
                 var stateField = typeof(NativePlaySession).GetField("state", instance);
                 var decode = typeof(CoopNativePlaySession).GetMethod("Decode", instance);
