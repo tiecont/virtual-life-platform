@@ -82,6 +82,12 @@ PostgreSQL publishes immutable validated bundles. Admin authors spawn weights, p
 
 The tile vocabulary comes from [v2](v2.md), [v3.1](v3.1.md), its [historical board data](v3.1/data/board_rules_10x10.json) and the [art direction](art-direction.md). Their dimensions, resource values and balance examples apply only to their respective revisions. Candidate policy changes require a new validated publication.
 
+### Approved V3 jewel roles
+
+The natural pool contains Strike (`sword`), Mana (`mana`), Rage (`rage`), Vitality (`heart`), Aegis (`shield`) and Soul (`special`). The nine approved sprites use the two R04 source sheets. Display names preserve historical wire IDs. Only Strike contributes ordinary attack damage.
+
+Schema 5 introduces an experimental, encounter-scoped policy. Nature removes eligible negative statuses, Frost mitigates the next eligible enemy attack and Astral raises eligible surviving basic jewels one unlocked tier after resolution. An authored opening or explicitly bound skill may convert basic jewels. Numerical values belong to the unpublished candidate. Prior schema versions keep their original engine capabilities and saved-match interpretation.
+
 ### Board stability
 
 Normal skill overlays preserve board stability unless a published skill explicitly
