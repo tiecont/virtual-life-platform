@@ -25,30 +25,30 @@
   "fontValidation": {
     "regularBytes": 135936,
     "boldBytes": 136332,
-    "cjkSubsetBytes": 295856,
+    "cjkSubsetBytes": 314844,
     "languages": {
       "vi": {
-        "uniqueCodepoints": 115,
+        "uniqueCodepoints": 119,
         "missingCodepoints": [],
         "validated": true
       },
       "en": {
-        "uniqueCodepoints": 72,
+        "uniqueCodepoints": 74,
         "missingCodepoints": [],
         "validated": true
       },
       "ja": {
-        "uniqueCodepoints": 265,
+        "uniqueCodepoints": 289,
         "missingCodepoints": [],
         "validated": true
       },
       "ko": {
-        "uniqueCodepoints": 225,
+        "uniqueCodepoints": 240,
         "missingCodepoints": [],
         "validated": true
       },
       "zh": {
-        "uniqueCodepoints": 270,
+        "uniqueCodepoints": 298,
         "missingCodepoints": [],
         "validated": true
       }
@@ -670,6 +670,90 @@
       "ja": "先にクリア",
       "ko": "선행 클리어",
       "zh": "需先通关"
+    },
+    "coop.owned_pet": {
+      "vi": "Linh Thú sở hữu",
+      "en": "Owned Pet",
+      "ja": "所持ペット",
+      "ko": "보유 펫",
+      "zh": "已拥有灵宠"
+    },
+    "coop.create": {
+      "vi": "Tạo phòng",
+      "en": "Create room",
+      "ja": "部屋を作成",
+      "ko": "방 만들기",
+      "zh": "创建房间"
+    },
+    "coop.join": {
+      "vi": "Vào phòng",
+      "en": "Join room",
+      "ja": "部屋に参加",
+      "ko": "방 참가",
+      "zh": "加入房间"
+    },
+    "coop.id": {
+      "vi": "Mã phòng",
+      "en": "Room id",
+      "ja": "ルームID",
+      "ko": "방 ID",
+      "zh": "房间编号"
+    },
+    "coop.refresh_availability": {
+      "vi": "Cập nhật điều kiện",
+      "en": "Refresh availability",
+      "ja": "参加条件を更新",
+      "ko": "참가 조건 새로고침",
+      "zh": "刷新参加条件"
+    },
+    "coop.resume": {
+      "vi": "Trở lại phòng",
+      "en": "Resume room",
+      "ja": "部屋に戻る",
+      "ko": "방으로 복귀",
+      "zh": "返回房间"
+    },
+    "coop.ready": {
+      "vi": "Sẵn sàng",
+      "en": "Ready",
+      "ja": "準備完了",
+      "ko": "준비 완료",
+      "zh": "准备就绪"
+    },
+    "coop.start": {
+      "vi": "Bắt đầu trận",
+      "en": "Start match",
+      "ja": "戦闘開始",
+      "ko": "전투 시작",
+      "zh": "开始战斗"
+    },
+    "coop.refresh": {
+      "vi": "Cập nhật phòng",
+      "en": "Refresh room",
+      "ja": "部屋を更新",
+      "ko": "방 새로고침",
+      "zh": "刷新房间"
+    },
+    "coop.enter": {
+      "vi": "Vào trận hoặc xem thưởng",
+      "en": "Enter match or view rewards",
+      "ja": "戦闘に入る・報酬を確認",
+      "ko": "전투 입장 또는 보상 확인",
+      "zh": "进入战斗或查看奖励"
+    },
+    "coop.back": {
+      "vi": "Quay lại",
+      "en": "Back",
+      "ja": "戻る",
+      "ko": "뒤로",
+      "zh": "返回"
+    },
+    "coop.plaza": {
+      "vi": "Về Quảng Trường Trung Tâm",
+      "en": "Return to Central Plaza",
+      "ja": "中央広場に戻る",
+      "ko": "중앙 광장으로 복귀",
+      "zh": "返回中央广场"
     }
   }
 }

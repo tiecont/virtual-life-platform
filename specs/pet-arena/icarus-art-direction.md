@@ -118,3 +118,11 @@ Use this export for runtime binding and motion qualification. The older H1 R3 pa
 On Unity 6000.3.14f1 at `a9a3625a`, Cinematic Studio retargeted the existing Charakuru walk (`elyth_base_walk_v1.vrma`, SHA-256 `50b27c7363ff844ccb0b71373794326583a601128e90f14de0c3df7bfefe9161`) onto the modular prefab. Four samples across the 1.292-second clip measured 36.40 degrees of maximum mapped joint rotation and 0.4874 m of skinned vertex displacement across 11 meshes. The temporary review clip uses all 54 mapped humanoid bones. Production motion and facial expression review remain open.
 
 A private OpenGLCore Editor run at `e1deb436` produced four URP frames. Each frame measured 0% near-white foreground pixels. See the [Unity walk capture](../../assets/review/wave-d4/characters/icarus-charakuru-unity-walk.webp).
+
+The neutral face close-up at `10989bab` uses the original model and eye bones.
+All 18 VRM expression presets have zero morph, color, UV and transform bindings.
+Blender inspection of the original project's `work/character.blend` and
+`exports/avatar.blend` found no mesh shape keys. The rig contains eye.L and
+eye.R, with no named jaw or eyelid controls. A speaking or blinking take
+requires an expression-capable revision. The private Unity capture also
+reported shader linking errors, so its material appearance remains under review.
