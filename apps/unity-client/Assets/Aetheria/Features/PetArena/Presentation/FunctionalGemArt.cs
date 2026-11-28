@@ -6,31 +6,16 @@ namespace Aetheria.PetArena.Presentation
 {
     public static class FunctionalGemArt
     {
-        private static readonly Lazy<Dictionary<string, Sprite>> HandAuthored =
+        private static readonly Lazy<Dictionary<string, Sprite>> ReferenceGenerated =
             new Lazy<Dictionary<string, Sprite>>(() => Load("FunctionalTiles/FunctionalGems"));
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private static readonly Lazy<Dictionary<string, Sprite>> GeminiNeonHigh =
             new Lazy<Dictionary<string, Sprite>>(() => Load("FunctionalTiles/FunctionalGemsGemini"));
-        private static readonly bool PreferGemini =
-            Array.IndexOf(Environment.GetCommandLineArgs(), "-aetheria-hand-authored-jewels") < 0;
-
         public static Sprite GetGeminiCandidate(string kind) => Find(GeminiNeonHigh, kind);
 #endif
 
-        public static Sprite Get(string kind)
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (PreferGemini)
-            {
-                var candidate = GetGeminiCandidate(kind);
-                if (candidate != null) return candidate;
-            }
-#endif
-            return GetHandAuthored(kind);
-        }
-
-        public static Sprite GetHandAuthored(string kind) => Find(HandAuthored, kind);
+        public static Sprite Get(string kind) => Find(ReferenceGenerated, kind);
 
         private static Sprite Find(Lazy<Dictionary<string, Sprite>> atlas, string kind)
         {

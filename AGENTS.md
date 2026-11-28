@@ -101,6 +101,14 @@ If Hydrogen is unavailable, keep the brief and continue independent work.
 Obtain owner direction before substituting a different provider. Keep historical
 Gemini outputs attributed to the provider that produced them.
 
+For jewel assets, use the owner's R04 battle image as a visual input to the
+generator. Hydrogen, the authorized Gemini tab and repository-listed image tools
+are permitted for this workflow. Use Meshy only when a 3D deliverable is needed.
+Keep the reference hash, actual provider master and atlas mapping. Limit local
+processing to extracting, resizing and packing generated pixels. All new artwork
+must come from reference-based generation; hand drawing and procedural redraws
+are outside the owner's production workflow.
+
 ## Gameplay Configuration Authority
 
 PostgreSQL is the single source of truth for supported gameplay configuration

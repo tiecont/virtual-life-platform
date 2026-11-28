@@ -12,7 +12,7 @@ namespace Aetheria.Tests
         public void FunctionalArtCandidatesUseSeparateRegionsOnSeparateAtlases()
         {
             Assert.That(
-                CheckAtlas(FunctionalGemArt.GetHandAuthored),
+                CheckAtlas(FunctionalGemArt.Get),
                 Is.Not.SameAs(CheckAtlas(FunctionalGemArt.GetGeminiCandidate)));
         }
 

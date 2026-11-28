@@ -28,3 +28,20 @@ Use gentle fantasy in the lighting, pacing and character acting. Preserve the or
 3. Retain the actual downloaded original in the private production workspace. Record the displayed task/output ID when available, SHA-256, source format, dimensions or sample rate, duration and one specific defect or review finding. Record unknown fields explicitly.
 4. Put the candidate through visual, deformation, playback or loop review as applicable. Record provider provenance and rights separately. Route a reduced public-safe preview through the review gallery only when permitted. Use private versioned storage for approved originals.
 5. Keep the approved design and current in-game asset available for comparison. A concept, staging frame, technical import, rights decision and owner acceptance have separate entries. Icarus requires an explicit decision for each H1–H4 gate.
+
+## R04 functional jewels
+
+The owner supplied `design/05_battle_fire_zone_normal.webp` (SHA-256
+`c4f4874c8903230cb6913a46028a4e2ae5726645af2d7f7fd3e9fba4a6f2ba6d`).
+OpenAI ImageGen received that image directly and generated one transparent 1536 ×
+1024 sheet on 28 November 2026. The provider did not report a price. The private
+master is `artifacts/private-workspace/r04-jewels/provider-master.png` (SHA-256
+`a1d1264705632fb709bb6c95032a1676eef8f59dee229d58acd8a768c20a3ad1`).
+The first row contains gold lightning (Sword), blue droplet (Mana) and red flame
+(Rage). The second contains pink Heart, cobalt Shield and amber paw (Special).
+The UI kit packer takes that master as its only argument and preserves the six
+existing Unity sprite names, regions and GUIDs. The default atlas has SHA-256
+`9899801e283c6751746c5fa0c6e8711a65d33d737dd6aace626ff64ae97f14be`.
+The separate historical Gemini candidate matches its archived atlas at
+`76837c975680022d177265493a8f89a6b52c2c031f93687601ef740e371161ca`.
+Owner visual approval and release remain pending.
