@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {navigateImagePage,observeImageBrowser} from '../../scripts/image-browser-navigation.mjs';
+import {navigateImagePage as navigate,observeImageBrowser} from '../../scripts/image-browser-navigation.mjs';
 
+const navigateImagePage = (page, path, attempts) => navigate(page, path, attempts, 'https://localhost:1234');
 const changed = () => Error('page.goto: net::ERR_NETWORK_CHANGED at https://localhost:1234/\nCall log:');
 function fixture(outcomes) {
   const calls = [], pages = [];
@@ -73,6 +74,47 @@ test('certificate, refused connection, timeout, cancellation and unrelated navig
     assert.equal(f.calls.filter(call => call.operation === 'goto').length, 1);
     assert.deepEqual(attempts, []);
   }
+});
+function interruptedDocument(timeout, overrides = {}, mutation = false) {
+  return page => {
+    page.mainFrame = () => page;
+    if (mutation) page.listeners.get('request')({method: () => 'POST'});
+    page.listeners.get('requestfailed')({
+      isNavigationRequest: () => true, frame: () => page, method: () => 'GET',
+      redirectedFrom: () => null, url: () => 'https://localhost:1234/admin',
+      failure: () => ({errorText: 'net::ERR_NETWORK_CHANGED'}), ...overrides,
+    });
+    throw timeout;
+  };
+}
+test('load timeout with a confirmed original document network change retries the same GET', async () => {
+  const timeout = Object.assign(Error('page.goto: Timeout 10000ms exceeded.'), {name: 'TimeoutError'});
+  const response = {status: () => 200};
+  const f = fixture([interruptedDocument(timeout), response]), attempts = [];
+  const loaded = await navigateImagePage(await f.context.newPage(), '/admin', attempts);
+  assert.equal(loaded.response, response);
+  assert.equal(loaded.page, f.pages[1]);
+  assert(f.pages[0].closed);
+  assert.deepEqual(attempts.map(attempt => attempt.result), ['ERR_NETWORK_CHANGED_LOAD_TIMEOUT', 'LOADED']);
+});
+test('timeouts remain fatal without a network change on the original main-frame GET', async () => {
+  const timeout = Object.assign(Error('page.goto: Timeout 10000ms exceeded.'), {name: 'TimeoutError'});
+  for (const overrides of [
+    {isNavigationRequest: () => false},
+    {frame: () => ({})},
+    {method: () => 'POST'},
+    {redirectedFrom: () => ({})},
+    {url: () => 'https://localhost:1234/identity'},
+    {url: () => 'https://other.invalid/admin'},
+    {failure: () => ({errorText: 'net::ERR_CERT_AUTHORITY_INVALID'})},
+  ]) {
+    const f = fixture([interruptedDocument(timeout, overrides)]);
+    await assert.rejects(navigateImagePage(await f.context.newPage(), '/admin', []), value => value === timeout);
+    assert.equal(f.pages.length, 1);
+  }
+  const f = fixture([interruptedDocument(timeout, {}, true)]);
+  await assert.rejects(navigateImagePage(await f.context.newPage(), '/admin', []), /mutation/);
+  assert.equal(f.pages.length, 1);
 });
 test('page retirement or context cancellation cannot be hidden by another request', async () => {
   for (const operation of ['close', 'newPage']) {

@@ -77,9 +77,9 @@ try {
     observeImageBrowser(context, origin, facts.browserDiagnostics);
     const errors = []; context.on('page', page => page.on('pageerror', error => errors.push(error.name)));
     let page = await context.newPage();
-    ({page} = await navigateImagePage(page, '/', facts.browserNavigations)); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
+    ({page} = await navigateImagePage(page, '/', facts.browserNavigations, origin)); await expect(page.getByRole('heading', {level: 1})).toHaveText('A city beginswith a connection.'); await expect(page.getByRole('status')).toHaveText('Database connected · schema v1');
     const styles = await page.locator('link[rel=stylesheet]').count(); assert(styles > 0);
-    ({page} = await navigateImagePage(page, '/identity', facts.browserNavigations));
+    ({page} = await navigateImagePage(page, '/identity', facts.browserNavigations, origin));
     if (!cookies) {
       await page.getByLabel('Display name').fill('Web image visitor');
       facts.guestForm = await page.getByLabel('Display name').evaluate(input => ({length: input.value.length, valid: input.validity.valid, disabled: input.disabled}));
