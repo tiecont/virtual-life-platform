@@ -15,6 +15,7 @@ import {Pool} from 'pg';
 import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 import {verifySoloCampaign} from './solo-water-campaign-probe.mjs';
+import {verifyTimedSoloPublication} from './solo-timed-publication-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -86,7 +87,9 @@ const waterCampaign=process.argv.includes('--water-campaign');
 const naturalCampaign=process.argv.includes('--natural-campaign');
 assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe');
 const unchangedCandidate=waterCampaign||naturalCampaign;
-const solo=unchangedCandidate||process.argv.includes('--solo');
+const timedSolo=process.argv.includes('--timed-solo');
+assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
+const solo=timedSolo||unchangedCandidate||process.argv.includes('--solo');
 const direct=solo||process.argv.includes('--direct');
 const functional=solo||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
@@ -97,8 +100,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -141,11 +144,18 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=timedSolo?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
  const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
- if(!unchangedCandidate){
+ if(timedSolo){
+  // Preserve the authored timer and uncapped rounds. The synthetic attack and
+  // health values give the probe room to finish after explicit and timed passes.
+  assert.ok(boss.regular);
+  boss.regular.maxHp=1;
+  boss.regular.defense=1;
+  Object.assign(boss.regular.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
+ }else if(!unchangedCandidate){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -306,7 +316,10 @@ try{
   boss.requiredRoomPoints=fields.points;
   boss.rewardPolicy.defeat.materials=fields.materials;
   if(fields.priority)boss.attackModel.targetPriority=fields.priority;
-  if(solo&&label==='B'){
+  if(timedSolo&&label==='B'){
+   boss.regular.rewardPolicy.firstClear.coins+=20;
+  }
+  if(solo&&!timedSolo&&label==='B'){
    // The progression fixture needs a reachable win with two real Boss phases.
    Object.assign(boss.solo,{maxHp:16,maxRounds:30,baseDamage:1,perRoundDamage:0,minimumDamage:1});
   }
@@ -441,7 +454,7 @@ try{
   return send();
  }
  const get=(auth,url)=>app.http.inject({url,headers:{cookie:auth.cookie}});
- const pets=unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
+ const pets=timedSolo?['fire-coalwhisk']:unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
@@ -461,7 +474,7 @@ try{
   mark('Achievement Points gate used the active Admin version',{version:version.version,points,requiredPoints:eligibility.requiredPoints,eligible:allowed,createStatus:result?.statusCode});
   return result?.json();
  }
- if(!unchangedCandidate)await grant(host,5250);
+ if(!unchangedCandidate&&!timedSolo)await grant(host,5250);
  const caPem=await readFile(tls.caFile,'utf8');
  async function prepareRoom(version,room){
   if(!room){
@@ -763,6 +776,10 @@ try{
    natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
    dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
   });
+ }else if(timedSolo){
+  await verifyTimedSoloPublication({
+   pool,host,published:A,validator,ruleset,mark,post,publish,soloAdmission,native,connections,closeMatch,restart,pureSwap,legalSwap,
+  });
  }else if(solo){
   const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:'cinder-terraces',encounterId:'cinder-terraces-boss'};
   const admission=await soloAdmission(input);
@@ -776,6 +793,12 @@ try{
   assert.equal(started.state.participants.length,1);
   assert.equal(started.state.board.length,64);
   assert.ok(started.state.board.every(tile=>typeof tile.kind==='string'&&!Object.hasOwn(tile,'element')));
+  for(const field of ['turnDeadlineUnixMs','turnRemainingMs','canEndTurn']){
+   assert.equal(Object.hasOwn(started.state,field),false);
+  }
+  const unsupported=await native(match,0,started.version,{kind:'endTurn'});
+  assert.equal(unsupported.code,15,JSON.stringify(unsupported)); // UNSUPPORTED_CLIENT
+  mark('schema 3 solo retained its untimed projection and rejected EndTurn',{canonicalVersion:started.version,rejection:unsupported.code});
   const pinned=(await pool.query('SELECT functional_config_version::int, functional_config_digest, functional_allocation FROM platform_native_arena8_matches WHERE match_id=$1',[match.row.match_id])).rows[0];
   assert.equal(pinned.functional_config_version,A.version);
   assert.equal(pinned.functional_config_digest,A.digest);
