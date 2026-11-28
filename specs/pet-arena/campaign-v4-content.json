@@ -11,6 +11,7 @@
     "dragon-fire-ignivar": {
       "provider": "Tripo Studio",
       "mode": "Smart Mesh P2.0",
+      "ownerSilhouetteReview": "keep-for-mesh-processing",
       "privacy": "Sharing Only",
       "jobId": "b6c5ecd7-1e38-4fdf-b410-25df2fdc5886",
       "credits": 100,
@@ -28,6 +29,7 @@
     "bird-fire-cinderquill": {
       "provider": "Tripo Studio",
       "mode": "Smart Mesh P2.0",
+      "ownerSilhouetteReview": "keep-for-mesh-processing",
       "privacy": "Sharing Only",
       "jobId": "8da4fae5-9f09-49ca-a5cc-378cbdf0bd00",
       "credits": 100,
