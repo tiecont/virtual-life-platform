@@ -289,3 +289,48 @@ fn warden_attack_stat_is_effective_only_in_the_new_schema() {
     };
     assert_eq!(charge_regular(0), charge_regular(36));
 }
+
+#[test]
+fn single_seat_warden_final_blow_proposes_the_ordinary_win_settlement() {
+    let rules = CoopRules::load_solo(BUNDLE, FIRE.into()).unwrap();
+    let seat = seats()[0].clone();
+    let loadout = ArtifactLoadout {
+        digest: ArtifactLoadout::digest(rules.digest(), &seat, &[]),
+        entries: Vec::new(),
+    };
+    let ready = rules.allocate_solo(seat, &loadout).unwrap();
+    let mut entropy = rng(0);
+    let mut playing = rules
+        .reduce_stamped(&ready, CoopAction::Start, Some(1_000), &mut entropy)
+        .unwrap()
+        .state;
+
+    // Model a legitimate finishing blow in a focused phase-two fixture.
+    rules.transform(&mut playing).unwrap();
+    playing.boss.hp = 1;
+    playing.turn_index = 10;
+    playing.participants[0].mana = rules.config.resources.mana_cap;
+    playing.pending = Some(PendingAttack {
+        targets: 1,
+        remaining: 1,
+        damage: u32::MAX,
+    });
+
+    let decision = rules
+        .reduce_stamped(&playing, CoopAction::Skill, Some(2_000), &mut entropy)
+        .unwrap();
+    assert_eq!(decision.state.phase, CoopPhase::Won);
+    assert_eq!(decision.state.boss.hp, 0);
+    assert_eq!(decision.state.pending, None);
+    assert!(decision.state.participants[0].alive);
+    assert_eq!(decision.state.participants[0].contribution_damage, 1);
+    assert!(decision.events.contains(&event("boss-damage", Some(0), 1)));
+    let settlement = decision.settlement.unwrap();
+    assert_eq!(settlement, rules.settlement(&decision.state));
+    let Value::List(fields) = settlement else {
+        panic!("ordinary settlement envelope");
+    };
+    assert_eq!(fields[4], Value::Text("won".into()));
+    assert_eq!(fields[5], Value::Text(FIRE.into()));
+    assert!(matches!(&fields[6], Value::List(participants) if participants.len() == 1));
+}
