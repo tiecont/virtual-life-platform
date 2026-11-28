@@ -73,11 +73,11 @@ describe('prelaunch double opt-in',()=>{
     const confirmed=await post('confirm',{schemaVersion:1,token});
     expect(confirmed.statusCode).toBe(200);expect(confirmed.json()).toMatchObject({state:'CONFIRMED',version:1,marketingConsent:false});
     expect((await post('confirm',{schemaVersion:1,token:previousToken})).statusCode).toBe(404);
+    expect((await post('confirm',{schemaVersion:1,token})).json()).toEqual(confirmed.json());
     now+=30*60000;
     expect((await post('confirm',{schemaVersion:1,token})).statusCode).toBe(404);
     const managementToken=confirmed.json().managementToken as string;
     expect(managementToken).toMatch(/^[a-f0-9]{64}$/);
-    expect((await post('confirm',{schemaVersion:1,token})).json()).toEqual(confirmed.json());
     expect((await pool.query("SELECT count(*)::int AS n FROM prelaunch_registrations WHERE state='CONFIRMED'")).rows[0].n).toBe(1);
     expect((await pool.query('SELECT admissions FROM prelaunch_campaigns')).rows[0].admissions).toBe(1);
     expect((await server.http.inject({url:'/v1/prelaunch/registration',remoteAddress:ip(),headers:{authorization:'Bearer '+managementToken}})).json()).toMatchObject({state:'CONFIRMED',version:1});

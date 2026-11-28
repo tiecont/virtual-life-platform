@@ -89,8 +89,8 @@ export class PrelaunchRegistrationService {
     });
   }
 
-  private async campaignRow(db:Pick<PoolClient,'query'>,id:string,lock=false){
-    const row=(await db.query<CampaignRow>('SELECT id,slug,capacity,admissions,phase,opens_at,closes_at FROM prelaunch_campaigns WHERE id=$1'+(lock?' FOR UPDATE':''),[id])).rows[0];
+  private async campaignRow(db:Pick<PoolClient,'query'>,id:string){
+    const row=(await db.query<CampaignRow>('SELECT id,slug,capacity,admissions,phase,opens_at,closes_at FROM prelaunch_campaigns WHERE id=$1',[id])).rows[0];
     if(!row)throw unavailable();
     return row;
   }
@@ -156,7 +156,7 @@ export class PrelaunchRegistrationService {
       await this.lock(db,'request:'+value.campaignId+':'+value.requestId);
       const prior=await this.priorRequest(db,value.campaignId,value.requestId);
       if(prior){if(prior.fingerprint!==fingerprint)throw stale();return accepted;}
-      const campaign=await this.campaignRow(db,value.campaignId,true);
+      const campaign=await this.campaignRow(db,value.campaignId);
       await this.rate(db,[['ip-register:'+this.seal('ip',clientKey),30,HOUR],['email-register:'+emailHash,5,HOUR]]);
       if(this.state(campaign)==='OPEN'){
         await this.lock(db,'email:'+value.campaignId+':'+emailHash);
@@ -164,6 +164,7 @@ export class PrelaunchRegistrationService {
         if(!suppressed){
           let registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE campaign_id=$1 AND email_hash=$2 FOR UPDATE',[value.campaignId,emailHash])).rows[0];
           if(!registration){
+            await this.lock(db,'pending-capacity:'+campaign.id);
             const pending=(await db.query<{n:number}>("SELECT count(*)::int AS n FROM prelaunch_registrations WHERE campaign_id=$1 AND state='PENDING'",[value.campaignId])).rows[0].n;
             if(pending<PENDING_CAP){
               const id=randomUUID(),managementNonce=randomBytes(32).toString('hex'),at=new Date(this.now());
@@ -187,7 +188,7 @@ export class PrelaunchRegistrationService {
       await this.lock(db,'request:'+value.campaignId+':'+value.requestId);
       const prior=await this.priorRequest(db,value.campaignId,value.requestId);
       if(prior){if(prior.fingerprint!==fingerprint)throw stale();return accepted;}
-      const campaign=await this.campaignRow(db,value.campaignId,true);
+      const campaign=await this.campaignRow(db,value.campaignId);
       await this.rate(db,[['ip-resend:'+this.seal('ip',clientKey),15,HOUR],['email-resend:'+emailHash,3,HOUR]]);
       await this.lock(db,'email:'+value.campaignId+':'+emailHash);
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE campaign_id=$1 AND email_hash=$2 FOR UPDATE',[value.campaignId,emailHash])).rows[0];
@@ -204,7 +205,6 @@ export class PrelaunchRegistrationService {
       WHERE ch.token_hash=$1`,[tokenHash])).rows[0];
     if(!initial)throw confirmationUnavailable();
     return this.tx(async db=>{
-      const campaign=await this.campaignRow(db,initial.campaign_id,true);
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE id=$1 FOR UPDATE',[initial.registration_id])).rows[0];
       const challenge=(await db.query<ChallengeRow>('SELECT * FROM prelaunch_challenges WHERE token_hash=$1 FOR UPDATE',[tokenHash])).rows[0];
       if(!challenge||!registration||challenge.registration_id!==registration.id)throw confirmationUnavailable();
@@ -213,14 +213,21 @@ export class PrelaunchRegistrationService {
       if(suppression.rowCount)throw confirmationUnavailable();
       if(registration.state==='CONFIRMED'&&challenge.confirmed)return PrelaunchConfirmationSchema.parse({...this.view(registration),managementToken:this.managementToken(registration.id,registration.management_nonce)});
       if(registration.state!=='PENDING'||challenge.used_at)throw confirmationUnavailable();
-      if(campaign.admissions>=campaign.capacity)throw new DomainError('NOT_AVAILABLE',409,'This campaign is full');
-      if(this.state(campaign)!=='OPEN')throw confirmationUnavailable();
       const at=new Date(this.now()),updated=(await db.query<RegistrationRow>("UPDATE prelaunch_registrations SET state='CONFIRMED',version=version+1,confirmed_at=$2 WHERE id=$1 RETURNING *",[registration.id,at])).rows[0];
       await db.query('UPDATE prelaunch_challenges SET used_at=$2,confirmed=true WHERE id=$1',[challenge.id,at]);
-      await db.query('UPDATE prelaunch_campaigns SET admissions=admissions+1,changed_at=$2 WHERE id=$1',[campaign.id,at]);
       await this.consent(db,registration.id,'email.confirmed');
       await db.query("INSERT INTO prelaunch_outbox(id,registration_id,kind,next_attempt_at,created_at) VALUES($1,$2,'confirmed',$3,$3)",[randomUUID(),registration.id,at]);
-      await this.audit(db,campaign.id,registration.id,'email.confirmed');
+      await this.audit(db,initial.campaign_id,registration.id,'email.confirmed');
+      // Acquire the shared capacity row only for the final write. A failed
+      // admission rolls back the challenge, consent and outbox together.
+      const admitted=await db.query(`UPDATE prelaunch_campaigns SET admissions=admissions+1,changed_at=$2
+        WHERE id=$1 AND admissions<capacity AND phase='OPEN'
+          AND (opens_at IS NULL OR opens_at<=$2) AND (closes_at IS NULL OR closes_at>$2)`,[initial.campaign_id,at]);
+      if(!admitted.rowCount){
+        const campaign=await this.campaignRow(db,initial.campaign_id);
+        if(campaign.admissions>=campaign.capacity)throw new DomainError('NOT_AVAILABLE',409,'This campaign is full');
+        throw confirmationUnavailable();
+      }
       return PrelaunchConfirmationSchema.parse({...this.view(updated),managementToken:this.managementToken(updated.id,updated.management_nonce)});
     });
   }
@@ -234,7 +241,7 @@ export class PrelaunchRegistrationService {
     if(!/^[a-f0-9]{64}$/.test(token))throw confirmationUnavailable();
     const value=PrelaunchWithdrawSchema.parse(input),initial=await this.registrationByManagement(this.identity.pool,token);
     return this.tx(async db=>{
-      const campaign=await this.campaignRow(db,initial.campaign_id,true);
+      const campaign=await this.campaignRow(db,initial.campaign_id);
       const registration=await this.registrationByManagement(db,token,true);
       if(registration.campaign_id!==campaign.id)throw confirmationUnavailable();
       const fingerprint=this.requestFingerprint({campaignId:campaign.id,requestId:value.requestId,operation:'withdraw',registrationId:registration.id,expectedVersion:value.expectedVersion});
@@ -319,7 +326,7 @@ export class PrelaunchRegistrationService {
   private async markSuppressed(delivery:DeliveryRow){
     await this.tx(async db=>{
       const campaignId=(await db.query<{campaign_id:string}>('SELECT campaign_id FROM prelaunch_registrations WHERE id=$1',[delivery.registration_id])).rows[0].campaign_id;
-      const campaign=await this.campaignRow(db,campaignId,true);
+      const campaign=await this.campaignRow(db,campaignId);
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE id=$1 FOR UPDATE',[delivery.registration_id])).rows[0];
       const at=new Date(this.now());
       if(registration.state==='PENDING'||registration.state==='CONFIRMED')await db.query("UPDATE prelaunch_registrations SET state='SUPPRESSED',version=version+1,suppressed_at=$2 WHERE id=$1",[registration.id,at]);
