@@ -72,6 +72,7 @@ function legalSwap(board, preferOffense=false){
 
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve(process.env.PACKAGED_QA_ENGINE);
 const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_REVISION};
+const nativeFailures=new WeakMap();
 const root=resolve(process.env.PACKAGED_QA_RUN);
 const roster=['Unity player', 'Integration seat 2','Integration seat 3','Integration seat 4'];
 let stopping;
@@ -248,16 +249,30 @@ try{
   return {value:view.ticket,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
+ function reportNativeFailure(error,phase,seat,connection,ticket=connection?.ticket){
+  const diagnostics={
+   phase,seat,
+   closeCode:connection?.closeCode()??null,
+   remainingTtlMs:Number.isFinite(ticket?.expiresAt)?ticket.expiresAt-Date.now():null,
+   socketAgeMs:connection?.socketAgeMs()??null,
+  };
+  nativeFailures.set(error,diagnostics);
+  console.log('native connection failure',JSON.stringify(diagnostics));
+ }
  function client(ticket,seat){
+  const startedAt=performance.now();
   const ws=new WebSocket(runtimeOrigin.replace('https:','wss:')+'/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:runtimeOrigin}});
   const queue=[];
-  let waiting;
+  let waiting,closeCode;
   ws.on('message',data=>{
    try{queue.push(decodeServer(new Uint8Array(data)));}
    catch{waiting?.(new Error('Invalid native message'));return;}
    waiting?.(null,queue.shift());
   });
-  ws.on('close',()=>waiting?.(new Error('Native socket closed')));
+  ws.on('close',code=>{
+   closeCode=code;
+   waiting?.(new Error('Native socket closed'));
+  });
   const next=()=>new Promise((resolve,reject)=>{
    if(queue.length){resolve(queue.shift());return;}
    if(ws.readyState!==WebSocket.OPEN){reject(new Error('Native socket closed'));return;}
@@ -272,20 +287,26 @@ try{
    ws.once('open',resolve);
    ws.on('error',()=>{const error=new Error('Native socket transport failed');waiting?.(error);reject(error);});
   });
-  return {ws,seat,ticket,opened,next,sequence:1};
+  return {ws,seat,ticket,opened,next,sequence:1,
+   closeCode:()=>closeCode,socketAgeMs:()=>Math.round(performance.now()-startedAt)};
  }
- async function openConnection(seat,ticket,target=fireTarget){
-  const connection={...client(ticket,seat),target};
-  const contentBytes=Buffer.from(target.allocation.content_hash,'hex');
+ async function openConnection(seat,target=fireTarget){
+  let connection,ticket,phase='ticket';
   try{
+   ticket=await freshTicket(seat,target);
+   phase='upgrade';
+   connection={...client(ticket,seat),target};
+   const contentBytes=Buffer.from(target.allocation.content_hash,'hex');
    await connection.opened;
+   phase='hello';
    const id=randomBytes(16);
    connection.ws.send(envelope(10,helloMessage(ticket.value,contentBytes),id,connection.sequence++));
    const hello=await connection.next();
    assert.equal(hello.body.case,'hello');
    return connection;
   }catch(error){
-   connection.ws.terminate();
+   reportNativeFailure(error,phase,seat,connection,ticket);
+   connection?.ws.terminate();
    throw error;
   }
  }
@@ -295,12 +316,14 @@ try{
   const id=randomBytes(16);
   let connection=connections[seat];
   for(let attempt=0;attempt<5&&!stopping;attempt++){
+   let awaitingReceipt=false;
    try{
     if(attempt>0||connection.ws.readyState!==WebSocket.OPEN||connection.ticket.expiresAt-Date.now()<2_000){
      connection.ws.terminate();
-     connection=await openConnection(seat,await freshTicket(seat,target),target);
+     connection=await openConnection(seat,target);
      connections[seat]=connection;
     }
+    awaitingReceipt=true;
     connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
     for(let message=0;message<16;message++){
      const env=await connection.next();
@@ -312,18 +335,20 @@ try{
      }
     }
    }catch(error){
+    if(awaitingReceipt)reportNativeFailure(error,'receipt',seat,connection);
     if(attempt===4)throw error;
-    console.log('reopening integration seat',seat,error.message);
     await new Promise(resolve=>setTimeout(resolve,400));
    }
   }
-  throw Error('Native command did not return a matching result');
+  const error=new Error('Native command did not return a matching result');
+  if(!stopping)reportNativeFailure(error,'receipt',seat,connection);
+  throw error;
  }
  try{
   async function connectTeammates(){
    for(const seat of [1,2,3]){
     for(let attempt=0;attempt<3;attempt++){
-     try{connections[seat]=await openConnection(seat,await freshTicket(seat));break;}
+     try{connections[seat]=await openConnection(seat);break;}
      catch(error){if(attempt===2)throw error;await new Promise(r=>setTimeout(r,350));}
     }
    }
@@ -487,7 +512,7 @@ try{
    throw Error('Timed out waiting for Water version '+version);
   }
   try{
-   connections[1]=await openConnection(1,await freshTicket(1,target),target);
+   connections[1]=await openConnection(1,target);
    const started=await readWaterVersion(1);
    assert.equal(started.state.phase,'playing');
    assert.equal(started.state.activeSeat,0);
@@ -516,8 +541,9 @@ try{
   facts.signal=stopping;
   process.exitCode=stopping==='SIGINT'?130:143;
  }else{
-  facts.failure={name:error.name,message:String(error.message).slice(0,500)};
-  facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);
+  const diagnostic=nativeFailures.get(error);
+  facts.failure=diagnostic??{name:error.name,message:String(error.message).slice(0,500)};
+  if(!diagnostic)facts.frames=String(error.stack??'').split('\n').filter(line=>line.trim().startsWith('at ')).slice(0,4);
   process.exitCode=1;
  }
 }finally{
