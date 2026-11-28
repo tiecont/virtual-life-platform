@@ -19,6 +19,8 @@ namespace Aetheria.Tests
 
         private string folder;
         private Scene previousScene, scene;
+        private bool replaceRunnerScene;
+        private NewSceneSetup runnerSetup;
         private AnimationClip clip;
 
         [SetUp]
@@ -28,7 +30,23 @@ namespace Aetheria.Tests
             folder = "Assets/" + name;
             AssetDatabase.CreateFolder("Assets", name);
             previousScene = SceneManager.GetActiveScene();
-            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            scene = default;
+            replaceRunnerScene = false;
+            if (SceneManager.sceneCount == 1 && string.IsNullOrEmpty(previousScene.path))
+            {
+                // Unity Test Framework starts EditMode in a default, untitled scene
+                // and restores the user's original scene setup after its run.
+                var roots = previousScene.GetRootGameObjects();
+                bool defaultRoots = roots.Length == 2 && roots.All(root => root.transform.childCount == 0) &&
+                    roots.Any(root => root.name == "Main Camera" && root.GetComponent<Camera>() != null) &&
+                    roots.Any(root => root.name == "Directional Light" && root.GetComponent<Light>() != null);
+                Assert.That(roots.Length == 0 || defaultRoots && !previousScene.isDirty, Is.True,
+                    "The runner's untitled scene contains unsaved changes.");
+                runnerSetup = defaultRoots ? NewSceneSetup.DefaultGameObjects : NewSceneSetup.EmptyScene;
+                replaceRunnerScene = true;
+            }
+            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
+                replaceRunnerScene ? NewSceneMode.Single : NewSceneMode.Additive);
             clip = new AnimationClip { name = "Synthetic transform animation (test fixture)" };
             AnimationUtility.SetEditorCurve(clip,
                 EditorCurveBinding.FloatCurve(ProbePath, typeof(Transform), "m_LocalPosition.x"),
@@ -43,7 +61,8 @@ namespace Aetheria.Tests
             if (scene.IsValid() && scene.isLoaded)
             {
                 foreach (var root in scene.GetRootGameObjects()) Undo.ClearUndo(root);
-                EditorSceneManager.CloseScene(scene, true);
+                if (replaceRunnerScene) EditorSceneManager.NewScene(runnerSetup, NewSceneMode.Single);
+                else EditorSceneManager.CloseScene(scene, true);
             }
             if (previousScene.IsValid() && previousScene.isLoaded)
                 SceneManager.SetActiveScene(previousScene);
@@ -72,8 +91,10 @@ namespace Aetheria.Tests
             var scenePath = folder + "/SyntheticMotionFixture.unity";
             Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
             Undo.ClearUndo(director.gameObject);
-            EditorSceneManager.CloseScene(scene, true);
-            scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+            if (replaceRunnerScene) scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            else EditorSceneManager.CloseScene(scene, true);
+            scene = EditorSceneManager.OpenScene(scenePath,
+                replaceRunnerScene ? OpenSceneMode.Single : OpenSceneMode.Additive);
             director = scene.GetRootGameObjects().Select(root => root.GetComponent<PlayableDirector>())
                 .Single(component => component != null);
             model = scene.GetRootGameObjects().Single(root => root.name == SyntheticModel).GetComponent<Animator>();
