@@ -13,8 +13,8 @@ const [baseline, canonical, draft] = await Promise.all([
 // These checks exercise roster composition. The integrated schema-six draft
 // still needs the Rust engine validator for its combat values and typed rules.
 const input = () => ({
-  bundle: {...structuredClone(baseline), schemaVersion: 6},
-  content: structuredClone(draft),
+  bundle: {...globalThis.structuredClone(baseline), schemaVersion: 6},
+  content: globalThis.structuredClone(draft),
 });
 const prepare = ({bundle, content}) => prepareCampaignV4Content(bundle, content, canonical, baseline);
 

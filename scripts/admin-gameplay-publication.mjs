@@ -66,6 +66,7 @@ assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
 const timedCoop=process.argv.includes('--timed-coop');
+const sharedAdmin=process.argv.includes('--shared-admin');
 const sharedMode=process.argv.find(arg=>['--shared-solo','--shared-coop'].includes(arg))?.slice(2);
 const advancedCoop=process.argv.includes('--advanced-coop')||sharedMode==='shared-coop';
 const advancedSoloArg=process.argv.find(arg=>arg.startsWith('--advanced-solo='));
@@ -88,7 +89,7 @@ process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
 const artifact=await mkdtemp(join(evidence,sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:sharedMode??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const facts={result:'FAIL',board:(sharedAdmin?'shared-admin':sharedMode)??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -131,7 +132,7 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=sharedMode?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
  const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
@@ -151,7 +152,7 @@ try{
   boss.regular.maxHp=1;
   boss.regular.defense=1;
   Object.assign(boss.regular.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
- }else if(!unchangedCandidate&&!advanced){
+ }else if(!unchangedCandidate&&!advanced&&!sharedAdmin){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -441,6 +442,38 @@ try{
   mark('published '+label+' through typed browser controls, engine validation and PostgreSQL selection',{version:created.version,digest:checked.digest,activeRevision:publishResult.activeRevision,fields});
   return configurations[label];
  }
+ if(sharedAdmin){
+  const nature=page.getByLabel('Nature spawn weight',{exact:true});
+  const matrix=page.getByRole('region',{name:'Elemental damage matrix'});
+  await expect(nature).toBeDisabled();
+  await expect(matrix.getByRole('spinbutton')).toHaveCount(36);
+  const weight=Number(await nature.inputValue())+1;
+  const created=await clickMutation('New draft from active','draft');
+  await expect(nature).toBeEnabled();
+  await control('Nature spawn weight',weight);
+  await control('Fire against Water (%)',60);
+  await control('Fire against Fire (%)',99);
+  const rejected=page.waitForResponse(value=>new URL(value.url()).pathname.endsWith('/gameplay-config-validate'));
+  await button('Save and validate').click();
+  assert.equal((await rejected).status(),422);
+  assert.equal((await dbActive()).version,installed.version);
+  await expect(page.getByLabel('Fire against Fire (%)',{exact:true})).toBeEnabled();
+  await control('Fire against Fire (%)',100);
+  await control('Boss attack',Number(seed.bosses[0].attack)+1);
+  await button('Compare with active').click();
+  await expect(page.getByRole('heading',{name:'Differences from active'})).toBeVisible();
+  const checked=await clickMutation('Save and validate','validate');
+  await clickMutation('Publish validated version','publish');
+  const saved=await dbConfig(created.version);
+  const element=saved.bundle.elements.find(row=>row.element==='fire');
+  assert.equal(element.effectiveness.find(row=>row.element==='water').permille,600);
+  assert.equal(saved.bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight,weight);
+  assert.equal(saved.bundle.bosses[0].attack,seed.bosses[0].attack+1);
+  assert.equal(saved.content_digest,checked.contentDigest);
+  assert.equal((await dbConfig(installed.version)).content_digest,installed.digest);
+  await expect(nature).toBeDisabled();
+  mark('shared nine weights, fixed Boss attack and matrix through Chromium, engine and PostgreSQL',{weight,digest:checked.contentDigest,invalidDiagonalStatus:422,originalDigest:installed.digest});
+ }else{
  const A=unchangedCandidate?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');
  let addressIndex=1;
  async function guest(name,petId){
@@ -1038,6 +1071,7 @@ try{
  const third=await allocate(A);
  await settle(third,await behavior(third,await launch(third)));
  mark('a new post-rollback native match selected A again',{matchId:third.row.match_id,version:A.version,digest:A.digest});
+ }
  }
  assert.deepEqual(facts.pageErrors??[],[]);
  assert.deepEqual(bindErrors,[]);
