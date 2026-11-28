@@ -9,7 +9,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 BOW = "8384d2be36fe9abf8c439503a4c478b80489e2d89ff84812091b787c2bc18e25"
-WINGS = "34030b8da0b5c864044907b7e78e3974f784ae73d7558eb434dafd326bda9262"
+WINGS = "be86f92ab8aff6e22e9a3f7f9a8e355305aa0f7b7329926f800be2d7605f4524"
 
 
 def string_vertices(mesh):
@@ -71,6 +71,25 @@ def bow_draw(obj):
 
 
 def wing_fold(obj):
+    # The selected wing-textured.glb spans glTF Z (Blender Y), unlike
+    # the previous pair. Map its authored span to the back socket's X axis.
+    mesh = obj.data
+    mesh.calc_loop_triangles()
+    if len(mesh.loop_triangles) != 788288 or not mesh.uv_layers.active:
+        raise ValueError("Unexpected owner-selected Tripo wing topology")
+    corners = [Vector(v) for v in obj.bound_box]
+    mid = sum(corners, Vector()) / len(corners)
+    extent = max(v.y for v in corners) - min(v.y for v in corners)
+    transform = Matrix.Scale(1.9 / extent, 4) @ Matrix.Rotation(math.pi / 2, 4, 'Z') @ Matrix.Translation(-mid)
+    mesh.transform(transform)
+    bpy.context.view_layer.objects.active = obj
+    reducer = obj.modifiers.new("Private review LOD", "DECIMATE")
+    reducer.ratio = 26000 / len(mesh.loop_triangles)
+    reducer.use_collapse_triangulate = True
+    bpy.ops.object.modifier_apply(modifier=reducer.name)
+    mesh.calc_loop_triangles()
+    if len(mesh.loop_triangles) > 28000 or not mesh.uv_layers.active:
+        raise ValueError(f"Review LOD invalid: {len(mesh.loop_triangles)} triangles")
     obj.shape_key_add(name="Basis")
     fold = obj.shape_key_add(name="WingFold")
     # Keep the center emblem stationary. Close the two sides about distinct
@@ -114,11 +133,13 @@ def author(source, output, kind):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("bow", "wings", "output"):
+    parser.add_argument("--bow", type=Path)
+    for name in ("wings", "output"):
         parser.add_argument("--" + name, required=True, type=Path)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Use Blender 5.3 for the private derivative")
     args.output.mkdir(parents=True, exist_ok=False)
-    author(args.bow.resolve(), args.output.resolve(), "Bow")
+    if args.bow is not None:
+        author(args.bow.resolve(), args.output.resolve(), "Bow")
     author(args.wings.resolve(), args.output.resolve(), "Wings")
