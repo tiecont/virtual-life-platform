@@ -523,6 +523,35 @@ elif stage == 'shared-board':
     (output / 'shared-visible-frames.json').write_text(json.dumps(frames, indent=2) + '\n')
     (output / 'shared-swap-observed').touch()
 
+    if environ.get('PACKAGED_QA_SCOPE') == 'feedback':
+        for attempt in range(1, 7):
+            name = f'feedback-{attempt}'
+            deadline = monotonic() + 32
+            while not (turn := read(name)):
+                if read('feedback-finished'):
+                    break
+                if monotonic() >= deadline:
+                    raise RuntimeError(f'No next authenticated host turn for {name}')
+                sleep(.12)
+            if not turn:
+                break
+            assert turn['state']['activeSeat'] == 0
+            # Wait for the new visible turn before dispatching either cell.
+            while time_ns() // 1_000_000 < turn['state']['turnDeadlineUnixMs']:
+                image = capture(name + '-before')
+                board = populated_board(image)
+                visible, _ = shared_hud_turn(image)
+                if board is not None and visible == (turn['state']['turn'], 0):
+                    break
+            else:
+                raise RuntimeError(f'{name} expired before the packaged host had the board')
+            for cell in (turn['move']['first'], turn['move']['second']):
+                click_record(name + '-cell', cell_center(board, cell), cell)
+                sleep(.20)
+            capture(name + '-after')
+            (output / (name + '-observed')).touch()
+
+
 elif stage=='first':
     for attempt in range(14):
         current=read('live-state')

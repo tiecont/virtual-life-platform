@@ -96,8 +96,24 @@ async function verifySharedRng(){
  const displayedEffects=[...playerLog.matchAll(/^Aetheria jewel HUD v2 ([a-z-]+) (\d+)$/gm)]
   .map(([,kind,value])=>({kind,value:Number(value)}));
  const screenshots=await verifyScreenshots(['06-shared-board-start.png','07-shared-board-host-swap.png']);
+ let additionalHostTurns=[];
+ if(process.env.PACKAGED_QA_SCOPE==='feedback'){
+  const {turns}=await read('feedback-finished.json');
+  for(const turn of turns){
+   const label='feedback-'+turn.attempt;
+   const before=await read(label+'.json');
+   assert.equal(before.version+1,turn.version);
+   assert.deepEqual(clicks.filter(input=>input.action===label+'-cell').map(input=>input.cell),
+    [turn.move.first,turn.move.second]);
+   assert.match(turn.receipt.receiptHash,/^[0-9a-f]{64}$/);
+   const effects=[...playerLog.matchAll(new RegExp('^Aetheria jewel HUD v'+turn.version+' ([a-z-]+) (\\d+)$','gm'))]
+    .map(([,kind,value])=>({kind,value:Number(value)}));
+   const frames=await verifyScreenshots([label+'-before.png',label+'-after.png']);
+   additionalHostTurns.push({...turn,displayedEffects:effects,frames});
+  }
+ }
  verifyPerformance(performance);
- return {
+ return {additionalHostTurns,
   result:'PASS',scope:'packaged-shared-rng-board',sourceRevision,playerSize:requestedSize,
   boardContract:'shared-rng-fire',boardTiles:64,
   fixture:run,ruleset:started.state.ruleset,startedVersion:started.version,hostSwapVersion:swapped.version,

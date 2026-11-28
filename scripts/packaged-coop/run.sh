@@ -15,7 +15,7 @@ if [[ ${1:-} == "--inside-disposable-db" ]]; then
   export PACKAGED_QA_SCOPE="${9:?missing acceptance scope}"
 fi
 case "${PACKAGED_QA_SCOPE:-full}" in
-  full|board|four-clients) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
+  full|board|feedback|four-clients) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
   *) echo "Unsupported packaged acceptance scope" >&2; exit 2 ;;
 esac
 case "${PACKAGED_QA_SIZE:-1024x768}" in
@@ -25,12 +25,12 @@ esac
 case "${PACKAGED_QA_BOARD:-functional}" in
   functional|elemental|advanced-water) ;;
   shared-rng)
-    [[ "$PACKAGED_QA_SCOPE" == board || "$PACKAGED_QA_SCOPE" == four-clients ]] || { echo "Shared RNG requires a board scope" >&2; exit 2; }
+    [[ "$PACKAGED_QA_SCOPE" == board || "$PACKAGED_QA_SCOPE" == feedback || "$PACKAGED_QA_SCOPE" == four-clients ]] || { echo "Shared RNG requires a board scope" >&2; exit 2; }
     ;;
   *) echo "Unsupported packaged board fixture" >&2; exit 2 ;;
 esac
-if [[ "$PACKAGED_QA_SCOPE" == four-clients && "${PACKAGED_QA_BOARD:-functional}" != shared-rng ]]; then
-  echo "Four client acceptance requires shared-rng" >&2
+if [[ ( "$PACKAGED_QA_SCOPE" == four-clients || "$PACKAGED_QA_SCOPE" == feedback ) && "${PACKAGED_QA_BOARD:-functional}" != shared-rng ]]; then
+  echo "This scope requires shared-rng" >&2
   exit 2
 fi
 export PACKAGED_QA_WIDTH="${PACKAGED_QA_SIZE%x*}" PACKAGED_QA_HEIGHT="${PACKAGED_QA_SIZE#*x}"
@@ -153,7 +153,7 @@ for phase in "${phases[@]}"; do
   # The full battle includes multiple button captures, OCR passes and a
   # packaged UI round-trip on every host turn.
   case "$phase" in
-    resume) phase_timeout=420s ;;
+    resume|shared-board) phase_timeout=420s ;;
     *) phase_timeout=180s ;;
   esac
   timeout "$phase_timeout" python3 "$driver_dir/drive.py" "$phase" 2>&1 | tee -a "$qa_run/ui.log"

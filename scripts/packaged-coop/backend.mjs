@@ -7,6 +7,7 @@ import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
 import {performance} from 'node:perf_hooks';
 import {createRequire} from 'node:module';
+import {playFeedbackTurns} from './shared-feedback.mjs';
 import {pureSwap} from '../coop-visible-kind-swap.mjs';
 import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-probe.mjs';
 import {prepareAdmissionTestTls} from '../../scripts/runtime-admission-test-tls.mjs';
@@ -483,6 +484,24 @@ try{
    });
    await json('shared-swapped.json',{...swapped,receipts});
    await waitForFile('shared-swap-observed');
+   if(process.env.PACKAGED_QA_SCOPE==='feedback'){
+    await playFeedbackTurns({start:swapped,observe:observeVersion,chooseBasic:legalSwap,save:json,wait:waitForFile,
+     async peerSwap({state,version},action){
+      const response=await intent(connections[state.activeSeat],version,JSON.stringify({epoch:1,action}));
+      assert.equal(response.body.case,'receipt');
+      assert.equal(Number(response.canonicalVersion),version+1);
+     },
+     async verifyHost(version,action){
+      const {rows}=await pool.query(
+       `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,
+          encode(payload_fingerprint,'hex') AS fingerprint,encode(receipt_hash,'hex') AS "receiptHash"
+        FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2`,[allocation.match_id,version]);
+      assert.equal(rows.length,1);
+      assert.equal(rows[0].actor,host);
+      assert.equal(rows[0].fingerprint,journalFingerprint(rows[0],allocation.match_id,action));
+      return {fingerprint:rows[0].fingerprint,receiptHash:rows[0].receiptHash};
+     }});
+   }
    await json('shared-board-run.json',{
     configVersion:created.version,digest:verdict.digest,contentHash:verdict.contentHash,
     candidate:sourceBundlePath,adjustments:{fireRequiredRoomPoints:0},authenticated,packagedClients:1,protocolPeers:3,
