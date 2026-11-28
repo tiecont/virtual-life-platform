@@ -90,7 +90,7 @@ namespace Aetheria.PetArena.Presentation
                 var admitted = await session.ConnectAsync(lifetime.Token);
                 nativeSession = session;
                 nativeView = admitted.Arena8;
-                stage?.PresentFixedNativeBattle(map);
+                stage?.PresentFixedNativeBattle(map, nativeView.PetId, nativeView.EncounterId);
                 matchId = admission.MatchIdText;
                 selectedCell = -1;
                 nativeSettlementRequest = NewRequestId();
@@ -160,6 +160,7 @@ namespace Aetheria.PetArena.Presentation
         private void DisposeNative()
         {
             DisposeFunctional();
+            stage?.ClearNativeBattlePreview();
             var session = nativeSession;
             nativeSession = null;
             nativeView = null;
@@ -186,7 +187,8 @@ namespace Aetheria.PetArena.Presentation
             var player = BattleScreenLayout.Side("arena8-player", "battle-player-side");
             var pet = new VisualElement();
             pet.AddToClassList("battle-combatant");
-            pet.Add(Label(current.PetName + " · Lv " + current.PetLevel + " · " + current.PetElement));
+            WaveD4BattlePreview.AddIdentity(pet,
+                Label(current.PetName + " · Lv " + current.PetLevel + " · " + current.PetElement), current.PetId);
             pet.Add(Label("HP " + current.Health + "/" + current.EffectiveHealth));
             pet.Add(Label("Mana " + current.Mana + "/" + Arena8NativeView.ManaCap +
                 " · Rage " + current.Rage + "/" + Arena8NativeView.RageCap));
@@ -197,7 +199,9 @@ namespace Aetheria.PetArena.Presentation
             var opponents = BattleScreenLayout.Side("arena8-opponents", "battle-enemy-side");
             var enemy = new VisualElement();
             enemy.AddToClassList("battle-combatant");
-            enemy.Add(Label(current.EncounterId.Replace('-', ' ') + (current.EncounterBoss ? " · Boss" : "")));
+            WaveD4BattlePreview.AddIdentity(enemy,
+                Label(current.EncounterId.Replace('-', ' ') + (current.EncounterBoss ? " · Boss" : "")),
+                current.EncounterId, opponent: true);
             enemy.Add(Label("HP " + current.EnemyHealth + " · Shield " + current.EnemyShield));
             if (current.TelegraphKind != null)
                 enemy.Add(Label(current.TelegraphKind + " · " + current.TelegraphAxis + " " +

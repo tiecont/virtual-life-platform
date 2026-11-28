@@ -36,7 +36,7 @@ namespace Aetheria.PetArena.Presentation
                     admission.ContentHash, admission.BootId, admission.TicketAsync);
                 session = new CoopNativePlaySession(platform, connection, admission.MatchId,
                     CoopNativeView.FunctionalSoloRuleset);
-                await session.ConnectAsync(lifetime.Token);
+                var admitted = await session.ConnectAsync(lifetime.Token);
 
                 functionalSession = session;
                 matchId = admission.MatchIdText;
@@ -45,7 +45,7 @@ namespace Aetheria.PetArena.Presentation
                 // Capture drives the same admitted session and renders each receipt explicitly.
                 functionalHud.enabled = !automated;
                 functionalHud.Attach(document);
-                stage?.PresentFixedNativeBattle(map);
+                stage?.PresentFixedNativeBattle(map, admitted.Coop.Own.PetId, admitted.Coop.BossId);
                 functionalHud.Bind(session, ReturnFromFunctionalBattle, "Return to roster", requireSettlement: true);
                 var settle = new Arena8SettleRequest { requestId = NewRequestId() };
                 functionalHud.SetSettlementLoader(async () =>
@@ -60,6 +60,7 @@ namespace Aetheria.PetArena.Presentation
             }
             catch
             {
+                stage?.ClearNativeBattlePreview();
                 if (functionalSession != null) DisposeFunctional();
                 else if (session != null) session.Dispose();
                 else platform.Dispose();

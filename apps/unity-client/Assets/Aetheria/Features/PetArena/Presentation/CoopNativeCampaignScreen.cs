@@ -26,6 +26,7 @@ namespace Aetheria.PetArena.Presentation
         private string petId, instanceId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
         private Action returnToHub;
+        private WaveD4BattlePreview.Actor previewPet, previewEnemy;
         private Arena8NativeTrust trust;
         private bool busy, loadingCatalog;
         private TextField joinField;
@@ -301,7 +302,16 @@ namespace Aetheria.PetArena.Presentation
                 throw;
             }
             session = admitted;
-            FindFirstObjectByType<ArenaWorldSceneController>()?.EnterBattlePresentation();
+            var arena = FindFirstObjectByType<ArenaWorldSceneController>();
+            if (arena != null)
+            {
+                arena.EnterBattlePresentation();
+                previewPet?.Dispose();
+                previewEnemy?.Dispose();
+                var view = admitted.State.Coop;
+                previewPet = WaveD4BattlePreview.Place(arena.PetActor, view.Own.PetId, baseOffset: .16f);
+                previewEnemy = WaveD4BattlePreview.Place(arena.EnemyActor, view.BossId, baseOffset: .16f, opponent: true);
+            }
             var hud = GetComponent<CoopNativeHud>();
             if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
             hud.Attach(document);
@@ -324,6 +334,8 @@ namespace Aetheria.PetArena.Presentation
 
         private void OnDestroy()
         {
+            previewPet?.Dispose();
+            previewEnemy?.Dispose();
             lifetime.Cancel();
             lifetime.Dispose();
             session?.Dispose();

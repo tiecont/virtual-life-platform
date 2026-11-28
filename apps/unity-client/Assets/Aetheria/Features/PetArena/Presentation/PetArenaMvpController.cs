@@ -33,6 +33,7 @@ namespace Aetheria.PetArena.Presentation
         private Transform developerBoard;
         private FixedBattleCamera fixedCamera;
         private string fixedMap;
+        private WaveD4BattlePreview.Actor previewPet, previewEnemy;
         private Transform playerRoot;
         private Transform enemyRoot;
         private Renderer enemyRenderer;
@@ -101,15 +102,29 @@ namespace Aetheria.PetArena.Presentation
             }
         }
 
-        public void PresentFixedNativeBattle(string mapId)
+        public void PresentFixedNativeBattle(string mapId, string petId = null, string encounterId = null)
         {
-            if (fixedMap == mapId) return;
             var camera = Camera.main;
             if (camera == null) return;
-            if (developerBoard != null) developerBoard.gameObject.SetActive(false);
-            if (fixedCamera == null) fixedCamera = camera.gameObject.AddComponent<FixedBattleCamera>();
-            fixedCamera.Frame(transform.TransformPoint(3.5f, 2f, 3.5f), playerRoot, enemyRoot, mapId);
-            fixedMap = mapId;
+            if (fixedCamera == null || fixedMap != mapId)
+            {
+                if (developerBoard != null) developerBoard.gameObject.SetActive(false);
+                if (fixedCamera == null) fixedCamera = camera.gameObject.AddComponent<FixedBattleCamera>();
+                fixedCamera.Frame(transform.TransformPoint(3.5f, 2f, 3.5f), playerRoot, enemyRoot, mapId);
+                fixedMap = mapId;
+            }
+
+            ClearNativeBattlePreview();
+            previewPet = WaveD4BattlePreview.Place(playerRoot, petId, baseOffset: -.55f);
+            previewEnemy = WaveD4BattlePreview.Place(enemyRoot, encounterId, baseOffset: -.55f, opponent: true);
+        }
+
+        internal void ClearNativeBattlePreview()
+        {
+            previewPet?.Dispose();
+            previewEnemy?.Dispose();
+            previewPet = null;
+            previewEnemy = null;
         }
 
         public void PresentCampaignPet(ArenaElement element, int level)
@@ -515,6 +530,7 @@ namespace Aetheria.PetArena.Presentation
 
         private void OnDestroy()
         {
+            ClearNativeBattlePreview();
             if (runtimeMaterial != null) Destroy(runtimeMaterial);
         }
     }

@@ -47,6 +47,35 @@ namespace Aetheria.Tests
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
 
+        [Test]
+        public void BattlePreviewUsesCanonicalPortraitsOnlyWhenOptedIn()
+        {
+            const string variable = "AETHERIA_WAVED4_BATTLE_PREVIEW";
+            const string portrait = "battle-preview-portrait";
+            var previous = Environment.GetEnvironmentVariable(variable);
+            var json = Projection(withAbilities: true).Replace("\"icarus\"", "\"fire-coalwhisk\"");
+            var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(json));
+            try
+            {
+                Environment.SetEnvironmentVariable(variable, null);
+                var standard = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(standard.Q(portrait), Is.Null);
+
+                Environment.SetEnvironmentVariable(variable, "1");
+                var preview = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                var player = preview.Q("coop-seat-0").Q<Image>(portrait);
+                var enemy = preview.Q("coop-opponents").Q<Image>(portrait);
+                Assert.That(player?.image?.name, Is.EqualTo("fire-coalwhisk"));
+                Assert.That(enemy?.image?.name, Is.EqualTo("cinder-terraces-warden"));
+                Assert.That(player.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                Assert.That(preview.Q("coop-seat-1").Q(portrait), Is.Null);
+                Assert.That(preview.Q<Label>("coop-seat-label-1"), Is.Not.Null);
+                Assert.That(preview.Q<Label>("coop-seat-label-0").text,
+                    Is.EqualTo(standard.Q<Label>("coop-seat-label-0").text));
+            }
+            finally { Environment.SetEnvironmentVariable(variable, previous); }
+        }
+
         [UnityTest]
         public IEnumerator CompactHudKeepsRowsReachableAndTheFooterVisible()
         {
