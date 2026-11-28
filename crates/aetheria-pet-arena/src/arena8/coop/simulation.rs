@@ -548,9 +548,13 @@ fn candidates(
         return vec![CoopAction::Start];
     }
     if policy == Policy::Coordinated && rules.config.shared_jewel_rng() {
-        let action = visible_telegraph_response(rules, state)
-            .or_else(|| best_shared_action(rules, state))
-            .unwrap_or(CoopAction::Guard);
+        let scored = best_shared_action(rules, state);
+        let action = match scored {
+            Some((winning, true)) => winning,
+            _ => visible_telegraph_response(rules, state)
+                .or_else(|| scored.map(|(action, _)| action))
+                .unwrap_or(CoopAction::Guard),
+        };
         return if action == CoopAction::Guard {
             vec![action]
         } else {
@@ -639,7 +643,7 @@ fn candidates(
 /// Compare visible first-wave board effects and legal casts on disposable
 /// copies. Combat is scored without critical hits and the real seed is never
 /// available to this policy. Unseen refills and cascades do not enter the score.
-fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<CoopAction> {
+fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, bool)> {
     let actor = state.active_seat;
     let seed = SecretSeed::from_host_entropy([0; 32]);
     let mut scratch_rng = seed
@@ -654,7 +658,11 @@ fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<CoopAction
         let Some(work) = boss_work(rules, &preview) else {
             return;
         };
-        let score = if preview.phase == CoopPhase::Won {
+        let guaranteed_win = preview.phase == CoopPhase::Won
+            && (state.pending.is_none()
+                || rules.config.terminal_outcome_policy
+                    == Some(super::config::TerminalOutcomePolicy::BossDefeatFirst));
+        let score = if guaranteed_win {
             u64::MAX
         } else {
             remaining.saturating_sub(work) * 100
@@ -703,8 +711,14 @@ fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<CoopAction
             // Count currently eligible survivors. Their final cell targets and
             // future scores depend on gravity and unobserved cascade outcomes.
             let upgraded = if upgrades > 0 && !preview.phase.terminal() {
+                // The reducer already took every matched cell, including the
+                // advanced jewels. Carry the explicit mask as well.
+                let surviving = matched
+                    .iter()
+                    .enumerate()
+                    .fold(0, |mask, (cell, hit)| mask | (u64::from(!hit) << cell));
                 rules
-                    .amplify(&mut preview, u64::MAX, upgrades, &mut events)
+                    .amplify(&mut preview, surviving, upgrades, &mut events)
                     .count_ones()
             } else {
                 0
@@ -736,7 +750,7 @@ fn best_shared_action(rules: &CoopRules, state: &CoopState) -> Option<CoopAction
             consider(action, preview, 0);
         }
     }
-    best.map(|(_, action)| action)
+    best.map(|(score, action)| (action, score == u64::MAX))
 }
 
 fn boss_work(rules: &CoopRules, state: &CoopState) -> Option<u64> {
@@ -1628,7 +1642,8 @@ mod tests {
             let (rules, mut state) = shared_board_fixture(kind);
             state.turn_index = 17;
             let unchanged = state.clone();
-            let Some(CoopAction::Swap { first, second }) = best_shared_action(&rules, &state)
+            let Some((CoopAction::Swap { first, second }, false)) =
+                best_shared_action(&rules, &state)
             else {
                 panic!("{kind:?} must beat an unneeded self-defense cast");
             };
@@ -1644,6 +1659,27 @@ mod tests {
             );
             assert_eq!(state, unchanged);
         }
+    }
+
+    #[test]
+    fn guaranteed_finishing_swap_precedes_defense_against_a_queued_attack() {
+        let (rules, mut state) = shared_board_fixture(TileKind::Sword);
+        rules.transform(&mut state).unwrap();
+        state.boss.hp = 1;
+        state.participants[0].hp = 100;
+        state.participants[0].defense = 63;
+        state.pending = Some(PendingAttack {
+            targets: 1,
+            remaining: 1,
+            damage: 108,
+        });
+        assert!(visible_telegraph_response(&rules, &state).is_some());
+        let ranked = best_shared_action(&rules, &state);
+        assert!(matches!(ranked, Some((CoopAction::Swap { .. }, true))));
+        assert_eq!(
+            candidates(&rules, &state, Policy::Coordinated, &mut SplitMix(0))[0],
+            ranked.unwrap().0
+        );
     }
 
     #[test]
