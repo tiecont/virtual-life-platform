@@ -221,6 +221,8 @@ namespace Aetheria.Editor
                     IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, frame, direction, Path.Combine(output, file + ".png"));
                 }
                 Inspect("front", actor.transform.forward);
+                Inspect("right", actor.transform.right);
+                Inspect("front-quarter", actor.transform.forward + actor.transform.right * .55f);
                 Inspect("back", -actor.transform.forward);
                 if (fittedBow) CaptureGrip(actor, fittedBow, vrm, camera, target, pixels, output, report);
                 Inspect("rear-quarter", -actor.transform.forward + actor.transform.right * .65f + Vector3.up * .12f);
