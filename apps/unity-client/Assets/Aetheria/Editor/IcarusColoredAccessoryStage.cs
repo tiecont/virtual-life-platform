@@ -106,7 +106,7 @@ namespace Aetheria.Editor
             }
             else
             {
-                report.bowContact = IcarusBowGripFit.Fit(model, anchor, vrm, true);
+                report.bowContact = IcarusBowGripFit.Fit(model, anchor, vrm);
                 report.bowTriangles = triangles;
                 report.bowHeightMeters = report.bowContact.bowLengthMeters;
                 report.bowAnchorErrorMeters = report.bowContact.riserPlacementErrorMeters;
@@ -228,7 +228,7 @@ namespace Aetheria.Editor
                 Inspect("rear-quarter", -actor.transform.forward + actor.transform.right * .65f + Vector3.up * .12f);
                 clip.SampleAnimation(animator.gameObject, clip.length * .55f);
                 if (fittedBow)
-                    report.bowWalkContact = IcarusBowGripFit.Fit(fittedBow, grip, vrm, false);
+                    report.bowWalkContact = IcarusBowGripFit.Fit(fittedBow, grip, vrm, report.bowContact);
                 draw.Refresh();
                 Inspect("walk-quarter", actor.transform.forward + actor.transform.right * .55f);
                 File.WriteAllText(Path.Combine(output, "fitting.json"), JsonUtility.ToJson(report, true));

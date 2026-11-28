@@ -17,15 +17,21 @@ namespace Aetheria.Editor
             public int wristCrossings, palmCrossings, fingerCrossings, ornamentCrossings, stringCrossings;
             public float nearestPalmToRiserSampleMeters;
             public float[] nearestDistalToRiserSamplesMeters;
+            public float nearestPalmToRiserSurfaceMeters;
+            public float[] nearestDistalToRiserSurfaceMeters;
         }
 
         [Serializable] internal sealed class Evidence
         {
             public Contact baseline, fitted;
             public Vector3 wrist, knuckleCenter, palmNormal, riserCenter, riserAxis, bowPlaneNormal, gripMarker;
+            public Vector3 bowSocketLocalPosition;
+            public Quaternion bowSocketLocalRotation;
+            public Quaternion[] fingerLocalRotations;
+            public bool usesFixedSocketPose;
             public int isolatedHandTriangles;
             public float metacarpalSpanMeters, handleOffsetAlongBowMeters, outwardAdjustmentMeters, fingerCurlDegrees, riserPlacementErrorMeters;
-            public float bowLengthMeters, placementAlongGripMeters;
+            public float bowLengthMeters, placementAlongGripMeters, placementAheadOfPalmMeters, bowTiltDegrees;
         }
 
         enum HandRegion { Wrist, Palm, Finger }
@@ -44,6 +50,7 @@ namespace Aetheria.Editor
             internal readonly Vector3 a, b, c;
             internal readonly Bounds box;
             internal readonly HandRegion region;
+            internal readonly float minY, maxY;
 
             internal Triangle(Vector3 a, Vector3 b, Vector3 c, HandRegion region = HandRegion.Palm)
             {
@@ -55,6 +62,32 @@ namespace Aetheria.Editor
                 bounds.Encapsulate(b);
                 bounds.Encapsulate(c);
                 box = bounds;
+                minY = Mathf.Min(a.y, Mathf.Min(b.y, c.y));
+                maxY = Mathf.Max(a.y, Mathf.Max(b.y, c.y));
+            }
+
+            internal float SqDistance(Vector3 point)
+            {
+                var ab = b - a;
+                var ac = c - a;
+                var normal = Vector3.Cross(ab, ac);
+                var ap = point - a;
+                float length = normal.sqrMagnitude;
+                if (length > 1e-18f &&
+                    Vector3.Dot(Vector3.Cross(ab, ap), normal) >= 0 &&
+                    Vector3.Dot(Vector3.Cross(c - b, point - b), normal) >= 0 &&
+                    Vector3.Dot(Vector3.Cross(-ac, point - c), normal) >= 0)
+                {
+                    float height = Vector3.Dot(ap, normal);
+                    return height * height / length;
+                }
+                float Edge(Vector3 start, Vector3 delta)
+                {
+                    float span = delta.sqrMagnitude;
+                    float position = span > 0 ? Mathf.Clamp01(Vector3.Dot(point - start, delta) / span) : 0;
+                    return (point - start - delta * position).sqrMagnitude;
+                }
+                return Mathf.Min(Edge(a, ab), Mathf.Min(Edge(b, c - b), Edge(c, -ac)));
             }
         }
 
@@ -141,7 +174,7 @@ namespace Aetheria.Editor
             internal float PalmDepth(Vector3[] points) => palmIndices.Max(i => Vector3.Dot(points[i] - palmCenter, normal));
 
             internal Triangle[] Surface(Vector3[] points) => handFaces.Select(t =>
-                new Triangle(points[t.a], points[t.b], points[t.c], t.region)).ToArray();
+                new Triangle(points[t.a], points[t.b], points[t.c], t.region)).OrderBy(t => t.minY).ToArray();
 
             internal (GameObject surface, Mesh mesh, int triangles) Isolate()
             {
@@ -182,11 +215,40 @@ namespace Aetheria.Editor
             internal float[] TipGaps(Vector3[] points, Vector3[] riser) =>
                 tipIndices.Select(indices => NearestSample(indices, points, riser)).ToArray();
 
+            static float SurfaceGap(int[] selected, Vector3[] points, Triangle[] riser)
+            {
+                float best = float.PositiveInfinity;
+                foreach (int index in selected)
+                {
+                    var point = points[index];
+                    foreach (var face in riser)
+                        if (face.box.SqrDistance(point) < best)
+                            best = Mathf.Min(best, face.SqDistance(point));
+                }
+                return Mathf.Sqrt(best);
+            }
+
+            internal void MeasureSurface(Contact contact, Vector3[] points, Triangle[] riser)
+            {
+                contact.nearestPalmToRiserSurfaceMeters = SurfaceGap(palmIndices, points, riser);
+                contact.nearestDistalToRiserSurfaceMeters = tipIndices.Select(indices => SurfaceGap(indices, points, riser)).ToArray();
+            }
+
             internal void Restore()
             {
                 for (int finger = 0; finger < 5; finger++)
                     for (int joint = 0; joint < 3; joint++)
                         digits[finger, joint].localRotation = original[finger, joint];
+            }
+
+            internal Quaternion[] LocalPose() => digits.Cast<Transform>().Select(t => t.localRotation).ToArray();
+
+            internal void ApplyLocalPose(Quaternion[] rotations)
+            {
+                if (rotations == null || rotations.Length != digits.Length)
+                    throw new InvalidDataException("Missing authored grip finger rotations.");
+                int index = 0;
+                foreach (var joint in digits) joint.localRotation = rotations[index++];
             }
 
             internal void Curl(float amount)
@@ -238,7 +300,7 @@ namespace Aetheria.Editor
             return hand.Isolate();
         }
 
-        internal static Evidence Fit(GameObject model, Transform marker, Vrm10Instance vrm, bool compareBaseline)
+        internal static Evidence Fit(GameObject model, Transform marker, Vrm10Instance vrm, Evidence fixedPose = null)
         {
             using var hand = new Hand(vrm);
             var parts = model.GetComponentsInChildren<Renderer>();
@@ -258,20 +320,35 @@ namespace Aetheria.Editor
             float halfKnuckleSpan = Vector3.Distance(hand.digits[0, 0].position, hand.digits[3, 0].position) / 2;
             float sampleHalfSpan = (halfKnuckleSpan + .004f) / model.transform.lossyScale.y;
             var contactBand = source.Where(p => Mathf.Abs(p.y - RiserHeight) < sampleHalfSpan && p.y < .010f).ToArray();
+            var riserFaces = Enumerable.Range(0, faces.Length / 3).Select(i => (a: faces[i * 3], b: faces[i * 3 + 1], c: faces[i * 3 + 2]))
+                .Where(t =>
+                {
+                    float y = (source[t.a].y + source[t.b].y + source[t.c].y) / 3;
+                    return Mathf.Abs(y - RiserHeight) < sampleHalfSpan && y < .010f;
+                }).ToArray();
+            if (riserFaces.Length == 0) throw new InvalidDataException("The measured grip has no contact triangles.");
             var center = new Vector3((band.Max(v => v.x) + band.Min(v => v.x)) / 2, RiserHeight,
                 (band.Max(v => v.z) + band.Min(v => v.z)) / 2);
             var initial = hand.Vertices();
             float palmDepth = hand.PalmDepth(initial);
             Vector3 World(Vector3 point) => model.transform.TransformPoint(point + markerLocal);
-            Contact Measure(Vector3[] points, Triangle[] handMesh)
+            var window = new Bounds(hand.knuckles, Vector3.one * (hand.palmLength * 3));
+            void MeasureGaps(Contact metrics, Vector3[] points, Vector3[] posedBody, bool includeVertexSamples)
             {
-                var riser = contactBand.Select(World).ToArray();
-                var metrics = new Contact { nearestPalmToRiserSampleMeters = hand.PalmGap(points, riser),
-                    nearestDistalToRiserSamplesMeters = hand.TipGaps(points, riser) };
-                var window = new Bounds(hand.knuckles, Vector3.one * (hand.palmLength * 3));
+                if (includeVertexSamples)
+                {
+                    var riser = contactBand.Select(World).ToArray();
+                    metrics.nearestPalmToRiserSampleMeters = hand.PalmGap(points, riser);
+                    metrics.nearestDistalToRiserSamplesMeters = hand.TipGaps(points, riser);
+                }
+                hand.MeasureSurface(metrics, points, riserFaces.Select(t => new Triangle(posedBody[t.a], posedBody[t.b], posedBody[t.c])).ToArray());
+            }
+            Contact MeasureCrossings(Triangle[] handMesh, Vector3[] posedBody)
+            {
+                var metrics = new Contact();
                 void Crossings(Vector3[] positions, int[] indices, bool isString)
                 {
-                    var posed = positions.Select(World).ToArray();
+                    var posed = isString ? positions.Select(World).ToArray() : posedBody;
                     for (int i = 0; i < indices.Length; i += 3)
                     {
                         int a = indices[i], b = indices[i + 1], c = indices[i + 2];
@@ -280,7 +357,8 @@ namespace Aetheria.Editor
                         float y = (positions[a].y + positions[b].y + positions[c].y) / 3;
                         foreach (var handFace in handMesh)
                         {
-                            if (!Crosses(bowFace, handFace)) continue;
+                            if (handFace.minY > bowFace.maxY) break;
+                            if (handFace.maxY < bowFace.minY || !Crosses(bowFace, handFace)) continue;
                             if (isString) metrics.stringCrossings++;
                             else if (y >= .010f && y <= .105f) metrics.ornamentCrossings++;
                             switch (handFace.region)
@@ -297,41 +375,92 @@ namespace Aetheria.Editor
                 return metrics;
             }
 
-            var baseline = compareBaseline ? Measure(initial, hand.Surface(initial)) : null;
-            model.transform.rotation = Quaternion.LookRotation(-hand.distal, hand.across);
-            var modeledCenter = World(center);
-            var offsetPoints = band.Select(p => World(p) - modeledCenter).ToArray();
-            var palmarExtents = offsetPoints.Select(p => Vector3.Dot(p, hand.normal)).ToArray();
-            float nearSide = palmarExtents.Min();
-            (float score, float outward, float along, float curl, Vector3 center, Contact result) best =
-                (float.PositiveInfinity, 0, 0, 0, Vector3.zero, null);
+            Vector3 Target(float outward, float along, float ahead)
+            {
+                var modeledCenter = World(center);
+                float nearSide = band.Min(p => Vector3.Dot(World(p) - modeledCenter, hand.normal));
+                return hand.palmCenter + hand.normal * (palmDepth - nearSide + outward) + hand.across * along + hand.distal * ahead;
+            }
+            Evidence Report(Contact baseline, Contact chosen, float outward, float along, float ahead, float curl, float tilt, Vector3 target)
+            {
+                return new Evidence
+                {
+                    baseline = baseline, fitted = chosen, wrist = hand.wrist.position,
+                    knuckleCenter = hand.knuckles, palmNormal = hand.normal, riserAxis = model.transform.up,
+                    riserCenter = World(center), bowPlaneNormal = model.transform.right, gripMarker = marker.position,
+                    bowSocketLocalPosition = model.transform.localPosition, bowSocketLocalRotation = model.transform.localRotation,
+                    fingerLocalRotations = hand.LocalPose(), usesFixedSocketPose = fixedPose != null,
+                    metacarpalSpanMeters = halfKnuckleSpan * 2,
+                    handleOffsetAlongBowMeters = RiserHeight, outwardAdjustmentMeters = outward, fingerCurlDegrees = curl,
+                    placementAlongGripMeters = along, placementAheadOfPalmMeters = ahead, bowTiltDegrees = tilt,
+                    bowLengthMeters = (source.Max(p => p.y) - source.Min(p => p.y)) * model.transform.lossyScale.y,
+                    riserPlacementErrorMeters = Vector3.Distance(target, World(center)),
+                };
+            }
+            if (fixedPose != null)
+            {
+                model.transform.SetLocalPositionAndRotation(fixedPose.bowSocketLocalPosition, fixedPose.bowSocketLocalRotation);
+                hand.ApplyLocalPose(fixedPose.fingerLocalRotations);
+                var points = hand.Vertices();
+                var posedBody = source.Select(World).ToArray();
+                var contact = MeasureCrossings(hand.Surface(points), posedBody);
+                MeasureGaps(contact, points, posedBody, true);
+                return Report(null, contact, fixedPose.outwardAdjustmentMeters, fixedPose.placementAlongGripMeters,
+                    fixedPose.placementAheadOfPalmMeters, fixedPose.fingerCurlDegrees, fixedPose.bowTiltDegrees,
+                    Target(fixedPose.outwardAdjustmentMeters, fixedPose.placementAlongGripMeters, fixedPose.placementAheadOfPalmMeters));
+            }
+
+            var initialBody = source.Select(World).ToArray();
+            var baseline = MeasureCrossings(hand.Surface(initial), initialBody);
+            MeasureGaps(baseline, initial, initialBody, true);
+            var gripRotation = Quaternion.LookRotation(-hand.distal, hand.across);
+            (float score, float outward, float along, float ahead, float curl, float tilt, Vector3 center, Contact result) best =
+                (float.PositiveInfinity, 0, 0, 0, 0, 0, Vector3.zero, null);
+            void Consider(Vector3[] points, Triangle[] handMesh, float curl, float along, float outward, float ahead, float tilt)
+            {
+                model.transform.rotation = Quaternion.AngleAxis(tilt, hand.normal) * gripRotation;
+                var target = Target(outward, along, ahead);
+                model.transform.position += target - World(center);
+                var posedBody = source.Select(World).ToArray();
+                var measure = MeasureCrossings(handMesh, posedBody);
+                float crossingScore = (measure.ornamentCrossings + measure.stringCrossings) * 10000 + measure.wristCrossings * 9 +
+                    measure.palmCrossings * 1.25f + measure.fingerCrossings * .65f;
+                if (crossingScore >= best.score) return;
+                MeasureGaps(measure, points, posedBody, false);
+                // Keep contact in the palm and at every fingertip while favoring fewer surface crossings.
+                float palmGap = measure.nearestPalmToRiserSurfaceMeters;
+                float[] tipGaps = measure.nearestDistalToRiserSurfaceMeters;
+                float score = crossingScore + (tipGaps.Sum() + palmGap * 4) * 9000 +
+                    Mathf.Max(0, palmGap - .004f) * 400000 + Mathf.Max(0, tipGaps.Max() - .008f) * 250000;
+                if (score < best.score) best = (score, outward, along, ahead, curl, tilt, target, measure);
+            }
             foreach (float curl in new[] { 30f, 37f, 44f, 51f, 58f })
             {
                 hand.Curl(curl);
                 var points = hand.Vertices();
                 var handMesh = hand.Surface(points);
-                foreach (float along in new[] { -.007f, 0f, .007f })
-                foreach (float outward in new[] { -.004f, 0f, .004f, .008f, .012f })
-                {
-                    var target = hand.palmCenter + hand.normal * (palmDepth - nearSide + outward) + hand.across * along;
-                    model.transform.position += target - World(center);
-                    var measure = Measure(points, handMesh);
-                    float score = (measure.ornamentCrossings + measure.stringCrossings) * 10000 + measure.wristCrossings * 100 +
-                        (measure.palmCrossings + measure.fingerCrossings) * .04f +
-                        (measure.nearestDistalToRiserSamplesMeters.Sum() + measure.nearestPalmToRiserSampleMeters * 4) * 1000;
-                    if (score < best.score) best = (score, outward, along, curl, target, measure);
-                }
+                foreach (float along in new[] { -.007f, 0f, .007f, .012f, .017f, .022f })
+                foreach (float outward in new[] { 0f, .004f, .008f, .012f, .016f })
+                foreach (float tilt in new[] { -8f, 0f, 8f })
+                    Consider(points, handMesh, curl, along, outward, 0, tilt);
+            }
+            var coarse = best;
+            foreach (float curl in new[] { coarse.curl - 3f, coarse.curl, coarse.curl + 3f })
+            {
+                hand.Curl(curl);
+                var points = hand.Vertices();
+                var handMesh = hand.Surface(points);
+                foreach (float along in new[] { coarse.along - .0025f, coarse.along, coarse.along + .0025f })
+                foreach (float outward in new[] { coarse.outward - .002f, coarse.outward, coarse.outward + .002f })
+                foreach (float ahead in new[] { -.004f, 0f, .004f, .008f })
+                foreach (float tilt in new[] { coarse.tilt - 3f, coarse.tilt, coarse.tilt + 3f })
+                    Consider(points, handMesh, curl, along, outward, ahead, tilt);
             }
             hand.Curl(best.curl);
+            model.transform.rotation = Quaternion.AngleAxis(best.tilt, hand.normal) * gripRotation;
             model.transform.position += best.center - World(center);
-            return new Evidence { baseline = baseline, fitted = best.result, wrist = hand.wrist.position,
-                knuckleCenter = hand.knuckles, palmNormal = hand.normal, riserAxis = model.transform.up,
-                riserCenter = best.center, bowPlaneNormal = model.transform.right, gripMarker = marker.position,
-                metacarpalSpanMeters = Vector3.Distance(hand.digits[0, 0].position, hand.digits[3, 0].position),
-                handleOffsetAlongBowMeters = RiserHeight, outwardAdjustmentMeters = best.outward, fingerCurlDegrees = best.curl,
-                placementAlongGripMeters = best.along,
-                bowLengthMeters = (source.Max(p => p.y) - source.Min(p => p.y)) * model.transform.lossyScale.y,
-                riserPlacementErrorMeters = Vector3.Distance(best.center, World(center)) };
+            MeasureGaps(best.result, hand.Vertices(), source.Select(World).ToArray(), true);
+            return Report(baseline, best.result, best.outward, best.along, best.ahead, best.curl, best.tilt, best.center);
         }
     }
 }
