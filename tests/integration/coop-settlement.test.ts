@@ -641,9 +641,10 @@ describe('cooperative settlement',()=>{
   const initial=await catalog();
   expect(initial.statusCode,initial.body).toBe(200);
   expect(initial.json()).toMatchObject({configVersion:pinned.version,routes:[
-   {id:entry,canEnterSolo:true,canHostCoop:false,cleared:false,hostPointsNeeded:0},
+   {id:entry,canEnterSolo:true,canHostCoop:false,cleared:false},
    {id:advanced,canEnterSolo:false,canHostCoop:false,cleared:false,hostPointsNeeded:287},
   ]});
+  expect(initial.json().routes[0]).not.toHaveProperty('hostPointsNeeded');
   await expect(allocate(advanced)).rejects.toThrow('Clear the required campaign encounter first');
   await expect(allocate('recruit-fire-kilnback')).rejects.toThrow('Campaign route is unavailable');
   await expect(pool.query('INSERT INTO pet_arena_campaign_route_clears '+

@@ -164,7 +164,8 @@ export class CoopRoomService{
     return {id:route.id,mapId:route.mapId,opponentPetId:route.opponentPetId,tier:route.tier,
      name:route.profile.name,mode:route.mode,prerequisiteEncounterId:route.prerequisiteEncounterId,
      cleared:cleared.has(route.id),canEnterSolo:canEnterSolo&&this.soloNativeAvailable,
-     canHostCoop:canEnterSolo&&!!this.provisioner&&route.mode==='either'&&hostPointsNeeded===0,hostPointsNeeded};
+     canHostCoop:canEnterSolo&&!!this.provisioner&&route.mode==='either'&&hostPointsNeeded===0,
+     ...(route.mode==='either'?{hostPointsNeeded}:{})};
    })});
   });
  }
