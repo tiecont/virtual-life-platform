@@ -24,7 +24,10 @@ namespace Aetheria.Editor
 
         // Runs only against temporary scene objects and assets. The checked-in
         // prefab keeps its existing Generic Icarus review import contract.
-        public static void Verify()
+        public static void Verify() => Verify(false);
+        public static void PrepareRecorder() => Verify(true);
+
+        private static void Verify(bool prepareRecorder)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -53,6 +56,7 @@ namespace Aetheria.Editor
             string folder = "Assets/" + leaf;
             PlayableDirector director = null;
             GameObject reviewRoot = null;
+            bool stagedForRecording = false;
             try
             {
                 reviewRoot = new GameObject("Icarus private motion review");
@@ -141,24 +145,29 @@ namespace Aetheria.Editor
                     review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, modelVrm, output,
                         out review.clippedWhitePercent);
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
+                if (prepareRecorder)
+                {
+                    IcarusCinematicRecording.Stage(scene, folder, output, reviewRoot.transform, modelVrm, skins, director, take);
+                    stagedForRecording = true;
+                }
                 Debug.Log($"Charakuru Icarus motion verified on Timeline. {review.mappedHumanoidBones} mapped bones, " +
                     $"{review.maxMappedJointAngleDegrees:F2}° joint motion, {review.maxSkinnedVertexDelta:F4} m skin movement.");
             }
             finally
             {
-                if (director != null)
+                if (!stagedForRecording && director != null)
                 {
                     director.Stop();
                     Undo.ClearUndo(director.gameObject);
                     Object.DestroyImmediate(director.gameObject);
                 }
-                if (reviewRoot != null) Object.DestroyImmediate(reviewRoot);
+                if (!stagedForRecording && reviewRoot != null) Object.DestroyImmediate(reviewRoot);
                 if (!useBootstrap)
                 {
                     EditorSceneManager.CloseScene(scene, true);
                     if (originalScene.IsValid() && originalScene.isLoaded) SceneManager.SetActiveScene(originalScene);
                 }
-                if (AssetDatabase.IsValidFolder(folder)) AssetDatabase.DeleteAsset(folder);
+                if (!stagedForRecording && AssetDatabase.IsValidFolder(folder)) AssetDatabase.DeleteAsset(folder);
             }
         }
 

@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "com.unity.addressables": "2.7.6",
+    "com.unity.cinemachine": "3.1.8",
+    "com.unity.recorder": "5.1.8",
     "com.unity.render-pipelines.universal": "17.3.0",
     "com.unity.test-framework": "1.6.0",
     "com.vrmc.gltf": "https://github.com/vrm-c/UniVRM.git?path=/Packages/UniGLTF#efd20f62f1bf0ac3fcc34de1e497324c5197d146",
