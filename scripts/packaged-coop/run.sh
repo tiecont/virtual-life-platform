@@ -13,7 +13,12 @@ export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=
 if [[ ${1:-} == "--inside-disposable-db" ]]; then
   export PACKAGED_QA_SIZE="${7:?missing player size}" PACKAGED_QA_BOARD="${8:?missing board contract}"
   export PACKAGED_QA_SCOPE="${9:?missing acceptance scope}" PACKAGED_QA_PLAYER_REVISION="${10:?missing package source}"
+  export PACKAGED_QA_FOUR_ROTATION="${11:?missing rotation flag}"
 fi
+case "${PACKAGED_QA_FOUR_ROTATION:-0}" in
+  0|1) ;;
+  *) echo "Invalid four-client rotation flag" >&2; exit 2 ;;
+esac
 case "${PACKAGED_QA_SCOPE:-full}" in
   full|board|feedback|four-clients) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
   *) echo "Unsupported packaged acceptance scope" >&2; exit 2 ;;
@@ -85,7 +90,7 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
   sha256sum "$qa_run/player-package.sha256" "$qa_engine" > "$qa_run/build.sha256"
   printf 'Acceptance evidence will be saved in %s\n' "$qa_run"
   exec node scripts/with-test-db.mjs bash "$driver_dir/run.sh" --inside-disposable-db \
-    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata" "$PACKAGED_QA_SIZE" "${PACKAGED_QA_BOARD:-functional}" "$PACKAGED_QA_SCOPE" "$qa_build_revision"
+    "$qa_run" "$qa_engine" "$qa_revision" "$qa_player" "$qa_tessdata" "$PACKAGED_QA_SIZE" "${PACKAGED_QA_BOARD:-functional}" "$PACKAGED_QA_SCOPE" "$qa_build_revision" "${PACKAGED_QA_FOUR_ROTATION:-0}"
 fi
 
 shift
