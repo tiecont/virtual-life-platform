@@ -319,6 +319,8 @@ The fixed-camera Fire and Water studies are CONCEPT images generated with OpenAI
 
 [Fire concept](../../assets/review/wave-d4/world/cinder-terraces-battle-concept.webp) · [Water concept](../../assets/review/wave-d4/world/tideglass-lagoon-battle-concept.webp) · [Jewel scale and states](../../assets/review/wave-d4/combat/functional-gems-scale-states.webp)
 
+The Gemini tab produced a separate navigation concept showing the arrival path around a tidal pool toward a stone arch. Its 2730×1536 PNG is in the verified private local stage `wave-d4-gemini/tideglass-navigation-stage-r1`. [Tideglass navigation concept](../../assets/review/wave-d4/world/tideglass-navigation-gemini-concept.webp)
+
 The previous four-account PACKAGED_GAMEPLAY run on d032a3b9 reached Fire victory at version 31 after restart, produced four award rows, and admitted all four to Water with the equipped Core at upgrade level 2. The local acceptance receipt is `artifacts/wave-d4-session/elemental-package-d032a3b9.json`. The historical security suite passed 21 files and 278 tests, with results in `artifacts/wave-d4-session/direct-session-security.log`.
 
 Functional candidate B was also tested on held-out seeds 601–612 across six parties with the Rust example at ef7beab0. Under the tactical policy, the level-20 starter party with Core won Fire 11/12 and Water 0/12. The level-40 Ground and Icarus parties won Water 5/12 and 7/12 respectively. The 576-match study is retained under `artifacts/wave-d4-session/functional-board/confirmation-b/`. Balance selection and owner acceptance remain open.
