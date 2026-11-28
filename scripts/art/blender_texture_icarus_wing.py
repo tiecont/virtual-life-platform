@@ -435,9 +435,12 @@ def render(source, output, mode, evidence, spec):
         material.node_tree.links.new(nodes["Exact original plate atlas"].outputs["Color"], emit.inputs["Color"])
         material.node_tree.links.new(emit.outputs["Emission"], nodes.get("Material Output").inputs["Surface"])
     else:
-        for name, direction in spec.render_views[:2]:
+        lights = spec.render_views[:2]
+        if mode == "neutral-studio" and spec.asset == "bow":
+            lights = [view for view in spec.render_views if view[0] in ("left", "right")]
+        for name, direction in lights:
             vector = Vector(direction) + Vector((0, 0, .44))
-            strength = 1.35
+            strength = .85 if mode == "neutral-studio" else 1.35
             light = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN"))
             scene.collection.objects.link(light)
             light.data.energy = strength
@@ -451,6 +454,15 @@ def render(source, output, mode, evidence, spec):
     background = world.node_tree.nodes.get("Background")
     background.inputs["Color"].default_value = (.17, .17, .17, 1)
     background.inputs["Strength"].default_value = 1 if mode == "base-color" else .45
+    if mode == "neutral-studio":
+        # Illuminate both sides evenly while leaving the camera backdrop neutral gray.
+        background.inputs["Strength"].default_value = 1
+        path = world.node_tree.nodes.new("ShaderNodeLightPath")
+        mix = world.node_tree.nodes.new("ShaderNodeMixRGB")
+        mix.inputs[1].default_value = (.78, .78, .78, 1)
+        mix.inputs[2].default_value = (.17, .17, .17, 1)
+        world.node_tree.links.new(path.outputs["Is Camera Ray"], mix.inputs[0])
+        world.node_tree.links.new(mix.outputs[0], background.inputs["Color"])
     frames = []
     folder = output / mode
     folder.mkdir(exist_ok=False, mode=0o700)
@@ -472,7 +484,7 @@ def run(spec, argv):
     parser.add_argument("output", type=Path)
     if spec.register_plates:
         parser.add_argument("--clay-captures", type=Path, help="Original neutral model views for color registration")
-    parser.add_argument("--render", choices=("base-color", "pbr"))
+    parser.add_argument("--render", choices=("base-color", "pbr", "neutral-studio"))
     args = parser.parse_args(argv)
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Use Blender 5.3 for the private wing color geometry.")
