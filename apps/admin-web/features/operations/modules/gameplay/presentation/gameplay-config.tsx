@@ -425,7 +425,7 @@ export default function GameplayConfig({request}:{request:Request}){
   <div><dt>Bundle schema</dt><dd>{display(bundle,'schemaVersion')}</dd></div>
   <div><dt>Content revision</dt><dd>{display(bundle,'contentRevision')}</dd></div>
  </dl>
- {expanded&&<label>When the Boss reaches zero HP
+ {expanded&&bundle&&<label>When the Boss reaches zero HP
   <select className="aetheria-field" disabled={!editable} value={String(bundle.terminalOutcomePolicy??'')}
    onChange={event=>change(['terminalOutcomePolicy'],event.target.value||undefined)}>
    <option value="">Resolve remaining end-of-turn effects</option>
