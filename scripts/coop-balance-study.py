@@ -97,6 +97,25 @@ ELEMENTAL_VARIANTS = {"lower-pressure": lower_pressure, "resource-burst": resour
 FUNCTIONAL_VARIANTS = {"functional-b": functional_reference, "tideglass-endurance": tideglass_endurance,
                        "tideglass-vitality": tideglass_vitality}
 
+# Factorial experiment for the timed ruleset. Retain each Warden's relative
+# health and attack curve, and keep party, board and skill inputs identical.
+def timed_warden_variant(bundle, *, lower_hp=False, lower_attack=False):
+    for boss in bundle["bosses"]:
+        if lower_hp:
+            boss["maxHp"] = max(1, boss["maxHp"] // 4)
+        if lower_attack:
+            model = boss["attackModel"]
+            model["baseDamage"] = max(1, model["baseDamage"] // 4)
+            model["perRoundDamage"] //= 4
+
+
+TIMED_VARIANTS = {
+    "timed-hp-quarter": lambda bundle: timed_warden_variant(bundle, lower_hp=True),
+    "timed-attack-quarter": lambda bundle: timed_warden_variant(bundle, lower_attack=True),
+    "timed-hp-attack-quarter": lambda bundle: timed_warden_variant(bundle, lower_hp=True, lower_attack=True),
+}
+
+
 def party(name, level, gear):
     result = []
     for i, pet in enumerate(PARTIES[name], 1):
@@ -134,7 +153,7 @@ def main():
     parser.add_argument("--seed-count", type=int, default=6)
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
-    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS])
+    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS])
     parser.add_argument("--stage", choices=["progression", "composition", "confirmation"], default="progression")
     parser.add_argument("--bosses", nargs="+", help="Explicit boss IDs, or 'all' for all bosses in the bundle")
     parser.add_argument("--summary-file", type=Path, help="Optional compact JSON summary path")
@@ -159,6 +178,8 @@ def main():
         boss_ids = BOSSES
     boss_chunks = [boss_ids[i:i + 2] for i in range(0, len(boss_ids), 2)]
     variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
+    if capability == "arena8-coop-v3":
+        variants = {**variants, **TIMED_VARIANTS}
     selected = args.bundles or (["baseline"] if functional else ["baseline", *variants])
     if any(name != "baseline" and name not in variants for name in selected):
         parser.error(f"requested balance variant is incompatible with {capability}")
