@@ -47,11 +47,36 @@ def source_charts(name, points, modes, rectangles):
                         rectangles[name, int(mode)]) for mode in np.unique(modes)}
 
 
+def uv_area(triangles):
+    first, second = triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0]
+    return np.abs(first[:, 0] * second[:, 1] - first[:, 1] * second[:, 0])
+
+
+def separate_collapsed_texels(triangles, low, high):
+    quarter_texel = .25 / SIZE
+    offsets = np.array(((1, 0), (-1, 0), (0, 1), (0, -1))) * quarter_texel
+    collapsed = np.flatnonzero(uv_area(triangles) <= 1e-20)
+    for index in collapsed:
+        triangle = triangles[index]
+        edges = np.linalg.norm(triangle - np.roll(triangle, -1, axis=0), axis=1)
+        edge = int(edges.argmax())
+        if edges[edge] <= quarter_texel / 2:
+            center = np.clip(triangle.mean(axis=0), low + quarter_texel, high - quarter_texel)
+            triangle[:] = center + offsets[[1, 0, 2]] / 2
+        else:
+            opposite = (edge + 2) % 3
+            candidates = np.repeat(triangle[None, :, :], len(offsets), axis=0)
+            candidates[:, opposite] = np.clip(triangle[opposite] + offsets, low, high)
+            triangle[:] = candidates[uv_area(candidates).argmax()]
+    return len(collapsed)
+
+
 def exact_atlas_uv(name, vertices, faces, charts):
     points, modes, area = groups(vertices, faces)
     if np.any(area <= 0):
         raise ValueError(f"{name} LOD contains a zero-area triangle")
     uv = np.empty((len(faces), 3, 2), dtype=np.float32)
+    texel_corrections = 0
     for mode in np.unique(modes):
         selected = modes == mode
         mapped_mode = int(mode)
@@ -65,13 +90,14 @@ def exact_atlas_uv(name, vertices, faces, charts):
         planes = [axis for axis in range(3) if axis != mapped_mode // 2]
         flat = points[selected][..., planes]
         normalized = np.clip((flat - low[planes]) / np.maximum(high[planes] - low[planes], 1e-12), 0, 1)
-        uv[selected] = ((normalized * [width - 2 * PAD - 1, height - 2 * PAD - 1]
-                         + [x + PAD + .5, y + PAD + .5]) / SIZE).astype(np.float32)
-    first, second = uv[:, 1] - uv[:, 0], uv[:, 2] - uv[:, 0]
-    zero_uv = int(np.count_nonzero(np.abs(first[:, 0] * second[:, 1] - first[:, 1] * second[:, 0]) <= 1e-20))
-    if not np.isfinite(uv).all() or uv.min() <= 0 or uv.max() >= 1:
-        raise ValueError(f"{name} LOD UV escaped its approved atlas")
-    return uv, zero_uv
+        chart_low = np.array([x + PAD + .5, y + PAD + .5]) / SIZE
+        chart_span = np.array([width - 2 * PAD - 1, height - 2 * PAD - 1]) / SIZE
+        projected = (chart_low + normalized * chart_span).astype(np.float32)
+        texel_corrections += separate_collapsed_texels(projected, chart_low, chart_low + chart_span)
+        uv[selected] = projected
+    if not np.isfinite(uv).all() or uv.min() <= 0 or uv.max() >= 1 or np.any(uv_area(uv) <= 1e-20):
+        raise ValueError(f"{name} LOD contains an invalid approved-atlas UV")
+    return uv, texel_corrections
 
 
 def measure_surface(source, reduced, faces):
@@ -287,7 +313,7 @@ def main():
         reduced_faces = reduced_faces[groups(reduced_vertices, reduced_faces)[2] > 0]
         if not len(reduced_faces):
             raise ValueError(f"The budget removed the visible {name} source part")
-        uv, zero_uv = exact_atlas_uv(name, reduced_vertices, reduced_faces, charts)
+        uv, texel_corrections = exact_atlas_uv(name, reduced_vertices, reduced_faces, charts)
         low_tree, distance = measure_surface(source_vertices, reduced_vertices, reduced_faces)
         if name in ('tripo_part_1', 'tripo_part_63'):
             key = 'endSourceWorldBlenderMeters' if name == 'tripo_part_1' else 'startSourceWorldBlenderMeters'
@@ -301,14 +327,15 @@ def main():
         source_high = np.maximum(source_high, source_vertices.max(axis=0))
         evidence.append({'part': name, 'sourceTriangles': len(source_faces), 'lodBudget': budgets[name],
                          'staticFirstTriangle': base_faces, 'lodTriangles': len(reduced_faces),
-                         'lodZeroAreaUVFaces': zero_uv, **distance})
+                         'lodZeroAreaUVFaces': 0, 'subtexelUvCorrections': texel_corrections, **distance})
         base_vertices += len(reduced_vertices)
         base_faces += len(reduced_faces)
         print(name, len(source_faces), '->', len(reduced_faces), flush=True)
 
     source_string, string_rest, string_draw, string_faces, start, end = string_rings(string, draw_review)
     points, modes, _ = groups(*mesh_arrays(string)[:2])
-    string_uv, zero_uv = exact_atlas_uv(STRING, string_rest, string_faces, source_charts(STRING, points, modes, rectangles))
+    string_uv, texel_corrections = exact_atlas_uv(STRING, string_rest, string_faces,
+                                               source_charts(STRING, points, modes, rectangles))
     _, distance = measure_surface(source_string, string_rest, string_faces)
     string_delta = np.linalg.norm(string_draw - string_rest, axis=1)
     endpoint_delta = np.concatenate((string_delta[:8], string_delta[-10:]))
@@ -364,7 +391,7 @@ def main():
                    'rootLocalMeters': [0, 0, 0], 'upGltf': [0, 1, 0], 'drawGltf': [0, 0, -1],
                    'upUnityUniGltfReverseZ': [0, 1, 0], 'drawUnityUniGltfReverseZ': [0, 0, 1]},
               'string': {'sourcePart': STRING, 'shape': DRAW, 'lodTriangles': len(string_faces),
-                 'lodZeroAreaUVFaces': zero_uv, 'maxDrawMeters': float(string_delta.max()),
+                 'lodZeroAreaUVFaces': 0, 'subtexelUvCorrections': texel_corrections, 'maxDrawMeters': float(string_delta.max()),
                  'maxEndpointDeviationMeters': float(endpoint_delta.max()), 'startSourceBlenderMeters': start.tolist(),
                  'endSourceBlenderMeters': end.tolist(), 'anchorSurfaceClearance': anchors,
                  'retainedUpperContinuationPatch': upper_join, **distance},
