@@ -8,7 +8,6 @@ from pathlib import Path
 import struct
 import sys
 
-import bpy
 import numpy as np
 
 
@@ -114,6 +113,8 @@ def topology(triangles, positions, uv, identity):
 
 
 def main():
+    import bpy
+
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
