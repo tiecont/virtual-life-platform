@@ -99,6 +99,11 @@ export async function verifyCampaignRoute({
  const admissionPath=coOp?'/v1/coop/rooms':allocateEndpoint;
  const inputFor=coOp?roomRequest:request;
  const initial=await routeCatalog(host);
+ if(!coOp){
+  assert.equal((await get(host,'/v1/coop/encounters')).statusCode,404);
+  assert.equal((await post(host,'/v1/coop/rooms',roomRequest(first))).statusCode,404);
+  assert.equal(initial.get(first).canHostCoop,false);
+ }
  assert.equal(initial.get(first)[eligible],true);
  assert.equal(initial.get(next)[eligible],false);
  const locked=await post(host,admissionPath,inputFor(next));

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Aetheria.Networking;
 using Aetheria.PetArena.Infrastructure;
@@ -236,6 +237,29 @@ namespace Aetheria.Tests
             Assert.Throws<FormatException>(() => Read(rows.Replace("4000000000", "0")));
             Assert.Throws<FormatException>(() => Read(rows.Replace("special-mana", "mana-gain")));
             Assert.Throws<FormatException>(() => Read(rows.Replace("sword-damage\",\"seat\":0", "sword-damage\",\"seat\":1")));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void SelectedRecruitmentRouteRejectsAnotherRouteWithTheSameBundle(bool solo)
+        {
+            const string selected = "recruit-fire-coalwhisk";
+            string payload = null;
+            _ = Coop(seats: solo ? 1 : 4, phase: "playing", customize: json => payload = Timed(json, solo)
+                .Replace(solo ? "\"version\":2" : "\"version\":3", solo ? "\"version\":4" : "\"version\":5")
+                .Replace("\"bossId\":\"cinder-terraces-warden\"", "\"bossId\":\"" + selected + "\",\"chillReductionPm\":0"));
+            var origin = new Uri("https://localhost");
+            using var session = new CoopNativePlaySession(new PlatformSession(origin),
+                new NativeConnection(new Uri("wss://localhost/rt/v1"), origin,
+                    Enumerable.Repeat((byte)1, 32).ToArray(), Guid.NewGuid(),
+                    _ => throw new AssertionException("The projection fixture must not open a socket.")),
+                Guid.NewGuid(), solo ? CoopNativeView.FunctionalSoloRuleset : CoopNativeView.Ruleset,
+                expectedEncounter: selected);
+            var decode = typeof(CoopNativePlaySession).GetMethod("Decode", BindingFlags.Instance | BindingFlags.NonPublic);
+            PlayState Read(string value) => (PlayState)decode.Invoke(session, new object[] { 0ul, Encoding.UTF8.GetBytes(value) });
+            Assert.That(Read(payload).Coop.BossId, Is.EqualTo(selected));
+            var rejected = Assert.Throws<TargetInvocationException>(() => Read(payload.Replace(selected, "recruit-fire-emberloom")));
+            Assert.That(rejected.InnerException, Is.TypeOf<NativeFailure>());
         }
 
         private static string Timed(string json, bool solo)

@@ -34,7 +34,8 @@ namespace Aetheria.PetArena.Presentation
             var hud = host.AddComponent<CoopNativeHud>();
             hud.Attach(document);
             var platform = new PlatformSession(admission.HttpsOrigin);
-            var session = new CoopNativePlaySession(platform, admission.CreateConnection(), admission.MatchId);
+            var expectedRoute = admission.BossId.StartsWith("recruit-", StringComparison.Ordinal) ? admission.BossId : null;
+            var session = new CoopNativePlaySession(platform, admission.CreateConnection(), admission.MatchId, expectedEncounter: expectedRoute);
             _ = ConnectAsync(session, hud, host);
         }
 

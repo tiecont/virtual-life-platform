@@ -207,7 +207,7 @@ try{
  const configForRuntime=()=>readConfig({
   NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:sessionSecret,
   ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:operatorKey,
-  LOCAL_COOP_ROOMS:'1',LOCAL_COOP_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
+  LOCAL_COOP_ROOMS:campaignSolo?'0':'1',LOCAL_COOP_NATIVE:campaignSolo?'0':'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
   LOCAL_ARENA8_NATIVE_BINARY:runtimeBinary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
   ...(historicalBinary?{LOCAL_COOP_HISTORICAL_RUNTIME_BINARY:historicalBinary}:{}),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,

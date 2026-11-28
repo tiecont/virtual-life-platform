@@ -315,7 +315,8 @@ namespace Aetheria.PetArena.Presentation
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
             var transportPlatform = new PlatformSession(admission.HttpsOrigin);
             trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
-            var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId);
+            var expectedRoute = admission.BossId.StartsWith("recruit-", StringComparison.Ordinal) ? admission.BossId : null;
+            var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId, expectedEncounter: expectedRoute);
             try
             {
                 await admitted.ConnectAsync();

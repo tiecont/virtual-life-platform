@@ -12,14 +12,15 @@ namespace Aetheria.Networking
     // the projection marks as active. It never computes damage, rewards or turns.
     public sealed class CoopNativePlaySession : NativePlaySession
     {
-        private readonly string expectedRuleset;
+        private readonly string expectedRuleset, expectedEncounter;
 
         public CoopNativePlaySession(PlatformSession platform, NativeConnection connection, Guid match,
-            string expectedRuleset = CoopNativeView.Ruleset) : base(platform, connection, match)
+            string expectedRuleset = CoopNativeView.Ruleset, string expectedEncounter = null) : base(platform, connection, match)
         {
             if (expectedRuleset != CoopNativeView.Ruleset && expectedRuleset != CoopNativeView.FunctionalSoloRuleset)
                 throw new ArgumentException("Unsupported match ruleset", nameof(expectedRuleset));
             this.expectedRuleset = expectedRuleset;
+            this.expectedEncounter = expectedEncounter;
         }
 
         public const string ViewKindName = "arena8-coop.view.v1";
@@ -31,9 +32,11 @@ namespace Aetheria.Networking
             {
                 var view = CoopNativeView.Decode(version, bytes);
                 var prior = State?.Coop;
-                if (view.RulesetId != expectedRuleset || prior != null &&
-                    (view.RulesetVersion != prior.RulesetVersion || view.You != prior.You ||
-                     view.ContentHash != prior.ContentHash || view.ConfigDigest != prior.ConfigDigest))
+                if (view.RulesetId != expectedRuleset ||
+                    (expectedEncounter != null && view.BossId != expectedEncounter) ||
+                    (prior != null && (view.RulesetVersion != prior.RulesetVersion || view.You != prior.You ||
+                       view.ContentHash != prior.ContentHash || view.ConfigDigest != prior.ConfigDigest ||
+                       view.BossId != prior.BossId)))
                     throw new FormatException("Match projection scope changed");
                 return new PlayState(version, view.Epoch, view.Turn, 0, view.Reward, null, null, view);
             }

@@ -332,8 +332,10 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   identity.registerDeletionOwner('coopSettlement',(account,transaction)=>coopSettlement.settleBeforeErasure(account,transaction));
   const coopSkills=new CoopSkillService(db);
   identity.registerExportOwner('coopSkillLevels',(account,transaction)=>coopSkills.exportAccount(transaction,account));
-  if(config.LOCAL_COOP_ROOMS==='1'){
-    let provisioner:CoopMatchProvisioner|undefined=options.coopProvisioner,ownedProvisioner=false;
+  const coopRoomsEnabled=config.LOCAL_COOP_ROOMS==='1';
+  const soloNativeAvailable=options.petArena8Native?.enabled===true&&!!gameplayValidator;
+  if(coopRoomsEnabled||soloNativeAvailable){
+    let provisioner:CoopMatchProvisioner|undefined=coopRoomsEnabled?options.coopProvisioner:undefined,ownedProvisioner=false;
     if(!provisioner&&config.LOCAL_COOP_NATIVE==='1'){
       const binary=config.LOCAL_ARENA8_NATIVE_BINARY,databaseUrl=config.LOCAL_ARENA8_NATIVE_DATABASE_URL;
       const role=config.LOCAL_ARENA8_NATIVE_DB_ROLE,caFile=config.LOCAL_ARENA8_NATIVE_CA_FILE;
@@ -360,8 +362,8 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
       ownedProvisioner=true;
     }
     if(provisioner)await provisioner.recover();
-    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner,options.petArena8Native?.enabled===true&&!!gameplayValidator);
-    registerCoopRooms(http,config,identity,coopRooms,coopSkills,options.now);
+    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner,soloNativeAvailable);
+    registerCoopRooms(http,config,identity,coopRooms,coopSkills,options.now,!coopRoomsEnabled);
     if(ownedProvisioner&&provisioner){
       const owned=provisioner;
       http.addHook('preClose',async()=>{await owned.close();});
