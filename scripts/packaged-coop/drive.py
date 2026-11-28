@@ -21,6 +21,10 @@ def center_band(top, bottom, half_width=170):
     return (screen_middle - half_width, top, screen_middle + half_width, bottom)
 
 def capture(name):
+    # A hovered jewel opens a tooltip over the board frame. Observe the HUD
+    # with the pointer parked in the window margin between real clicks.
+    run(['python3', root / 'x11.py', 'move', '3', '3'], check=True)
+    sleep(.15)
     run([root / 'capture.sh', name], check=True)
     return output / (name + '.png')
 

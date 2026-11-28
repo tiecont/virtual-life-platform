@@ -34,14 +34,15 @@ if sys.argv[1]=='capture':
 else:
  sync=sig(x,'XSync',c_int,c_void_p,c_int)
  sig(x,'XSetInputFocus',c_int,c_void_p,c_ulong,c_int,c_ulong)(d,window,1,0)
- if sys.argv[1]=='click':
+ if sys.argv[1] in ('click', 'move'):
   pos=list(map(int,sys.argv[2:]))
   x_pos,y_pos,child = c_int(),c_int(),c_ulong()
   assert translate(d,window,root,*pos,byref(x_pos),byref(y_pos),byref(child))
   pos=[x_pos.value,y_pos.value]
   sig(xt,'XTestFakeMotionEvent',c_int,c_void_p,c_int,c_int,c_int,c_ulong)(d,-1,*pos,0)
-  button=sig(xt,'XTestFakeButtonEvent',c_int,c_void_p,c_uint,c_int,c_ulong)
-  sync(d,0); time.sleep(.10); button(d,1,1,0); sync(d,0); time.sleep(.15);button(d,1,0,0)
+  if sys.argv[1]=='click':
+   button=sig(xt,'XTestFakeButtonEvent',c_int,c_void_p,c_uint,c_int,c_ulong)
+   sync(d,0); time.sleep(.10); button(d,1,1,0); sync(d,0); time.sleep(.15);button(d,1,0,0)
  elif sys.argv[1]=='scroll':
   x_pos,y_pos,child = c_int(),c_int(),c_ulong()
   assert translate(d,window,root,280,400,byref(x_pos),byref(y_pos),byref(child))
