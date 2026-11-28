@@ -14,5 +14,7 @@
     "Aetheria.World.Domain",
     "Aetheria.World.Presentation"
   ],
+  "overrideReferences": true,
+  "precompiledReferences": ["Google.Protobuf.dll", "System.Runtime.CompilerServices.Unsafe.dll"],
   "optionalUnityReferences": ["TestAssemblies"]
 }
