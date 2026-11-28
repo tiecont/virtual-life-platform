@@ -5,8 +5,62 @@ import os
 from pathlib import Path
 import sys
 
-from PIL import Image
+from PIL import Image, ImageChops
 from board_capture import populated_board
+
+
+def max_rgb(image):
+    red, green, blue = image.split()
+    return ImageChops.lighter(red, ImageChops.lighter(green, blue))
+
+
+def pixel_bands(occupied, offset):
+    spans = []
+    start = None
+    for index, present in enumerate([*occupied, False], offset):
+        if present and start is None:
+            start = index
+        elif not present and start is not None:
+            spans.append((start, index - 1))
+            start = None
+    return spans
+
+
+def min_grid_gap(spans):
+    if len(spans) != 8:
+        return None
+    return min(right[0] - left[1] - 1 for left, right in zip(spans, spans[1:]))
+
+
+def measure_opening_board(frame, bounds, reference):
+    left, top, side = bounds
+    x, y = left + 4, top + 4
+    inside = frame.crop((x, y, left + side - 3, top + side - 3)).convert('RGB')
+    width, height = inside.size
+    brightness = max_rgb(inside)
+    thresholds = {}
+    for threshold in (90, 100, 120):
+        mask = brightness.point(lambda value: 255 if value >= threshold else 0)
+        pixels = mask.tobytes()
+        columns = pixel_bands((any(pixels[column::width]) for column in range(width)), x)
+        rows = pixel_bands((any(pixels[row * width:(row + 1) * width]) for row in range(height)), y)
+        thresholds[threshold] = {'columnBandsInclusive': columns, 'rowBandsInclusive': rows,
+                                 'minColumnGapPx': min_grid_gap(columns), 'minRowGapPx': min_grid_gap(rows)}
+
+    columns = thresholds[90]['columnBandsInclusive']
+    rows = thresholds[90]['rowBandsInclusive']
+    if not columns or not rows:
+        return {'thresholds': thresholds, 'brightPixelBounds': None, 'rgbComparisonToFirst': None}, None
+    area = (columns[0][0], rows[0][0], columns[-1][1] + 1, rows[-1][1] + 1)
+    art = frame.crop(area).convert('RGB')
+    comparison = None
+    if reference is not None and area == reference[0]:
+        difference = max_rgb(ImageChops.difference(reference[1], art))
+        total = art.width * art.height
+        comparison = {'sampledPixels': total, 'differingPixels': total - difference.histogram()[0]}
+    return {'thresholds': thresholds, 'brightPixelBounds': area,
+            'rgbSha256': hashlib.sha256(art.tobytes()).hexdigest(), 'rgbComparisonToFirst': comparison}, (area, art)
+
 
 run = Path(sys.argv[1])
 expected_size = list(map(int, sys.argv[2].split('x')))
@@ -22,6 +76,7 @@ assert 0 < opening_ended - opening_started <= 15_000
 assert [item['seat'] for item in acceptance['seats']] == [0, 1, 2, 3]
 displays, processes, assigned = set(), set(), set()
 clients = []
+opening_art_reference = None
 for slot in range(4):
     local = run/f'client-{slot}'
     evidence = json.loads((local/'board.json').read_text())
@@ -41,12 +96,18 @@ for slot in range(4):
         assert image.format == 'PNG'
         size = list(image.size)
         assert size == expected_size
+        # Keep this visual observation independent of native acceptance. A
+        # local highlight can legitimately change pixels in the same state.
+        art_measurements, art_sample = measure_opening_board(image, evidence['bounds'], opening_art_reference)
+        if slot == 0:
+            opening_art_reference = art_sample
     assert list(populated_board(frame) or []) == evidence['bounds']
     frame_hash = hashlib.sha256(frame.read_bytes()).hexdigest()
     assert (evidence['visibleTurn'], evidence['visibleActiveSeat']) == (0, 0)
     assert opening_started <= evidence['capturedUnixMs'] < opening_ended
     clients.append({**evidence, 'picture': f'client-{slot}/{name}', 'dimensions': size,
-                    'display': display, 'window': window, 'pid': pid, 'sha256': frame_hash})
+                    'display': display, 'window': window, 'pid': pid, 'sha256': frame_hash,
+                    'openingBoardArt': art_measurements})
 assert len(displays) == len(processes) == 4
 assert assigned == {0, 1, 2, 3}
 assert clients[0]['assignedSeat'] == 0
