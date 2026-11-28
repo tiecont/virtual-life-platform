@@ -21,6 +21,12 @@ The first command accepts an alternate private VRM via `--vrm` and additional in
 | Face and voice | Verify independent eyelid, brow, jaw and phoneme targets. Use measured eye-bone motion when the source has eye bones. Drive bound phonemes from a rights-cleared audio timeline, with interruption returning the face to rest. | Neutral, single-control and mixed expressions. Inspect lip contact, chin drift and unintended opposite-eye motion. Unbound VRM presets require facial authoring. |
 | Combat and showcase | Bind Unity presentation to an existing committed event, or explicitly mark an offline cinematic take. Use camera lead and recovery, a readable silhouette at impact, timed audio and a quiet reduced-motion version. | Compare event time, first visible response and audio cue on one timeline. Record real-time playback separately from paced offline media. |
 
+### Outfit layers on an existing VRM
+
+Inspect the imported skin, material slots, original triangle connectivity and bone weights before changing an outfit. On Icarus the skirt already has its own skinned renderer. The lower-body material contains skin, boots and costume trim. The connected pelvis/thigh surface contains 2,532 triangles. Preserve the original indices, UVs, materials, bind poses and skeleton when assigning independent Unity submeshes to thighs, arms and the remaining outfit. Keep local corrections on their own Timeline track so the same walk can be reviewed with the track muted.
+
+Compare original and corrected materials on the same camera and animation frames. Inspect panel hems, silhouette and skin exposure, then count intersections against the actual thigh surface. On the Icarus walk, pulling skirt vertices outward reduced cardinally visible witnesses from 1,497 to 802 and produced wider gaps at pink panel edges in all four Unity close-ups. Keep that correction out of the fitted character. A private undercloth study can be rendered with `Aetheria.Editor.IcarusLocalizedGarmentStudy.BuildBodyLayersRendered` using the original VRM and the existing shoulder-clearance walk.
+
 ## Material and performance review
 
 Capture both sides under identical neutral illumination at matched exposure. Include base-color-only, full PBR and normal-disabled controls. Compare local feather colors and accent materials against approved reference views. Inspect texture dimensions, color space, culling, metallic/roughness channel conversion and foreground clipping. An overhead fixed key can leave the underside unreadable even when both UV sides carry matching colors.
