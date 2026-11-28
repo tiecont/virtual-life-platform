@@ -27,10 +27,12 @@ namespace Aetheria.Editor
         public static void Verify() => Verify(false);
         public static void VerifyLayers() => Verify(false, reviewLayers: true);
         public static void VerifyDeformation() => Verify(false, reviewDeformation: true);
+        public static void VerifyChinDeformation() => Verify(false, reviewChin: true);
         public static void PrepareRecorder() => Verify(true);
         public static void PrepareAccessoryRecorder() => Verify(true, true);
 
-        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false, bool reviewLayers = false)
+        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false,
+            bool reviewChin = false, bool reviewLayers = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -41,6 +43,13 @@ namespace Aetheria.Editor
                 !Path.IsPathRooted(output ?? "") || Directory.Exists(output) || File.Exists(output))
                 throw new InvalidOperationException($"Batch mode requires a local VRMA in {motionVariable} and a new absolute review directory in {outputVariable}.");
 
+            string chinSource = reviewDeformation || reviewChin
+                ? Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_CHIN_VRM") : null;
+            string chinSha = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_CHIN_SHA256");
+            if (reviewChin || !string.IsNullOrEmpty(chinSource))
+                Require(Path.IsPathRooted(chinSource ?? "") && File.Exists(chinSource) &&
+                    chinSource.EndsWith(".vrm",StringComparison.OrdinalIgnoreCase) && Hash(chinSource)==chinSha,
+                    "Use the exact authorized chin candidate in AETHERIA_ICARUS_REVIEW_CHIN_VRM and AETHERIA_ICARUS_REVIEW_CHIN_SHA256.");
             string sourceVrmFile = Path.Combine(Path.GetDirectoryName(Application.dataPath), VrmPath);
             Require(Hash(sourceVrmFile) == VrmSha256, "The owner-designated Icarus VRM has changed.");
             Directory.CreateDirectory(output);
@@ -130,6 +139,21 @@ namespace Aetheria.Editor
                 if (reviewDeformation)
                     deformation = IcarusWalkDeformationReview.Compare(modelVrm,modelAnimator,skins,director,bound,take.start,
                         out garmentCorrection);
+                IcarusChinWeightReview.Facts chin = null;
+                SkinnedMeshRenderer candidateHead = null;
+                SkinnedMeshRenderer originalHead = null;
+                if (chinSource != null)
+                {
+                    string candidatePath = folder+"/PrivateChinCandidate.vrm";
+                    File.Copy(chinSource,Path.Combine(Application.dataPath,leaf,"PrivateChinCandidate.vrm"));
+                    AssetDatabase.ImportAsset(candidatePath,ImportAssetOptions.ForceSynchronousImport);
+                    var sourceCandidate = AssetDatabase.LoadAssetAtPath<GameObject>(candidatePath);
+                    Require(sourceCandidate != null,"The authorized chin candidate did not import.");
+                    originalHead = skins.Single(renderer => renderer.name=="Head");
+                    candidateHead = sourceCandidate.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Single(renderer=>renderer.name=="Head");
+                    chin = IcarusChinWeightReview.Compare(modelVrm,originalHead,candidateHead,director,take.start,bound.length,chinSha);
+                }
                 var review = Sample(director, take.start, bound.length, bones.Select(bone => bone.Joint).ToArray(), skins);
                 Require(review.maxMappedJointAngleDegrees > 1f && review.maxSkinnedVertexDelta > .001f,
                     $"The Timeline must move mapped joints and deform the actual skin. Joint degrees {review.maxMappedJointAngleDegrees}, mesh delta {review.maxSkinnedVertexDelta}.");
@@ -152,10 +176,24 @@ namespace Aetheria.Editor
                     }).ToArray();
                 review.eyeRig = MeasureEyeRig(modelVrm, skins);
                 review.deformation = deformation;
+                review.chin = chin;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
                     review.frames = Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,output,
-                        out review.clippedWhitePercent);
+                        out review.clippedWhitePercent, captureMovingChin: chin != null);
+                if (chin != null && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
+                {
+                    string chinOutput = Path.Combine(output,"chin-correction");
+                    Directory.CreateDirectory(chinOutput);
+                    var originalMesh = originalHead.sharedMesh;
+                    try
+                    {
+                        originalHead.sharedMesh = candidateHead.sharedMesh;
+                        Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,chinOutput,
+                            out _, captureMovingChin: true);
+                    }
+                    finally { originalHead.sharedMesh = originalMesh; }
+                }
                 if (garmentCorrection != null)
                 {
                     string privateClip = "IcarusWalkPrivateGarmentCorrection.anim";
@@ -340,7 +378,8 @@ namespace Aetheria.Editor
         }
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
-            SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent)
+            SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent,
+            bool captureMovingChin = false)
         {
             Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
                 "A graphics capture requires the project's URP pipeline.");
@@ -441,6 +480,27 @@ namespace Aetheria.Editor
                     File.WriteAllBytes(Path.Combine(output, name), image.EncodeToPNG());
                     frames.Add(name);
                     exposure.Add(whitePercent);
+                    if (captureMovingChin &&
+                        modelVrm.TryGetBoneTransform(HumanBodyBones.LeftEye,out var left) &&
+                        modelVrm.TryGetBoneTransform(HumanBodyBones.RightEye,out var right))
+                    {
+                        var position = camera.transform.position;
+                        var rotation = camera.transform.rotation;
+                        var orthoSize = camera.orthographicSize;
+                        var eyes = (left.position+right.position)*.5f;
+                        float separation = Vector3.Distance(left.position,right.position);
+                        camera.orthographicSize = separation*2.6f;
+                        var chinFocus = eyes+Vector3.down*(separation*1.02f);
+                        camera.transform.position = chinFocus+new Vector3(.36f,.04f,1f);
+                        camera.transform.LookAt(chinFocus);
+                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                        RenderTexture.active = target;
+                        image.ReadPixels(new Rect(0,0,size,size),0,0);
+                        image.Apply();
+                        File.WriteAllBytes(Path.Combine(output,$"icarus-motion-chin-{i+1:D2}.png"),image.EncodeToPNG());
+                        camera.transform.SetPositionAndRotation(position,rotation);
+                        camera.orthographicSize = orthoSize;
+                    }
                 }
                 if (modelVrm.TryGetBoneTransform(HumanBodyBones.LeftEye, out var leftEye) &&
                     modelVrm.TryGetBoneTransform(HumanBodyBones.RightEye, out var rightEye))
@@ -520,6 +580,7 @@ namespace Aetheria.Editor
             public ExpressionBindings[] expressionBindings;
             public EyeRigSample[] eyeRig;
             public IcarusWalkDeformationReview.Result deformation;
+            public IcarusChinWeightReview.Facts chin;
             public string correctedClipSha256;
             public string[] correctedFrames = Array.Empty<string>();
             public float[] correctedClippedWhitePercent = Array.Empty<float>();
