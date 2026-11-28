@@ -1,0 +1,168 @@
+{
+  "version": 2,
+  "contract": "specs/engineering/execution.md",
+  "scopedRules": ["apps/portal-web/AGENTS.md", "scripts/engineering-harness/AGENTS.md"],
+  "skills": {
+    "aetheria-engineering-harness": ".agents/skills/aetheria-engineering-harness/SKILL.md",
+    "aetheria-hero-character-vrm": ".agents/skills/aetheria-hero-character-vrm/SKILL.md",
+    "aetheria-standard-asset-3d": ".agents/skills/aetheria-standard-asset-3d/SKILL.md"
+  },
+  "stages": {
+    "scope": "Read applicable rules and specifications, recover relevant state, establish measurable acceptance and capability prerequisites.",
+    "implement": "Work in the assigned source scope using the selected procedure and approved inputs.",
+    "validate": "Run the mandatory technical checks and the task-specific acceptance tests.",
+    "review": "Diagnose failures, refine and revalidate; inspect candidate evidence and resolve required review gates.",
+    "handoff": "Record exact source, actual results, limitations, blockers and the next authorized action.",
+    "hero-intake": "Confirm identity, source hashes, authorized reference and provider permissions before submission.",
+    "hero-views": "Register the verified views through the installed Charakuru workflow and obtain the reference review.",
+    "hero-mesh": "Select the owner-reviewed Smart Mesh before segmentation, UV and texturing.",
+    "hero-h1": "Build and review face, hair and independent expressions.",
+    "hero-h2": "Build and review modular costume, wings, bow, materials, UVs and budget.",
+    "hero-h3": "Bind and review the rig, weights, controls, contacts and extreme poses.",
+    "hero-admission": "Validate exact VRM, rights, mappings, hashes and staging path; import only after admission.",
+    "hero-h4": "Capture and review Unity URP presentation, reduced motion and performance.",
+    "asset-intake": "Confirm the approved reference, route, budget, rights, identity and runtime contract.",
+    "asset-build": "Produce, segment, unwrap, texture, export and normalize using the applicable asset skill.",
+    "asset-admission": "Verify exact normalized asset, asset class, rights, Blender import, pivots, bounds and budget before Unity staging.",
+    "media-intake": "Confirm reference ownership, authorized provider, deliverable and per-job spending boundary.",
+    "release-qualify": "Collect recorded source policy, applicable qualification, final candidate and one exact-source hosted run."
+  },
+  "gates": {
+    "local-source": {"kind":"workflow","stage":"validate","workflow":"local-review","description":"Verify repository state, frozen migrations and release source policy."},
+    "scoped-checks": {"kind":"technical","stage":"validate","description":"Record the exact commands, results and task-specific regression evidence on the candidate source. Apply applicable architecture, policy, formatting, lint, types, builds and tests."},
+    "source-review": {"kind":"review","stage":"review","description":"Review the candidate against scoped acceptance and log unresolved findings. Identify self-review or the actual independent reviewer."},
+    "maintenance-checks": {"kind":"technical","stage":"validate","description":"Run the changed tooling and governance checks, existing security scans and dependency/integrity checks as affected. Impact recommendations are advisory."},
+    "native-runtime": {"kind":"workflow","stage":"validate","workflow":"rust-tests","input":{"allowLocalExecution":true},"description":"Run the locked Rust workspace tests with the qualified local toolchain."},
+    "gameplay-contract": {"kind":"technical","stage":"validate","description":"Exercise applicable authority, immutable config publication/loading, binding, progression, process, restart and settlement acceptance from the task and production roadmap."},
+    "migration-static": {"kind":"workflow","stage":"validate","workflow":"migration-compat","input":{"mode":"static"},"description":"Compare frozen migration bytes."},
+    "database-compat": {"kind":"technical","stage":"validate","description":"Record applicable runtime and archived compatibility checks with owned disposable data; include migration plans, privileges and recovery/rollback checks for affected infrastructure."},
+    "unity-editor": {"kind":"workflow","stage":"validate","workflow":"unity-build","input":{"action":"tests","allowLocalExecution":true},"description":"Run licensed pinned Unity Editor tests in the candidate worktree."},
+    "unity-player": {"kind":"technical","stage":"validate","description":"Capture actual built-player behavior for affected user flows. Apply named platform and performance qualification when the task requires it."},
+    "visual-evidence": {"kind":"review","stage":"review","description":"Review actual implementation captures alongside approved references. For animated work include motion, contacts and transitions. Report observed defects and capture conditions."},
+    "visual-acceptance": {"kind":"owner","stage":"review","description":"Obtain owner acceptance for the exact visual or product candidate and artifacts."},
+    "hero-intake": {"revisionPolicy":"stage","kind":"technical","stage":"hero-intake","description":"Check H0 identity, hash, provenance and provider permissions. Run the required structural intake for the selected asset."},
+    "hero-views": {"revisionPolicy":"stage","kind":"owner","stage":"hero-views","description":"Obtain the Charakuru reference and registered-view review before geometry."},
+    "hero-mesh": {"revisionPolicy":"stage","kind":"owner","stage":"hero-mesh","description":"Obtain Smart Mesh selection before dependent processing."},
+    "h1": {"revisionPolicy":"stage","kind":"owner","stage":"hero-h1","description":"Obtain approval of face, hair and independent expression deformation."},
+    "h2": {"revisionPolicy":"stage","kind":"owner","stage":"hero-h2","description":"Obtain approval of the modular turnaround and technical budgets."},
+    "h3": {"revisionPolicy":"stage","kind":"owner","stage":"hero-h3","description":"Obtain approval of rig and extreme poses before final Unity effects."},
+    "hero-admission": {"revisionPolicy":"stage","kind":"technical","stage":"hero-admission","description":"Record the verified VRM metadata, asset SHA-256, agreed Unity import contract and granted rights."},
+    "h4": {"kind":"owner","stage":"hero-h4","description":"Obtain approval of actual Unity materials, VFX, reduced motion and runtime evidence."},
+    "asset-admission": {"revisionPolicy":"stage","kind":"technical","stage":"asset-admission","description":"Verify normalized bytes, provenance, geometry, UV, material, scale, collision and clean Blender import under the asset-specific contract."},
+    "asset-owner-admission": {"revisionPolicy":"stage","kind":"owner","stage":"asset-admission","description":"Obtain owner review before staging an asset that is part of character or Pet production."},
+    "media-provenance": {"kind":"technical","stage":"validate","description":"Record the approved input, actual provider and mode, job/receipt, cost when observable, output hash and runtime use or rights status."},
+    "release-source": {"kind":"workflow","stage":"validate","workflow":"release-source","description":"Validate the checked-in release manifest policy."},
+    "release-qualification": {"kind":"technical","stage":"release-qualify","description":"Attach exact-source hosted CI and all applicable signed, hardware, security, privacy and release acceptance evidence."},
+    "release-owner": {"kind":"owner","stage":"review","description":"Obtain the applicable owner release decision and match the canonical release policy."}
+  },
+  "routes": {
+    "repo-review": {
+      "summary":"Read-only repository, frozen migration and release source review",
+      "tags":["review","frozen migrations","release source","exact revision","local review"],
+      "paths":[],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["specs/engineering/harness.md"],
+      "stages":["scope","validate","handoff"],
+      "gates":["local-source"]
+    },
+    "engineering": {
+      "summary":"Architecture, source implementation, bug fixing, refactoring, security, dependency and performance changes",
+      "tags":["architecture","feature","bug","refactor","performance","security","dependency","nest","backend","test","regression"],
+      "paths":["apps/platform-api","packages","tests"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["README.md","config/architecture"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["scoped-checks","source-review"]
+    },
+    "native-gameplay": {
+      "summary":"Authoritative gameplay, combat, progression, Pet and Boss content, configuration, economy and multiplayer",
+      "tags":["rust","gameplay","combat","multiplayer","pet","boss","economy","progression","settlement","network","game configuration"],
+      "paths":["apps/game-runtime","crates","config/gameplay","packages/contracts/src/gameplay-config.ts"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["apps/game-runtime/README.md","specs/pet-arena/wave-c2-arena8-contract.md","specs/acceptance/production-roadmap.md"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["native-runtime","gameplay-contract","source-review"]
+    },
+    "database-infrastructure": {
+      "summary":"Database, migrations, permissions, backup/restore and infrastructure changes",
+      "tags":["postgres","migration","database","docker","backup","restore","infra","least privilege"],
+      "paths":["apps/platform-api/src/shared/database","infra","scripts/postgres-backup.mjs"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["specs/native-data-lifecycle.md","specs/engineering/harness.md"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["migration-static","database-compat","source-review"]
+    },
+    "unity-client": {
+      "summary":"Unity presentation, runtime integration, scenes, shaders, VFX, animation, visual QA and performance",
+      "tags":["unity","player","urp","scene","shader","vfx","cinematic","animation","performance","render"],
+      "paths":["apps/unity-client"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["apps/unity-client/README.md","specs/acceptance/wave-d4-production-acceptance.md","specs/acceptance/character-visual-fidelity.md"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["unity-editor","unity-player","visual-evidence"]
+    },
+    "hero-vrm": {
+      "summary":"Complete flagship and Limited S humanoid hero or key NPC with Charakuru VRM",
+      "tags":["hero","limited s","humanoid","icarus","charakuru","vrm","likeness","facial","deformation","rig","clothing","hair"],
+      "paths":[".agents/skills/aetheria-hero-character-vrm","specs/pet-arena/references/icarus"],
+      "skills":[".agents/skills/aetheria-hero-character-vrm/SKILL.md"],
+      "references":["specs/media/tripo-build-refine.md","specs/acceptance/character-visual-fidelity.md"],
+      "stages":["scope","hero-intake","hero-views","hero-mesh","hero-h1","hero-h2","hero-h3","hero-admission","hero-h4","handoff"],
+      "gates":["hero-intake","hero-views","hero-mesh","h1","h2","h3","hero-admission","h4"]
+    },
+    "standard-3d": {
+      "summary":"Standalone detached accessory, weapon, prop or environment through Tripo or eligible Meshy and Blender",
+      "tags":["prop","environment","accessory","weapon","tripo","meshy","blender","topology","uv","texture","wings","bow","halo"],
+      "paths":[".agents/skills/aetheria-standard-asset-3d"],
+      "skills":[".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
+      "references":["specs/media/tripo-build-refine.md","specs/media/private-art-delivery.md"],
+      "stages":["scope","asset-intake","asset-build","asset-admission","validate","review","handoff"],
+      "gates":["asset-admission","unity-player","visual-evidence"]
+    },
+    "standard-character-asset": {
+      "summary":"Standard/common Pet or detached asset for a character or Pet, with owner review before Unity staging",
+      "tags":["standard pet","common pet","character accessory","character wings","character weapon","pet asset","tripo","blender"],
+      "paths":[],
+      "skills":[".agents/skills/aetheria-standard-asset-3d/SKILL.md"],
+      "references":["specs/media/tripo-build-refine.md","specs/pet-arena/standard-animation-v3.1.md"],
+      "stages":["scope","asset-intake","asset-build","asset-admission","validate","review","handoff"],
+      "gates":["asset-admission","asset-owner-admission","unity-player","visual-evidence"]
+    },
+    "product-experience": {
+      "summary":"Visual UI/UX, website, character and Pet presentation, and player experience",
+      "tags":["ui","ux","website","portal","browser","accessibility","presentation","player experience"],
+      "paths":["apps/portal-web","apps/admin-web","packages/ui"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["README.md","specs/acceptance/production-roadmap.md"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["scoped-checks","visual-evidence","visual-acceptance"]
+    },
+    "media-production": {
+      "summary":"Reference-based visual and audio production, localization and runtime media delivery",
+      "tags":["hydrogen","audio","music","localization","reference","jewel","storyboard","background","audiovisual","content"],
+      "paths":["specs/media","assets/review"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["specs/media/hydrogen-production.md","specs/media/private-art-delivery.md"],
+      "stages":["scope","media-intake","implement","validate","review","handoff"],
+      "gates":["media-provenance","visual-acceptance"]
+    },
+    "repository-maintenance": {
+      "summary":"Repository governance, harness, security scanners, tools, build measurements and integrity checks",
+      "tags":["repository","maintenance","harness","governance","footprint","complexity","build measurement","integrity"],
+      "paths":["scripts/engineering-harness","tests/harness","config/engineering-execution.json","config/development-plan.json","AGENTS.md","pnpm-lock.yaml"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["specs/engineering/harness.md"],
+      "stages":["scope","implement","validate","review","handoff"],
+      "gates":["local-source","maintenance-checks","source-review"]
+    },
+    "release": {
+      "summary":"Integration and release qualification under exact-source CI, release policy and owner authorization",
+      "tags":["release","qualification","deployment","merge","ci","signing","acceptance","privacy"],
+      "paths":["config/release-decision.json","config/release-policy.json",".github/workflows"],
+      "skills":[".agents/skills/aetheria-engineering-harness/SKILL.md"],
+      "references":["config/release-decision.json","config/release-policy.json","specs/acceptance/production-roadmap.md"],
+      "stages":["scope","validate","release-qualify","review","handoff"],
+      "gates":["release-source","release-qualification","release-owner"]
+    }
+  }
+}
