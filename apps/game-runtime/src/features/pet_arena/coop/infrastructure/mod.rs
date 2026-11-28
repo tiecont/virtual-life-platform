@@ -3,7 +3,8 @@ use super::domain::{Rules, SYSTEM_ACTOR_ID};
 use aetheria_persistence::{Completion, Error, Game};
 use aetheria_pet_arena::arena8::coop::config::{effect_kind_name, effect_target_name};
 use aetheria_pet_arena::arena8::coop::{
-    CoopAction, CoopPhase, CoopState, FIRE_ZONE_CELLS, FUNCTIONAL_SOLO_RULESET_ID, StatusKind,
+    CoopAction, CoopCommand, CoopPhase, CoopState, FIRE_ZONE_CELLS, FUNCTIONAL_SOLO_RULESET_ID,
+    StatusKind,
 };
 use serde::{Deserialize, Serialize};
 
@@ -110,6 +111,29 @@ impl Game for Rules {
                 .participants
                 .get(state.active_seat)
                 .is_some_and(|seat| seat.account == account)
+    }
+
+    fn prepare_action(
+        &self,
+        state: &CoopState,
+        command: CoopCommand,
+    ) -> aetheria_persistence::Result<CoopCommand> {
+        if !self.engine().is_v3() {
+            return Ok(CoopCommand::new(command.action));
+        }
+        let now_ms = self.now_ms().max(state.turn_started_ms.unwrap_or(0));
+        let expired = state
+            .turn_deadline_ms
+            .is_some_and(|deadline| now_ms >= deadline);
+        match command.action {
+            // The ticker's read can race a clock adjustment before it takes the lock.
+            CoopAction::ExpireTurn { .. } if !expired => Err(Error::Conflict),
+            CoopAction::ExpireTurn { .. } | CoopAction::Start => {
+                Ok(CoopCommand::timed(command.action, now_ms))
+            }
+            _ if expired => Err(Error::TurnExpired),
+            _ => Ok(CoopCommand::timed(command.action, now_ms)),
+        }
     }
 
     fn project_system(&self, state: &CoopState) -> aetheria_persistence::Result<Vec<u8>> {

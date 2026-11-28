@@ -24,7 +24,7 @@ use std::sync::{
     Arc,
     atomic::{AtomicU64, Ordering},
 };
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -354,6 +354,48 @@ impl Drop for DbDriver {
     }
 }
 
+async fn lock_match_row(
+    db: &mut tokio_postgres::Client,
+    match_id: Uuid,
+) -> tokio_postgres::Transaction<'_> {
+    let tx = db.transaction().await.expect("hold match row");
+    tx.query_one(
+        "SELECT 1 FROM game_native_matches WHERE id=$1::text::uuid FOR UPDATE",
+        &[&match_id.to_string()],
+    )
+    .await
+    .expect("lock match row");
+    tx
+}
+
+async fn set_clock_while_blocked(
+    lock: tokio_postgres::Transaction<'_>,
+    request_pid: i32,
+    clock: &AtomicU64,
+    now_ms: u64,
+) {
+    tokio::time::timeout(Duration::from_millis(750), async {
+        loop {
+            let blocked: bool = lock
+                .query_one(
+                    "SELECT pg_backend_pid() = ANY(pg_blocking_pids($1))",
+                    &[&request_pid],
+                )
+                .await
+                .expect("inspect row lock wait")
+                .get(0);
+            if blocked {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(5)).await;
+        }
+    })
+    .await
+    .expect("command reached the match row lock");
+    clock.store(now_ms, Ordering::Release);
+    lock.commit().await.expect("release match row");
+}
+
 #[tokio::test]
 #[ignore = "requires local PostgreSQL binaries (initdb/pg_ctl/psql) and openssl"]
 async fn v3_timed_turn_expiry_late_commands_races_and_restart_recovery() {
@@ -565,29 +607,41 @@ async fn v3_timed_turn_expiry_late_commands_races_and_restart_recovery() {
     assert_eq!(end_view["state"]["participants"][0]["mana"], 0);
     assert_eq!(end_view["state"]["participants"][0]["rage"], 0);
 
-    // 4. Late player command for seat 1 AFTER deadline (at +19s >= 1_700_000_019_000)
-    // is rejected with Fault::Rejected(StaleVersion) AND triggers system ExpireTurn!
-    fake_clock.store(1_700_000_019_000, Ordering::Release);
-    let late_err = commands
-        .execute(
+    // 4. The player submits shortly before the deadline and blocks on the match
+    // row. Once the lock becomes available at the deadline, only expiry may commit.
+    let (mut db2, driver2) = connect_runtime_postgres(&db_cfg, &ca_pem, role)
+        .await
+        .expect("second client");
+    let _driver2 = DbDriver(driver2);
+    let player_pid: i32 = db
+        .query_one("SELECT pg_backend_pid()", &[])
+        .await
+        .unwrap()
+        .get(0);
+    let lock = lock_match_row(&mut db2, match_id).await;
+
+    fake_clock.store(1_700_000_018_999, Ordering::Release);
+    let late_cmd_id = Uuid::new_v4();
+    let late_intent = intent(
+        match_id,
+        2,
+        INTENT_KIND,
+        br#"{"epoch":1,"action":{"kind":"guard"}}"#,
+    );
+    let (late_result, ()) = tokio::join!(
+        commands.execute(
             &mut db,
             &trust,
             &durable_sessions[1],
-            Uuid::new_v4().as_bytes(),
-            &intent(
-                match_id,
-                2,
-                INTENT_KIND,
-                br#"{"epoch":1,"action":{"kind":"guard"}}"#,
-            ),
+            late_cmd_id.as_bytes(),
+            &late_intent,
             true,
-        )
-        .await
-        .err()
-        .expect("late command must be rejected");
+        ),
+        set_clock_while_blocked(lock, player_pid, &fake_clock, 1_700_000_019_000),
+    );
     assert!(matches!(
-        late_err,
-        Fault::Rejected(public::ErrorCode::StaleVersion)
+        late_result.err(),
+        Some(Fault::Rejected(public::ErrorCode::StaleVersion))
     ));
 
     let (epoch, version, status, after_late) = host
@@ -620,12 +674,17 @@ async fn v3_timed_turn_expiry_late_commands_races_and_restart_recovery() {
         .await
         .expect("committed retry must succeed across later turn expiration");
     assert_eq!(retry_end.version, 2);
+    assert_eq!(retry_end.projection, end_reply.projection);
 
-    // Verify receipt actor_id for committed_version = 3 is SYSTEM_ACTOR_ID (no AFK seat credit).
-    let (mut db2, driver2) = connect_runtime_postgres(&db_cfg, &ca_pem, role)
+    // Only the system expiry has a receipt; the rejected Guard consumes no action.
+    let late_receipt = db2
+        .query_opt(
+            "SELECT 1 FROM game_native_receipts WHERE match_id=$1::text::uuid AND command_id=$2::text::uuid",
+            &[&match_id.to_string(), &late_cmd_id.to_string()],
+        )
         .await
-        .expect("second client");
-    let _driver2 = DbDriver(driver2);
+        .expect("look up rejected player command");
+    assert!(late_receipt.is_none());
     let row = db2
         .query_one(
             "SELECT actor_id::text FROM game_native_receipts WHERE match_id=$1::text::uuid AND committed_version=3",
@@ -635,7 +694,20 @@ async fn v3_timed_turn_expiry_late_commands_races_and_restart_recovery() {
         .expect("receipt query");
     assert_eq!(row.get::<_, String>(0), SYSTEM_ACTOR_ID);
 
-    // 6. Concurrent boundary race: two ticker calls across two DB clients race at deadline.
+    // 6. An expiry candidate waits for the row while the clock moves backward.
+    // The locked check rejects the premature expiry without changing the turn.
+    let lock = lock_match_row(&mut db2, match_id).await;
+    fake_clock.store(1_700_000_034_000, Ordering::Release);
+    let (ticker_result, ()) = tokio::join!(
+        commands.tick_expiration(&mut db),
+        set_clock_while_blocked(lock, player_pid, &fake_clock, 1_700_000_033_999),
+    );
+    assert!(ticker_result.unwrap());
+    let (_, version, _, state) = host.inspect_state(&mut db, match_id).await.unwrap();
+    assert_eq!(version, 3);
+    assert_eq!(state.turn_index, 2);
+
+    // 6a. Concurrent boundary race: two ticker calls across two DB clients race at deadline.
     // Exactly one advances turn 2 -> 3; no double-advance.
     fake_clock.store(1_700_000_034_500, Ordering::Release);
     let (res_a, res_b) = tokio::join!(
@@ -689,8 +761,8 @@ async fn v3_timed_turn_expiry_late_commands_races_and_restart_recovery() {
         Some(1_700_000_064_500)
     );
 
-    // 7. Restart recovery: drop host/owner/commands cleanly, advance clock by 9s (leaving 6s remaining),
-    // re-acquire Owner + resume Host, confirm remaining timer is 6_000ms (NOT reset to 15_000ms),
+    // 7. Restart recovery: advance the fake clock by 6s, re-acquire Owner and
+    // resume the Host with the original deadline and 9s remaining,
     // then run background ticker until deadline passes.
     drop(commands);
     drop(host);

@@ -4,7 +4,8 @@ use aetheria_pet_arena::arena8::coop::simulation::{
     simulate_solo,
 };
 use aetheria_pet_arena::arena8::coop::{
-    CoopConfig, CoopRules, solo_content_hash, solo_v2_content_hash,
+    CoopConfig, CoopRules, FUNCTIONAL_SOLO_RULESET_VERSION, V3_SOLO_RULESET_VERSION,
+    solo_content_hash, solo_v2_content_hash,
 };
 
 #[tokio::main(worker_threads = 2)]
@@ -56,12 +57,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .iter()
             .any(|boss| boss.solo.is_some() || boss.regular.is_some())
         {
-            let solo_hash = if config.is_v3() {
-                solo_v2_content_hash(digest)
+            let (version, solo_hash) = if config.is_v3() {
+                (V3_SOLO_RULESET_VERSION, solo_v2_content_hash(digest))
             } else {
-                solo_content_hash(digest)
+                (FUNCTIONAL_SOLO_RULESET_VERSION, solo_content_hash(digest))
             };
             receipt["soloContentHash"] = hex(&solo_hash).into();
+            receipt["soloRulesetVersion"] = version.into();
         }
         println!("{receipt}");
         return Ok(());

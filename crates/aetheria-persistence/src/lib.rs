@@ -25,6 +25,7 @@ pub enum Error {
     Invalid,
     Unauthorized,
     Conflict,
+    TurnExpired,
     Collision,
     EffectDenied,
     Integrity,
@@ -66,6 +67,11 @@ pub trait Game: Reducer + Send + Sync + 'static {
     fn decode(&self, bytes: &[u8]) -> Result<Self::State>;
     fn member(&self, state: &Self::State, account: &str) -> bool;
     fn authorize(&self, state: &Self::State, account: &str, action: &Self::Action) -> bool;
+    /// Bind execution metadata for a new command while its checkpoint is locked.
+    /// Receipt retries are resolved before this hook.
+    fn prepare_action(&self, _state: &Self::State, action: Self::Action) -> Result<Self::Action> {
+        Ok(action)
+    }
     fn project(&self, state: &Self::State, account: &str) -> Result<Vec<u8>>;
     fn project_system(&self, _state: &Self::State) -> Result<Vec<u8>> {
         Err(Error::Unauthorized)
@@ -707,6 +713,9 @@ where
                 .checked_add(1)
                 .ok_or(Error::Invalid)?,
         };
+        let action = self
+            .game
+            .prepare_action(&stored.checkpoint.state, r.action)?;
         let transition = apply(
             self.game.as_ref(),
             &stored.checkpoint,
@@ -715,7 +724,7 @@ where
                 match_id: *r.match_id.as_bytes(),
                 expected_version: r.expected_version as u64,
                 ruleset: self.game.ruleset(),
-                action: r.action,
+                action,
             },
             &stored.seed,
             clock,

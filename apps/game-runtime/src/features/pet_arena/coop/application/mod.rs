@@ -57,13 +57,6 @@ impl NativeGame for Rules {
         };
         Ok((intent.epoch, CoopCommand::new(action)))
     }
-    fn stamp_action(&self, action: CoopCommand, now_ms: u64) -> CoopCommand {
-        if self.engine().is_v3() {
-            CoopCommand::timed(action.action, now_ms)
-        } else {
-            CoopCommand::new(action.action)
-        }
-    }
     fn timed_turns(&self) -> bool {
         self.engine().is_v3()
     }
@@ -75,10 +68,10 @@ impl NativeGame for Rules {
                 .is_some_and(|deadline| now_ms >= deadline))
         .then_some(state.turn_index)
     }
-    fn expire_turn_action(&self, turn_index: u16, now_ms: u64) -> Option<CoopCommand> {
+    fn expire_turn_action(&self, turn_index: u16) -> Option<CoopCommand> {
         self.engine()
             .is_v3()
-            .then(|| CoopCommand::timed(CoopAction::ExpireTurn { turn_index }, now_ms))
+            .then(|| CoopCommand::new(CoopAction::ExpireTurn { turn_index }))
     }
     fn supports_ping(&self) -> bool {
         true

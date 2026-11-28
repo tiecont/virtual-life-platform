@@ -44,16 +44,13 @@ pub trait NativeGame: Game {
     }
     fn view_kind(&self) -> &'static str;
     fn parse(&self, kind: &str, payload: &[u8]) -> Result<(i64, Self::Action), Error>;
-    fn stamp_action(&self, action: Self::Action, _now_ms: u64) -> Self::Action {
-        action
-    }
     fn timed_turns(&self) -> bool {
         false
     }
     fn expired_turn(&self, _state: &Self::State, _now_ms: u64) -> Option<u16> {
         None
     }
-    fn expire_turn_action(&self, _turn_index: u16, _now_ms: u64) -> Option<Self::Action> {
+    fn expire_turn_action(&self, _turn_index: u16) -> Option<Self::Action> {
         None
     }
     fn supports_ping(&self) -> bool {
@@ -93,7 +90,9 @@ where
         eprintln!("{{\"event\":\"native.command.rejected\",\"category\":\"{error:?}\"}}");
         match error {
             Error::Collision => Fault::Rejected(public::ErrorCode::CommandIdCollision),
-            Error::Conflict => Fault::Rejected(public::ErrorCode::StaleVersion),
+            Error::Conflict | Error::TurnExpired => {
+                Fault::Rejected(public::ErrorCode::StaleVersion)
+            }
             Error::Invalid => Fault::Rejected(public::ErrorCode::UnsupportedClient),
             Error::EffectDenied => Fault::Rejected(public::ErrorCode::NotInProximity),
             Error::Unauthorized => Fault::Revoked,
@@ -107,10 +106,9 @@ where
         epoch: i64,
         version: u64,
         turn_index: u16,
-        now_ms: u64,
-    ) -> Result<bool, Error> {
-        let Some(action) = self.host.game().expire_turn_action(turn_index, now_ms) else {
-            return Ok(false);
+    ) -> Result<(), Error> {
+        let Some(action) = self.host.game().expire_turn_action(turn_index) else {
+            return Ok(());
         };
         let command_id = system_expire_command_id(self.match_id, turn_index);
         let expected_version = i64::try_from(version).map_err(|_| Error::Invalid)?;
@@ -131,30 +129,28 @@ where
         {
             Ok(_) => {
                 self.committed.fetch_add(1, Ordering::Relaxed);
-                Ok(true)
+                Ok(())
             }
-            Err(Error::Conflict) => Ok(false),
+            Err(Error::Conflict) => Ok(()),
             Err(error) => Err(error),
         }
     }
 
-    async fn expire_if_due(
+    async fn expire_rejected_turn(
         &self,
         db: &mut Client,
+        expected_epoch: i64,
         expected_version: i64,
-        now_ms: u64,
-    ) -> Result<bool, Error> {
+    ) -> Result<(), Error> {
         let (epoch, version, status, state) = self.host.inspect_state(db, self.match_id).await?;
-        if status != "ACTIVE" {
-            return Ok(false);
+        if status == "ACTIVE"
+            && epoch == expected_epoch
+            && i64::try_from(version).ok() == Some(expected_version)
+            && let Some(turn_index) = self.host.game().expired_turn(&state, (self.clock)())
+        {
+            self.submit_expire(db, epoch, version, turn_index).await?;
         }
-        if let Some(turn_index) = self.host.game().expired_turn(&state, now_ms) {
-            let _ = self
-                .submit_expire(db, epoch, version, turn_index, now_ms)
-                .await;
-            return Ok(true);
-        }
-        Ok(i64::try_from(version).ok() != Some(expected_version))
+        Ok(())
     }
 
     /// Periodic 100ms background check for timed-turn expiration.
@@ -173,9 +169,7 @@ where
         }
         let now_ms = (self.clock)();
         if let Some(turn_index) = self.host.game().expired_turn(&state, now_ms) {
-            let _ = self
-                .submit_expire(db, epoch, version, turn_index, now_ms)
-                .await?;
+            self.submit_expire(db, epoch, version, turn_index).await?;
         }
         Ok(true)
     }
@@ -236,8 +230,6 @@ where
                         .game()
                         .parse(kind, &intent.action_payload)
                         .map_err(|e| self.fault(e))?;
-                    let now_ms = (self.clock)();
-                    let action = self.host.game().stamp_action(action, now_ms);
                     let expected_version = i64::try_from(intent.expected_state_version)
                         .map_err(|_| self.fault(Error::Invalid))?;
                     let request = Request {
@@ -254,19 +246,16 @@ where
                         .await
                     {
                         Ok(receipt) => receipt,
-                        Err(Error::Invalid) if self.host.game().timed_turns() => {
-                            if self
-                                .expire_if_due(db, expected_version, now_ms)
-                                .await
-                                .map_err(|e| self.fault(e))?
+                        Err(Error::TurnExpired) => {
+                            // The ticker retries if this follow-up cannot obtain the lock.
+                            if let Err(error) =
+                                self.expire_rejected_turn(db, epoch, expected_version).await
                             {
-                                self.rejected.fetch_add(1, Ordering::Relaxed);
                                 eprintln!(
-                                    "{{\"event\":\"native.command.rejected\",\"category\":\"TURN_EXPIRED\"}}"
+                                    "{{\"event\":\"native.turn.expiration_failed\",\"category\":\"{error:?}\"}}"
                                 );
-                                return Err(Fault::Rejected(public::ErrorCode::StaleVersion));
                             }
-                            return Err(self.fault(Error::Invalid));
+                            return Err(self.fault(Error::TurnExpired));
                         }
                         Err(error) => return Err(self.fault(error)),
                     };
