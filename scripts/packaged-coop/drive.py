@@ -63,6 +63,16 @@ def word_button(image, words, box, mode='11'):
             return box[0]+(x+width//2)//2, box[1]+(y+height//2)//2
     return None
 
+def start_button(image):
+    # Start spans the viewport above the footer. Excluding the surrounding scene
+    # lets single-line OCR read the label on both compact and desktop panels.
+    box = center_band(screen_height - 83, screen_height - 45)
+    button = word_button(image, {'battle'}, box, mode='7')
+    if button:
+        return button
+    return word_button(image, {'battle'}, center_band(screen_height - 115, screen_height - 18))
+
+
 def action_button(image, word, board):
     for left, top, right, bottom in enabled_action_frames(image, board):
         label = ocr(image, (left, top, right, bottom), '6').lower()
@@ -238,17 +248,12 @@ elif stage == 'water':
     room_ready('water','20-water-four-seats-ready')
     facts=expect('water-allocation-facts',lambda facts:facts['seats']==4,timeout=30)
     print('Water allocation', facts, flush=True)
-    start_box = center_band(screen_height - 115, screen_height - 18)
     if environ.get('PACKAGED_QA_BOARD', 'functional') == 'functional':
-        def water_start_button(image):
-            if 'start battle' in ocr(image, start_box, '6').lower():
-                return word_button(image, {'battle'}, start_box, mode='6')
-
-        start, _ = wait_for('21-water-equipped-native-hud', water_start_button, tries=28)
+        start, _ = wait_for('21-water-equipped-native-hud', start_button, tries=28)
         (output/'water-hud-observed').touch()
         for attempt in range(5):
             if attempt:
-                start = water_start_button(capture(f'water-start-retry-{attempt}'))
+                start = start_button(capture(f'water-start-retry-{attempt}'))
             started = read('water-started')
             if started:
                 break
@@ -297,7 +302,7 @@ elif stage == 'water':
                  lambda img: not status_button(img) and playing_board(img, swapped['state']))
         (output/'water-swap-observed').touch()
     else:
-        text('21-water-equipped-native-hud', 'start battle', start_box, tries=28)
+        wait_for('21-water-equipped-native-hud', start_button, tries=28)
         (output/'water-hud-observed').touch()
 
 elif stage=='first':
@@ -310,7 +315,7 @@ elif stage=='first':
             click(*recover)
             sleep(1.1)
             continue
-        started=word_button(image,{'battle'},center_band(screen_height - 115, screen_height - 18))
+        started=start_button(image)
         if started:
             click(*started)
             try:
