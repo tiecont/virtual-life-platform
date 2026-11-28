@@ -19,6 +19,10 @@ Agent owns integration and is the only writer of the canonical backlog.
 Workers return `summary`, `revision`, `files`, actual `checks` and
 `limitations` through the existing handoff contract.
 
+Use GPT-6 Luna or GPT-6.1 Terra for routine build, test and lint runs that
+only require executing known commands and reporting results. Use GPT-6.2 Sol
+for implementation, diagnosis and changes with significant regression risk.
+
 For delegated work, use Fast (2× speed) when the interface supports it.
 Choose reasoning effort independently for each assignment according to its
 complexity. If speed selection is unavailable, keep the task-appropriate
