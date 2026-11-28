@@ -356,8 +356,9 @@ the repository's functional candidate as authored into the fresh database.
 Choose **Enter local arena** to create a guest, then select an owned starter Pet
 and start the Fire regular encounter. Start the battle and swap adjacent tiles
 to match three or more of the same functional kind. Clear both the regular encounter and the Warden in Cinder Terraces to open
-Tideglass Lagoon. Clearing the same pair in Tideglass opens Stormcoil Fields.
-The first complete pair in each of these maps recruits the first Pet you do not
+Tideglass Lagoon. Each subsequent pair opens the next chapter, in order: Stormcoil
+Fields, Lantern Necropolis, Ochre Labyrinth and Dawn Prism Sanctum.
+The first complete pair in each map recruits the first Pet you do not
 already own from its published recruitment list, if one is available. Close the player
 to clean up the temporary profile, certificates, API, runtime and database.
 Each launch starts a fresh guest campaign. The player log stays under

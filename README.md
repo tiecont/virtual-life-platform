@@ -29,7 +29,8 @@ the separately required licensed Editor/player checks.
 After building the Linux development player and native backend, run
 `pnpm play:linux:functional` to play the Wave D4 solo campaign. Choose **Enter
 local arena**, select an owned Pet and start Fire. Clearing the regular encounter
-and Boss unlocks Tideglass. Clearing the Tideglass pair unlocks Stormcoil Fields.
+and Boss unlocks Tideglass. The candidate contains six chapters, ending at Dawn
+Prism Sanctum.
 Closing the player removes the disposable campaign.
 [Build prerequisites and campaign controls](apps/unity-client/README.md#play-the-functional-solo-campaign)
 
