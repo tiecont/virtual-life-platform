@@ -14,7 +14,6 @@ namespace Aetheria.PetArena.Presentation
         private static readonly Lazy<XElement> Catalog = new(Load);
         private static readonly Lazy<Font> Latin = new(() => Resources.Load<Font>("WaveD4/Fonts/AetheriaNotoSans-Regular"));
         private static readonly Lazy<Font> Cjk = new(() => Resources.Load<Font>("WaveD4/Fonts/AetheriaNotoSansCJK-Subset"));
-        private static string selected;
 
         private static XElement Load()
         {
@@ -24,7 +23,7 @@ namespace Aetheria.PetArena.Presentation
             return XDocument.Load(reader).Root;
         }
 
-        private static string Language => selected ??= PlayerPrefs.GetString(Preference, "en");
+        private static string Language => PlayerPrefs.GetString(Preference, "en");
 
         public static string Text(string key, string fallback)
         {
@@ -54,8 +53,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 var choice = names.IndexOf(change.newValue);
                 if (choice < 0) return;
-                selected = codes[choice];
-                PlayerPrefs.SetString(Preference, selected);
+                PlayerPrefs.SetString(Preference, codes[choice]);
                 PlayerPrefs.Save();
                 redraw();
             });

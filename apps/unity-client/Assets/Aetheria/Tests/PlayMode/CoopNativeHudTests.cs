@@ -122,6 +122,30 @@ namespace Aetheria.Tests
             }
         }
 
+        [TestCase("en", "End Turn >>")]
+        [TestCase("vi", "Kết thúc lượt >>")]
+        [TestCase("ja", "ターン終了 >>")]
+        [TestCase("ko", "턴 종료 >>")]
+        [TestCase("zh", "结束回合 >>")]
+        public void TimedActionUsesPersistedCampaignLanguage(string language, string expected)
+        {
+            const string key = "aetheria.campaign.language";
+            var previous = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetString(key) : null;
+            try
+            {
+                PlayerPrefs.SetString(key, language);
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(
+                    elements: new[] { "sword", "mana", "rage", "heart", "shield", "special" }, withAbilities: true, timed: true)));
+                var hud = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(hud.Q<Button>("coop-action-end-turn").text, Is.EqualTo(expected));
+            }
+            finally
+            {
+                if (previous == null) PlayerPrefs.DeleteKey(key);
+                else PlayerPrefs.SetString(key, previous);
+            }
+        }
+
         [UnityTest]
         public IEnumerator DesktopResolutionsKeepEightRowsCenteredBetweenCombatants()
         {
