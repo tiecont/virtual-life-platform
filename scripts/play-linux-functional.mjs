@@ -9,6 +9,7 @@ import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {toolEnvironment,validateTestDatabaseURL} from './test-environment.mjs';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
+import {prepareGhostNatureMap,verifyGhostNatureReceipt} from './packaged-solo-nature-probe.mjs';
 
 const require=createRequire(import.meta.url);
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -60,11 +61,13 @@ process.once('SIGTERM',stop);
 try{
  const mode=process.argv[2]??'functional';
  const capture=mode==='--shared-capture';
+ const captureNature=mode==='--shared-nature-capture';
  const candidates={
   functional:'arena8-coop-functional-v1.candidate.json',
   '--timed':'arena8-coop-functional-v2.candidate.json',
   '--shared':'arena8-coop-shared-rng-v1.candidate.json',
   '--shared-capture':'arena8-coop-shared-rng-v1.candidate.json',
+  '--shared-nature-capture':'arena8-coop-shared-rng-v1.candidate.json',
  };
  if(process.platform!=='linux'||process.argv.length>3||!Object.hasOwn(candidates,mode))
   throw Error('Use a supported functional, timed or shared Linux play mode');
@@ -126,17 +129,34 @@ try{
  const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
  if(!stopping){
   phase='Unity development player';
-  console.log((capture?'Recording a packaged guest turn.':'Create a guest with Enter local arena.')+' Player log: '+resolve(directory,'player.log'));
+  console.log((captureNature?'Recording a packaged natural Ghost Nature cleanse.':capture?'Recording a packaged guest turn.':'Create a guest with Enter local arena.')+' Player log: '+resolve(directory,'player.log'));
   player=spawn(playerBinary,[
    '-force-glcore','-screen-width','1280','-screen-height','720','-screen-fullscreen','0',
    '-logFile',resolve(directory,'player.log'),
-   ...(capture?['-aetheria-arena8-native-capture',directory,'-aetheria-arena8-functional-turn','-aetheria-arena8-functional-regular']:[]),
+   ...(captureNature?['-aetheria-arena8-native-capture',directory,'-aetheria-arena8-shared-nature']:
+    capture?['-aetheria-arena8-native-capture',directory,'-aetheria-arena8-functional-turn','-aetheria-arena8-functional-regular']:[]),
   ],{env:{
    ...toolEnvironment(process.env),XDG_CONFIG_HOME:profile,
    AETHERIA_ARENA8_NATIVE:endpoint,AETHERIA_ARENA8_NATIVE_CA:tls.caFile,AETHERIA_ARENA8_FUNCTIONAL:'1',
   },stdio:'ignore'});
-  const code=await new Promise((done,fail)=>{player.once('error',fail);player.once('close',done);});
+  const exited=new Promise((done,fail)=>{player.once('error',fail);player.once('close',done);});
+  let mapAccess;
+  if(captureNature){
+   phase='disposable Ghost map access fixture';
+   try{
+    mapAccess=await Promise.race([
+     prepareGhostNatureMap(pool,directory,()=>stopping||player.exitCode!==null),
+     exited.then(()=>{throw Error('The player exited before starting the Ghost fixture');}),
+    ]);
+   }catch(error){stop();await exited.catch(()=>{});throw error;}
+  }
+  phase='Unity development player';
+  const code=await exited;
   if(!stopping&&code!==0)throw Error('Check the local player log');
+  if(captureNature&&!stopping){
+   phase='verify packaged natural Ghost cleanse';
+   await verifyGhostNatureReceipt(pool,directory,published,mapAccess,bundle,candidate);
+  }
   if(capture&&!stopping){
    phase='verify packaged solo turn';
    const facts=JSON.parse(await readFile(resolve(directory,'native-facts.json'),'utf8'));

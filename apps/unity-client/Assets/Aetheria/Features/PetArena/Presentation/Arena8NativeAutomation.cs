@@ -51,6 +51,11 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
+                if (NativeArgument("-aetheria-arena8-shared-nature"))
+                {
+                    await CaptureNaturalNatureCleanse();
+                    return;
+                }
                 if (NativeArgument("-aetheria-arena8-functional-turn"))
                 {
                     await CaptureFunctionalBattleTurn();
