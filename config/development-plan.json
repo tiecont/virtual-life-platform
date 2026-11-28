@@ -11168,6 +11168,7 @@
     },
     {
       "id": "VL-203",
+      "november28HostedShardReconciliation": {"hostedHead": "fa0f816575997b1e10ca8f7c2a34e66dad27337a", "run": "46146889629", "failedJob": "140990739736", "reason": "The unchanged four integration shards passed six new route and settlement cases, but aggregation expected the previous 910 tests.", "localFix": "1092f9a5", "check": "The unchanged verify-vitest-reports.mjs verified the four original hosted JSON reports against 916 required tests. All 916 passed with zero skipped, pending or todo. The local fix awaits hosted verification."},
       "campaignV4ContinuationVerification": {"sourceRevision": "f675c641ba7b443fcc44fafdd2aead74c8a7d422", "verifiedScope": "Hosted architecture failure diagnosed. Local architecture and Portal production build passed after moving shared localization to specs."},
       "campaignV4Verification": {
         "sourceRevision": "973c55a619eac42014f814b01557547738463191",
