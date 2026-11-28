@@ -1,11 +1,13 @@
 """Apply the four original color plates to the approved editable Icarus wing master."""
 
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from hashlib import sha256
 import json
 from pathlib import Path
 import struct
 import sys
+from typing import Callable
 from zlib import compressobj, crc32
 
 import bpy
@@ -28,6 +30,37 @@ CANDIDATE = "icarus-wing-color-review.blend"
 RECEIPT = "wing-uv-color-review.json"
 
 
+@dataclass(frozen=True)
+class AssetSpec:
+    asset: str
+    source_sha: str
+    part_count: int
+    triangles: int
+    directions: tuple
+    render_views: tuple
+    texture: str
+    candidate: str
+    receipt: str
+    projection_for_chart: Callable
+
+
+def wing_projection(chart):
+    axis = chart["axis"]
+    sign = chart["normalSign"]
+    main = 0 if (axis == 1 and sign > 0) or (axis != 1 and chart["centerDepth"] >= 0) else 3
+    side = None
+    if axis != 1 and main == 0:
+        side = 1 if chart["low"][0] + chart["high"][0] > 0 else 2
+    return main, side
+
+
+WING = AssetSpec(
+    "wing", SOURCE_SHA, 104, 4980124, DIRECTIONS,
+    (("front", (0, 1, 0)), ("back", (0, -1, 0)), ("left-quarter", (1, .66, .08)), ("right-quarter", (-1, .66, .08))),
+    TEXTURE, CANDIDATE, RECEIPT, wing_projection,
+)
+
+
 def mesh_arrays(obj):
     mesh = obj.data
     mesh.calc_loop_triangles()
@@ -42,6 +75,15 @@ def geometry_hash(vertices, triangles):
     hashed = sha256(vertices)
     hashed.update(triangles)
     return hashed.hexdigest()
+
+
+def shape_hashes(obj):
+    keys = obj.data.shape_keys
+    if keys is None:
+        return {}
+    return {layer.name: {"positionSha256": sha256(array_values(layer.data, "co", 3, np.float32)).hexdigest(),
+                         "value": layer.value}
+            for layer in keys.key_blocks}
 
 
 def directions(direction):
@@ -118,14 +160,14 @@ def groups(vertices, triangles):
     return points, face_axis, magnitude
 
 
-def read_charts(objects):
-    planar_bounds = [[np.full(2, np.inf), np.full(2, -np.inf)] for _ in DIRECTIONS]
+def read_charts(objects, spec):
+    planar_bounds = [[np.full(2, np.inf), np.full(2, -np.inf)] for _ in spec.directions]
     all_charts = {}
     original = {}
     for obj in objects:
         vertices, triangles, _ = mesh_arrays(obj)
         original[obj.name] = geometry_hash(vertices, triangles)
-        for bounds, direction in zip(planar_bounds, DIRECTIONS, strict=True):
+        for bounds, direction in zip(planar_bounds, spec.directions, strict=True):
             projected = vertices @ directions(direction).T
             bounds[0] = np.minimum(bounds[0], projected.min(axis=0))
             bounds[1] = np.maximum(bounds[1], projected.max(axis=0))
@@ -169,10 +211,9 @@ def pack(charts):
     raise ValueError("Per-part UV charts did not fit in the 4K atlas.")
 
 
-def chart_color(chart, plates):
+def chart_color(chart, plates, spec):
     axis = chart["axis"]
     planes = chart["planes"]
-    sign = chart["normalSign"]
     _, _, width, height = chart["rect"]
     h, v = np.meshgrid(np.arange(width), np.arange(height))
     uv = np.stack((h, v), axis=-1).reshape(-1, 2)
@@ -181,16 +222,10 @@ def chart_color(chart, plates):
     world[:, axis] = chart["centerDepth"]
     low, high = chart["low"][planes], chart["high"][planes]
     world[:, planes] = low + uv * (high - low)
-    # Keep the two main faces bound to their independent original artwork.
-    main = 0 if (axis == 1 and sign > 0) or (axis != 1 and chart["centerDepth"] >= 0) else 3
-    if axis == 1 and sign < 0:
-        main = 3
+    main, quarter = spec.projection_for_chart(chart)
     p, rgb, valid = project(world, plates[main])
     fill_plate(p, rgb, valid, plates[main])
-    # A quarter plate contributes at most 20% on the emblem/front half and
-    # where its original foreground actually exists. Rear color remains independent.
-    if axis != 1 and main == 0:
-        quarter = 1 if chart["low"][0] + chart["high"][0] > 0 else 2
+    if quarter is not None:
         _, side, visible = project(world, plates[quarter])
         plates[quarter]["samples"] += int(np.count_nonzero(visible))
         rgb[visible] = np.rint(.8 * rgb[visible] + .2 * side[visible]).astype(np.uint8)
@@ -257,11 +292,11 @@ def write_rgb_png(path, rgb):
         chunk(file, b"IEND", b"")
 
 
-def attach_material(objects, texture):
+def attach_material(objects, texture, spec):
     image = bpy.data.images.load(str(texture), check_existing=False)
     image.colorspace_settings.name = "sRGB"
     image.pack()
-    material = bpy.data.materials.new("Icarus original plate colors")
+    material = bpy.data.materials.new(f"Icarus {spec.asset} original plate colors")
     material.use_nodes = True
     nodes = material.node_tree.nodes
     links = material.node_tree.links
@@ -282,24 +317,25 @@ def attach_material(objects, texture):
         obj.data.materials[0] = material
 
 
-def create(source, references, output):
+def create(source, references, output, spec):
     bpy.ops.wm.open_mainfile(filepath=str(source))
     bpy.context.view_layer.update()
     objects = meshes()
     identity = Matrix.Identity(4)
-    if len(objects) != 104 or any(obj.matrix_world != identity or obj.data.users != 1 for obj in objects):
-        raise ValueError("The approved wing must retain its 104 separate identity-space clay parts.")
-    charts, bounds, original = read_charts(objects)
+    if len(objects) != spec.part_count or any(obj.matrix_world != identity or obj.data.users != 1 for obj in objects):
+        raise ValueError("The approved clay must retain all separate identity-space parts.")
+    charts, bounds, original = read_charts(objects, spec)
+    rest_keys = {obj.name: shape_hashes(obj) for obj in objects if obj.data.shape_keys is not None}
     density = pack(charts)
     plates = [read_plate(references / row["file"], direction, low, high)
-              for row, direction, (low, high) in zip(verify_reference(references, "wing"), DIRECTIONS, bounds, strict=True)]
+              for row, direction, (low, high) in zip(verify_reference(references, spec.asset), spec.directions, bounds, strict=True)]
     rgb = np.zeros((SIZE, SIZE, 3), dtype=np.uint8)
     for chart in charts.values():
         x, y, width, height = chart["rect"]
-        rgb[y:y + height, x:x + width] = chart_color(chart, plates)
+        rgb[y:y + height, x:x + width] = chart_color(chart, plates, spec)
     parts = assign_uv(objects, charts, original)
-    if sum(row["triangles"] for row in parts) != 4980124:
-        raise ValueError("The exact approved wing triangle count changed.")
+    if sum(row["triangles"] for row in parts) != spec.triangles:
+        raise ValueError("The exact approved clay triangle count changed.")
     occupied = np.zeros((SIZE, SIZE), dtype=np.bool_)
     rows = []
     for (part, mode), chart in sorted(charts.items()):
@@ -311,16 +347,18 @@ def create(source, references, output):
         rows.append({"part": part, "normalAxis": chart["axis"], "normalSign": chart["normalSign"],
                      "rectanglePixels": [x, y, width, height]})
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
-    texture = output / TEXTURE
+    texture = output / spec.texture
     write_rgb_png(texture, rgb)
-    attach_material(objects, texture)
-    candidate = output / CANDIDATE
+    attach_material(objects, texture, spec)
+    candidate = output / spec.candidate
     bpy.ops.wm.save_as_mainfile(filepath=str(candidate), compress=True)
-    if file_hash(source) != SOURCE_SHA:
-        raise ValueError("The source clay file changed.")
+    if (file_hash(source) != spec.source_sha
+            or rest_keys != {obj.name: shape_hashes(obj) for obj in objects if obj.data.shape_keys is not None}):
+        raise ValueError("The source clay file or original shape keys changed.")
     return {
-        "classification": "PRIVATE_WING_FOUR_PLATE_UV_COLOR_REVIEW",
-        "sourceSha256": SOURCE_SHA,
+        "classification": f"PRIVATE_{spec.asset.upper()}_FOUR_PLATE_UV_COLOR_REVIEW",
+        "sourceSha256": spec.source_sha,
+        "sourceShapeKeys": rest_keys,
         "candidateSha256": file_hash(candidate),
         "atlasSha256": file_hash(texture),
         "atlasWidth": SIZE, "atlasHeight": SIZE, "atlasColorSpace": "sRGB",
@@ -330,28 +368,29 @@ def create(source, references, output):
         "chartRectangles": rows,
         "partChartsOverlap": False,
         "plateSampling": [{"direction": d, "sampled": p["samples"], "rimFilled": p["filled"]}
-                          for d, p in zip(DIRECTIONS, plates, strict=True)],
-        "references": verify_reference(references, "wing"),
+                          for d, p in zip(spec.directions, plates, strict=True)],
+        "references": verify_reference(references, spec.asset),
         "scope": "Reference-only base color with independent face plates. Dominant-surface projection may overlap within one chart; no normal or metallic map, runtime LOD, rig or art admission.",
     }
 
 
-def render(source, output, mode, evidence):
-    texture = output / TEXTURE
-    if file_hash(output / CANDIDATE) != evidence["candidateSha256"] or file_hash(texture) != evidence["atlasSha256"]:
+def render(source, output, mode, evidence, spec):
+    texture = output / spec.texture
+    if file_hash(output / spec.candidate) != evidence["candidateSha256"] or file_hash(texture) != evidence["atlasSha256"]:
         raise ValueError("The rendered source or atlas changed.")
-    bpy.ops.wm.open_mainfile(filepath=str(output / CANDIDATE))
+    bpy.ops.wm.open_mainfile(filepath=str(output / spec.candidate))
     objects = meshes()
     originals = {row["part"]: row for row in evidence["parts"]}
     for obj in objects:
         if (geometry_hash(*mesh_arrays(obj)[:2]) != originals[obj.name]["meshSha256"]
-                or obj.data.uv_layers.active.name != UV or obj.matrix_world != Matrix.Identity(4)):
+                or obj.data.uv_layers.active.name != UV or obj.matrix_world != Matrix.Identity(4)
+                or shape_hashes(obj) != evidence["sourceShapeKeys"].get(obj.name, {})):
             raise ValueError("The saved color study changed original geometry, UV or rest placement.")
-    if set(originals) != {obj.name for obj in objects} or file_hash(source) != SOURCE_SHA:
+    if set(originals) != {obj.name for obj in objects} or file_hash(source) != spec.source_sha:
         raise ValueError("The rendered accessory changed approved component identity.")
-    camera, center, scale, _ = stage_camera("wing", objects)
+    camera, center, scale, _ = stage_camera(spec.asset, objects)
     scene = bpy.context.scene
-    scene.render.resolution_x, scene.render.resolution_y = 1024, 768
+    scene.render.resolution_x, scene.render.resolution_y = (1024, 768) if spec.asset == "wing" else (768, 1024)
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     world = bpy.data.worlds.new("Neutral studio background")
@@ -370,7 +409,9 @@ def render(source, output, mode, evidence):
         material.node_tree.links.new(nodes["Exact original plate atlas"].outputs["Color"], emit.inputs["Color"])
         material.node_tree.links.new(emit.outputs["Emission"], nodes.get("Material Output").inputs["Surface"])
     else:
-        for name, vector, strength in (("Face key", (.18, 1, .44), 1.35), ("Reverse key", (-.18, -1, .44), 1.35)):
+        for name, direction in spec.render_views[:2]:
+            vector = Vector(direction) + Vector((0, 0, .44))
+            strength = 1.35
             light = bpy.data.objects.new(name, bpy.data.lights.new(name, "SUN"))
             scene.collection.objects.link(light)
             light.data.energy = strength
@@ -387,8 +428,7 @@ def render(source, output, mode, evidence):
     frames = []
     folder = output / mode
     folder.mkdir(exist_ok=False, mode=0o700)
-    for name, vector in zip(("front", "back", "left-quarter", "right-quarter"),
-                            ((0, 1, 0), (0, -1, 0), (1, .66, .08), (-1, .66, .08)), strict=True):
+    for name, vector in spec.render_views:
         outcome = capture(camera, center, scale * 1.10, Vector(vector), folder / f"{name}.png")
         frames.append({"view": name, "direction": vector, **outcome})
     if len({row["sha256"] for row in frames}) != len(frames):
@@ -399,30 +439,30 @@ def render(source, output, mode, evidence):
     }, indent=2) + "\n")
 
 
-def main():
+def run(spec, argv):
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("references", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--render", choices=("base-color", "pbr"))
-    args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
+    args = parser.parse_args(argv)
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Use Blender 5.3 for the private wing color geometry.")
     source = args.source.resolve(strict=True)
-    if file_hash(source) != SOURCE_SHA:
-        raise ValueError("Use the exact owner-approved wing clay trial.")
+    if file_hash(source) != spec.source_sha:
+        raise ValueError("Use the exact owner-approved clay trial.")
     references = args.references.resolve(strict=True)
-    reference = verify_reference(references, "wing")
+    reference = verify_reference(references, spec.asset)
     output = args.output.resolve()
     if args.render:
-        evidence = json.loads((output / RECEIPT).read_text())
-        if reference != evidence["references"] or evidence["sourceSha256"] != SOURCE_SHA:
+        evidence = json.loads((output / spec.receipt).read_text())
+        if reference != evidence["references"] or evidence["sourceSha256"] != spec.source_sha:
             raise ValueError("The source or original view pins changed between phases.")
-        render(source, output, args.render, evidence)
+        render(source, output, args.render, evidence, spec)
     else:
-        evidence = create(source, references, output)
-        (output / RECEIPT).write_text(json.dumps(evidence, indent=2) + "\n")
+        evidence = create(source, references, output, spec)
+        (output / spec.receipt).write_text(json.dumps(evidence, indent=2) + "\n")
 
 
 if __name__ == "__main__":
-    main()
+    run(WING, sys.argv[sys.argv.index("--") + 1:])
