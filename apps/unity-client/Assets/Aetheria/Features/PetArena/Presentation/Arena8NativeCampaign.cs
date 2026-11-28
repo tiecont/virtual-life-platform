@@ -90,7 +90,7 @@ namespace Aetheria.PetArena.Presentation
                 var admitted = await session.ConnectAsync(lifetime.Token);
                 nativeSession = session;
                 nativeView = admitted.Arena8;
-                stage?.PresentFixedNativeBattle(map, nativeView.PetId, nativeView.EncounterId);
+                stage?.PresentFixedNativeBattle(map, nativeView.PetId, NativeOpponentMediaId(nativeView.EncounterId));
                 matchId = admission.MatchIdText;
                 selectedCell = -1;
                 nativeSettlementRequest = NewRequestId();
@@ -170,6 +170,14 @@ namespace Aetheria.PetArena.Presentation
             nativeTrust = null;
         }
 
+        // The original arena8-pve projection uses the encounter IDs published before the Warden names.
+        private static string NativeOpponentMediaId(string encounterId) => encounterId switch
+        {
+            "cinder-terraces-boss" => "cinder-terraces-warden",
+            "tideglass-lagoon-boss" => "tideglass-lagoon-warden",
+            _ => encounterId
+        };
+
         private void DrawNativeCombat()
         {
             var current = nativeView;
@@ -202,7 +210,7 @@ namespace Aetheria.PetArena.Presentation
             enemy.AddToClassList("battle-combatant");
             WaveD4BattlePreview.AddIdentity(enemy,
                 Label(current.EncounterId.Replace('-', ' ') + (current.EncounterBoss ? " · Boss" : "")),
-                current.EncounterId, opponent: true);
+                NativeOpponentMediaId(current.EncounterId), opponent: true);
             enemy.Add(Label("HP " + current.EnemyHealth + " · Shield " + current.EnemyShield));
             if (current.TelegraphKind != null)
                 enemy.Add(Label(current.TelegraphKind + " · " + current.TelegraphAxis + " " +
