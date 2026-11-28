@@ -25,30 +25,30 @@
   "fontValidation": {
     "regularBytes": 135936,
     "boldBytes": 136332,
-    "cjkSubsetBytes": 314844,
+    "cjkSubsetBytes": 326924,
     "languages": {
       "vi": {
-        "uniqueCodepoints": 119,
+        "uniqueCodepoints": 121,
         "missingCodepoints": [],
         "validated": true
       },
       "en": {
-        "uniqueCodepoints": 74,
+        "uniqueCodepoints": 77,
         "missingCodepoints": [],
         "validated": true
       },
       "ja": {
-        "uniqueCodepoints": 289,
+        "uniqueCodepoints": 317,
         "missingCodepoints": [],
         "validated": true
       },
       "ko": {
-        "uniqueCodepoints": 240,
+        "uniqueCodepoints": 259,
         "missingCodepoints": [],
         "validated": true
       },
       "zh": {
-        "uniqueCodepoints": 298,
+        "uniqueCodepoints": 323,
         "missingCodepoints": [],
         "validated": true
       }
@@ -754,6 +754,97 @@
       "ja": "中央広場に戻る",
       "ko": "중앙 광장으로 복귀",
       "zh": "返回中央广场"
+    },
+    "coop.title": {
+      "vi": "Đấu trường phối hợp",
+      "en": "Cooperative Arena8",
+      "ja": "協力アリーナ",
+      "ko": "협동 아레나",
+      "zh": "协作竞技场"
+    },
+    "coop.preview": {
+      "vi": "Bản xem thử cục bộ",
+      "en": "Local developer preview",
+      "ja": "ローカル開発プレビュー",
+      "ko": "로컬 개발 미리보기",
+      "zh": "本地开发预览"
+    },
+    "coop.needs_pet": {
+      "vi": "Cần sở hữu một Linh Thú để tạo phòng.",
+      "en": "An owned Pet is required to create a room.",
+      "ja": "部屋の作成には所持ペットが必要です。",
+      "ko": "방을 만들려면 보유한 펫이 필요합니다.",
+      "zh": "创建房间需要拥有一只灵宠。"
+    },
+    "coop.room_state": {
+      "vi": "Phòng {0} · {1}",
+      "en": "Room {0} · {1}",
+      "ja": "部屋 {0} · {1}",
+      "ko": "방 {0} · {1}",
+      "zh": "房间 {0} · {1}"
+    },
+    "coop.state.OPEN": {
+      "vi": "Đang mở",
+      "en": "OPEN",
+      "ja": "募集中",
+      "ko": "모집 중",
+      "zh": "开放中"
+    },
+    "coop.state.LOCKED": {
+      "vi": "Đã khóa",
+      "en": "LOCKED",
+      "ja": "締切",
+      "ko": "잠김",
+      "zh": "已锁定"
+    },
+    "coop.state.STARTED": {
+      "vi": "Đã bắt đầu",
+      "en": "STARTED",
+      "ja": "開始済み",
+      "ko": "시작됨",
+      "zh": "已开始"
+    },
+    "coop.room_meta": {
+      "vi": "Boss {0} · cấu hình v{1} · {2} điểm",
+      "en": "Boss {0} · config v{1} · points {2}",
+      "ja": "ボス {0} · 設定 v{1} · {2} ポイント",
+      "ko": "보스 {0} · 설정 v{1} · {2}점",
+      "zh": "首领 {0} · 配置 v{1} · {2} 点"
+    },
+    "coop.seat_count": {
+      "vi": "Số chỗ: {0}/4",
+      "en": "Seats: {0}/4",
+      "ja": "参加人数: {0}/4",
+      "ko": "참가 인원: {0}/4",
+      "zh": "人数：{0}/4"
+    },
+    "coop.seat_member": {
+      "vi": "Bạn ở ghế {0}",
+      "en": "You are seat {0}",
+      "ja": "あなたは席 {0}",
+      "ko": "내 자리: {0}",
+      "zh": "你的席位：{0}"
+    },
+    "coop.seat_host": {
+      "vi": "Bạn ở ghế {0} (chủ phòng)",
+      "en": "You are seat {0} (host)",
+      "ja": "あなたは席 {0}（部屋主）",
+      "ko": "내 자리: {0} (방장)",
+      "zh": "你的席位：{0}（房主）"
+    },
+    "coop.points_needed": {
+      "vi": "Còn thiếu {0} điểm thành tựu",
+      "en": "Achievement Points still needed · {0}",
+      "ja": "不足実績ポイント · {0}",
+      "ko": "부족한 업적 점수 · {0}",
+      "zh": "还需成就点数 · {0}"
+    },
+    "coop.map_needed": {
+      "vi": "Hãy vượt qua {0} trước.",
+      "en": "Clear {0} first.",
+      "ja": "先に{0}をクリアしてください。",
+      "ko": "먼저 {0} 지역을 클리어하세요.",
+      "zh": "请先通关{0}。"
     }
   }
 }

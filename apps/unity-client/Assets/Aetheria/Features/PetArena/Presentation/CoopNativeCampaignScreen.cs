@@ -103,10 +103,10 @@ namespace Aetheria.PetArena.Presentation
                 {
                     row.Add(new Label("Room hosting locked.") { name = "coop-availability-status" });
                     if (catalog.points < encounter.requiredPoints)
-                        row.Add(new Label("Achievement Points still needed · " + (encounter.requiredPoints - catalog.points))
+                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.points_needed", "Achievement Points still needed \u00b7 {0}"), encounter.requiredPoints - catalog.points))
                             { name = "coop-availability-points-lock" });
                     if (encounter.prerequisite != null && !encounter.prerequisite.cleared)
-                        row.Add(new Label("Clear " + encounter.prerequisite.mapName + " first.")
+                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.map_needed", "Clear {0} first."), encounter.prerequisite.mapName))
                             { name = "coop-availability-map-lock", enableRichText = false });
                 }
             }
@@ -121,8 +121,8 @@ namespace Aetheria.PetArena.Presentation
             if (root == null || !isActiveAndEnabled) return;
             root.Clear();
             CampaignLocale.ApplyFont(root);
-            root.Add(new Label("Cooperative Arena8") { name = "coop-lobby-title" });
-            root.Add(new Label("Local developer preview") { name = "coop-lobby-preview" });
+            root.Add(new Label(CampaignLocale.Text("coop.title", "Cooperative Arena8")) { name = "coop-lobby-title" });
+            root.Add(new Label(CampaignLocale.Text("coop.preview", "Local developer preview")) { name = "coop-lobby-preview" });
             if (notice.Length > 0) root.Add(new Label(notice) { name = "coop-lobby-notice" });
             if (room == null || room.status == "OPEN") RenderCollection(root);
             if (returnToHub != null)
@@ -131,7 +131,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 root.Add(BuildAvailability(map, catalog, loadingCatalog));
                 if (Encounter?.eligible == true && instanceId == null)
-                    root.Add(new Label("An owned Pet is required to create a room."));
+                    root.Add(new Label(CampaignLocale.Text("coop.needs_pet", "An owned Pet is required to create a room.")));
                 var create = new Button(() => _ = RunAsync(CreateAsync)) { text = CampaignLocale.Text("coop.create", "Create room"), name = "coop-create" };
                 create.SetEnabled(CanCreate);
                 root.Add(create);
@@ -175,14 +175,13 @@ namespace Aetheria.PetArena.Presentation
                 }
                 return;
             }
-            root.Add(new Label("Room " + room.roomId + " · " + room.status) { name = "coop-room-status" });
-            root.Add(new Label("Boss " + room.bossId + " · config v" + room.configVersion +
-                " · points " + room.requiredPoints) { name = "coop-room-meta" });
-            var seats = new Label("Seats: " + (room.seats == null ? 0 : room.seats.Length) + "/4");
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_state", "Room {0} \u00b7 {1}"), room.roomId, CampaignLocale.Text("coop.state." + room.status, room.status))) { name = "coop-room-status" });
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_meta", "Boss {0} \u00b7 config v{1} \u00b7 points {2}"), room.bossId, room.configVersion, room.requiredPoints)) { name = "coop-room-meta" });
+            var seats = new Label(string.Format(CampaignLocale.Text("coop.seat_count", "Seats: {0}/4"), room.seats?.Length ?? 0));
             seats.name = "coop-room-seats";
             root.Add(seats);
             if (room.you != null && room.you.seat >= 0)
-                root.Add(new Label("You are seat " + room.you.seat + (room.you.isHost ? " (host)" : "")));
+                root.Add(new Label(string.Format(room.you.isHost ? CampaignLocale.Text("coop.seat_host", "You are seat {0} (host)") : CampaignLocale.Text("coop.seat_member", "You are seat {0}"), room.you.seat)));
             var ready = new Button(() => _ = RunAsync(ReadyAsync)) { text = CampaignLocale.Text("coop.ready", "Ready"), name = "coop-ready" };
             ready.SetEnabled(room.status == "OPEN" && room.seats.Any(seat => seat.you && !string.IsNullOrEmpty(seat.petId)));
             root.Add(ready);
