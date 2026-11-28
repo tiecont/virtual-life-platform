@@ -1,0 +1,19 @@
+# Set the sandbox policy and the default permission preset to workspace-write.
+# Enforcement depends on the host sandbox backend. Verify its file, process and
+# network restrictions with synthetic fixtures before using untrusted input.
+
+- id: sandbox-policy
+  config:
+    mode: workspace-write
+- id: tools
+  config:
+    mode: ptc
+    maxParallelSubCalls: 4
+- id: ptc-runtime
+  config:
+    timeoutMs: 120000
+    maxTimeoutMs: 300000
+    maxOldGenerationSizeMb: 512
+- id: permission
+  config:
+    defaultPreset: workspace-write
