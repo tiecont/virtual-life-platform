@@ -305,10 +305,10 @@ namespace Aetheria.Editor
             return new Morph(candidate, shape, clip);
         }
 
-        private static (Animator animator, AnimationClip clip, int joints) Retarget(GameObject model, Vrm10Instance vrm,
-            GameObject sourceVrm, Transform stage)
+        internal static (Animator animator, AnimationClip clip, int joints) Retarget(GameObject model, Vrm10Instance vrm,
+            GameObject sourceVrm, Transform stage, string walkAsset = Walk)
         {
-            var motion = Object.Instantiate(Import(Walk), stage);
+            var motion = Object.Instantiate(Import(walkAsset), stage);
             try
             {
                 var source = motion.GetComponentsInChildren<Animator>(true).Single();
@@ -412,7 +412,7 @@ namespace Aetheria.Editor
         // Edit-mode GPU skins can stay on their bind pose even after a new
         // morph or clip has been sampled. Draw the actual CPU-sampled vertices
         // with the source mesh's materials and discard the draw copies on exit.
-        private sealed class SampledSurfaceDraw : IDisposable
+        internal sealed class SampledSurfaceDraw : IDisposable
         {
             private readonly (SkinnedMeshRenderer skin, MeshFilter filter, Mesh sample)[] surfaces;
 
@@ -452,7 +452,7 @@ namespace Aetheria.Editor
             }
         }
 
-        private static Bounds BoundsFor(GameObject model)
+        internal static Bounds BoundsFor(GameObject model)
         {
             var renderer = model.GetComponentsInChildren<Renderer>(false).Where(value => value.enabled).ToArray();
             Require(renderer.Length > 0, "Preview has no visible renderers.");
@@ -467,7 +467,7 @@ namespace Aetheria.Editor
             model.GetComponentsInChildren<SkinnedMeshRenderer>(false).Where(renderer => renderer.sharedMesh != null)
                 .Sum(renderer => renderer.sharedMesh.triangles.Length / 3);
 
-        private static Camera Studio(Transform stage, RenderTexture target)
+        internal static Camera Studio(Transform stage, RenderTexture target)
         {
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(.36f, .39f, .47f);
@@ -498,7 +498,7 @@ namespace Aetheria.Editor
             return camera;
         }
 
-        private static void Capture(Camera camera, RenderTexture target, Texture2D pixels, Bounds frame,
+        internal static void Capture(Camera camera, RenderTexture target, Texture2D pixels, Bounds frame,
             Vector3 direction, string path)
         {
             camera.transform.position = frame.center + direction.normalized * (frame.size.magnitude + 1);

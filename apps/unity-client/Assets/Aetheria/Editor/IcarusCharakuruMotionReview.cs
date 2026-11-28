@@ -28,6 +28,7 @@ namespace Aetheria.Editor
         public static void VerifySkirtClearance() => Verify(false, reviewSkirt: true);
         public static void VerifyArmClearance() => Verify(false, reviewArms: true);
         public static void VerifyPelvisDeformation() => Verify(false, reviewPelvis: true);
+        public static void VerifyPelvisAndRibbonDeformation() => Verify(false, reviewPelvis: true, reviewRibbons: true);
         public static void VerifyLayers() => Verify(false, reviewLayers: true);
         public static void VerifyDeformation() => Verify(false, reviewDeformation: true);
         public static void VerifyChinDeformation() => Verify(false, reviewChin: true);
@@ -36,7 +37,7 @@ namespace Aetheria.Editor
 
         private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false,
             bool reviewChin = false, bool reviewLayers = false, bool reviewArms = false, bool reviewPelvis = false,
-            bool reviewSkirt = false)
+            bool reviewSkirt = false, bool reviewRibbons = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -189,6 +190,19 @@ namespace Aetheria.Editor
                 IcarusPelvisWeightReview.Facts pelvis = null;
                 SkinnedMeshRenderer candidateBody = null;
                 SkinnedMeshRenderer originalBody = null;
+                var pelvisMeshes = new List<(SkinnedMeshRenderer renderer, Mesh original, Mesh candidate)>();
+                void WithPelvisMeshes(Action sample)
+                {
+                    try
+                    {
+                        foreach (var part in pelvisMeshes) part.renderer.sharedMesh = part.candidate;
+                        sample();
+                    }
+                    finally
+                    {
+                        foreach (var part in pelvisMeshes) part.renderer.sharedMesh = part.original;
+                    }
+                }
                 if (reviewPelvis)
                 {
                     string input = folder+"/PrivatePelvisCandidate.vrm";
@@ -201,13 +215,30 @@ namespace Aetheria.Editor
                         .Single(renderer=>renderer.name=="Body");
                     pelvis = IcarusPelvisWeightReview.Compare(originalBody,candidateBody,director,take.start,bound.length,pelvisSha);
                     var originalMesh = originalBody.sharedMesh;
-                    IcarusLayerSurfaceExport.Write(Path.Combine(output,"original-layers.bin"),skins,director,take.start,bound.length);
-                    try
+                    pelvisMeshes.Add((originalBody, originalMesh, candidateBody.sharedMesh));
+                    if (reviewRibbons)
                     {
-                        originalBody.sharedMesh = candidateBody.sharedMesh;
-                        IcarusLayerSurfaceExport.Write(Path.Combine(output,"pelvis-layers.bin"),skins,director,take.start,bound.length,originalMesh);
+                        var imported = sourceCandidate.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                        foreach (string name in new[] { "Spring_07_ribbon_left", "Spring_08_ribbon_right" })
+                        {
+                            var from = skins.Single(r => r.name == name);
+                            var to = imported.Single(r => r.name == name);
+                            var sourceMesh = from.sharedMesh;
+                            var nextMesh = to.sharedMesh;
+                            Require(sourceMesh.vertexCount == nextMesh.vertexCount &&
+                                sourceMesh.subMeshCount == nextMesh.subMeshCount &&
+                                sourceMesh.uv.SequenceEqual(nextMesh.uv) &&
+                                sourceMesh.bindposes.SequenceEqual(nextMesh.bindposes) &&
+                                from.bones.Select(b => b.name).SequenceEqual(to.bones.Select(b => b.name)) &&
+                                Enumerable.Range(0, sourceMesh.subMeshCount).All(index =>
+                                    sourceMesh.GetIndices(index).SequenceEqual(nextMesh.GetIndices(index))),
+                                name + " changed the topology, UV layout or rig of the original ribbon.");
+                            pelvisMeshes.Add((from, sourceMesh, nextMesh));
+                        }
                     }
-                    finally { originalBody.sharedMesh=originalMesh; }
+                    IcarusLayerSurfaceExport.Write(Path.Combine(output,"original-layers.bin"),skins,director,take.start,bound.length);
+                    WithPelvisMeshes(() => IcarusLayerSurfaceExport.Write(Path.Combine(output,"pelvis-layers.bin"),
+                        skins,director,take.start,bound.length,originalMesh));
                 }
                 var review = Sample(director, take.start, bound.length, bones.Select(bone => bone.Joint).ToArray(), skins);
                 Require(review.maxMappedJointAngleDegrees > 1f && review.maxSkinnedVertexDelta > .001f,
@@ -255,14 +286,8 @@ namespace Aetheria.Editor
                 {
                     string correctedOutput = Path.Combine(output,"pelvis-correction");
                     Directory.CreateDirectory(correctedOutput);
-                    var originalMesh = originalBody.sharedMesh;
-                    try
-                    {
-                        originalBody.sharedMesh = candidateBody.sharedMesh;
-                        Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,correctedOutput,
-                            out _,captureMovingPelvis: true);
-                    }
-                    finally { originalBody.sharedMesh=originalMesh; }
+                    WithPelvisMeshes(() => Capture(director,take.start,bound.length,skins,reviewRoot.transform,modelVrm,
+                        correctedOutput,out _,captureMovingPelvis: true));
                 }
                 if (garmentCorrection != null)
                 {
@@ -447,9 +472,9 @@ namespace Aetheria.Editor
             return result.ToArray();
         }
 
-        private static string[] Capture(PlayableDirector director, double lead, float length,
+        internal static string[] Capture(PlayableDirector director, double lead, float length,
             SkinnedMeshRenderer[] skins, Transform reviewRoot, Vrm10Instance modelVrm, string output, out float[] clippedWhitePercent,
-            bool captureMovingChin = false, bool captureMovingPelvis = false)
+            bool captureMovingChin = false, bool captureMovingPelvis = false, bool supersample = false, Bounds? fixedFrame = null)
         {
             Require(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset,
                 "A graphics capture requires the project's URP pipeline.");
@@ -476,12 +501,24 @@ namespace Aetheria.Editor
             }
             var bounds = skins[0].bounds;
             foreach (var skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
+            bounds = fixedFrame ?? bounds;
             camera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y) * 1.35f;
             camera.transform.position = bounds.center + new Vector3(1.45f, .18f, 5);
             camera.transform.LookAt(bounds.center);
             const int size = 720;
-            var target = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
+            var renderSize = supersample ? size * 2 : size;
+            var target = new RenderTexture(renderSize, renderSize, 24, RenderTextureFormat.ARGB32)
+                { filterMode = FilterMode.Bilinear };
+            var resolve = supersample ? new RenderTexture(size, size, 0, RenderTextureFormat.ARGB32) : null;
             var image = new Texture2D(size, size, TextureFormat.RGB24, false);
+            void ReadCamera()
+            {
+                RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                if (resolve != null) Graphics.Blit(target, resolve);
+                RenderTexture.active = resolve != null ? resolve : target;
+                image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
+                image.Apply();
+            }
             var previous = RenderTexture.active;
             var originalScene = SceneManager.GetActiveScene();
             bool switchScene = originalScene != reviewRoot.gameObject.scene;
@@ -523,10 +560,7 @@ namespace Aetheria.Editor
                         mesh.RecalculateBounds();
                         filter.sharedMesh = mesh;
                     }
-                    RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                    RenderTexture.active = target;
-                    image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
-                    image.Apply();
+                    ReadCamera();
                     var pixels = image.GetPixels32();
                     var background = pixels[0];
                     int foreground = 0;
@@ -548,6 +582,19 @@ namespace Aetheria.Editor
                         throw new InvalidOperationException($"Icarus frame {i + 1} exceeded the 25% near-white foreground limit.");
                     }
                     File.WriteAllBytes(Path.Combine(output, name), image.EncodeToPNG());
+                    if (i == 0 && fixedFrame.HasValue)
+                    {
+                        var origin = camera.transform.position;
+                        var rotation = camera.transform.rotation;
+                        foreach (var view in new[] { ("front", Vector3.forward), ("back", Vector3.back), ("side", Vector3.right) })
+                        {
+                            camera.transform.position = bounds.center + view.Item2 * 5;
+                            camera.transform.LookAt(bounds.center);
+                            ReadCamera();
+                            File.WriteAllBytes(Path.Combine(output, "body-" + view.Item1 + "-walk-10pct.png"), image.EncodeToPNG());
+                        }
+                        camera.transform.SetPositionAndRotation(origin, rotation);
+                    }
                     frames.Add(name);
                     exposure.Add(whitePercent);
                     if (captureMovingChin &&
@@ -563,10 +610,7 @@ namespace Aetheria.Editor
                         var chinFocus = eyes+Vector3.down*(separation*1.36f);
                         camera.transform.position = chinFocus+new Vector3(.36f,.04f,1f);
                         camera.transform.LookAt(chinFocus);
-                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                        RenderTexture.active = target;
-                        image.ReadPixels(new Rect(0,0,size,size),0,0);
-                        image.Apply();
+                        ReadCamera();
                         File.WriteAllBytes(Path.Combine(output,$"icarus-motion-chin-{i+1:D2}.png"),image.EncodeToPNG());
                         camera.transform.SetPositionAndRotation(position,rotation);
                         camera.orthographicSize = orthoSize;
@@ -584,10 +628,7 @@ namespace Aetheria.Editor
                         camera.orthographicSize = Vector3.Distance(hips.position,midpoint)*.78f;
                         camera.transform.position = focus+new Vector3(.29f,.08f,1f);
                         camera.transform.LookAt(focus);
-                        RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination=target });
-                        RenderTexture.active = target;
-                        image.ReadPixels(new Rect(0,0,size,size),0,0);
-                        image.Apply();
+                        ReadCamera();
                         File.WriteAllBytes(Path.Combine(output,$"icarus-motion-pelvis-{i+1:D2}.png"),image.EncodeToPNG());
                         camera.transform.SetPositionAndRotation(position,rotation);
                         camera.orthographicSize = orthoSize;
@@ -603,11 +644,8 @@ namespace Aetheria.Editor
                     var focus = eyes + Vector3.down * (separation * .45f);
                     camera.transform.position = focus + new Vector3(0, 0, 1);
                     camera.transform.LookAt(focus);
-                    RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                    RenderTexture.active = target;
-                    image.ReadPixels(new Rect(0, 0, size, size), 0, 0);
-                    image.Apply();
-                    File.WriteAllBytes(Path.Combine(output, "icarus-face-neutral.png"), image.EncodeToPNG());
+                    ReadCamera();
+                    File.WriteAllBytes(Path.Combine(output, "icarus-face-walk-85pct.png"), image.EncodeToPNG());
                 }
                 clippedWhitePercent = exposure.ToArray();
                 return frames.ToArray();
@@ -628,6 +666,7 @@ namespace Aetheria.Editor
                     Object.DestroyImmediate(filter.gameObject);
                     Object.DestroyImmediate(mesh);
                 }
+                if (resolve != null) { resolve.Release(); Object.DestroyImmediate(resolve); }
                 target.Release();
                 Object.DestroyImmediate(target);
                 Object.DestroyImmediate(image);

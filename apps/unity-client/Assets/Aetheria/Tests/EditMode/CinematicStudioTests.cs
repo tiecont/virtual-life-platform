@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using UniVRM10;
 using Aetheria.Editor;
 using NUnit.Framework;
 using UnityEditor;
@@ -145,6 +147,123 @@ namespace Aetheria.Tests
             Assert.That(rebound.playableAsset, Is.SameAs(timeline));
             Assert.That(AssetDatabase.AssetPathToGUID(path), Is.EqualTo(guid));
             Assert.That(rebound.GetGenericBinding(((TimelineAsset)timeline).GetOutputTracks().Single()), Is.EqualTo(model));
+        }
+
+        [Test]
+        public void SavedPerformanceTakeBlendsThreeInstancesAndReopensWithItsOwnCueBindings()
+        {
+            var actor = AddModel("Body test fixture");
+            var camera = AddModel("Camera test fixture");
+            var source = actor.gameObject.AddComponent<AudioSource>();
+            var particles = camera.gameObject.AddComponent<ParticleSystem>();
+            var voice = AssetDatabase.LoadAssetAtPath<AudioClip>(
+                "Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Audio/Vocals/icarus_kit_signature.ogg");
+
+            AnimationClip Constant(string name, float value, float duration)
+            {
+                var motion = new AnimationClip {name = name};
+                AnimationUtility.SetEditorCurve(motion,
+                    EditorCurveBinding.FloatCurve(ProbePath, typeof(Transform), "m_LocalPosition.x"),
+                    AnimationCurve.Constant(0, duration, value));
+                AssetDatabase.CreateAsset(motion, folder + "/" + name + ".anim");
+                return motion;
+            }
+            var idle = Constant("Idle", 0, 4);
+            var walk = Constant("Walk", 2, 1);
+            var shot = Constant("Shot", 3, 12);
+            var timelinePath = folder + "/Performance.playable";
+            var director = PerformanceSequence.Create(actor, idle, walk, camera, shot, source, voice, particles, timelinePath);
+            Assert.Throws<InvalidOperationException>(() =>
+                PerformanceSequence.Create(actor, idle, walk, camera, shot, source, voice, particles, timelinePath));
+            var scenePath = folder + "/Performance.unity";
+            Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+            if (!replaceRunnerScene) EditorSceneManager.CloseScene(scene, true);
+            scene = EditorSceneManager.OpenScene(scenePath, replaceRunnerScene ? OpenSceneMode.Single : OpenSceneMode.Additive);
+
+            director = scene.GetRootGameObjects().Select(root => root.GetComponent<PlayableDirector>()).Single(item => item != null);
+            var timeline = (TimelineAsset)director.playableAsset;
+            var body = timeline.GetOutputTracks().OfType<AnimationTrack>().Single(track => track.name != "Choreography");
+            var clips = body.GetClips().OrderBy(instance => instance.start).ToArray();
+            Assert.That(clips.Select(instance => instance.animationClip), Is.EqualTo(new[] { idle, walk, idle }));
+            Assert.That(clips[0].end - clips[1].start, Is.EqualTo(PerformanceSequence.Transition).Within(.00001));
+            Assert.That(clips[1].end - clips[2].start, Is.EqualTo(PerformanceSequence.Transition).Within(.00001));
+            var vocal = timeline.GetOutputTracks().OfType<AudioTrack>().Single();
+            var burst = timeline.GetOutputTracks().OfType<ControlTrack>().Single().GetClips().Single();
+            Assert.That(vocal.GetClips().Single().start, Is.EqualTo(burst.start).Within(.00001));
+            var boundActor = (Animator)director.GetGenericBinding(body);
+            var boundCamera = (Animator)director.GetGenericBinding(timeline.GetOutputTracks().Single(track => track.name == "Choreography"));
+            Assert.That(((AudioSource)director.GetGenericBinding(vocal)).gameObject, Is.SameAs(boundActor.gameObject));
+            Assert.That(((ControlPlayableAsset)burst.asset).sourceGameObject.Resolve(director), Is.SameAs(boundCamera.gameObject));
+
+            director.RebuildGraph();
+            float Position(double time)
+            {
+                director.time = time;
+                director.Evaluate();
+                return boundActor.transform.Find(ProbePath).localPosition.x;
+            }
+            Assert.That(Position(clips[1].start - .01), Is.EqualTo(0).Within(.02));
+            Assert.That(Position(clips[1].start + PerformanceSequence.Transition / 2), Is.InRange(.25f, 1.75f));
+            Assert.That(Position(clips[1].start + .5), Is.EqualTo(2).Within(.02));
+            Assert.That(Position(clips[2].start + PerformanceSequence.Transition / 2), Is.InRange(.25f, 1.75f));
+            Assert.That(Position(clips[2].start + .5), Is.EqualTo(0).Within(.02));
+            director.Stop();
+        }
+
+        [Test]
+        public void TimedVowelFollowsSelectedTrimmedVoiceInstanceInTheActorsMotionLayer()
+        {
+            var actor = AddModel("Voice test fixture");
+            var description = ScriptableObject.CreateInstance<VRM10Object>();
+            var expression = ScriptableObject.CreateInstance<VRM10Expression>();
+            var mesh = new Mesh { vertices = new[] { Vector3.zero } };
+            mesh.AddBlendShapeFrame("Mouth", 100, new[] { Vector3.down * .01f }, null, null);
+            AssetDatabase.CreateAsset(mesh, folder + "/TestMesh.asset");
+            AssetDatabase.CreateAsset(description, folder + "/Vrm.asset");
+            AssetDatabase.CreateAsset(expression, folder + "/Vowel.asset");
+            var renderer = actor.transform.Find(ProbePath).gameObject.AddComponent<SkinnedMeshRenderer>();
+            renderer.sharedMesh = mesh;
+            expression.MorphTargetBindings = new[] { new MorphTargetBinding { RelativePath = ProbePath, Index = 0, Weight = 1 } };
+            description.Expression.Aa = expression;
+            var vrm = actor.gameObject.AddComponent<Vrm10Instance>();
+            vrm.Vrm = description;
+            vrm.UpdateType = Vrm10Instance.UpdateTypes.None;
+            var director = CinematicStudio.CreateBoundTimeline(actor, clip, CinematicStudio.Sequence.CharacterIntro,
+                folder + "/Voice.playable");
+            var timeline = (TimelineAsset)director.playableAsset;
+            var body = timeline.GetOutputTracks().OfType<AnimationTrack>().Single();
+            var track = timeline.CreateTrack<AudioTrack>("Test voice");
+            const string voicePath = "Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Audio/Vocals/icarus_kit_signature.ogg";
+            var voice = AssetDatabase.LoadAssetAtPath<AudioClip>(voicePath);
+            track.CreateClip(voice).start = 0;
+            var selected = track.CreateClip(voice);
+            selected.start = 4;
+            selected.clipIn = .5;
+            selected.timeScale = 2;
+            selected.duration = 1;
+            timeline.fixedDuration = 6;
+            director.SetGenericBinding(track, actor.gameObject.AddComponent<AudioSource>());
+            using var hash = SHA256.Create();
+            var sheet = new VrmFaceCueTrack.Sheet {
+                audioAssetGuid = AssetDatabase.AssetPathToGUID(voicePath),
+                audioSha256 = BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(voicePath))).Replace("-", ""),
+                voiceStartSeconds = selected.start,
+                cues = new[] { new VrmFaceCueTrack.Cue { preset = "aa", start = .5f, peak = 1f, end = 1.5f, weight = .8f } }
+            };
+            var overlay = VrmFaceCueTrack.Add(director, sheet, folder + "/Spoken.anim");
+            Assert.That(overlay.parent, Is.SameAs(body));
+            var take = overlay.GetClips().Single();
+            Assert.That(take.start, Is.EqualTo(selected.start));
+            Assert.That(take.clipIn, Is.EqualTo(selected.clipIn));
+            Assert.That(take.timeScale, Is.EqualTo(selected.timeScale));
+            Assert.That(take.duration, Is.EqualTo(selected.duration));
+            director.time = 4.25;
+            director.Evaluate();
+            Assert.That(renderer.GetBlendShapeWeight(0), Is.EqualTo(80).Within(.1));
+            director.time = .25;
+            director.Evaluate();
+            Assert.That(renderer.GetBlendShapeWeight(0), Is.Zero.Within(.1));
+            director.Stop();
         }
 
         private Animator AddModel(string label)

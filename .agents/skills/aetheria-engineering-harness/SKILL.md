@@ -5,6 +5,9 @@ description: Execute and verify substantial Aetheria engineering tasks from INPU
 
 # Aetheria engineering harness
 
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
+
 Apply the repository's `AGENTS.md`. For startup, security boundaries and CLI examples, read [the harness runbook](../../../specs/engineering/harness.md) as needed.
 
 1. Convert the expected output into testable acceptance criteria. Use `pnpm plan:status` for backlog work and filter its JSON in the shell to the relevant tasks before reading the result. Inspect the matching authorities and specs. Identify dependencies, write scopes, and checks before assigning work.
@@ -13,3 +16,7 @@ Apply the repository's `AGENTS.md`. For startup, security boundaries and CLI exa
 4. When the user opts into multi-agent work, choose only matching specialists. Use native subagents for independent investigation and review. Give concurrent writers distinct, permission-scoped worktrees. Use the runbook’s native managed-worker command for a separate sandbox and disabled worker delegation. If worker isolation cannot be verified, delegate read-only work and integrate code sequentially. The lead integrates and owns backlog edits.
 5. Ask each substantial assignee for a handoff with `summary`, `revision`, `files`, `checks` (name and actual status), and `limitations`. Attach evidence references and remaining actions to the task record. The lead checks the actual changes and sends integrated source to an independent reviewer when requested. Keep repository CI and release gates in force.
 6. Report task IDs, implementation and acceptance status, exact revision and PR if available, actual checks, evidence, blockers, and the next exact action. Keep the full backlog, logs, and transcripts out of the prompt and committed source.
+
+For a character performance task, search for `character performance` and run the offline intake before assigning rig, rendering or cinematic work. The result records actual VRM bindings and installed packages.
+
+For visual refinement, record source hash, variant revision, renderer, pose, camera and relative evidence paths together. Use the [character fidelity checklist](../../../specs/acceptance/character-visual-fidelity.md) for candidate scope and owner acceptance. Carry a source audit and matched frames through the handoff. An unchanged visibility defect stays open after a successful capture.

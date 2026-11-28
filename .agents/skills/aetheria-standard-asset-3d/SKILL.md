@@ -5,6 +5,9 @@ description: Produce or normalize Aetheria detached accessories, standard and co
 
 # Aetheria Standard Asset 3D
 
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
+
 Use this skill for detached character accessories such as wings, bows, and
 halos; standard/common Pets; weapons; map environments; and props. For
 flagship/Limited S humanoids or key NPCs requiring a high-likeness face,
@@ -18,6 +21,16 @@ Read the root `AGENTS.md`, applicable art/asset specification, import and
 animation contracts, and release state before production. Run
 `pnpm plan:status`. Preserve canonical IDs, scale, pivots, provenance, material
 ownership, server-authoritative behavior, and owner-only art gates.
+
+## Existing textured wing, weapon or creature
+
+When the design is locked, compare the exported part count with the requested physical components. Retain the original GLB and atlas. A UV seam may split vertex indices on one continuous surface. Use [the character performance review](../aetheria-hero-character-vrm/references/character-performance.md) for shape-preserving separation, material controls, attachment and deforming-clip evidence.
+
+### Rebuild an articulated accessory from its original images
+
+When the owner retains the design and asks for new geometry, load the existing image plates directly. Record the files, checksums and angle labels, including three-quarter views. Use Tripo **Model → Generate in Parts → Detailed** when available, with Texture off. Confirm the live quote, visibility and owner spend cap. For Icarus the four original wing views and four original bow views drive this stage. Preserve their outlines, feather layout, ornament placement and palette.
+
+Export the untextured geometry. Inspect the mount and feather groups on the wing, and the grip, limb tips and physical string on the bow. Move each intended group independently, restore the rest pose, and compare matching camera views against the source plates. Check gaps and overlaps in intermediate poses. If a moving part is fused or a feather silhouette drifts, correct the geometry before Smart UV, material assignment or paid texture work. Preserve the rejected asset separately for comparison.
 
 ## 1. Prepare references and the production target
 
@@ -61,14 +74,14 @@ new binaries larger than 500 KiB to Git.
 
 ## 2. Produce with Tripo Studio as the default
 
-Use Tripo Studio through **Chrome DevTools MCP** for Wings, Weapons, Standard
+Use the official Tripo Studio MCP or the authenticated Studio fallback for Wings, Weapons, Standard
 Pets, and every asset needing multiple materials or detailed part separation.
 Reuse the authenticated English Tripo tab and a locale-neutral URL.
 
-The full chain is mandatory:
+For new assets, complete these production stages:
 
-1. **Smart Mesh** with the approved triangle budget set before generation.
-2. **Segment** by material and mechanical/component part.
+1. Generate geometry with the approved triangle budget. Use **Generate in Parts** for the articulated rebuild above or **Smart Mesh** for conventional assets.
+2. Verify separate mechanical components and material regions. Use **Segment** for a suitable untextured mesh when the provider has not already produced usable parts.
 3. **Smart UV** with checked islands, seams, texel density, and no accidental
    overlap.
 4. **Retexture** at 4K for the detailed master, or 2K only when the approved
@@ -84,6 +97,8 @@ Reconcile ambiguous jobs rather than resubmitting them.
 objects such as rocks, chests, foliage, or furniture, or for authorized
 reference-image generation. It does not replace the full Tripo chain for
 multi-material Wings, Weapons, or Standard Pets.
+
+For a part-generated asset with Texture off, label an atlas projected from the approved concept in Blender as a local color projection. On Icarus the owner approved that palette for a private fitting. Record the separate Tripo Smart UV and 4K texture operation IDs, driving reference, settings, exported GLB and embedded-image hashes when those steps run. Compare the returned UV and part mapping with the corrected source and transfer the verified maps to the articulated LOD when necessary. Inspect both feather faces, string, grip, ornaments and silhouettes before production fitting. Keep a local material preview identifiable in its receipt and screenshots.
 
 ## 3. Normalize in Blender 5.3
 
@@ -102,9 +117,7 @@ Reopen the exported geometry and verify:
 - retained textures, normals, roughness/metallic/AO channels, alpha mode, and
   correct color spaces.
 
-Remove broken zero-thickness bowstrings; render the string in Unity with
-`LineRenderer` using the approved endpoints. Do not replace them with visible
-AI mesh rods.
+For a source with a usable physical string, preserve the approved profile, pin both nocks and measure draw and return. On the reconstructed Phoenix Bow, compare both upper joins against the source in the same side cameras. Use the original material and inspect the held wrist separately. Use a LineRenderer replacement only when the character contract allows it and the physical source is unusable. Apply the [class-specific visual rubric](../../../specs/acceptance/character-visual-fidelity.md) to each candidate.
 
 ## 4. Enforce poly and quality budgets
 

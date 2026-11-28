@@ -1,9 +1,12 @@
 ---
 name: aetheria-hero-character-vrm
-description: Produce or revise Aetheria flagship and Limited S humanoid characters and key NPCs that need high-likeness faces, expressive VRM Humanoid rigs, modular accessories, and Unity URP delivery. Use for complete hero character production, not detached props, standard Pets, environments, or gameplay code.
+description: Produce or revise Aetheria flagship and Limited S humanoid characters and key NPCs that need high-likeness faces, expressive VRM Humanoid rigs, modular accessories, controlled visual refinement and Unity URP delivery. Use for complete hero character production, not detached props, standard Pets, environments, or gameplay code.
 ---
 
 # Aetheria Hero Character VRM
+
+For Tripo production and asset refinement use the [Build & Refine capability matrix](../../../specs/media/tripo-build-refine.md). Prefer supported Studio MCP operations, route H3.5 generation through Studio, and reuse validated parts, UVs, textures and rigs.
+
 
 Use this skill for flagship/Limited S humanoids and key NPCs such as Icarus.
 For detached accessories, standard/common Pets, weapons, maps, environments,
@@ -18,6 +21,12 @@ release state. Keep new source artwork and editable production handoffs under
 `/home/tiecont/Projects/Aetheria-Workspace/`; commit only source-safe files.
 Skill installation does not establish an accepted benchmark, owner approval,
 publishable rights, or deployment permission.
+
+## Existing character performance
+
+For motion fixes or a showcase on an existing VRM, start with the actual bindings and approved source. Use [character performance](references/character-performance.md) for inspection, matched-pose comparisons, facial/audio capability, camera takes and frame-time evidence.
+
+For an approved asset with a visible defect, use the [controlled refinement workflow](references/asset-refinement.md). It covers the original-source audit, matched rendering and geometry variants, independent visual review and rollback.
 
 ## H0 source and reference preflight
 

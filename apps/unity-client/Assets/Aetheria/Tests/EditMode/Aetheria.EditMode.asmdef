@@ -14,6 +14,7 @@
     "Unity.Addressables",
     "Unity.ResourceManager",
     "Unity.Timeline",
+    "VRM10",
     "Aetheria.World.Domain",
     "Aetheria.World.Presentation"
   ],
