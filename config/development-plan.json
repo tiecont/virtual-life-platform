@@ -10014,7 +10014,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Functional co-op and solo Rust use a shared reducer and version-bound tile projections. Rust tests on 6be5ac65 passed 194 scoped cases. Verify real solo admission, settlement and recovery."
+      "remaining": "On 91415575 all 155 aetheria-pet-arena tests passed, including six weighted jewel effects in solo regular, solo Boss and four-seat Boss. Packaged Linux solo admitted and swapped on 8ad6e6e6. Four-seat Fire on ea298452 resumed the same board and configuration after restart, won and settled four receipts once. Solo reconnect remains to qualify."
     },
     {
       "id": "VL-177",
