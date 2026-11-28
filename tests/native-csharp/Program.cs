@@ -116,6 +116,8 @@ static class Program
         var logoutId = Guid.NewGuid(); int logouts = 0;
         TaskCompletionSource<bool> committed = null, releaseAck = null;
         TaskCompletionSource<bool> ticketRequested = null, releaseTicket = null;
+        ErrorCode viewError = ErrorCode.TemporarilyUnavailable;
+        var viewFailures = 0;
         app.MapPost("/v1/session/login", async context => {
             var body = await JsonDocument.ParseAsync(context.Request.Body);
             Check(body.RootElement.GetProperty("loginName").GetString() == "fixture");
@@ -205,6 +207,10 @@ static class Program
                                     JsonSerializer.Serialize(new {state = new {turns, ownRoll = 42}, epoch = 1, reward = turns == 3 ? "REWARD_PENDING" : null})) };
                                 if (mode == "play-invalid") response.Receipt.AuthorizedProjection = ByteString.CopyFromUtf8("{}");
                                 if (projectionOverride != null) response.Receipt.AuthorizedProjection = ByteString.CopyFromUtf8(projectionOverride);
+                                if (view && viewFailures > 0) {
+                                    viewFailures--;
+                                    response.Rejection = new Rejection { Code = viewError };
+                                }
                             } else {
                                 response.CanonicalVersion = 1;
                                 response.Receipt = new Receipt { Committed = true, AuthorizedProjection = ByteString.CopyFromUtf8("{\"turn\":1}") };
@@ -311,6 +317,33 @@ static class Program
             try { await play.ReconnectAsync(cancelled.Token); throw new Exception("Scene cancellation ignored"); }
             catch (OperationCanceledException) { passed++; }
             Check(!play.ToString().Contains("secret"));
+        }
+        stage = "reconnect-projection-retry"; mode = "play";
+        using (var platform = new PlatformSession(origin, Handler()))
+        using (var play = new SyntheticPlaySession(platform, Client(platform.TicketAsync), Match)) {
+            var prior = await play.LoginAsync("fixture", "secret-password-123");
+            var priorReceipts = playReceipts.Count;
+            foreach (var code in new[] { ErrorCode.TemporarilyUnavailable, ErrorCode.Backpressure }) {
+                var before = tickets;
+                viewError = code;
+                viewFailures = 1;
+                var restored = await play.ReconnectAsync();
+                Check(restored.Version == prior.Version && restored.Turns == prior.Turns && tickets == before + 2);
+                Check(playReceipts.Count == priorReceipts && !play.HasPendingCommand); passed += 2;
+            }
+            var beforePermanent = tickets;
+            var restoredState = play.State;
+            viewError = ErrorCode.Unauthenticated;
+            viewFailures = 1;
+            await Denied(() => play.ReconnectAsync(), Failure.Rejected);
+            Check(tickets == beforePermanent + 1 && ReferenceEquals(play.State, restoredState)); passed++;
+
+            var beforeRepeated = tickets;
+            viewError = ErrorCode.Backpressure;
+            viewFailures = 3;
+            await Denied(() => play.ReconnectAsync(), Failure.Rejected);
+            Check(viewFailures == 1 && tickets == beforeRepeated + 2 && playReceipts.Count == priorReceipts); passed++;
+            viewFailures = 0;
         }
         stage = "strict-viewer-projection"; mode = "play";
         using (var platform = new PlatformSession(origin, Handler()))

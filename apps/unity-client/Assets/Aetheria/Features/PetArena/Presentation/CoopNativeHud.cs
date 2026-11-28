@@ -328,7 +328,8 @@ namespace Aetheria.PetArena.Presentation
             }
             catch (NativeFailure failure)
             {
-                Debug.LogWarning("Coop recovery failed: " + failure.Reason);
+                var category = failure.Reason == Failure.Rejected ? failure.Reason + "/" + failure.Code : failure.Reason.ToString();
+                Debug.LogWarning("Coop recovery failed: " + category);
             }
             catch (OperationCanceledException) { }
             finally

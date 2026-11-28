@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Aetheria.Native.Public.V1;
 
 namespace Aetheria.Networking
 {
@@ -66,7 +67,15 @@ namespace Aetheria.Networking
         public Task<PlayState> ReconnectAsync(CancellationToken cancellation = default) =>
             Exclusive(async token => {
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
-                return await Read(token).ConfigureAwait(false);
+                try {
+                    return await Read(token).ConfigureAwait(false);
+                } catch (NativeFailure failure) when (IsTransientRejection(failure)) {
+                    // The projected view is read-only. A transient rejection
+                    // faults its socket, so retry once with fresh admission.
+                    await Task.Delay(100, token).ConfigureAwait(false);
+                    await connection.ReconnectAsync(token).ConfigureAwait(false);
+                    return await Read(token).ConfigureAwait(false);
+                }
             }, cancellation);
 
         // A native match allocation can already scope the admission ticket to one
@@ -129,11 +138,15 @@ namespace Aetheria.Networking
                 result.ReceiptId = Convert.ToBase64String(receipt.CommandId.ToByteArray());
                 token.ThrowIfCancellationRequested();
                 pending = null; return result;
-            } catch (NativeFailure e) when (e.Reason == Failure.Rejected && e.Code != Aetheria.Native.Public.V1.ErrorCode.TemporarilyUnavailable && e.Code != Aetheria.Native.Public.V1.ErrorCode.Backpressure) {
+            } catch (NativeFailure e) when (e.Reason == Failure.Rejected && !IsTransientRejection(e)) {
                 // A definite server rejection has no ambiguous effect to retry.
                 pending = null; throw;
             }
         }
+        private static bool IsTransientRejection(NativeFailure failure) =>
+            failure.Reason == Failure.Rejected &&
+            (failure.Code == ErrorCode.TemporarilyUnavailable || failure.Code == ErrorCode.Backpressure);
+
         private async Task<PlayState> Read(CancellationToken token)
         {
             var receipt = await connection.SubmitAsync(new GameCommand(Guid.NewGuid(), match, 0, ViewKind, Array.Empty<byte>()), token).ConfigureAwait(false);
