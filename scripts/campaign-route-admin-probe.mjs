@@ -56,6 +56,23 @@ export async function verifyCampaignRouteAdmin({
   await input.fill(String(edited[key]));
   await expect(input).toHaveValue(String(edited[key]));
  }
+ const payoutEdits=[
+  {payout:'firstClear',group:'First route victory',label:'Achievement Points',key:'achievementPoints',delta:5},
+  {payout:'firstClear',group:'First route victory',label:'Coins',key:'coins',delta:11},
+  {payout:'repeatClear',group:'Repeat route victory',label:'Pet EXP',key:'exp',delta:9},
+  {payout:'defeat',group:'Route defeat',label:'Artifact materials',key:'materials',delta:2},
+ ].map(edit=>({...edit,value:authored.profile.rewardPolicy[edit.payout][edit.key]+edit.delta}));
+ const rewardField=({group,label})=>editor.getByRole('group',{name:group,exact:true}).getByLabel(label,{exact:true});
+ for(const edit of payoutEdits){
+  const field=rewardField(edit);
+  await field.fill(String(edit.value));
+  await expect(field).toHaveValue(String(edit.value));
+ }
+ const victoryActions=editor.getByRole('group',{name:'Route minimum committed combat actions',exact:true})
+  .getByLabel('Victory actions',{exact:true});
+ const rewardMinimum=authored.profile.rewardPolicy.minimumActions.victory+1;
+ await victoryActions.fill(String(rewardMinimum));
+ await expect(victoryActions).toHaveValue(String(rewardMinimum));
  await editor.screenshot({path:join(artifact,'campaign-route-draft.png')});
  await button('Compare with active').click();
  await expect(page.getByRole('heading',{name:'Differences from active'})).toBeVisible();
@@ -69,6 +86,12 @@ export async function verifyCampaignRouteAdmin({
  await expect(prior).toHaveValue(first);
  await expect(mode).toHaveValue('either');
  await expect(recruit).not.toBeChecked();
+ for(const edit of payoutEdits){
+  await expect(rewardField(edit)).toHaveValue(String(edit.value));
+  await expect(rewardField(edit)).toBeDisabled();
+ }
+ await expect(victoryActions).toHaveValue(String(rewardMinimum));
+ await expect(victoryActions).toBeDisabled();
  await editor.screenshot({path:join(artifact,'campaign-route-published.png')});
 
  const saved=await dbConfig(created.version);
@@ -77,6 +100,8 @@ export async function verifyCampaignRouteAdmin({
  const nextRoute=expected.campaignRoutes.find(route=>route.id===next);
  Object.assign(nextRoute,{enabled:true,mode:'either'});
  Object.assign(nextRoute.profile,edited);
+ for(const {payout,key,value} of payoutEdits)nextRoute.profile.rewardPolicy[payout][key]=value;
+ nextRoute.profile.rewardPolicy.minimumActions.victory=rewardMinimum;
  delete nextRoute.profile.rewardPolicy.recruitmentPetIds;
  assert.deepEqual(saved.bundle,expected);
  const verified=await validator.validate(ruleset,saved.bundle);
@@ -111,7 +136,7 @@ export async function verifyCampaignRouteAdmin({
   await expect(record).toHaveCount(1);
  }
  mark('Chromium authored and rolled back schema 7 routes through authenticated Admin, Nest, Rust and PostgreSQL',{
-  routeCount:routes.length,rejectedCyclicPrerequisite:422,route:next,profile:edited,
+  routeCount:routes.length,rejectedCyclicPrerequisite:422,route:next,profile:edited,rewardPolicy:nextRoute.profile.rewardPolicy,
   prerequisite:first,mode:'either',recruitmentEnabled:false,publishedVersion:created.version,
   publishedDigest:verified.digest,restoredVersion:installed.version,restoredDigest:installed.digest,
   activationScope:'disposable PostgreSQL only',

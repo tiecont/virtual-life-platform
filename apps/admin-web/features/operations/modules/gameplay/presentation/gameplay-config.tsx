@@ -56,6 +56,30 @@ function sharedJewels(bundle:GameplayBundle|null){
  return bundle?.schemaVersion===6||bundle?.schemaVersion===7;
 }
 
+function SettlementRewardFields({bundle,encounterPath,editable,route,change}:{
+ bundle:GameplayBundle|null;encounterPath:readonly string[];editable:boolean;route?:boolean;
+ change:(path:readonly string[],value:unknown)=>void;
+}){
+ const rewardPath=[...encounterPath,'rewardPolicy'];
+ const minimumPath=[...rewardPath,'minimumActions'];
+ const minimum=read(bundle,minimumPath) as Record<string,number>|undefined;
+ const labels=route?['First route victory','Repeat route victory','Route defeat']:['First Boss victory','Repeat Boss victory','Defeat'];
+ return <>
+  <fieldset disabled={!editable}><legend>{route?'Route minimum committed combat actions':'Minimum committed combat actions per participant'}</legend>
+   <p className="small muted">Healing, guarding and board moves count. Starting the battle does not. Zero includes all seated participants.</p>
+   {(['victory','defeat'] as const).map(outcome=><Num key={outcome} label={outcome==='victory'?'Victory actions':'Defeat actions'}
+    min={0} max={4096} value={minimum?.[outcome]??0} onChange={value=>{
+     if(Number.isInteger(value))change(minimumPath,{victory:0,defeat:0,...minimum,[outcome]:value});
+    }}/>)}</fieldset>
+  {(['firstClear','repeatClear','defeat'] as const).map((kind,i)=><fieldset key={kind} disabled={!editable}>
+   <legend>{labels[i]}</legend><div className="fields">{([['achievementPoints','Achievement Points'],['coins','Coins'],
+    ['exp','Pet EXP'],['materials','Artifact materials']] as const).map(([key,label])=>{
+    const path=[...rewardPath,kind,key];
+    return <Num key={key} label={label} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
+   })}</div></fieldset>)}
+ </>;
+}
+
 function CampaignRouteEditor({bundle,editable,change}:{
  bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
 }){
@@ -89,7 +113,9 @@ function CampaignRouteEditor({bundle,editable,change}:{
     {reward&&typeof reward==='object'?<label><input type="checkbox" checked={Array.isArray(recruitment)&&recruitment.includes(opponent)}
      onChange={event=>change([...path,'profile','rewardPolicy','recruitmentPetIds'],event.target.checked?[opponent]:undefined)}/> Recruit {opponent} on first qualifying clear</label>:null}
    </div>:<p>Supply an authored combat profile in the draft before enabling this route.</p>}
-  </fieldset></section>;
+  </fieldset>
+  {reward&&typeof reward==='object'?<SettlementRewardFields bundle={bundle} encounterPath={[...path,'profile']} editable={editable} route change={change}/>:null}
+ </section>;
 }
 
 function AdvancedJewelEditor({bundle,editable,change}:{
@@ -643,19 +669,10 @@ export default function GameplayConfig({request}:{request:Request}){
  {functional&&<MultiplierFactors schedule={schedule} editable={editable} change={change}/>}
  {bundle&&<CampaignRouteEditor bundle={bundle} editable={editable} change={change}/>}
  <h3>Settlement rewards</h3>
- {read(bundle,[...bossPath,'rewardPolicy'])?<RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>:null}
- {read(bundle,[...bossPath,'rewardPolicy'])?<fieldset disabled={!editable}><legend>Minimum committed combat actions per participant</legend>
- <p className="small muted">Healing, guarding and board moves count. Starting the battle does not. Zero includes all seated participants.</p>
- {(['victory','defeat'] as const).map(outcome=>{
-  const path=[...bossPath,'rewardPolicy','minimumActions'];
-  const values=read(bundle,path) as Record<string,number>|undefined;
-  return <Num key={outcome} label={outcome==='victory'?'Victory actions':'Defeat actions'} min={0} max={4096} value={values?.[outcome]??0} onChange={value=>{
-   if(Number.isInteger(value))change(path,{victory:0,defeat:0,...values,[outcome]:value});
-  }}/>;
- })}</fieldset>:null}
- {read(bundle,[...bossPath,'rewardPolicy'])?<div>{(['firstClear','repeatClear','defeat'] as const).map((kind,i)=><fieldset key={kind} disabled={!editable}><legend>{['First Boss victory','Repeat Boss victory','Defeat'][i]}</legend><div className="fields">{(['achievementPoints','coins','exp','materials'] as const).map((key,j)=>{
-  const path=[...bossPath,'rewardPolicy',kind,key];return <Num key={key} label={['Achievement Points','Coins','Pet EXP','Artifact materials'][j]} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
- })}</div></fieldset>)}</div>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
+ {read(bundle,[...bossPath,'rewardPolicy'])?<>
+  <RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>
+  <SettlementRewardFields bundle={bundle} encounterPath={bossPath} editable={editable} change={change}/>
+ </>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
 
  <h3>Skill configuration</h3>{bundle&&<SkillTrainingEditor key={selected.version} bundle={bundle} editable={editable} change={change}/>}<div className="audit"><table><thead><tr><th>Skill</th><th>Mana</th><th>Rage</th><th>Cooldown</th><th>Power (pm)</th></tr></thead><tbody>{(Array.isArray(bundle?.skills)?bundle!.skills as unknown[]:[]).map((skill,index)=>{const row=skill as Record<string,unknown>;return <tr key={index}><td>{String(row.id)}</td>{['manaCost','rageCost','cooldownTurns','powerPm'].map(key=><td key={key}><input className="aetheria-field" type="number" min={0} disabled={!editable} value={typeof row[key]==='number'?row[key] as number:0} onChange={event=>{const next=Number(event.target.value);if(Number.isFinite(next)&&next>=0)change(['skills',String(index),key],next);}}/></td>)}</tr>;})}</tbody></table></div>
  </div>
