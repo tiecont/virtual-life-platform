@@ -106,7 +106,7 @@ function journalFingerprint(row,matchId,action){
 }
 
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve(process.env.PACKAGED_QA_ENGINE);
-const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_REVISION};
+const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_PLAYER_REVISION??process.env.PACKAGED_QA_REVISION};
 const nativeFailures=new WeakMap();
 const root=resolve(process.env.PACKAGED_QA_RUN);
 const roster=['Unity player', 'Integration seat 2','Integration seat 3','Integration seat 4'];
@@ -322,7 +322,7 @@ try{
   assert.equal(start.actor,host);
   assert.equal(start.fingerprint,journalFingerprint(start,allocation.match_id,{kind:'start'}));
   await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/board.json')));
-  await json('four-native-run.json',{roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
+  await json('four-native-run.json',{harnessRevision:facts.backendSource,playerRevision:facts.unitySource,roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
    digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
    distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version});
   facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');

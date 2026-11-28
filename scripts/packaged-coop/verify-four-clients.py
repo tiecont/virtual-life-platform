@@ -10,6 +10,8 @@ from board_capture import populated_board
 run = Path(sys.argv[1])
 expected_size = list(map(int, sys.argv[2].split('x')))
 acceptance = json.loads((run/'four-native-run.json').read_text())
+assert acceptance['harnessRevision'] == (run/'source-sha.txt').read_text().strip()
+assert acceptance['playerRevision'] == (run/'player-source-sha.txt').read_text().strip()
 assert acceptance['accounts'] == acceptance['sessions'] == 4
 assert acceptance['distinctTickets'] >= 4
 assert acceptance['startVersion'] == 1

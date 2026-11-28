@@ -83,7 +83,7 @@ ignored artifacts and report the actual number of people who finished.
 
 For four packaged clients on one shared RNG board, set
 `PACKAGED_QA_SCOPE=four-clients PACKAGED_QA_BOARD=shared-rng PACKAGED_QA_SIZE=1280x720`
-and pass the matching Linux build receipt, runtime binary and Tesseract data to
+and pass the Linux build receipt, runtime binary and Tesseract data to
 `scripts/packaged-coop/run.sh`. The four processes each use their own private
 display and Unity profile. They create guest sessions through the player UI,
 enter Cinder Terraces, join and ready in the same room, and consume separate
@@ -99,3 +99,8 @@ more visible swaps. Each host action has a durable receipt fingerprint,
 before/after frames and a list of effect chips attached by that player version.
 An available move targeting Nature can yield no cleanse when the actor has
 no removable status. Use the recorded effects for qualification.
+
+The four-client mode accepts a build from another committed revision only when
+Git confirms that all tracked differences are confined to this harness
+directory. The report records the separate player and harness SHAs. Other
+modes continue to require the same revision.
