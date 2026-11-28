@@ -73,7 +73,7 @@ Related tasks VL-211.
 | C02 | All 221 abilities retain Lv1 access. | PASS | aa730cc2 · catalog_conformance | 55 Lv1 kits executed 221 abilities across 11 effect families with fixture resources. |
 | C03 | All eleven supported effects have behavioral coverage. | PASS | aa730cc2 · catalog_conformance | 55 Lv1 kits executed 221 abilities across 11 effect families with fixture resources. |
 | C04 | Icarus-only FIRE_ZONE preserved. | PASS | aa730cc2 · catalog_conformance | 55 Lv1 kits executed 221 abilities across 11 effect families with fixture resources. |
-| C05 | Six elements have meaningful strategic identity. | NOT_RUN | — | Collect dedicated evidence for this condition. |
+| C05 | Six elements have meaningful strategic identity. | IN_PROGRESS | 5e3c66bb · [Functional matchup test](../../crates/aetheria-pet-arena/src/arena8/coop/tests.rs) | Identical three-Sword matches at fixed attack and zero crit followed all 36 authored Pet/Warden matchups. Fire against Water dealt zero and Electric against Water dealt 1.5× the neutral hit. Tactical variety in human play remains to qualify. |
 | C06 | Board initialization failure is reproduced and resolved. | PASS | eb980abb · Balance | Seed 114 retained. Constructive opening resolves it; lower-pressure and shared-pressure have distinct holdout outcomes. |
 | C07 | Boss transformation and multiplier behavior verified. | PASS | 68584413 · Player | Phase 2 at v25. Five multiplier tiles retained on recovery. |
 | C08 | Early and intermediate progression evaluated. | IN_PROGRESS | eb980abb · Balance | 2,304 simulations across six Bosses. Natural access to tested Lv20 and gear remains open. |
