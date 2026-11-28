@@ -68,9 +68,7 @@ namespace Aetheria.PetArena.Presentation
                 }
                 destinationSlots.TryGetValue(destination, out var slot);
                 destinationSlots[destination] = slot + 1;
-                chips[next++].Show(kind, value, color, board, destination, slot);
-                if (traceFeedback)
-                    Debug.Log(FormattableString.Invariant($"Aetheria jewel HUD v{view.Version} {effect.Kind} {effect.Value}"));
+                chips[next++].Show(kind, value, color, board, destination, slot, traceFeedback ? effect : null, view.Version);
             }
         }
 
@@ -121,7 +119,9 @@ namespace Aetheria.PetArena.Presentation
             private VisualElement source, destination;
             private float elapsed;
             private int stackSlot;
-            private bool active;
+            private bool active, positioned;
+            private CoopNativeView.JewelEffect trace;
+            private ulong version;
 
             public Chip()
             {
@@ -142,7 +142,8 @@ namespace Aetheria.PetArena.Presentation
                 Hide();
             }
 
-            public void Show(string kind, string value, Color color, VisualElement from, VisualElement to, int slot)
+            public void Show(string kind, string value, Color color, VisualElement from, VisualElement to, int slot,
+                CoopNativeView.JewelEffect tracedEffect, ulong committedVersion)
             {
                 icon.style.backgroundImage = new StyleBackground(FunctionalGemArt.Get(kind));
                 text.text = value;
@@ -151,6 +152,9 @@ namespace Aetheria.PetArena.Presentation
                 destination = to;
                 stackSlot = slot;
                 elapsed = 0;
+                trace = tracedEffect;
+                version = committedVersion;
+                positioned = false;
                 active = true;
             }
 
@@ -171,6 +175,17 @@ namespace Aetheria.PetArena.Presentation
                     if (elapsed >= FlightSeconds + HoldSeconds) Hide();
                     return;
                 }
+                // Wait for a layout pass after positioning. A missing destination,
+                // hidden chip or chip discarded before layout cannot qualify.
+                if (trace != null && positioned && Element.panel != null &&
+                    Element.resolvedStyle.display == DisplayStyle.Flex &&
+                    Element.resolvedStyle.visibility == Visibility.Visible &&
+                    Element.worldBound.width > 0 && Element.worldBound.height > 0 &&
+                    root.worldBound.Overlaps(Element.worldBound))
+                {
+                    Debug.Log(FormattableString.Invariant($"Aetheria jewel HUD v{version} {trace.Kind} {trace.Value}"));
+                    trace = null;
+                }
                 var flight = reducedMotion ? 0 : FlightSeconds;
                 var end = root.WorldToLocal(new Vector2(
                     target.xMax - 20 - (stackSlot / 4) * 62,
@@ -181,6 +196,7 @@ namespace Aetheria.PetArena.Presentation
                 Element.style.left = Mathf.Clamp(location.x, 0, Mathf.Max(0, root.layout.width - 86));
                 Element.style.top = Mathf.Clamp(location.y, 0, Mathf.Max(0, root.layout.height - 25));
                 Element.style.display = DisplayStyle.Flex;
+                positioned = true;
                 elapsed += delta;
                 if (elapsed >= flight + HoldSeconds) Hide();
             }
