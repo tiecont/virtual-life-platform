@@ -20,6 +20,7 @@ import {verifyTimedSoloPublication} from './solo-timed-publication-probe.mjs';
 import {pureSwap} from './coop-visible-kind-swap.mjs';
 import {verifyAdvancedCoopPublication} from './coop-advanced-publication-probe.mjs';
 import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
+import {verifySharedCoopReplay} from './coop-shared-replay-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -314,7 +315,8 @@ try{
   const fields=advanced?values(bundle):variants[label],boss=bundle.bosses[0];
   if(advanced){
    if(label==='B'){
-    bundle.advancedJewels.frostReductionPm[0]++;
+    if(sharedMode==='shared-coop')bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight++;
+    else bundle.advancedJewels.frostReductionPm[0]++;
     bundle.contentRevision++;
    }
   }else{
@@ -652,11 +654,13 @@ try{
    if(response.body.case==='rejection')return {code:response.body.value.code};
    if(response.body.case==='receipt'){
     const projection=Buffer.from(response.body.value.authorizedProjection);
-    return {
+    const receipt={
      state:JSON.parse(projection.toString('utf8')).state,
      version:Number(response.canonicalVersion),committed:response.body.value.committed,
      ...(advancedCoop?{projectionHash:createHash('sha256').update(projection).digest('hex')}:{}),
     };
+    if(sharedMode==='shared-coop')Object.defineProperty(receipt,'projectionBytes',{value:projection});
+    return receipt;
    }
   }
   throw Error('Native command did not return a matching result');
@@ -845,7 +849,16 @@ try{
   assert.equal(started.state.turnTimeoutMs,15000);
   const vocabulary=A.bundle.board.functionalTiles.spawnWeights.map(row=>row.kind);
   assert.equal(vocabulary.length,9);
-  const swapped=await native(match,0,started.version,legalSwap(started.state.board));
+  const replacement=solo?undefined:await publish('B');
+  if(replacement){
+   assert.notEqual(replacement.digest,A.digest);
+   assert.notEqual(replacement.hash,A.hash);
+   const selectedWeight=bundle=>bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight;
+   assert.equal(selectedWeight(replacement.bundle),selectedWeight(A.bundle)+1);
+  }
+  // Publish before the swap so recovery gets the full new seat deadline.
+  const action=legalSwap(started.state.board),commandId=randomBytes(16);
+  const swapped=await native(match,0,started.version,action,commandId);
   assert.equal(swapped.committed,true,JSON.stringify(swapped));
   assert.equal(swapped.version,started.version+1);
   for(const state of [started.state,swapped.state]){
@@ -858,6 +871,9 @@ try{
    seats:started.state.participants.length,bossId:authored.id,bossMaxHp:started.state.boss.maxHp,
    configDigest:A.digest,firstVersion:started.version,swapVersion:swapped.version,
    observedKinds:[...new Set([...started.state.board,...swapped.state.board].map(tile=>tile.kind))].sort(),
+  });
+  if(replacement)await verifySharedCoopReplay({
+   pool,members,match,started,swapped,action,commandId,replacement,mark,native,restart,dbActive,allocationRow,
   });
  }else if(advancedSolo){
   await verifyAdvancedSoloJewel({
