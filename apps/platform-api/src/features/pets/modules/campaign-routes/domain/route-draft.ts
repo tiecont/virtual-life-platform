@@ -26,7 +26,7 @@ export function readCampaignRouteDraft(input:unknown):CampaignRouteDraft{
   const draft=routeDraft.parse(input);
   const seenMaps=new Set<string>();
   const seenPets=new Set<string>();
-  const canonicalMaps=new Map(MAPS.map(map=>[map.id,map.element]));
+  const canonicalMaps=new Map<string,string>(MAPS.map(map=>[map.id,map.element]));
   for(const map of draft.maps){
     if(seenMaps.has(map.id)||canonicalMaps.get(map.id)!==map.element)
       throw new Error('Route draft has a duplicate or incorrectly mapped region');
