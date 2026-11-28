@@ -24,6 +24,7 @@ namespace Aetheria.Editor
         {
             public string scene, bodySha256 = BodySha, wingSha256, bowSha256, unity = Application.unityVersion;
             public string wingMount, bowGrip;
+            public string[] wingImportedMaps, bowImportedMaps;
             public int wingTriangles, bowTriangles;
             public float wingSpanMeters, bowHeightMeters, wingAnchorErrorMeters, bowAnchorErrorMeters;
         }
@@ -86,8 +87,13 @@ namespace Aetheria.Editor
                 .Concat(model.GetComponentsInChildren<SkinnedMeshRenderer>().Select(r => r.sharedMesh)).ToArray();
             int triangles = meshes.Sum(mesh => mesh.triangles.Length / 3);
             var materials = model.GetComponentsInChildren<Renderer>().SelectMany(r => r.sharedMaterials).Distinct().ToArray();
-            if (materials.Length == 0 || !materials.Any(m => m && m.mainTexture && m.mainTexture.width >= 4096) || materials.Any(m => !m || !m.mainTexture || m.mainTexture.width < (wing ? 1024 : 512)))
-                throw new InvalidDataException("The fitted accessory lacks the original colored texture.");
+            var importedMaps = materials.Select(m => m && m.mainTexture
+                ? $"{m.name} {m.mainTexture.width}x{m.mainTexture.height}" : "Missing base color").ToArray();
+            if (wing) report.wingImportedMaps = importedMaps;
+            else report.bowImportedMaps = importedMaps;
+            // Unity may limit the in-memory size. Offline intake verifies the exact source image hashes.
+            if (materials.Length == 0 || !materials.Any(m => m && m.mainTexture && m.mainTexture.width >= 1024) || materials.Any(m => !m || !m.mainTexture || m.mainTexture.width < (wing ? 1024 : 512)))
+                throw new InvalidDataException(model.name + " failed the imported color check: " + string.Join(", ", importedMaps));
             var size = VisibleBounds(model).size;
             if (wing)
             {
