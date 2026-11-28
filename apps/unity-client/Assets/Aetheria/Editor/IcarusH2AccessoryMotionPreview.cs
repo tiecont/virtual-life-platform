@@ -21,7 +21,9 @@ namespace Aetheria.Editor
         private const string Walk = Intake + "/Walk.vrma";
         private const string WalkSha = "50b27c7363ff844ccb0b71373794326583a601128e90f14de0c3df7bfefe9161";
         private const string Wings = Intake + "/Wings.glb";
-        private const string WingsSha = "06556f265d8e1a660412d670477b3b64c3e844a3ec105c3016c66f78bdef2c57";
+        private const string WingSourceTask = "a061ea26-294a-49f9-89f8-e4954ed11c21";
+        private const string WingSourceSha = "be86f92ab8aff6e22e9a3f7f9a8e355305aa0f7b7329926f800be2d7605f4524";
+        private const string WingsSha = "b7e97b488368bc0d26ae1984259f036573b4237513ddb318479409b8d7251c84";
         private const string Bow = Intake + "/Bow.glb";
         private const string BowSha = "86f0251d47103295d66878759f2cb2b14a757d0207f3034cd26d0e96680def3c";
         private const int Size = 960;
@@ -33,6 +35,8 @@ namespace Aetheria.Editor
             public string unityVersion = Application.unityVersion, graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
             public string modelSha256 = VrmSha, walkSha256 = WalkSha, bowSha256 = BowSha, wingsSha256 = WingsSha;
             public string prefabSha256, wingsSocketParent, bowSocketParent, wingsClip, bowClip;
+            public string wingProviderTask = WingSourceTask, wingProviderExportSha256 = WingSourceSha;
+            public SequenceFrame[] wingSequence, bowSequence;
             public int wingsTriangles, bowTriangles, assembledTriangles, frameCount, mappedWalkJoints;
             public float wingFoldDeltaMeters, bowDrawDeltaMeters, releaseRestResidualMeters;
             public float walkWingSocketTravelMeters, walkBowSocketTravelMeters;
@@ -42,6 +46,13 @@ namespace Aetheria.Editor
             public string[] frames;
             public string bowReviewScope = "Provider draw clip and integrated string. Stable center-grip band fitted to the mapped right palm. The free hand remains in the static review pose.";
             public string movementReviewScope = "Existing retargeted Charakuru walk with sampled accessory morph weights.";
+        }
+
+        [Serializable]
+        private sealed class SequenceFrame
+        {
+            public string frame, sha256;
+            public float seconds, weight;
         }
 
         public static void Render()
@@ -166,6 +177,32 @@ namespace Aetheria.Editor
                     FrameHash(6) != FrameHash(7) && FrameHash(7) != FrameHash(8),
                     "The fixed cameras must show the actual different accessory morph states.");
 
+                string sequences = Path.Combine(output, "sequences");
+                Directory.CreateDirectory(sequences);
+                SequenceFrame[] Sequence(Morph shape, string name, Bounds frame, Vector3 direction, float[] times)
+                {
+                    var sequence = times.Select((seconds, index) =>
+                    {
+                        float normalized = shape.Sample(seconds);
+                        draw.Refresh();
+                        string file = $"sequences/{name}-{index + 1:D2}.png";
+                        string destination = Path.Combine(output, file);
+                        Capture(camera, target, pixels, frame, direction, destination);
+                        return new SequenceFrame { frame = file, seconds = seconds, weight = normalized, sha256 = Hash(destination) };
+                    }).ToArray();
+                    Require(sequence.Select(frame => frame.sha256).Distinct().Count() >= 4,
+                        "The fixed-camera sequence must contain distinct rendered deformations.");
+                    return sequence;
+                }
+                var wingSequence = Sequence(wing, "wings-fold-to-spread", whole,
+                    new Vector3(.32f, .13f, -1), new[] { 0f, .10f, .20f, .30f, .40f, .50f });
+                Require(wingSequence[0].weight > .95f && wingSequence[^1].weight < .08f,
+                    "Expected the imported wing expansion sequence to start folded and end spread.");
+                wingSocket.gameObject.SetActive(false);
+                var bowSequence = Sequence(bow, "bow-draw-to-release", bowFrame, bowAngle,
+                    new[] { 0f, .25f, .50f, drawTime, releaseMiddle, bow.Clip.length });
+                wingSocket.gameObject.SetActive(true);
+
                 Vector3 wingStart = wingSocket.position, bowStart = bowSocket.position;
                 float wingTravel = 0, bowTravel = 0;
                 foreach (float time in new[] { .15f, .50f, .85f })
@@ -192,7 +229,8 @@ namespace Aetheria.Editor
                     bowGripToPalmBeforeMeters = bowFit.before, bowGripToPalmAfterMeters = bowFit.after,
                     drawNockToFreePalmMeters = bowFit.free, bowRestWeight = restWeight, bowDrawWeight = drawnWeight,
                     bowReleaseMiddleWeight = middleWeight, bowReleasedWeight = releasedWeight,
-                    frameCount = shots.Count, frames = shots.ToArray(),
+                    wingSequence = wingSequence, bowSequence = bowSequence,
+                    frameCount = shots.Count + wingSequence.Length + bowSequence.Length, frames = shots.ToArray(),
                 };
                 File.WriteAllText(Path.Combine(output, "icarus-h2-accessory-motion.json"), JsonUtility.ToJson(facts, true) + "\n");
                 Debug.Log("Private Icarus H2 morph assembly and motion preview completed.");
