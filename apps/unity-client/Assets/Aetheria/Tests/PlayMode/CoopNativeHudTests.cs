@@ -336,14 +336,14 @@ namespace Aetheria.Tests
                     ("astral-upgrade", 0, 2, 3, "astral", "×2", "coop-cell-3")
                 };
                 var rows = string.Join(",", cues.Select(cue =>
-                    FormattableString.Invariant($"{{"kind":"{cue.Kind}","seat":{cue.Seat},"value":{cue.Value}") +
-                    (cue.Cell.HasValue ? FormattableString.Invariant($","cell":{cue.Cell.Value}") : "") + "}"));
+                    FormattableString.Invariant($@"{{""kind"":""{cue.Kind}"",""seat"":{cue.Seat},""value"":{cue.Value}") +
+                    (cue.Cell.HasValue ? FormattableString.Invariant($@",""cell"":{cue.Cell.Value}") : "") + "}"));
                 var jewels = Enumerable.Range(0, 64).Select(index => JewelKinds[index % 6]).ToArray();
                 jewels[3] = "rage";
                 var viewJson = AdvancedProjection(jewels, multiplierCell: 3)
-                    .Replace(""chillReductionPm":0", ""chillReductionPm":150");
-                var receiptJson = viewJson.Replace(""chillReductionPm":150",
-                    ""chillReductionPm":150,"jewelFeedback":[" + rows + "]");
+                    .Replace(@"""chillReductionPm"":0", @"""chillReductionPm"":150");
+                var receiptJson = viewJson.Replace(@"""chillReductionPm"":150",
+                    @"""chillReductionPm"":150,""jewelFeedback"":[" + rows + "]");
 
                 var decode = typeof(CoopNativePlaySession).GetMethod("Decode", instance);
                 var stateField = typeof(NativePlaySession).GetField("state", instance);
