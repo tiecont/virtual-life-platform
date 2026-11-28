@@ -354,3 +354,31 @@ On 4bae21f5, one new guest with three level-1 starters completed the revision 5 
 The previous four-account PACKAGED_GAMEPLAY run on d032a3b9 reached Fire victory at version 31 after restart, produced four award rows, and admitted all four to Water with the equipped Core at upgrade level 2. The local acceptance receipt is `artifacts/wave-d4-session/elemental-package-d032a3b9.json`. The historical security suite passed 21 files and 278 tests, with results in `artifacts/wave-d4-session/direct-session-security.log`.
 
 Functional candidate B was also tested on held-out seeds 601–612 across six parties with the Rust example at ef7beab0. Under the tactical policy, the level-20 starter party with Core won Fire 11/12 and Water 0/12. The level-40 Ground and Icarus parties won Water 5/12 and 7/12 respectively. The 576-match study is retained under `artifacts/wave-d4-session/functional-board/confirmation-b/`. Balance selection and owner acceptance remain open.
+
+## O. Wave D4 reference-driven production run
+
+Rows use the same condition model as above. Previously passed rows tied to elemental tiles, 60-second timers or walkable battle are historical, not current acceptance.
+
+| ID | Task | Condition | Status | Source and evidence | Remaining qualification |
+| --- | --- | --- | --- | --- | --- |
+| O-A01 | VL-210 | All five owner reference files located and hashed. | PASS | R01 f41ee523…, R02 eb6217df…, R03 1cad5126…, R04 c4f4874c…, R05 7326612a… (full SHA-256 in `assets/review/wave-d4/design-system` manifest) | Prefixes match the owner's copies. |
+| O-A02 | VL-210 | Canonical visual design system established. | IN_PROGRESS | Icons, frames, fonts, localization catalog produced; Unity components pending | Unity worker hit provider quota; resumes after reset. |
+| O-A04 | VL-210 | Reference-matched element icons. | IN_PROGRESS | Six active-element medallions, procedural reconstruction | Not pixel-exact; owner visual review pending. |
+| O-A06 | VL-210 | Functional gem visual mapping prepared for review. | PASS | [Mapping sheet](../../assets/review/wave-d4/design-system/wave-d4-gem-mapping-and-ui-kit.webp) | Design candidate, not an approved gameplay change. |
+| O-A07 | VL-210 | Reference-faithful gem atlas integrated. | IN_PROGRESS | FunctionalGems atlas replaced, same sprite layout | Unity import and render check not yet run. |
+| O-A08 | VL-210 | Four currency icons match reference family. | IN_PROGRESS | Energy, diamond, coin, stone icons produced | Owner review pending. |
+| O-B02 | VL-211 | Server-authoritative turn duration is 15 seconds. | IN_PROGRESS | 6402dd7d · Rust `arena8-coop-v3` | Rust and PostgreSQL ignored-DB test passed; Nest and Unity not yet integrated. |
+| O-B03 | VL-211 | End Turn works with the authorized action economy. | IN_PROGRESS | 6402dd7d · `EndTurn` | Voluntary pass, no free resources, not Guard. Unity button pending. |
+| O-B04 | VL-211 | Timeout advances without automated gameplay. | IN_PROGRESS | 6402dd7d · `ExpireTurn` | Idempotent, restart-safe in DB test. |
+| O-B05 | VL-211 | No maximum-turn or maximum-round combat defeat. | IN_PROGRESS | 6402dd7d · v3 tests | v1/v2/functional-v1 unchanged. |
+| O-B12 | VL-211 | x2 through x8 supported. | IN_PROGRESS | 6402dd7d · candidate bundle | x7/x8 thresholds are an unapproved candidate. |
+| O-B18 | VL-203 | Historical rulesets remain recoverable. | IN_PROGRESS | 6402dd7d · digests unchanged | Hosted CI pending. |
+| O-B19 | VL-211 | New balance simulations executed. | IN_PROGRESS | 6402dd7d · 3,456 matches | 0 wins, 3,456 losses under unmodified boss values; 0 unresolved. Tuning and owner approval open. |
+| O-J01 | VL-203 | PR90 aggregate failure resolved. | IN_PROGRESS | 6402dd7d · ci-capacity 898→902 | Four added tests identified; hosted CI pending. |
+| O-F04 | VL-204 | Representative starter Pet assets advanced. | IN_PROGRESS | Blender 5.3 candidates: Coalwhisk, Dewskip, Clodkin | Primitive-built; art review required; 0 Meshy credits. |
+| O-F09 | VL-206 | Fire background production candidate. | IN_PROGRESS | Gemini Neon High master 2730×1536 | Runtime JPG swapped; Unity render pending. |
+| FLOW-01 | VL-184 | Account entitlement and credit costs verified. | PASS | Flow showed 1,050 credits, reset Dec 26. 720p 8s video: 24 credits (x1) | Watermark required in region. |
+| FLOW-03 | VL-184 | Icarus introduction produced. | IN_PROGRESS | 8 s 720p h264 clip, 24 credits | Wings drift from folded to spread; face consistent in mid frames. Review pending; not accepted. |
+| FLOW-04 | VL-184 | Icarus ultimate cinematic produced. | IN_PROGRESS | Second 24-credit generation submitted | First prompt risked extra wings; retry added a two-wing constraint. Not yet downloaded. |
+
+Not yet started: remaining O-A to O-J and FLOW-02, 05..12 rows. Private cloud upload is NOT_RUN. Owner reviews are outstanding for art, balance and x7/x8.
