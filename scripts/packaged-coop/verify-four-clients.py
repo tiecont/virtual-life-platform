@@ -1,6 +1,7 @@
 """Re-qualify four X11 window captures against the one native PG journal."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -49,4 +50,26 @@ for slot in range(4):
 assert len(displays) == len(processes) == 4
 assert assigned == {0, 1, 2, 3}
 assert clients[0]['assignedSeat'] == 0
+if os.environ.get('PACKAGED_QA_FOUR_ROTATION') == '1':
+    rotation = json.loads((run/'four-rotation-journal.json').read_text())
+    assert rotation['matchId'] == acceptance['matchId']
+    assert [row['issuerSeat'] for row in rotation['turns']] == [0, 1, 2, 3]
+    for row in rotation['turns']:
+        turn = row['turn']
+        row['captures'] = []
+        for slot, client in enumerate(clients):
+            local = run/f'client-{slot}'
+            screen = json.loads((local/f'handoff-{turn}.json').read_text())
+            assert screen['clientSlot'] == slot and screen['assignedSeat'] == client['assignedSeat']
+            assert screen['turn'] == turn and screen['activeSeat'] == row['activeSeat']
+            assert row['startedUnixMs'] <= screen['capturedUnixMs'] < row['endedUnixMs']
+            name = f'10-team-turn-{turn}.png'
+            assert screen['picture'] == name
+            path = local/name
+            with Image.open(path) as image:
+                assert image.format == 'PNG' and list(image.size) == expected_size
+            assert list(populated_board(path) or []) == screen['bounds']
+            row['captures'].append({**screen, 'picture': f'client-{slot}/{name}',
+                                    'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+    acceptance['rotation'] = rotation
 print(json.dumps({**acceptance, 'result': 'PASS', 'clients': clients}, indent=2))
