@@ -557,6 +557,19 @@ namespace Aetheria.Editor
                         throw new InvalidOperationException($"Icarus frame {i + 1} exceeded the 25% near-white foreground limit.");
                     }
                     File.WriteAllBytes(Path.Combine(output, name), image.EncodeToPNG());
+                    if (i == 0 && fixedFrame.HasValue)
+                    {
+                        var origin = camera.transform.position;
+                        var rotation = camera.transform.rotation;
+                        foreach (var view in new[] { ("front", Vector3.forward), ("back", Vector3.back), ("side", Vector3.right) })
+                        {
+                            camera.transform.position = bounds.center + view.Item2 * 5;
+                            camera.transform.LookAt(bounds.center);
+                            ReadCamera();
+                            File.WriteAllBytes(Path.Combine(output, "body-" + view.Item1 + "-walk-10pct.png"), image.EncodeToPNG());
+                        }
+                        camera.transform.SetPositionAndRotation(origin, rotation);
+                    }
                     frames.Add(name);
                     exposure.Add(whitePercent);
                     if (captureMovingChin &&
@@ -607,7 +620,7 @@ namespace Aetheria.Editor
                     camera.transform.position = focus + new Vector3(0, 0, 1);
                     camera.transform.LookAt(focus);
                     ReadCamera();
-                    File.WriteAllBytes(Path.Combine(output, "icarus-face-neutral.png"), image.EncodeToPNG());
+                    File.WriteAllBytes(Path.Combine(output, "icarus-face-walk-85pct.png"), image.EncodeToPNG());
                 }
                 clippedWhitePercent = exposure.ToArray();
                 return frames.ToArray();

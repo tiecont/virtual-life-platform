@@ -232,9 +232,20 @@ namespace Aetheria.Editor
                     surface.sharedMaterials = originalMaterials;
                     director.RebuildGraph();
                     CaptureWalk(compareVariants ? "A-original-v1" : "original");
-                    if (compareVariants) CaptureWalk("B-render-v1", true);
+                    if (compareVariants)
+                    {
+                        CaptureWalk("B-render-v1", true);
+                        CaptureWalk("B-repeat-control", true);
+                    }
                     surface.sharedMesh = mesh;
                     surface.sharedMaterials = layeredMaterials;
+                    if (compareVariants)
+                    {
+                        director.RebuildGraph();
+                        for (int i = 0; i < Frames; i++)
+                            surface.SetBlendShapeWeight(mesh.GetBlendShapeIndex($"WalkClearance{i:D2}"), 0);
+                        CaptureWalk("C-partition-control", true);
+                    }
                     layer.muted = false;
                     director.RebuildGraph();
                     CaptureWalk(compareVariants ? "C-undercloth-v1" : "corrected", compareVariants);
