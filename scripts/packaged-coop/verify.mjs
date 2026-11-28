@@ -7,8 +7,13 @@ const read=async file=>JSON.parse(await readFile(join(root,file+'.json'),'utf8')
 const environment=await readFile(join(root,'environment.txt'),'utf8');
 const expectedSize=environment.match(/(1024x768|1280x720|1920x1080) Gamescope/)?.[1];
 assert.ok(expectedSize,'Missing requested player size in the environment receipt');
+const before=await read('before-restart'),after=await read('after-restart'),renewed=await read('host-renewed');
+assert.equal(before.version,after.version);
+assert.deepEqual(after.state,before.state);
+assert.equal(before.state.board.length,64);
 const screenshots=['07-multiplier-board-before-restart','09-same-multiplier-board-after-reconnect',
  '12-visible-four-seat-reward','21-water-equipped-native-hud'];
+if(before.state.ruleset.version===2)screenshots.push('22-water-started-board','23-water-after-host-swap');
 for(const name of screenshots){
  const png=await readFile(join(root,name+'.png'));
  assert.ok(png.length>32&&png.subarray(0,8).toString('hex')==='89504e470d0a1a0a'&&
@@ -17,10 +22,6 @@ for(const name of screenshots){
 }
 const states=(await Promise.all((await readdir(root)).filter(name=>/^state-\d{3}\.json$/.test(name)).map(name=>read(name.slice(0,-5))))).sort((a,b)=>a.version-b.version);
 const stateAt=version=>states.find(s=>s.version===version)?.state;
-const before=await read('before-restart'),after=await read('after-restart'),renewed=await read('host-renewed');
-assert.equal(before.version,after.version);
-assert.deepEqual(after.state,before.state);
-assert.equal(before.state.board.length,64);
 const version=before.state.ruleset.version;
 assert.ok(version===1||version===2);
 const field=version===2?'kind':'element';
@@ -65,6 +66,37 @@ assert.equal(water.entries.length,1);
 assert.equal(water.entries[0].artifactId,gear.preUpgrade.artifact_id);
 assert.equal(water.entries[0].definitionId,'core-emberglass');
 assert.equal(water.entries[0].upgradeLevel,2);
+if(version===2){
+ const started=await read('water-started'),swapped=await read('water-swapped');
+ assert.equal(started.version,1);
+ assert.equal(swapped.version,2);
+ assert.deepEqual(swapped.receipts,[{host:true,version:1},{host:true,version:2}]);
+ assert.equal(started.state.turn,0);
+ assert.equal(started.state.activeSeat,0);
+ assert.equal(swapped.state.turn,1);
+ assert.equal(swapped.state.activeSeat,1);
+ assert.notDeepEqual(started.state.board,swapped.state.board);
+ assert.equal(swapped.state.participants[0].maxHp,started.state.participants[0].maxHp);
+ for(const {state} of [started,swapped]){
+  assert.equal(state.phase,'playing');
+  assert.equal(state.bossId,gear.waterRoom.bossId);
+  assert.equal(state.ruleset.version,version);
+  assert.equal(state.ruleset.configDigest,water.configDigest);
+  assert.equal(state.board.length,64);
+  assert.ok(state.board.every(tile=>tile&&vocabulary.includes(tile.kind)&&!Object.hasOwn(tile,'element')));
+  assert.equal(state.participants.length,4);
+  const host=state.participants[0];
+  const comparison=state.participants.find(unit=>unit.seat!==0&&unit.petId===water.petId);
+  assert.ok(comparison);
+  assert.equal(host.petId,water.petId);
+  assert.equal(host.level,comparison.level);
+  assert.equal(host.maxHp,comparison.maxHp+water.artifactHp);
+ }
+ water.startedVersion=started.version;
+ water.swapVersion=swapped.version;
+ water.boardTiles=swapped.state.board.length;
+ water.equippedMaxHp=swapped.state.participants[0].maxHp;
+}
 const log=(await readFile(join(root,'backend.log'),'utf8')).split('\n');
 const outcome=log.find(line=>line.startsWith('reward rows verified '));
 assert.ok(outcome);

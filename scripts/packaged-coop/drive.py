@@ -289,6 +289,29 @@ elif stage == 'water':
     print('Water allocation', facts, flush=True)
     text('21-water-equipped-native-hud','start battle',center_band(screen_height - 115, screen_height - 18),tries=28)
     (output/'water-hud-observed').touch()
+    if environ.get('PACKAGED_QA_BOARD', 'functional') == 'functional':
+        click(*label('21-water-equipped-native-hud', 'battle', center_band(screen_height - 115, screen_height - 18)))
+        started = expect('water-started', lambda result: result['version'] == 1, timeout=25)
+
+        def playing_board(img, state):
+            if status_button(img) or live_turn(img) != (state['turn'], state['activeSeat']):
+                return None
+            try:
+                board = board_bounds(img)
+            except RuntimeError:
+                return None
+            left, top, side = board
+            if left < 0 or left + side > screen_width or top + side > screen_height:
+                return None
+            return board
+
+        board, _ = wait_for('22-water-started-board', lambda img: playing_board(img, started['state']))
+        for tile in (started['move']['first'], started['move']['second']):
+            click(*cell_center(board, tile))
+            sleep(.42)
+        swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=20)
+        wait_for('23-water-after-host-swap', lambda img: playing_board(img, swapped['state']))
+        (output/'water-swap-observed').touch()
 
 elif stage=='first':
     for attempt in range(14):

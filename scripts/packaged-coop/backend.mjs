@@ -232,7 +232,8 @@ try{
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
- async function freshTicket(seat){
+ const fireTarget={room,allocation,boss};
+ async function freshTicket(seat,{room,allocation,boss}=fireTarget){
   const member=members[seat];
   const response=await post(member,'/v1/coop/rooms/'+room.roomId+'/admission',{});
   assert.equal(response.statusCode,200,JSON.stringify(response.json()));
@@ -246,7 +247,6 @@ try{
   return {value:view.ticket,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
- const matchBytes=Buffer.from(allocation.match_id.replaceAll('-',''),'hex'),contentBytes=Buffer.from(allocation.content_hash,'hex');
  function client(ticket,seat){
   const ws=new WebSocket(runtimeOrigin.replace('https:','wss:')+'/rt/v1','vl.native.v1',{ca:caPem,headers:{origin:runtimeOrigin}});
   const queue=[];
@@ -273,8 +273,9 @@ try{
   });
   return {ws,seat,ticket,opened,next,sequence:1};
  }
- async function openConnection(seat,ticket){
-  const connection=client(ticket,seat);
+ async function openConnection(seat,ticket,target=fireTarget){
+  const connection={...client(ticket,seat),target};
+  const contentBytes=Buffer.from(target.allocation.content_hash,'hex');
   try{
    await connection.opened;
    const id=randomBytes(16);
@@ -288,14 +289,15 @@ try{
   }
  }
  let connections=[];
- async function intent({seat},expectedVersion,action,kind='arena8-coop.intent.v1'){
+ async function intent({seat,target},expectedVersion,action,kind='arena8-coop.intent.v1'){
+  const matchBytes=Buffer.from(target.allocation.match_id.replaceAll('-',''),'hex');
   const id=randomBytes(16);
   let connection=connections[seat];
   for(let attempt=0;attempt<5&&!stopping;attempt++){
    try{
     if(attempt>0||connection.ws.readyState!==WebSocket.OPEN||connection.ticket.expiresAt-Date.now()<2_000){
      connection.ws.terminate();
-     connection=await openConnection(seat,await freshTicket(seat));
+     connection=await openConnection(seat,await freshTicket(seat,target),target);
      connections[seat]=connection;
     }
     connection.ws.send(envelope(11,intentMessage(matchBytes,expectedVersion,action,kind),id,connection.sequence++));
@@ -448,14 +450,14 @@ try{
  }
  await json('water-roster-ready.json',{seats:4});
  const waterAllocation=await until(
-   "SELECT match_id, world_id, seats, config_digest FROM coop_allocations WHERE status='ACTIVE' AND room_id=$1",
+   "SELECT match_id, world_id, boot_id, content_hash, seats, config_digest FROM coop_allocations WHERE status='ACTIVE' AND room_id=$1",
    [waterRoom.roomId]);
  const hostLoadout=waterAllocation.seats.find(seat=>seat.account===host);
  assert.equal(waterAllocation.seats.length,4);
  assert.equal(waterAllocation.config_digest,verdict.digest);
  assert.equal(hostLoadout.petId,equipped[0].pet_id);
  assert.ok(hostLoadout.loadout.entries.some(entry=>entry.artifactId===equipped[0].artifact_id&&entry.definitionId==='core-emberglass'&&entry.upgradeLevel===equipped[0].upgrade_level));
-const comparison=waterAllocation.seats.find(seat=>seat.account!==host&&seat.petId===hostLoadout.petId);
+ const comparison=waterAllocation.seats.find(seat=>seat.account!==host&&seat.petId===hostLoadout.petId);
  assert.ok(comparison);
  assert.equal(comparison.petLevel,hostLoadout.petLevel);
  assert.equal(comparison.loadout.entries.length,0);
@@ -468,6 +470,41 @@ const comparison=waterAllocation.seats.find(seat=>seat.account!==host&&seat.petI
  await until('SELECT nonce FROM platform_native_ticket_uses WHERE world_id=$1 AND account_id=$2', [waterAllocation.world_id,host]);
  facts.scenarios.push('packaged-player-consumed-a-native-admission-in-the-equipped-water-allocation');
  await waitForFile('water-hud-observed');
+ if(isFunctional){
+  const target={room:waterRoom,allocation:waterAllocation,boss:water};
+  async function readWaterVersion(version){
+   for(let attempt=0;attempt<100&&!stopping;attempt++){
+    const receipt=await intent(connections[1],0,'','arena8-coop.view.v1');
+    assert.equal(receipt.body.case,'receipt');
+    const observed=Number(receipt.canonicalVersion);
+    assert.ok(observed<=version,'Water advanced past the expected version');
+    if(observed===version){
+     return {version,state:JSON.parse(Buffer.from(receipt.body.value.authorizedProjection)).state};
+    }
+    await new Promise(resolve=>setTimeout(resolve,300));
+   }
+   throw Error('Timed out waiting for Water version '+version);
+  }
+  try{
+   connections[1]=await openConnection(1,await freshTicket(1,target),target);
+   const started=await readWaterVersion(1);
+   assert.equal(started.state.phase,'playing');
+   assert.equal(started.state.activeSeat,0);
+   await json('water-started.json',{...started,move:legalSwap(started.state.board)});
+   const swapped=await readWaterVersion(2);
+   const receipts=(await pool.query(
+     'SELECT actor_id=$2 AS "host", committed_version::int AS version FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version',
+     [waterAllocation.match_id,host])).rows;
+   assert.deepEqual(receipts,[{host:true,version:1},{host:true,version:2}]);
+   await json('water-swapped.json',{...swapped,receipts});
+   const retained=(await pool.query('SELECT seats FROM coop_allocations WHERE match_id=$1',[waterAllocation.match_id])).rows[0].seats;
+   assert.deepEqual(retained,waterAllocation.seats);
+   facts.scenarios.push('packaged-water-host-started-and-swapped-with-the-upgraded-core');
+   await waitForFile('water-swap-observed');
+  }finally{
+   connections[1]?.ws.close();
+  }
+ }
 
  }
  facts.result='PASS';console.log('reward rows verified',JSON.stringify(facts));
