@@ -11586,6 +11586,7 @@
     },
     {
       "id": "VL-210",
+      "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
         "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
@@ -11778,6 +11779,7 @@
     },
     {
       "id": "VL-212",
+      "campaignV4ContinuationVerification": {"sourceRevision": "306aa09a1b7c0fdeb802008af02eb2e27c2d00cf", "verifiedScope": "New four-process harness verifies window, seat-bound ticket, room and board for each process. Exact-source packaged runtime verification pending."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
         "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
