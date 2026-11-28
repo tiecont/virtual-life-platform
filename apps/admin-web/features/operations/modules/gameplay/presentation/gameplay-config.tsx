@@ -512,7 +512,7 @@ export default function GameplayConfig({request}:{request:Request}){
   if(!growth||!(name+' '+id).toLowerCase().includes(petSearch.trim().toLowerCase()))return null;
   const path=['pets',String(index),'growth'];
   return <fieldset key={id} disabled={!editable}><legend>{name}</legend><div className="fields">
-   <label>Growth curve<select className="aetheria-field" value={display(growth,'curve')} onChange={event=>change([...path,'curve'],event.target.value)}>
+   <label>Growth curve<select aria-label={name+' growth curve'} className="aetheria-field" value={display(growth,'curve')} onChange={event=>change([...path,'curve'],event.target.value)}>
     {['steady','focused','bulwark','dragon','agile'].map(curve=><option key={curve}>{curve}</option>)}
    </select></label>
    {(['healthBp','attackBp','defenseBp','biasPm'] as const).map((key,field)=><Num key={key} label={['HP growth (bp)','Attack growth (bp)','Defense growth (bp)','Growth adjustment (permille)'][field]} value={read(growth,[key])} min={key==='biasPm'?-100:0} max={key==='biasPm'?100:250} onChange={value=>change([...path,key],value)}/>)}

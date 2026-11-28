@@ -456,7 +456,7 @@ try{
   const icarus=seed.pets.find(pet=>pet.id==='pet-v3-fire-icarus');
   await control('Icarus critRateBp',icarus.critRateBp+1);
   await page.getByText('Per-Pet growth',{exact:true}).click();
-  await page.getByLabel('Growth curve',{exact:true}).selectOption('agile');
+  await page.getByRole('combobox',{name:'Icarus growth curve',exact:true}).selectOption('agile');
   await control('Attack growth (bp)',icarus.growth.attackBp+1);
   await control('Frost damage reduction (‰) · match 3',seed.advancedJewels.frostReductionPm[0]+1);
   const firstCoins=page.getByRole('group',{name:'First Boss victory',exact:true}).getByLabel('Coins',{exact:true});
