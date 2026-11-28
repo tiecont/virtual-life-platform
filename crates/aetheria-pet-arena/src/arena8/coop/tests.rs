@@ -1354,6 +1354,56 @@ fn functional_rules() -> CoopRules {
 }
 
 #[test]
+fn functional_campaign_binds_three_solo_maps_and_their_canonical_recruitment_order() {
+    let catalog: serde_json::Value = serde_json::from_str(include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../specs/pet-arena/mvp-wave1-43-pets.json"
+    )))
+    .unwrap();
+    let config = CoopConfig::parse(functional_bundle()).unwrap();
+    let maps = catalog["maps"].as_array().unwrap();
+    for (chapter, boss) in maps[..3].iter().zip(&config.bosses()[..3]) {
+        let map_id = chapter["id"].as_str().unwrap();
+        assert_eq!(boss.map_id.as_deref(), Some(map_id));
+        let regular = CoopRules::load_solo(functional_bundle(), format!("{map_id}-regular"))
+            .expect("functional regular encounter");
+        let warden =
+            CoopRules::load_solo(functional_bundle(), boss.id.clone()).expect("functional Warden");
+        assert_eq!(regular.digest(), config.digest());
+        assert_eq!(warden.digest(), config.digest());
+
+        let mut recruits = chapter["regularPetIds"].as_array().unwrap().clone();
+        recruits.push(chapter["legendaryPetId"].clone());
+        let rewards = boss.reward_policy.as_ref().unwrap();
+        assert_eq!(
+            serde_json::json!(rewards.recruitment_pet_ids),
+            serde_json::Value::Array(recruits)
+        );
+    }
+
+    let stormcoil = &config.bosses()[2];
+    let regular = stormcoil.regular.as_ref().unwrap();
+    assert_eq!(
+        stormcoil.required_map_clear.as_deref(),
+        Some("tideglass-lagoon")
+    );
+    assert_eq!(
+        (
+            regular.reward_policy.first_clear.exp,
+            regular.reward_policy.first_clear.coins
+        ),
+        (1100, 300)
+    );
+    assert_eq!(
+        (
+            regular.reward_policy.repeat_clear.exp,
+            regular.reward_policy.repeat_clear.coins
+        ),
+        (180, 60)
+    );
+}
+
+#[test]
 fn functional_candidate_requires_separate_typed_identities_and_progressive_weights() {
     let mutate = |path: &str, value: serde_json::Value| {
         let mut candidate: serde_json::Value = serde_json::from_slice(functional_bundle()).unwrap();

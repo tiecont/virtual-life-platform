@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "engineCapability": "arena8-coop-v2",
   "configId": "arena8-coop-functional-candidate",
-  "contentRevision": 3,
+  "contentRevision": 4,
   "board": {
     "deadBoardPolicy": "regenerate",
     "generationAttempts": 64,
@@ -5647,6 +5647,14 @@
       "requiredRoomPoints": 5000,
       "mapId": "cinder-terraces",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "fire-coalwhisk",
+          "fire-emberloom",
+          "fire-kilnback",
+          "fire-flarequill",
+          "fire-scorchveil",
+          "fire-pyrecrown"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -5738,6 +5746,14 @@
       "requiredRoomPoints": 5000,
       "mapId": "tideglass-lagoon",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "water-dewskip",
+          "water-ripplefin",
+          "water-foamcurl",
+          "water-tideweft",
+          "water-abyssail",
+          "water-lagoonarch"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -5828,7 +5844,16 @@
       "telegraphTurns": 2,
       "requiredRoomPoints": 5000,
       "mapId": "stormcoil-fields",
+      "requiredMapClear": "tideglass-lagoon",
       "rewardPolicy": {
+        "recruitmentPetIds": [
+          "electric-zipspool",
+          "electric-copperkip",
+          "electric-arcshell",
+          "electric-pulsecrest",
+          "electric-thundrel",
+          "electric-stormdiadem"
+        ],
         "firstClear": {
           "achievementPoints": 250,
           "coins": 120,
@@ -5846,6 +5871,50 @@
           "coins": 0,
           "exp": 0,
           "materials": 0
+        }
+      },
+      "solo": {
+        "maxHp": 2100,
+        "baseDamage": 15,
+        "perRoundDamage": 1,
+        "minimumDamage": 3,
+        "maxRounds": 25
+      },
+      "regular": {
+        "id": "stormcoil-fields-regular",
+        "name": "Stormcoil Fields Scout",
+        "element": "electric",
+        "maxHp": 540,
+        "defense": 12,
+        "critRateBp": 800,
+        "critDamageBp": 15000,
+        "attackModel": {
+          "baseDamage": 16,
+          "perRoundDamage": 1,
+          "defenseDivisor": 8,
+          "minimumDamage": 3
+        },
+        "telegraphTurns": 2,
+        "maxRounds": 15,
+        "rewardPolicy": {
+          "firstClear": {
+            "achievementPoints": 0,
+            "coins": 300,
+            "exp": 1100,
+            "materials": 0
+          },
+          "repeatClear": {
+            "achievementPoints": 0,
+            "coins": 60,
+            "exp": 180,
+            "materials": 0
+          },
+          "defeat": {
+            "achievementPoints": 0,
+            "coins": 0,
+            "exp": 0,
+            "materials": 0
+          }
         }
       }
     },
