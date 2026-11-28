@@ -221,29 +221,46 @@ def verify_reference(directory, asset):
     return evidence
 
 
+def verify_receipt(path, asset, source_sha, references):
+    data = path.read_bytes()
+    receipt = json.loads(data)
+    expected_asset = "wings" if asset == "wing" else "bow"
+    expected_refs = {row["file"]: row["sha256"] for row in references}
+    if (receipt["asset"] != expected_asset or receipt["state"] != "downloaded"
+            or receipt["parts"] != "Detailed" or receipt["texture"] is not False
+            or receipt["sha256"] != source_sha or receipt["refs"] != expected_refs):
+        raise ValueError("The provider receipt must bind the downloaded geometry and four original references.")
+    return {
+        "taskId": str(UUID(receipt["task"])),
+        "provider": receipt["provider"],
+        "visibility": receipt["visibility"],
+        "sha256": sha256(data).hexdigest(),
+    }
+
+
 def main():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("asset", choices=REFERENCES)
     parser.add_argument("source", type=Path)
     parser.add_argument("reference_directory", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--task-id", type=UUID, required=True)
-    parser.add_argument("--expected-sha256", required=True)
+    parser.add_argument("--provider-receipt", type=Path, required=True)
     parser.add_argument("--render-existing", action="store_true")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
     if bpy.app.version[:2] != (5, 3):
         raise RuntimeError("Use Blender 5.3 for the private clay intake.")
     source = args.source.resolve(strict=True)
     actual = file_hash(source)
-    if actual != args.expected_sha256 or actual in SUPERSEDED:
+    if actual in SUPERSEDED:
         raise ValueError("Expected the pinned fresh provider geometry, distinct from the superseded mesh.")
     reference = verify_reference(args.reference_directory.resolve(strict=True), args.asset)
+    provenance = verify_receipt(args.provider_receipt.resolve(strict=True), args.asset, actual, reference)
     output = args.output.resolve()
     review = output / "accessory-clay-review.json"
     editable = output / f"icarus-{args.asset}-provider-rest.blend"
     if args.render_existing:
         before = json.loads(review.read_text())
-        if (actual != before["sourceSha256"] or str(args.task_id) != before["providerTaskId"]
+        if (actual != before["sourceSha256"] or provenance != before["providerReceipt"]
                 or args.asset != before["asset"] or reference != before["referenceFiles"]
                 or file_hash(editable) != before["editableBlendSha256"]):
             raise ValueError("The existing private source, editable artifact or reference pins changed.")
@@ -278,8 +295,7 @@ def main():
     facts = {
         "classification": "PRIVATE_PRE_UV_CLAY_REVIEW",
         "asset": args.asset,
-        "provider": "Tripo Studio",
-        "providerTaskId": str(args.task_id),
+        "providerReceipt": provenance,
         "sourceSha256": actual,
         "referenceFiles": reference,
         "declaredProviderSurfaceNodes": source_objects,
