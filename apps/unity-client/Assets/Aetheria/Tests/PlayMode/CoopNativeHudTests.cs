@@ -575,7 +575,7 @@ namespace Aetheria.Tests
             var settings = ScriptableObject.CreateInstance<PanelSettings>();
             var origin = new Uri("https://localhost");
             using var session = new CoopNativePlaySession(new PlatformSession(origin),
-                new NativeConnection(new Uri("wss://localhost/rt/v1"), origin, new byte[32], Guid.NewGuid(),
+                new NativeConnection(new Uri("wss://localhost/rt/v1"), origin, Enumerable.Repeat((byte)1, 32).ToArray(), Guid.NewGuid(),
                     _ => throw new AssertionException("This fixture only exercises projection and receipt consumption.")),
                 match, solo ? CoopNativeView.FunctionalSoloRuleset : CoopNativeView.Ruleset);
             try
