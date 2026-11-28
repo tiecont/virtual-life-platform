@@ -55,6 +55,9 @@ try {
   }
 
   await mkdir(join(project, 'Assets', 'Editor'), {recursive: true});
+  await writeFile(join(project, 'Assets', 'Editor', 'PetWingbeatAdmission.asmdef'), JSON.stringify({
+    name: 'Aetheria.PetWingbeatAdmission.Editor', includePlatforms: ['Editor'], references: ['UniGLTF.Editor', 'UniGLTF'],
+  }));
   await mkdir(join(project, 'Assets', 'Candidates'));
   await mkdir(join(project, 'ProjectSettings'));
   await cp(join(unitySource, 'Packages'), join(project, 'Packages'), {recursive: true});
