@@ -124,6 +124,54 @@ async function regularWin(account:Account,mapId='cinder-terraces'){
  });
 }
 
+async function functionalSoloWin(account:Account,mapId:string,kind:'regular'|'boss',binding:FixtureBinding){
+ const matchId=randomUUID(),worldId='native:arena8-'+matchId,bootId=randomUUID(),settlementId=randomUUID();
+ const encounterId=mapId+'-'+kind;
+ const {rows:[owned]}=await pool.query<{id:string}>(
+  'SELECT owned_pet_instance_id AS id FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',
+  [account.accountId,account.petId],
+ );
+ const pin={bossId:kind==='boss'?mapId+'-warden':encounterId,seat:{ownedPetInstanceId:owned!.id}};
+ await pool.query(
+  `INSERT INTO platform_native_arena8_matches(match_id,account_id,request_id,fingerprint,world_id,boot_id,content_hash,pet_id,
+    map_id,encounter_id,level,artifacts,status,generation,functional_config_version,functional_config_digest,functional_allocation)
+   VALUES($1,$2,$3,$4,$5,$6,$4,$7,$8,$9,1,'[]','ACTIVE',1,$10,$11,$12)`,
+  [matchId,account.accountId,randomUUID(),binding.contentHash,worldId,bootId,account.petId,mapId,encounterId,
+   binding.version,binding.digest,pin],
+ );
+ await pool.query(
+  `INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,protocol_version,
+   canonical_version,rng_version,owner_boot_id,epoch,state_version,server_tick,logical_time_ms,rng_cursor,status,
+   seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot)
+   VALUES($1,$2,'arena8-functional-pve',1,decode($3,'hex'),decode($3,'hex'),1,1,1,$4,1,1,1,0,0,'SETTLING',
+   decode($3,'hex'),decode($3,'hex'),'fixture-key',$5,$6,$7)`,
+  [matchId,worldId,binding.contentHash,bootId,randomBytes(12),randomBytes(16),Buffer.from('sealed')],
+ );
+ await pool.query(
+  `INSERT INTO game_native_receipts(match_id,actor_id,command_id,payload_fingerprint,committed_version,epoch,
+   receipt_hash,key_id,nonce,tag,sealed_receipt) VALUES($1,$2,$3,$4,1,1,$4,'fixture-key',$5,$6,$7)`,
+  [matchId,account.accountId,randomUUID(),randomBytes(32),randomBytes(12),randomBytes(16),Buffer.from('receipt')],
+ );
+ const proposal={
+  configDigest:binding.digest,contentHash:binding.contentHash,kind:'solo.completed.v1',outcome:'won',
+  ...(kind==='regular'?{encounterId}:{}),
+  participants:[{account:account.accountId,alive:true,damage:100,healing:0,petId:account.petId,shielding:0}],
+  round:2,ruleset:'arena8-functional-pve',rulesetVersion:1,turn:3,
+ };
+ await pool.query(
+  'INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1,1,1,$2,$3,$4)',
+  [matchId,settlementId,canonicalProposalHash(proposal),proposal],
+ );
+ await pool.query(
+  "INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1,$2,$3,'game.settlement.v1')",
+  [randomUUID(),matchId,settlementId],
+ );
+ return ()=>server.http.inject({
+  method:'POST',url:'/v1/pets/wave-a/arena8/native/matches/'+matchId+'/settle',
+  headers:{origin,cookie:account.cookie,'x-csrf-token':account.csrf},payload:{requestId:randomUUID()},
+ });
+}
+
 function fixtureRewardPolicy(recruitmentPetIds:readonly string[]){
  return {
   recruitmentPetIds,minimumActions:{victory:1,defeat:0},
@@ -466,6 +514,36 @@ describe('cooperative settlement',()=>{
    const outbox=await pool.query('SELECT delivered_at FROM game_native_outbox WHERE settlement_id=$1',[mismatched.settlementId]);
    expect(outbox.rows[0]?.delivered_at).toBeNull();
    await pool.query("UPDATE game_native_outbox SET available_at=clock_timestamp()+interval '1 hour' WHERE settlement_id=$1",[mismatched.settlementId]);
+  }
+ });
+ it('settles functional campaign pairs in either order and grants the first unowned authored recruit once',async()=>{
+  const path=new URL('../../config/gameplay/arena8-coop-functional-v1.candidate.json',import.meta.url);
+  const {bosses}=JSON.parse(readFileSync(path,'utf8')) as {bosses:Record<string,unknown>[]};
+  const pinned=await publishSettlementFixture(bosses,true);
+  const candidateRecruits=[
+   {map:'cinder-terraces',owned:'fire-coalwhisk',recruit:'fire-emberloom'},
+   {map:'tideglass-lagoon',owned:'water-dewskip',recruit:'water-ripplefin'},
+   {map:'stormcoil-fields',owned:'electric-zipspool',recruit:'electric-copperkip'},
+  ];
+  for(const {map,owned,recruit} of candidateRecruits){
+   for(const first of ['regular','boss'] as const){
+    const account=await guest(map.slice(0,12)+' '+first,owned);
+    const firstReceipt=await (await functionalSoloWin(account,map,first,pinned))();
+    expect(firstReceipt.statusCode,firstReceipt.body).toBe(200);
+    expect(firstReceipt.json()).toMatchObject({won:true,firstClear:true,clearedMaps:[],recruitedPetId:null});
+
+    const settle=await functionalSoloWin(account,map,first==='regular'?'boss':'regular',pinned);
+    const receipts=await Promise.all([settle(),settle()]);
+    for(const receipt of receipts){
+     expect(receipt.statusCode,receipt.body).toBe(200);
+     expect(receipt.json()).toMatchObject({won:true,firstClear:true,clearedMaps:[map],recruitedPetId:recruit});
+    }
+    expect(receipts[0]!.json()).toEqual(receipts[1]!.json());
+    const ownedRecruits=await pool.query(
+     "SELECT pet_id FROM pet_wave_one_owned WHERE account_id=$1 AND source='campaign'",[account.accountId],
+    );
+    expect(ownedRecruits.rows).toEqual([{pet_id:recruit}]);
+   }
   }
  });
 
