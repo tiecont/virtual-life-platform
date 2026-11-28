@@ -52,12 +52,52 @@ const functionalTargets=[
  ['all-allies','All living allies'],
 ] as const;
 
+function sharedJewels(bundle:GameplayBundle|null){
+ return bundle?.schemaVersion===6||bundle?.schemaVersion===7;
+}
+
+function CampaignRouteEditor({bundle,editable,change}:{
+ bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
+}){
+ const [selected,setSelected]=useState('');
+ if(bundle.schemaVersion!==7||!Array.isArray(bundle.campaignRoutes)||!bundle.campaignRoutes.length)return null;
+ const routes=bundle.campaignRoutes;
+ const index=Math.max(0,routes.findIndex(route=>read(route,['id'])===selected));
+ const route=routes[index],path=['campaignRoutes',String(index)],id=display(route,'id'),map=display(route,'mapId');
+ const opponent=display(route,'opponentPetId'),profile=read(route,['profile']);
+ const reward=read(profile,['rewardPolicy']);
+ const recruitment=read(reward,['recruitmentPetIds']);
+ return <section><h3>Map encounter routes</h3>
+  <label>Encounter route<select aria-label="Encounter route" className="aetheria-field" value={id} onChange={event=>setSelected(event.target.value)}>
+   {routes.map(row=><option key={display(row,'id')} value={display(row,'id')}>{display(row,'mapId')} · {display(row,'opponentPetId')}</option>)}
+  </select></label>
+  <fieldset disabled={!editable}><legend>{opponent} · {display(route,'tier')}</legend>
+   <label>Prior clear<select aria-label="Prior clear" className="aetheria-field" value={String(read(route,['prerequisiteEncounterId'])??'')}
+    onChange={event=>change([...path,'prerequisiteEncounterId'],event.target.value||null)}>
+    <option value="">None</option>
+    {routes.filter(row=>display(row,'id')!==id&&display(row,'mapId')===map)
+     .map(row=><option key={display(row,'id')} value={display(row,'id')}>{display(row,'opponentPetId')}</option>)}
+   </select></label>
+   <label>Admission<select aria-label="Admission" className="aetheria-field" value={display(route,'mode')} onChange={event=>change([...path,'mode'],event.target.value)}>
+    <option value="solo">Solo</option><option value="either">Solo or cooperative</option>
+   </select></label>
+   <label><input type="checkbox" disabled={!profile} checked={read(route,['enabled'])===true}
+    onChange={event=>change([...path,'enabled'],event.target.checked)}/> Enable encounter on publication</label>
+   {profile!=null?<div className="fields">
+    {(['maxHp','attack','defense','requiredRoomPoints'] as const).map((key,i)=><Num key={key} label={['Opponent max HP','Opponent attack','Opponent defense','Host achievement points'][i]}
+     value={read(profile,[key])} onChange={n=>change([...path,'profile',key],n)}/>)}
+    {reward&&typeof reward==='object'?<label><input type="checkbox" checked={Array.isArray(recruitment)&&recruitment.includes(opponent)}
+     onChange={event=>change([...path,'profile','rewardPolicy','recruitmentPetIds'],event.target.checked?[opponent]:undefined)}/> Recruit {opponent} on first qualifying clear</label>:null}
+   </div>:<p>Supply an authored combat profile in the draft before enabling this route.</p>}
+  </fieldset></section>;
+}
+
 function AdvancedJewelEditor({bundle,editable,change}:{
  bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
 }){
  const policy=read(bundle,['advancedJewels']);
  const historical=bundle.schemaVersion===5;
- if((!historical&&bundle.schemaVersion!==6)||!policy)return null;
+ if((!historical&&!sharedJewels(bundle))||!policy)return null;
  const control=(key:string,label:string)=>{
   const value=read(policy,[key]);
   return typeof value==='number' && <Num label={label} value={value} onChange={n=>change(['advancedJewels',key],n)}/>;
@@ -96,7 +136,7 @@ function AdvancedJewelEditor({bundle,editable,change}:{
 function FunctionalBoardEditor({bundle,editable,change}:{
  bundle:GameplayBundle;editable:boolean;change:(path:readonly string[],value:unknown)=>void;
 }){
- const sharedSpawn=bundle.schemaVersion===6;
+ const sharedSpawn=sharedJewels(bundle);
  const path=['board','functionalTiles'];
  const tiles=read(bundle,[...path,'spawnWeights']);
  const weightTotal=Array.isArray(tiles)?tiles.reduce((sum,row)=>sum+Number(read(row,['weight'])??0),0):0;
@@ -566,10 +606,10 @@ export default function GameplayConfig({request}:{request:Request}){
    <option value="highest-mana">Highest current mana</option>
   </select>
  </label>}
- {bundle?.schemaVersion===6&&<fieldset disabled={!editable}><Num label="Boss attack" min={1} value={read(bundle,[...bossPath,'attack'])} onChange={value=>change([...bossPath,'attack'],value)}/></fieldset>}
+ {sharedJewels(bundle)&&<fieldset disabled={!editable}><Num label="Boss attack" min={1} value={read(bundle,[...bossPath,'attack'])} onChange={value=>change([...bossPath,'attack'],value)}/></fieldset>}
  <div className="fields"><Num label="Achievement Points to host" value={read(bundle,[...bossPath,'requiredRoomPoints'])} onChange={value=>change([...bossPath,'requiredRoomPoints'],value)}/><Num label="Boss max HP" value={read(bundle,[...bossPath,'maxHp'])} onChange={value=>change([...bossPath,'maxHp'],value)}/>{(['baseDamage','perRoundDamage','minimumDamage','defenseDivisor'] as const).map((key,i)=><Num key={key} label={['Boss base damage','Additional damage per round','Minimum incoming damage','Party defense divisor'][i]} min={key==='perRoundDamage'?0:1} value={read(bundle,[...bossPath,'attackModel',key])} onChange={value=>change([...bossPath,'attackModel',key],value)}/>)}<Num label="Boss defense" value={read(bundle,[...bossPath,'defense'])} onChange={value=>change([...bossPath,'defense'],value)}/><Num label="Critical rate (bp)" value={read(bundle,[...bossPath,'critRateBp'])} onChange={value=>change([...bossPath,'critRateBp'],value)}/><Num label="Critical damage (bp)" value={read(bundle,[...bossPath,'critDamageBp'])} onChange={value=>change([...bossPath,'critDamageBp'],value)}/><Num label="Telegraph turns" value={read(bundle,[...bossPath,'telegraphTurns'])} onChange={value=>change([...bossPath,'telegraphTurns'],value)}/><Num label="Phase threshold (bp)" value={read(bundle,[...bossPath,'phase','thresholdBp'])} onChange={value=>change([...bossPath,'phase','thresholdBp'],value)}/><Num label="Phase max HP growth (bp)" value={read(bundle,[...bossPath,'phase','maxGrowthBp'])} onChange={value=>change([...bossPath,'phase','maxGrowthBp'],value)}/><Num label="Phase two current HP (bp)" value={read(bundle,[...bossPath,'phase','currentBp'])} onChange={value=>change([...bossPath,'phase','currentBp'],value)}/><Num label="Phase two attack (pm)" value={read(bundle,[...bossPath,'phase','phase2AttackPm'])} onChange={value=>change([...bossPath,'phase','phase2AttackPm'],value)}/><Num label="Attack targets" value={read(bundle,[...bossPath,'phase','attackTargets'])} onChange={value=>change([...bossPath,'phase','attackTargets'],value)}/></div>
  <h3>Pet elements and effectiveness</h3>
- {bundle?.schemaVersion===6&&Array.isArray(bundle.elements)
+ {bundle&&sharedJewels(bundle)&&Array.isArray(bundle.elements)
   ?<SharedElementMatrix elements={bundle.elements} editable={editable} change={change}/>
   :<><p className="small muted">Damage against each defending element. 100% is normal damage and 0% is immunity.</p>
  {Array.isArray(bundle?.elements)&&bundle.elements.map((profile,i)=>{
@@ -601,6 +641,7 @@ export default function GameplayConfig({request}:{request:Request}){
   </tr>;
  })}</tbody></table></div>
  {functional&&<MultiplierFactors schedule={schedule} editable={editable} change={change}/>}
+ {bundle&&<CampaignRouteEditor bundle={bundle} editable={editable} change={change}/>}
  <h3>Settlement rewards</h3>
  {read(bundle,[...bossPath,'rewardPolicy'])?<RecruitmentEditor bundle={bundle} bossPath={bossPath} editable={editable} change={change}/>:null}
  {read(bundle,[...bossPath,'rewardPolicy'])?<fieldset disabled={!editable}><legend>Minimum committed combat actions per participant</legend>
