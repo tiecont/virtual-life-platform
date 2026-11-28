@@ -6755,7 +6755,7 @@
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast."
+      "remaining": "Validate client and portal shared language tokens, safety UX, and card/map contrast. At f1eb5caa all five persisted-language PlayMode cases passed for End Turn. Localized campaign navigation is implemented. The same run found a four-pixel overlap between the action row and footer."
     },
     {
       "id": "VL-107",
@@ -9831,13 +9831,13 @@
         "Versioned approved editorial content with optimistic concurrency, publish audit and release gates; no public edit endpoints",
         "Real HTTP/browser auth, CSRF, stale session, privacy and concurrency regressions pass"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "priority": 2,
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
-      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth."
+      "remaining": "Add /admin/prelaunch and scoped operator APIs using existing identity/BFF; no duplicate console or auth. PR 95 at c60a5c0a passed 18 proxy cases, admin build, lint and signed-out browser smoke. Independent review found sign-in destination loss, stale auth responses and mixed database snapshots. Verify the corrected revision before accepting this read-only slice."
     },
     {
       "id": "VL-167",
@@ -11133,7 +11133,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision.",
+      "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision. At 660475d0 the timed cooperative WSS fixture passed all 12 scenarios with four authenticated seats, digest and deadline recovery, and per-seat awards paid once across retries and restart.",
       "implementation": {
         "timedSoloWss": {
           "sourceRevision": "c8698d6a3d4faf01f96dda3c69a5bc38a3ecb3c2",
@@ -11426,7 +11426,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Real Chromium operator publication, rollback, pinned restart recovery and audited Mana yields passed 34 scenarios on 834198e3. Complete the remaining acquisition policy editors and verify the combined integration before merge.",
+      "remaining": "Real Chromium operator publication, rollback, pinned restart recovery and audited Mana yields passed 34 scenarios on 834198e3. Complete the remaining acquisition policy editors and verify the combined integration before merge. PR 94 adds opt-in wallet and typed policy handling. At ab8650a9 all 23 unit and contract cases and six PostgreSQL cases passed. At 055031d5 the admin production build, editor lint and desktop and mobile expired-verification cases passed. Pin economy policy at allocation before wiring it into settlement.",
       "implementation": {
         "integratedLinuxReview": {
           "sourceRevision": "b2a35703bc74512f8803bcaf61749cacab74b6b2",
@@ -11538,7 +11538,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review.",
+      "remaining": "The 8ad6e6e6 Linux package showed the six Gemini Neon High jewels at 720p and 1080p in authenticated combat. Co-op Start v1 at 1080p exposed all four skills without clipping. Verify terminal reconnect, Ghost vulnerability and owner visual review. At 763461ac the packaged Linux solo HUD accepted an End Turn click at 1280×720, advanced from round 1 to 2 and advanced again after idle expiry. The rendered four-seat timed journey remains open.",
       "implementation": {
         "battleSettlementHud": {
           "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
