@@ -34,7 +34,7 @@ namespace Aetheria.Editor
             public int thighTriangles, armTriangles;
             public string scene, status = "PROTOTYPE", source = BodyHash, walk = WalkHash;
             public int frames = Frames, affectedVertices;
-            public float maxBaselineMismatchMeters, maxCorrectiveErrorMeters;
+            public float maxBaselineMismatchMeters, maxCorrectiveErrorMeters, maxUntouchedBodyDeltaMeters, maxGarmentDeltaMeters;
         }
 
         public static void Build() => BuildStudy(false);
@@ -176,6 +176,22 @@ namespace Aetheria.Editor
                     for (int i = 0; i < vertexCount; i++)
                         report.maxCorrectiveErrorMeters = Mathf.Max(report.maxCorrectiveErrorMeters,
                             Vector3.Distance(target[frame][i], actual[frame][i]));
+                if (bodyLayer)
+                {
+                    var originalCloth = LoadSurface(baseline, false);
+                    var actualCloth = LoadSurface(reimport, false);
+                    for (int frame = 0; frame < Frames; frame++)
+                    {
+                        for (int i = 0; i < SkirtVertices; i++)
+                            report.maxGarmentDeltaMeters = Mathf.Max(report.maxGarmentDeltaMeters,
+                                Vector3.Distance(originalCloth[frame][i], actualCloth[frame][i]));
+                        for (int i = 0; i < BodyVertices; i++)
+                            if (!selected[i]) report.maxUntouchedBodyDeltaMeters = Mathf.Max(report.maxUntouchedBodyDeltaMeters,
+                                Vector3.Distance(poses[frame][i], actual[frame][i]));
+                    }
+                    if (Mathf.Max(report.maxGarmentDeltaMeters, report.maxUntouchedBodyDeltaMeters) > .0001f)
+                        throw new InvalidDataException("Layer correction displaced an unrelated body or garment vertex.");
+                }
                 if (report.maxCorrectiveErrorMeters > .001f)
                     throw new InvalidDataException($"Native Timeline overlay differs from target ({report.maxCorrectiveErrorMeters} m).");
                 if (render)
