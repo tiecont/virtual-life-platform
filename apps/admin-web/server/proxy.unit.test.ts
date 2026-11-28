@@ -78,3 +78,23 @@ it('economy-policy proxy enforces query, CSRF, and strict schema validation incl
  expect((await handler(new Request(origin+'/api/admin/economy-policy',{headers:{cookie}}))).status).toBe(200);
  expect((await handler(new Request(origin+'/api/admin/economy-policy-publish',{method:'POST',headers:{origin,cookie,'x-csrf-token':'b'.repeat(64)},body:JSON.stringify({requestId:'11111111-1111-4111-8111-111111111111',expectedActiveRevision:1,reason:'VALID_POLICY',policy})}))).status).toBe(200);
 });
+
+it('accepts bounded economy history with long JSON-escaped disclosure and reason text',async()=>{
+ const escapedText=(length:number)=>'x'+String.fromCharCode(1).repeat(length-1);
+ const version={
+  energyMax:180,energyRegenSeconds:300,activityEnergyCost:0,diamondToLuminousStoneRate:1,
+  firstClearLuminousStones:60,bossFirstClearLuminousStones:120,gachaSingleCostCoins:100,gachaSingleCostLuminousStones:160,
+  gachaDisclosure:{featuredPetId:'pet-v3-fire-icarus',softPityAt:60,hardPityAt:80,baseSProbabilityPpm:8000,featuredProbabilityPpm:500000,guaranteedFeaturedAfterOffRate:true,duplicateExp:200,missExp:25,realMoneyPurchasesEnabled:false,summary:escapedText(512)},
+  version:200,reason:escapedText(256),publishedBy:session.subject,publishedAt:'2026-11-28T00:00:00.000Z',
+ };
+ const overview={
+  schemaVersion:1,activeVersion:200,activeRevision:200,active:version,
+  updatedBy:version.publishedBy,updatedAt:version.publishedAt,
+  versions:Array.from({length:200},(_,index)=>({...version,version:200-index})),
+ };
+ expect(Buffer.byteLength(JSON.stringify(overview))).toBeGreaterThan(262144);
+ const handler=createAdminHandler(config(),async()=>Response.json(overview));
+ const response=await handler(new Request(origin+'/api/admin/economy-policy',{headers:{cookie}}));
+ expect(response.status).toBe(200);
+ expect(await response.json()).toEqual(overview);
+});

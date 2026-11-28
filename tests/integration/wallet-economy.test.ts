@@ -112,8 +112,6 @@ async function setupStack({enabled=true,published=true}={}){
     proxy,
     opCookie,
     csrfToken,
-    digest,
-    contentHash,
     advanceTime:(deltaMs:number)=>{nowOffsetMs+=deltaMs;},
     now,
   };
@@ -363,7 +361,11 @@ describe('Local four-resource wallet and economy policy',()=>{
     expect(pubReplay.status).toBe(200);
     expect(await pubReplay.json()).toEqual(pubBody);
 
-    expect((await server.http.inject({url:'/v1/pets/wallet',headers:{cookie:player.cookie}})).json().energy.max).toBe(240);
+    expect((await server.http.inject(walletRequest)).json().energy.max).toBe(240);
+    const highCapPlayer=await createGuest(server,'High Cap Observer');
+    const highCapWallet={url:'/v1/pets/wallet',headers:{cookie:highCapPlayer.cookie}};
+    expect((await server.http.inject(highCapWallet)).json().energy).toMatchObject({current:240,max:240});
+    await pool.query('UPDATE pet_wallet_accounts SET premium_diamonds=1 WHERE account_id=$1',[highCapPlayer.accountId]);
 
     const stalePublish=await proxy(new Request(adminOrigin+'/api/admin/economy-policy-publish',{
       method:'POST',
@@ -379,6 +381,16 @@ describe('Local four-resource wallet and economy policy',()=>{
     }));
     expect(rbRes.status).toBe(200);
     expect(await rbRes.json()).toMatchObject({version:1,activeRevision:3});
+    expect((await server.http.inject(highCapWallet)).json().energy).toMatchObject({current:180,max:180});
+    const converted=await server.http.inject({
+      method:'POST',url:'/v1/pets/wallet/convert',
+      headers:{origin:playerOrigin,cookie:highCapPlayer.cookie,'x-csrf-token':highCapPlayer.csrf},
+      payload:{requestId:randomUUID(),premiumDiamonds:1},
+    });
+    expect(converted.statusCode).toBe(200);
+    expect(converted.json().wallet.energy).toMatchObject({current:180,max:180});
+    expect((await pool.query('SELECT energy_current FROM pet_wallet_accounts WHERE account_id=$1',[highCapPlayer.accountId])).rows).toEqual([{energy_current:180}]);
+    expect((await pool.query('SELECT delta_energy FROM pet_wallet_ledger WHERE account_id=$1',[highCapPlayer.accountId])).rows).toEqual([{delta_energy:-60}]);
 
     const audit=await (await proxy(new Request(adminOrigin+'/api/admin/economy-policy-audit',{headers:{cookie:opCookie}}))).json();
     expect(audit.events.map((e:{action:string})=>e.action)).toEqual(['rollback','publish','publish']);

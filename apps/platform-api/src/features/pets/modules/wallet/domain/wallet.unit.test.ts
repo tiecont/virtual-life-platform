@@ -13,6 +13,9 @@ describe('wallet pure domain rules',()=>{
     expect(computeLazyEnergy(180,start,start+900_000,180,300)).toEqual({
       current:180,gained:0,nextUpdatedAtMs:start+900_000,nextRegenSeconds:0,
     });
+    expect(computeLazyEnergy(240,start,start+900_000,180,300)).toEqual({
+      current:180,gained:0,nextUpdatedAtMs:start+900_000,nextRegenSeconds:0,
+    });
     expect(computeLazyEnergy(100,start,start+450_000,180,300)).toEqual({
       current:101,gained:1,nextUpdatedAtMs:start+300_000,nextRegenSeconds:150,
     });

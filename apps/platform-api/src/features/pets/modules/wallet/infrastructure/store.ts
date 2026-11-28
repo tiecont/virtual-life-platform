@@ -231,7 +231,7 @@ export class WalletStore{
        ) VALUES($1,$2,$3,$4,'diamond_to_stone_conversion',$5,$6,0,$7,$8::jsonb,$9::jsonb,$10)`,
       [
         receiptId,accountId,input.requestId,payloadSha,
-        energy.gained,-input.premiumDiamonds,step.credited,
+        energy.current-walletRow.energy_current,-input.premiumDiamonds,step.credited,
         JSON.stringify({energy:energy.current,premiumDiamonds:step.nextDiamonds,coins,luminousStones:step.nextStones}),
         JSON.stringify(receipt),at,
       ],

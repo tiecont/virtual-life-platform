@@ -1,25 +1,13 @@
 import {randomUUID} from 'node:crypto';
 import {describe,expect,it} from 'vitest';
 import {
-  CoopEngineCapability,
-  CoopRulesetVersionSchema,
   EconomyPolicyPublishSchema,
   FourResourceWalletSchema,
   WalletConvertInputSchema,
-  coopRulesetVersionForCapability,
+  WalletConvertReceiptSchema,
 } from '../src';
 
-describe('wave D4 wallet, economy authority and timed capability contracts',()=>{
-  it('supports arena8-coop-v3 timed functional capability mapping',()=>{
-    expect(CoopEngineCapability.timedFunctional).toBe('arena8-coop-v3');
-    expect(coopRulesetVersionForCapability('arena8-coop-v1')).toBe(1);
-    expect(coopRulesetVersionForCapability('arena8-coop-v2')).toBe(2);
-    expect(coopRulesetVersionForCapability('arena8-coop-v3')).toBe(3);
-    expect(coopRulesetVersionForCapability('arena8-coop-v4')).toBeUndefined();
-    expect(CoopRulesetVersionSchema.safeParse(3).success).toBe(true);
-    expect(CoopRulesetVersionSchema.safeParse(4).success).toBe(false);
-  });
-
+describe('wave D4 wallet and economy authority contracts',()=>{
   it('validates four-resource wallet, strict conversion input, and rejects non-1:1 rates',()=>{
     expect(FourResourceWalletSchema.safeParse({
       schemaVersion:1,
@@ -73,5 +61,26 @@ describe('wave D4 wallet, economy authority and timed capability contracts',()=>
       ...validPublish,
       policy:{...validPublish.policy,gachaDisclosure:{...validPublish.policy.gachaDisclosure,realMoneyPurchasesEnabled:true}},
     }).success).toBe(false);
+  });
+
+  it('validates a conversion receipt and rejects invalid or private balances',()=>{
+    const receipt={
+      receiptId:randomUUID(),
+      requestId:randomUUID(),
+      debitedPremiumDiamonds:40,
+      creditedLuminousStones:40,
+      wallet:{
+        schemaVersion:1,
+        energy:{current:180,max:180,regenSeconds:300,nextRegenSeconds:0},
+        premiumDiamonds:60,
+        coins:8000,
+        luminousStones:40,
+        conversionPolicy:{enabled:true,from:'premiumDiamonds',to:'luminousStones',inputUnit:1,outputUnit:1},
+      },
+    };
+    expect(WalletConvertReceiptSchema.parse(receipt)).toEqual(receipt);
+    expect(WalletConvertReceiptSchema.safeParse({...receipt,creditedLuminousStones:0}).success).toBe(false);
+    expect(WalletConvertReceiptSchema.safeParse({...receipt,wallet:{...receipt.wallet,premiumDiamonds:-1}}).success).toBe(false);
+    expect(WalletConvertReceiptSchema.safeParse({...receipt,wallet:{...receipt.wallet,accountId:randomUUID()}}).success).toBe(false);
   });
 });

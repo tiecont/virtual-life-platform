@@ -42,8 +42,16 @@ await page.getByRole('button',{name:'System & traffic',exact:true}).click();cons
 
  expect(observed.every(body=>!body.includes(serviceToken)&&!body.includes(secret)&&!body.includes('ADMIN_METRICS_READ_TOKEN')&&!body.includes('OPERATOR_AUTH_KEY'))).toBe(true);expect(errors).toEqual([]);await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();expect((await page.request.get('/api/admin/session')).status()).toBe(401);
 });
-test('actual browser fresh verification rotates the session and revoke-all clears access',async({page,request})=>{
- await signIn(page);const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;await page.getByRole('button',{name:'Session & security',exact:true}).click();await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));await page.getByRole('button',{name:'Verify again',exact:true}).click();await expect(page.getByRole('status')).toContainText('Verification refreshed.');
+test('actual browser recovers from expired economy verification, rotates the session and revokes all access',async({page,request})=>{
+ await signIn(page);
+ const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;
+ await page.route('**/api/admin/economy-policy',route=>route.fulfill({
+  status:403,json:{error:{code:'FORBIDDEN',message:'Fresh operator authentication required'}},
+ }));
+ await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Verify your password and authenticator to continue.');
+ await expect(page.getByRole('button',{name:'Session & security',exact:true})).toHaveAttribute('aria-current','page');
+ await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));await page.getByRole('button',{name:'Verify again',exact:true}).click();await expect(page.getByRole('status')).toContainText('Verification refreshed.');
  const current=(await page.context().cookies()).find(value=>value.name==='city_operator')!;expect(current.value!==old.value).toBe(true);expect((await request.get('/api/admin/session',{headers:{cookie:'city_operator='+old.value}})).status()).toBe(401);
  await page.getByRole('button',{name:'Revoke all sessions',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
 });

@@ -23,7 +23,7 @@ export function computeLazyEnergy(
   if(!Number.isSafeInteger(regenSeconds)||regenSeconds<10)throw new Error('Invalid energy regen policy');
   if(storedCurrent>=max){
     return Object.freeze({
-      current:storedCurrent,
+      current:max,
       gained:0,
       nextUpdatedAtMs:Math.max(updatedAtMs,nowMs),
       nextRegenSeconds:0,
