@@ -1,0 +1,40 @@
+{
+  "objective": "Validate an offline infrastructure change and report its evidence.",
+  "tasks": [
+    {
+      "id": "inspect",
+      "owner": "lead",
+      "acceptance": ["Record the source revision and preserve existing owner changes."],
+      "dependsOn": [],
+      "writePaths": []
+    },
+    {
+      "id": "validate",
+      "owner": "qa",
+      "acceptance": ["Run the migration compatibility validator.", "Record the revision and evidence checksum."],
+      "dependsOn": [],
+      "writePaths": []
+    },
+    {
+      "id": "policy",
+      "owner": "security",
+      "acceptance": ["Verify offline release defaults and confirm approval gates are present."],
+      "dependsOn": [],
+      "writePaths": []
+    },
+    {
+      "id": "tests",
+      "owner": "qa",
+      "acceptance": ["Verify parser failures, input rejection and file integrity behavior."],
+      "dependsOn": [],
+      "writePaths": []
+    },
+    {
+      "id": "report",
+      "owner": "lead",
+      "acceptance": ["Report passed, failed and blocked checks with reproducible commands."],
+      "dependsOn": ["inspect", "validate", "policy", "tests"],
+      "writePaths": []
+    }
+  ]
+}
