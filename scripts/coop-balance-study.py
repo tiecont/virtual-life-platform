@@ -155,9 +155,22 @@ def warden_defense_support(bundle):
     tiles["shield"]["amount"] = 35
 
 
+def veteran_artifacts(bundle):
+    """Test the leverage of rank-five equipment without altering natural boards or enemies."""
+    bundle["configId"] = "arena8-veteran-artifacts-candidate"
+    bundle["contentRevision"] = 1
+    items = {item["id"]: item for item in bundle["artifacts"]}
+    # Keep base values and unlock levels intact. At rank five, the three
+    # existing items reach 34 ATK, 36 HP or 34 ATK in their primary stat.
+    items["core-prismheart"]["perLevel"]["attack"] = 7
+    items["aegis-bastionplate"]["perLevel"]["hp"] = 7
+    items["rune-temporal-seal"]["perLevel"]["attack"] = 6
+
+
 # Study inputs only. None of these variants publishes an active configuration.
 SHARED_VARIANTS = {
     "warden-defense-support": warden_defense_support,
+    "veteran-artifacts": veteran_artifacts,
     "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
         ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
     "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
@@ -312,7 +325,7 @@ def main():
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS, *SHARED_VARIANTS])
-    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels", "warden"], default="progression")
+    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels", "warden", "capstone"], default="progression")
     parser.add_argument("--mode", choices=["coop", "solo", "both"], default="coop")
     parser.add_argument("--include-regular", action="store_true", help="Include regular opponents for solo play")
     parser.add_argument("--advanced-candidate", type=Path, help="Split one authored bundle into control, skill-only and encounter-only studies")
@@ -335,7 +348,7 @@ def main():
     if not shared and capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
     functional = shared or capability in ("arena8-coop-v2", "arena8-coop-v3")
-    if args.stage == "warden" and not shared:
+    if args.stage in ("warden", "capstone") and not shared:
         parser.error("the Warden progression stage requires a shared schema 6 bundle")
     base_bosses = {row["id"]: row for row in base["bosses"]}
     if args.bosses == ["all"] or (args.bosses is None and (shared or capability == "arena8-coop-v3")):
@@ -387,6 +400,8 @@ def main():
         scenarios = [("starters", 10, "starter-core"), ("starters", 20, "starter-core"),
                      ("starters", 40, "starter-core"), ("starters", 60, "starter-core"),
                      ("ground", 40, "starter-core"), ("icarus", 40, "starter-core")]
+    elif args.stage == "capstone":
+        scenarios = [(name, 100, "temporal-trained") for name in ("icarus", "offense", "sustain")]
     elif args.stage == "warden":
         scenarios = WARDEN_CASES
     else:
