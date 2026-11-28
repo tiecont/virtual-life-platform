@@ -152,3 +152,55 @@ export async function verifyGhostAdvancedReceipts(pool,directory,published,fixtu
  const verified={candidate,match,mapAccess:fixture.purpose,clearedMapFixture:fixture.mapClear,samples,receipts,frames};
  await writeFile(join(directory,'solo-shared-frost-astral-verification.json'),JSON.stringify(verified,null,2)+'\n',{mode:0o600});
 }
+
+export async function verifyGhostUltimateReceipt(pool,directory,published,fixture,bundle,candidate){
+ const read=async name=>JSON.parse(await readFile(join(directory,name),'utf8'));
+ const player=await read('native-facts.json');
+ const sample=await read('ultimate-receipt.json');
+ assert.equal(player.status,'ok');
+ assert.equal(player.ruleset,'arena8-functional-pve');
+ assert.equal(player.participantCount,1);
+ assert.equal(sample.matchId,player.matchId);
+ assert.equal(sample.version,player.version);
+ assert.equal(sample.configDigest,published.digest);
+ assert.equal(sample.version,sample.beforeVersion+1);
+ assert.equal(sample.guardTurns,sample.beforeVersion-1);
+ assert.equal(sample.turnTimeoutMilliseconds,15000);
+ assert.equal(sample.refreshSuppressed,true);
+ assert.equal(sample.hudLabel,'Ultimate Skill');
+ const pet=bundle.pets.find(row=>row.id===sample.pet);
+ const ultimate=bundle.skills.find(row=>row.id===pet.ultimate);
+ assert.equal(sample.ability,ultimate.id);
+ assert.equal(sample.rageBefore,ultimate.rageCost);
+ assert.ok(sample.rageAfter<sample.rageBefore);
+ assert.equal(sample.cooldownBefore,0);
+ assert.ok(sample.cooldownAfter>0&&sample.cooldownAfter<=ultimate.cooldownTurns);
+ assert.ok(sample.bossHealthAfter<sample.bossHealthBefore);
+
+ const {rows:[receipt]}=await pool.query(
+  `SELECT m.account_id,m.content_hash,m.functional_config_version::int AS version,m.functional_config_digest AS digest,
+     m.functional_allocation->>'bossId' AS encounter,r.actor_id,encode(r.receipt_hash,'hex') AS hash,
+     (SELECT count(*)::int FROM game_native_receipts all_receipts WHERE all_receipts.match_id=m.match_id) AS receipt_count
+   FROM platform_native_arena8_matches m JOIN game_native_receipts r ON r.match_id=m.match_id
+   WHERE m.match_id=$1 AND r.command_id=$2 AND r.committed_version=$3`,
+  [sample.matchId,commandUuid(sample.receiptId),sample.version]);
+ assert.equal(receipt.account_id,fixture.accountId);
+ assert.equal(receipt.actor_id,fixture.accountId);
+ assert.equal(receipt.content_hash,sample.contentHash);
+ assert.equal(receipt.version,published.version);
+ assert.equal(receipt.digest,published.digest);
+ assert.equal(receipt.encounter,encounter);
+ assert.equal(receipt.receipt_count,sample.version);
+
+ const frames=[];
+ for(const name of ['ultimate-solo-01-ready.png','ultimate-solo-02-committed.png']){
+  const image=await readFile(join(directory,name));
+  assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+  assert.equal(image.readUInt32BE(16),1280);
+  assert.equal(image.readUInt32BE(20),720);
+  frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
+ }
+ assert.notEqual(frames[0].sha256,frames[1].sha256);
+ await writeFile(join(directory,'solo-shared-ultimate-verification.json'),
+  JSON.stringify({candidate,receipt,mapAccess:fixture.purpose,sample,frames},null,2)+'\n',{mode:0o600});
+}

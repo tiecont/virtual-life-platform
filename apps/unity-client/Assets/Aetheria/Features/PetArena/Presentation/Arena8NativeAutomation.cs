@@ -51,6 +51,11 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
+                if (NativeArgument("-aetheria-arena8-shared-ultimate"))
+                {
+                    await CaptureCommittedUltimate();
+                    return;
+                }
                 if (NativeArgument("-aetheria-arena8-shared-frost-astral"))
                 {
                     await CaptureNaturalFrostAndAstral();
