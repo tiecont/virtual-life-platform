@@ -1160,11 +1160,11 @@
     {
       "id": "VL-171",
       "campaignV3Verification": {
-        "sourceRevision": "c3b71d8856a709c656a88eaffd83b0766464212b",
-        "command": "node scripts/unity-validate.mjs tests",
+        "sourceRevision": "8c252e592234a25faeb3b53da86ffdd3e1c5c430",
+        "command": "Installed Unity Editor -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.CinematicStudioTests",
         "exitCode": 0,
-        "result": "Cinematic Studio editor compiled with Timeline 1.8.12. Intro, skill, ultimate and reveal tracks can bind an imported model and clip. Production capture and model approval remain open.",
-        "evidence": "artifacts/unity/2026-11-28T09-08-27-686Z-48e86c1e/result.json"
+        "result": "All five cases passed. Four saved and reloaded Timeline compositions animated only the bound synthetic model. Existing assets survive reuse and scene director replacement. Canonical Icarus capture awaits H1.",
+        "evidence": "artifacts/campaign-v3/cinematic-studio-8c252e59-results.xml"
       },
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
@@ -10794,11 +10794,11 @@
     {
       "id": "VL-198",
       "campaignV3Verification": {
-        "sourceRevision": "1f319c737fd55f9bee541db65f033c779ce2a665",
-        "command": "aetheria-game-runtime --check-gameplay-config <bundle>",
+        "sourceRevision": "ec4b2cfe598069c83998c9fc54201f85396abe0f",
+        "command": "sha256sum provider-master.png reference-jewels.png FunctionalGems.png; packaged Linux Fire screenshot inspection",
         "exitCode": 0,
-        "result": "Accepted source bundles for schemas 1 through 5. Active allocations keep their immutable configuration.",
-        "evidence": "artifacts/campaign-v3/qa-rust-cli-1f319c73.log"
+        "result": "The approved two R04 masters match their hashes. The nine-sprite atlas preserves the approved image content. Native 720p and 1080p Fire captures show the six basic jewels. H1 model approval and media rights remain separate.",
+        "evidence": "specs/media/hydrogen-production.md"
       },
       "mvpMilestone": "M4",
       "mvpCriticalPath": true,
