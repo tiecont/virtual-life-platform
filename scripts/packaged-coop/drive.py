@@ -1,10 +1,11 @@
 from pathlib import Path
 from os import environ
-from PIL import Image
+from PIL import Image, ImageOps
 from board_capture import board_bounds, cell_center, enabled_action_frames, populated_board
 from subprocess import run
-from time import monotonic, sleep
+from time import monotonic, sleep, time_ns
 import json
+from math import hypot, radians, tan
 import sys
 from io import BytesIO
 from shutil import copyfile
@@ -23,7 +24,7 @@ def center_band(top, bottom, half_width=170):
 def capture(name):
     # A hovered jewel opens a tooltip over the board frame. Observe the HUD
     # with the pointer parked in the window margin between real clicks.
-    if stage in ('first', 'recover', 'resume', 'water'):
+    if stage in ('first', 'recover', 'resume', 'water', 'shared-board', 'four-battle'):
         run(['python3', root / 'x11.py', 'move', '3', '3'], check=True)
         sleep(.15)
     run([root / 'capture.sh', name], check=True)
@@ -68,6 +69,26 @@ def word_button(image, words, box, mode='11'):
             return box[0]+(x+width//2)//2, box[1]+(y+height//2)//2
     return None
 
+def join_button(image, field_y):
+    # Start from the observed Room id label and read only the next button row.
+    # Sparse OCR across the UUID form may discard the short Join label.
+    row = center_band(field_y + 29, field_y + 58, 110)
+    position = word_button(image, {'join'}, row, mode='7')
+    if position:
+        return position, 'single-line-word'
+
+    # Some versions omit per-word boxes for this small label. A separate
+    # raw-line pass can still recognize both words before using the row center.
+    heard = ocr(image, row, mode='13').strip().lower()
+    if re.search(r'\bj[o0]in\s+r[o0][o0]m\b', heard):
+        return (screen_middle, (row[1] + row[3]) // 2), 'single-line-text'
+
+    # A different UI scale can shift the row. Use the recognized word's
+    # coordinates in the wider vertical band rather than a blind click.
+    position = word_button(image, {'join'}, center_band(field_y + 17, field_y + 75, 124), mode='11')
+    return (position, 'visible-row-fallback') if position else None
+
+
 def start_button(image):
     # Start spans the viewport above the footer. Excluding the surrounding scene
     # lets single-line OCR read the label on both compact and desktop panels.
@@ -111,6 +132,26 @@ def live_turn(image):
     heard = ocr(image, (middle - 200, 6, middle + 200, 32)).lower()
     match = re.search(r'turn\s+([0-9o]+).*?seat\s+([0-9o]+)', heard)
     return tuple(int(value.replace('o', '0')) for value in match.groups()) if match else None
+
+def shared_hud_turn(image):
+    with Image.open(image) as frame:
+        middle = frame.width // 2
+        hud = frame.crop((middle - 160, 7, middle + 160, 30)).convert('L')
+    # A small light-on-dark UI Toolkit label sits above a textured viewport.
+    # Isolate the light text, then give the OCR line a clean white margin.
+    hud = hud.resize((hud.width * 4, hud.height * 4), Image.Resampling.BICUBIC)
+    hud = ImageOps.expand(hud.point(lambda value: 0 if value >= 125 else 255), border=18, fill=255)
+    data = BytesIO()
+    hud.save(data, format='PNG')
+    args = ['tesseract', 'stdin', 'stdout', '--tessdata-dir', environ['PACKAGED_QA_TESSDATA'], '--psm', '7']
+    heard = run(args, input=data.getvalue(), capture_output=True, check=True).stdout.decode().strip()
+    # The centered dot may be read as punctuation or attach to the preceding
+    # glyph. Accept joined label/digit text and normalize zero-shaped glyphs.
+    match = re.search(r'\bturn\s*([0-9oq]+)[^a-z0-9]*seat\s*([0-3oq])(?=\W|$)', heard.lower())
+    if match:
+        return tuple(int(value.translate(str.maketrans('oq', '00'))) for value in match.groups()), heard
+    return None, heard
+
 
 def pending(data):
     state=data['state']
@@ -219,8 +260,180 @@ def room_ready(map_name, filename):
         sleep(.4)
     raise RuntimeError(f'{map_name} Start match did not become enabled')
 
+def plaza_position(image):
+    # Use the visible orange avatar body and the authored static Plaza camera
+    # to recover ground position. Holding a key for a fixed second count
+    # under four renderers can leave clients on the neighboring bench collider.
+    with Image.open(image) as frame:
+        sampled = frame.convert('RGB').resize((screen_width // 2, screen_height // 2))
+        points = []
+        for y in range(80, sampled.height-18):
+            for x in range(30, sampled.width-30):
+                red, green, blue = sampled.getpixel((x,y))
+                if red >= 228 and 91 <= green <= 182 and blue <= 72:
+                    points.append((2*x,2*y))
+    if len(points) < 8:
+        return None
+    # The projected avatar is compact even at the front of the plaza. Use
+    # the median to reject isolated warm pixels from distant portal props.
+    x = sorted(point[0] for point in points)[len(points)//2]
+    y = sorted(point[1] for point in points)[len(points)//2]
+    camera_length = hypot(14.3,24.5)
+    slope, forward_z = 14.3/camera_length, 24.5/camera_length
+    focal = (screen_height/2) / tan(radians(22.5))
+    vertical = (screen_height/2-y) / focal
+    dy = .95-15.5
+    dz = -(forward_z + slope*vertical)*dy/(slope-forward_z*vertical)
+    depth = -slope*dy+forward_z*dz
+    return (x-screen_middle)*depth/focal, dz-22.5
+
+def walk_four_client_to_fire():
+    # Follow the outer west lane, then turn inward while south of the north
+    # bench. Accept the actual portal label before interacting through E.
+    waypoints = [(0,-10.2),(1,4.6),(0,-8.1),(1,6.6)]
+    for index, (axis, target) in enumerate(waypoints):
+        for attempt in range(14):
+            image = capture(f'03-plaza-waypoint-{index}')
+            prompt = ocr(image,(24,88,415,120),'7').lower()
+            if re.search(r'\bcinder\s+terraces\b',prompt):
+                copyfile(image,output/'03-plaza-fire-sign.png')
+                key('e',.18)
+                return
+            position = plaza_position(image)
+            if position is None:
+                # The fire arch can cover the figure a frame before or after
+                # its entry prompt. Step south to get the marker back in view.
+                key('s',.30)
+                sleep(.4)
+                continue
+            error = target-position[axis]
+            if abs(error) < .42:
+                break
+            negative, positive = ('a','d') if axis == 0 else ('s','w')
+            key(negative if error < 0 else positive, min(1.3,max(.24,abs(error)/4.2)))
+            sleep(.4)
+        else:
+            raise RuntimeError(f'Plaza waypoint {index} stalled around {position}')
+    text('03-plaza-fire-sign','cinder terraces',(24,88,365,120))
+    key('e',.18)
+
 stage = sys.argv[1]
-if stage == 'fire':
+if stage == 'read-plaza-position':
+    for image in sys.argv[2:]:
+        point = plaza_position(Path(image))
+        description = f'x={point[0]:.2f} z={point[1]:.2f}' if point else 'figure occluded'
+        print(f'{Path(image).name}: {description}', flush=True)
+elif stage == 'read-shared-label':
+    for image in sys.argv[2:]:
+        visible, heard = shared_hud_turn(image)
+        print(f'{Path(image).name}: {visible} {heard}', flush=True)
+elif stage == 'read-join-button':
+    for filename in sys.argv[2:]:
+        image = Path(filename)
+        room_id = word_button(image, {'room'}, (0, 315, 160, 430))
+        result = join_button(image, room_id[1]) if room_id else None
+        if not result:
+            raise RuntimeError(f'Join room was not recognized in {image.name}')
+        position, method = result
+        print(f'{image}: field_y={room_id[1]} x={position[0]} y={position[1]} method={method}', flush=True)
+elif stage == 'four-lobby':
+    seat = int(environ['PACKAGED_QA_SEAT'])
+    shared = output.parent
+    label('01-guest-login','guest',center_band(74,116,65), tries=45)
+    click(screen_middle,96)
+    click(*label('02-plaza','collection',collection, tries=45))
+    click(*label('02b-owned-collection','back',plaza_back))
+    sleep(.45)
+    walk_four_client_to_fire()
+    label('03-fire-portal','coalwhisk',pet_selection, tries=45)
+    if seat == 0:
+        click(*label('04-host-room','create',head))
+    else:
+        until = monotonic() + 100
+        while not (shared/'room-id').is_file() and monotonic() < until:
+            sleep(.25)
+        room_id = (shared/'room-id').read_text().strip()
+        assert re.fullmatch(r'[a-f0-9-]{36}', room_id)
+        room_label = label('04-join-form','room',(0,315,160,430))
+        click(max(220,screen_middle//2),room_label[1])
+        run(['python3', root/'x11.py', 'replace-text', room_id], check=True)
+        (position, method), _ = wait_for('04-join-form-filled', lambda image: join_button(image, room_label[1]))
+        print(f'Join room recognized at x={position[0]} y={position[1]} ({method}, field_y={room_label[1]})', flush=True)
+        click(*position)
+    def visible_seat(img):
+        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,225,360,286),'6').lower())
+        return match.group(1) if match else None
+    assigned, _ = wait_for('05-assigned-lobby-seat', visible_seat)
+    (output/'assigned-seat').write_text(assigned + '\n')
+    click(*label('06-ready','ready',center_band(265,319)))
+elif stage == 'four-host-room-start':
+    def ready_start(img):
+        start = word_button(img, {'start'}, center_band(315,360))
+        if start and min(Image.open(img).convert('RGB').getpixel((40,start[1]))) >= 130:
+            return start
+        refresh = word_button(img, {'refresh'}, center_band(360,399))
+        if refresh:
+            click(*refresh)
+        return None
+    click(*wait_for('07-fully-ready-room',ready_start, tries=45)[0])
+elif stage == 'four-battle':
+    seat = int(environ['PACKAGED_QA_SEAT'])
+    condition = lambda name: (output.parent / name).is_file()
+    until = monotonic() + 100
+    while not condition('four-allocation.json') and monotonic() < until:
+        sleep(.25)
+    assert condition('four-allocation.json'), 'Missing actual room allocation'
+
+    def admit(img):
+        if 'cooperative' in ocr(img, (0,0,290,34), '7').lower():
+            # Refresh moves from y379 to y336 when the server marks the room
+            # started. Enter then occupies y379. Read complete, centered rows.
+            for top in (360, 317, 403):
+                row = center_band(top, top + 37, 170)
+                enter = word_button(img, {'enter'}, row, mode='7')
+                if enter:
+                    click(*enter)
+                    return
+            for top in (360, 317):
+                refresh = word_button(img, {'refresh'}, center_band(top, top + 37), mode='7')
+                if refresh:
+                    click(*refresh)
+                    return
+            return None
+        if recover := status_button(img):
+            click(*recover)
+            return None
+        return start_button(img) if seat == 0 else None
+
+    if seat == 0:
+        wait_for('08-native-admission', admit, tries=45)
+        until = monotonic() + 100
+        while not condition('four-native-ready.json') and monotonic() < until:
+            admit(capture('08a-waiting-for-native-members'))
+            sleep(.4)
+        assert condition('four-native-ready.json'), 'Missing four actual player tickets'
+        start, _ = wait_for('08b-native-start', admit, tries=40)
+        print(f'Client 0: Start battle at {start}', flush=True)
+        click(*start)
+
+    def board_evidence(img):
+        board = populated_board(img)
+        if board is not None:
+            turn, _ = shared_hud_turn(img)
+            if turn is not None:
+                return board, turn
+        if seat != 0:
+            admit(img)
+        return None
+
+    (board, turn), image = wait_for('09-native-jewel-board', board_evidence, tries=80)
+    (output/'board.json').write_text(json.dumps({
+        'clientSlot': seat, 'assignedSeat': int((output/'assigned-seat').read_text()),
+        'picture': image.name, 'bounds': list(board),
+        'visibleTurn': turn[0], 'visibleActiveSeat': turn[1],
+        'capturedUnixMs': time_ns() // 1_000_000,
+    }) + '\n')
+elif stage == 'fire':
     label('01-guest-login','guest',center_band(74,116,65))
     click(screen_middle,96)
     collection_button=label('02-plaza','collection',collection)
@@ -331,6 +544,115 @@ elif stage == 'water':
     else:
         wait_for('21-water-equipped-native-hud', enter_or_start, tries=28)
         (output/'water-hud-observed').touch()
+
+elif stage == 'shared-board':
+    clicks = []
+
+    def click_record(action, position, cell=None):
+        record = {'action': action, 'position': list(position), 'unixMs': time_ns() // 1_000_000}
+        if cell is not None:
+            record['cell'] = cell
+        click(*position)
+        record['sentUnixMs'] = time_ns() // 1_000_000
+        clicks.append(record)
+        (output / 'shared-input.json').write_text(json.dumps(clicks, indent=2) + '\n')
+
+    for attempt in range(14):
+        image = capture('05-shared-native-admission')
+        if recover := status_button(image):
+            click_record('reconnect', recover)
+            sleep(.7)
+            continue
+        if start := enter_or_start(image):
+            click_record('start', start)
+            try:
+                initial = expect('shared-started', lambda result: result['version'] == 1, timeout=2)
+                break
+            except RuntimeError:
+                sleep(.3)
+    else:
+        raise RuntimeError('Shared jewel Start did not commit from the packaged HUD')
+
+    def capture_candidate(name, attempt):
+        image = capture(f'{name}-attempt-{attempt:02d}')
+        return image, time_ns() // 1_000_000, populated_board(image)
+
+    def qualified_frame(name, captures, projection):
+        state = projection['state']
+        target = (state['turn'], state['activeSeat'])
+        began = state['turnDeadlineUnixMs'] - state['turnTimeoutMs']
+        for image, captured_at, board in captures:
+            if board is None or not began <= captured_at < state['turnDeadlineUnixMs']:
+                continue
+            visible, heard = shared_hud_turn(image)
+            print(f'Window {image.name} visible={visible} OCR={heard!r}', flush=True)
+            if visible == target:
+                copyfile(image, output / f'{name}.png')
+                return {'turn': visible[0], 'activeSeat': visible[1], 'capturedUnixMs': captured_at, 'hudText': heard}
+        raise RuntimeError(f'Expected a visible populated board {target} captured within its deadline for {name}')
+
+    assert initial['state']['activeSeat'] == 0 and initial['state']['turn'] == 0
+    start_name = '06-shared-board-start'
+    for attempt in range(1, 7):
+        opening = capture_candidate(start_name, attempt)
+        _, captured_at, board = opening
+        if captured_at >= initial['state']['turnDeadlineUnixMs']:
+            raise RuntimeError('Shared jewel opening expired before a populated board could be captured')
+        if board is not None:
+            break
+    else:
+        raise RuntimeError('Expected a populated shared jewel opening')
+    for cell in (initial['move']['first'], initial['move']['second']):
+        click_record('swap-cell', cell_center(board, cell), cell)
+        sleep(.24)
+
+    # Capture live while the observer reads its authorized projection and
+    # verifies the durable receipt. OCR runs after both input clicks.
+    swap_name = '07-shared-board-host-swap'
+    swap_captures = []
+    observed_at_attempt = None
+    for attempt in range(1, 9):
+        swap_captures.append(capture_candidate(swap_name, attempt))
+        if observed_at_attempt is None and read('shared-swapped'):
+            observed_at_attempt = attempt
+        if observed_at_attempt is not None and attempt - observed_at_attempt >= 2:
+            break
+    swapped = expect('shared-swapped', lambda result: result['version'] == 2, timeout=3)
+    frames = {
+        'start': qualified_frame(start_name, [opening], initial),
+        'afterHostSwap': qualified_frame(swap_name, swap_captures, swapped),
+    }
+    (output / 'shared-visible-frames.json').write_text(json.dumps(frames, indent=2) + '\n')
+    (output / 'shared-swap-observed').touch()
+
+    if environ.get('PACKAGED_QA_SCOPE') == 'feedback':
+        for attempt in range(1, 7):
+            name = f'feedback-{attempt}'
+            deadline = monotonic() + 32
+            while not (turn := read(name)):
+                if read('feedback-finished'):
+                    break
+                if monotonic() >= deadline:
+                    raise RuntimeError(f'No next authenticated host turn for {name}')
+                sleep(.12)
+            if not turn:
+                break
+            assert turn['state']['activeSeat'] == 0
+            # Wait for the new visible turn before dispatching either cell.
+            while time_ns() // 1_000_000 < turn['state']['turnDeadlineUnixMs']:
+                image = capture(name + '-before')
+                board = populated_board(image)
+                visible, _ = shared_hud_turn(image)
+                if board is not None and visible == (turn['state']['turn'], 0):
+                    break
+            else:
+                raise RuntimeError(f'{name} expired before the packaged host had the board')
+            for cell in (turn['move']['first'], turn['move']['second']):
+                click_record(name + '-cell', cell_center(board, cell), cell)
+                sleep(.20)
+            capture(name + '-after')
+            (output / (name + '-observed')).touch()
+
 
 elif stage=='first':
     for attempt in range(14):

@@ -34,8 +34,9 @@ namespace Aetheria.PetArena.Presentation
             {
                 var connection = new NativeConnection(admission.WssOrigin, admission.HttpsOrigin,
                     admission.ContentHash, admission.BootId, admission.TicketAsync, clientBuild: admission.ClientBuild);
+                var expectedRoute = encounter.StartsWith("recruit-", StringComparison.Ordinal) ? encounter : null;
                 session = new CoopNativePlaySession(platform, connection, admission.MatchId,
-                    CoopNativeView.FunctionalSoloRuleset);
+                    CoopNativeView.FunctionalSoloRuleset, expectedRoute);
                 await session.ConnectAsync(lifetime.Token);
 
                 functionalSession = session;

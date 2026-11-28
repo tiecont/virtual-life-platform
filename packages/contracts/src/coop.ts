@@ -34,6 +34,15 @@ const coopEncounter=coopHosting.extend({
  recruitment:z.strictObject({regularPetIds:z.array(CoopPetIdSchema),legendaryPetId:CoopPetIdSchema.nullable()}).nullable(),
 });
 export const CoopEncounterCatalogSchema=z.strictObject({ruleset:CoopRulesetSchema,configVersion,points:accumulatedPoints,encounters:z.array(coopEncounter).max(6)});
+export const CampaignRouteCatalogSchema=z.strictObject({
+ ruleset:CoopRulesetSchema,configVersion,
+ routes:z.array(z.strictObject({
+  id:CoopBossIdSchema,mapId:CoopPetIdSchema,opponentPetId:CoopPetIdSchema,
+  tier:z.enum(['entry','advanced','boss']),name:displayName,mode:z.enum(['solo','either']),
+  prerequisiteEncounterId:CoopBossIdSchema.nullable(),cleared:z.boolean(),
+  canEnterSolo:z.boolean(),canHostCoop:z.boolean(),
+ })).max(48),
+});
 export const CoopCreateRoomSchema=z.strictObject({requestId,bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional(),petId:CoopPetIdSchema.optional(),ownedPetInstanceId:z.uuid().optional()});
 export const CoopJoinRoomSchema=z.strictObject({requestId,mapId:CoopPetIdSchema.optional()});
 export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema,ownedPetInstanceId:z.uuid().optional()});
@@ -46,7 +55,7 @@ export const CoopRewardReceiptSchema=z.strictObject({
 });
 export const CoopAdmissionCommandSchema=z.strictObject({});
 export const CoopAdmissionViewSchema=z.strictObject({
- clientBuild:z.literal('unity-native-v3').optional(),
+ clientBuild:z.enum(['unity-native-v3','unity-native-v4']).optional(),
  roomId:z.uuid(),bossId:CoopBossIdSchema,matchId:z.uuid(),bootId:z.uuid(),accountId:z.uuid(),seat:seatNumber,
  wssUrl:z.string().min(10).max(512),httpsOrigin:z.string().url(),
  ticket:z.string().min(20).max(8192),expiresAt:z.iso.datetime(),

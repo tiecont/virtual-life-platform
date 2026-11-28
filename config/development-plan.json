@@ -948,6 +948,8 @@
     },
     {
       "id": "VL-170",
+      "campaignLocalStorageQualification": {"sourceRevision": "15c8bb04535ce6593d89b337b3d9a9b17dc5550f", "verifiedScope": "Sixteen governance tests passed. A disposable loopback MinIO with synthetic fixtures returned anonymous private 403, public 200 and authenticated SHA-256 match. Hosted private staging remains unavailable."},
+      "campaignV4November28Qualification": {"sourceRevision": "ed93788f27355533fdec0f0b4292641d8f96f495", "verifiedScope": "Private stage/verify matched 31 local files, 6094890 bytes. No upload."},
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -1159,6 +1161,24 @@
     },
     {
       "id": "VL-171",
+      "icarusOwnerWingSource": {
+        "url": "https://studio.tripo3d.ai/workspace/segmentation/a061ea26-294a-49f9-89f8-e4954ed11c21",
+        "taskId": "a061ea26-294a-49f9-89f8-e4954ed11c21",
+        "sourceSha256": "be86f92ab8aff6e22e9a3f7f9a8e355305aa0f7b7329926f800be2d7605f4524",
+        "reviewedDerivativeSha256": "b7e97b488368bc0d26ae1984259f036573b4237513ddb318479409b8d7251c84",
+        "scope": "The owner locked the open silhouette of this exact source and rejected the 3f5d9af1 single-mesh fold and Unity appearance. Rework feather segmentation, articulation and both-sided color fidelity on the existing 788288-triangle Tripo mesh. The newly generated alternate wing concept is withdrawn. Next H2 requires owner review."
+      },
+      "icarusBodyMotionCorrection": {
+        "chin": "9bfbae76 direct Unity original-vs-candidate, 40 walk samples, chin p95 head-relative drift 5.90 to 1.31 mm, pitch probe 9.39 to 2.66 mm. Four matching rendered close-ups.",
+        "arms": "6802bc38 private eight-degree shoulder clearance clip reduced maximum arm-skirt triangle crossings from 92 to zero over 32 walk samples. Leg crossings remain.",
+        "pelvis": "0f04483f Unity private candidate: 17413 measured edges, worst stretch 22.35x to 1.75x and 93 to zero edges above twice rest length. Leg-skirt crossings remain at up to 75 pairs."
+      },
+      "icarusTripoMotionReview": {
+        "sourceRevision": "479de194",
+        "command": "Blender 5.3 blender_icarus_accessory_motion.py on pinned Tripo exports",
+        "result": "Exported textured BowDrawRelease and WingSpreadBeatFold with animated morph weights. Bow retains all 40 original string vertices. Both private GLBs and 24 fps preview videos produced. No additional provider credits.",
+        "remaining": "Fit to the actual original VRM in Unity and review hand contact, clothing occlusion, chin stability and modular turnaround with the owner."
+      },
       "campaignV3Verification": {
         "sourceRevision": "8c252e592234a25faeb3b53da86ffdd3e1c5c430",
         "command": "Installed Unity Editor -batchmode -nographics -runTests -testPlatform EditMode -testFilter Aetheria.Tests.CinematicStudioTests",
@@ -10517,6 +10537,15 @@
     },
     {
       "id": "VL-192",
+      "campaignV4November28Qualification": {"sourceRevision": "5da701bdce8ee82b44192db8da2745c9a2a42242", "verifiedScope": "Authenticated operator UI round trip including cyclic rejection, publication, refreshed MFA and audited rollback returned 200 in disposable PostgreSQL."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "a97cc95a2c7a6cf699bcdfc2c9db628c6ef57497", "verifiedScope": "Chromium operator edits, invalid correction, publication, immutable digest check, rollback audit PASS."},
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "node scripts/admin-gameplay-publication.mjs --shared-admin",
+        "exitCode": 0,
+        "result": "Chromium and PostgreSQL confirmed operator authorization, 422 for mirror 99%, successful correction and new publication with the original immutable digest preserved.",
+        "evidence": "artifacts/campaign-v4/qa-shared-admin-f9e5b780.log"
+      },
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -10835,6 +10864,7 @@
     },
     {
       "id": "VL-199",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-2bXjXhkf", "result": "Four authenticated sessions, three healthy HUDs; client 3 showed Reconnect and transport close PolicyViolation. No four-seat turn rotation qualified."},
       "mvpMilestone": "M3",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -11083,6 +11113,14 @@
     },
     {
       "id": "VL-202",
+      "campaignV4ContinuationVerification": {"sourceRevision": "a8e19d537c320a1b61deb8ad3dc35f49d6cce074", "verifiedScope": "Actual solo and cooperative WSS two-phase route wins, gating, member-bound rewards, one recruitment and idempotent retries PASS. All 48 independent authored profiles pass engine validation. Broader map traversal underway."},
+      "campaignV4Verification": {
+        "sourceRevision": "66af0a44b1c531d831467b8e9cfe9b722c79cef6",
+        "command": "node --test scripts/campaign-v4-content.test.mjs",
+        "exitCode": 0,
+        "result": "Five candidate-roster tests passed. 61 identities and 245 bound abilities. 48 map opponents remain gated.",
+        "evidence": "artifacts/campaign-v4/qa-roster-66af0a44.log"
+      },
       "mvpMilestone": "M3",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11131,6 +11169,14 @@
     },
     {
       "id": "VL-203",
+      "campaignV4ContinuationVerification": {"sourceRevision": "f675c641ba7b443fcc44fafdd2aead74c8a7d422", "verifiedScope": "Hosted architecture failure diagnosed. Local architecture and Portal production build passed after moving shared localization to specs."},
+      "campaignV4Verification": {
+        "sourceRevision": "973c55a619eac42014f814b01557547738463191",
+        "command": "node scripts/admin-gameplay-publication.mjs --shared-coop --direct",
+        "exitCode": 0,
+        "result": "Four-seat WSS restart preserved pinned schema 6 digest, canonical board, absolute deadline and sealed receipt even after replacement publication.",
+        "evidence": "artifacts/campaign-v4/qa-recovery-973c55a6.log"
+      },
       "campaignV3Verification": {
         "sourceRevision": "fda59517be8b4cbf3bd7ec08f13374897439bb59",
         "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop",
@@ -11229,6 +11275,14 @@
     },
     {
       "id": "VL-204",
+      "reviewBranchQualification": {"branch": "codex/character-performance", "sourceRevision": "eb9a8165", "evidence": "artifacts/character-performance/hem-evidence/ribbon-review/icarus-motion-review.json", "result": "The source-matched Icarus ornament and side ribbon derivative closes the visible holes at 10% and 60% of the supplied walk. Broad Body strain check remains false. Fixed-socket bow e32402e8 still intersects fingers. H2 open."},
+      "campaignV4Verification": {
+        "sourceRevision": "e1deb43654fef592569b241624fc0d5c7ec37cb2",
+        "command": "Aetheria.Editor.IcarusCharakuruMotionReview.Verify (direct Unity 6000.3.14f1 batchmode, existing Charakuru walk)",
+        "exitCode": 0,
+        "result": "54 mapped humanoid bones and 11 actual skinned meshes. Timeline sampled a 1.292-second authored walk. Maximum mapped joint difference 36.40 degrees and measured skinned vertex displacement 0.4874 m. Four private OpenGLCore URP frames had zero near-white foreground pixels.",
+        "evidence": "artifacts/campaign-v4/icarus-motion-e1deb436-gpu/icarus-motion-review.json"
+      },
       "mvpMilestone": "M2",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11248,7 +11302,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
+      "remaining": "Use the existing Charakuru Icarus export f1d2b65d as the development baseline. Qualify retargeting and runtime use of the existing rig. H1 R3 is a separate historical face/hair proposal; new visual changes and release rights retain their own gates.",
       "implementation": {
         "reviewCandidateStorage": {
           "sourceRevision": "c7c7ea9fc03204009abe70a118306a843f34f906",
@@ -11276,6 +11330,9 @@
     },
     {
       "id": "VL-205",
+      "campaignPrivateEyeQualification": {"sourceRevision": "5bdf49ce", "verifiedScope": "Original Charakuru VRM 10-degree single-eye probes in the real Unity Editor moved 84 left / 92 right skin vertices, up to 2.10 / 2.70 mm. All 18 existing expression presets remain unbound."},
+      "campaignV4CandidateReview": {"sourceRevision": "3035d7a85a28a86ff59713e50cd70e289ee18151", "verifiedScope": "Ignivar and Cinderquill original GLBs verified, 11016 and 8386 triangles respectively, reference hashes and Tripo jobs recorded. No UVs, textures, rig or motion. Coalwhisk/Warden importer and animation probes passed at 33bb547a."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "9d824f915549d28e91cce7dd8ef0e5a000d0637c", "verifiedScope": "Blender 5.3 reimport and action deformation passed for Coalwhisk and Cinder Warden. Prototype material and silhouette review remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11301,6 +11358,8 @@
     },
     {
       "id": "VL-206",
+      "campaignV4November28Qualification": {"sourceRevision": "fbeb2b46838cfb0063ff1782e44e293833087886", "verifiedScope": "Real accessory Recorder exited 0 after 30 frames. Eight local score audition files matched their source checksums."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "7c1c364fc997df7c78b679bb69b068a2a3921658", "verifiedScope": "Existing model and motion recorded via Cinemachine 3.1.8 and Unity Recorder 5.1.8, 30 frames at 24 fps, 720\u00d7720, 1.25 s. Neutral face and expression inventory verified separately. Accessory and expression qualification remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
       "mvpCriticalPath": true,
@@ -11553,6 +11612,15 @@
     },
     {
       "id": "VL-210",
+      "reviewBranchQualification": {"branch": "codex/v4-parallel-integration", "sourceRevision": "5616845f", "evidence": "artifacts/campaign-v4/feedback-capture-qa/artifacts/packaged-coop-runs/run-suc5d4ie/board-acceptance.json", "result": "One packaged Linux player and three protocol peers: board acceptance PASS, Heart move v6 linked to turn 5. No visible effect trace, post-turn-12 or natural Frost/Astral qualification."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
+        "exitCode": 0,
+        "result": "Packaged Fire board and host swap passed at 720p, 1080p, 1440p and 2160p. Unity executable at this source, Rust binary baf6b7dc; fixture waived Fire entry points.",
+        "evidence": "artifacts/packaged-coop-runs/run-5CTRMycE/board-acceptance.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "e038a40418548e5ce91399ee08730f119d818c19",
         "command": "PACKAGED_QA_BOARD=advanced-water PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",
@@ -11636,6 +11704,16 @@
     },
     {
       "id": "VL-211",
+      "campaignV4CandidateReview": {"sourceRevision": "ddfe5dbdc70c390ecaa12f958c8a6cbadf8abf47", "verifiedScope": "349adf3a\u2026 six-region fixed candidate passed Rust validation. In 3456 matched-cohort samples across two configurations, co-op won 20 times, solo once, and vitality-only controls had zero wins. No unresolved matches or production changes."},
+      "campaignV4November28Qualification": {"sourceRevision": "93c64cf224e34b1062db5e0eed3091f079be4529", "verifiedScope": "Quarter-vitality candidate yielded seven level-cap co-op Warden wins across 96 samples, versus zero baseline. Candidate remains unpublished."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "7950040eae45ebc555d6d36570d78433f340c7dc", "verifiedScope": "Two paired solo regular control cohorts won all 384 samples apiece. No Warden victories. Unpublished survival candidate improved cooperative phase reach."},
+      "campaignV4Verification": {
+        "sourceRevision": "578944f5958d66c624255a43cd54c09ceee1324c",
+        "command": "python3 scripts/coop-balance-study.py (three distributions, seed pairs 6001–6002 and 7001–7002; high-tier 8001–8003)",
+        "exitCode": 0,
+        "result": "4,032 baseline/variant matches resolved. The additional 1,584 geared and trained matches yielded zero wins. Candidate remains unpublished.",
+        "evidence": "artifacts/campaign-v4/study-7001-final/summary.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "9f0aecdd6a1df9ffdad8dc70d16cd2ca083ed98e",
         "command": "scripts/coop-balance-study.py (discovery 4001–4002; holdout 5001–5002)",
@@ -11730,6 +11808,15 @@
     },
     {
       "id": "VL-212",
+      "campaignV4November28Qualification": {"sourceRevision": "1e4a6cbd0ecc699a797f391bcb32adb5bfb8ab03", "verifiedScope": "All 48 account route eligibility gates and six real authenticated two-phase WSS wins, exact replay and outsider isolation passed. Historical migrations through 0073 and actual packaged shared solo at af625941 passed."},
+      "campaignV4ContinuationVerification": {"sourceRevision": "306aa09a1b7c0fdeb802008af02eb2e27c2d00cf", "verifiedScope": "New four-process harness verifies window, seat-bound ticket, room and board for each process. Exact-source packaged runtime verification pending."},
+      "campaignV4Verification": {
+        "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
+        "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng bash scripts/packaged-coop/run.sh",
+        "exitCode": 0,
+        "result": "One real Linux player and three authenticated protocol peers. Actual captures, journal fingerprints, turn captions and process samples at four resolutions. Four-human playtest remains outstanding.",
+        "evidence": "artifacts/packaged-coop-runs/run-Q5Ro5QnE/board-acceptance.json"
+      },
       "campaignV3Verification": {
         "sourceRevision": "1aae6433520bb1a2b0d968b6f1948cf5700eef10",
         "command": "PACKAGED_QA_SCOPE=board PACKAGED_QA_SIZE=2560x1440 bash scripts/packaged-coop/run.sh (Linux receipt, runtime binary, tessdata)",

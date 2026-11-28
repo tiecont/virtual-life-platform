@@ -15,7 +15,8 @@ namespace Aetheria.PetArena.Vfx
     {
         None = 0,
         Regular = 1,
-        Boss = 2
+        Boss = 2,
+        BossPhaseTwo = 3
     }
 
     public enum ArenaHub

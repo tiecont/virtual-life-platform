@@ -1,7 +1,11 @@
 import { ReadinessSchema } from '@aetheria/contracts';
 import CityMap from '../features/city/modules/city/presentation/CityMap';
+import ArenaFieldGuide from '../features/pet-arena/modules/field-guide/presentation/ArenaFieldGuide';
 export const dynamic = 'force-dynamic';
-export default async function Home() {
+export default async function Home({searchParams}: {
+  searchParams: Promise<{arenaLanguage?: string | string[]}>;
+}) {
+  const showArenaGuide = process.env.AETHERIA_PORTAL_ARENA_PREVIEW === '1';
   let ready = false;
   try {
     const response = await fetch(new URL('/health/ready', process.env.API_INTERNAL_URL ?? 'http://127.0.0.1:4300'), { cache: 'no-store', signal: AbortSignal.timeout(3000) });
@@ -13,5 +17,7 @@ export default async function Home() {
     <div className="status-card"><div className="status-heading"><span className={ready ? 'dot ready' : 'dot'} aria-hidden="true"/><h2>Platform status</h2></div>
       <p role="status">{ready ? 'Database connected · schema v1' : 'Platform unavailable · try again shortly'}</p>
       <p className="muted">This status comes from the platform API and PostgreSQL. It does not indicate that a world is open.</p><a href="/">Refresh status <span aria-hidden="true">↗</span></a></div><a href="/identity">Create or manage your city identity →</a>
-    </section><p><a href="/character">Create your animal character →</a></p><CityMap/><footer>Development preview · Real world rollout closed · No public release</footer></main>;
+    </section><p><a href="/character">Create your animal character →</a></p>{showArenaGuide && <p><a href="#arena-field-guide">Open the Pet Arena field guide →</a></p>}<CityMap/>
+    {showArenaGuide && <ArenaFieldGuide language={(await searchParams).arenaLanguage}/>}
+    <footer>Development preview · Real world rollout closed · No public release</footer></main>;
 }

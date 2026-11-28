@@ -1,0 +1,120 @@
+.guide {
+  max-width: none;
+  padding: 2rem 0 3rem;
+  border-top: 1px solid #d3ddd2;
+  scroll-margin-top: 6rem;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.heading h2 {
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+
+.languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 .9rem;
+  font-size: .85rem;
+}
+
+.languages [aria-current] {
+  color: #172d2a;
+  text-decoration-thickness: 2px;
+}
+
+.guide h3,
+.map h4 {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.note {
+  margin: .4rem 0 1.1rem;
+  color: #435b53;
+}
+
+.maps,
+.jewels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  align-items: start;
+  gap: .8rem;
+  margin: 0;
+}
+
+.map,
+.jewels > div {
+  padding: 1rem;
+  border: 1px solid #d3ddd2;
+  border-radius: .8rem;
+  background: #fff;
+}
+
+.map {
+  border-top: 3px solid var(--region-color, #225c49);
+}
+
+.map[data-element='fire'] { --region-color: #a45c46; }
+.map[data-element='water'] { --region-color: #42758b; }
+.map[data-element='electric'] { --region-color: #8d710e; }
+.map[data-element='ghost'] { --region-color: #76568c; }
+.map[data-element='ground'] { --region-color: #866144; }
+.map[data-element='light'] { --region-color: #97742b; }
+
+.families {
+  display: grid;
+  grid-template-columns: minmax(4rem, auto) 1fr;
+  gap: .2rem 1rem;
+  margin: .6rem 0;
+}
+
+.families dt {
+  color: #435b53;
+}
+
+.families dd,
+.jewels dd {
+  margin: 0;
+}
+
+.map details summary {
+  display: list-item;
+  min-height: 44px;
+  padding: .55rem 0;
+  color: #225c49;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.map summary:focus-visible {
+  outline: 3px solid #225c49;
+  outline-offset: 3px;
+}
+
+.map ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.guide .jewelHeading {
+  margin-top: 2rem;
+}
+
+.jewels dt {
+  font-weight: 700;
+}
+
+.jewels dd {
+  margin-top: .25rem;
+  color: #435b53;
+}

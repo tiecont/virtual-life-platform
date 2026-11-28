@@ -44,6 +44,7 @@ impl SecretSeed {
 
 /// Ephemeral, server-only stream. Failed turns discard it and consume no durable entropy.
 pub struct TurnRng {
+    key: Zeroizing<[u8; 32]>,
     rng: ChaCha20Rng,
     start: u64,
     cursor: u64,
@@ -54,15 +55,33 @@ impl TurnRng {
     /// the secret seed can construct one; no client value is accepted.
     #[doc(hidden)]
     pub fn new(seed: &SecretSeed, binding: Value, cursor: u64) -> Result<Self, Error> {
-        let key = Zeroizing::new(seed.key(binding)?);
+        Ok(Self::from_key(Zeroizing::new(seed.key(binding)?), cursor))
+    }
+
+    fn from_key(key: Zeroizing<[u8; 32]>, cursor: u64) -> Self {
         let mut rng = ChaCha20Rng::from_seed(*key);
         rng.set_word_pos(u128::from(cursor));
-        Ok(Self {
+        Self {
+            key,
             rng,
             start: cursor,
             cursor,
-        })
+        }
     }
+
+    /// Open a deterministic, independently positioned stream for a reducer-owned purpose.
+    /// The purpose must be a stable protocol label and the caller persists its cursor.
+    pub fn substream(&self, purpose: &'static str, cursor: u64) -> Result<Self, Error> {
+        let mut mac =
+            Hmac::<Sha256>::new_from_slice(self.key.as_ref()).map_err(|_| Error::InvalidState)?;
+        mac.update(&canonical::encode(&list([
+            Value::Text("vl.rng-substream.v1".into()),
+            Value::Text(purpose.into()),
+        ]))?);
+        let key = Zeroizing::new(mac.finalize().into_bytes().into());
+        Ok(Self::from_key(key, cursor))
+    }
+
     pub fn cursor(&self) -> u64 {
         self.cursor
     }
@@ -76,11 +95,21 @@ impl TurnRng {
         Ok(word)
     }
     pub fn below(&mut self, upper: u32) -> Result<u32, Error> {
+        self.below_reserving(upper, 0)
+    }
+
+    fn below_reserving(&mut self, upper: u32, reserve: u64) -> Result<u32, Error> {
         if upper == 0 {
             return Err(Error::InvalidAction);
         }
         let limit = (1_u64 << 32) - (1_u64 << 32) % u64::from(upper);
         loop {
+            if reserve > 0
+                && (MAX_WORDS_PER_TURN - (self.cursor - self.start)).min(u64::MAX - self.cursor)
+                    <= reserve
+            {
+                return Err(Error::EntropyExhausted);
+            }
             let word = self.next_word()?;
             if u64::from(word) < limit {
                 return Ok(word % upper);
@@ -88,11 +117,17 @@ impl TurnRng {
         }
     }
     pub fn shuffle<T>(&mut self, items: &mut [T]) -> Result<(), Error> {
+        self.shuffle_reserving(items, 0)
+    }
+
+    /// Shuffle a speculative candidate while leaving words for a fallback.
+    /// An error may leave the supplied slice partially shuffled.
+    pub fn shuffle_reserving<T>(&mut self, items: &mut [T], reserve: u64) -> Result<(), Error> {
         if items.len() > 512 {
             return Err(Error::Capacity);
         }
         for index in (1..items.len()).rev() {
-            let target = self.below((index + 1) as u32)? as usize;
+            let target = self.below_reserving((index + 1) as u32, reserve)? as usize;
             items.swap(index, target);
         }
         Ok(())

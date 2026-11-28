@@ -10,7 +10,8 @@ use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
 use aetheria_pet_arena::arena8::coop::{
     ADVANCED_RULESET_VERSION, ADVANCED_SOLO_RULESET_VERSION, ArtifactLoadout, COOP_RULESET_ID,
-    FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID, SEATS, SeatInput, SkillLevelBinding,
+    FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID, SEATS, SHARED_RNG_RULESET_VERSION,
+    SHARED_RNG_SOLO_RULESET_VERSION, SeatInput, SkillLevelBinding,
 };
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
@@ -312,6 +313,10 @@ impl NativeRuntime {
         let contract = game.ruleset();
         let content = contract.content_hash;
         let required_client_build = match (contract.id.as_str(), contract.version) {
+            (COOP_RULESET_ID, SHARED_RNG_RULESET_VERSION)
+            | (FUNCTIONAL_SOLO_RULESET_ID, SHARED_RNG_SOLO_RULESET_VERSION) => {
+                Some("unity-native-v4")
+            }
             (COOP_RULESET_ID, ADVANCED_RULESET_VERSION)
             | (FUNCTIONAL_SOLO_RULESET_ID, ADVANCED_SOLO_RULESET_VERSION) => {
                 Some("unity-native-v3")

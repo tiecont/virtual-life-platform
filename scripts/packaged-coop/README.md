@@ -35,6 +35,23 @@ To qualify the unmodified schema 5 candidate through Nest, PostgreSQL and authen
 node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop
 ```
 
+## Shared nine-jewel board
+
+```sh
+PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng PACKAGED_QA_SIZE=1280x720 \
+  bash scripts/packaged-coop/run.sh "$BUILD_RECEIPT" "$RUNTIME_BINARY" "$TESSDATA_DIR"
+```
+
+This publishes the schema 6 nine-jewel candidate in the disposable database
+with only the Fire room hosting threshold set to zero. Start and the first
+legal swap are sent through the packaged HUD. Three authenticated protocol
+peers join and observe. The verifier matches the two exact actions against
+the host's durable journal fingerprints and saves time-stamped clicks, the
+published digest, two screenshots with 64 rendered cells and the tile kind
+counts actually observed. An individual board can have fewer than nine
+distinct kinds. The scope ends after the first swap. Timed restart, full
+combat, settlement and four-human play remain separate qualifications.
+
 ## Four-person offline playtest
 
 Use the Linux development player and local cooperative server setup in
@@ -63,3 +80,27 @@ effect beside each issue. Compare difficulty across parties only when their
 level, gear, seed and configuration are recorded. Label any granted AP,
 materials or reduced difficulty explicitly. Save anonymized observations under
 ignored artifacts and report the actual number of people who finished.
+
+For four packaged clients on one shared RNG board, set
+`PACKAGED_QA_SCOPE=four-clients PACKAGED_QA_BOARD=shared-rng PACKAGED_QA_SIZE=1280x720`
+and pass the Linux build receipt, runtime binary and Tesseract data to
+`scripts/packaged-coop/run.sh`. The four processes each use their own private
+display and Unity profile. They create guest sessions through the player UI,
+enter Cinder Terraces, join and ready in the same room, and consume separate
+session-bound Rust tickets. The host commits Start from the HUD after all four
+are admitted. Each client contributes its own rendered 8×8 board capture.
+The acceptance JSON binds the four windows and observed seats to one allocation
+and the digest published through the existing operator fixture.
+
+For a longer schema 6 HUD sample, use `PACKAGED_QA_SCOPE=feedback` with
+`PACKAGED_QA_BOARD=shared-rng`. After the regular opening checks, the three
+protocol peers advance their own turns and the packaged host plays up to six
+more visible swaps. Each host action has a durable receipt fingerprint,
+before/after frames and a list of effect chips attached by that player version.
+An available move targeting Nature can yield no cleanse when the actor has
+no removable status. Use the recorded effects for qualification.
+
+The four-client mode accepts a build from another committed revision only when
+Git confirms that all tracked differences are confined to this harness
+directory. The report records the separate player and harness SHAs. Other
+modes continue to require the same revision.

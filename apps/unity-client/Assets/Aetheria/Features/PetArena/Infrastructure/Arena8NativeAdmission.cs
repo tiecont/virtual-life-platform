@@ -80,7 +80,7 @@ namespace Aetheria.PetArena.Infrastructure
                 if (!string.Equals(response.ruleset ?? "", expectedRuleset ?? "", StringComparison.Ordinal))
                     throw new NativeFailure(Failure.Scope);
                 if (response.clientBuild != null && (expectedRuleset != CoopNativeView.FunctionalSoloRuleset ||
-                    response.clientBuild != NativeConnection.JewelFeedbackClientBuild))
+                    !NativeConnection.SupportsJewelFeedback(response.clientBuild)))
                     throw new NativeFailure(Failure.Scope);
                 var https = Canonical(response.httpsOrigin, "https");
                 var wss = Canonical(response.wssUrl, "wss");

@@ -40,6 +40,16 @@ JEWEL_CASES = (
     ("jewel-support", 40, "stormcoil-loadout"),
 )
 HISTORICAL_COMPOSITIONS = tuple(name for name in PARTIES if name != "jewel-support")
+WARDEN_CASES = tuple(
+    (name, level, gear)
+    for name in ("icarus", "offense", "sustain")
+    for level, gear in (
+        (40, "stormcoil-loadout"),
+        (40, "prismheart-trained"),
+        (60, "prismheart-trained"),
+        (60, "temporal-trained"),
+    )
+)
 
 
 def dump(path, value):
@@ -129,7 +139,84 @@ TIMED_VARIANTS = {
 }
 
 
-def party(name, level, gear):
+def shared_weights(bundle, weights):
+    for entry in bundle["board"]["functionalTiles"]["spawnWeights"]:
+        entry["weight"] = weights[entry["kind"]]
+
+
+def warden_defense_support(bundle):
+    """Isolate practical recovery between authored Warden impacts."""
+    bundle["configId"] = "arena8-warden-defense-support-v1"
+    bundle["contentRevision"] = 1
+    tiles = bundle["board"]["functionalTiles"]
+    # A plain match of three now has an authored yield of 90 healing or 105
+    # shielding before the existing missing-health and shield-cap constraints.
+    tiles["heart"]["amount"] = 30
+    tiles["shield"]["amount"] = 35
+
+
+def fixed_warden_vitality(bundle):
+    """Compare the observed trained-party damage budget against fixed two-phase HP."""
+    bundle["configId"] = "arena8-fixed-warden-vitality-candidate"
+    bundle["contentRevision"] = 1
+    # The unchanged Fire profile requires 25,800 damage across both phases.
+    # A quarter-health control asks whether coordinated parties that dealt
+    # roughly 6,000 damage can finish. The rule is identical for a solo seat.
+    for boss in bundle["bosses"]:
+        if boss["id"] in BOSSES:
+            boss["maxHp"] //= 4
+
+
+def all_region_warden_vitality(bundle):
+    """Extend the two-region vitality experiment to every canonical Warden."""
+    bundle["configId"] = "arena8-six-warden-vitality-candidate"
+    bundle["contentRevision"] = 1
+    for boss in bundle["bosses"]:
+        boss["maxHp"] //= 4
+
+
+def deliberate_warden_telegraph(bundle):
+    """Allow one more response turn between the existing fixed-strength impacts."""
+    tuning = json.loads((ROOT / "config/gameplay/candidates/warden-response.json").read_text())
+    bundle["configId"] = "arena8-six-warden-telegraph-candidate"
+    bundle["contentRevision"] = 1
+    for boss in bundle["bosses"]:
+        profile = tuning.pop(boss["id"])
+        boss["maxHp"] = profile["maxHp"]
+        boss["telegraphTurns"] = profile["telegraphTurns"]
+    if tuning:
+        raise ValueError("Warden tuning contains IDs absent from the bundle")
+
+
+def veteran_artifacts(bundle):
+    """Test the leverage of rank-five equipment without altering natural boards or enemies."""
+    bundle["configId"] = "arena8-veteran-artifacts-candidate"
+    bundle["contentRevision"] = 1
+    items = {item["id"]: item for item in bundle["artifacts"]}
+    # Keep base values and unlock levels intact. At rank five, the three
+    # existing items reach 34 ATK, 36 HP or 34 ATK in their primary stat.
+    items["core-prismheart"]["perLevel"]["attack"] = 7
+    items["aegis-bastionplate"]["perLevel"]["hp"] = 7
+    items["rune-temporal-seal"]["perLevel"]["attack"] = 6
+
+
+# Study inputs only. None of these variants publishes an active configuration.
+SHARED_VARIANTS = {
+    "warden-defense-support": warden_defense_support,
+    "veteran-artifacts": veteran_artifacts,
+    "fixed-warden-vitality": fixed_warden_vitality,
+    "six-warden-vitality": all_region_warden_vitality,
+    "six-warden-telegraph": deliberate_warden_telegraph,
+    "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
+        ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
+    "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
+        "sword": 2000, "mana": 1600, "rage": 1600, "heart": 1400, "shield": 1400,
+        "special": 1100, "nature": 350, "frost": 350, "astral": 200,
+    }),
+}
+
+
+def party(name, level, gear, bundle):
     result = []
     for i, pet in enumerate(PARTIES[name], 1):
         definitions = {
@@ -141,6 +228,16 @@ def party(name, level, gear):
                 ("core", "core-amberlattice", 1),
                 ("aegis", "aegis-bastionplate", 1),
                 ("rune", "rune-mistquill", 1),
+            ],
+            "prismheart-trained": [
+                ("core", "core-prismheart", 5),
+                ("aegis", "aegis-bastionplate", 5),
+                ("rune", "rune-whisperknot", 5),
+            ],
+            "temporal-trained": [
+                ("core", "core-prismheart", 5),
+                ("aegis", "aegis-bastionplate", 5),
+                ("rune", "rune-temporal-seal", 5),
             ],
         }[gear]
         artifacts = [
@@ -155,6 +252,14 @@ def party(name, level, gear):
         skills = []
         if gear == "trained-core" and pet == COALWHISK:
             skills.append({"skillId": "fire-coalwhisk-ember-lance", "level": 2})
+        if gear in ("prismheart-trained", "temporal-trained"):
+            bindings = next(row for row in bundle["pets"] if row["id"] == pet)
+            skill_ids = {bindings.get(slot) for slot in ("guard", "skill", "signature", "ultimate", "fireZone")}
+            skills.extend(
+                {"skillId": row["id"], "level": 1 + len(row["upgradeLevels"])}
+                for row in bundle["skills"]
+                if row["id"] in skill_ids and row.get("upgradeLevels")
+            )
         result.append({"petId": pet, "level": level, "artifacts": artifacts, "skillLevels": skills})
     return result
 
@@ -208,6 +313,8 @@ def summarize_row(item, row):
         "averageActions": row["averageActionsMilli"] / 1000,
         "averageSimulatedDurationMs": row["averageLogicalDurationMs"],
         "matchesWithMultiplier": row["matchesWithMultiplier"],
+        "phaseTwoReached": row["phaseTwoReached"],
+        "terminalBossHpSum": diagnostics["terminalBossHpSum"],
         "contributions": row["contributions"],
         "castsBySkill": row["castsBySkill"],
         "advancedJewels": diagnostics.get("advancedJewels"),
@@ -253,8 +360,8 @@ def main():
     parser.add_argument("--seed-count", type=int, default=6)
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
-    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS])
-    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels"], default="progression")
+    parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS, *SHARED_VARIANTS])
+    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels", "warden", "capstone"], default="progression")
     parser.add_argument("--mode", choices=["coop", "solo", "both"], default="coop")
     parser.add_argument("--include-regular", action="store_true", help="Include regular opponents for solo play")
     parser.add_argument("--advanced-candidate", type=Path, help="Split one authored bundle into control, skill-only and encounter-only studies")
@@ -273,11 +380,14 @@ def main():
         parser.error(f"build the Rust example, or set --binary: {binary}")
     base = json.loads(args.baseline.read_text())
     capability = base.get("engineCapability")
-    if capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
+    shared = capability == "arena8-coop-v5" and base.get("schemaVersion") == 6
+    if not shared and capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
-    functional = capability in ("arena8-coop-v2", "arena8-coop-v3")
+    functional = shared or capability in ("arena8-coop-v2", "arena8-coop-v3")
+    if args.stage in ("warden", "capstone") and not shared:
+        parser.error("the Warden progression stage requires a shared schema 6 bundle")
     base_bosses = {row["id"]: row for row in base["bosses"]}
-    if args.bosses == ["all"] or (args.bosses is None and capability == "arena8-coop-v3"):
+    if args.bosses == ["all"] or (args.bosses is None and (shared or capability == "arena8-coop-v3")):
         boss_ids = tuple(base_bosses)
     elif args.bosses:
         boss_ids = tuple(args.bosses)
@@ -288,6 +398,10 @@ def main():
     variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
     if capability == "arena8-coop-v3":
         variants = {**variants, **TIMED_VARIANTS}
+    if shared:
+        variants = SHARED_VARIANTS
+        if args.advanced_candidate:
+            parser.error("shared RNG cannot be compared through conversion controls")
     selected = args.bundles or (["baseline"] if functional else ["baseline", *variants])
     if any(name != "baseline" and name not in variants for name in selected):
         parser.error(f"requested balance variant is incompatible with {capability}")
@@ -322,6 +436,10 @@ def main():
         scenarios = [("starters", 10, "starter-core"), ("starters", 20, "starter-core"),
                      ("starters", 40, "starter-core"), ("starters", 60, "starter-core"),
                      ("ground", 40, "starter-core"), ("icarus", 40, "starter-core")]
+    elif args.stage == "capstone":
+        scenarios = [(name, 100, "temporal-trained") for name in ("icarus", "offense", "sustain")]
+    elif args.stage == "warden":
+        scenarios = WARDEN_CASES
     else:
         scenarios = JEWEL_CASES
     if args.parties:
@@ -331,7 +449,7 @@ def main():
 
     seat_inputs = {}
     for name, level, gear in scenarios:
-        seats = party(name, level, gear)
+        seats = party(name, level, gear, base)
         if args.mode in ("coop", "both"):
             seat_inputs["coop", name, level, gear] = seats
         if args.mode in ("solo", "both"):

@@ -22,6 +22,7 @@ namespace Aetheria.PetArena.Presentation
         private CoopNativePlaySession session;
         private CoopLobbyClient.Room room;
         private CoopCampaignCatalog catalog;
+        private Arena8RecruitmentCatalog recruitment;
         private WorldMapDefinition map;
         private string petId, instanceId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
@@ -44,6 +45,7 @@ namespace Aetheria.PetArena.Presentation
                 Guid.TryParseExact(pet.ownedPetInstanceId, "D", out var id) && id != Guid.Empty).ToArray();
             SetPet(pets.FirstOrDefault());
             catalog = publishedCatalog;
+            recruitment = null;
             returnToHub = returnAction;
             room = null;
             notice = "";
@@ -61,7 +63,7 @@ namespace Aetheria.PetArena.Presentation
             if (pets.Length == 0) return;
             var labels = pets.Select((p, i) => (i + 1) + ". " + p.name + " · Lv " + p.level).ToList();
             var index = Array.FindIndex(pets, pet => pet.ownedPetInstanceId == instanceId);
-            var selection = new DropdownField("Owned Pet", labels, Math.Max(0, index));
+            var selection = new DropdownField(CampaignLocale.Text("coop.owned_pet", "Owned Pet"), labels, Math.Max(0, index));
             selection.RegisterValueChangedCallback(change =>
             {
                 SetPet(pets[selection.index]);
@@ -101,10 +103,10 @@ namespace Aetheria.PetArena.Presentation
                 {
                     row.Add(new Label("Room hosting locked.") { name = "coop-availability-status" });
                     if (catalog.points < encounter.requiredPoints)
-                        row.Add(new Label("Achievement Points still needed · " + (encounter.requiredPoints - catalog.points))
+                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.points_needed", "Achievement Points still needed · {0}"), encounter.requiredPoints - catalog.points))
                             { name = "coop-availability-points-lock" });
                     if (encounter.prerequisite != null && !encounter.prerequisite.cleared)
-                        row.Add(new Label("Clear " + encounter.prerequisite.mapName + " first.")
+                        row.Add(new Label(string.Format(CampaignLocale.Text("coop.map_needed", "Clear {0} first."), encounter.prerequisite.mapName))
                             { name = "coop-availability-map-lock", enableRichText = false });
                 }
             }
@@ -118,61 +120,95 @@ namespace Aetheria.PetArena.Presentation
             var root = Root;
             if (root == null || !isActiveAndEnabled) return;
             root.Clear();
-            root.Add(new Label("Cooperative Arena8") { name = "coop-lobby-title" });
-            root.Add(new Label("Local developer preview") { name = "coop-lobby-preview" });
+            CampaignLocale.ApplyFont(root);
+            root.Add(new Label(CampaignLocale.Text("coop.title", "Cooperative Arena8")) { name = "coop-lobby-title" });
+            root.Add(new Label(CampaignLocale.Text("coop.preview", "Local developer preview")) { name = "coop-lobby-preview" });
             if (notice.Length > 0) root.Add(new Label(notice) { name = "coop-lobby-notice" });
             if (room == null || room.status == "OPEN") RenderCollection(root);
             if (returnToHub != null)
-                root.Add(new Button(returnToHub) { text = "Return to Central Plaza", name = "coop-return" });
+                root.Add(new Button(returnToHub) { text = CampaignLocale.Text("coop.plaza", "Return to Central Plaza"), name = "coop-return" });
             if (room == null)
             {
                 root.Add(BuildAvailability(map, catalog, loadingCatalog));
                 if (Encounter?.eligible == true && instanceId == null)
-                    root.Add(new Label("An owned Pet is required to create a room."));
-                var create = new Button(() => _ = RunAsync(CreateAsync)) { text = "Create room", name = "coop-create" };
+                    root.Add(new Label(CampaignLocale.Text("coop.needs_pet", "An owned Pet is required to create a room.")));
+                var create = new Button(() => _ = RunAsync(CreateAsync)) { text = CampaignLocale.Text("coop.create", "Create room"), name = "coop-create" };
                 create.SetEnabled(CanCreate);
                 root.Add(create);
                 var refresh = new Button(() => _ = RunAsync(RefreshCampaignAsync))
-                    { text = "Refresh availability", name = "coop-refresh-availability" };
+                    { text = CampaignLocale.Text("coop.refresh_availability", "Refresh availability"), name = "coop-refresh-availability" };
                 refresh.SetEnabled(!loadingCatalog);
                 root.Add(refresh);
-                joinField = new TextField("Room id") { name = "coop-room-id", value = joinField?.value ?? "" };
+                joinField = new TextField(CampaignLocale.Text("coop.id", "Room id")) { name = "coop-room-id", value = joinField?.value ?? "" };
                 root.Add(joinField);
-                var join = new Button(() => _ = RunAsync(JoinAsync)) { text = "Join room", name = "coop-join" };
+                var join = new Button(() => _ = RunAsync(JoinAsync)) { text = CampaignLocale.Text("coop.join", "Join room"), name = "coop-join" };
                 join.SetEnabled(lobby != null);
                 root.Add(join);
                 if (lobby?.CanRefreshRoom == true)
-                    root.Add(new Button(() => _ = RunAsync(ResumeAsync)) { text = "Resume room", name = "coop-resume" });
+                    root.Add(new Button(() => _ = RunAsync(ResumeAsync)) { text = CampaignLocale.Text("coop.resume", "Resume room"), name = "coop-resume" });
+                var recruit = new Button(() => _ = RunAsync(async () =>
+                {
+                    recruitment = await api.GetRecruitmentCatalog(lifetime.Token);
+                    RenderLobby();
+                })) { text = CampaignLocale.Text("map.recruitment", "Recruitment encounters") };
+                root.Add(recruit);
+                if (recruitment?.routes != null)
+                {
+                    var local = recruitment.routes.Where(route => route.mapId == map.Id && route.mode == "either").ToArray();
+                    if (local.Length == 0)
+                        root.Add(new Label(CampaignLocale.Text("map.no_recruitment", "No recruitment encounters available.")));
+                    var byId = recruitment.routes.ToDictionary(route => route.id);
+                    var routeList = new ScrollView { name = "coop-recruitment-routes" };
+                    routeList.style.flexShrink = 1;
+                    if (local.Length > 0) root.Add(routeList);
+                    foreach (var route in local)
+                    {
+                        var label = route.name + (route.cleared ? " ✓" : "");
+                        if (route.prerequisiteEncounterId != null &&
+                            byId.TryGetValue(route.prerequisiteEncounterId, out var prerequisite) && !prerequisite.cleared)
+                            label += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite.name;
+                        var host = new Button(() => _ = RunAsync(() => CreateEncounterAsync(route.id)))
+                            { text = label, enableRichText = false };
+                        host.SetEnabled(map.IsPlayable && route.canHostCoop && instanceId != null);
+                        routeList.Add(host);
+                    }
+                }
                 return;
             }
-            root.Add(new Label("Room " + room.roomId + " · " + room.status) { name = "coop-room-status" });
-            root.Add(new Label("Boss " + room.bossId + " · config v" + room.configVersion +
-                " · points " + room.requiredPoints) { name = "coop-room-meta" });
-            var seats = new Label("Seats: " + (room.seats == null ? 0 : room.seats.Length) + "/4");
+            var state = CampaignLocale.Text("coop.state." + room.status, room.status);
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_state", "Room {0} · {1}"), room.roomId, state))
+                { name = "coop-room-status" });
+            root.Add(new Label(string.Format(CampaignLocale.Text("coop.room_meta", "Boss {0} · config v{1} · points {2}"),
+                room.bossId, room.configVersion, room.requiredPoints)) { name = "coop-room-meta" });
+            var seats = new Label(string.Format(CampaignLocale.Text("coop.seat_count", "Seats: {0}/4"), room.seats?.Length ?? 0));
             seats.name = "coop-room-seats";
             root.Add(seats);
             if (room.you != null && room.you.seat >= 0)
-                root.Add(new Label("You are seat " + room.you.seat + (room.you.isHost ? " (host)" : "")));
-            var ready = new Button(() => _ = RunAsync(ReadyAsync)) { text = "Ready", name = "coop-ready" };
+                root.Add(new Label(string.Format(room.you.isHost ? CampaignLocale.Text("coop.seat_host", "You are seat {0} (host)") : CampaignLocale.Text("coop.seat_member", "You are seat {0}"), room.you.seat)));
+            var ready = new Button(() => _ = RunAsync(ReadyAsync)) { text = CampaignLocale.Text("coop.ready", "Ready"), name = "coop-ready" };
             ready.SetEnabled(room.status == "OPEN" && room.seats.Any(seat => seat.you && !string.IsNullOrEmpty(seat.petId)));
             root.Add(ready);
-            var start = new Button(() => _ = RunAsync(StartAsync)) { text = "Start match", name = "coop-start" };
+            var start = new Button(() => _ = RunAsync(StartAsync)) { text = CampaignLocale.Text("coop.start", "Start match"), name = "coop-start" };
             start.SetEnabled((room.canStart || room.status == "LOCKED") && room.you != null && room.you.isHost);
             root.Add(start);
             if (lobby.CanRefreshRoom)
-                root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = "Refresh room", name = "coop-refresh" });
+                root.Add(new Button(() => _ = RunAsync(RefreshRoomAsync)) { text = CampaignLocale.Text("coop.refresh", "Refresh room"), name = "coop-refresh" });
             if (room.status == "STARTED")
-                root.Add(new Button(() => _ = RunAsync(ResumeMatchAsync)) { text = "Enter match or view rewards", name = "coop-enter" });
-            var leave = new Button(() => _ = RunAsync(BackToLobbyAsync)) { text = "Back", name = "coop-back" };
+                root.Add(new Button(() => _ = RunAsync(ResumeMatchAsync)) { text = CampaignLocale.Text("coop.enter", "Enter match or view rewards"), name = "coop-enter" });
+            var leave = new Button(() => _ = RunAsync(BackToLobbyAsync)) { text = CampaignLocale.Text("coop.back", "Back"), name = "coop-back" };
             root.Add(leave);
         }
 
         private async Task CreateAsync()
         {
-            if (!CanCreate) return;
+            if (CanCreate) await CreateEncounterAsync(Encounter.bossId);
+        }
+
+        private async Task CreateEncounterAsync(string encounterId)
+        {
             try
             {
-                room = await lobby.CreateAsync(petId, instanceId, map.Id, Guid.NewGuid(), lifetime.Token, Encounter.bossId);
+                room = await lobby.CreateAsync(petId, instanceId, map.Id, Guid.NewGuid(), lifetime.Token, encounterId);
             }
             catch (Wave1ApiException error) when (error.Status == 403 || error.Status == 404 || error.Status == 503)
             {
@@ -194,6 +230,7 @@ namespace Aetheria.PetArena.Presentation
         private async Task RefreshCampaignAsync()
         {
             catalog = null;
+            recruitment = null;
             loadingCatalog = true;
             RenderLobby();
             var cancellation = lifetime.Token;
@@ -288,7 +325,8 @@ namespace Aetheria.PetArena.Presentation
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
             var transportPlatform = new PlatformSession(admission.HttpsOrigin);
             trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
-            var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId);
+            var expectedRoute = admission.BossId.StartsWith("recruit-", StringComparison.Ordinal) ? admission.BossId : null;
+            var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId, expectedEncounter: expectedRoute);
             try
             {
                 await admitted.ConnectAsync();

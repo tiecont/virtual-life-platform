@@ -73,6 +73,10 @@ namespace Aetheria.Tests
         [TestCase(CinematicStudio.Sequence.SkillShowcase, 0, .20)]
         [TestCase(CinematicStudio.Sequence.Ultimate, .55, .35)]
         [TestCase(CinematicStudio.Sequence.GachaReveal, .20, .90)]
+        [TestCase(CinematicStudio.Sequence.BossIntro, .60, .45)]
+        [TestCase(CinematicStudio.Sequence.BossPhaseTransition, .15, .25)]
+        [TestCase(CinematicStudio.Sequence.Victory, .10, .75)]
+        [TestCase(CinematicStudio.Sequence.Defeat, .20, .60)]
         public void SavedTimelineAnimatesOnlyItsBoundSyntheticModelAfterReopen(
             CinematicStudio.Sequence sequence, double lead, double tail)
         {

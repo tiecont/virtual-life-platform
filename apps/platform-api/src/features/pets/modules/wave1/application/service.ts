@@ -29,15 +29,17 @@ import {
 import {evolutionPreview, MAPS, type CoreElement, type Stats} from '../domain/manifest';
 import {Wave1Store, type Wave1Transaction} from '../infrastructure/store';
 
-import {WAVE_A_ACTIVE_PETS} from '../domain/wave-a-catalog';
+import {WAVE_A_ACTIVE_PETS,WAVE_A_PET_BY_ID,WAVE_A_ROSTER,type WaveAPet} from '../domain/wave-a-catalog';
 
 // Current production catalog annotations are outside the immutable combat bundle.
 const starterIds:ReadonlySet<string>=new Set(STARTER_PET_IDS);
-export const canonicalCatalogReference=WAVE_A_ACTIVE_PETS.map(pet=>({
+const referenceForPet=(pet:WaveAPet)=>({
  id:pet.id,catalogRank:pet.catalogRank,starter:starterIds.has(pet.id),
  sourceCategory:pet.sourceCategory,acquisitionAuthority:pet.acquisitionAuthority,
  gameplayReady:pet.runtime.gameplayReady,modelStatus:pet.runtime.modelStatus,
-}));
+});
+export const canonicalCatalogReference=WAVE_A_ACTIVE_PETS.map(referenceForPet);
+export const developmentCatalogReference=WAVE_A_ROSTER.map(referenceForPet);
 
 export type Wave1Entropy={int(maxExclusive:number):number};
 export type PartyInput={petIds:string[]};
@@ -228,7 +230,7 @@ export class Wave1Service {
     const pet=owned.find(row=>row.petId===petId);
     if(!pet||!(await tx.party()).includes(petId))throw invalid('Choose a Pet in your party');
     const catalog=WAVE1_PET_BY_ID.get(petId);
-    if(!catalog)throw new Error('Owned Pet is absent from the Wave 1 catalog');
+    if(!catalog)throw invalid('Choose a Wave 1 Pet for this campaign');
     const cleared=new Set((await tx.clears()).map(row=>row.mapId));
     const mapIndex=MAPS.findIndex(value=>value.id===mapId);
     if(mapIndex>0&&!cleared.has(MAPS[mapIndex-1].id))throw invalid('Map is locked');
@@ -249,15 +251,18 @@ export class Wave1Service {
     const clears=await tx.clears();
     const history=await tx.gachaHistory();
     const pets=owned.map(row=>{
-      const catalog=WAVE1_PET_BY_ID.get(row.petId);
-      if(!catalog)throw new Error('Owned Pet is absent from the Wave 1 catalog');
+      const catalog=collectionPet(row.petId);
+      if(!catalog)throw new Error('Owned Pet is absent from the collection catalog');
+      // This is an evolution preview. Native combat derives stats from its
+      // engine-validated, pinned publication.
       const view=evolutionPreviewFor(catalog.element,row.level);
       return {
         petId:row.petId,name:catalog.name,element:catalog.element,rank:catalog.rank,
         level:row.level,exp:row.exp,expToNext:expToNext(row.level),stage:view.stage,
         unlocks:view.unlocks,stats:view.stats,duplicateExp:row.duplicateExp,ownedPetInstanceId:row.ownedPetInstanceId,
       };
-    }).sort((left,right)=>(WAVE1_PET_INDEX.get(left.petId)??0)-(WAVE1_PET_INDEX.get(right.petId)??0));
+    }).sort((left,right)=>(WAVE1_PET_INDEX.get(left.petId)??WAVE1_PETS.length)
+      -(WAVE1_PET_INDEX.get(right.petId)??WAVE1_PETS.length)||left.petId.localeCompare(right.petId));
     const cleared=new Set(clears.map(row=>row.mapId));
     return {
       revision:player.revision,
@@ -274,6 +279,15 @@ export class Wave1Service {
       },
     };
   }
+}
+
+export function collectionPet(petId:string):Pick<Wave1PetView,'name'|'element'|'rank'>|undefined {
+  const legacy=WAVE1_PET_BY_ID.get(petId);
+  if(legacy)return legacy;
+  const pet=WAVE_A_PET_BY_ID.get(petId);
+  if(pet?.rosterState==='ACTIVE'&&(pet.family==='dragon'||pet.family==='bird'))
+    return {name:pet.name,element:pet.element,rank:pet.presentationPowerClass};
+  return undefined;
 }
 
 function evolutionPreviewFor(element:CoreElement,level:number){

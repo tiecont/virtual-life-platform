@@ -60,6 +60,7 @@ or duplicate services. Retain the existing stack, protocol and database journal.
 New Rust gameplay remains default-off. Nest RoomAuthority remains the only legacy
 room writer. Pet Arena PvE precedes new Lodge gameplay; mobile is conditional.
 Keep authentication, authorization, privacy, consent, moderation and release gates.
+The owner confirms that main deploys directly to production and no staging environment exists. Keep unreleased candidates on review branches.
 Source implementation and green CI do not authorize production deployment,
 purchases, signing, media licensing, destructive migrations or public dating.
 

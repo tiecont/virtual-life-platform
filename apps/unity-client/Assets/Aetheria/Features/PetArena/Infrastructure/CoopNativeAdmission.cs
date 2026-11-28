@@ -75,7 +75,7 @@ namespace Aetheria.PetArena.Infrastructure
                 wss.Authority != https.Authority ||
                 payload.ticket == null || payload.ticket.Length < 20 || payload.ticket.Length > MaxTicketLength ||
                 payload.contentHash == null || payload.contentHash.Length != 64 ||
-                payload.clientBuild != null && payload.clientBuild != NativeConnection.JewelFeedbackClientBuild)
+                payload.clientBuild != null && !NativeConnection.SupportsJewelFeedback(payload.clientBuild))
                 throw new FormatException("Invalid coop admission scope");
             var admission = new CoopNativeAdmission(payload);
             var lifetime = admission.ExpiresAt - DateTimeOffset.UtcNow;

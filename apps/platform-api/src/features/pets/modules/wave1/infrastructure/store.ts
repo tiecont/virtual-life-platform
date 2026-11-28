@@ -85,8 +85,13 @@ export class Wave1Store {
     const party=(await db.query<{petId:string;ownedPetInstanceId:string}>('SELECT pet_id AS "petId",owned_pet_instance_id AS "ownedPetInstanceId" FROM pet_wave_one_party WHERE account_id=$1 ORDER BY slot',[accountId])).rows;
     const clears=(await db.query<Wave1ClearRow>(`SELECT ${CLEAR_COLUMNS} FROM pet_wave_one_map_clears WHERE account_id=$1 ORDER BY cleared_at`,[accountId])).rows;
     const gacha=(await db.query<Wave1GachaRow>(`SELECT ${GACHA_COLUMNS} FROM pet_wave_one_gacha_history WHERE account_id=$1 ORDER BY seq`,[accountId])).rows;
+    const campaignRoutes=(await db.query<{route_id:string;config_version:string;config_digest:string;cleared_at:Date}>(
+      'SELECT route_id,config_version,config_digest,cleared_at FROM pet_arena_campaign_route_clears WHERE account_id=$1 ORDER BY cleared_at,route_id',
+      [accountId])).rows;
     return {
       schemaVersion:1,initialized:true,revision:player.revision,wallet:{coins:player.coins},
+      ...(campaignRoutes.length?{campaignRoutes:campaignRoutes.map(row=>({routeId:row.route_id,
+        configVersion:Number(row.config_version),configDigest:row.config_digest,clearedAt:row.cleared_at.toISOString()}))}:{}),
       pets:pets.map(row=>({petId:row.petId,level:row.level,exp:row.exp,duplicateExp:row.duplicateExp,source:row.source,acquiredAt:row.acquiredAt.toISOString()})),
       party:party.map(row=>row.petId),
       clears:clears.map(row=>({mapId:row.mapId,replays:row.replays,clearedAt:row.clearedAt.toISOString()})),

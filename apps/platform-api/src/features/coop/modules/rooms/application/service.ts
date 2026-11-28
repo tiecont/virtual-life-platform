@@ -1,7 +1,7 @@
 import {createHash,randomUUID} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {
- CoopRewardReceiptSchema,CoopAdmissionViewSchema,CoopEligibilitySchema,CoopEncounterCatalogSchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
+ CampaignRouteCatalogSchema,CoopRewardReceiptSchema,CoopAdmissionViewSchema,CoopEligibilitySchema,CoopEncounterCatalogSchema,CoopRoomViewSchema,CoopCreateRoomSchema,CoopReadySchema,CoopSelectPetSchema,
 } from '@aetheria/contracts';
 import type {z} from 'zod';
 import {DomainError} from '../../../../../shared/common/errors';
@@ -11,10 +11,14 @@ import {bindArtifactLoadout} from '../../match/domain/loadout';
 import {readOwnedArtifactLoadouts} from '../../../../pets/modules/wave-a-artifacts/infrastructure/store';
 import {arena8CampaignMap} from '../../../../pets/modules/wave-a-arena8/application/allocation';
 import type {CoopSkillService} from '../../skills/application/service';
+import {
+ campaignRoute,isCampaignRoute,publishedCampaignRoutes,type PublishedCampaignRoute,
+ assertCampaignPrerequisite,hasCampaignRouteClear,listCampaignRouteClears,
+} from '../../../../pets/modules/campaign-routes/application/platform';
 
 type Queryable=Pick<PoolClient,'query'>;
 type ActiveConfiguration=Awaited<ReturnType<CoopRoomStore['activeConfiguration']>>;
-type BossConfiguration=ReturnType<typeof bossConfiguration>;
+type BossConfiguration=ReturnType<typeof bossConfiguration>&{route?:PublishedCampaignRoute};
 const missing=()=>new DomainError('NOT_FOUND',404,'Cooperative room not found');
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);
 const forbidden=(message:string)=>new DomainError('FORBIDDEN',403,message);
@@ -47,6 +51,7 @@ export class CoopRoomService{
   private readonly store:CoopRoomStore,
   private readonly skills:CoopSkillService,
   private readonly provisioner?:CoopMatchProvisioner,
+  private readonly soloNativeAvailable=false,
  ){}
 
  private async transaction<T>(accountId:string,requestId:string,work:(tx:PoolClient)=>Promise<T>):Promise<T>{
@@ -70,7 +75,12 @@ export class CoopRoomService{
   if(prior.fingerprint!==fingerprint)throw conflict('Request key was used with different input');
   return parse(prior.response);
  }
- private configuration(active:ActiveConfiguration,requestedBossId?:string,requestedMapId?:string){
+ private configuration(active:ActiveConfiguration,requestedBossId?:string,requestedMapId?:string):BossConfiguration{
+  if(requestedBossId&&isCampaignRoute(requestedBossId)){
+   if(!this.provisioner)throw unavailable('Campaign route runtime is unavailable');
+   const route=campaignRoute(active.bundle,requestedBossId,'coop',requestedMapId);
+   return {...bossConfiguration({...route.profile,mapId:route.mapId}),route};
+  }
   const catalog=active.bundle.bosses;
   const boss=Array.isArray(catalog)
    ?catalog.find(entry=>entry&&(requestedBossId===undefined||entry.id===requestedBossId)&&(requestedMapId===undefined||entry.mapId===requestedMapId)&&(requestedBossId!==undefined||requestedMapId!==undefined))
@@ -92,17 +102,28 @@ export class CoopRoomService{
    return result;
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
  }
+ private async pinnedRoute(tx:Queryable,room:CoopRoomRow){
+  if(!isCampaignRoute(room.bossId))return undefined;
+  const bundle=await this.store.pinnedBundle(tx,room.configVersion,room.configDigest);
+  if(!bundle||!this.provisioner)throw unavailable('Pinned campaign route is unavailable');
+  return campaignRoute(bundle,room.bossId,'coop');
+ }
  private async view(tx:Queryable,room:CoopRoomRow,accountId:string,allowForeign=false){
   const seats=await this.store.seats(tx,room.id);
   const mine=seats.find(seat=>seat.accountId===accountId);
   if(!mine&&!allowForeign&&room.status!=='OPEN'&&room.hostAccountId!==accountId)throw missing();
   const isHost=room.hostAccountId===accountId;
+  let canJoin=room.status==='OPEN'&&!mine&&seats.length<ROOM_LIMIT;
+  if(canJoin){
+   const route=await this.pinnedRoute(tx,room);
+   if(route?.prerequisiteEncounterId)canJoin=await hasCampaignRouteClear(tx,accountId,route.prerequisiteEncounterId);
+  }
   return CoopRoomViewSchema.parse({
    roomId:room.id,ruleset:room.ruleset,bossId:room.bossId,mapId:await this.store.pinnedMap(tx,room),status:room.status,revision:room.revision,
    configVersion:room.configVersion,requiredPoints:room.requiredPoints,createdAt:room.createdAt.toISOString(),
    you:{seat:mine?.seat??null,isHost},
    seats:seats.map(seat=>({seat:seat.seat,petId:seat.petId,petLevel:seat.petLevel,ready:seat.ready,you:seat.accountId===accountId,ownedPetInstanceId:seat.accountId===accountId?seat.ownedPetInstanceId:null})),
-   canJoin:room.status==='OPEN'&&!mine&&seats.length<ROOM_LIMIT,
+   canJoin,
    canStart:isHost&&room.status==='OPEN'&&seats.length===ROOM_LIMIT&&seats.every(seat=>seat.ready&&seat.petId!==null&&seat.petLevel!==null&&seat.ownedPetInstanceId!==null),
   });
  }
@@ -124,7 +145,26 @@ export class CoopRoomService{
    const points=await this.store.achievementPoints(tx,accountId);
    const clears=await this.store.clearedMaps(tx,accountId,config.requiredMapClear===undefined?[]:[config.requiredMapClear]);
    const {prerequisite,...hosting}=hostingEligibility(config,points,clears);
-   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',points,...hosting,...(prerequisite?{prerequisite}:{})});
+   const required=config.route?.prerequisiteEncounterId;
+   const eligible=hosting.eligible&&(!required||await hasCampaignRouteClear(tx,accountId,required));
+   return CoopEligibilitySchema.parse({ruleset:'arena8-coop-pve',points,...hosting,eligible,...(prerequisite?{prerequisite}:{})});
+  });
+ }
+
+ async campaignRoutes(accountId:string){
+  return this.readAvailability(async(tx,active)=>{
+   const routes=publishedCampaignRoutes(active.bundle);
+   if(routes.length===0)return CampaignRouteCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,routes:[]});
+   const points=await this.store.achievementPoints(tx,accountId);
+   const ids=routes.flatMap(route=>route.prerequisiteEncounterId?[route.id,route.prerequisiteEncounterId]:[route.id]);
+   const cleared=await listCampaignRouteClears(tx,accountId,ids);
+   return CampaignRouteCatalogSchema.parse({ruleset:'arena8-coop-pve',configVersion:active.version,routes:routes.map(route=>{
+    const canEnterSolo=!route.prerequisiteEncounterId||cleared.has(route.prerequisiteEncounterId);
+    return {id:route.id,mapId:route.mapId,opponentPetId:route.opponentPetId,tier:route.tier,
+     name:route.profile.name,mode:route.mode,prerequisiteEncounterId:route.prerequisiteEncounterId,
+     cleared:cleared.has(route.id),canEnterSolo:canEnterSolo&&this.soloNativeAvailable,
+     canHostCoop:canEnterSolo&&!!this.provisioner&&route.mode==='either'&&points>=route.profile.requiredRoomPoints};
+   })});
   });
  }
 
@@ -152,6 +192,7 @@ export class CoopRoomService{
    const active=await this.store.activeConfiguration(tx);
    const config=this.configuration(active,input.bossId,input.mapId),points=await this.store.achievementPoints(tx,accountId);
    if(points<config.requiredPoints)throw forbidden('Achievement Points required to create this room');
+   if(config.route)await assertCampaignPrerequisite(tx,accountId,config.route);
    if(config.requiredMapClear!==undefined){
     const clears=await this.store.clearedMaps(tx,accountId,[config.requiredMapClear]);
     if(!clears.has(config.requiredMapClear))throw forbidden(`Clear ${mapLabel(config.requiredMapClear)} to create this room`);
@@ -204,6 +245,8 @@ export class CoopRoomService{
    if(room.status!=='OPEN')throw conflict('Room is not open');
    const seats=await this.store.seats(tx,roomId);
    if(seats.length>=ROOM_LIMIT)throw conflict('Room is full');
+   const route=await this.pinnedRoute(tx,room);
+   if(route)await assertCampaignPrerequisite(tx,accountId,route);
    const used=new Set(seats.map(seat=>seat.seat));
    const seat=[0,1,2,3].find(value=>!used.has(value))!;
    await this.store.addSeat(tx,{roomId,seat,accountId,petId:null,petLevel:null,ownedPetInstanceId:null});

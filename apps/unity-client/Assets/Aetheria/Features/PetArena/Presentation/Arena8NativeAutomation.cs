@@ -51,6 +51,21 @@ namespace Aetheria.PetArena.Presentation
                     loadedSession = true;
                 }
                 await LoadLobby();
+                if (NativeArgument("-aetheria-arena8-shared-ultimate"))
+                {
+                    await CaptureCommittedUltimate();
+                    return;
+                }
+                if (NativeArgument("-aetheria-arena8-shared-frost-astral"))
+                {
+                    await CaptureNaturalFrostAndAstral();
+                    return;
+                }
+                if (NativeArgument("-aetheria-arena8-shared-nature"))
+                {
+                    await CaptureNaturalNatureCleanse();
+                    return;
+                }
                 if (NativeArgument("-aetheria-arena8-functional-turn"))
                 {
                     await CaptureFunctionalBattleTurn();
@@ -186,6 +201,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 nativeFacts.status = "failed";
                 nativeFacts.error = exception.Message;
+                Debug.LogWarning(exception.GetType().Name + "\n" + exception.StackTrace);
                 try { await CaptureNative("native-99-failed.png"); } catch { }
             }
             finally

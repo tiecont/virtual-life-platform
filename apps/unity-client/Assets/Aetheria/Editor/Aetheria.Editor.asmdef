@@ -12,6 +12,8 @@
     "Aetheria.Pets",
     "Aetheria.RemoteContent",
     "Unity.Timeline",
+    "Unity.Cinemachine",
+    "Unity.Recorder.Editor",
     "Unity.Addressables",
     "Unity.Addressables.Editor",
     "Aetheria.World.Domain",

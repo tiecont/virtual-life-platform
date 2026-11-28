@@ -18,6 +18,8 @@ namespace Aetheria.Networking
         public const int FunctionalVersion = 2;
         public const int TimedFunctionalVersion = 3;
         public const int SoloTimedFunctionalVersion = 2;
+        public const int SharedJewelVersion = 5;
+        public const int SoloSharedJewelVersion = 4;
         public const int AdvancedFunctionalVersion = 4;
         public const int SoloAdvancedFunctionalVersion = 3;
         public const int Seats = 4;
@@ -203,7 +205,7 @@ namespace Aetheria.Networking
         public bool IsFunctionalBoard => RulesetVersion >= FunctionalVersion || RulesetId == FunctionalSoloRuleset;
         public bool IsTimed => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
-        public bool HasAdvancedJewels => RulesetVersion == (RulesetId == FunctionalSoloRuleset
+        public bool HasAdvancedJewels => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloAdvancedFunctionalVersion : AdvancedFunctionalVersion);
         public string ConfigDigest { get; }
         public int You { get; }
@@ -270,8 +272,8 @@ namespace Aetheria.Networking
             var solo = fields.RulesetId == FunctionalSoloRuleset;
             var seatCount = solo ? 1 : Seats;
             var advancedVersion = solo ? SoloAdvancedFunctionalVersion : AdvancedFunctionalVersion;
-            fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion, advancedVersion);
-            var advanced = fields.RulesetVersion == advancedVersion;
+            fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion, solo ? SoloSharedJewelVersion : SharedJewelVersion);
+            var advanced = fields.RulesetVersion >= advancedVersion;
             var timed = fields.RulesetVersion >= (solo ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
             var allowedFields = new[]
             {

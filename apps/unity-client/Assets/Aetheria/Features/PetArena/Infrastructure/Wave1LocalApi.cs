@@ -138,6 +138,9 @@ namespace Aetheria.PetArena.Infrastructure
 
         public void Dispose() => http.Dispose();
 
+        public Task<Arena8RecruitmentCatalog> GetRecruitmentCatalog(CancellationToken cancellation) =>
+            Request<Arena8RecruitmentCatalog>("/v1/coop/campaign-routes", null, cancellation);
+
         public async Task<CoopCampaignCatalog> GetCoopCampaignCatalog(CancellationToken cancellation) =>
             CoopCampaignCatalog.Decode(await CoopRequest("/v1/coop/encounters", null, cancellation));
 

@@ -53,7 +53,7 @@ export type CoopStartInput=Readonly<{
 export type CoopStartResult=Readonly<{matchId:string;worldId:string;bootId:string;contentHash:string;generation:number}>;
 export type {CoopAdmissionView} from '@aetheria/contracts';
 type Lease={timer:ReturnType<typeof setInterval>;stop:()=>void};
-type ActiveMatch={clientBuild?:'unity-native-v3';record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
+type ActiveMatch={clientBuild?:ReturnType<typeof nativeClientBuildForBundle>;record:CoopAllocationRecord;scope:RuntimeScope;generation:number;handle:CoopRuntimeHandle;lease:Lease;stopped:boolean;exited:boolean};
 
 const unavailable=(message='Cooperative native runtime is unavailable')=>new DomainError('NOT_AVAILABLE',503,message);
 const conflict=(message:string)=>new DomainError('REQUEST_CONFLICT',409,message);

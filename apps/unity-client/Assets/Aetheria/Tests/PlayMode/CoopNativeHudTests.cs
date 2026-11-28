@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Aetheria.PetArena.Infrastructure;
 using Aetheria.Networking;
+using Aetheria.Native.Public.V1;
+using Google.Protobuf;
 using Aetheria.PetArena.Presentation;
 using Aetheria.PetArena.Vfx;
 using Aetheria.World.Presentation;
@@ -556,6 +558,105 @@ namespace Aetheria.Tests
             }
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void UltimateCueBelongsToTheExactCommittedLocalCommand(bool solo)
+        {
+            const string name = "coop-ultimate-cue";
+            const string locale = "aetheria.campaign.language";
+            const BindingFlags instance = BindingFlags.Instance | BindingFlags.NonPublic;
+            var oldLocale = PlayerPrefs.GetString(locale);
+            var hadLocale = PlayerPrefs.HasKey(locale);
+            var oldMotion = WorldPresentationSettings.ReducedMotion;
+            var timeScale = Time.timeScale;
+            var match = Guid.NewGuid();
+            var commandId = Guid.Parse("12121212-1212-1212-1212-121212121212");
+            var go = new GameObject("committed-ultimate-test");
+            var settings = ScriptableObject.CreateInstance<PanelSettings>();
+            var origin = new Uri("https://localhost");
+            using var session = new CoopNativePlaySession(new PlatformSession(origin),
+                new NativeConnection(new Uri("wss://localhost/rt/v1"), origin, Enumerable.Repeat((byte)1, 32).ToArray(), Guid.NewGuid(),
+                    _ => throw new AssertionException("This fixture only exercises projection and receipt consumption.")),
+                match, solo ? CoopNativeView.FunctionalSoloRuleset : CoopNativeView.Ruleset);
+            try
+            {
+                PlayerPrefs.SetString(locale, "vi");
+                WorldPresentationSettings.ReducedMotion = true;
+                var document = go.AddComponent<UIDocument>();
+                document.panelSettings = settings;
+                var hud = go.AddComponent<CoopNativeHud>();
+                hud.enabled = false;
+                hud.Attach(document);
+                var root = document.rootVisualElement;
+                var jewels = Enumerable.Range(0, 64).Select(index => JewelKinds[index % 6]).ToArray();
+                var projection = Projection(elements: jewels, withAbilities: true, timed: true, solo: solo);
+                var bytes = Encoding.UTF8.GetBytes(projection);
+                var stateField = typeof(NativePlaySession).GetField("state", instance);
+                var decode = typeof(CoopNativePlaySession).GetMethod("Decode", instance);
+                var decodeCommitted = typeof(NativePlaySession).GetMethod("DecodeCommitted", instance);
+                PlayState Read(ulong version) => (PlayState)decode.Invoke(session, new object[] { version, bytes });
+                var envelope = new ServerEnvelope {
+                    CommandId = ByteString.CopyFrom(commandId.ToByteArray()),
+                    CanonicalVersion = 2,
+                    Receipt = new Receipt { AuthorizedProjection = ByteString.CopyFrom(bytes) },
+                };
+                GameCommand Command(ulong before, byte[] action) =>
+                    new GameCommand(commandId, match, before, CoopNativeIntent.Kind, action);
+                PlayState Commit(GameCommand command) =>
+                    (PlayState)decodeCommitted.Invoke(session, new object[] { envelope, command });
+                void Deliver(PlayState state)
+                {
+                    stateField.SetValue(session, state);
+                    hud.SetSettlementLoader(null);
+                }
+
+                stateField.SetValue(session, Read(1));
+                hud.Bind(session);
+                Assert.That(root.Q(name), Is.Null);
+                var ultimate = CoopNativeIntent.UltimateAction(1);
+                var rejected = Assert.Throws<TargetInvocationException>(() => Commit(Command(1, ultimate)));
+                Assert.That(rejected.InnerException, Is.TypeOf<NativeFailure>(), "A read receipt cannot authorize the cue.");
+                envelope.Receipt.Committed = true;
+                var expectedId = envelope.CommandId;
+                envelope.CommandId = ByteString.CopyFrom(new byte[16]);
+                rejected = Assert.Throws<TargetInvocationException>(() => Commit(Command(1, ultimate)));
+                Assert.That(rejected.InnerException, Is.TypeOf<NativeFailure>(), "Another command cannot authorize the cue.");
+                envelope.CommandId = expectedId;
+                Deliver(Commit(Command(1, CoopNativeIntent.SignatureAction(1))));
+                Assert.That(root.Q(name), Is.Null);
+
+                envelope.CanonicalVersion = 3;
+                var accepted = Commit(Command(2, ultimate));
+                Assert.That(accepted.HasCommittedUltimate, Is.True);
+                Deliver(accepted);
+                var cue = root.Q<Label>(name);
+                Assert.That(cue?.text, Is.EqualTo("Kỹ năng tối thượng"));
+                Assert.That(cue.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                Assert.That(root.Q<Label>(CoopNativePresentation.TurnName), Is.Not.Null);
+                Assert.That(Time.timeScale, Is.EqualTo(timeScale));
+                Deliver(accepted);
+                Assert.That(root.Q(name), Is.SameAs(cue), "The same version cannot replace or restart a cue.");
+
+                typeof(CoopNativeHud).GetField("ultimateCueUntil", instance).SetValue(hud, Time.unscaledTime);
+                typeof(CoopNativeHud).GetMethod("Update", instance).Invoke(hud, null);
+                Deliver(accepted);
+                Assert.That(root.Q(name), Is.Null);
+                Deliver(Read(4));
+                Assert.That(root.Q(name), Is.Null);
+                envelope.CanonicalVersion = 6;
+                Deliver(Commit(Command(4, ultimate)));
+                Assert.That(root.Q(name), Is.Null, "Skipped versions are not a freshly observed commit.");
+            }
+            finally
+            {
+                WorldPresentationSettings.ReducedMotion = oldMotion;
+                if (hadLocale) PlayerPrefs.SetString(locale, oldLocale);
+                else PlayerPrefs.DeleteKey(locale);
+                UnityEngine.Object.DestroyImmediate(go);
+                UnityEngine.Object.DestroyImmediate(settings);
+            }
+        }
+
         private static string AdvancedProjection(string[] jewels, int multiplierCell = 0) =>
             Projection(elements: jewels, withAbilities: true, timed: true, multiplierCell: multiplierCell)
                 .Replace("\"version\":3", "\"version\":4")
@@ -563,7 +664,7 @@ namespace Aetheria.Tests
 
         private static string Projection(string pending = "null", int health = 400,
             int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2,
-            bool withAbilities = false, bool timed = false, int multiplierCell = 0)
+            bool withAbilities = false, bool timed = false, int multiplierCell = 0, bool solo = false)
         {
             elements ??= new[] { "fire" };
             var board = new System.Text.StringBuilder();
@@ -576,7 +677,7 @@ namespace Aetheria.Tests
             }
             var seats = new System.Text.StringBuilder();
             var pets = new[] { "icarus", "coralline", "volt", "terran" };
-            for (var index = 0; index < 4; index += 1)
+            for (var index = 0; index < (solo ? 1 : 4); index += 1)
             {
                 if (index > 0) seats.Append(',');
                 seats.Append("{\"seat\":").Append(index).Append(",\"petId\":\"").Append(pets[index])
@@ -605,7 +706,9 @@ namespace Aetheria.Tests
             }
             var timer = timed ? ",\"turnTimeoutMs\":15000,\"turnDeadlineUnixMs\":1015000,\"turnRemainingMs\":15000," +
                 "\"serverUnixMs\":1000000,\"maxRounds\":null,\"canEndTurn\":true,\"fireZoneActiveTurns\":0,\"fireZoneCells\":[]" : "";
-            return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"arena8-coop-pve\",\"version\":" + (timed ? 3 : 1) + "," +
+            return "{\"state\":{\"schemaVersion\":1,\"ruleset\":{\"id\":\"" +
+                (solo ? CoopNativeView.FunctionalSoloRuleset : CoopNativeView.Ruleset) + "\",\"version\":" +
+                (timed ? (solo ? 2 : 3) : 1) + "," +
                 "\"contentHash\":\"" + new string('a', 64) + "\",\"configDigest\":\"" + new string('b', 64) + "\"}," +
                 "\"you\":0,\"phase\":\"playing\",\"activeSeat\":0,\"turn\":0,\"round\":" + round + "," +
                 "\"boss\":{\"hp\":5000,\"maxHp\":5000,\"phase\":1,\"shield\":0,\"armorBreakPm\":0,\"dotDamage\":0,\"dotTurns\":0,\"transformed\":false}," +

@@ -1,0 +1,1189 @@
+{
+  "schemaVersion": 1,
+  "id": "arena8-campaign-v4-content-candidate",
+  "releaseState": "draft-only",
+  "routeAcquisitionEnabled": false,
+  "standardSBanner": {
+    "enabled": false,
+    "ratesAuthored": false
+  },
+  "meshCandidates": {
+    "dragon-fire-ignivar": {
+      "provider": "Tripo Studio",
+      "mode": "Smart Mesh P2.0",
+      "ownerSilhouetteReview": "keep-for-mesh-processing",
+      "privacy": "Sharing Only",
+      "jobId": "b6c5ecd7-1e38-4fdf-b410-25df2fdc5886",
+      "credits": 100,
+      "referenceSha256": "a8f7f1bcb16bfd7bfa8c441f3ec3fa3af18c0056f2e57a2fcd3080abf3b7af9a",
+      "glbSha256": "26827aaeaab6e42dcca29b4ff8d338e106a496e5073584799c5ac66cac5cf9b0",
+      "segmentedUvCandidate": {"derivedSha256": "068de744f73bedf0d86d31e39011ae808402500663cfa2692370533d9b0a54cb", "derivedBytes": 841316, "exactOrientedFaceCoverage": 11016, "providerPartCount": 38, "providerMaterialBindings": 0, "unityAdmission": false, "fiveViewSilhouetteUnchanged": true},
+      "segmentedExport": {"operationId": "4d720de7-8ec0-45c4-ac9c-73bf0c9b7ee4", "credits": 40, "glbBytes": 228620, "glbSha256": "c6c3995679be002ed943973ca91a9d6ac0bd11e2be46a5fab8b887179edb9b29", "meshParts": 38, "triangles": 11016},
+      "localUvCandidate": {"glbSha256": "1f23a06970af8cb4dbc737548e7a91a0ff606bcddb6b2e2075aa39b54901c8dd", "sourceSha256": "26827aaeaab6e42dcca29b4ff8d338e106a496e5073584799c5ac66cac5cf9b0", "fiveViewSilhouetteUnchanged": true, "uvCoveragePercent": 17.2024, "productionAdmission": false},
+      "glbBytes": 201384,
+      "providerFaces": 6633,
+      "providerVertices": 5568,
+      "triangles": 11016,
+      "hasUv": false,
+      "textures": 0,
+      "skins": 0,
+      "animations": 0
+    },
+    "bird-fire-cinderquill": {
+      "provider": "Tripo Studio",
+      "mode": "Smart Mesh P2.0",
+      "ownerSilhouetteReview": "keep-for-mesh-processing",
+      "privacy": "Sharing Only",
+      "jobId": "8da4fae5-9f09-49ca-a5cc-378cbdf0bd00",
+      "credits": 100,
+      "referenceSha256": "b2f4fd8489d0a520ee2d6d09543246cccfd6183ed7d9653ed24c4ca32a8af674",
+      "glbSha256": "996adc3d827591a4cf533ad5c5d41c57c8ebdeb618c5c253168c3a0df8b4af34",
+      "segmentedUvCandidate": {"derivedSha256": "105a55a239a046e49fd7183e8e95cb95502958cd1971dfb123b29a3793a27292", "derivedBytes": 660572, "exactOrientedFaceCoverage": 8386, "providerPartCount": 25, "providerMaterialBindings": 0, "unityAdmission": false, "fiveViewSilhouetteUnchanged": true},
+      "segmentedExport": {"operationId": "5b62b24a-463f-4d94-860a-02be5f080617", "credits": 40, "glbBytes": 221648, "glbSha256": "d530abee87baa62935043df59264a0eab62933a9c14cd2e571b2c4e5dc0aec67", "meshParts": 25, "triangles": 8386},
+      "localUvCandidate": {"glbSha256": "9474a1a51aa283ea4431ab8f009a93e5123cc830861ff312ccfaed537cf469f1", "sourceSha256": "996adc3d827591a4cf533ad5c5d41c57c8ebdeb618c5c253168c3a0df8b4af34", "fiveViewSilhouetteUnchanged": true, "uvCoveragePercent": 33.3084, "productionAdmission": false},
+      "glbBytes": 182652,
+      "providerFaces": 4876,
+      "providerVertices": 5259,
+      "triangles": 8386,
+      "hasUv": false,
+      "textures": 0,
+      "skins": 0,
+      "animations": 0
+    }
+  },
+  "maps": [
+    {
+      "id": "cinder-terraces",
+      "element": "fire",
+      "routes": [
+        {
+          "opponentPetId": "fire-coalwhisk",
+          "encounterId": "recruit-fire-coalwhisk",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "fire-emberloom",
+          "encounterId": "recruit-fire-emberloom",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-fire-coalwhisk",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "fire-kilnback",
+          "encounterId": "recruit-fire-kilnback",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-fire-emberloom",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "fire-flarequill",
+          "encounterId": "recruit-fire-flarequill",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-fire-kilnback",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "fire-scorchveil",
+          "encounterId": "recruit-fire-scorchveil",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-fire-flarequill",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-fire-cinderquill",
+          "encounterId": "recruit-bird-fire-cinderquill",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-fire-scorchveil",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "fire-pyrecrown",
+          "encounterId": "recruit-fire-pyrecrown",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-fire-cinderquill",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-fire-ignivar",
+          "encounterId": "recruit-dragon-fire-ignivar",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-fire-pyrecrown",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    },
+    {
+      "id": "tideglass-lagoon",
+      "element": "water",
+      "routes": [
+        {
+          "opponentPetId": "water-dewskip",
+          "encounterId": "recruit-water-dewskip",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "water-ripplefin",
+          "encounterId": "recruit-water-ripplefin",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-water-dewskip",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "water-foamcurl",
+          "encounterId": "recruit-water-foamcurl",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-water-ripplefin",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "water-tideweft",
+          "encounterId": "recruit-water-tideweft",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-water-foamcurl",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "water-abyssail",
+          "encounterId": "recruit-water-abyssail",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-water-tideweft",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-water-tidewren",
+          "encounterId": "recruit-bird-water-tidewren",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-water-abyssail",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "water-lagoonarch",
+          "encounterId": "recruit-water-lagoonarch",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-water-tidewren",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-water-tidecoil",
+          "encounterId": "recruit-dragon-water-tidecoil",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-water-lagoonarch",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    },
+    {
+      "id": "stormcoil-fields",
+      "element": "electric",
+      "routes": [
+        {
+          "opponentPetId": "electric-zipspool",
+          "encounterId": "recruit-electric-zipspool",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "electric-copperkip",
+          "encounterId": "recruit-electric-copperkip",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-electric-zipspool",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "electric-arcshell",
+          "encounterId": "recruit-electric-arcshell",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-electric-copperkip",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "electric-pulsecrest",
+          "encounterId": "recruit-electric-pulsecrest",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-electric-arcshell",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "electric-thundrel",
+          "encounterId": "recruit-electric-thundrel",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-electric-pulsecrest",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-electric-arcswift",
+          "encounterId": "recruit-bird-electric-arcswift",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-electric-thundrel",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "electric-stormdiadem",
+          "encounterId": "recruit-electric-stormdiadem",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-electric-arcswift",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-electric-voltrazik",
+          "encounterId": "recruit-dragon-electric-voltrazik",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-electric-stormdiadem",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    },
+    {
+      "id": "lantern-necropolis",
+      "element": "ghost",
+      "routes": [
+        {
+          "opponentPetId": "ghost-wickrift",
+          "encounterId": "recruit-ghost-wickrift",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ghost-shroudlet",
+          "encounterId": "recruit-ghost-shroudlet",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-ghost-wickrift",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ghost-bellshade",
+          "encounterId": "recruit-ghost-bellshade",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-ghost-shroudlet",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ghost-echowisp",
+          "encounterId": "recruit-ghost-echowisp",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ghost-bellshade",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ghost-veilrelic",
+          "encounterId": "recruit-ghost-veilrelic",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ghost-echowisp",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-ghost-pallidrone",
+          "encounterId": "recruit-bird-ghost-pallidrone",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ghost-veilrelic",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ghost-lanternwake",
+          "encounterId": "recruit-ghost-lanternwake",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-ghost-pallidrone",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-ghost-hollowmaw",
+          "encounterId": "recruit-dragon-ghost-hollowmaw",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-ghost-lanternwake",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    },
+    {
+      "id": "ochre-labyrinth",
+      "element": "ground",
+      "routes": [
+        {
+          "opponentPetId": "ground-clodkin",
+          "encounterId": "recruit-ground-clodkin",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ground-burrowick",
+          "encounterId": "recruit-ground-burrowick",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-ground-clodkin",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ground-dunebraid",
+          "encounterId": "recruit-ground-dunebraid",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-ground-burrowick",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ground-siltmaw",
+          "encounterId": "recruit-ground-siltmaw",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ground-dunebraid",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ground-terracrest",
+          "encounterId": "recruit-ground-terracrest",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ground-siltmaw",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-ground-dustrunner",
+          "encounterId": "recruit-bird-ground-dustrunner",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-ground-terracrest",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "ground-faultwarden",
+          "encounterId": "recruit-ground-faultwarden",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-ground-dustrunner",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-ground-terradrake",
+          "encounterId": "recruit-dragon-ground-terradrake",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-ground-faultwarden",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    },
+    {
+      "id": "dawn-prism-sanctum",
+      "element": "light",
+      "routes": [
+        {
+          "opponentPetId": "light-gleamlet",
+          "encounterId": "recruit-light-gleamlet",
+          "tier": "entry",
+          "prerequisiteEncounterId": null,
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "light-dawnpurl",
+          "encounterId": "recruit-light-dawnpurl",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-light-gleamlet",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "light-raymantle",
+          "encounterId": "recruit-light-raymantle",
+          "tier": "entry",
+          "prerequisiteEncounterId": "recruit-light-dawnpurl",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "light-solweft",
+          "encounterId": "recruit-light-solweft",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-light-raymantle",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "light-prismhalo",
+          "encounterId": "recruit-light-prismhalo",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-light-solweft",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "bird-light-prismkite",
+          "encounterId": "recruit-bird-light-prismkite",
+          "tier": "advanced",
+          "prerequisiteEncounterId": "recruit-light-prismhalo",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "light-dawnarchon",
+          "encounterId": "recruit-light-dawnarchon",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-bird-light-prismkite",
+          "recruitment": "first-qualified-clear"
+        },
+        {
+          "opponentPetId": "dragon-light-auroryx",
+          "encounterId": "recruit-dragon-light-auroryx",
+          "tier": "boss",
+          "prerequisiteEncounterId": "recruit-light-dawnarchon",
+          "recruitment": "first-qualified-clear"
+        }
+      ]
+    }
+  ],
+  "standardSCandidates": [
+    {
+      "rigProfile": "rig_q4",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Vulcaryn",
+        "en": "Vulcaryn",
+        "ja": "ヴァルカリン",
+        "ko": "불카린",
+        "zh": "沃尔卡林"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-fire-vulcaryn",
+        "element": "fire",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 228,
+        "attack": 27,
+        "defense": 15,
+        "critRateBp": 1450,
+        "critDamageBp": 17500,
+        "catalog": {
+          "name": "Vulcaryn",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "focused",
+          "healthBp": 100,
+          "attackBp": 130,
+          "defenseBp": 65,
+          "biasPm": 0
+        },
+        "skill": "pet-s-fire-vulcaryn-cinder-pounce",
+        "signature": "pet-s-fire-vulcaryn-ember-roar",
+        "ultimate": "pet-s-fire-vulcaryn-caldera-leap",
+        "guard": "pet-s-fire-vulcaryn-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-fire-vulcaryn-cinder-pounce",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 92,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-fire-vulcaryn-ember-roar",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 300,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        },
+        {
+          "id": "pet-s-fire-vulcaryn-caldera-leap",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 282,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-fire-vulcaryn-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    },
+    {
+      "rigProfile": "rig_q4",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Nerivelle",
+        "en": "Nerivelle",
+        "ja": "ネリヴェル",
+        "ko": "네리벨",
+        "zh": "内里维尔"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-water-nerivelle",
+        "element": "water",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 245,
+        "attack": 22,
+        "defense": 17,
+        "critRateBp": 1000,
+        "critDamageBp": 16500,
+        "catalog": {
+          "name": "Nerivelle",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "steady",
+          "healthBp": 135,
+          "attackBp": 90,
+          "defenseBp": 100,
+          "biasPm": 0
+        },
+        "skill": "pet-s-water-nerivelle-tide-dart",
+        "signature": "pet-s-water-nerivelle-lagoon-shelter",
+        "ultimate": "pet-s-water-nerivelle-moonpool-renewal",
+        "guard": "pet-s-water-nerivelle-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-water-nerivelle-tide-dart",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 74,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-water-nerivelle-lagoon-shelter",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "shield",
+            "target": "allies",
+            "value": 50,
+            "durationTurns": 2,
+            "stackingPm": 1000,
+            "contribution": "caster"
+          }
+        },
+        {
+          "id": "pet-s-water-nerivelle-moonpool-renewal",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "heal",
+            "target": "allies",
+            "value": 72,
+            "durationTurns": 0,
+            "stackingPm": 1000,
+            "contribution": "caster"
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-water-nerivelle-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    },
+    {
+      "rigProfile": "rig_insect",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Fulgarys",
+        "en": "Fulgarys",
+        "ja": "フルガリス",
+        "ko": "풀가리스",
+        "zh": "弗尔加里斯"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-electric-fulgarys",
+        "element": "electric",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 195,
+        "attack": 29,
+        "defense": 12,
+        "critRateBp": 1750,
+        "critDamageBp": 18500,
+        "catalog": {
+          "name": "Fulgarys",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "agile",
+          "healthBp": 90,
+          "attackBp": 155,
+          "defenseBp": 55,
+          "biasPm": 0
+        },
+        "skill": "pet-s-electric-fulgarys-spark-ram",
+        "signature": "pet-s-electric-fulgarys-charged-elytra",
+        "ultimate": "pet-s-electric-fulgarys-thunder-horn",
+        "guard": "pet-s-electric-fulgarys-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-electric-fulgarys-spark-ram",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 97,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-electric-fulgarys-charged-elytra",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "shield",
+            "target": "self-actor",
+            "value": 110,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        },
+        {
+          "id": "pet-s-electric-fulgarys-thunder-horn",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 290,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-electric-fulgarys-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    },
+    {
+      "rigProfile": "rig_q4",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Umbryss",
+        "en": "Umbryss",
+        "ja": "アンブリス",
+        "ko": "엄브리스",
+        "zh": "安布里斯"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-ghost-umbryss",
+        "element": "ghost",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 211,
+        "attack": 26,
+        "defense": 14,
+        "critRateBp": 1500,
+        "critDamageBp": 17500,
+        "catalog": {
+          "name": "Umbryss",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "focused",
+          "healthBp": 95,
+          "attackBp": 135,
+          "defenseBp": 70,
+          "biasPm": 0
+        },
+        "skill": "pet-s-ghost-umbryss-grave-step",
+        "signature": "pet-s-ghost-umbryss-hush-mark",
+        "ultimate": "pet-s-ghost-umbryss-moonless-prowl",
+        "guard": "pet-s-ghost-umbryss-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-ghost-umbryss-grave-step",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 89,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-ghost-umbryss-hush-mark",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "debuff",
+            "target": "boss",
+            "value": 180,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        },
+        {
+          "id": "pet-s-ghost-umbryss-moonless-prowl",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "damage-over-time",
+            "target": "boss",
+            "value": 104,
+            "durationTurns": 3,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-ghost-umbryss-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    },
+    {
+      "rigProfile": "rig_q4",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Jaderyx",
+        "en": "Jaderyx",
+        "ja": "ジェイデリクス",
+        "ko": "제이데릭스",
+        "zh": "翡翠里克斯"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-ground-jaderyx",
+        "element": "ground",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 282,
+        "attack": 21,
+        "defense": 23,
+        "critRateBp": 700,
+        "critDamageBp": 16000,
+        "catalog": {
+          "name": "Jaderyx",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "bulwark",
+          "healthBp": 150,
+          "attackBp": 65,
+          "defenseBp": 125,
+          "biasPm": 0
+        },
+        "skill": "pet-s-ground-jaderyx-jade-stamp",
+        "signature": "pet-s-ground-jaderyx-garden-rampart",
+        "ultimate": "pet-s-ground-jaderyx-qilin-thunder",
+        "guard": "pet-s-ground-jaderyx-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-ground-jaderyx-jade-stamp",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 82,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-ground-jaderyx-garden-rampart",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "shield",
+            "target": "allies",
+            "value": 45,
+            "durationTurns": 2,
+            "stackingPm": 1000,
+            "contribution": "caster"
+          }
+        },
+        {
+          "id": "pet-s-ground-jaderyx-qilin-thunder",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 260,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-ground-jaderyx-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    },
+    {
+      "rigProfile": "rig_q4",
+      "animationContract": "standard-animation-v3.1",
+      "vfxState": "not-produced",
+      "modelState": "not-produced",
+      "nameByLocale": {
+        "vi": "Solenne",
+        "en": "Solenne",
+        "ja": "ソレンヌ",
+        "ko": "솔렌",
+        "zh": "索莱娜"
+      },
+      "acquisition": "blocked",
+      "runtimePet": {
+        "id": "pet-s-light-solenne",
+        "element": "light",
+        "rarity": "standard-s",
+        "powerClass": "s",
+        "maxHp": 224,
+        "attack": 24,
+        "defense": 16,
+        "critRateBp": 1100,
+        "critDamageBp": 17000,
+        "catalog": {
+          "name": "Solenne",
+          "mapId": null
+        },
+        "growth": {
+          "curve": "steady",
+          "healthBp": 120,
+          "attackBp": 105,
+          "defenseBp": 85,
+          "biasPm": 0
+        },
+        "skill": "pet-s-light-solenne-prism-step",
+        "signature": "pet-s-light-solenne-gentle-dawn",
+        "ultimate": "pet-s-light-solenne-sunlit-reflection",
+        "guard": "pet-s-light-solenne-guard"
+      },
+      "runtimeSkills": [
+        {
+          "id": "pet-s-light-solenne-prism-step",
+          "kind": "skill",
+          "manaCost": 20,
+          "rageCost": 0,
+          "cooldownTurns": 1,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 84,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-light-solenne-gentle-dawn",
+          "kind": "signature",
+          "manaCost": 0,
+          "rageCost": 40,
+          "cooldownTurns": 2,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "cleanse",
+            "target": "allies",
+            "value": 1,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          }
+        },
+        {
+          "id": "pet-s-light-solenne-sunlit-reflection",
+          "kind": "ultimate",
+          "manaCost": 0,
+          "rageCost": 100,
+          "cooldownTurns": 6,
+          "powerPm": 1000,
+          "critEligible": true,
+          "effect": {
+            "kind": "damage",
+            "target": "boss",
+            "value": 269,
+            "durationTurns": 0,
+            "stackingPm": 1000
+          },
+          "upgradeLevels": [
+            {
+              "materials": 2,
+              "powerPm": 1100
+            },
+            {
+              "materials": 4,
+              "powerPm": 1200
+            }
+          ]
+        },
+        {
+          "id": "pet-s-light-solenne-guard",
+          "kind": "guard",
+          "manaCost": 0,
+          "rageCost": 0,
+          "cooldownTurns": 0,
+          "powerPm": 1000,
+          "critEligible": false,
+          "effect": {
+            "kind": "buff",
+            "target": "self-actor",
+            "value": 250,
+            "durationTurns": 2,
+            "stackingPm": 1000
+          }
+        }
+      ]
+    }
+  ]
+}

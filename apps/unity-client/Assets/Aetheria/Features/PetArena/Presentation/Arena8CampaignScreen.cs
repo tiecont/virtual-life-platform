@@ -24,6 +24,7 @@ namespace Aetheria.PetArena.Presentation
         private VisualElement root, board;
         private ScrollView content;
         private Wave1Manifest chapterManifest;
+        private Arena8RecruitmentCatalog recruitmentCatalog;
         private Wave1State state;
         private WaveAArtifactState artifacts;
         private Arena8View view;
@@ -182,6 +183,7 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task LoadLobby()
         {
+            recruitmentCatalog = null;
             chapterManifest ??= await api.Get<Wave1Manifest>("/manifest", lifetime.Token);
             if (chapterManifest?.maps == null || chapterManifest.maps.Length == 0)
                 throw new InvalidOperationException("Campaign chapters are unavailable.");
@@ -223,6 +225,31 @@ namespace Aetheria.PetArena.Presentation
                     Button(CampaignLocale.Text("map." + chapter.id.Replace('-', '_'), chapter.name) + (bossEncounter ? " · Boss" : " · Regular") +
                         (open ? (selected ? " · selected" : "") : " · Locked"),
                         () => { selectedMap = chapter.id; boss = bossEncounter; Draw(); }, enabled: open);
+                }
+            }
+
+            if (UsesFunctionalBoard)
+            {
+                var title = CampaignLocale.Text("map.recruitment", "Recruitment encounters");
+                Button(title, () => Run(async () =>
+                {
+                    recruitmentCatalog = await api.GetRecruitmentCatalog(lifetime.Token);
+                }, title));
+                if (recruitmentCatalog?.routes != null)
+                {
+                    if (recruitmentCatalog.routes.Length == 0)
+                        content.Add(Label(CampaignLocale.Text("map.no_recruitment", "No recruitment encounters available.")));
+                    var byId = recruitmentCatalog.routes.ToDictionary(route => route.id);
+                    foreach (var route in recruitmentCatalog.routes)
+                    {
+                        var mapName = CampaignLocale.Text("map." + route.mapId.Replace('-', '_'), route.mapId);
+                        var routeLabel = mapName + " · " + route.name + (route.cleared ? " ✓" : "");
+                        if (!route.canEnterSolo && route.prerequisiteEncounterId != null &&
+                            byId.TryGetValue(route.prerequisiteEncounterId, out var prerequisite) && !prerequisite.cleared)
+                            routeLabel += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite.name;
+                        Button(routeLabel, () => Run(() => AllocateMatch(route.mapId, route.id), route.name),
+                            enabled: route.canEnterSolo && state.FindPet(selectedPet) != null);
+                    }
                 }
             }
 

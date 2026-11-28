@@ -30,6 +30,8 @@ namespace Aetheria.PetArena.Presentation
         private bool terminalExitOnly;
         private string exitLabel;
         private CoopNativeView previous;
+        private Label ultimateCue;
+        private float ultimateCueUntil;
         private ArenaAudioDirector battleAudio;
         private CoopJewelHudEffects jewelEffects;
         private int jewelFeedbackSpeed = 1;
@@ -57,6 +59,7 @@ namespace Aetheria.PetArena.Presentation
             reading = false;
             nextRefresh = 0;
             previous = null;
+            ClearUltimateCue();
             jewelEffects?.Clear();
             jewelFeedbackSpeed = PlayerPrefs.GetInt(JewelSpeedPreference, 1) == 2 ? 2 : 1;
             feedback = null;
@@ -85,12 +88,19 @@ namespace Aetheria.PetArena.Presentation
         private void OnDestroy()
         {
             jewelEffects?.Clear();
+            ClearUltimateCue();
             if (battleAudio != null) Destroy(battleAudio.gameObject);
         }
 
         private void Update()
         {
             jewelEffects?.Update(Time.unscaledDeltaTime, jewelFeedbackSpeed, WorldPresentationSettings.ReducedMotion);
+            if (ultimateCue != null)
+            {
+                var left = ultimateCueUntil - Time.unscaledTime;
+                if (left <= 0) ClearUltimateCue();
+                else ultimateCue.style.opacity = WorldPresentationSettings.ReducedMotion ? 1 : Mathf.Min(1, left / .2f);
+            }
             var view = session?.State?.Coop;
             if (view == null) return;
             var remaining = session.RemainingTurnMilliseconds;
@@ -143,6 +153,9 @@ namespace Aetheria.PetArena.Presentation
             {
                 selected = -1;
                 feedback = null;
+                ClearUltimateCue();
+                if (view.Version - previous.Version == 1 && state.ReceiptId != null && state.HasCommittedUltimate)
+                    ultimateCueUntil = Time.unscaledTime + 1.5f;
                 if (view.Terminal)
                 {
                     battleAudio?.SetCombatScore(ArenaCombatScore.None);
@@ -152,6 +165,7 @@ namespace Aetheria.PetArena.Presentation
                 else if (view.BossState.Phase > previous.BossState.Phase)
                 {
                     feedback = "The Boss transformed";
+                    battleAudio?.SetCombatScore(ArenaCombatScore.BossPhaseTwo);
                     battleAudio?.Play(ArenaAudioCue.BossWarning);
                 }
                 else
@@ -176,7 +190,8 @@ namespace Aetheria.PetArena.Presentation
             if (previous == null && !view.Terminal && battleAudio != null)
             {
                 var regular = view.BossId?.EndsWith("-regular", StringComparison.Ordinal) == true;
-                battleAudio.SetCombatScore(regular ? ArenaCombatScore.Regular : ArenaCombatScore.Boss);
+                battleAudio.SetCombatScore(regular ? ArenaCombatScore.Regular :
+                    view.BossState.Phase >= 2 ? ArenaCombatScore.BossPhaseTwo : ArenaCombatScore.Boss);
                 if (view.BossId?.StartsWith("cinder-terraces-", StringComparison.Ordinal) == true)
                     battleAudio.SetAmbience(ArenaAmbience.Fire);
                 else if (view.BossId?.StartsWith("tideglass-lagoon-", StringComparison.Ordinal) == true)
@@ -313,7 +328,40 @@ namespace Aetheria.PetArena.Presentation
             }
             if (returnToHub != null || session != null) target.Add(BuildFooter(view));
             SizeBattle(body);
+            if (ultimateCueUntil > Time.unscaledTime) MountUltimateCue(target);
             if (requestReward) _ = ReadRewardAsync();
+        }
+
+        private void MountUltimateCue(VisualElement target)
+        {
+            if (ultimateCue == null)
+            {
+                ultimateCue = new Label(CampaignLocale.Text("battle.ultimate_skill", "Ultimate Skill"))
+                {
+                    name = "coop-ultimate-cue",
+                    pickingMode = PickingMode.Ignore
+                };
+                CampaignLocale.ApplyFont(ultimateCue);
+                var style = ultimateCue.style;
+                style.position = Position.Absolute;
+                style.left = new Length(25, LengthUnit.Percent);
+                style.right = new Length(25, LengthUnit.Percent);
+                style.bottom = 64;
+                style.backgroundColor = new Color(.09f, .07f, .17f, .96f);
+                style.color = new Color(1f, .9f, .67f);
+                style.paddingTop = 8;
+                style.paddingBottom = 8;
+                style.unityTextAlign = TextAnchor.MiddleCenter;
+                style.unityFontStyleAndWeight = FontStyle.Bold;
+            }
+            target.Add(ultimateCue);
+        }
+
+        private void ClearUltimateCue()
+        {
+            ultimateCue?.RemoveFromHierarchy();
+            ultimateCue = null;
+            ultimateCueUntil = 0;
         }
 
         private static void SizeBattle(ScrollView scroll) =>

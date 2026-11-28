@@ -361,6 +361,8 @@ Fields, Lantern Necropolis, Ochre Labyrinth and Dawn Prism Sanctum.
 The first complete pair in each map recruits the first Pet you do not
 already own from its published recruitment list, if one is available. Close the player
 to clean up the temporary profile, certificates, API, runtime and database.
+For the nine-kind shared board, run `pnpm play:linux:shared` with a compatible Linux player and runtime. The schema 6 candidate is published only to the disposable database. In a private 1280×720 display, `pnpm qa:linux:solo-shared` creates a guest, plays the opening Fire regular turn, and checks the screenshots, two committed receipts and pinned configuration.
+
 For the timed ruleset, run `pnpm play:linux:timed` with a player and runtime built from the timed-turn source. This publishes the schema 4 candidate to the disposable database. The active seat has fifteen seconds to act and may choose **End turn**. The server also advances an expired turn. The ordinary functional launcher continues to use schema 3.
 
 Each launch starts a fresh guest campaign. The player log stays under

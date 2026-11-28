@@ -20,6 +20,10 @@ import {verifyTimedSoloPublication} from './solo-timed-publication-probe.mjs';
 import {pureSwap} from './coop-visible-kind-swap.mjs';
 import {verifyAdvancedCoopPublication} from './coop-advanced-publication-probe.mjs';
 import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
+import {verifySharedCoopReplay} from './coop-shared-replay-probe.mjs';
+import {routeCandidate} from './campaign-route-candidate.mjs';
+import {verifyCampaignRouteAdmin} from './campaign-route-admin-probe.mjs';
+import {enableCampaignProbeRoutes,verifyCampaignRoute} from './campaign-route-e2e-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -66,18 +70,31 @@ assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
 const timedCoop=process.argv.includes('--timed-coop');
-const advancedCoop=process.argv.includes('--advanced-coop');
+const campaignGrid=process.argv.includes('--campaign-route-grid');
+const campaignSolo=campaignGrid||process.argv.includes('--campaign-route');
+const campaignCoop=process.argv.includes('--campaign-route-coop');
+assert.ok(!(campaignSolo&&campaignCoop)&&!(campaignGrid&&process.argv.includes('--campaign-route')),
+ 'Select one campaign route probe');
+const campaignMode=campaignGrid?'campaign-route-grid':campaignSolo?'campaign-route':campaignCoop?'campaign-route-coop':undefined;
+const routeAdmin=process.argv.includes('--route-admin');
+const authoredRoutes=Boolean(campaignMode)||routeAdmin;
+const sharedAdmin=process.argv.includes('--shared-admin');
+const sharedMode=process.argv.find(arg=>['--shared-solo','--shared-coop'].includes(arg))?.slice(2);
+const advancedCoop=process.argv.includes('--advanced-coop')||sharedMode==='shared-coop';
 const advancedSoloArg=process.argv.find(arg=>arg.startsWith('--advanced-solo='));
 const advancedSolo=advancedSoloArg?.slice('--advanced-solo='.length);
 assert.ok(advancedSoloArg===undefined||['nature','astral'].includes(advancedSolo),'Select Nature or Astral for the solo advanced fixture');
-const advanced=advancedCoop||Boolean(advancedSolo);
+const advanced=advancedCoop||Boolean(advancedSolo)||Boolean(sharedMode)||Boolean(campaignMode);
+assert.ok(!(authoredRoutes&&(sharedMode||advancedCoop||advancedSolo||sharedAdmin||timedSolo||timedCoop||unchangedCandidate||process.argv.includes('--solo')))
+ && !(routeAdmin&&(campaignMode||process.argv.includes('--direct'))),
+ 'Select one campaign route probe with its own publication and transport');
 assert.ok(!(advancedSolo&&(timedSolo||unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
 assert.ok(!(advancedCoop&&timedCoop),'Select one cooperative fixture');
 assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
-const solo=Boolean(advancedSolo)||timedSolo||unchangedCandidate||process.argv.includes('--solo');
+const solo=campaignSolo||sharedMode==='shared-solo'||Boolean(advancedSolo)||timedSolo||unchangedCandidate||process.argv.includes('--solo');
 assert.ok(!(solo&&(timedCoop||advancedCoop)),'Select either a solo fixture or the timed cooperative fixture');
-const direct=solo||timedCoop||advancedCoop||process.argv.includes('--direct');
-const functional=solo||timedCoop||advancedCoop||process.argv.includes('--functional');
+const direct=Boolean(campaignMode)||solo||timedCoop||advancedCoop||process.argv.includes('--direct');
+const functional=Boolean(campaignMode)||solo||timedCoop||advancedCoop||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
 const historicalBinary=historicalArg?.slice('--historical-binary='.length);
 assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
@@ -86,8 +103,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,routeAdmin?'route-admin-':campaignMode?campaignMode+'-':sharedMode?sharedMode+'-':advancedSolo?'advanced-solo-'+advancedSolo+'-':advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:(routeAdmin?'route-admin':campaignMode??(sharedAdmin?'shared-admin':sharedMode))??(advancedSolo?'advanced-functional-solo-'+advancedSolo:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental'),operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -130,9 +147,12 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=authoredRoutes||sharedMode||sharedAdmin?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json':advanced?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
- const seed=JSON.parse(seedBytes);
+ const shared=JSON.parse(seedBytes);
+ const seed=authoredRoutes?routeCandidate(shared,...await Promise.all([
+  'specs/pet-arena/campaign-v4-content.json','config/gameplay/candidates/map-encounters.json',
+ ].map(async path=>JSON.parse(await readFile(path,'utf8'))))):shared;
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
  if(timedCoop){
   // Only this disposable copy uses reachable victory and defeat conditions.
@@ -150,7 +170,7 @@ try{
   boss.regular.maxHp=1;
   boss.regular.defense=1;
   Object.assign(boss.regular.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
- }else if(!unchangedCandidate&&!advanced){
+ }else if(!unchangedCandidate&&!advanced&&!sharedAdmin&&!routeAdmin){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -174,7 +194,7 @@ try{
   }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  }
  const validator=new EngineGameplayBundleValidator(binary);
- const baseline=advanced?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
+ const baseline=advanced&&!authoredRoutes?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
  const installed=await installGameplayConfig(pool,ruleset,baseline,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
  const operatorPassword='synthetic-local-ab-operator-only',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
@@ -189,7 +209,7 @@ try{
  const configForRuntime=()=>readConfig({
   NODE_ENV:'test',DATABASE_URL:address.toString(),SESSION_SECRET:sessionSecret,
   ADMIN_ORIGIN:adminOrigin,OPERATOR_AUTH_KEY:operatorKey,
-  LOCAL_COOP_ROOMS:'1',LOCAL_COOP_NATIVE:'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
+  LOCAL_COOP_ROOMS:campaignSolo?'0':'1',LOCAL_COOP_NATIVE:campaignSolo?'0':'1',GAMEPLAY_CONFIG_VALIDATOR_BINARY:binary,
   LOCAL_ARENA8_NATIVE_BINARY:runtimeBinary,LOCAL_ARENA8_NATIVE_DATABASE_URL:runtime.toString(),
   ...(historicalBinary?{LOCAL_COOP_HISTORICAL_RUNTIME_BINARY:historicalBinary}:{}),
   LOCAL_ARENA8_NATIVE_DB_ROLE:role,LOCAL_ARENA8_NATIVE_CA_FILE:tls.caFile,
@@ -200,15 +220,24 @@ try{
  });
  async function startApi(){
   const config=configForRuntime();
-  app=await createApp(config,pool,false,solo?{...(naturalCampaign?{petArenaWave1:{enabled:true}}:{}),petArtifacts:{enabled:unchangedCandidate},petArena8Native:{
+  app=await createApp(config,pool,false,solo?{...(naturalCampaign||campaignMode?{petArenaWave1:{enabled:true}}:{}),petArtifacts:{enabled:unchangedCandidate||Boolean(campaignMode)},petArena8Native:{
    enabled:true,binary:runtimeBinary,databaseUrl:runtime.toString(),role,caFile:tls.caFile,
    storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,
    httpsOrigin:nativeOrigin,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE,
-  }}:{});
+  }}:campaignMode?{petArenaWave1:{enabled:true},petArtifacts:{enabled:true}}:{});
   await app.app.listen(apiPort,'127.0.0.1');
  }
  await startApi();
  let operator;
+ let browserAuthCounter=-1;
+ async function freshBrowserCode(){
+  const nextWindow=(browserAuthCounter+1)*30_000;
+  const wait=nextWindow-Date.now();
+  if(wait>0)await pause(wait+100);
+  const now=Date.now();
+  browserAuthCounter=Math.floor(now/30_000);
+  return totp(operatorSecret,now);
+ }
  if(direct){
   const response=await app.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},
    payload:{password:operatorPassword,code:totp(operatorSecret,Date.now())}});
@@ -241,7 +270,7 @@ try{
  assert.equal(unauthorized.status(),401);
  await page.goto(adminOrigin+'/admin');
  await page.getByLabel('Password',{exact:true}).fill(operatorPassword);
- await page.getByLabel('Authenticator code',{exact:true}).fill(totp(operatorSecret,Date.now()));
+ await page.getByLabel('Authenticator code',{exact:true}).fill(await freshBrowserCode());
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'City at a glance',exact:true})).toBeVisible({timeout:60000});
  await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
@@ -310,9 +339,12 @@ try{
   const active=await dbActive();
   const bundle=globalThis.structuredClone(advanced?seed:(await dbConfig(active.version)).bundle);
   const fields=advanced?values(bundle):variants[label],boss=bundle.bosses[0];
-  if(advanced){
+  if(campaignMode){
+   enableCampaignProbeRoutes(bundle,{coOp:campaignCoop,grid:campaignGrid});
+  }else if(advanced){
    if(label==='B'){
-    bundle.advancedJewels.frostReductionPm[0]++;
+    if(sharedMode==='shared-coop')bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight++;
+    else bundle.advancedJewels.frostReductionPm[0]++;
     bundle.contentRevision++;
    }
   }else{
@@ -440,6 +472,86 @@ try{
   mark('published '+label+' through typed browser controls, engine validation and PostgreSQL selection',{version:created.version,digest:checked.digest,activeRevision:publishResult.activeRevision,fields});
   return configurations[label];
  }
+ if(routeAdmin){
+  async function refreshOperatorVerification(){
+   await button('Session & security').click();
+   await expect(page.getByRole('heading',{name:'Refresh verification',exact:true})).toBeVisible();
+   await page.getByLabel('Password',{exact:true}).fill(operatorPassword);
+   await page.getByLabel('Authenticator code',{exact:true}).fill(await freshBrowserCode());
+   const response=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/step-up'
+    &&value.request().method()==='POST');
+   await button('Verify again').click();
+   assert.equal((await response).status(),200);
+   await expect(page.getByText('Verification refreshed.',{exact:true})).toBeVisible();
+   await button('Gameplay configuration').click();
+  }
+  await verifyCampaignRouteAdmin({
+   page,expect,artifact,installed,dbConfig,dbActive,validator,ruleset,mark,clickMutation,button,versionRow,activeEntry,auditSection,
+   refreshOperatorVerification,
+  });
+ }else if(sharedAdmin){
+  const nature=page.getByLabel('Nature spawn weight',{exact:true});
+  const matrix=page.getByRole('region',{name:'Elemental damage matrix'});
+  await expect(nature).toBeDisabled();
+  await expect(matrix.getByRole('spinbutton')).toHaveCount(36);
+  const weight=Number(await nature.inputValue())+1;
+  const created=await clickMutation('New draft from active','draft');
+  await expect(nature).toBeEnabled();
+  await page.getByLabel('Find a Pet').fill('Icarus');
+  const icarus=seed.pets.find(pet=>pet.id==='pet-v3-fire-icarus');
+  await control('Icarus critRateBp',icarus.critRateBp+1);
+  await page.getByText('Per-Pet growth',{exact:true}).click();
+  await page.getByRole('combobox',{name:'Icarus growth curve',exact:true}).selectOption('agile');
+  await control('Attack growth (bp)',icarus.growth.attackBp+1);
+  await control('Frost damage reduction (‰) · match 3',seed.advancedJewels.frostReductionPm[0]+1);
+  const firstCoins=page.getByRole('group',{name:'First Boss victory',exact:true}).getByLabel('Coins',{exact:true});
+  const coins=seed.bosses[0].rewardPolicy.firstClear.coins+1;
+  await firstCoins.fill(String(coins));
+  await control('Nature spawn weight',weight);
+  await control('Fire against Water (%)',60);
+  await control('Fire against Fire (%)',99);
+  const rejected=page.waitForResponse(value=>new URL(value.url()).pathname.endsWith('/gameplay-config-validate'));
+  await button('Save and validate').click();
+  assert.equal((await rejected).status(),422);
+  assert.equal((await dbActive()).version,installed.version);
+  await expect(page.getByLabel('Fire against Fire (%)',{exact:true})).toBeEnabled();
+  await control('Fire against Fire (%)',100);
+  await control('Boss attack',Number(seed.bosses[0].attack)+1);
+  await button('Compare with active').click();
+  await expect(page.getByRole('heading',{name:'Differences from active'})).toBeVisible();
+  const checked=await clickMutation('Save and validate','validate');
+  await clickMutation('Publish validated version','publish');
+  const saved=await dbConfig(created.version);
+  const element=saved.bundle.elements.find(row=>row.element==='fire');
+  assert.equal(element.effectiveness.find(row=>row.element==='water').permille,600);
+  assert.equal(saved.bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight,weight);
+  assert.equal(saved.bundle.bosses[0].attack,seed.bosses[0].attack+1);
+  const savedPet=saved.bundle.pets.find(pet=>pet.id===icarus.id);
+  assert.equal(savedPet.critRateBp,icarus.critRateBp+1);
+  assert.deepEqual(savedPet.growth,{...icarus.growth,curve:'agile',attackBp:icarus.growth.attackBp+1});
+  assert.deepEqual(saved.bundle.advancedJewels.frostReductionPm,[seed.advancedJewels.frostReductionPm[0]+1,...seed.advancedJewels.frostReductionPm.slice(1)]);
+  assert.equal(saved.bundle.bosses[0].rewardPolicy.firstClear.coins,coins);
+  assert.equal(saved.content_digest,checked.contentDigest);
+  assert.equal((await dbConfig(installed.version)).content_digest,installed.digest);
+  await expect(nature).toBeDisabled();
+  await expect(firstCoins).toBeDisabled();
+  const rolled=await clickMutation('Roll back','rollback',versionRow(installed.version));
+  await expect(activeEntry('Digest')).toHaveAttribute('title',installed.digest);
+  assert.deepEqual(await dbActive(),{version:installed.version,revision:rolled.activeRevision});
+  assert.equal((await dbConfig(created.version)).content_digest,checked.contentDigest);
+  const auditRequest=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/admin/gameplay-config-audit');
+  await button('Load audit',auditSection()).click();
+  const auditResponse=await auditRequest;
+  assert.equal(auditResponse.status(),200);
+  for(const [action,version] of [['publish',created.version],['rollback',installed.version]]){
+   // Cell contents are table text, so select the row by its action and version.
+   const record=auditSection().locator('tbody tr').filter({has:page.getByRole('cell',{name:action,exact:true})})
+    .filter({has:page.locator('td:nth-child(3)').filter({hasText:new RegExp('^'+version+'$')})});
+   await expect(record).toHaveCount(1);
+  }
+  mark('Pet stats and growth, Frost limits and first-clear rewards survived publication and audited rollback',{pet:icarus.id,coins,publishedVersion:created.version,restoredVersion:rolled.version});
+  mark('shared nine weights, fixed Boss attack and matrix through Chromium, engine and PostgreSQL',{weight,digest:checked.contentDigest,invalidDiagonalStatus:422,originalDigest:installed.digest});
+ }else{
  const A=unchangedCandidate?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');
  let addressIndex=1;
  async function guest(name,petId){
@@ -447,6 +559,13 @@ try{
   assert.equal(response.statusCode,201,JSON.stringify(response.json()));
   const body=response.json(),accountId=body.profile.id;
   const auth={cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId};
+  if(campaignMode){
+   const state=await app.http.inject({url:'/v1/pets/wave1/state',headers:{cookie:auth.cookie}});
+   assert.equal(state.statusCode,200,state.body);
+   const owned=state.json().pets.find(row=>row.petId===petId);
+   assert.equal(owned?.level,1);
+   return {...auth,instanceId:owned.ownedPetInstanceId};
+  }
   if(naturalCampaign)return auth;
   await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
   const owned=await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3) RETURNING owned_pet_instance_id',[accountId,petId,'starter']);
@@ -455,7 +574,7 @@ try{
  async function post(auth,url,payload){
   const send=()=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
   const response=await send();
-  if(!naturalCampaign||response.statusCode!==429)return response;
+  if(!(naturalCampaign||campaignGrid)||response.statusCode!==429)return response;
   const seconds=Number(response.headers['retry-after']??60);
   assert.ok(Number.isFinite(seconds)&&seconds>0&&seconds<=60);
   mark('waited for the published native API rate window',{seconds});
@@ -463,7 +582,8 @@ try{
   return send();
  }
  const get=(auth,url)=>app.http.inject({url,headers:{cookie:auth.cookie}});
- const pets=timedSolo||advancedSolo?['fire-coalwhisk']:unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
+ const pets=campaignSolo?['water-dewskip']:campaignCoop?['water-dewskip','ground-clodkin','fire-coalwhisk','water-dewskip']
+ :sharedMode==='shared-solo'||timedSolo||advancedSolo?['fire-coalwhisk']:unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
@@ -483,7 +603,7 @@ try{
   mark('Achievement Points gate used the active Admin version',{version:version.version,points,requiredPoints:eligibility.requiredPoints,eligible:allowed,createStatus:result?.statusCode});
   return result?.json();
  }
- if(!unchangedCandidate&&!timedSolo&&!advancedSolo)await grant(host,timedCoop?6000:5250);
+ if(!campaignMode&&!unchangedCandidate&&!timedSolo&&!advancedSolo&&sharedMode!=='shared-solo')await grant(host,timedCoop?6000:5250);
  const caPem=await readFile(tls.caFile,'utf8');
  async function prepareRoom(version,room){
   if(!room){
@@ -548,7 +668,7 @@ try{
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,match.row.content_hash);
   assert.equal(view.wssUrl,nativeOrigin.replace('https:','wss:')+'/rt/v1');
-  assert.equal(view.clientBuild,advancedCoop?'unity-native-v3':undefined);
+  assert.equal(view.clientBuild,campaignMode||sharedMode?'unity-native-v4':advancedCoop?'unity-native-v3':undefined);
   return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt),url:view.wssUrl};
  }
  async function openConnection(match,seat){
@@ -618,11 +738,13 @@ try{
    if(response.body.case==='rejection')return {code:response.body.value.code};
    if(response.body.case==='receipt'){
     const projection=Buffer.from(response.body.value.authorizedProjection);
-    return {
+    const receipt={
      state:JSON.parse(projection.toString('utf8')).state,
      version:Number(response.canonicalVersion),committed:response.body.value.committed,
      ...(advancedCoop?{projectionHash:createHash('sha256').update(projection).digest('hex')}:{}),
     };
+    if(sharedMode==='shared-coop')Object.defineProperty(receipt,'projectionBytes',{value:projection});
+    return receipt;
    }
   }
   throw Error('Native command did not return a matching result');
@@ -789,6 +911,59 @@ try{
   await verifySoloCampaign({
    natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
    dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
+  });
+ }else if(campaignMode){
+  await verifyCampaignRoute({
+   coOp:campaignCoop,grid:campaignGrid,pool,published:A,original:await dbConfig(installed.version),originalVersion:installed.version,host,members,
+   outsider:await guest('QA route outsider','water-dewskip'),mark,get,post,soloAdmission,native,
+   connections,closeMatch,prepareRoom,allocate,legalSwap,drain:()=>new CoopSettlement(pool).drain(),
+  });
+ }else if(sharedMode){
+  const authored=A.bundle.bosses.find(row=>row.mapId==='cinder-terraces');
+  assert.ok(!Object.hasOwn(authored,'solo'));
+  let match;
+  if(solo){
+   const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:authored.mapId,encounterId:authored.mapId+'-boss'};
+   const admission=await soloAdmission(input);
+   assert.equal(admission.clientBuild,'unity-native-v4');
+   match={input,row:{match_id:admission.matchId,content_hash:admission.contentHash},version:A,admission};
+  }else match=await allocate(A);
+  connections.push(match);
+  const started=await native(match,0,0,{kind:'start'});
+  assert.equal(started.committed,true,JSON.stringify(started));
+  assert.equal(started.state.ruleset.configDigest,A.digest);
+  assert.equal(started.state.ruleset.version,solo?4:5);
+  assert.equal(started.state.participants.length,solo?1:4);
+  assert.equal(started.state.bossId,authored.id);
+  assert.equal(started.state.boss.maxHp,authored.maxHp);
+  assert.equal(started.state.turnTimeoutMs,15000);
+  const vocabulary=A.bundle.board.functionalTiles.spawnWeights.map(row=>row.kind);
+  assert.equal(vocabulary.length,9);
+  const replacement=solo?undefined:await publish('B');
+  if(replacement){
+   assert.notEqual(replacement.digest,A.digest);
+   assert.notEqual(replacement.hash,A.hash);
+   const selectedWeight=bundle=>bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight;
+   assert.equal(selectedWeight(replacement.bundle),selectedWeight(A.bundle)+1);
+  }
+  // Publish before the swap so recovery gets the full new seat deadline.
+  const action=legalSwap(started.state.board),commandId=randomBytes(16);
+  const swapped=await native(match,0,started.version,action,commandId);
+  assert.equal(swapped.committed,true,JSON.stringify(swapped));
+  assert.equal(swapped.version,started.version+1);
+  for(const state of [started.state,swapped.state]){
+   assert.equal(state.board.length,64);
+   assert.ok(state.board.every(tile=>vocabulary.includes(tile.kind)));
+  }
+  const read=await native(match,solo?0:1,0);
+  assert.deepEqual(read.state.board,swapped.state.board);
+  mark('natural shared board and fixed Warden through authenticated allocation and committed swap',{
+   seats:started.state.participants.length,bossId:authored.id,bossMaxHp:started.state.boss.maxHp,
+   configDigest:A.digest,firstVersion:started.version,swapVersion:swapped.version,
+   observedKinds:[...new Set([...started.state.board,...swapped.state.board].map(tile=>tile.kind))].sort(),
+  });
+  if(replacement)await verifySharedCoopReplay({
+   pool,members,match,started,swapped,action,commandId,replacement,mark,native,restart,dbActive,allocationRow,
   });
  }else if(advancedSolo){
   await verifyAdvancedSoloJewel({
@@ -1002,6 +1177,7 @@ try{
  const third=await allocate(A);
  await settle(third,await behavior(third,await launch(third)));
  mark('a new post-rollback native match selected A again',{matchId:third.row.match_id,version:A.version,digest:A.digest});
+ }
  }
  assert.deepEqual(facts.pageErrors??[],[]);
  assert.deepEqual(bindErrors,[]);

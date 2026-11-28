@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import {access,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
 import {performance} from 'node:perf_hooks';
 import {createRequire} from 'node:module';
+import {playFeedbackTurns} from './shared-feedback.mjs';
+import {pureSwap} from '../coop-visible-kind-swap.mjs';
 import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-probe.mjs';
 import {prepareAdmissionTestTls} from '../../scripts/runtime-admission-test-tls.mjs';
 const require=createRequire(import.meta.url);
@@ -29,8 +31,10 @@ const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
 const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
-assert.ok(['functional','elemental','advanced-water'].includes(boardMode),'Unknown packaged board fixture');
+assert.ok(['functional','elemental','advanced-water','shared-rng'].includes(boardMode),'Unknown packaged board fixture');
 const advancedWater=boardMode==='advanced-water';
+const sharedRng=boardMode==='shared-rng';
+const fourClients=process.env.PACKAGED_QA_SCOPE==='four-clients';
 const isFunctional=boardMode!=='elemental';
 function helloMessage(ticket,contentHash,build){return Buffer.concat([stringField(1,ticket),stringField(2,build??(isFunctional?'unity-native-v2':'coop-process-v1')),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
@@ -73,8 +77,36 @@ function legalSwap(board, preferOffense=false){
  throw Error('Committed board has no legal swap');
 }
 
+// Recompute the host's durable native receipt fingerprints for these two
+// inputs. View receipts and automatic timeout cannot satisfy this proof.
+function journalFingerprint(row,matchId,action){
+ const sized=(tag,bytes)=>{
+  const header=Buffer.alloc(5);
+  header.writeUInt8(tag);
+  header.writeUInt32BE(bytes.length,1);
+  return Buffer.concat([header,bytes]);
+ };
+ const text=value=>sized(5,Buffer.from(value));
+ const uuid=value=>sized(4,Buffer.from(value.replaceAll('-',''),'hex'));
+ const number=(tag,value)=>{
+  const bytes=Buffer.alloc(9);
+  bytes.writeUInt8(tag);
+  bytes.writeBigInt64BE(BigInt(value),1);
+  return bytes;
+ };
+ const list=values=>{
+  const header=Buffer.alloc(5);
+  header.writeUInt8(6);
+  header.writeUInt32BE(values.length,1);
+  return Buffer.concat([header,...values]);
+ };
+ const canonicalAction=action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
+ const payload=list([text(row.actor),uuid(matchId),uuid(row.command),number(2,row.epoch),number(2,row.version-1),canonicalAction]);
+ return createHash('sha256').update(Buffer.from('VL-CANON\x01')).update(list([text('vl.command.v1'),payload])).digest('hex');
+}
+
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve(process.env.PACKAGED_QA_ENGINE);
-const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_REVISION};
+const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_PLAYER_REVISION??process.env.PACKAGED_QA_REVISION};
 const nativeFailures=new WeakMap();
 const root=resolve(process.env.PACKAGED_QA_RUN);
 const roster=['Unity player', 'Integration seat 2','Integration seat 3','Integration seat 4'];
@@ -110,31 +142,38 @@ try{
  const validator=new EngineGameplayBundleValidator(binary);
  const installation=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  console.log('Installed seed configuration',installation.version,installation.digest);
- const bundle=JSON.parse(await readFile(isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json','utf8'));
- // Historical captures use the elemental QA publication at content revision 4.
- bundle.contentRevision=isFunctional?bundle.contentRevision+1:4;
+ const sourceBundlePath=sharedRng?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json'
+  :isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const bundle=JSON.parse(await readFile(sourceBundlePath,'utf8'));
  const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
  const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
- for(const boss of [fire,water]){
-  boss.attackModel.baseDamage=1;
-  boss.attackModel.perRoundDamage=0;
-  boss.attackModel.minimumDamage=1;
-  boss.requiredRoomPoints=0;
- }
- // A test-only publication makes the Fire match winnable with legal swaps.
- fire.maxHp=7000;
- water.requiredRoomPoints=333;
- fire.phase.maxGrowthBp=5000;
- fire.phase.currentBp=1500;
- fire.rewardPolicy.firstClear={achievementPoints:333,coins:144,exp:105,materials:7};
- bundle.multiplier.schedule[0].tiers[0].weight=1;
- bundle.multiplier.schedule[0].tiers.push({...bundle.multiplier.schedule[1].tiers[1],weight:10000});
- fire.defense=1;
- bundle.party.maxRounds=32;
- for(const skill of bundle.skills){
-  if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=isFunctional?0:1;
-  if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=isFunctional?0:1;
-  if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=isFunctional?0:1;
+ if(sharedRng){
+  assert.equal(bundle.schemaVersion,6);
+  fire.requiredRoomPoints=0;
+ }else{
+  // Historical captures use the elemental QA publication at content revision 4.
+  bundle.contentRevision=isFunctional?bundle.contentRevision+1:4;
+  for(const boss of [fire,water]){
+   boss.attackModel.baseDamage=1;
+   boss.attackModel.perRoundDamage=0;
+   boss.attackModel.minimumDamage=1;
+   boss.requiredRoomPoints=0;
+  }
+  // A test-only publication makes the Fire match winnable with legal swaps.
+  fire.maxHp=7000;
+  water.requiredRoomPoints=333;
+  fire.phase.maxGrowthBp=5000;
+  fire.phase.currentBp=1500;
+  fire.rewardPolicy.firstClear={achievementPoints:333,coins:144,exp:105,materials:7};
+  bundle.multiplier.schedule[0].tiers[0].weight=1;
+  bundle.multiplier.schedule[0].tiers.push({...bundle.multiplier.schedule[1].tiers[1],weight:10000});
+  fire.defense=1;
+  bundle.party.maxRounds=32;
+  for(const skill of bundle.skills){
+   if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=isFunctional?0:1;
+   if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=isFunctional?0:1;
+   if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=isFunctional?0:1;
+  }
  }
  const verdict=await validator.validate('arena8-coop-pve',bundle);
  await writeFile(join(root,'test-publication.json'),JSON.stringify(bundle,null,2)+'\n');
@@ -188,7 +227,7 @@ try{
  const post=(auth,url,payload)=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
  const pets=['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'];
  const members=[null];
- for(const [index,pet] of pets.slice(1).entries())members.push(await guest('Integration seat '+(index+1),pet));
+ if(!fourClients)for(const [index,pet] of pets.slice(1).entries())members.push(await guest('Integration seat '+(index+1),pet));
  const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
  await writeFile(join(root,'game-endpoint'),endpoint);
  await writeFile(join(root,'game-ca'),tls.caFile);
@@ -202,10 +241,10 @@ try{
   }
   throw Error('Timed out waiting for '+file);
  }
- async function until(query, values = []) {
+ async function until(query, values = [], observed = () => true) {
   for(let i=0;i<2400&&!stopping;i++){
    const result=await pool.query(query, values);
-   if(result.rows.length)return result.rows[0];
+   if(result.rows.length && observed(result.rows[0]))return result.rows[0];
    await new Promise(r=>setTimeout(r,500));
   }
   throw Error('Timed out waiting for player action');
@@ -219,7 +258,7 @@ try{
  const hostTickets=async()=> (await pool.query(
    'SELECT count(t.nonce)::int AS n FROM coop_allocations a LEFT JOIN platform_native_ticket_uses t ON t.world_id=a.world_id AND t.account_id=$2 WHERE a.room_id=$1',
    [room.roomId,host])).rows[0].n;
- facts.accounts=[roster[0],...roster.slice(1)];
+ if(!fourClients)facts.accounts=[roster[0],...roster.slice(1)];
  console.log('player-created',room.roomId,room.bossId);
  await writeFile(join(root,'room-id'),room.roomId);
  await json('room-id-json.json',room);
@@ -228,7 +267,7 @@ try{
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/pet',{requestId:randomUUID(),petId:member.petId,ownedPetInstanceId:member.instanceId})).statusCode,200);
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/ready',{requestId:randomUUID(),ready:true})).statusCode,200);
  }
- console.log('three integrations ready');
+ if(!fourClients)console.log('three integrations ready');
  await until("SELECT match_id FROM coop_allocations WHERE status='ACTIVE'");
  const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations WHERE room_id=$1',[room.roomId])).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
@@ -250,6 +289,51 @@ try{
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
+ if(fourClients){
+  const seats=(await pool.query(
+   'SELECT seat,account_id,pet_id,owned_pet_instance_id,ready FROM coop_room_seats WHERE room_id=$1 ORDER BY seat',[room.roomId],
+  )).rows;
+  assert.deepEqual(seats.map(seat=>seat.seat),[0,1,2,3]);
+  assert.equal(new Set(seats.map(seat=>seat.account_id)).size,4);
+  assert.ok(seats.every(seat=>seat.ready&&seat.pet_id&&seat.owned_pet_instance_id));
+  assert.equal(seats[0].account_id,host);
+  await json('four-allocation.json',{roomId:room.roomId,matchId:allocation.match_id,seatCount:seats.length});
+  let lastSeats;
+  await until(
+   `SELECT ARRAY(SELECT s.seat FROM coop_room_seats s WHERE s.room_id=$2 AND EXISTS
+      (SELECT 1 FROM platform_native_ticket_uses t WHERE t.world_id=$1 AND t.account_id=s.account_id)
+      ORDER BY s.seat) AS admitted`, [allocation.world_id,room.roomId], ({admitted}) => {
+    const summary=admitted.join(',');
+    if(summary!==lastSeats)console.log('Four-player consumed ticket seats:',summary || 'none');
+    lastSeats=summary;
+    return admitted.length===4;
+   });
+  const tickets=(await pool.query(
+   `SELECT account_id, count(DISTINCT session_id)::int AS sessions, count(DISTINCT nonce)::int AS tickets,
+      count(*) FILTER (WHERE boot_id=$2)::int AS matching_boot FROM platform_native_ticket_uses
+     WHERE world_id=$1 GROUP BY account_id ORDER BY account_id`,[allocation.world_id,allocation.boot_id],
+  )).rows;
+  const worldSessions=(await pool.query(
+   'SELECT count(DISTINCT session_id)::int AS sessions, count(DISTINCT nonce)::int AS tickets FROM platform_native_ticket_uses WHERE world_id=$1',
+   [allocation.world_id],
+  )).rows[0];
+  assert.deepEqual(tickets.map(ticket=>ticket.account_id),seats.map(seat=>seat.account_id).sort());
+  assert.ok(tickets.every(ticket=>ticket.sessions===1&&ticket.tickets>0&&ticket.tickets===ticket.matching_boot));
+  assert.equal(worldSessions.sessions,4);
+  assert.ok(worldSessions.tickets>=4);
+  await json('four-native-ready.json',{accounts:tickets.length,sessions:worldSessions.sessions});
+  const start=await until(
+   `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+      encode(payload_fingerprint,'hex') AS fingerprint FROM game_native_receipts WHERE match_id=$1 AND committed_version=1`,
+   [allocation.match_id]);
+  assert.equal(start.actor,host);
+  assert.equal(start.fingerprint,journalFingerprint(start,allocation.match_id,{kind:'start'}));
+  await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/board.json')));
+  await json('four-native-run.json',{harnessRevision:facts.backendSource,playerRevision:facts.unitySource,roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
+   digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
+   distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version});
+  facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');
+ }else{
  const fireTarget={room,allocation,boss};
  async function freshTicket(seat,{room,allocation,boss}=fireTarget){
   const member=members[seat];
@@ -262,7 +346,7 @@ try{
   assert.equal(view.accountId,member.accountId);
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,allocation.content_hash);
-  assert.equal(view.clientBuild,advancedWater&&boss.id===water.id?'unity-native-v3':undefined);
+  assert.equal(view.clientBuild,sharedRng?'unity-native-v4':advancedWater&&boss.id===water.id?'unity-native-v3':undefined);
   return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
@@ -361,6 +445,77 @@ try{
   if(!stopping)reportNativeFailure(error,'receipt',seat,connection);
   throw error;
  }
+ if(sharedRng){
+  try{
+   await Promise.all([1,2,3].map(async seat=>{connections[seat]=await openConnection(seat);}));
+   await until('SELECT nonce FROM platform_native_ticket_uses WHERE world_id=$1 AND account_id=$2',[allocation.world_id,host]);
+   const authenticated=(await pool.query(
+    'SELECT count(DISTINCT account_id)::int AS count FROM platform_native_ticket_uses WHERE world_id=$1',
+    [allocation.world_id])).rows[0].count;
+   assert.equal(authenticated,4);
+   async function observeVersion(version){
+    for(let attempt=0;attempt<150&&!stopping;attempt++){
+     const view=await intent(connections[1],0,'','arena8-coop.view.v1');
+     assert.equal(view.body.case,'receipt');
+     const observed=Number(view.canonicalVersion);
+     assert.ok(observed<=version,'Timed board advanced past the requested version');
+     if(observed===version){
+      const state=JSON.parse(Buffer.from(view.body.value.authorizedProjection)).state;
+      assert.equal(state.ruleset.configDigest,verdict.digest);
+      assert.equal(state.ruleset.contentHash,verdict.contentHash);
+      return {version,state,observedUnixMs:Date.now()};
+     }
+     await new Promise(resolve=>setTimeout(resolve,100));
+    }
+    throw Error('Timed out observing shared RNG version '+version);
+   }
+   const started=await observeVersion(1);
+   // Prefer an advanced match when the unchanged natural opening offers one.
+   // No reroll, candidate weight change or generated jewel is involved.
+   const advanced=['astral','frost','nature'].map(kind=>pureSwap(started.state.board,kind,true)).find(Boolean);
+   const move=advanced?.action??legalSwap(started.state.board);
+   await json('shared-started.json',{...started,move});
+   const swapped=await observeVersion(2);
+   const rows=(await pool.query(
+    `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+        encode(payload_fingerprint,'hex') AS fingerprint,encode(receipt_hash,'hex') AS receipt_hash
+     FROM game_native_receipts WHERE match_id=$1 AND committed_version IN (1,2) ORDER BY committed_version`,
+    [allocation.match_id])).rows;
+   assert.deepEqual(rows.map(row=>row.version),[1,2]);
+   const receipts=rows.map((row,index)=>{
+    const action=index===0?{kind:'start'}:move;
+    assert.equal(row.actor,host);
+    assert.equal(row.fingerprint,journalFingerprint(row,allocation.match_id,action),
+     'The authenticated host command must match the exact packaged input');
+    return {version:row.version,epoch:row.epoch,actor:'host',action,fingerprint:row.fingerprint,receiptHash:row.receipt_hash};
+   });
+   await json('shared-swapped.json',{...swapped,receipts});
+   await waitForFile('shared-swap-observed');
+   if(process.env.PACKAGED_QA_SCOPE==='feedback'){
+    await playFeedbackTurns({start:swapped,observe:observeVersion,chooseBasic:legalSwap,save:json,wait:waitForFile,
+     async peerSwap({state,version},action){
+      const response=await intent(connections[state.activeSeat],version,JSON.stringify({epoch:1,action}));
+      assert.equal(response.body.case,'receipt');
+      assert.equal(Number(response.canonicalVersion),version+1);
+     },
+     async verifyHost(version,action){
+      const {rows}=await pool.query(
+       `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+          encode(payload_fingerprint,'hex') AS fingerprint,encode(receipt_hash,'hex') AS "receiptHash"
+        FROM game_native_receipts WHERE match_id=$1 AND committed_version=$2`,[allocation.match_id,version]);
+      assert.equal(rows.length,1);
+      assert.equal(rows[0].actor,host);
+      assert.equal(rows[0].fingerprint,journalFingerprint(rows[0],allocation.match_id,action));
+      return {fingerprint:rows[0].fingerprint,receiptHash:rows[0].receiptHash};
+     }});
+   }
+   await json('shared-board-run.json',{
+    configVersion:created.version,digest:verdict.digest,contentHash:verdict.contentHash,
+    candidate:sourceBundlePath,adjustments:{fireRequiredRoomPoints:0},authenticated,packagedClients:1,protocolPeers:3,
+   });
+   facts.scenarios.push('four-authenticated-clients-and-exact-packaged-host-start-and-swap');
+  }finally{for(const connection of connections)connection?.ws.close();}
+ }else{
  try{
   async function connectTeammates(){
    for(const seat of [1,2,3]){
@@ -556,7 +711,9 @@ try{
  }
 
  }
- facts.result='PASS';console.log('reward rows verified',JSON.stringify(facts));
+ }
+ }
+ facts.result='PASS';console.log('Packaged backend verified',JSON.stringify(facts));
 
 }catch(error){
  if(stopping){

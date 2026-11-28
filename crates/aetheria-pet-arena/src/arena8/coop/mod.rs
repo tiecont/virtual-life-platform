@@ -14,6 +14,7 @@
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
 pub mod advanced;
+pub mod campaign_routes;
 pub mod config;
 mod functional;
 mod loadout;
@@ -62,6 +63,8 @@ pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
 pub const V3_RULESET_VERSION: u32 = 3;
 pub const ADVANCED_RULESET_VERSION: u32 = 4;
 pub const ADVANCED_SOLO_RULESET_VERSION: u32 = 3;
+pub const SHARED_RNG_RULESET_VERSION: u32 = 5;
+pub const SHARED_RNG_SOLO_RULESET_VERSION: u32 = 4;
 pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
 pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
 pub const V3_SOLO_RULESET_VERSION: u32 = 2;
@@ -271,6 +274,9 @@ pub struct CoopState {
     pub pending: Option<PendingAttack>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chill_reduction_pm: Option<u16>,
+    /// Independent board entropy position for shared-jewel matches.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    board_rng_cursor: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub turn_started_ms: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -410,7 +416,7 @@ impl CoopError {
 pub struct CoopRules {
     config: CoopConfig,
     digest: [u8; 32],
-    spawn_table: [u32; 6],
+    spawn_table: [u32; TileKind::SHARED.len()],
     spawn_total: u32,
     board_tiers: u64,
     effectiveness: [[u16; 6]; 6],
@@ -423,6 +429,7 @@ pub struct CoopRules {
 struct Opponent<'a> {
     element: &'a str,
     max_hp: u32,
+    attack_addend: u32,
     defense: u32,
     crit_rate_bp: u16,
     crit_damage_bp: u16,
@@ -508,18 +515,24 @@ impl CoopRules {
 
     fn bind(config: CoopConfig, encounter_id: &str, solo: bool) -> Result<Self, ConfigError> {
         config.validate()?;
-        let selected = config
-            .bosses()
-            .iter()
-            .find(|boss| {
-                boss.id == encounter_id
-                    || (solo
-                        && boss
-                            .regular
-                            .as_ref()
-                            .is_some_and(|regular| regular.id == encounter_id))
-            })
-            .ok_or(ConfigError::Boss)?;
+        let selected = if let Some(route) = config.campaign_route(encounter_id) {
+            route
+                .selectable_profile(solo)
+                .ok_or(ConfigError::CampaignRoute)?
+        } else {
+            config
+                .bosses()
+                .iter()
+                .find(|boss| {
+                    boss.id == encounter_id
+                        || (solo
+                            && boss
+                                .regular
+                                .as_ref()
+                                .is_some_and(|regular| regular.id == encounter_id))
+                })
+                .ok_or(ConfigError::Boss)?
+        };
         let regular_profile = selected
             .regular
             .as_ref()
@@ -527,18 +540,17 @@ impl CoopRules {
             .cloned();
         let (boss_profile, solo_round_limit) = match (solo, &regular_profile) {
             (true, Some(profile)) => (selected.clone(), profile.max_rounds),
+            (true, None) if config.shared_jewel_rng() => (selected.clone(), None),
             (true, None) => {
                 let profile = selected.solo.as_ref().ok_or(ConfigError::Boss)?;
                 (selected.solo_profile(profile), profile.max_rounds)
             }
             (false, _) => (selected.clone(), None),
         };
-        let (spawn_table, spawn_total) = config.board.spawn_table()?;
-        let mut effectiveness = [[1_000u16; 6]; 6];
-        for (index, profile) in config.elements.iter().enumerate() {
-            let attacker = config::parse_element(&profile.element)?;
-            effectiveness[attacker.index()] = profile.effectiveness_table()?;
-            debug_assert_eq!(index, attacker.index());
+        let (spawn_table, spawn_total) = config.board.spawn_table(config.shared_jewel_rng())?;
+        let mut effectiveness = [[0u16; 6]; 6];
+        for (attacker, profile) in config.element_index()?.into_iter().enumerate() {
+            effectiveness[attacker] = profile.effectiveness_table()?;
         }
         let board_tiers = config
             .multiplier
@@ -579,11 +591,18 @@ impl CoopRules {
         self.regular_profile.is_some()
     }
 
+    pub fn campaign_route_id(&self) -> Option<&str> {
+        self.config
+            .campaign_route(self.encounter_id())
+            .map(|route| route.id.as_str())
+    }
+
     fn opponent(&self) -> Opponent<'_> {
         if let Some(regular) = &self.regular_profile {
             Opponent {
                 element: &regular.element,
                 max_hp: regular.max_hp,
+                attack_addend: 0,
                 defense: regular.defense,
                 crit_rate_bp: regular.crit_rate_bp,
                 crit_damage_bp: regular.crit_damage_bp,
@@ -595,6 +614,13 @@ impl CoopRules {
             Opponent {
                 element: &boss.element,
                 max_hp: boss.max_hp,
+                // Historical Wardens and standalone regular encounters use
+                // the authored flat attack model without a separate ATK term.
+                attack_addend: if self.config.shared_jewel_rng() {
+                    boss.attack
+                } else {
+                    0
+                },
                 defense: boss.defense,
                 crit_rate_bp: boss.crit_rate_bp,
                 crit_damage_bp: boss.crit_damage_bp,
@@ -617,6 +643,33 @@ impl CoopRules {
     }
 
     pub fn ruleset(&self) -> Ruleset {
+        if self.config.shared_jewel_rng() {
+            let (id, version, domain) = if self.solo {
+                (
+                    FUNCTIONAL_SOLO_RULESET_ID,
+                    SHARED_RNG_SOLO_RULESET_VERSION,
+                    "aetheria.arena8-functional-native.v4",
+                )
+            } else {
+                (
+                    COOP_RULESET_ID,
+                    SHARED_RNG_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v5",
+                )
+            };
+            return Ruleset {
+                id: id.into(),
+                version,
+                rng_version: RNG_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    version,
+                    domain,
+                    "timed-turns-v1;shared-nine-jewel-rng-v1;fixed-boss-v1",
+                    self.seat_count(),
+                ),
+            };
+        }
         if self.config.advanced_jewels.is_some() {
             let (id, version, domain) = if self.solo {
                 (
@@ -805,6 +858,7 @@ impl CoopRules {
             round_index: 1,
             pending: None,
             chill_reduction_pm: None,
+            board_rng_cursor: self.config.shared_jewel_rng().then_some(0),
             turn_started_ms: None,
             turn_deadline_ms: None,
         };
@@ -973,7 +1027,11 @@ impl CoopRules {
     pub fn validate(&self, state: &CoopState) -> Result<(), CoreError> {
         let versioned = self.config.versioned_roster();
         let expected_boss = versioned.then_some(self.encounter_id());
-        if !self.valid_advanced_state(state)
+        if state.board_rng_cursor.is_some() != self.config.shared_jewel_rng()
+            || state
+                .board_rng_cursor
+                .is_some_and(|cursor| (cursor == 0) != (state.phase == CoopPhase::Ready))
+            || !self.valid_advanced_state(state)
             || state.config_digest != self.digest
             || state.boss.curse.is_some_and(|curse| {
                 !(1..=32).contains(&curse.turns)
@@ -1162,17 +1220,29 @@ impl CoopRules {
         }
         let mut next = state.clone();
         let mut events = Vec::new();
+        let mut board_rng = if matches!(action, CoopAction::Start | CoopAction::Swap { .. }) {
+            state
+                .board_rng_cursor
+                .map(|cursor| rng.substream("aetheria.arena8-coop.board.v1", cursor))
+                .transpose()?
+        } else {
+            None
+        };
         match action {
             CoopAction::Start => {
                 if next.phase != CoopPhase::Ready {
                     return Err(CoreError::InvalidAction);
                 }
-                // Historical bundles keep their original reducer and RNG stream.
+                // Historical bundles use the original stream for every draw.
+                let board_entropy = board_rng.as_mut().unwrap_or(rng);
                 match self.config.board.initial_board_policy {
-                    None => self.fill_board(&mut next, rng)?,
+                    None => self.fill_board(&mut next, board_entropy)?,
                     Some(config::InitialBoardPolicy::Constructive) => {
-                        next.board = self.construct_board(rng)?;
+                        next.board = self.construct_board(board_entropy)?;
                     }
+                }
+                if let Some(spawns) = observation.natural_spawns.as_mut() {
+                    tally_board(&mut spawns.opening, &next.board);
                 }
                 if let Some(opening) = self
                     .advanced_encounter()
@@ -1201,7 +1271,13 @@ impl CoopRules {
                     return Err(CoreError::InvalidAction);
                 }
                 next.board = board;
-                self.resolve_cascades(&mut next, rng, &mut events, observation)?;
+                self.resolve_cascades(
+                    &mut next,
+                    rng,
+                    board_rng.as_mut(),
+                    &mut events,
+                    observation,
+                )?;
             }
             CoopAction::EndTurn => {
                 self.require_turn(&next)?;
@@ -1230,6 +1306,9 @@ impl CoopRules {
             ability => {
                 self.act_ability(&mut next, ability, rng, &mut events)?;
             }
+        }
+        if let Some(board_rng) = board_rng {
+            next.board_rng_cursor = Some(board_rng.cursor());
         }
         if !matches!(action, CoopAction::Start) {
             observation.shield_absorbed = self.complete_turn(&mut next, rng, &mut events);
@@ -1822,6 +1901,7 @@ impl CoopRules {
         &self,
         state: &mut CoopState,
         rng: &mut TurnRng,
+        mut board_rng: Option<&mut TurnRng>,
         events: &mut Vec<Value>,
         observation: &mut TurnObservation,
     ) -> Result<(), CoreError> {
@@ -1854,7 +1934,8 @@ impl CoopRules {
             if state.phase.terminal() {
                 return Ok(());
             }
-            observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
+            let board_entropy = board_rng.as_deref_mut().unwrap_or(rng);
+            self.gravity_and_refill(state, board_entropy, &mut survivors, observation)?;
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
@@ -1873,10 +1954,11 @@ impl CoopRules {
                         state.board[index] = None;
                     }
                 }
-                observation.record_refill(self.gravity_and_refill(state, rng, &mut survivors)?);
+                self.gravity_and_refill(state, board_entropy, &mut survivors, observation)?;
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
-                    self.dead_board(state, rng)?;
+                    self.dead_board(state, board_entropy)?;
                     observation.forced_cascade_regenerations += 1;
+                    observation.record_recovery(&state.board);
                     survivors = 0;
                 }
                 break;
@@ -2039,7 +2121,8 @@ impl CoopRules {
         state: &mut CoopState,
         rng: &mut TurnRng,
         surviving_cells: &mut u64,
-    ) -> Result<RefillResult, CoreError> {
+        observation: &mut TurnObservation,
+    ) -> Result<(), CoreError> {
         let mut next = [None; CELLS];
         let mut moved_survivors = 0;
         for column in 0..SIDE {
@@ -2061,22 +2144,27 @@ impl CoopRules {
                 .filter(|row| next[row * SIDE + column].is_none())
                 .count();
             for row in 0..empty {
-                next[row * SIDE + column] = Some(self.spawn_tile(state, rng)?);
+                let tile = self.spawn_tile(state, rng)?;
+                if let Some(spawns) = observation.natural_spawns.as_mut() {
+                    spawns.refill[tile.identity.index()] += 1;
+                }
+                next[row * SIDE + column] = Some(tile);
             }
         }
         state.board = next;
         *surviving_cells = moved_survivors;
         let still_matching =
             self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
-        if still_matching {
-            Ok(RefillResult::StillMatching)
-        } else if self.legal_swap(state).is_none() {
-            self.dead_board(state, rng)?;
-            *surviving_cells = 0;
-            Ok(RefillResult::Regenerated)
-        } else {
-            Ok(RefillResult::Playable)
+        if !still_matching {
+            observation.refill_swap_checks += 1;
+            if self.legal_swap(state).is_none() {
+                self.dead_board(state, rng)?;
+                *surviving_cells = 0;
+                observation.dead_board_regenerations += 1;
+                observation.record_recovery(&state.board);
+            }
         }
+        Ok(())
     }
 
     fn dead_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
@@ -2088,6 +2176,9 @@ impl CoopRules {
             config::DeadBoardPolicy::Regenerate => {
                 self.fill_board(state, rng)?;
                 Ok(())
+            }
+            config::DeadBoardPolicy::Shuffle if self.config.shared_jewel_rng() => {
+                self.shuffle_or_construct_board(state, rng)
             }
             config::DeadBoardPolicy::Shuffle => {
                 let attempts = u32::from(self.config.board.generation_attempts).max(1);
@@ -2111,16 +2202,39 @@ impl CoopRules {
         }
     }
 
-    fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {
-        opening_board::construct(self.identities(), self.spawn_table, self.spawn_total, rng)
+    fn shuffle_or_construct_board(
+        &self,
+        state: &mut CoopState,
+        rng: &mut TurnRng,
+    ) -> Result<(), CoreError> {
+        // A constructive board consumes 65 successful draws. Leave extra
+        // words for unbiased rejection sampling when optional shuffles fail.
+        const CONSTRUCTION_WORD_RESERVE: u64 = 512;
+        let mut candidate = state.board;
+        for _ in 0..self.config.board.generation_attempts {
+            match rng.shuffle_reserving(&mut candidate, CONSTRUCTION_WORD_RESERVE) {
+                Ok(()) => {}
+                Err(CoreError::EntropyExhausted) => break,
+                Err(error) => return Err(error),
+            }
+            if !matched_cells(&candidate).into_iter().any(|matched| matched) {
+                state.board = candidate;
+                if self.legal_swap(state).is_some() {
+                    return Ok(());
+                }
+            }
+        }
+        state.board = self.construct_board(rng)?;
+        Ok(())
     }
 
-    fn identities(&self) -> [TileIdentity; 6] {
-        if self.functional_board() {
-            TileKind::ALL.map(TileIdentity::Kind)
-        } else {
-            crate::arena8::ELEMENTS.map(TileIdentity::Element)
-        }
+    fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {
+        opening_board::construct(
+            self.functional_board(),
+            self.spawn_table,
+            self.spawn_total,
+            rng,
+        )
     }
 
     fn fill_board(&self, state: &mut CoopState, rng: &mut TurnRng) -> Result<(), CoreError> {
@@ -2131,7 +2245,7 @@ impl CoopRules {
                 // refill draws the escalating multiplier distribution.
                 let roll = rng.below(self.spawn_total)?;
                 state.board[index] = Some(Tile {
-                    identity: spawn_identity(self.identities(), self.spawn_table, roll),
+                    identity: spawn_identity(self.functional_board(), &self.spawn_table, roll),
                     multiplier: 1,
                 });
             }
@@ -2154,7 +2268,7 @@ impl CoopRules {
     fn spawn_tile(&self, state: &CoopState, rng: &mut TurnRng) -> Result<Tile, CoreError> {
         let clock = self.escalation_clock(state);
         let roll = rng.below(self.spawn_total)?;
-        let identity = spawn_identity(self.identities(), self.spawn_table, roll);
+        let identity = spawn_identity(self.functional_board(), &self.spawn_table, roll);
         let budget = self
             .config
             .multiplier
@@ -2166,9 +2280,15 @@ impl CoopRules {
             .multiplier
             .tier_for(clock, tier_roll)
             .map_err(|_| CoreError::InvalidState)?;
+        // Advanced yields are tiered by the number of matched cells. Only
+        // basic jewels have multiplier weights in their effect formulas.
+        let multiplier = match identity {
+            TileIdentity::Kind(kind) if self.config.shared_jewel_rng() && kind.advanced() => 1,
+            _ => tier.multiplier,
+        };
         Ok(Tile {
             identity,
-            multiplier: tier.multiplier,
+            multiplier,
         })
     }
 
@@ -2320,7 +2440,7 @@ impl CoopRules {
         } else {
             1_000
         };
-        let base = u64::from(model.base_damage)
+        let base = (u64::from(model.base_damage) + u64::from(opponent.attack_addend))
             .saturating_add(
                 u64::from(model.per_round_damage).saturating_mul(u64::from(state.round_index)),
             )
@@ -2510,12 +2630,6 @@ struct MatchOutcome {
     critical: bool,
 }
 
-enum RefillResult {
-    StillMatching,
-    Playable,
-    Regenerated,
-}
-
 /// Measurements outside the durable state and event stream.
 #[derive(Clone, Copy, Default)]
 struct TurnObservation {
@@ -2526,12 +2640,20 @@ struct TurnObservation {
     forced_cascade_regenerations: u64,
     shield_absorbed: u64,
     amplified_cells: u64,
+    natural_spawns: Option<simulation::NaturalSpawnDiagnostics>,
 }
 
 impl TurnObservation {
-    fn record_refill(&mut self, result: RefillResult) {
-        self.refill_swap_checks += u64::from(!matches!(result, RefillResult::StillMatching));
-        self.dead_board_regenerations += u64::from(matches!(result, RefillResult::Regenerated));
+    fn record_recovery(&mut self, board: &[Option<Tile>; CELLS]) {
+        if let Some(spawns) = self.natural_spawns.as_mut() {
+            tally_board(&mut spawns.recovery, board);
+        }
+    }
+}
+
+fn tally_board(counts: &mut [u64; TileKind::SHARED.len()], board: &[Option<Tile>; CELLS]) {
+    for tile in board.iter().flatten() {
+        counts[tile.identity.index()] += 1;
     }
 }
 
@@ -2628,11 +2750,19 @@ pub(crate) fn matched_cells(board: &[Option<Tile>; CELLS]) -> [bool; CELLS] {
     matched
 }
 
-fn spawn_identity(identities: [TileIdentity; 6], table: [u32; 6], roll: u32) -> TileIdentity {
+fn spawn_identity(
+    functional: bool,
+    table: &[u32; TileKind::SHARED.len()],
+    roll: u32,
+) -> TileIdentity {
     let mut point = roll;
-    for (identity, weight) in identities.into_iter().zip(table) {
+    for (index, &weight) in table.iter().enumerate() {
         if point < weight {
-            return identity;
+            return if functional {
+                TileIdentity::Kind(TileKind::SHARED[index])
+            } else {
+                TileIdentity::Element(crate::arena8::ELEMENTS[index])
+            };
         }
         point -= weight;
     }
@@ -2770,6 +2900,12 @@ impl Canonical for CoopState {
                 self.turn_deadline_ms.map_or(Value::Null, Value::Uint),
             ]));
         }
+        if let Some(cursor) = self.board_rng_cursor {
+            fields.push(list([
+                Value::Text("board-rng-cursor".into()),
+                Value::Uint(cursor),
+            ]));
+        }
         Value::List(fields)
     }
 }
@@ -2831,7 +2967,10 @@ pub mod test_support {
     //! Narrow hooks for the committed engine conformance tests. They expose
     //! engine algorithms on an already validated bundle and carry no defaults.
 
-    use super::{CELLS, CoopConfig, CoopError, CoopRules, CoopState, Tile, TurnRng, matched_cells};
+    use super::{
+        CELLS, CoopConfig, CoopError, CoopRules, CoopState, Tile, TurnObservation, TurnRng,
+        matched_cells,
+    };
 
     impl CoopRules {
         /// Rebuild a ruleset from a caller-supplied authored bundle.
@@ -2852,7 +2991,7 @@ pub mod test_support {
             state: &mut CoopState,
             rng: &mut TurnRng,
         ) -> Result<(), aetheria_game_core::Error> {
-            self.gravity_and_refill(state, rng, &mut 0).map(|_| ())
+            self.gravity_and_refill(state, rng, &mut 0, &mut TurnObservation::default())
         }
 
         /// Apply raw damage to the Boss through the authored phase policy.

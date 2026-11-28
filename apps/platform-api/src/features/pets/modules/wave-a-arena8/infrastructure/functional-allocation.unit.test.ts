@@ -10,6 +10,8 @@ it.each([
  [3,'arena8-coop-v2',true],
  [4,'arena8-coop-v3',true],
  [5,'arena8-coop-v4',true],
+ [6,'arena8-coop-v5',true],
+ [6,'arena8-coop-v4',false],
  [3,'arena8-coop-v3',false],
  [4,'arena8-coop-v2',false],
  [4,'arena8-coop-v4',false],

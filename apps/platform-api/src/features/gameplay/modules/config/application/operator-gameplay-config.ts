@@ -6,7 +6,7 @@ import {
  gameplayEngineBinding,type GameplayBundle,type GameplayRuleset,
 } from '@aetheria/contracts';
 import type {PoolClient} from 'pg';
-import {canonicalCatalogReference} from '../../../../pets/modules/wave1/application/service';
+import {canonicalCatalogReference,developmentCatalogReference} from '../../../../pets/modules/wave1/application/service';
 import type {OperatorService} from '../../../../identity/modules/operators/application/operator-service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {GameplayConfigStore,type GameplayVersion,type GameplayVersionSummary} from '../infrastructure/version-store';
@@ -24,7 +24,7 @@ const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
 });
 const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
- ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:canonicalCatalogReference}:{}),
+ ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:(row.bundle.schemaVersion===6||row.bundle.schemaVersion===7)?developmentCatalogReference:canonicalCatalogReference}:{}),
 });
 
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,

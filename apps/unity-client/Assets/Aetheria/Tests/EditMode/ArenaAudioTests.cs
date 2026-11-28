@@ -227,6 +227,9 @@ namespace Aetheria.Tests.EditMode
                 Assert.That(director.Score, Is.EqualTo(ArenaCombatScore.Boss));
                 Assert.That(director.MusicSource.clip, Is.Not.Null);
                 Assert.That(director.MusicSource.outputAudioMixerGroup, Is.Not.Null);
+                Assert.That(director.MusicSource.clip.name, Is.EqualTo("coop-boss"));
+                Assert.That(director.SetCombatScore(ArenaCombatScore.BossPhaseTwo), Is.True);
+                Assert.That(director.MusicSource.clip.name, Is.EqualTo("coop-boss-phase-2"));
                 Assert.That(director.SetCombatScore(ArenaCombatScore.None), Is.True);
                 Assert.That(director.MusicSource.clip, Is.Null);
                 Assert.That(director.SetAmbience(ArenaAmbience.None), Is.True);

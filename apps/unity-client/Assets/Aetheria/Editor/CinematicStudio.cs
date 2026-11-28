@@ -12,7 +12,7 @@ namespace Aetheria.Editor
 {
     public sealed class CinematicStudio : EditorWindow
     {
-        public enum Sequence { CharacterIntro, SkillShowcase, Ultimate, GachaReveal }
+        public enum Sequence { CharacterIntro, SkillShowcase, Ultimate, GachaReveal, BossIntro, BossPhaseTransition, Victory, Defeat }
 
         private const string UndoLabel = "Create cinematic sequence";
         private const string TrackPrefix = "Aetheria model motion · ";
@@ -210,6 +210,10 @@ namespace Aetheria.Editor
             Sequence.SkillShowcase => new("Skill showcase", 0, .20),
             Sequence.Ultimate => new("Ultimate", .55, .35),
             Sequence.GachaReveal => new("Gacha reveal", .20, .90),
+            Sequence.BossIntro => new("Boss intro", .60, .45),
+            Sequence.BossPhaseTransition => new("Boss phase transition", .15, .25),
+            Sequence.Victory => new("Victory", .10, .75),
+            Sequence.Defeat => new("Defeat", .20, .60),
             _ => throw new ArgumentOutOfRangeException(nameof(sequence))
         };
 

@@ -14,7 +14,7 @@ import type {CoopSkillService} from '../../skills/application/service';
 
 // Authenticated cooperative room routes. Default-off; the composition enables
 // them only for a local/test runtime, alongside the existing native previews.
-export function registerCoopRooms(http:FastifyInstance,config:Config,identity:IdentityService,rooms:CoopRoomService,skills:CoopSkillService,now=Date.now){
+export function registerCoopRooms(http:FastifyInstance,config:Config,identity:IdentityService,rooms:CoopRoomService,skills:CoopSkillService,now=Date.now,catalogOnly=false){
  if(config.NODE_ENV==='production')throw new Error('Cooperative rooms are local/test only');
  const limits=new WindowLimiter(now),accounts=new WeakMap<FastifyRequest,string>();
  const token=(req:FastifyRequest)=>readSessionToken(req,config)!;
@@ -37,6 +37,8 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    accounts.set(req,context.accountId);
    if(!limits.take('coop-session:'+identity.hash(credential),180))throw new DomainError('RATE_LIMITED',429,'Please wait before retrying');
   });
+  api.get('/coop/campaign-routes',req=>rooms.campaignRoutes(account(req)));
+  if(catalogOnly)return;
   api.get('/coop/pets/:ownedPetInstanceId/skills',req=>{
    const {ownedPetInstanceId}=CoopSkillPetParamsSchema.parse(req.params);
    return skills.progression(account(req),ownedPetInstanceId);
