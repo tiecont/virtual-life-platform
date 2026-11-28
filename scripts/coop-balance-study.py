@@ -40,6 +40,16 @@ JEWEL_CASES = (
     ("jewel-support", 40, "stormcoil-loadout"),
 )
 HISTORICAL_COMPOSITIONS = tuple(name for name in PARTIES if name != "jewel-support")
+WARDEN_CASES = tuple(
+    (name, level, gear)
+    for name in ("icarus", "offense", "sustain")
+    for level, gear in (
+        (40, "stormcoil-loadout"),
+        (40, "prismheart-trained"),
+        (60, "prismheart-trained"),
+        (60, "temporal-trained"),
+    )
+)
 
 
 def dump(path, value):
@@ -145,7 +155,7 @@ SHARED_VARIANTS = {
 }
 
 
-def party(name, level, gear):
+def party(name, level, gear, bundle):
     result = []
     for i, pet in enumerate(PARTIES[name], 1):
         definitions = {
@@ -157,6 +167,16 @@ def party(name, level, gear):
                 ("core", "core-amberlattice", 1),
                 ("aegis", "aegis-bastionplate", 1),
                 ("rune", "rune-mistquill", 1),
+            ],
+            "prismheart-trained": [
+                ("core", "core-prismheart", 5),
+                ("aegis", "aegis-bastionplate", 5),
+                ("rune", "rune-whisperknot", 5),
+            ],
+            "temporal-trained": [
+                ("core", "core-prismheart", 5),
+                ("aegis", "aegis-bastionplate", 5),
+                ("rune", "rune-temporal-seal", 5),
             ],
         }[gear]
         artifacts = [
@@ -171,6 +191,14 @@ def party(name, level, gear):
         skills = []
         if gear == "trained-core" and pet == COALWHISK:
             skills.append({"skillId": "fire-coalwhisk-ember-lance", "level": 2})
+        if gear in ("prismheart-trained", "temporal-trained"):
+            bindings = next(row for row in bundle["pets"] if row["id"] == pet)
+            skill_ids = {bindings.get(slot) for slot in ("guard", "skill", "signature", "ultimate", "fireZone")}
+            skills.extend(
+                {"skillId": row["id"], "level": 1 + len(row["upgradeLevels"])}
+                for row in bundle["skills"]
+                if row["id"] in skill_ids and row.get("upgradeLevels")
+            )
         result.append({"petId": pet, "level": level, "artifacts": artifacts, "skillLevels": skills})
     return result
 
@@ -224,6 +252,8 @@ def summarize_row(item, row):
         "averageActions": row["averageActionsMilli"] / 1000,
         "averageSimulatedDurationMs": row["averageLogicalDurationMs"],
         "matchesWithMultiplier": row["matchesWithMultiplier"],
+        "phaseTwoReached": row["phaseTwoReached"],
+        "terminalBossHpSum": diagnostics["terminalBossHpSum"],
         "contributions": row["contributions"],
         "castsBySkill": row["castsBySkill"],
         "advancedJewels": diagnostics.get("advancedJewels"),
@@ -270,7 +300,7 @@ def main():
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS, *SHARED_VARIANTS])
-    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels"], default="progression")
+    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels", "warden"], default="progression")
     parser.add_argument("--mode", choices=["coop", "solo", "both"], default="coop")
     parser.add_argument("--include-regular", action="store_true", help="Include regular opponents for solo play")
     parser.add_argument("--advanced-candidate", type=Path, help="Split one authored bundle into control, skill-only and encounter-only studies")
@@ -293,6 +323,8 @@ def main():
     if not shared and capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
     functional = shared or capability in ("arena8-coop-v2", "arena8-coop-v3")
+    if args.stage == "warden" and not shared:
+        parser.error("the Warden progression stage requires a shared schema 6 bundle")
     base_bosses = {row["id"]: row for row in base["bosses"]}
     if args.bosses == ["all"] or (args.bosses is None and (shared or capability == "arena8-coop-v3")):
         boss_ids = tuple(base_bosses)
@@ -343,6 +375,8 @@ def main():
         scenarios = [("starters", 10, "starter-core"), ("starters", 20, "starter-core"),
                      ("starters", 40, "starter-core"), ("starters", 60, "starter-core"),
                      ("ground", 40, "starter-core"), ("icarus", 40, "starter-core")]
+    elif args.stage == "warden":
+        scenarios = WARDEN_CASES
     else:
         scenarios = JEWEL_CASES
     if args.parties:
@@ -352,7 +386,7 @@ def main():
 
     seat_inputs = {}
     for name, level, gear in scenarios:
-        seats = party(name, level, gear)
+        seats = party(name, level, gear, base)
         if args.mode in ("coop", "both"):
             seat_inputs["coop", name, level, gear] = seats
         if args.mode in ("solo", "both"):
