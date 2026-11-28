@@ -29,7 +29,23 @@ def pack(master: Path) -> None:
         atlas.save(RESOURCES / "FunctionalTiles" / "FunctionalGems.png")
 
 
+def pack_reference_icons(master: Path) -> None:
+    expected = "26fe604af853af4606216d359117dbc022cba4e59ece7a9f8f0dde858057a588"
+    if hashlib.sha256(master.read_bytes()).hexdigest() != expected:
+        raise ValueError("Expected the R04 leaf, snowflake and star provider master")
+    with Image.open(master) as sheet:
+        edge = sheet.height
+        for index, kind in enumerate(("wood_leaf", "ice_snowflake", "light_star")):
+            tile = sheet.crop((index * edge, 0, (index + 1) * edge, edge))
+            tile.resize((256, 256), Image.Resampling.LANCZOS).save(
+                RESOURCES / "WaveD4" / "Icons" / f"gem_{kind}.png")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("provider_master", type=Path)
-    pack(parser.parse_args().provider_master)
+    parser.add_argument("--reference-icons", type=Path)
+    args = parser.parse_args()
+    pack(args.provider_master)
+    if args.reference_icons:
+        pack_reference_icons(args.reference_icons)

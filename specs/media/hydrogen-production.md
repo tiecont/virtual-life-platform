@@ -45,3 +45,9 @@ existing Unity sprite names, regions and GUIDs. The default atlas has SHA-256
 The separate historical Gemini candidate matches its archived atlas at
 `76837c975680022d177265493a8f89a6b52c2c031f93687601ef740e371161ca`.
 Owner visual approval and release remain pending.
+
+Three reserve icons use a second ImageGen sheet derived from R04 and the six-jewel
+master. Its SHA-256 is `26fe604af853af4606216d359117dbc022cba4e59ece7a9f8f0dde858057a588`.
+Pass `--reference-icons artifacts/private-workspace/r04-jewels/reference-jewels.png`
+to pack its leaf, snowflake and star into the existing reserve icon resources.
+They have no gameplay assignment on the functional board.
