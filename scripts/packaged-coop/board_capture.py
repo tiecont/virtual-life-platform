@@ -77,7 +77,9 @@ def enabled_action_frames(filename, bounds):
         width = stop - begin
         rows = [y for y, row in enumerate(fill, start=first_row)
                 if sum(row[begin:stop]) >= width // 2]
-        if rows and 23 <= rows[-1] - rows[0] + 1 <= 65:
+        # A cooldown on a neighboring action can wrap onto a fourth line.
+        # UI Toolkit stretches every action to the height of the tallest one.
+        if rows and 23 <= rows[-1] - rows[0] + 1 <= 96:
             yield (start + begin, rows[0], start + stop, rows[-1] + 1)
 
 
