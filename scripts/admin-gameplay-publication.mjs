@@ -70,10 +70,12 @@ assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
 const timedCoop=process.argv.includes('--timed-coop');
-const campaignSolo=process.argv.includes('--campaign-route');
+const campaignGrid=process.argv.includes('--campaign-route-grid');
+const campaignSolo=campaignGrid||process.argv.includes('--campaign-route');
 const campaignCoop=process.argv.includes('--campaign-route-coop');
-assert.ok(!(campaignSolo&&campaignCoop),'Select one campaign route seat mode');
-const campaignMode=campaignSolo?'campaign-route':campaignCoop?'campaign-route-coop':undefined;
+assert.ok(!(campaignSolo&&campaignCoop)&&!(campaignGrid&&process.argv.includes('--campaign-route')),
+ 'Select one campaign route probe');
+const campaignMode=campaignGrid?'campaign-route-grid':campaignSolo?'campaign-route':campaignCoop?'campaign-route-coop':undefined;
 const routeAdmin=process.argv.includes('--route-admin');
 const authoredRoutes=Boolean(campaignMode)||routeAdmin;
 const sharedAdmin=process.argv.includes('--shared-admin');
@@ -329,7 +331,7 @@ try{
   const bundle=globalThis.structuredClone(advanced?seed:(await dbConfig(active.version)).bundle);
   const fields=advanced?values(bundle):variants[label],boss=bundle.bosses[0];
   if(campaignMode){
-   enableCampaignProbeRoutes(bundle,campaignCoop);
+   enableCampaignProbeRoutes(bundle,{coOp:campaignCoop,grid:campaignGrid});
   }else if(advanced){
    if(label==='B'){
     if(sharedMode==='shared-coop')bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight++;
@@ -550,7 +552,7 @@ try{
  async function post(auth,url,payload){
   const send=()=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
   const response=await send();
-  if(!naturalCampaign||response.statusCode!==429)return response;
+  if(!(naturalCampaign||campaignGrid)||response.statusCode!==429)return response;
   const seconds=Number(response.headers['retry-after']??60);
   assert.ok(Number.isFinite(seconds)&&seconds>0&&seconds<=60);
   mark('waited for the published native API rate window',{seconds});
@@ -890,7 +892,7 @@ try{
   });
  }else if(campaignMode){
   await verifyCampaignRoute({
-   coOp:campaignCoop,pool,published:A,original:await dbConfig(installed.version),originalVersion:installed.version,host,members,
+   coOp:campaignCoop,grid:campaignGrid,pool,published:A,original:await dbConfig(installed.version),originalVersion:installed.version,host,members,
    outsider:await guest('QA route outsider','water-dewskip'),mark,get,post,soloAdmission,native,
    connections,closeMatch,prepareRoom,allocate,legalSwap,drain:()=>new CoopSettlement(pool).drain(),
   });
