@@ -17,3 +17,5 @@
 
 .simulation-results table{width:max-content;min-width:100%;table-layout:auto}.simulation-results th,.simulation-results td{white-space:nowrap;overflow-wrap:normal;word-break:normal}
 }
+
+.element-effectiveness{min-width:38rem}.element-effectiveness input.aetheria-field{min-width:4.5rem;margin:0}
