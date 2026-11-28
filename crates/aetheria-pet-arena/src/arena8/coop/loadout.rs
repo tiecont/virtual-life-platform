@@ -216,3 +216,96 @@ impl Modifiers {
         )
     }
 }
+
+#[cfg(test)]
+mod campaign_roster {
+    use super::*;
+    use crate::arena8::coop::CoopRules;
+
+    #[test]
+    fn every_campaign_pet_can_grow_and_equip_each_eligible_artifact() {
+        let source = include_bytes!(
+            "../../../../../config/gameplay/arena8-coop-shared-rng-v1.candidate.json"
+        );
+        let rules = CoopRules::load_solo(source, "cinder-terraces-regular".into()).unwrap();
+        let config = rules.config();
+        assert_eq!(config.pets.len(), 61);
+        let catalog = &config.artifacts.as_ref().unwrap().0;
+        assert_eq!(catalog.len(), 7);
+
+        for pet in &config.pets {
+            let allocate = |level: u8, entries: Vec<EquippedArtifact>| {
+                let seat = SeatInput {
+                    account: "campaign-roster-review".into(),
+                    owned_pet_instance_id: "owned-review-pet".into(),
+                    pet_id: pet.id.clone(),
+                    level,
+                    artifact_power_pm: 0,
+                };
+                let loadout = ArtifactLoadout {
+                    digest: ArtifactLoadout::digest(rules.digest(), &seat, &entries),
+                    entries,
+                };
+                rules.allocate_solo(seat, &loadout)
+            };
+
+            let first = allocate(1, Vec::new()).unwrap().participants.remove(0);
+            let last = allocate(100, Vec::new()).unwrap().participants.remove(0);
+            assert_eq!(
+                (first.max_hp, first.attack, first.defense),
+                (pet.max_hp, pet.attack, pet.defense)
+            );
+            assert!(
+                last.max_hp > first.max_hp
+                    && last.attack >= first.attack
+                    && last.defense >= first.defense,
+                "{}",
+                pet.id
+            );
+            for item in catalog {
+                let equipped = |level, rank| {
+                    allocate(
+                        level,
+                        vec![EquippedArtifact {
+                            slot: item.slot,
+                            artifact_id: "cc111111-0000-4000-8000-000000000001".into(),
+                            definition_id: item.id.clone(),
+                            upgrade_level: rank,
+                        }],
+                    )
+                };
+                if item.required_pet_level > 1 {
+                    assert!(
+                        equipped(item.required_pet_level - 1, 1).is_err(),
+                        "{} {}",
+                        pet.id,
+                        item.id
+                    );
+                }
+                let base = allocate(item.required_pet_level, Vec::new())
+                    .unwrap()
+                    .participants
+                    .remove(0);
+                for rank in 1..=MAX_ARTIFACT_LEVEL {
+                    let participant = equipped(item.required_pet_level, rank)
+                        .unwrap()
+                        .participants
+                        .remove(0);
+                    let modifier = item.effective(rank).unwrap();
+                    assert_eq!(
+                        (participant.max_hp, participant.attack, participant.defense),
+                        (
+                            base.max_hp + u32::from(modifier.hp),
+                            base.attack + u32::from(modifier.attack),
+                            base.defense + u32::from(modifier.defense),
+                        ),
+                        "{} {} rank {}",
+                        pet.id,
+                        item.id,
+                        rank
+                    );
+                }
+            }
+        }
+    }
+}
