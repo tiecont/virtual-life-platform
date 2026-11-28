@@ -9745,11 +9745,11 @@
         "Strict bounded registration/verify/resend/withdraw/status contracts, generic anti-enumeration, rate limits, redacted logs and minimal approved aggregates; marketing consent separate; no game accounts or beta entitlement",
         "Fake/sink mail tests exercise outbox retry/suppression and expiring tokens; production campaign acceptance and delivery default OFF"
       ],
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "qualificationRequirements": [],
       "workstream": "F",
       "priority": 1,
-      "remaining": "Implement expiry, idempotent double opt-in, consent audit and atomic lifetime cap of 5000 in the current PostgreSQL journal. Verify concurrent final-slot claims with local mail delivery fixtures.",
+      "remaining": "PR 91 reconciles double opt-in, consent audit and the lifetime cap with main at migration 0067. Verify the disposable PostgreSQL concurrency suite, both historical migration policies and hosted CI on the final revision. Public registration remains disabled.",
       "verificationRequirements": [
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ]
