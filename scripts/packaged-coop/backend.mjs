@@ -107,7 +107,7 @@ try{
  const installation=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  console.log('Installed seed configuration',installation.version,installation.digest);
  const bundle=JSON.parse(await readFile(isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json','utf8'));
- bundle.contentRevision=4;
+ bundle.contentRevision+=1;
  const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
  const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
  for(const boss of [fire,water]){
