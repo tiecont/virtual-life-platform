@@ -191,12 +191,17 @@ pet_selection = (165, 67, 430, 101)
 pet_options = (165, 106, 430, 220)
 
 def room_ready(map_name, filename):
-    box = (0, 180, 300, 265)
+    box = (2, 215, 140, 242)
     for _ in range(20):
         img = capture(filename)
-        if re.search(r'4\s*/\s*4', ocr(img, box, '6')):
+        if re.search(r'4\s*/\s*4', ocr(img, box, '7')):
             break
-        if refresh := word_button(img, {'refresh'}, lobby_buttons):
+        # The native lobby uses fixed-height rows at all supported resolutions.
+        # Read only the Refresh row so the labels on adjacent rows cannot win OCR.
+        refresh = word_button(img, {'refresh'}, center_band(362, 396, 90), mode='7')
+        if refresh is None:
+            refresh = word_button(img, {'refresh'}, lobby_buttons)
+        if refresh:
             click(*refresh)
         sleep(.4)
     else:
