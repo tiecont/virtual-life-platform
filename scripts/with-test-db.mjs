@@ -17,15 +17,21 @@ const interrupt=()=>cancel('SIGINT'),terminate=()=>cancel('SIGTERM');process.on(
 async function run(command,commandArgs,env,capture=false){
  if(cancelled&&!cleaning)throw Error('Test run cancelled');
   return new Promise((resolve, reject) => {
-    const child = spawn(command, commandArgs, { cwd: root, env,detached:true, stdio: capture === 'stderr' ? ['ignore', 'inherit', 'pipe'] : capture ? ['ignore', 'pipe', 'inherit'] : 'inherit' });active=child;
-    let output = '';
-    if (capture === 'stderr') child.stderr.on('data', chunk => {
-      process.stderr.write(chunk);
-      output = (output + chunk).slice(-16384);
+    const stdout = capture && capture !== 'stderr';
+    const stderr = capture === 'stderr' || capture === 'both';
+    const child = spawn(command, commandArgs, {
+      cwd: root, env, detached: true,
+      stdio: capture ? ['ignore', stdout ? 'pipe' : 'inherit', stderr ? 'pipe' : 'inherit'] : 'inherit'
     });
-    else if (capture) child.stdout.on('data', chunk => { output += chunk; });
+    active=child;
+    let output = '', diagnostics = '';
+    if (stdout) child.stdout.on('data', chunk => { output += chunk; });
+    if (stderr) child.stderr.on('data', chunk => {
+      process.stderr.write(chunk);
+      diagnostics = (diagnostics + chunk).slice(-16384);
+    });
     child.once('error',()=>{active=undefined;reject(Error('Test subprocess unavailable'));});
-    child.once('close',async code=>{active=undefined;if(cancelled&&!cleaning){await stopping;reject(Error('Test run cancelled'));}else if(code===0)resolve(output);else{if(child.pid)await stopGroup(child.pid);const error=Error('Test subprocess failed');if(capture==='stderr')error.diagnostics=output;error.exitCode=Number.isInteger(code)&&code>0?code:1;reject(error);}});
+    child.once('close',async code=>{active=undefined;if(cancelled&&!cleaning){await stopping;reject(Error('Test run cancelled'));}else if(code===0)resolve(output);else{if(child.pid)await stopGroup(child.pid);const error=Error('Test subprocess failed');if(stderr)error.diagnostics=diagnostics;error.exitCode=Number.isInteger(code)&&code>0?code:1;reject(error);}});
   });
 }
 function ipv4Range(cidr) {
@@ -37,14 +43,24 @@ function ipv4Range(cidr) {
   return { start, end: start + size };
 }
 
+async function dockerSubnets() {
+  // Docker knows about disconnected networks as well as running bridges.
+  for (let attempt = 0; ; attempt++) {
+    const ids = (await run('docker', ['network', 'ls', '-q', '--no-trunc'], tools, true)).trim().split(/\s+/).filter(Boolean);
+    if (!ids.length) return [];
+    try {
+      const inventory = await run('docker', ['network', 'inspect', '--format', '{{json .IPAM.Config}}', ...ids], tools, 'both');
+      return inventory.trim().split('\n').flatMap(line => JSON.parse(line) ?? []).map(config => config.Subnet);
+    } catch (error) {
+      // Another project's cleanup may remove a network between ls and inspect.
+      if (attempt >= 2 || !/\b(?:no such network|network [^\s]+ not found)\b/i.test(error.diagnostics ?? '')) throw error;
+    }
+  }
+}
+
 async function freeSubnet(attempted) {
-  // Docker knows about disconnected networks as well as running bridges. Host
-  // routes also exclude subnets reached through interfaces such as VPNs.
-  const ids = (await run('docker', ['network', 'ls', '-q', '--no-trunc'], tools, true)).trim().split(/\s+/).filter(Boolean);
-  const occupied = ids.length
-    ? (await run('docker', ['network', 'inspect', '--format', '{{json .IPAM.Config}}', ...ids], tools, true))
-        .trim().split('\n').flatMap(line => JSON.parse(line) ?? []).map(config => config.Subnet)
-    : [];
+  const occupied = await dockerSubnets();
+  // Host routes also exclude subnets reached through interfaces such as VPNs.
   const routes = JSON.parse(await run('ip', ['-j', '-4', 'route', 'show', 'table', 'all'], tools, true));
   const ranges = [...attempted, ...occupied, ...routes.map(route => route.dst)]
     .filter(cidr => typeof cidr === 'string' && cidr !== '0.0.0.0/0')

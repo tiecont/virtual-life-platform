@@ -21,7 +21,13 @@ const subnet = override && JSON.parse(fs.readFileSync(override)).networks.defaul
 fs.appendFileSync(${JSON.stringify(log)}, JSON.stringify({args, override, subnet}) + '\\n');
 if (args[0] === 'context') console.log('"unix:///var/run/docker.sock"');
 else if (args[1] === 'ls') console.log('existing-network');
-else if (args[1] === 'inspect') console.log('[{"Subnet":"172.16.0.0/16"}]');
+else if (args[1] === 'inspect') {
+  if (!fs.existsSync(${JSON.stringify(join(dir, 'network-removed'))})) {
+    fs.writeFileSync(${JSON.stringify(join(dir, 'network-removed'))}, '');
+    console.error('Error response from daemon: network existing-network not found');
+    process.exitCode = 1;
+  } else console.log('[{"Subnet":"172.16.0.0/16"}]');
+}
 else if (args.includes('up') && !override) {
   console.error(${JSON.stringify(initialError)});
   process.exitCode = 1;
@@ -44,6 +50,7 @@ test('test database retries pool exhaustion on its own subnet and removes its ov
   const {run, calls} = await fixture(t, 'all predefined address pools have been fully subnetted');
   assert.match((await run()).stdout, /child ran/);
   const operations = await calls();
+  assert.equal(operations.filter(({args}) => args[0] === 'network' && args[1] === 'inspect').length, 3);
   const compose = operations.filter(({args}) => args[0] === 'compose');
   assert.equal(new Set(compose.map(({args}) => args[2])).size, 1);
   assert.deepEqual(compose.map(({args}) => args.find(arg => ['up', 'port', 'down'].includes(arg))), [
