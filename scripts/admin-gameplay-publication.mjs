@@ -14,7 +14,7 @@ import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
-import {verifySoloWaterCampaign} from './solo-water-campaign-probe.mjs';
+import {verifySoloCampaign} from './solo-water-campaign-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
 const {createApp}=require('../apps/platform-api/src/app.ts');
@@ -83,7 +83,10 @@ function pureSwap(board,requiredKind){
  }
 }
 const waterCampaign=process.argv.includes('--water-campaign');
-const solo=waterCampaign||process.argv.includes('--solo');
+const naturalCampaign=process.argv.includes('--natural-campaign');
+assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe');
+const unchangedCandidate=waterCampaign||naturalCampaign;
+const solo=unchangedCandidate||process.argv.includes('--solo');
 const direct=solo||process.argv.includes('--direct');
 const functional=solo||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
@@ -94,8 +97,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,waterCampaign?'water-campaign-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:waterCampaign?'unchanged-functional-solo-campaign':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -142,7 +145,7 @@ try{
  const seedBytes=await readFile(seedPath);
  const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
- if(!waterCampaign){
+ if(!unchangedCandidate){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -191,7 +194,7 @@ try{
  });
  async function startApi(){
   const config=configForRuntime();
-  app=await createApp(config,pool,false,solo?{petArtifacts:{enabled:waterCampaign},petArena8Native:{
+  app=await createApp(config,pool,false,solo?{...(naturalCampaign?{petArenaWave1:{enabled:true}}:{}),petArtifacts:{enabled:unchangedCandidate},petArena8Native:{
    enabled:true,binary:runtimeBinary,databaseUrl:runtime.toString(),role,caFile:tls.caFile,
    storageKey:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY,storageKeyId:config.LOCAL_ARENA8_NATIVE_STORAGE_KEY_ID,
    httpsOrigin:nativeOrigin,certFile:config.LOCAL_ARENA8_NATIVE_TLS_CERT_FILE,keyFile:config.LOCAL_ARENA8_NATIVE_TLS_KEY_FILE,
@@ -415,19 +418,30 @@ try{
   mark('published '+label+' through typed browser controls, engine validation and PostgreSQL selection',{version:created.version,digest:checked.digest,activeRevision:publishResult.activeRevision,fields});
   return configurations[label];
  }
- const A=waterCampaign?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');
+ const A=unchangedCandidate?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');
  let addressIndex=1;
  async function guest(name,petId){
   const response=await app.http.inject({method:'POST',url:'/v1/session/guest',remoteAddress:'127.214.1.'+addressIndex++,headers:{origin},payload:{requestId:randomUUID(),displayName:name,avatarKey:'mint'}});
   assert.equal(response.statusCode,201,JSON.stringify(response.json()));
   const body=response.json(),accountId=body.profile.id;
+  const auth={cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId};
+  if(naturalCampaign)return auth;
   await pool.query('INSERT INTO pet_wave_one_players(account_id,coins) VALUES($1,0) ON CONFLICT DO NOTHING',[accountId]);
   const owned=await pool.query('INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,1,0,$3) RETURNING owned_pet_instance_id',[accountId,petId,'starter']);
-  return {cookie:String(response.headers['set-cookie']).split(';')[0],csrf:body.csrfToken,accountId,petId,instanceId:owned.rows[0].owned_pet_instance_id};
+  return {...auth,instanceId:owned.rows[0].owned_pet_instance_id};
  }
- const post=(auth,url,payload)=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
+ async function post(auth,url,payload){
+  const send=()=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
+  const response=await send();
+  if(!naturalCampaign||response.statusCode!==429)return response;
+  const seconds=Number(response.headers['retry-after']??60);
+  assert.ok(Number.isFinite(seconds)&&seconds>0&&seconds<=60);
+  mark('waited for the published native API rate window',{seconds});
+  await pause((seconds+1)*1000);
+  return send();
+ }
  const get=(auth,url)=>app.http.inject({url,headers:{cookie:auth.cookie}});
- const pets=waterCampaign?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
+ const pets=unchangedCandidate?['water-dewskip','ground-clodkin']:['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'],members=[];
  for(const [index,pet] of pets.entries())members.push(await guest('QA seat '+(index+1),pet));
  const host=members[0];
  const grant=(account,points)=>pool.query('INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) VALUES($1,$2,$3,$4)',[account.accountId,points,'admin_grant',randomUUID()]);
@@ -496,7 +510,8 @@ try{
  }
   async function freshTicket(match,seat){
   if(solo){
-   const ticket=await soloAdmission(match.input);
+   const ticket=match.admission??await soloAdmission(match.input);
+   match.admission=undefined;
    assert.equal(ticket.matchId,match.row.match_id);
    return {value:ticket.ticket,expiresAt:Date.parse(ticket.expiresAt),url:ticket.wssUrl};
   }
@@ -726,10 +741,27 @@ try{
   mark('all four receipts used the material award pinned at allocation',{version:match.version.version,materials:match.version.fields.materials});
   mark('disposable match settled to free the local runtime listener',{matchId:match.row.match_id,canonicalVersion:response.version});
  }
- if(waterCampaign){
-  await verifySoloWaterCampaign({
-   pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
-   dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,legalSwap,
+ if(unchangedCandidate){
+  async function replaceActive(mapId){
+   const active=await dbActive();
+   const replacement=structuredClone(A.bundle);
+   replacement.contentRevision++;
+   replacement.bosses.find(boss=>boss.mapId===mapId).rewardPolicy.firstClear.coins+=37;
+   const draft=await operatorPost('draft',{parentVersion:active.version,bundle:replacement});
+   const validated=await operatorPost('validate',{version:draft.version,expectedRevision:draft.revision});
+   const published=await operatorPost('publish',{version:draft.version,expectedRevision:validated.revision,expectedActiveRevision:active.revision});
+   assert.notEqual(published.contentDigest,A.digest);
+   assert.equal((await dbActive()).version,draft.version);
+   mark('published an alternate Warden payout while the original match was active',{mapId,version:draft.version,digest:published.contentDigest});
+   return async()=>{
+    const current=await dbActive();
+    await operatorPost('rollback',{version:A.version,expectedActiveRevision:current.revision});
+    assert.equal((await dbActive()).version,A.version);
+   };
+  }
+  await verifySoloCampaign({
+   natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
+   dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
   });
  }else if(solo){
   const input={requestId:randomUUID(),boardRuleset:'functional',petId:host.petId,mapId:'cinder-terraces',encounterId:'cinder-terraces-boss'};

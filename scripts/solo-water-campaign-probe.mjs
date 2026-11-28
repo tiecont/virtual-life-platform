@@ -1,26 +1,130 @@
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
 
-export async function verifySoloWaterCampaign({
+// Evaluate only visible runs, projected stats, and published values. Hidden
+// refill tiles, future attacks and combat results remain owned by Rust.
+function tacticalPolicy(bundle){
+ const tileRules=bundle.board.functionalTiles;
+ const tiers=new Map(bundle.multiplier.schedule.flatMap(stage=>stage.tiers).map(tier=>[tier.multiplier,tier]));
+ const pets=new Map(bundle.pets.map(pet=>[pet.id,pet]));
+ const elements=new Map(bundle.elements.map(element=>[element.element,element]));
+ const skills=new Map(bundle.skills.map(skill=>[skill.id,skill]));
+ function elementalScale(pet,opponent){
+  return elements.get(pet.element).effectiveness.find(entry=>entry.element===opponent.element).permille/1000;
+ }
+ function chooseAction(view,opponent,boss){
+  const seat=view.participants[0];
+  const effectiveness=elementalScale(pets.get(seat.petId),opponent);
+  const isWarden=opponent===boss;
+  const phaseEdge=view.boss.phase===1&&isWarden?Math.floor(boss.solo.maxHp*boss.phase.thresholdBp/10000):0;
+  const threshold=view.boss.hp-phaseEdge;
+  const {defenseDivisor,minimumDamage}=opponent.attackModel;
+  const incoming=view.pending?Math.max(view.pending.damage-Math.floor(seat.defense/defenseDivisor),
+   opponent.solo?.minimumDamage??minimumDamage):0;
+  const risk=incoming>0&&seat.hp+seat.shield-incoming<=25;
+  const missingHp=seat.maxHp-seat.hp;
+  const survivalValue=seat.hp/seat.maxHp<0.34?2.4:seat.hp/seat.maxHp<0.6?1.6:0.7;
+  const rageValue=seat.petId==='ground-clodkin'&&view.boss.armorBreakPm<3250?(effectiveness<1?2.6:2.0):0.7;
+  const armorScale=view.boss.armorBreakPm/1000;
+  const critExpectation=1+(seat.critRateBp/10000)*(seat.critDamageBp/10000-1);
+  const options=[];
+  function assess(action,damage,heal,shield,extra,crit=1){
+   damage=Math.max(0,damage*armorScale-view.boss.shield);
+   const endsPhase=damage>=threshold;
+   const preventsHit=endsPhase&&isWarden;
+   const survives=seat.hp+heal+shield+seat.shield>(preventsHit?0:incoming);
+   const score=Math.min(damage*crit,threshold)+heal*survivalValue+
+     (risk?2.8:1.0)*Math.min(Math.max(incoming-seat.shield,0),shield)+extra+
+     (endsPhase?150:0)+(survives?0:-10000);
+   options.push({action,score});
+  }
+  const cells=view.board.slice();
+  const matched=(index,step)=>cells[index].kind===cells[index+step].kind&&cells[index].kind===cells[index+step*2].kind;
+  for(let a=0;a<64;a++)for(const b of [a%8<7?a+1:-1,a<56?a+8:-1]){
+   if(b<0||cells[a].kind===cells[b].kind)continue;
+   [cells[a],cells[b]]=[cells[b],cells[a]];
+   const hits=new Set();
+   for(let i=0;i<64;i++){
+    if(i%8<6&&matched(i,1))for(const j of [i,i+1,i+2])hits.add(j);
+    if(i<48&&matched(i,8))for(const j of [i,i+8,i+16])hits.add(j);
+   }
+   if(hits.has(a)||hits.has(b)){
+    const weights={sword:0,mana:0,rage:0,heart:0,shield:0,special:0};
+    for(const i of hits){
+     const tile=cells[i],tier=tiers.get(tile.multiplier);
+     weights[tile.kind]+=(tile.kind==='sword'?tier.damageWeightPm:tier.resourceWeightPm)/1000;
+    }
+    const attack=weights.sword===0?0:Math.max(1,seat.attack+weights.sword*tileRules.swordContributionPm*
+      bundle.damage.contributionScalePm/1000-Math.floor(opponent.defense/bundle.damage.defenseDivisor))*effectiveness;
+    const heal=Math.min(missingHp,weights.heart*tileRules.heart.amount);
+    const shield=Math.min(Math.max(0,seat.maxHp*tileRules.shield.shieldCapPm/1000-seat.shield),weights.shield*tileRules.shield.amount);
+    const mana=Math.min(bundle.resources.manaCap-seat.mana,weights.mana*tileRules.manaPerTile+weights.special*tileRules.special.mana);
+    const rage=Math.min(bundle.resources.rageCap-seat.rage,weights.rage*tileRules.ragePerTile+weights.special*tileRules.special.rage);
+    assess({kind:'swap',first:a,second:b},attack,heal,shield,mana*0.3*effectiveness+rage*rageValue+hits.size*9,critExpectation);
+   }
+   [cells[a],cells[b]]=[cells[b],cells[a]];
+  }
+  for(const ability of view.abilities.filter(entry=>entry.ready)){
+   const skill=skills.get(ability.id),effect=skill.effect;
+   const power=skill.powerPm/1000;
+   const resourceCost=ability.rage*(ability.kind==='ultimate'?0.2:0.35)+ability.mana*0.2;
+   if(effect.kind==='damage'&&effectiveness>0){
+    assess({kind:ability.kind},(seat.attack+effect.value)*power*effectiveness,0,0,-resourceCost,skill.critEligible?critExpectation:1);
+   } else if(effect.kind==='debuff'){
+    const expectedFuture=Math.min(750,view.boss.hp+phaseEdge);
+    const payoff=expectedFuture*(effect.value*power/view.boss.armorBreakPm);
+    assess({kind:ability.kind},0,0,0,payoff-resourceCost);
+   } else if(effect.kind==='heal'){
+    assess({kind:ability.kind},0,Math.min(missingHp,effect.value*power),0,-resourceCost);
+   } else if(effect.kind==='shield'){
+    assess({kind:ability.kind},0,0,effect.value*power,-resourceCost);
+   } else if(ability.kind==='guard'&&incoming>0){
+    const defenseBonus=Math.floor(seat.defense*(effect.value*power/1000)/opponent.attackModel.defenseDivisor);
+    assess({kind:'guard'},0,0,defenseBonus,Math.min(bundle.resources.rageCap-seat.rage,bundle.resources.ragePerGuard)*rageValue);
+   }
+  }
+  assert.ok(options.some(option=>option.action.kind==='swap'),'Expected a legal committed swap');
+  return options.sort((a,b)=>b.score-a.score)[0].action;
+ }
+ function choosePet(roster,boss){
+  const ranked=roster.filter(pet=>pets.has(pet.pet_id)).map(pet=>({
+   id:pet.pet_id,
+   score:elementalScale(pets.get(pet.pet_id),boss)*(40+pet.level)+(pet.pet_id==='ground-clodkin'?8:0),
+  }));
+  assert.ok(ranked.length>0);
+  return ranked.sort((a,b)=>b.score-a.score)[0].id;
+ }
+ return {chooseAction,choosePet};
+}
+
+export async function verifySoloCampaign({
+  natural=false,
   pool, published, seedBytes, engineHash, host, otherAccount, mark,
-  dbConfig, get, post, soloAdmission, native, connections, closeMatch, restart, legalSwap,
+  dbConfig, get, post, soloAdmission, native, connections, closeMatch, restart, replaceActive, legalSwap,
 }) {
   const electric='pet-v31-electric-quorion';
-  const level=Number(process.env.WATER_CAMPAIGN_LEVEL??'1');
-  assert.ok(Number.isInteger(level)&&level>=1&&level<=60);
+  const policy=natural?tacticalPolicy(published.bundle):null;
   assert.deepEqual((await dbConfig(published.version)).bundle,JSON.parse(seedBytes));
   mark('published the unchanged candidate through engine validation in disposable PostgreSQL',{
    version:published.version,digest:published.digest,sourceSha256:createHash('sha256').update(seedBytes).digest('hex'),engineSha256:engineHash,
   });
-  await pool.query('UPDATE pet_wave_one_owned SET level=$2 WHERE account_id=$1',[host.accountId,level]);
-  await pool.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,$3,0,'gacha')",[host.accountId,electric,level]);
+  let fixtureLevel;
+  if(natural){
+   const state=await get(host,'/v1/pets/wave1/state');
+   assert.equal(state.statusCode,200,state.body);
+  }else{
+   fixtureLevel=Number(process.env.WATER_CAMPAIGN_LEVEL??'1');
+   assert.ok(Number.isInteger(fixtureLevel)&&fixtureLevel>=1&&fixtureLevel<=60);
+   await pool.query('UPDATE pet_wave_one_owned SET level=$2 WHERE account_id=$1',[host.accountId,fixtureLevel]);
+   await pool.query("INSERT INTO pet_wave_one_owned(account_id,pet_id,level,exp,source) VALUES($1,$2,$3,0,'gacha')",[host.accountId,electric,fixtureLevel]);
+  }
   // Initialize the ordinary starter wallet before measuring battle grants.
   const artifactResponse=await get(host,'/v1/pets/artifacts/state');
   assert.equal(artifactResponse.statusCode,200,JSON.stringify(artifactResponse.json()));
   const artifacts=artifactResponse.json();
   assert.ok(artifacts.inventory.every(artifact=>artifact.equipped===null));
-  mark('fixture owns two manually provisioned solo Pet instances, with no equipped artifacts or clear rows',{
-   firePet:host.petId,waterPet:electric,level,startingMaterials:artifacts.materials,equippedArtifacts:[],partySize:1,
+  if(!natural)mark('fixture owns two manually provisioned solo Pet instances, with no equipped artifacts or clear rows',{
+   firePet:host.petId,waterPet:electric,level:fixtureLevel,startingMaterials:artifacts.materials,equippedArtifacts:[],partySize:1,
   });
   const allocateUrl='/v1/pets/wave-a/arena8/native/allocate';
   const waterId='tideglass-lagoon';
@@ -31,7 +135,7 @@ export async function verifySoloWaterCampaign({
    const response=await post(host,allocateUrl,input(mapId,kind,petId));
    assert.equal(response.statusCode,403,JSON.stringify(response.json()));
    assert.equal(response.json().error?.message,'Map is locked');
-   mark('authenticated next map admission denied until both previous encounters settle',{mapId,status:403});
+   mark('authenticated next map admission denied until both previous encounters settle',{mapId,kind,status:403});
   }
   // Rank only visible matches and currently affordable skills. The Rust
   // runtime owns cascades, random outcomes and every state transition.
@@ -83,7 +187,12 @@ export async function verifySoloWaterCampaign({
   }
   const initial=await progression();
   assert.deepEqual(initial.maps,[]);
-  assert.deepEqual(initial.pets.map(row=>row.pet_id).sort(),[electric,host.petId].sort());
+  if(natural){
+   assert.deepEqual(initial.pets.map(row=>[row.pet_id,row.level,row.exp,row.source]),[
+    ['fire-coalwhisk',1,0,'starter'],['ground-clodkin',1,0,'starter'],['water-dewskip',1,0,'starter'],
+   ]);
+   mark('guest started with three ordinary level-1 starters and no clear or equipped Artifact',initial);
+  }else assert.deepEqual(initial.pets.map(row=>row.pet_id).sort(),[electric,host.petId].sort());
 
   async function playAndSettle(mapId,kind,petId,{firstClear=true,restartOnFirstMove=false}={}){
    const request=input(mapId,kind,petId);
@@ -92,7 +201,7 @@ export async function verifySoloWaterCampaign({
    const pet=published.bundle.pets.find(value=>value.id===petId);
    const before=await progression();
    const admitted=await soloAdmission(request);
-   const match={input:request,row:{match_id:admitted.matchId,content_hash:admitted.contentHash},version:published};
+   const match={input:request,admission:admitted,row:{match_id:admitted.matchId,content_hash:admitted.contentHash},version:published};
    connections.push(match);
    let cursor=await native(match,0,0,{kind:'start'});
    assert.equal(cursor.committed,true);
@@ -105,19 +214,23 @@ export async function verifySoloWaterCampaign({
    assert.equal(startingPet.level,before.pets.find(row=>row.pet_id===petId).level);
    const phases=new Set([cursor.state.boss.phase]);
    const moves=[];
+   let restoreActive;
    while(cursor.state.phase==='playing'){
-    const action=chooseAction(cursor.state,pet);
+    const action=policy?policy.chooseAction(cursor.state,regular?authored.regular:authored,authored):chooseAction(cursor.state,pet);
     const result=await native(match,0,cursor.version,action);
     assert.equal(result.committed,true,JSON.stringify({action,result}));
     cursor=result;
     phases.add(cursor.state.boss.phase);
     moves.push({action,petHp:cursor.state.participants[0].hp,bossHp:cursor.state.boss.hp,bossPhase:cursor.state.boss.phase});
     if(restartOnFirstMove&&moves.length===1){
+     if(natural)restoreActive=await replaceActive(mapId);
      await restart();
      const restored=await native(match,0,0);
      assert.equal(restored.version,cursor.version);
      assert.deepEqual(restored.state,cursor.state);
-     mark('active Water Warden restored exactly after Nest and Rust restart',{version:restored.version,digest:restored.state.ruleset.configDigest});
+     const stage=natural?'active Warden restored after publication replacement and process restart'
+      :'active Water Warden restored exactly after Nest and Rust restart';
+     mark(stage,{mapId,version:restored.version,digest:restored.state.ruleset.configDigest});
     }
    }
    mark('authoritative Rust terminal projection',{
@@ -125,14 +238,17 @@ export async function verifySoloWaterCampaign({
     turns:moves.length,finalHp:cursor.state.participants[0].hp,finalBossHp:cursor.state.boss.hp,moves,
    });
    const settlementUrl='/v1/pets/wave-a/arena8/native/matches/'+admitted.matchId+'/settle';
-   const denied=await post(otherAccount,settlementUrl,{requestId:randomUUID()});
-   assert.equal(denied.statusCode,403);
+   const validateRetry=!natural||(firstClear&&cursor.state.phase==='won');
+   const denied=validateRetry?await post(otherAccount,settlementUrl,{requestId:randomUUID()}):null;
+   if(denied)assert.equal(denied.statusCode,403);
    const receipt=await post(host,settlementUrl,{requestId:randomUUID()});
    assert.equal(receipt.statusCode,200,JSON.stringify(receipt.json()));
    const value=receipt.json();
-   const retry=await post(host,settlementUrl,{requestId:randomUUID()});
-   assert.equal(retry.statusCode,200);
-   assert.deepEqual(retry.json(),value);
+   if(validateRetry){
+    const retry=await post(host,settlementUrl,{requestId:randomUUID()});
+    assert.equal(retry.statusCode,200);
+    assert.deepEqual(retry.json(),value);
+   }
    closeMatch(match);
    const won=cursor.state.phase==='won';
    if(won&&!regular)assert.deepEqual([...phases],[1,2]);
@@ -176,14 +292,68 @@ export async function verifySoloWaterCampaign({
    mark('authenticated Nest settled the exact Rust proposal once',{
     mapId,encounterId:request.encounterId,publishedDigest:published.digest,terminalVersion:cursor.version,
     won,firstClear:value.firstClear,coins:value.coins,exp:value.exp,materials:value.materials,recruitedPetId:value.recruitedPetId,
-    clearedMaps:value.clearedMaps,replayMatches:true,nonOwnerStatus:denied.statusCode,delivery:settlement[0].delivery_outcome,
+    clearedMaps:value.clearedMaps,replayMatches:validateRetry?true:null,nonOwnerStatus:denied?.statusCode??null,delivery:settlement[0].delivery_outcome,
    });
+   await restoreActive?.();
    return won;
   }
   async function win(mapId,kind,petId,options){
    for(let attempt=0;attempt<4;attempt++)if(await playAndSettle(mapId,kind,petId,{...options,restartOnFirstMove:options?.restartOnFirstMove&&attempt===0}))return;
    throw Error('No native win for '+mapId+' '+kind+' in four attempts');
   }
+  if(natural){
+   const starter=artifacts.inventory.find(item=>item.definitionId==='core-emberglass');
+   assert.ok(starter,'Expected the standard starter Core');
+   const upgrade=await post(host,'/v1/pets/artifacts/upgrade',{requestId:randomUUID(),artifactId:starter.artifactId});
+   assert.equal(upgrade.statusCode,200,upgrade.body);
+   mark('upgraded standard starter Core through the authenticated Artifact route',upgrade.json());
+
+   const authored=published.bundle.bosses;
+   const maps=authored.map(boss=>boss.mapId);
+   const expectedRecruits=['fire-emberloom','water-ripplefin','electric-zipspool','ghost-wickrift','ground-burrowick','light-gleamlet'];
+   assert.equal(maps.length,expectedRecruits.length);
+   let equippedPet=null;
+   for(const [index,boss] of authored.entries()){
+    const {mapId}=boss;
+    const next=maps[index+1];
+    const current=await progression();
+    const petId=policy.choosePet(current.pets,boss);
+    if(petId!==equippedPet){
+     if(equippedPet){
+      const unequip=await post(host,'/v1/pets/artifacts/unequip',{requestId:randomUUID(),petId:equippedPet,slot:'core'});
+      assert.equal(unequip.statusCode,200,unequip.body);
+      assert.equal(unequip.json().removedArtifactId,starter.artifactId);
+     }
+     const equip=await post(host,'/v1/pets/artifacts/equip',{requestId:randomUUID(),petId,artifactId:starter.artifactId});
+     assert.equal(equip.statusCode,200,equip.body);
+     equippedPet=petId;
+    }
+    mark('selected an owned Pet by matchup and earned level',{mapId,petId,level:current.pets.find(pet=>pet.pet_id===petId).level});
+    const checkNextLocked=async()=>{
+     if(!next)return;
+     for(const kind of ['regular','boss'])await checkLocked(next,kind,petId);
+    };
+    await checkNextLocked();
+    await win(mapId,'regular',petId);
+    await checkNextLocked();
+
+    let cleared=false;
+    for(let attempt=0;attempt<8&&!cleared;attempt++){
+     cleared=await playAndSettle(mapId,'boss',petId,{restartOnFirstMove:mapId==='lantern-necropolis'&&attempt===0});
+     if(!cleared&&attempt<5)await win(mapId,'regular',petId,{firstClear:false});
+    }
+    assert.ok(cleared,'No natural Warden win in '+mapId);
+    const state=await progression();
+    assert.deepEqual(state.maps,maps.slice(0,index+1));
+    assert.deepEqual(state.pets.filter(pet=>pet.source==='campaign').map(pet=>pet.pet_id),expectedRecruits.slice(0,index+1).sort());
+   }
+   const final=await get(host,'/v1/pets/wave1/state');
+   assert.equal(final.statusCode,200,final.body);
+   assert.deepEqual(final.json().campaign,{clearedMaps:maps,nextMapId:null});
+   mark('one natural starter account completed all six maps and earned six recruits',await progression());
+   return;
+  }
+
   await checkLocked(waterId,'regular',electric);
   await win(fireId,'regular',host.petId);
   await checkLocked(waterId,'regular',electric);
