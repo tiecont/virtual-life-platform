@@ -155,6 +155,18 @@ def warden_defense_support(bundle):
     tiles["shield"]["amount"] = 35
 
 
+def fixed_warden_vitality(bundle):
+    """Compare the observed trained-party damage budget against fixed two-phase HP."""
+    bundle["configId"] = "arena8-fixed-warden-vitality-candidate"
+    bundle["contentRevision"] = 1
+    # The unchanged Fire profile requires 25,800 damage across both phases.
+    # A quarter-health control asks whether coordinated parties that dealt
+    # roughly 6,000 damage can finish. The rule is identical for a solo seat.
+    for boss in bundle["bosses"]:
+        if boss["id"] in BOSSES:
+            boss["maxHp"] //= 4
+
+
 def veteran_artifacts(bundle):
     """Test the leverage of rank-five equipment without altering natural boards or enemies."""
     bundle["configId"] = "arena8-veteran-artifacts-candidate"
@@ -171,6 +183,7 @@ def veteran_artifacts(bundle):
 SHARED_VARIANTS = {
     "warden-defense-support": warden_defense_support,
     "veteran-artifacts": veteran_artifacts,
+    "fixed-warden-vitality": fixed_warden_vitality,
     "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
         ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
     "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
