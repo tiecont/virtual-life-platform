@@ -46,7 +46,7 @@ def part_arrays(source, document):
         file.seek(20 + json_size)
         _, tag = struct.unpack("<II", file.read(8))
         if tag != 0x004E4942:
-            raise ValueError("Geometry source must contain the embedded GLB battery of meshes.")
+            raise ValueError("Geometry source must contain an embedded GLB binary chunk.")
     payload = np.memmap(source, mode="r", dtype=np.uint8, offset=28 + json_size)
     for node in document["nodes"]:
         if any(name in node for name in ("matrix", "translation", "rotation", "scale")):
@@ -61,9 +61,38 @@ def part_arrays(source, document):
             raise ValueError("Expected dense original FLOAT3 surface coordinates.")
         offset = view.get("byteOffset", 0) + position.get("byteOffset", 0)
         vertices = np.ndarray((position["count"], 3), "<f4", buffer=payload, offset=offset)
-        triangles = document["accessors"][primitive["indices"]]["count"] // 3
+        indices = document["accessors"][primitive["indices"]]
+        index_view = document["bufferViews"][indices["bufferView"]]
+        dtype = {5123: "<u2", 5125: "<u4"}[indices["componentType"]]
+        index_offset = index_view.get("byteOffset", 0) + indices.get("byteOffset", 0)
+        faces = np.ndarray((indices["count"] // 3, 3), dtype, buffer=payload, offset=index_offset)
         lower, upper = vertices.min(axis=0), vertices.max(axis=0)
-        yield node["name"], triangles, vertices, lower, upper
+        yield node["name"], faces, vertices, lower, upper
+
+
+def occupied_components(vertices, faces, corridor):
+    kept_edges = []
+    for edge in ((0, 1), (1, 2), (2, 0)):
+        pairs = faces[:, edge]
+        kept_edges.extend(pairs[np.all(corridor[pairs], axis=1)].tolist())
+    parents = {}
+
+    def root(index):
+        while parents.setdefault(index, index) != index:
+            parents[index] = parents[parents[index]]
+            index = parents[index]
+        return index
+
+    for left, right in kept_edges:
+        parents[root(left)] = root(right)
+    components = {}
+    for index in np.flatnonzero(corridor).tolist():
+        components.setdefault(root(index), []).append(index)
+    result = []
+    for vertex_ids in components.values():
+        ys = vertices[vertex_ids, 1]
+        result.append({"yExtent": [float(ys.min()), float(ys.max())], "vertices": len(ys)})
+    return sorted(result, key=lambda row: row["yExtent"][1] - row["yExtent"][0], reverse=True)
 
 
 def string_coverage(parts):
@@ -79,19 +108,36 @@ def string_coverage(parts):
     radius = .006
     covered_by = {}
     occupancy = np.zeros(len(edges) - 1, dtype=np.bool_)
-    for name, _, vertices, low, high in parts:
+    conservative_triangle_occupancy = np.zeros(len(occupancy), dtype=np.bool_)
+    component_evidence = {}
+    for name, faces, vertices, low, high in parts:
         if high[1] < start_y or low[1] > end_y:
             continue
         if np.any(low[[0, 2]] > transverse + radius) or np.any(high[[0, 2]] < transverse - radius):
             continue
         transverse_distance = np.linalg.norm(vertices[:, [0, 2]] - transverse, axis=1)
-        heights = vertices[transverse_distance < radius, 1]
+        inside = transverse_distance < radius
+        heights = vertices[inside, 1]
         counts, _ = np.histogram(heights, bins=edges)
         hits = counts > 0
         if np.any(hits):
             covered_by[name] = [int(value) for value in np.flatnonzero(hits)]
             occupancy |= hits
-    missing = np.flatnonzero(~occupancy)
+            components = occupied_components(vertices, faces, inside)
+            component_evidence[name] = {"components": len(components), "largestBySpan": components[:8]}
+        for batch in np.array_split(faces, max(1, len(faces) // 80000)):
+            points = vertices[batch]
+            low_corner = points.min(axis=1)
+            high_corner = points.max(axis=1)
+            inside_box = np.all(low_corner[:, [0, 2]] <= transverse + radius, axis=1)
+            inside_box &= np.all(high_corner[:, [0, 2]] >= transverse - radius, axis=1)
+            inside_box &= (low_corner[:, 1] <= end_y) & (high_corner[:, 1] >= start_y)
+            lower_ys, upper_ys = low_corner[inside_box, 1], high_corner[inside_box, 1]
+            start_indices = np.clip(np.searchsorted(edges, lower_ys, side="right") - 1, 0, len(occupancy) - 1)
+            end_indices = np.clip(np.searchsorted(edges, upper_ys, side="left"), 0, len(occupancy))
+            events = np.bincount(start_indices, minlength=len(edges)) - np.bincount(end_indices, minlength=len(edges))
+            conservative_triangle_occupancy |= np.cumsum(events[:-1]) > 0
+    missing = np.flatnonzero(~conservative_triangle_occupancy)
     split = np.flatnonzero(np.diff(missing) > 1) + 1
     gaps = [interval for interval in np.split(missing, split) if len(interval)]
     longest = max(gaps, key=len, default=None)
@@ -102,16 +148,19 @@ def string_coverage(parts):
         "betweenNockCandidatesY": [start_y, end_y],
         "bins": len(occupancy),
         "occupiedBins": int(np.count_nonzero(occupancy)),
+        "binsIntersectingAnyTriangleBounds": np.flatnonzero(conservative_triangle_occupancy).tolist(),
         "partOccupancyBins": covered_by,
-        "longestUnsampledSpanY": None if longest is None else [float(edges[longest[0]]), float(edges[longest[-1] + 1])],
-        "coverageScope": "Vertex sampling within a straight 6 mm corridor. Missing bins alone do not identify an arbitrarily curved string or a coarse long triangle.",
+        "vertexEdgeComponentEvidence": component_evidence,
+        "longestSpanWithNoTriangleBoundsY":
+            None if longest is None else [float(edges[longest[0]]), float(edges[longest[-1] + 1])],
+        "coverageScope": "Vertex and shared-index edge sampling in a straight 6 mm corridor, plus conservative triangle AABB overlap. AABB absence excludes any original triangle in that interval. Front-profile curvature is reviewed separately.",
     }
 
 
 def raw_probe(source, asset):
     document = glb_document(source)
     parts = list(part_arrays(source, document))
-    rows = {name: {"triangles": triangles, "boundsMin": low.tolist(), "boundsMax": high.tolist(),
+    rows = {name: {"triangles": len(triangles), "boundsMin": low.tolist(), "boundsMax": high.tolist(),
                    "boundsCenter": ((low + high) / 2).tolist()}
             for name, triangles, _, low, high in parts}
     candidates = {region: [key(index) for index in ids] for region, ids in REGION_CANDIDATES[asset].items()}
