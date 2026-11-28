@@ -10841,6 +10841,14 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "waterStartedAndSwapped": {
+          "sourceRevision": "f50853e1829d04b2aec8e33e4869ac46e205eced",
+          "command": "PACKAGED_QA_SIZE=1280x720 bash scripts/packaged-coop/run.sh <linux-build-receipt> <rust-runtime> <tessdata>",
+          "packageManifestSha256": "9f0fccd4a394c6ac537736cad154b9b31f53584d9b16d2f9a806140c6584b63f",
+          "runtimeSha256": "90a5e5c2641f6498ad94c5340f033406559ac57497eedd2ea8247c176bad3535",
+          "result": "PASS on one Linux player and three authenticated socket peers. Fire resumed after restart at v3 and settled four rewards at victory v42. The host equipped and upgraded Emberglass, then started Water at v1 and swapped at v2 for 36 Mana. Both screenshots show 64 jewels. Coalwhisk gained 5 max HP. The run used disposable encounter and partner fixtures. The verifier and both manifests were checked independently.",
+          "evidence": "artifacts/wave-d4-session/functional-coop/water-f50853e1/acceptance.json"
+        },
         "functionalRegularPackage": {
           "sourceRevision": "d203f179",
           "command": "Direct Linux Editor build and private Gamescope solo start/swap with authenticated Nest and Rust WSS.",
