@@ -22,6 +22,7 @@ namespace Aetheria.Editor
         const string Base = "Assets/Aetheria/ArtStudies/Icarus/";
         const string Body = Base + "Source/Icarus.vrm";
         const string BodyHash = "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a";
+        const string ChinHash = "10471adf66cfdade8ff862818f9a3b61d893b5c557f636deae63fde8c50ea935";
         const string WalkHash = "50b27c7363ff844ccb0b71373794326583a601128e90f14de0c3df7bfefe9161";
         const string Voice = "Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Audio/Vocals/icarus_kit_signature.ogg";
         const string Mixer = "Assets/Aetheria/Features/PetArena/Vfx/Audio/AetheriaArenaMixer.mixer";
@@ -29,6 +30,7 @@ namespace Aetheria.Editor
         [Serializable]
         sealed class Report
         {
+            public string originalModelSha256 = BodyHash, modelVariant;
             public string scene, modelSha256 = BodyHash, walkSha256 = WalkHash, voiceAsset = Voice, graphics, unity;
             public string status = "PROTOTYPE", expressions, exportProfile;
             public double duration, cueStart, walkStart = PerformanceSequence.WalkStart, overlap = PerformanceSequence.Transition;
@@ -39,7 +41,17 @@ namespace Aetheria.Editor
 
         // Invoked in a private batch Editor. Keep the generated scene and Timeline together
         // in this project so later Play Mode, Recorder and player builds use the same bindings.
-        public static void Build()
+        public static void Build() => BuildStage(null);
+
+        public static void BuildChinStudy()
+        {
+            var path = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_CHIN");
+            if (string.IsNullOrEmpty(path) || !Path.IsPathRooted(path) || !File.Exists(path) || Hash(path) != ChinHash)
+                throw new InvalidDataException("Provide the measured private Icarus chin-weight candidate.");
+            BuildStage(path);
+        }
+
+        static void BuildStage(string chinSource)
         {
             var output = Environment.GetEnvironmentVariable("AETHERIA_PERFORMANCE_OUTPUT");
             var source = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_REVIEW_MOTION");
@@ -63,9 +75,18 @@ namespace Aetheria.Editor
                 var path = folder + "/Walk.vrma";
                 File.Copy(source, Path.Combine(Application.dataPath, path.Substring(7)));
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
-                if (AssetDatabase.LoadAssetAtPath<GameObject>(Body) == null)
-                    AssetDatabase.ImportAsset(Body, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
-                var model = (GameObject)PrefabUtility.InstantiatePrefab(Asset<GameObject>(Body));
+                string bodyAsset = Body;
+                if (chinSource != null)
+                {
+                    bodyAsset = folder + "/Icarus-ChinReview.vrm";
+                    string destination = Path.Combine(Application.dataPath, bodyAsset.Substring(7));
+                    File.Copy(chinSource, destination);
+                    if (Hash(destination) != ChinHash) throw new InvalidDataException("Chin study copy changed during intake.");
+                    AssetDatabase.ImportAsset(bodyAsset, ImportAssetOptions.ForceSynchronousImport);
+                }
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(bodyAsset) == null)
+                    AssetDatabase.ImportAsset(bodyAsset, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+                var model = (GameObject)PrefabUtility.InstantiatePrefab(Asset<GameObject>(bodyAsset));
                 var vrm = model.GetComponentInChildren<Vrm10Instance>();
                 vrm.UpdateType = Vrm10Instance.UpdateTypes.None;
                 var actor = model.GetComponentInChildren<Animator>();
@@ -124,6 +145,8 @@ namespace Aetheria.Editor
                 preview.focus = Bone(HumanBodyBones.Spine);
                 director.playOnAwake = true;
                 var report = new Report {
+                    modelSha256 = chinSource == null ? BodyHash : ChinHash,
+                    modelVariant = chinSource == null ? "Original Charakuru" : "Private chin-weight correction",
                     scene = folder + "/Performance.unity", trackedBones = skeleton.Length, cueStart = cueStart,
                     duration = director.duration, graphics = SystemInfo.graphicsDeviceType.ToString(), unity = Application.unityVersion,
                     exportProfile = export, morphTargets = model.GetComponentsInChildren<SkinnedMeshRenderer>()
