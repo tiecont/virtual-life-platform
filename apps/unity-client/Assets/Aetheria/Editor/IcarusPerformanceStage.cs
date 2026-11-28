@@ -117,6 +117,9 @@ namespace Aetheria.Editor
                 var particles = ElementCue(folder, center + new Vector3(-.31f, .08f, .12f) * height, height);
                 LightRig();
                 var director = PerformanceSequence.Create(actor, idle, walk, rig, shot, audio, voice, particles, folder + "/Performance.playable");
+                var preview = director.gameObject.AddComponent<Aetheria.Icarus.CharacterPerformancePreview>();
+                preview.shot = camera;
+                preview.focus = Bone(HumanBodyBones.Spine);
                 director.playOnAwake = true;
                 var report = new Report {
                     scene = folder + "/Performance.unity", trackedBones = skeleton.Length, cueStart = cueStart,
