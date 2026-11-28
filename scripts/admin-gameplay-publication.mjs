@@ -744,7 +744,7 @@ try{
  if(unchangedCandidate){
   async function replaceActive(mapId){
    const active=await dbActive();
-   const replacement=structuredClone(A.bundle);
+   const replacement=globalThis.structuredClone(A.bundle);
    replacement.contentRevision++;
    replacement.bosses.find(boss=>boss.mapId===mapId).rewardPolicy.firstClear.coins+=37;
    const draft=await operatorPost('draft',{parentVersion:active.version,bundle:replacement});
