@@ -15,7 +15,28 @@ export default function OperatorConsole(){
  useEffect(()=>{if(session&&clock&&(clock>=Date.parse(session.idleExpiresAt)||clock>=Date.parse(session.expiresAt))){setSession(null);setMetric(null);setEvents(null);setMessage('Your session expired. Sign in again.');}},[clock,session]);
  async function request(action:string,body?:unknown,signal?:AbortSignal){
   const response=await fetch('/api/admin/'+action,{signal,method:body===undefined?'GET':'POST',credentials:'same-origin',cache:'no-store',headers:{...body!==undefined?{'content-type':'application/json'}:{},...session?{'x-csrf-token':session.csrfToken}:{}},...body!==undefined?{body:JSON.stringify(body)}:{}});
-  const value=await response.json();if(!response.ok&&action.startsWith('gameplay-config'))throw Error(typeof (value as {error?:{message?:unknown}})?.error?.message==='string'?(value as {error:{message:string}}).error.message:'Gameplay configuration request failed.');if(response.status===401){setSession(null);setMetric(null);setEvents(null);throw Error(action==='login'?'Password or authenticator code was not accepted.':'Your session expired. Sign in again.');}if(response.status===403){setTab('security');setMessage('Verify your password and authenticator to continue.');throw Error('Verify your password and authenticator to continue.');}if(response.status===409)throw Error(action.startsWith('runtime-')?'Runtime or release changed. Refresh before another command.':action.startsWith('event-')?'Event changed. Refresh the calendar before another command.':'Account changed. Refresh before another command.');if(response.status===404)throw Error(action.startsWith('runtime-')?'Versioned runtime controls unavailable.':action.startsWith('event-')?'Event or organizer unavailable.':'Account unavailable.');if(!response.ok)throw Error(response.status===429?'Please wait a minute before trying again.':'The operator service is unavailable. Please try again.');return value;
+  const value=await response.json();
+  const economyAction=action.startsWith('economy-policy');
+  if(action==='economy-policy'&&response.status===404)return null;
+  if(response.status===401){
+   setSession(null);setMetric(null);setEvents(null);
+   const notice=action==='login'?'Password or authenticator code was not accepted.':'Your session expired. Sign in again.';
+   if(economyAction)setMessage(notice);
+   throw Error(notice);
+  }
+  if(response.status===403){
+   const notice='Verify your password and authenticator to continue.';
+   setTab('security');setMessage(notice);
+   throw Error(notice);
+  }
+  if(!response.ok&&(action.startsWith('gameplay-config')||economyAction)){
+   const message=(value as {error?:{message?:unknown}})?.error?.message;
+   throw Error(typeof message==='string'?message:economyAction?'Economy policy request failed.':'Gameplay configuration request failed.');
+  }
+  if(response.status===409)throw Error(action.startsWith('runtime-')?'Runtime or release changed. Refresh before another command.':action.startsWith('event-')?'Event changed. Refresh the calendar before another command.':'Account changed. Refresh before another command.');
+  if(response.status===404)throw Error(action.startsWith('runtime-')?'Versioned runtime controls unavailable.':action.startsWith('event-')?'Event or organizer unavailable.':'Account unavailable.');
+  if(!response.ok)throw Error(response.status===429?'Please wait a minute before trying again.':'The operator service is unavailable. Please try again.');
+  return value;
  }
  useEffect(()=>{let active=true;fetch('/api/admin/session',{cache:'no-store',credentials:'same-origin'}).then(async response=>{if(response.status===401)return null;if(!response.ok)throw Error();return OperatorSessionSchema.parse(await response.json());}).then(value=>{if(active)setSession(value);}).catch(()=>{if(active)setMessage('Sign-in is temporarily unavailable. Please try again.');}).finally(()=>{if(active)setChecking(false);});return()=>{active=false;};},[]);
  async function authenticate(event:FormEvent<HTMLFormElement>,step=false){

@@ -6,6 +6,7 @@ import {
  GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
 } from '@aetheria/contracts';
 import {SkillTrainingEditor} from './skill-training-editor';
+import {EconomyPolicyConfig} from './economy-policy-config';
 import {initialParty,SimulationParty} from './simulation-party';
 import {bundleDifferences} from './bundle-diff';
 
@@ -359,5 +360,6 @@ export default function GameplayConfig({request}:{request:Request}){
  <h3>Raw bundle (advanced)</h3><textarea className="aetheria-field" rows={14} value={json} onChange={event=>setJson(event.target.value)} disabled={!editable} /><p><button type="button" className="aetheria-button secondary" disabled={busy||!editable} onClick={applyJson}>Apply JSON to editor</button></p>
  </section>:null}
  <section className="aetheria-card"><h2>Publication audit</h2><button type="button" className="aetheria-button secondary" disabled={busy} onClick={()=>void loadAudit()}>Load audit</button>{audit?<div className="audit"><table><thead><tr><th>Seq</th><th>Action</th><th>Version</th><th>Actor</th><th>When</th></tr></thead><tbody>{audit.events.map(event=><tr key={event.sequence}><td>{event.sequence}</td><td>{event.action}</td><td>{event.version}</td><td>{event.actor}</td><td>{new Date(event.occurredAt).toLocaleString()}</td></tr>)}</tbody></table></div>:null}</section>
+ <EconomyPolicyConfig request={request}/>
  </>;
 }

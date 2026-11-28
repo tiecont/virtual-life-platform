@@ -33,7 +33,7 @@ export const ReadinessSchema = z.discriminatedUnion('status', [
   z.strictObject({ status: z.literal('unavailable') }),
 ]);
 export const ApiErrorSchema = z.strictObject({ error: z.strictObject({
-  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE', 'NOT_AVAILABLE', 'SAFETY_UNAVAILABLE', 'WORLD_UNAVAILABLE', 'WORLD_VERSION_MISMATCH', 'ROOM_FULL', 'ALREADY_IN_ROOM', 'NOT_IN_ROOM', 'SEAT_TAKEN', 'ALREADY_SEATED', 'INSUFFICIENT_FUNDS', 'REQUEST_CONFLICT']),
+  code: z.enum(['FORBIDDEN', 'NOT_FOUND', 'INVALID_REQUEST', 'INTERNAL_ERROR', 'UNAUTHENTICATED', 'RATE_LIMITED', 'IDEMPOTENCY_CONFLICT', 'NAME_UNAVAILABLE', 'NOT_AVAILABLE', 'SAFETY_UNAVAILABLE', 'WORLD_UNAVAILABLE', 'WORLD_VERSION_MISMATCH', 'ROOM_FULL', 'ALREADY_IN_ROOM', 'NOT_IN_ROOM', 'SEAT_TAKEN', 'ALREADY_SEATED', 'INSUFFICIENT_FUNDS', 'INSUFFICIENT_PREMIUM_DIAMONDS', 'REQUEST_CONFLICT']),
   message: z.string(), requestId: z.uuid(),
 }) });
 export type Readiness = z.infer<typeof ReadinessSchema>;
@@ -127,3 +127,4 @@ export * from './game-lobby';
 export * from './pet-taxonomy-v3';
 
 export * from './pet-manifest-v3';
+export * from './wallet';

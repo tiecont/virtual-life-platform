@@ -58,3 +58,43 @@ it('account results must be bounded strict projections; private upstream fields 
  const id='11111111-1111-4111-8111-111111111111',view={accountId:id,kind:'registered',status:'active',version:0,activeSessions:1,privacy:{export:'OWNER_SELF_SERVICE',deletion:'OWNER_SELF_SERVICE',receiptTtlSeconds:86400}};
  for(const extra of [{privateEmail:'SYNTHETIC_PRIVATE_NOT_ALLOWED'},{sessions:[{token:'SYNTHETIC_PRIVATE_NOT_ALLOWED'}]},{version:-1}]){const handler=createAdminHandler(config(),async()=>Response.json({...view,...extra}));const response=await handler(new Request(origin+'/api/admin/account?accountId='+id,{headers:{cookie}}));expect(response.status).toBe(503);expect(await response.text()).not.toContain('SYNTHETIC_PRIVATE_NOT_ALLOWED');}
 });
+it('economy-policy proxy enforces query, CSRF, and strict schema validation including locked 1:1 conversion rate',async()=>{
+ let calls=0;
+ const policy={
+  energyMax:180,energyRegenSeconds:300,activityEnergyCost:0,diamondToLuminousStoneRate:1 as const,
+  firstClearLuminousStones:60,bossFirstClearLuminousStones:120,gachaSingleCostCoins:100,gachaSingleCostLuminousStones:160,
+  gachaDisclosure:{featuredPetId:'pet-v3-fire-icarus',softPityAt:60,hardPityAt:80,baseSProbabilityPpm:8000,featuredProbabilityPpm:500000,guaranteedFeaturedAfterOffRate:true,duplicateExp:200,missExp:25,realMoneyPurchasesEnabled:false as const,summary:'0.8% base S; 60/80 pity; no real-money purchases.'},
+ };
+ const version={...policy,version:1,reason:'SEED',publishedBy:'system',publishedAt:'2026-11-28T00:00:00.000Z'};
+ const handler=createAdminHandler(config(),async url=>{
+  calls++;
+  if(url.endsWith('/economy-policy'))return Response.json({schemaVersion:1,activeVersion:1,activeRevision:1,updatedBy:'system',updatedAt:'2026-11-28T00:00:00.000Z',active:version,versions:[version]});
+  return Response.json({schemaVersion:1,version:2,activeRevision:2,active:{...version,version:2}});
+ });
+ expect((await handler(new Request(origin+'/api/admin/economy-policy?extra=1',{headers:{cookie}}))).status).toBe(400);
+ expect((await handler(new Request(origin+'/api/admin/economy-policy-publish',{method:'POST',headers:{origin,cookie,'x-csrf-token':'b'.repeat(64)},body:JSON.stringify({requestId:'11111111-1111-4111-8111-111111111111',expectedActiveRevision:1,reason:'BAD_RATE',policy:{...policy,diamondToLuminousStoneRate:2}})}))).status).toBe(400);
+ expect((await handler(new Request(origin+'/api/admin/economy-policy-publish',{method:'POST',headers:{origin,cookie},body:'{}'}))).status).toBe(403);
+ expect(calls).toBe(0);
+ expect((await handler(new Request(origin+'/api/admin/economy-policy',{headers:{cookie}}))).status).toBe(200);
+ expect((await handler(new Request(origin+'/api/admin/economy-policy-publish',{method:'POST',headers:{origin,cookie,'x-csrf-token':'b'.repeat(64)},body:JSON.stringify({requestId:'11111111-1111-4111-8111-111111111111',expectedActiveRevision:1,reason:'VALID_POLICY',policy})}))).status).toBe(200);
+});
+
+it('accepts bounded economy history with long JSON-escaped disclosure and reason text',async()=>{
+ const escapedText=(length:number)=>'x'+String.fromCharCode(1).repeat(length-1);
+ const version={
+  energyMax:180,energyRegenSeconds:300,activityEnergyCost:0,diamondToLuminousStoneRate:1,
+  firstClearLuminousStones:60,bossFirstClearLuminousStones:120,gachaSingleCostCoins:100,gachaSingleCostLuminousStones:160,
+  gachaDisclosure:{featuredPetId:'pet-v3-fire-icarus',softPityAt:60,hardPityAt:80,baseSProbabilityPpm:8000,featuredProbabilityPpm:500000,guaranteedFeaturedAfterOffRate:true,duplicateExp:200,missExp:25,realMoneyPurchasesEnabled:false,summary:escapedText(512)},
+  version:200,reason:escapedText(256),publishedBy:session.subject,publishedAt:'2026-11-28T00:00:00.000Z',
+ };
+ const overview={
+  schemaVersion:1,activeVersion:200,activeRevision:200,active:version,
+  updatedBy:version.publishedBy,updatedAt:version.publishedAt,
+  versions:Array.from({length:200},(_,index)=>({...version,version:200-index})),
+ };
+ expect(Buffer.byteLength(JSON.stringify(overview))).toBeGreaterThan(262144);
+ const handler=createAdminHandler(config(),async()=>Response.json(overview));
+ const response=await handler(new Request(origin+'/api/admin/economy-policy',{headers:{cookie}}));
+ expect(response.status).toBe(200);
+ expect(await response.json()).toEqual(overview);
+});
