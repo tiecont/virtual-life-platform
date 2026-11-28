@@ -417,21 +417,24 @@ elif stage == 'four-battle':
         click(*start)
 
     def board_evidence(img):
+        captured_at = time_ns() // 1_000_000
         board = populated_board(img)
         if board is not None:
             turn, _ = shared_hud_turn(img)
-            if turn is not None:
-                return board, turn
+            if turn == (0, 0):
+                return board, turn, captured_at
+            if turn is not None and turn[0] > 0:
+                raise RuntimeError(f'The packaged client missed the shared opening: visible turn and seat {turn}')
         if seat != 0:
             admit(img)
         return None
 
-    (board, turn), image = wait_for('09-native-jewel-board', board_evidence, tries=80)
+    (board, turn, captured_at), image = wait_for('09-native-jewel-board', board_evidence, tries=80)
     (output/'board.json').write_text(json.dumps({
         'clientSlot': seat, 'assignedSeat': int((output/'assigned-seat').read_text()),
         'picture': image.name, 'bounds': list(board),
         'visibleTurn': turn[0], 'visibleActiveSeat': turn[1],
-        'capturedUnixMs': time_ns() // 1_000_000,
+        'capturedUnixMs': captured_at,
     }) + '\n')
 elif stage == 'fire':
     label('01-guest-login','guest',center_band(74,116,65))
