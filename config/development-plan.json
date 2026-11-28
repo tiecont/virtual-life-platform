@@ -10891,6 +10891,11 @@
         "Record exact committed source and actual outcomes for the listed acceptance criteria."
       ],
       "implementation": {
+        "fourNativeOpening": {
+          "sourceRevision": "65ee6e0e18a3d26429a12a6b253508c2aef01b05",
+          "verification": "Four 1280×720 Linux clients on player f56a9e75 rendered the same opening on time in run-KN5DZkKm, with distinct authenticated sessions.",
+          "remaining": "Prove subsequent seat handoffs and settlement on four actual players."
+        },
         "waitingRoomRefresh": {
           "sourceRevision": "f56a9e75db3637145002dd62d4140cc83d021778",
           "verification": "Direct Unity PlayMode: 18 of 18 passed. Linux development player built. Four real packaged clients with the 7c68e227 capture harness did not reach the opening; host Ready control was not found in run-wrAAGgE2.",
@@ -11392,6 +11397,11 @@
         "VL-184"
       ],
       "implementation": {
+        "recruitmentHostPoints": {
+          "sourceRevision": "2eb7d6ae0c6be16ecf946b05e844ab5c05320069",
+          "verification": "Contracts build and all 20 disposable PostgreSQL cooperative settlement cases passed on detached source. The route response exposes remaining host points for cooperative encounters.",
+          "remaining": "Packaged multi-language recruitment presentation remains under visual review."
+        },
         "routePolicyOperator": {
           "sourceRevision": "beb5e795ec96905aea0ca703e9dafe92f282eb15",
           "verification": "Admin typecheck passed. Isolated actual Chromium/Next/Nest/PostgreSQL operator session covered 48 authored routes, rejected a cycle with 422, published v2 and rolled back to v1. Anonymous overview returned 401. Schema-7 engine validated publication.",
