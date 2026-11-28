@@ -43,6 +43,7 @@ class AssetSpec:
     receipt: str
     projection_for_chart: Callable
     interior_guard_pixels: int = 1
+    register_plates: Callable | None = None
 
 
 def wing_projection(chart):
@@ -145,6 +146,8 @@ def read_plate(path, direction, low, high, interior_guard):
 def project(world, plate):
     coordinates = world @ plate["axis"].T
     points = np.rint((coordinates - plate["worldCenter"]) * plate["scale"] + plate["pxCenter"]).astype(np.int32)
+    if "register" in plate:
+        points = plate["register"](points)
     width, height = plate["dims"]
     xs, ys = np.clip(points[:, 0], 0, width - 1), np.clip(points[:, 1], 0, height - 1)
     valid = plate["foreground"][ys, xs]
@@ -334,7 +337,7 @@ def attach_material(objects, texture, spec):
         obj.data.materials[0] = material
 
 
-def create(source, references, output, spec):
+def create(source, references, output, spec, calibration=None):
     bpy.ops.wm.open_mainfile(filepath=str(source))
     bpy.context.view_layer.update()
     objects = meshes()
@@ -346,6 +349,8 @@ def create(source, references, output, spec):
     density = pack(charts)
     plates = [read_plate(references / row["file"], direction, low, high, spec.interior_guard_pixels)
               for row, direction, (low, high) in zip(verify_reference(references, spec.asset), spec.directions, bounds, strict=True)]
+    if calibration:
+        spec.register_plates(plates, calibration)
     rgb = np.zeros((SIZE, SIZE, 3), dtype=np.uint8)
     for chart in charts.values():
         x, y, width, height = chart["rect"]
@@ -388,6 +393,7 @@ def create(source, references, output, spec):
                            "referenceMaskPixels": p["maskPixels"], "stableInteriorPixels": p["interiorPixels"]}
                           for d, p in zip(spec.directions, plates, strict=True)],
         "referenceInteriorGuardPixels": spec.interior_guard_pixels,
+        "registrationFiles": [p["calibrationSha"] for p in plates if "calibrationSha" in p],
         "references": verify_reference(references, spec.asset),
         "scope": "Reference-only base color with independent face plates. Dominant-surface projection may overlap within one chart; no normal or metallic map, runtime LOD, rig or art admission.",
     }
@@ -464,6 +470,8 @@ def run(spec, argv):
     parser.add_argument("source", type=Path)
     parser.add_argument("references", type=Path)
     parser.add_argument("output", type=Path)
+    if spec.register_plates:
+        parser.add_argument("--clay-captures", type=Path, help="Original neutral model views for color registration")
     parser.add_argument("--render", choices=("base-color", "pbr"))
     args = parser.parse_args(argv)
     if bpy.app.version[:2] != (5, 3):
@@ -480,7 +488,7 @@ def run(spec, argv):
             raise ValueError("The source or original view pins changed between phases.")
         render(source, output, args.render, evidence, spec)
     else:
-        evidence = create(source, references, output, spec)
+        evidence = create(source, references, output, spec, getattr(args, "clay_captures", None))
         (output / spec.receipt).write_text(json.dumps(evidence, indent=2) + "\n")
 
 
