@@ -204,7 +204,7 @@ namespace Aetheria.Tests
                 var jewels = Enumerable.Range(0, 64).Select(index => JewelKinds[index % JewelKinds.Length]).ToArray();
                 var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(AdvancedProjection(jewels)));
 
-                foreach (var (width, height) in new[] { (1280, 720), (1920, 1080) })
+                foreach (var (width, height) in new[] { (1280, 720), (1920, 1080), (2560, 1440), (3840, 2160) })
                 {
                     root.style.width = width;
                     root.style.height = height;

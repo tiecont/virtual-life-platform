@@ -97,6 +97,6 @@ namespace Aetheria.Networking
                 }
                 return new GameCommand(Guid.NewGuid(), match, current.Version, CoopNativeIntent.Kind,
                     CoopNativeIntent.Create(view.Epoch, kind, first, second));
-            }, cancellation);
+            }, cancellation, renewAdmissionBeforeSubmit: true);
     }
 }

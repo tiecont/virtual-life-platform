@@ -101,16 +101,16 @@ namespace Aetheria.PetArena.Presentation
                 turnHeader.text = CoopNativePresenter.TurnLabel(view, remaining);
             }
             if (recovering || leaving || submitting) return;
-            if (!view.Terminal && session.NeedsRefresh && !session.HasPendingCommand && !reading)
+            var expired = remaining == 0;
+            var canActNow = view.ActiveSeat == view.You && !expired;
+            if (!view.Terminal && !canActNow && session.NeedsRefresh && !session.HasPendingCommand && !reading)
             {
                 _ = RecoverAsync(renewal: true);
                 return;
             }
-            var expired = remaining == 0;
-            if (view.Version != renderedVersion || session.RequiresReconnect != renderedReconnect ||
+            if (view.Version != renderedVersion || session.HasTransportFault != renderedReconnect ||
                 expired != renderedExpired) Refresh();
-            if (view.Terminal || reading || !CanSubmit || Time.unscaledTime < nextRefresh ||
-                view.ActiveSeat == view.You && !expired) return;
+            if (view.Terminal || reading || !CanSubmit || Time.unscaledTime < nextRefresh || canActNow) return;
             nextRefresh = Time.unscaledTime + 1f;
             _ = ReadSharedBoardAsync();
         }
@@ -183,7 +183,7 @@ namespace Aetheria.PetArena.Presentation
                     battleAudio.SetAmbience(ArenaAmbience.Water);
             }
             previous = view;
-            renderedReconnect = session.RequiresReconnect;
+            renderedReconnect = session.HasTransportFault;
             renderedRecovery = recovering;
             renderedVersion = view.Version;
             Render(view);
@@ -246,10 +246,18 @@ namespace Aetheria.PetArena.Presentation
             if (body == null)
             {
                 target.Clear();
-                body = new ScrollView { name = "coop-hud-scroll" };
+                body = new ScrollView
+                {
+                    name = "coop-hud-scroll",
+                    horizontalScrollerVisibility = ScrollerVisibility.Hidden
+                };
                 body.AddToClassList("coop-hud-scroll");
-                body.contentViewport.RegisterCallback<GeometryChangedEvent>(change =>
-                    BattleScreenLayout.Size(body, change.newRect.size));
+                var scroll = body;
+                // Resize after the layout pass. The outer scroll area is set
+                // by the HUD and does not vary when scrollbars show or hide.
+                var fit = scroll.schedule.Execute(() => SizeBattle(scroll));
+                fit.Pause();
+                scroll.RegisterCallback<GeometryChangedEvent>(_ => fit.ExecuteLater(0));
                 target.Add(body);
             }
             else
@@ -271,7 +279,6 @@ namespace Aetheria.PetArena.Presentation
             if (view.HasAdvancedJewels) AddJewelSpeedControl(turnHeader);
             target.Insert(0, turnHeader);
             body.Add(presentation);
-            BattleScreenLayout.Size(body, body.contentViewport.contentRect.size);
             var status = view.Terminal ? (view.Phase == "won" ? "Victory" : "Defeat") : feedback;
             if (submitting) target.Add(new Label("Sending action…") { name = "coop-network" });
             else if (!string.IsNullOrEmpty(status)) target.Add(new Label(status) { name = "coop-feedback" });
@@ -305,8 +312,12 @@ namespace Aetheria.PetArena.Presentation
                 target.Add(start);
             }
             if (returnToHub != null || session != null) target.Add(BuildFooter(view));
+            SizeBattle(body);
             if (requestReward) _ = ReadRewardAsync();
         }
+
+        private static void SizeBattle(ScrollView scroll) =>
+            BattleScreenLayout.Size(scroll, scroll.contentViewport.contentRect.size, fillViewport: false);
 
         private void AddJewelSpeedControl(VisualElement header)
         {
@@ -330,7 +341,7 @@ namespace Aetheria.PetArena.Presentation
         }
 
         private bool CanSubmit => session != null && !recovering && !leaving && !submitting &&
-            !session.RequiresReconnect && !session.HasPendingCommand;
+            !session.HasTransportFault && !session.HasPendingCommand;
 
         private VisualElement BuildFooter(CoopNativeView view)
         {
@@ -344,7 +355,7 @@ namespace Aetheria.PetArena.Presentation
             footer.Add(leave);
 
             var retry = session?.HasPendingCommand == true;
-            var needsRecovery = !submitting && (retry || session?.RequiresReconnect == true);
+            var needsRecovery = !submitting && (retry || session?.HasTransportFault == true);
             var recover = new Button(() => _ = RecoverAsync())
             {
                 name = retry ? "coop-retry" : "coop-reconnect",
@@ -394,7 +405,8 @@ namespace Aetheria.PetArena.Presentation
         {
             var current = session;
             var retry = current?.HasPendingCommand == true;
-            if (current == null || recovering || leaving || (!retry && !current.RequiresReconnect)) return;
+            if (current == null || recovering || leaving) return;
+            if (!retry && !current.HasTransportFault && !(renewal && current.NeedsRefresh)) return;
             recovering = true;
             if (!renewal)
             {
@@ -420,7 +432,7 @@ namespace Aetheria.PetArena.Presentation
                     recovering = false;
                     // A render during renewal can disable controls even if the
                     // replacement socket resumes the same committed version.
-                    if (!renewal || renderedRecovery || current.RequiresReconnect || current.State?.Coop?.Version != renderedVersion)
+                    if (!renewal || renderedRecovery || current.HasTransportFault || current.State?.Coop?.Version != renderedVersion)
                         Refresh();
                 }
             }

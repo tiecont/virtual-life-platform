@@ -42,7 +42,8 @@ namespace Aetheria.Networking
         public bool HasPendingCommand => pending != null;
         public Aetheria.Native.Public.V1.WorldSnapshot MovementState => connection.Snapshot?.Clone();
         public bool NeedsRefresh => connection.NeedsRefresh;
-        public bool RequiresReconnect => connection.NeedsRefresh || connection.State == ConnectionState.Faulted;
+        public bool HasTransportFault => connection.State == ConnectionState.Faulted;
+        public bool RequiresReconnect => connection.NeedsRefresh || HasTransportFault;
         public async Task<Aetheria.Native.Public.V1.WorldSnapshot> MoveAsync(int x, int z, CancellationToken cancellation = default)
         {
             if (disposed) throw new ObjectDisposedException(nameof(NativePlaySession));
@@ -67,18 +68,21 @@ namespace Aetheria.Networking
             }, cancellation);
 
         public Task<PlayState> ReconnectAsync(CancellationToken cancellation = default) =>
-            Exclusive(async token => {
+            Exclusive(ReconnectAndRead, cancellation);
+
+        private async Task<PlayState> ReconnectAndRead(CancellationToken token)
+        {
+            await connection.ReconnectAsync(token).ConfigureAwait(false);
+            try {
+                return await Read(token).ConfigureAwait(false);
+            } catch (NativeFailure failure) when (IsTransientRejection(failure)) {
+                // The projected view is read-only. A transient rejection
+                // faults its socket, so retry once with fresh admission.
+                await Task.Delay(100, token).ConfigureAwait(false);
                 await connection.ReconnectAsync(token).ConfigureAwait(false);
-                try {
-                    return await Read(token).ConfigureAwait(false);
-                } catch (NativeFailure failure) when (IsTransientRejection(failure)) {
-                    // The projected view is read-only. A transient rejection
-                    // faults its socket, so retry once with fresh admission.
-                    await Task.Delay(100, token).ConfigureAwait(false);
-                    await connection.ReconnectAsync(token).ConfigureAwait(false);
-                    return await Read(token).ConfigureAwait(false);
-                }
-            }, cancellation);
+                return await Read(token).ConfigureAwait(false);
+            }
+        }
 
         // A native match allocation can already scope the admission ticket to one
         // match, so the transport must connect without a fresh platform login.
@@ -114,10 +118,22 @@ namespace Aetheria.Networking
         protected abstract string ViewKind { get; }
         protected abstract PlayState Decode(ulong version, byte[] bytes);
         public abstract Task<PlayState> AdvanceAsync(CancellationToken cancellation = default);
-        protected Task<PlayState> SubmitPending(Func<PlayState, Guid, GameCommand> create, CancellationToken cancellation) =>
+        protected Task<PlayState> SubmitPending(Func<PlayState, Guid, GameCommand> create,
+            CancellationToken cancellation, bool renewAdmissionBeforeSubmit = false) =>
             Exclusive(async token => {
                 if (pending != null) throw new NativeFailure(Failure.Busy);
-                if (state == null) throw new NativeFailure(Failure.Rejected);
+                var requested = state;
+                if (requested == null) throw new NativeFailure(Failure.Rejected);
+                if (renewAdmissionBeforeSubmit && connection.NeedsRefresh)
+                {
+                    // A short admission can end during a playable turn. Renew
+                    // before creating an intent and recheck the board it targeted.
+                    var latest = await ReconnectAndRead(token).ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
+                    state = latest;
+                    if (latest.Version != requested.Version || latest.Epoch != requested.Epoch)
+                        throw new NativeFailure(Failure.Rejected, ErrorCode.StaleVersion);
+                }
                 pending = create(state, match);
                 return await CommitPending(token).ConfigureAwait(false);
             }, cancellation);

@@ -44,7 +44,7 @@ namespace Aetheria.PetArena.Presentation
             board[index / side].Add(cell);
         }
 
-        public static void Size(VisualElement content, Vector2 viewport)
+        public static void Size(VisualElement content, Vector2 viewport, bool fillViewport = true)
         {
             var stage = content?.Q("battle-stage");
             var center = stage?.Q("battle-center");
@@ -64,7 +64,7 @@ namespace Aetheria.PetArena.Presentation
             stage.style.paddingTop = upperMargin;
             foreach (var element in stage.Children())
                 if (element.ClassListContains("battle-side")) element.style.top = upperMargin;
-            stage.style.minHeight = viewport.y;
+            if (fillViewport) stage.style.minHeight = viewport.y;
         }
     }
 }
