@@ -268,9 +268,13 @@ elif stage == 'water':
     click(*label('15-plaza-gear-before-equip','equip',(35,539,400,585)))
     text('16-plaza-gear-equipped','core: emberglass',(35,350,395,396))
     click(*label('16-plaza-gear-equipped','upgrade',(35,592,400,704)))
-    upgraded=text('17-plaza-gear-upgraded','lv2',(35,338,395,394))
-    back=word_button(upgraded,{'back'},(38,615,405,743))
-    assert back, 'Back to Central Plaza control missing'
+    text('17-plaza-gear-upgraded','lv2',(35,338,395,394))
+    def artifact_back(img):
+        back = word_button(img, {'back'}, (38, 560, 370, screen_height))
+        if back is None:
+            run(['python3', root/'x11.py', 'scroll', 'down'], check=True)
+        return back
+    back, _ = wait_for('17b-plaza-artifact-back', artifact_back, tries=8)
     click(*back)
     sleep(.7)
     for symbol,duration in [('d',1.88),('w',3.8),('e',.14)]:
