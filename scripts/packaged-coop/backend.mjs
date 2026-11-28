@@ -100,7 +100,7 @@ function journalFingerprint(row,matchId,action){
   header.writeUInt32BE(values.length,1);
   return Buffer.concat([header,...values]);
  };
- const canonicalAction=action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
+ const canonicalAction=action.kind==='endTurn'?number(3,7):action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
  const payload=list([text(row.actor),uuid(matchId),uuid(row.command),number(2,row.epoch),number(2,row.version-1),canonicalAction]);
  return createHash('sha256').update(Buffer.from('VL-CANON\x01')).update(list([text('vl.command.v1'),payload])).digest('hex');
 }
@@ -340,6 +340,24 @@ try{
    distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version,
    openingStartedUnixMs,openingEndedUnixMs});
   facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');
+  if(process.env.PACKAGED_QA_FOUR_ROTATION==='1'){
+   await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/handoff-4.json')));
+   const {rows}=await pool.query(
+    `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+      encode(payload_fingerprint,'hex') AS fingerprint,created_at AS "createdAt"
+      FROM game_native_receipts WHERE match_id=$1 AND committed_version BETWEEN 2 AND 6 ORDER BY committed_version`,
+    [allocation.match_id]);
+   const turns=seats.map((seat,index)=>{
+    const row=rows[index];
+    assert.equal(row?.version,index+2);
+    assert.equal(row.actor,seat.account_id);
+    assert.equal(row.fingerprint,journalFingerprint(row,allocation.match_id,{kind:'endTurn'}));
+    return {turn:index+1,issuerSeat:index,version:row.version,activeSeat:(index+1)%4,fingerprint:row.fingerprint,
+     startedUnixMs:row.createdAt.getTime(),
+     endedUnixMs:Math.min(row.createdAt.getTime()+bundle.party.turnTimeoutMs,rows[index+1]?.createdAt.getTime()??Infinity)};
+   });
+   await json('four-rotation-journal.json',{matchId:allocation.match_id,turns});
+  }
  }else{
  const fireTarget={room,allocation,boss};
  async function freshTicket(seat,{room,allocation,boss}=fireTarget){

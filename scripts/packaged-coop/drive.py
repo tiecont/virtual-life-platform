@@ -435,6 +435,41 @@ elif stage == 'four-battle':
         'visibleTurn': turn[0], 'visibleActiveSeat': turn[1],
         'capturedUnixMs': captured_at,
     }) + '\n')
+    if environ.get('PACKAGED_QA_FOUR_ROTATION') == '1':
+        assigned = int((output/'assigned-seat').read_text())
+        for current in range(4):
+            # Keep all four screenshots from one committed turn before its
+            # owner clicks. The first round always starts at seat zero.
+            marker = 'board.json' if current == 0 else f'handoff-{current}.json'
+            if assigned == current:
+                deadline = monotonic() + 15
+                markers = [output.parent/f'client-{slot}'/marker for slot in range(4)]
+                while not all(path.exists() for path in markers) and monotonic() < deadline:
+                    sleep(.05)
+                if not all(path.exists() for path in markers):
+                    raise RuntimeError(f'Four clients did not observe turn {current} before the deadline')
+                position = action_button(image, 'end', board)
+                if position is None:
+                    raise RuntimeError(f'Active seat {assigned} has no visible End Turn control')
+                click(*position)
+            following = current + 1
+            def next_board(img):
+                stamp = time_ns() // 1_000_000
+                turn, _ = shared_hud_turn(img)
+                if turn and turn[0] > following:
+                    raise RuntimeError(f'Missed turn {following}: {turn}')
+                if turn == (following, following % 4):
+                    bounds = populated_board(img)
+                    if bounds is not None:
+                        return bounds, stamp
+                return None
+            (board, stamp), image = wait_for(f'10-team-turn-{following}', next_board, tries=24)
+            file = output/f'handoff-{following}.json'
+            temp = file.with_suffix('.tmp')
+            temp.write_text(json.dumps({'clientSlot': seat, 'assignedSeat': assigned, 'turn': following,
+                                        'activeSeat': following % 4, 'capturedUnixMs': stamp,
+                                        'bounds': list(board), 'picture': image.name}) + '\n')
+            temp.replace(file)
 elif stage == 'fire':
     label('01-guest-login','guest',center_band(74,116,65))
     click(screen_middle,96)
