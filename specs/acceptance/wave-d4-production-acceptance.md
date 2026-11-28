@@ -82,6 +82,66 @@ Related tasks VL-211.
 | C11 | Six Bosses evaluated with attainable teams. | IN_PROGRESS | eb980abb · Balance | 2,304 simulations across six Bosses. Natural access to tested Lv20 and gear remains open. |
 | C12 | Owner balance approval recorded separately. | OWNER_REVIEW_REQUIRED | eb980abb · Balance | Owner selects or rejects the candidate digest. |
 
+### Jewel balance qualification
+
+The timed six-kind studies at `6402dd7d` and `5213a1c7` provide the historical
+cooperative reference. The two separate confirmation ranges beginning at 1001
+and 2001 recorded 0/864 baseline wins and 467/864 under quarter Warden HP and
+attack. The composition range 3011–3022 recorded 0/2592 baseline wins and
+1635/2592 under the combined reduction. Tactical level-20 starter parties
+still lost all six Water battles across the two confirmation ranges. The earlier
+functional Fire and Water comparisons used another ruleset revision.
+
+The [offline study](../../scripts/coop-balance-study.py) compares the timed
+six-kind baseline, the historical Warden tuning hypothesis, and the separate
+advanced capability. Its advanced control uses the same typed capability with
+an empty encounter scope. The skill-only and encounter-only variants retain
+their respective authored sources and share the control's Boss and progression
+inputs. Rust validates each generated bundle at load. The capability and bundle
+digest bind the RNG stream, so equal seed ranges pair sampling inputs across
+variants while boards and refills can diverge. A Warden tuning study applies to
+the cooperative profile. Solo regular and Warden results also exercise their
+separately authored profiles.
+
+| Gate | Decision evidence |
+| --- | --- |
+| J58 | Retain the timed six-kind reference and its digest. Rerun only the new metric cohort with that reference. |
+| J59 | Evaluate skill conversions and opening conversions independently against the advanced control. Report unsuccessful and successful creation, matched groups, and effect results. |
+| J60 | Report by Pet or party, level, loadout, encounter type, element, and one of the four public-information policies. The matrix includes both solo and co-op. Fixture loadouts establish legal reducer inputs. Natural progression still requires qualification. |
+| J61 | Report unique legal swaps per committed playing turn and dead-board regenerations per refill swap check. Forced cascade-cap regeneration has a separate count. |
+| J62 | Report committed HP damage, usable Mana and Rage after resource caps, healing, actual shield absorption and survivors. State deltas and paid costs measure generation across the party. Rage transfers are neutral in that calculation. |
+| J63 | Compare matched advanced groups with observed occupancy and committed cleanses, Chill consumption and mitigation, and Astral tiers. Watch for repeated no-op conversions, reliance on a single support composition, shield or resource saturation, and benefits concentrated in one policy. Reducer and restart checks cover the actual abuse and replay guarantees. |
+| J64 | Freeze candidate digests and a discovery cohort before evaluating a disjoint held-out range. Report unresolved outcomes and durations alongside wins and losses. |
+| J65 | Review whether the Warden tuning improves attainable starter viability without trivializing trained loadouts, which advanced source yields useful matches, and whether any observed conversion or effect needs different limits. Keep every numerical candidate unpublished pending the owner's selection by digest. |
+
+The study's elapsed time uses one synthetic second per accepted action for
+determinism. The simulator reports committed turns separately. It cannot
+qualify human usability under a 15-second deadline. An evaluation budget or a
+policy that cannot produce an accepted action leaves a match unresolved.
+Damage per turn includes committed DoT ticks. Skill healing efficiency compares
+actual heals with their capacity on valid targets. Vitality jewel healing is
+included in effective healing. Shield efficiency reports actual absorption as
+a fraction of granted shielding.
+
+#### Canonical skill audit
+
+The typed catalog binds 221 unique abilities across 55 active Pets. The
+effect counts are 111 Damage, 55 Buff, 21 Shield, 9 Debuff, 8 Rage Transfer,
+5 Heal, 4 Mana Restore, 4 Curse, 2 Cleanse, 1 Chain Damage and
+1 Damage over Time. The earlier cast-conformance receipt supplied resources
+and applicable targets. The example's `--audit-skills BUNDLE` lists each
+active binding, original effect, target, costs and cooldown.
+
+| Experimental conversion binding | Canonical ability | Evaluation focus |
+| --- | --- | --- |
+| Nature | `pet-v31-light-aurelune-dawn-cleanse` cleanses allies for 16 Mana and has a two-turn cooldown. | Inspect Lantern's reapplication of Vulnerability and the interval between the skill's cleanse and the converted group's match. `light-gleamlet-dawn-cleanse` is a same-effect candidate for a later starter comparison. |
+| Frost | `pet-v31-water-marivell-tidal-mending` heals allies for 40 Rage and has a two-turn cooldown. | Check whether the converted group can be matched before the next threatening committed attack. Compare damage mitigation separately from Marivell's existing heal. `water-foamcurl-foam-salve` is a lowest-ally heal candidate if access becomes a concern. |
+| Astral | `light-dawnarchon-ray-prism-burst` shields allies for 40 Rage and has a two-turn cooldown. | Track eligible surviving basic jewels, upgrades by resulting tier, and downstream resource or attack yield. Separate the original shield's effect from the conversion. |
+
+These three bindings retain their canonical abilities and add conversions in
+the authored experimental encounters. Wardens in Lantern, Tideglass and Dawn
+provide isolated opening conversions for Nature, Frost and Astral.
+
 ## Progression and economy
 
 Related tasks VL-207, VL-208.
