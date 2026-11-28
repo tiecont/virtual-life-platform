@@ -167,6 +167,14 @@ def fixed_warden_vitality(bundle):
             boss["maxHp"] //= 4
 
 
+def all_region_warden_vitality(bundle):
+    """Extend the two-region vitality experiment to every canonical Warden."""
+    bundle["configId"] = "arena8-six-warden-vitality-candidate"
+    bundle["contentRevision"] = 1
+    for boss in bundle["bosses"]:
+        boss["maxHp"] //= 4
+
+
 def veteran_artifacts(bundle):
     """Test the leverage of rank-five equipment without altering natural boards or enemies."""
     bundle["configId"] = "arena8-veteran-artifacts-candidate"
@@ -184,6 +192,7 @@ SHARED_VARIANTS = {
     "warden-defense-support": warden_defense_support,
     "veteran-artifacts": veteran_artifacts,
     "fixed-warden-vitality": fixed_warden_vitality,
+    "six-warden-vitality": all_region_warden_vitality,
     "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
         ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
     "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
