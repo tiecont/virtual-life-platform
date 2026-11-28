@@ -948,6 +948,7 @@
     },
     {
       "id": "VL-170",
+      "campaignLocalStorageQualification": {"sourceRevision": "15c8bb04535ce6593d89b337b3d9a9b17dc5550f", "verifiedScope": "Sixteen governance tests passed. A disposable loopback MinIO with synthetic fixtures returned anonymous private 403, public 200 and authenticated SHA-256 match. Hosted private staging remains unavailable."},
       "campaignV4November28Qualification": {"sourceRevision": "ed93788f27355533fdec0f0b4292641d8f96f495", "verifiedScope": "Private stage/verify matched 31 local files, 6094890 bytes. No upload."},
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
