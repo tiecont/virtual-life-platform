@@ -48,7 +48,7 @@ namespace Aetheria.ArtValidation
         {
             public string id, sourceSha256, wingbeatSha256, nativeClip;
             public string[] importedShaders;
-            public bool expectedMaterialOnAllParts;
+            public bool expectedMaterialOnAllParts, motionWithinTolerance;
             public int meshParts, triangles, vertices, framesMeasured, sharedPartPairs, wingToBodyPairs, textureSubassets;
             public float nativeClipSeconds, maxRestGeometryError, maxRestUvError, maxStartDelta;
             public float maxTorsoDelta, maxStaticBodyDelta, maxReturnDelta, maxCoincidentVertexGap, maxWrappedDelta;
@@ -316,12 +316,11 @@ namespace Aetheria.ArtValidation
             animation.Sample();
             for (int index = 0; index < parts.Length; index++)
                 facts.maxWrappedDelta = Mathf.Max(facts.maxWrappedDelta, MaxDelta(referenceUpstroke[index], Bake(parts[index].skin, baked)));
-            Require(new[] { facts.maxStartDelta, facts.maxTorsoDelta, facts.maxStaticBodyDelta, facts.maxReturnDelta,
-                facts.maxCoincidentVertexGap, facts.maxWrappedDelta }.All(delta => delta <= Tolerance),
-                $"{facts.id}: rest, torso, seam or wrapped playback exceeded tolerance. {JsonUtility.ToJson(facts)}");
-            Require(new[] { facts.negativeWingUpstroke, facts.positiveWingUpstroke,
-                facts.negativeWingDownstroke, facts.positiveWingDownstroke }.All(delta => delta >= MinimumWingTravel),
-                $"{facts.id}: insufficient baked travel on either side of the flap. {JsonUtility.ToJson(facts)}");
+            facts.motionWithinTolerance =
+                new[] { facts.maxStartDelta, facts.maxTorsoDelta, facts.maxStaticBodyDelta, facts.maxReturnDelta,
+                    facts.maxCoincidentVertexGap, facts.maxWrappedDelta }.All(delta => delta <= Tolerance) &&
+                new[] { facts.negativeWingUpstroke, facts.positiveWingUpstroke, facts.negativeWingDownstroke,
+                    facts.positiveWingDownstroke }.All(delta => delta >= MinimumWingTravel);
         }
 
         private static float MaxDelta(Vector3[] reference, Vector3[] sample)

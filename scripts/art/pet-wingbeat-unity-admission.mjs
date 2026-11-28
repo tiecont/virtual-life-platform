@@ -84,7 +84,9 @@ try {
     model.id === inputs[index].id && model.framesMeasured === 49))
     throw Error('Unity omitted required model or frame evidence');
   report.unityFacts = factsPath;
-  report.motionQualified = true;
+  report.motionQualified = facts.models.every(model => model.motionWithinTolerance);
+  if (!report.motionQualified)
+    throw Error('A native loop failed motion tolerance. See per-model motion and material facts in unity-facts.json.');
   if (!facts.models.every(model => model.expectedMaterialOnAllParts))
     throw Error('Motion measured. Imported material failed the URP/Lit fallback check. See unity-facts.json.');
   report.classification = 'PRIVATE_UNITY_WINGBEAT_PASS';
