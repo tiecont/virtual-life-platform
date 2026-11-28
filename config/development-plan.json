@@ -11309,6 +11309,7 @@
     },
     {
       "id": "VL-205",
+      "campaignV4CandidateReview": {"sourceRevision": "3035d7a85a28a86ff59713e50cd70e289ee18151", "verifiedScope": "Ignivar and Cinderquill original GLBs verified, 11016 and 8386 triangles respectively, reference hashes and Tripo jobs recorded. No UVs, textures, rig or motion. Coalwhisk/Warden importer and animation probes passed at 33bb547a."},
       "campaignV4ContinuationVerification": {"sourceRevision": "9d824f915549d28e91cce7dd8ef0e5a000d0637c", "verifiedScope": "Blender 5.3 reimport and action deformation passed for Coalwhisk and Cinder Warden. Prototype material and silhouette review remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
@@ -11680,6 +11681,7 @@
     },
     {
       "id": "VL-211",
+      "campaignV4CandidateReview": {"sourceRevision": "ddfe5dbdc70c390ecaa12f958c8a6cbadf8abf47", "verifiedScope": "349adf3a\u2026 six-region fixed candidate passed Rust validation. In 3456 matched-cohort samples across two configurations, co-op won 20 times, solo once, and vitality-only controls had zero wins. No unresolved matches or production changes."},
       "campaignV4November28Qualification": {"sourceRevision": "93c64cf224e34b1062db5e0eed3091f079be4529", "verifiedScope": "Quarter-vitality candidate yielded seven level-cap co-op Warden wins across 96 samples, versus zero baseline. Candidate remains unpublished."},
       "campaignV4ContinuationVerification": {"sourceRevision": "7950040eae45ebc555d6d36570d78433f340c7dc", "verifiedScope": "Two paired solo regular control cohorts won all 384 samples apiece. No Warden victories. Unpublished survival candidate improved cooperative phase reach."},
       "campaignV4Verification": {
