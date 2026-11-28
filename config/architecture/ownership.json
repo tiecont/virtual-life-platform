@@ -21,7 +21,7 @@
     "pet_content_transitions": "platform.pet-content",
     "pet_content_match_pins": "platform.pet-content",
     "pet_arena_campaign_route_drafts": "platform.pet-content",
-    "pet_arena_campaign_route_clears": "platform.coop",
+    "pet_arena_campaign_route_clears": "platform.pet-content",
     "pet_acquisition_drafts": "platform.pet-content",
     "pet_acquisition_maps": "platform.pet-content",
     "pet_acquisition_species": "platform.pet-content",
