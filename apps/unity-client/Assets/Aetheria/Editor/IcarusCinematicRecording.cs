@@ -296,7 +296,7 @@ namespace Aetheria.Editor
                 Require(director.time >= stage.startSeconds + stage.durationSeconds * .8 &&
                     (maxHipDistance > .001f || maxHipAngle > 1f), "The model-bound Timeline did not advance through the expected take.");
                 Finish(output, stage);
-                EndPlay();
+                ClosePrivateEditor(0);
             }
             catch (Exception error) { Fail(error); }
         }
@@ -347,10 +347,10 @@ namespace Aetheria.Editor
         private static void Fail(Exception error)
         {
             Debug.LogException(error);
-            EndPlay();
+            ClosePrivateEditor(1);
         }
 
-        private static void EndPlay()
+        private static void ClosePrivateEditor(int status)
         {
             EditorApplication.update -= WaitForGraphics;
             EditorApplication.update -= Poll;
@@ -361,7 +361,10 @@ namespace Aetheria.Editor
             if (director != null) director.Stop();
             if (imageSettings != null) Object.DestroyImmediate(imageSettings);
             if (controllerSettings != null) Object.DestroyImmediate(controllerSettings);
-            EditorApplication.isPlaying = false;
+            SessionState.EraseString(SessionKey);
+            // All evidence is flushed. This dedicated Editor can exit directly;
+            // leaving Play Mode first would trigger another full asset refresh.
+            EditorApplication.delayCall += () => EditorApplication.Exit(status);
         }
 
         private static RecordingStage ReadStage(string output)
