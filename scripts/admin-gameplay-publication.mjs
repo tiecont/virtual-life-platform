@@ -16,6 +16,8 @@ import {createRequire} from 'node:module';
 import {prepareAdmissionTestTls} from './runtime-admission-test-tls.mjs';
 import {verifySoloCampaign} from './solo-water-campaign-probe.mjs';
 import {verifyTimedSoloPublication} from './solo-timed-publication-probe.mjs';
+import {pureSwap} from './coop-visible-kind-swap.mjs';
+import {verifyAdvancedCoopPublication} from './coop-advanced-publication-probe.mjs';
 import {verifyTimedCoopPublication} from './coop-timed-publication-probe.mjs';
 const require=createRequire(import.meta.url);
 const {migrate}=require('../apps/platform-api/src/shared/database/migrations.ts');
@@ -57,44 +59,19 @@ function legalSwap(board){
  throw Error('Committed board has no legal swap');
 }
 
-// Use the committed tile kinds to find an opening swap whose first batch is
-// all Mana. Subsequent authoritative cascade gains can only increase Mana.
-function pureSwap(board,requiredKind){
- const kinds=board.map(tile=>tile.kind);
- function firstBatch(){
-  const matched=new Set();
-  for(let index=0;index<kinds.length;index++){
-   const kind=kinds[index];
-   for(const step of [1,8]){
-    if(step===1?index%8>=6:index>=48)continue;
-    if(kind===kinds[index+step]&&kind===kinds[index+step*2]){
-     matched.add(index);matched.add(index+step);matched.add(index+step*2);
-    }
-   }
-  }
-  return matched.size>0&&[...matched].every(index=>kinds[index]===requiredKind)?matched.size:0;
- }
- for(let first=0;first<kinds.length;first++){
-  for(const second of [first%8<7?first+1:-1,first<56?first+8:-1]){
-   if(second<0||kinds[first]===kinds[second])continue;
-   [kinds[first],kinds[second]]=[kinds[second],kinds[first]];
-   const matched=firstBatch();
-   [kinds[first],kinds[second]]=[kinds[second],kinds[first]];
-   if(matched>0)return {action:{kind:'swap',first,second},matched};
-  }
- }
-}
 const waterCampaign=process.argv.includes('--water-campaign');
 const naturalCampaign=process.argv.includes('--natural-campaign');
 assert.ok(!(waterCampaign&&naturalCampaign),'Select only one solo campaign probe');
 const unchangedCandidate=waterCampaign||naturalCampaign;
 const timedSolo=process.argv.includes('--timed-solo');
 const timedCoop=process.argv.includes('--timed-coop');
+const advancedCoop=process.argv.includes('--advanced-coop');
+assert.ok(!(advancedCoop&&timedCoop),'Select one cooperative fixture');
 assert.ok(!(timedSolo&&(unchangedCandidate||process.argv.includes('--solo'))),'Select only one solo fixture');
 const solo=timedSolo||unchangedCandidate||process.argv.includes('--solo');
-assert.ok(!(solo&&timedCoop),'Select either a solo fixture or the timed cooperative fixture');
-const direct=solo||timedCoop||process.argv.includes('--direct');
-const functional=solo||timedCoop||process.argv.includes('--functional');
+assert.ok(!(solo&&(timedCoop||advancedCoop)),'Select either a solo fixture or the timed cooperative fixture');
+const direct=solo||timedCoop||advancedCoop||process.argv.includes('--direct');
+const functional=solo||timedCoop||advancedCoop||process.argv.includes('--functional');
 const historicalArg=process.argv.find(arg=>arg.startsWith('--historical-binary='));
 const historicalBinary=historicalArg?.slice('--historical-binary='.length);
 assert.ok(historicalArg===undefined||(!functional&&historicalBinary?.startsWith('/')),
@@ -103,8 +80,8 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const evidence=resolve(root,'artifacts/admin-publication');
 await mkdir(evidence,{recursive:true});
-const artifact=await mkdtemp(join(evidence,naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
-const facts={result:'FAIL',board:naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
+const artifact=await mkdtemp(join(evidence,advancedCoop?'advanced-coop-':naturalCampaign?'natural-campaign-':waterCampaign?'water-campaign-':timedSolo?'timed-solo-':timedCoop?'timed-coop-':solo?'solo-':functional?'functional-':'run-'));
+const facts={result:'FAIL',board:advancedCoop?'advanced-functional-coop':naturalCampaign?'natural-functional-solo-campaign':waterCampaign?'unchanged-functional-solo-campaign':timedSolo?'timed-functional-solo':timedCoop?'timed-functional-coop':solo?'functional-solo':functional?'functional':'elemental',operatorTransport:direct?'nest-http':'chromium',upgradedRuntime:historicalBinary!==undefined,revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scenarios:[],browserRequests:[],allocations:[]};
 function mark(scenario,details){
  facts.scenarios.push({scenario,details});
  console.log(JSON.stringify({scenario,details}));
@@ -147,7 +124,7 @@ try{
  await admin.query('ALTER ROLE '+identifier(role)+' IN DATABASE '+identifier(database)+' SET search_path TO '+identifier(schema));
  const tls=await prepareAdmissionTestTls(directory,pool);await tls.enable();
  const runtime=new URL(process.env.TEST_DATABASE_URL);runtime.username=role;runtime.password=password;
- const seedPath=timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const seedPath=advancedCoop?'config/gameplay/arena8-coop-advanced-v1.candidate.json':timedSolo||timedCoop?'config/gameplay/arena8-coop-functional-v2.candidate.json':functional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
  const seedBytes=await readFile(seedPath);
  const seed=JSON.parse(seedBytes);
  const boss=seed.bosses.find(value=>value.mapId==='cinder-terraces');
@@ -167,7 +144,7 @@ try{
   boss.regular.maxHp=1;
   boss.regular.defense=1;
   Object.assign(boss.regular.attackModel,{baseDamage:1,perRoundDamage:0,minimumDamage:1});
- }else if(!unchangedCandidate){
+ }else if(!unchangedCandidate&&!advancedCoop){
   // Shorten the fixture so retrying a room never hides a failed concurrent allocation.
   seed.party.maxRounds=2;
   boss.telegraphTurns=1;
@@ -191,7 +168,8 @@ try{
   }else seed.multiplier.schedule[0].tiers.push({...seed.multiplier.schedule[1].tiers[1],weight:20});
  }
  const validator=new EngineGameplayBundleValidator(binary);
- const installed=await installGameplayConfig(pool,ruleset,seed,validator,'system:disposable-admin-ab-fixture');
+ const baseline=advancedCoop?JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v2.candidate.json','utf8')):seed;
+ const installed=await installGameplayConfig(pool,ruleset,baseline,validator,'system:disposable-admin-ab-fixture');
  assert.equal(installed.version,1);
  const operatorPassword='synthetic-local-ab-operator-only',operatorSecret='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',operatorKey=randomBytes(32).toString('hex');
  const bootstrapTime=Date.now()-60000;
@@ -323,24 +301,32 @@ try{
   return response.json();
  }
  async function directPublish(label){
-  const fields=variants[label],active=await dbActive();
-  const bundle=globalThis.structuredClone((await dbConfig(active.version)).bundle),boss=bundle.bosses[0];
-  boss.requiredRoomPoints=fields.points;
-  boss.rewardPolicy.defeat.materials=fields.materials;
-  if(fields.priority)boss.attackModel.targetPriority=fields.priority;
-  if(timedSolo&&label==='B'){
-   boss.regular.rewardPolicy.firstClear.coins+=20;
+  const active=await dbActive();
+  const bundle=globalThis.structuredClone(advancedCoop?seed:(await dbConfig(active.version)).bundle);
+  const fields=advancedCoop?values(bundle):variants[label],boss=bundle.bosses[0];
+  if(advancedCoop){
+   if(label==='B'){
+    bundle.advancedJewels.frostReductionPm[0]++;
+    bundle.contentRevision++;
+   }
+  }else{
+   boss.requiredRoomPoints=fields.points;
+   boss.rewardPolicy.defeat.materials=fields.materials;
+   if(fields.priority)boss.attackModel.targetPriority=fields.priority;
+   if(timedSolo&&label==='B'){
+    boss.regular.rewardPolicy.firstClear.coins+=20;
+   }
+   if(timedCoop&&label==='B'){
+    bundle.contentRevision++;
+    boss.rewardPolicy.firstClear.coins+=20;
+    bundle.bosses.find(value=>value.mapId==='tideglass-lagoon').rewardPolicy.defeat.coins+=7;
+   }
+   if(solo&&!timedSolo&&label==='B'){
+    // The progression fixture needs a reachable win with two real Boss phases.
+    Object.assign(boss.solo,{maxHp:16,maxRounds:30,baseDamage:1,perRoundDamage:0,minimumDamage:1});
+   }
+   if(functional)bundle.board.functionalTiles.manaPerTile=fields.manaYield;
   }
-  if(timedCoop&&label==='B'){
-   bundle.contentRevision++;
-   boss.rewardPolicy.firstClear.coins+=20;
-   bundle.bosses.find(value=>value.mapId==='tideglass-lagoon').rewardPolicy.defeat.coins+=7;
-  }
-  if(solo&&!timedSolo&&label==='B'){
-   // The progression fixture needs a reachable win with two real Boss phases.
-   Object.assign(boss.solo,{maxHp:16,maxRounds:30,baseDamage:1,perRoundDamage:0,minimumDamage:1});
-  }
-  if(functional)bundle.board.functionalTiles.manaPerTile=fields.manaYield;
   const {version,revision}=await operatorPost('draft',{parentVersion:active.version,bundle});
   const validated=await operatorPost('validate',{version,expectedRevision:revision});
   const published=await operatorPost('publish',{version,expectedRevision:validated.revision,expectedActiveRevision:active.revision});
@@ -792,6 +778,11 @@ try{
   await verifySoloCampaign({
    natural:naturalCampaign,pool,published:A,seedBytes,engineHash:currentEngineHash,host,otherAccount:members[1],mark,
    dbConfig,get,post,soloAdmission,native,connections,closeMatch,restart,replaceActive,legalSwap,
+  });
+ }else if(advancedCoop){
+  await verifyAdvancedCoopPublication({
+   pool,host,members,outsider:await guest('QA unseated account','ground-clodkin'),
+   published:A,mark,post,publish,createRoom,prepareRoom,allocate,allocationRow,native,connections,restart,
   });
  }else if(timedCoop){
   const outsider=await guest('QA unseated account','ground-clodkin');
