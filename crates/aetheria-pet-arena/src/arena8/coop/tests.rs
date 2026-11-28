@@ -1470,14 +1470,14 @@ fn assert_weighted_tile_effects(rules: &CoopRules, initial: &CoopState, wounded_
             u64::from(state.participants[wounded_seat].hp - 10)
         );
         if kind == TileKind::Sword {
-            let boss = rules.selected_boss();
+            let opponent = rules.opponent();
             let authored_contribution = (2 + 2) * policy.sword_contribution_pm;
             let authored_bonus =
                 authored_contribution * rules.config().damage.contribution_scale_pm / 1_000;
             let raw = actor.attack + authored_bonus
-                - boss.defense / rules.config().damage.defense_divisor;
+                - opponent.defense / rules.config().damage.defense_divisor;
             let elemental = raw
-                * u32::from(rules.effectiveness(Element::Fire, boss.element().unwrap()))
+                * u32::from(rules.effectiveness(Element::Fire, rules.opponent_element().unwrap()))
                 / 1_000;
             // Apply encounter-specific phase and lethal caps to the expected hit.
             let expected = rules.damage_boss(&mut initial.clone(), elemental).unwrap();
@@ -1489,6 +1489,48 @@ fn assert_weighted_tile_effects(rules: &CoopRules, initial: &CoopState, wounded_
             assert_eq!(stream.cursor(), 0, "utility effects consume no crit draw");
         }
         assert!(state.board.iter().all(Option::is_none));
+    }
+}
+
+#[test]
+fn identical_sword_matches_follow_the_six_pet_elements_against_each_warden() {
+    let config = CoopConfig::parse(functional_bundle()).unwrap();
+    for boss in config.bosses() {
+        let rules = CoopRules::load(functional_bundle(), boss.id.clone()).unwrap();
+        let mut hits = Vec::new();
+        for profile in &config.elements {
+            let pet = config
+                .pets
+                .iter()
+                .find(|pet| pet.element == profile.element)
+                .unwrap();
+            let mut team = seats();
+            team[0].pet_id.clone_from(&pet.id);
+            let mut state = rules.allocate(team).unwrap();
+            // Hold offensive stats and the board constant to isolate the Pet matchup.
+            state.participants[0].attack = 100;
+            state.participants[0].crit_rate_bp = 0;
+            state.board[..3].fill(Some(Tile {
+                identity: TileIdentity::Kind(TileKind::Sword),
+                multiplier: 1,
+            }));
+            let matched = matched_cells(&state.board);
+            let result = rules
+                .score_functional_match(&mut state, 0, &matched, &mut rng(0), &mut Vec::new())
+                .unwrap();
+            let weight = profile
+                .effectiveness
+                .iter()
+                .find(|row| row.element == boss.element)
+                .unwrap()
+                .permille;
+            hits.push((weight, result.damage));
+        }
+        let neutral = hits.iter().find(|(weight, _)| *weight == 1000).unwrap().1;
+        assert!(neutral > 0, "{}", boss.id);
+        for (weight, damage) in hits {
+            assert_eq!(damage, neutral * u32::from(weight) / 1000, "{}", boss.id);
+        }
     }
 }
 
