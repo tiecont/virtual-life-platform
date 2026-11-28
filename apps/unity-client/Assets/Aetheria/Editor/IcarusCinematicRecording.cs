@@ -37,9 +37,10 @@ namespace Aetheria.Editor
         private static CinemachineBrain brain;
         private static CinemachineCamera shotCamera;
         private static Transform hips;
+        private static IcarusAccessoryReview accessories;
         private static Vector3 firstHipPosition;
         private static Quaternion firstHipRotation;
-        private static double deadline;
+        private static double deadline, clipStart;
         private static float maxHipDistance;
         private static float maxHipAngle;
 
@@ -50,6 +51,7 @@ namespace Aetheria.Editor
             public string motionReportHash;
             public double startSeconds;
             public double durationSeconds;
+            public bool showcaseAccessories;
         }
 
         [Serializable]
@@ -61,10 +63,11 @@ namespace Aetheria.Editor
             public double startSeconds, recordedTimelineSeconds;
             public float maxNearWhitePercent, minForegroundPercent, maxHipDistance, maxHipAngle;
             public string[] frames, frameSha256;
+            public IcarusAccessoryReview.Facts accessories;
         }
 
         internal static void Stage(Scene scene, string folder, string output, Transform root, Vrm10Instance vrm,
-            SkinnedMeshRenderer[] skins, PlayableDirector boundDirector, TimelineClip take)
+            SkinnedMeshRenderer[] skins, PlayableDirector boundDirector, TimelineClip take, bool showcaseAccessories)
         {
             Require(vrm.TryGetBoneTransform(HumanBodyBones.Hips, out var hipsBone), "Icarus Recorder requires mapped hips.");
             if (SceneManager.GetActiveScene() != scene)
@@ -90,6 +93,8 @@ namespace Aetheria.Editor
                 bounds.Encapsulate(skin.bounds);
                 skin.updateWhenOffscreen = true;
             }
+
+            if (showcaseAccessories) bounds = IcarusAccessoryReview.Frame(vrm, bounds);
 
             var outputCamera = new GameObject(CameraName).AddComponent<Camera>();
             outputCamera.transform.SetParent(root, false);
@@ -139,7 +144,8 @@ namespace Aetheria.Editor
             Require(EditorSceneManager.SaveScene(scene, scenePath), "Could not save the private recording scene.");
             var request = new RecordingStage {
                 scenePath = scenePath, startSeconds = take.start, durationSeconds = take.duration,
-                motionReportHash = Hash(Path.Combine(output, "icarus-motion-review.json"))
+                motionReportHash = Hash(Path.Combine(output, "icarus-motion-review.json")),
+                showcaseAccessories = showcaseAccessories
             };
             WriteJson(Path.Combine(output, RequestName), request);
             Debug.Log("Icarus Recorder stage: " + scenePath);
@@ -219,6 +225,7 @@ namespace Aetheria.Editor
                 "Recording Timeline lost its model or Cinemachine binding.");
             var vrm = ((Animator)director.GetGenericBinding(animation)).GetComponent<Vrm10Instance>();
             Require(vrm.TryGetBoneTransform(HumanBodyBones.Hips, out hips), "Recording lost the mapped Icarus hips.");
+            accessories = stage.showcaseAccessories ? new IcarusAccessoryReview(vrm, camera, stage.startSeconds) : null;
 
             string sequence = Path.Combine(output, "sequence");
             Directory.CreateDirectory(sequence);
@@ -245,6 +252,7 @@ namespace Aetheria.Editor
             controller.PrepareRecording();
             Require(controller.StartRecording(), "Unity Recorder refused the image sequence.");
             director.Play();
+            clipStart = stage.startSeconds;
             deadline = EditorApplication.timeSinceStartup + 120;
             EditorApplication.update += Poll;
             Debug.Log($"Icarus Recorder started {ExpectedFrames(stage)} targeted PNG frames at {FrameRate} fps.");
@@ -257,10 +265,11 @@ namespace Aetheria.Editor
                 Require(EditorApplication.timeSinceStartup < deadline, "Unity Recorder did not finish before the deadline.");
                 maxHipDistance = Mathf.Max(maxHipDistance, Vector3.Distance(firstHipPosition, hips.localPosition));
                 maxHipAngle = Mathf.Max(maxHipAngle, Quaternion.Angle(firstHipRotation, hips.localRotation));
+                accessories?.Observe(director.time, director.time - clipStart);
                 if (controller.IsRecording()) return;
                 string output = SessionState.GetString(SessionKey, "");
                 var stage = ReadStage(output);
-                Require(brain.ActiveVirtualCamera == shotCamera, "The Icarus Cinemachine shot was not live at capture.");
+                Require(brain.ActiveVirtualCamera is CinemachineCamera live && live == shotCamera, "The Icarus Cinemachine shot was not live at capture.");
                 Require(director.time >= stage.startSeconds + stage.durationSeconds * .8 &&
                     (maxHipDistance > .001f || maxHipAngle > 1f), "The model-bound Timeline did not advance through the expected take.");
                 Finish(output, stage);
@@ -307,7 +316,7 @@ namespace Aetheria.Editor
                 recordedTimelineSeconds = director.time - stage.startSeconds, maxNearWhitePercent = maxWhite,
                 minForegroundPercent = minForeground, maxHipDistance = maxHipDistance, maxHipAngle = maxHipAngle,
                 frames = frames.Select(path => "sequence/" + Path.GetFileName(path)).ToArray(), frameSha256 = hashes,
-                productionReady = false
+                accessories = accessories?.Complete(), productionReady = false
             });
             Debug.Log($"Icarus Recorder verified {frames.Length} model-bound PNG frames.");
         }
@@ -323,6 +332,8 @@ namespace Aetheria.Editor
             EditorApplication.update -= Poll;
             controller?.StopRecording();
             controller = null;
+            accessories?.Stop();
+            accessories = null;
             if (director != null) director.Stop();
             if (imageSettings != null) Object.DestroyImmediate(imageSettings);
             if (controllerSettings != null) Object.DestroyImmediate(controllerSettings);

@@ -26,8 +26,9 @@ namespace Aetheria.Editor
         // prefab keeps its existing Generic Icarus review import contract.
         public static void Verify() => Verify(false);
         public static void PrepareRecorder() => Verify(true);
+        public static void PrepareAccessoryRecorder() => Verify(true, true);
 
-        private static void Verify(bool prepareRecorder)
+        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -148,7 +149,7 @@ namespace Aetheria.Editor
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
                 if (prepareRecorder)
                 {
-                    IcarusCinematicRecording.Stage(scene, folder, output, reviewRoot.transform, modelVrm, skins, director, take);
+                    IcarusCinematicRecording.Stage(scene, folder, output, reviewRoot.transform, modelVrm, skins, director, take, showcaseAccessories);
                     stagedForRecording = true;
                 }
                 Debug.Log($"Charakuru Icarus motion verified on Timeline. {review.mappedHumanoidBones} mapped bones, " +
