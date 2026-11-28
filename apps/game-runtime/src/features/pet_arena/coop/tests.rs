@@ -1104,3 +1104,76 @@ fn basic_jewel_receipts_report_actual_yields_without_changing_events_state_or_en
         }
     }
 }
+
+#[test]
+fn campaign_route_proposal_names_the_pinned_encounter_in_both_modes() {
+    let shared = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-shared-rng-v1.candidate.json"
+    ));
+    let mut bundle: serde_json::Value = serde_json::from_slice(shared).unwrap();
+    let route_id = "recruit-fire-coalwhisk";
+    let mut profile = bundle["bosses"][0].clone();
+    profile["id"] = route_id.into();
+    profile["name"] = "Coalwhisk encounter fixture".into();
+    profile["maxHp"] = 100.into();
+    profile["rewardPolicy"]["recruitmentPetIds"] = serde_json::json!(["fire-coalwhisk"]);
+    profile.as_object_mut().unwrap().remove("regular");
+    bundle["schemaVersion"] = 7.into();
+    bundle["engineCapability"] = "arena8-coop-v6".into();
+    bundle["campaignRoutes"] = serde_json::json!([{
+        "id":route_id, "mapId":"cinder-terraces", "opponentPetId":"fire-coalwhisk",
+        "tier":"entry", "enabled":true, "mode":"either", "profile":profile,
+    }]);
+    let bytes = serde_json::to_vec(&bundle).unwrap();
+    let loadouts = bindings(&bytes, &seats());
+    let solo = Rules::load_solo(
+        &bytes,
+        seats()[0].clone(),
+        route_id.into(),
+        &loadouts[0],
+        Vec::new(),
+    )
+    .unwrap();
+    let coop = Rules::load(&bytes, seats(), route_id.into(), Some(&loadouts)).unwrap();
+    let legacy = Rules::load(
+        &bytes,
+        seats(),
+        "cinder-terraces-warden".into(),
+        Some(&loadouts),
+    )
+    .unwrap();
+    let entropy = SecretSeed::from_host_entropy([7; 32]);
+    for (rules, count, kind, encounter, version) in [
+        (solo, 1, "solo.completed.v1", Some(route_id), 4),
+        (coop, 4, "coop.completed.v1", Some(route_id), 5),
+        (legacy, 4, "coop.completed.v1", None, 5),
+    ] {
+        let mut rng = entropy.stream(Value::Text("fixture".into()), 0).unwrap();
+        let mut state = rules
+            .engine()
+            .reduce(&rules.initial(), CoopAction::Start, &mut rng)
+            .unwrap()
+            .state;
+        // The host contract starts at an already terminal engine decision.
+        rules
+            .engine()
+            .damage_boss_for_test(&mut state, u32::MAX)
+            .unwrap();
+        rules
+            .engine()
+            .damage_boss_for_test(&mut state, u32::MAX)
+            .unwrap();
+        let Completion::Proposal(proposal) = rules.completion(&state).unwrap() else {
+            panic!("expected a committed outcome proposal");
+        };
+        assert_eq!(proposal["outcome"], "won");
+        assert_eq!(proposal["kind"], kind);
+        assert_eq!(proposal["rulesetVersion"], version);
+        assert_eq!(
+            proposal.get("encounterId").and_then(|value| value.as_str()),
+            encounter
+        );
+        assert_eq!(proposal["participants"].as_array().unwrap().len(), count);
+    }
+}
