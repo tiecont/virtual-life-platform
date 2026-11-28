@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using UniVRM10;
 using Aetheria.Editor;
 using NUnit.Framework;
 using UnityEditor;
@@ -205,6 +207,62 @@ namespace Aetheria.Tests
             Assert.That(Position(clips[1].start + .5), Is.EqualTo(2).Within(.02));
             Assert.That(Position(clips[2].start + PerformanceSequence.Transition / 2), Is.InRange(.25f, 1.75f));
             Assert.That(Position(clips[2].start + .5), Is.EqualTo(0).Within(.02));
+            director.Stop();
+        }
+
+        [Test]
+        public void TimedVowelFollowsSelectedTrimmedVoiceInstanceInTheActorsMotionLayer()
+        {
+            var actor = AddModel("Voice test fixture");
+            var description = ScriptableObject.CreateInstance<VRM10Object>();
+            var expression = ScriptableObject.CreateInstance<VRM10Expression>();
+            var mesh = new Mesh { vertices = new[] { Vector3.zero } };
+            mesh.AddBlendShapeFrame("Mouth", 100, new[] { Vector3.down * .01f }, null, null);
+            AssetDatabase.CreateAsset(mesh, folder + "/TestMesh.asset");
+            AssetDatabase.CreateAsset(description, folder + "/Vrm.asset");
+            AssetDatabase.CreateAsset(expression, folder + "/Vowel.asset");
+            var renderer = actor.transform.Find(ProbePath).gameObject.AddComponent<SkinnedMeshRenderer>();
+            renderer.sharedMesh = mesh;
+            expression.MorphTargetBindings = new[] { new MorphTargetBinding { RelativePath = ProbePath, Index = 0, Weight = 1 } };
+            description.Expression.Aa = expression;
+            var vrm = actor.gameObject.AddComponent<Vrm10Instance>();
+            vrm.Vrm = description;
+            vrm.UpdateType = Vrm10Instance.UpdateTypes.None;
+            var director = CinematicStudio.CreateBoundTimeline(actor, clip, CinematicStudio.Sequence.CharacterIntro,
+                folder + "/Voice.playable");
+            var timeline = (TimelineAsset)director.playableAsset;
+            var body = timeline.GetOutputTracks().OfType<AnimationTrack>().Single();
+            var track = timeline.CreateTrack<AudioTrack>("Test voice");
+            const string voicePath = "Assets/Aetheria/Features/PetArena/Presentation/Resources/WaveD4/Audio/Vocals/icarus_kit_signature.ogg";
+            var voice = AssetDatabase.LoadAssetAtPath<AudioClip>(voicePath);
+            track.CreateClip(voice).start = 0;
+            var selected = track.CreateClip(voice);
+            selected.start = 4;
+            selected.clipIn = .5;
+            selected.timeScale = 2;
+            selected.duration = 1;
+            timeline.fixedDuration = 6;
+            director.SetGenericBinding(track, actor.gameObject.AddComponent<AudioSource>());
+            using var hash = SHA256.Create();
+            var sheet = new VrmFaceCueTrack.Sheet {
+                audioAssetGuid = AssetDatabase.AssetPathToGUID(voicePath),
+                audioSha256 = BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(voicePath))).Replace("-", ""),
+                voiceStartSeconds = selected.start,
+                cues = new[] { new VrmFaceCueTrack.Cue { preset = "aa", start = .5f, peak = 1f, end = 1.5f, weight = .8f } }
+            };
+            var overlay = VrmFaceCueTrack.Add(director, sheet, folder + "/Spoken.anim");
+            Assert.That(overlay.parent, Is.SameAs(body));
+            var take = overlay.GetClips().Single();
+            Assert.That(take.start, Is.EqualTo(selected.start));
+            Assert.That(take.clipIn, Is.EqualTo(selected.clipIn));
+            Assert.That(take.timeScale, Is.EqualTo(selected.timeScale));
+            Assert.That(take.duration, Is.EqualTo(selected.duration));
+            director.time = 4.25;
+            director.Evaluate();
+            Assert.That(renderer.GetBlendShapeWeight(0), Is.EqualTo(80).Within(.1));
+            director.time = .25;
+            director.Evaluate();
+            Assert.That(renderer.GetBlendShapeWeight(0), Is.Zero.Within(.1));
             director.Stop();
         }
 
