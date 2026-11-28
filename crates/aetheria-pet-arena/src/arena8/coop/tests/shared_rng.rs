@@ -380,3 +380,16 @@ fn bounds_shared_multiplier_weights_without_changing_historical_validation() {
     assert_eq!(parse(&shared), Err(ConfigError::MultiplierSchedule));
     assert!(parse(&historical).is_ok());
 }
+
+#[test]
+fn shared_rules_require_fifteen_seconds_and_preserve_historical_timeouts() {
+    let mut shared: Json = serde_json::from_slice(BUNDLE).unwrap();
+    let mut historical: Json = serde_json::from_slice(V3_BUNDLE).unwrap();
+    assert_eq!(parse(&shared).unwrap().party.turn_timeout_ms, 15_000);
+    for duration in [14_999, 15_001] {
+        shared["party"]["turnTimeoutMs"] = json!(duration);
+        historical["party"]["turnTimeoutMs"] = json!(duration);
+        assert_eq!(parse(&shared), Err(ConfigError::Party));
+        assert_eq!(parse(&historical).unwrap().party.turn_timeout_ms, duration);
+    }
+}

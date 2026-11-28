@@ -1273,11 +1273,16 @@ impl PartyConfig {
             (_, Some(rounds)) => (1..=1_000).contains(&rounds),
             _ => false,
         };
+        let valid_timeout = if schema_version == SHARED_RNG_SCHEMA_VERSION {
+            self.turn_timeout_ms == 15_000
+        } else {
+            (1_000..=300_000).contains(&self.turn_timeout_ms)
+        };
         if usize::from(self.seats) != crate::arena8::coop::SEATS
             || !valid_rounds
             || self.max_cascades == 0
             || self.max_cascades > MAX_CASCADE_LIMIT
-            || !(1_000..=300_000).contains(&self.turn_timeout_ms)
+            || !valid_timeout
         {
             return Err(ConfigError::Party);
         }
