@@ -11631,6 +11631,7 @@
     },
     {
       "id": "VL-210",
+      "feedbackLobbyVerification": {"sourceRevision":"eb92a293","result":"Packaged f56a9e75 feedback run-e3VNDr5H reached a real Fire lobby with four occupants. Corrected OCR region and scaled controls. Tesseract psm 6 on original frame read Seats: 4/4. End-to-end post-turn-12 multiplier evidence remains open.","evidence":"artifacts/campaign-v4/continuation-gameplay/artifacts/packaged-coop-runs/run-e3VNDr5H/04-four-seats-ready.png"},
       "campaignV4ContinuationVerification": {"sourceRevision": "a65b01075f43ddcfdbcdedeca2539f04b123cca3", "verifiedScope": "Private 720p Linux player and three authenticated peers passed the natural nine-kind board opening, two committed commands and Sword damage HUD trace. Nature, Frost and Astral effects remain under qualification."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
