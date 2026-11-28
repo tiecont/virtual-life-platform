@@ -108,3 +108,9 @@ eyes, spiked metallic wings, battle interface, logos, dragon, fire covering the
 outfit, cropped feet or wing tips. New hidden design details remain proposals.
 
 No generated image or external image-to-3D service was used for this study.
+
+## Current Charakuru export
+
+The owner identified the existing Charakuru product as the Icarus development baseline. Open the existing local Charakuru project in Motion preview. Its project ID is `a462e9ff-57da-4e45-9b13-7ba81414f6e0`. The saved export `exports/avatar.vrm` and Unity's `Assets/Aetheria/ArtStudies/Icarus/Source/Icarus.vrm` have SHA-256 `f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a` and 16,892,316 bytes. The VRM 1.0 export contains 54 mapped humanoid bones, one skin, eleven meshes, five embedded images and no mesh morph targets. The character is visible in the [actual Charakuru motion preview](../../assets/review/wave-d4/characters/icarus-charakuru-motion-preview.webp).
+
+Use this export for runtime binding and motion qualification. The older H1 R3 package records a separate face and hair study. Its outstanding approval applies if that revision is proposed for adoption. Keep new design acceptance, expression work and media rights scoped to the relevant delivery.

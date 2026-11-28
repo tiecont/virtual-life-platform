@@ -11248,7 +11248,7 @@
       "verificationRequirements": [
         "Run the task-specific acceptance checks on committed source and record the revision, results, review mode and CI."
       ],
-      "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
+      "remaining": "Use the existing Charakuru Icarus export f1d2b65d as the development baseline. Qualify retargeting and runtime use of the existing rig. H1 R3 is a separate historical face/hair proposal; new visual changes and release rights retain their own gates.",
       "implementation": {
         "reviewCandidateStorage": {
           "sourceRevision": "c7c7ea9fc03204009abe70a118306a843f34f906",

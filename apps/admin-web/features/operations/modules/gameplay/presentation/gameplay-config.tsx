@@ -363,6 +363,8 @@ export default function GameplayConfig({request}:{request:Request}){
   await work(async()=>{
    const temp=JSON.parse(json) as GameplayBundle;
    const mutation=GameplayConfigMutationSchema.parse(await request('gameplay-config-update',{requestId:crypto.randomUUID(),ruleset:RULESET,version:selected.version,expectedRevision:selected.revision,bundle:temp}));
+   // Saving is committed even if the subsequent engine validation rejects the draft.
+   setSelected({...selected,revision:mutation.revision,bundle:temp});
    if(activation==='save'){await loadOverview();await open(mutation.version);setMessage('Draft saved at revision '+mutation.revision+'. Validate it with the engine before publishing.');return;}
    const validation=GameplayConfigValidationSchema.parse(await request('gameplay-config-validate',{requestId:crypto.randomUUID(),ruleset:RULESET,version:mutation.version,expectedRevision:mutation.revision}));
    await loadOverview();await open(mutation.version);setMessage('Engine validated: '+validation.engineCapability+', digest '+validation.contentDigest.slice(0,12)+'…');
