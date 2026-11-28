@@ -11511,7 +11511,7 @@
           "sourceRevision": "c1c5b3434ba7aaea38d47abacd1dae20683a3605",
           "testRevision": "f78f723c9ea827c15f22ff3e3d9a072d05332e4e",
           "command": "Direct Unity Editor 6000.3.14f1 via node scripts/unity-validate.mjs tests and linux",
-          "result": "The Linux build passed. The identical source tree passed 84 EditMode and 38 PlayMode tests with two explicit skips. HUD tests exercised the terminal text, pending settlement and retry. Solo and cooperative feedback use the same high-contrast styling.",
+          "result": "The Linux build passed. The identical source tree passed 84 EditMode and 38 PlayMode tests with two explicit skips. HUD tests exercised the terminal text, pending settlement and retry. A separate 1280x720 packaged Fire solo run on an adjusted encounter showed the pending state and the subsequent durable receipt for 200 coins and 500 Pet EXP.",
           "evidence": "artifacts/wave-d4-session/fire-hud-c1c5b343/tests.json"
         },
         "productionReview": {
