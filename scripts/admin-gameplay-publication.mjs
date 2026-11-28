@@ -452,6 +452,16 @@ try{
   const weight=Number(await nature.inputValue())+1;
   const created=await clickMutation('New draft from active','draft');
   await expect(nature).toBeEnabled();
+  await page.getByLabel('Find a Pet').fill('Icarus');
+  const icarus=seed.pets.find(pet=>pet.id==='pet-v3-fire-icarus');
+  await control('Icarus critRateBp',icarus.critRateBp+1);
+  await page.getByText('Per-Pet growth',{exact:true}).click();
+  await page.getByLabel('Growth curve',{exact:true}).selectOption('agile');
+  await control('Attack growth (bp)',icarus.growth.attackBp+1);
+  await control('Frost damage reduction (‰) · match 3',seed.advancedJewels.frostReductionPm[0]+1);
+  const firstCoins=page.getByRole('group',{name:'First Boss victory',exact:true}).getByLabel('Coins',{exact:true});
+  const coins=seed.bosses[0].rewardPolicy.firstClear.coins+1;
+  await firstCoins.fill(String(coins));
   await control('Nature spawn weight',weight);
   await control('Fire against Water (%)',60);
   await control('Fire against Fire (%)',99);
@@ -471,9 +481,30 @@ try{
   assert.equal(element.effectiveness.find(row=>row.element==='water').permille,600);
   assert.equal(saved.bundle.board.functionalTiles.spawnWeights.find(row=>row.kind==='nature').weight,weight);
   assert.equal(saved.bundle.bosses[0].attack,seed.bosses[0].attack+1);
+  const savedPet=saved.bundle.pets.find(pet=>pet.id===icarus.id);
+  assert.equal(savedPet.critRateBp,icarus.critRateBp+1);
+  assert.deepEqual(savedPet.growth,{...icarus.growth,curve:'agile',attackBp:icarus.growth.attackBp+1});
+  assert.deepEqual(saved.bundle.advancedJewels.frostReductionPm,[seed.advancedJewels.frostReductionPm[0]+1,...seed.advancedJewels.frostReductionPm.slice(1)]);
+  assert.equal(saved.bundle.bosses[0].rewardPolicy.firstClear.coins,coins);
   assert.equal(saved.content_digest,checked.contentDigest);
   assert.equal((await dbConfig(installed.version)).content_digest,installed.digest);
   await expect(nature).toBeDisabled();
+  await expect(firstCoins).toBeDisabled();
+  const rolled=await clickMutation('Roll back','rollback',versionRow(installed.version));
+  await expect(activeEntry('Digest')).toHaveAttribute('title',installed.digest);
+  assert.deepEqual(await dbActive(),{version:installed.version,revision:rolled.activeRevision});
+  assert.equal((await dbConfig(created.version)).content_digest,checked.contentDigest);
+  const auditRequest=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/admin/gameplay-config-audit');
+  await button('Load audit',auditSection()).click();
+  const auditResponse=await auditRequest;
+  assert.equal(auditResponse.status(),200);
+  for(const [action,version] of [['publish',created.version],['rollback',installed.version]]){
+   // Cell contents are table text, so select the row by its action and version.
+   const record=auditSection().locator('tbody tr').filter({has:page.getByRole('cell',{name:action,exact:true})})
+    .filter({has:page.locator('td:nth-child(3)').filter({hasText:new RegExp('^'+version+'$')})});
+   await expect(record).toHaveCount(1);
+  }
+  mark('Pet stats and growth, Frost limits and first-clear rewards survived publication and audited rollback',{pet:icarus.id,coins,publishedVersion:created.version,restoredVersion:rolled.version});
   mark('shared nine weights, fixed Boss attack and matrix through Chromium, engine and PostgreSQL',{weight,digest:checked.contentDigest,invalidDiagonalStatus:422,originalDigest:installed.digest});
  }else{
  const A=unchangedCandidate?{version:installed.version,digest:installed.digest,bundle:seed}:await publish('A');

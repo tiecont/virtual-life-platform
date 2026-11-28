@@ -489,12 +489,12 @@ export default function GameplayConfig({request}:{request:Request}){
   </select>
  </label>}
  <h3>Pet catalog</h3><label>Find a Pet<input type="search" className="aetheria-field" value={petSearch} onChange={event=>setPetSearch(event.target.value)} /></label>
- <div className="audit"><table><thead><tr><th>Name</th><th>Pet ID</th><th>Element</th><th>Rarity</th><th>Power class</th><th>HP</th><th>Attack</th><th>Defense</th></tr></thead>
+ <div className="audit"><table><thead><tr><th>Name</th><th>Pet ID</th><th>Element</th><th>Rarity</th><th>Power class</th><th>HP</th><th>Attack</th><th>Defense</th><th>Critical rate (bp)</th><th>Critical damage (bp)</th></tr></thead>
  <tbody>{(Array.isArray(bundle?.pets)?bundle.pets:[]).map((pet,index)=>{
   const name=display(pet,'catalog','name'),id=display(pet,'id');
   if(!(name+' '+id).toLowerCase().includes(petSearch.trim().toLowerCase()))return null;
   return <tr key={index}><td>{name}</td><td>{id}</td><td>{display(pet,'element')}</td><td>{display(pet,'rarity')}</td><td>{display(pet,'powerClass')}</td>
-   {['maxHp','attack','defense'].map(key=><td key={key}><input aria-label={name+' '+key} className="aetheria-field" type="number" min={0} disabled={!editable} value={display(pet,key)} onChange={event=>{const n=event.target.valueAsNumber;if(Number.isSafeInteger(n)&&n>=0)change(['pets',String(index),key],n);}} /></td>)}</tr>;
+   {['maxHp','attack','defense','critRateBp','critDamageBp'].map(key=><td key={key}><input aria-label={name+' '+key} className="aetheria-field" type="number" min={0} disabled={!editable} value={display(pet,key)} onChange={event=>{const n=event.target.valueAsNumber;if(Number.isSafeInteger(n)&&n>=0)change(['pets',String(index),key],n);}} /></td>)}</tr>;
  })}</tbody></table></div>
  {selected.catalogReference&&<details><summary>Canonical acquisition and production status</summary><div className="audit"><table>
   <caption>Current roster reference</caption>
@@ -511,7 +511,10 @@ export default function GameplayConfig({request}:{request:Request}){
   const growth=read(pet,['growth']),name=display(pet,'catalog','name'),id=display(pet,'id');
   if(!growth||!(name+' '+id).toLowerCase().includes(petSearch.trim().toLowerCase()))return null;
   const path=['pets',String(index),'growth'];
-  return <fieldset key={id} disabled={!editable}><legend>{name} · {display(growth,'curve')}</legend><div className="fields">
+  return <fieldset key={id} disabled={!editable}><legend>{name}</legend><div className="fields">
+   <label>Growth curve<select className="aetheria-field" value={display(growth,'curve')} onChange={event=>change([...path,'curve'],event.target.value)}>
+    {['steady','focused','bulwark','dragon','agile'].map(curve=><option key={curve}>{curve}</option>)}
+   </select></label>
    {(['healthBp','attackBp','defenseBp','biasPm'] as const).map((key,field)=><Num key={key} label={['HP growth (bp)','Attack growth (bp)','Defense growth (bp)','Growth adjustment (permille)'][field]} value={read(growth,[key])} min={key==='biasPm'?-100:0} max={key==='biasPm'?100:250} onChange={value=>change([...path,key],value)}/>)}
   </div></fieldset>;
  })}</details>:null}
@@ -609,7 +612,7 @@ export default function GameplayConfig({request}:{request:Request}){
    if(Number.isInteger(value))change(path,{victory:0,defeat:0,...values,[outcome]:value});
   }}/>;
  })}</fieldset>:null}
- {read(bundle,[...bossPath,'rewardPolicy'])?<div>{(['firstClear','repeatClear','defeat'] as const).map((kind,i)=><fieldset key={kind}><legend>{['First Boss victory','Repeat Boss victory','Defeat'][i]}</legend><div className="fields">{(['achievementPoints','coins','exp','materials'] as const).map((key,j)=>{
+ {read(bundle,[...bossPath,'rewardPolicy'])?<div>{(['firstClear','repeatClear','defeat'] as const).map((kind,i)=><fieldset key={kind} disabled={!editable}><legend>{['First Boss victory','Repeat Boss victory','Defeat'][i]}</legend><div className="fields">{(['achievementPoints','coins','exp','materials'] as const).map((key,j)=>{
   const path=[...bossPath,'rewardPolicy',kind,key];return <Num key={key} label={['Achievement Points','Coins','Pet EXP','Artifact materials'][j]} value={read(bundle,path)} onChange={value=>change(path,value)}/>;
  })}</div></fieldset>)}</div>:<><p className="small muted">Paid exactly once per seated participant from this published bundle; losses use the loss values.</p><div className="fields">{([['clearAchievementPoints','Clear Achievement Points'],['clearCoins','Clear coins'],['clearExp','Clear Pet EXP'],['lossAchievementPoints','Loss Achievement Points'],['lossCoins','Loss coins'],['lossExp','Loss Pet EXP']] as const).map(([key,label])=><Num key={key} label={label} value={read(bundle,['rewards',key])} onChange={value=>change(['rewards',key],value)}/>)}</div></>}
 
