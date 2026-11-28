@@ -42,10 +42,50 @@ await page.getByRole('button',{name:'System & traffic',exact:true}).click();cons
 
  expect(observed.every(body=>!body.includes(serviceToken)&&!body.includes(secret)&&!body.includes('ADMIN_METRICS_READ_TOKEN')&&!body.includes('OPERATOR_AUTH_KEY'))).toBe(true);expect(errors).toEqual([]);await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();expect((await page.request.get('/api/admin/session')).status()).toBe(401);
 });
-test('actual browser fresh verification rotates the session and revoke-all clears access',async({page,request})=>{
- await signIn(page);const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;await page.getByRole('button',{name:'Session & security',exact:true}).click();await page.getByLabel('Password',{exact:true}).fill(password);await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));await page.getByRole('button',{name:'Verify again',exact:true}).click();await expect(page.getByRole('status')).toContainText('Verification refreshed.');
- const current=(await page.context().cookies()).find(value=>value.name==='city_operator')!;expect(current.value!==old.value).toBe(true);expect((await request.get('/api/admin/session',{headers:{cookie:'city_operator='+old.value}})).status()).toBe(401);
- await page.getByRole('button',{name:'Revoke all sessions',exact:true}).click();await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
+test('actual browser prelaunch deep link preserves campaign through fresh verification and revoke-all',async({page,request})=>{
+ const campaignId='11111111-1111-4111-8111-111111111111';
+ await page.goto('/admin/prelaunch');
+ await page.getByLabel('Password',{exact:true}).fill(password);
+ await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()));
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Prelaunch registration',exact:true})).toBeVisible();
+ await page.getByLabel('Campaign ID').fill(campaignId);
+
+ let receiveRequest!:()=>void;
+ const pendingRequest=new Promise<void>(resolve=>{receiveRequest=resolve;});
+ let releaseResponse!:()=>void;
+ const pendingResponse=new Promise<void>(resolve=>{releaseResponse=resolve;});
+ const summaryPath='**/api/admin/prelaunch-summary?*';
+ await page.route(summaryPath,async route=>{
+  receiveRequest();
+  await pendingResponse;
+  await route.fulfill({status:403,json:{error:{code:'FORBIDDEN'}}}).catch(()=>{ /* Request may already be cancelled. */ });
+ },{times:1});
+ await page.getByRole('button',{name:'Load campaign',exact:true}).click();
+ await pendingRequest;
+ await page.getByRole('button',{name:'Overview',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'City at a glance'})).toBeVisible();
+ releaseResponse();
+
+ await page.route(summaryPath,route=>route.fulfill({status:403,json:{error:{code:'FORBIDDEN'}}}),{times:1});
+ await page.getByRole('button',{name:'Prelaunch registration',exact:true}).click();
+ await expect(page.getByLabel('Campaign ID')).toHaveValue(campaignId);
+ await page.getByRole('button',{name:'Load campaign',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Session & security',exact:true})).toBeVisible();
+ const old=(await page.context().cookies()).find(value=>value.name==='city_operator')!;
+ await page.getByLabel('Password',{exact:true}).fill(password);
+ await page.getByLabel('Authenticator code').fill(totp(secret,Date.now()+30000));
+ await page.getByRole('button',{name:'Verify again',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Prelaunch registration',exact:true})).toBeVisible();
+ await expect(page.getByLabel('Campaign ID')).toHaveValue(campaignId);
+ await expect(page.locator('.notice')).toContainText('Verification refreshed.');
+ const current=(await page.context().cookies()).find(value=>value.name==='city_operator')!;
+ expect(current.value!==old.value).toBe(true);
+ expect((await request.get('/api/admin/session',{headers:{cookie:'city_operator='+old.value}})).status()).toBe(401);
+ await page.getByRole('button',{name:'Session & security',exact:true}).click();
+ await page.getByRole('button',{name:'Revoke all sessions',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeVisible();
+ await page.screenshot({path:test.info().outputPath('operator-revoked.png'),fullPage:true});
 });
 test('synthetic observation fixtures show loading, true zero, stale, missing and error states with responsive keyboard controls',async({page})=>{
  await page.clock.install({time:new Date()});await page.emulateMedia({reducedMotion:'reduce'});await signIn(page);let mode='loading',release:undefined|(()=>void);const values={requests:0,errors:0,connections:0,memberships:0,eventLoopP95Ms:null};

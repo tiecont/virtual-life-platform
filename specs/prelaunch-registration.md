@@ -53,7 +53,10 @@ the `Authorization: Bearer` header, never in query strings. Responses, audit and
 operator aggregates contain no email, token or registration payload.
 
 Authenticated operators with fresh MFA may read aggregate campaign counts and
-mail-outbox health at `GET /v1/operator/prelaunch-summary`.
+mail-outbox health at `GET /v1/operator/prelaunch-summary`. Lifetime admissions
+include confirmed registrations that later withdrew or were suppressed.
+The Admin page displays lifetime and current confirmed counts separately.
+Its browser response includes campaign state and counts.
 
 ## Mail outbox
 

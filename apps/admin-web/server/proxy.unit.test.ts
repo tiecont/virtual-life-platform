@@ -58,3 +58,27 @@ it('account results must be bounded strict projections; private upstream fields 
  const id='11111111-1111-4111-8111-111111111111',view={accountId:id,kind:'registered',status:'active',version:0,activeSessions:1,privacy:{export:'OWNER_SELF_SERVICE',deletion:'OWNER_SELF_SERVICE',receiptTtlSeconds:86400}};
  for(const extra of [{privateEmail:'SYNTHETIC_PRIVATE_NOT_ALLOWED'},{sessions:[{token:'SYNTHETIC_PRIVATE_NOT_ALLOWED'}]},{version:-1}]){const handler=createAdminHandler(config(),async()=>Response.json({...view,...extra}));const response=await handler(new Request(origin+'/api/admin/account?accountId='+id,{headers:{cookie}}));expect(response.status).toBe(503);expect(await response.text()).not.toContain('SYNTHETIC_PRIVATE_NOT_ALLOWED');}
 });
+
+it('returns bounded prelaunch aggregates through the authenticated operator route',async()=>{
+ const campaignId=session.subject;
+ const summary={schemaVersion:1,campaignId,slug:'launch-preview',state:'CLOSED',capacity:5000,confirmed:7,currentConfirmed:6,
+  remaining:4993,pending:2,withdrawn:1,suppressed:0,outbox:{pending:1,sent:10,failed:1,suppressed:0}};
+ const upstream={...summary,recentAudit:[{action:'email.confirmed',actor:'system',occurredAt:'2026-11-24T00:00:00.000Z'}]};
+ let calls=0;
+ const handler=createAdminHandler(config(),async(url,init)=>{
+  expect(url).toBe(api+'/v1/operator/prelaunch-summary?campaignId='+campaignId);
+  expect(new Headers(init?.headers).get('cookie')).toBe(cookie);
+  calls++;
+  return Response.json(calls===1?upstream:{...upstream,email:'private@example.invalid'});
+ });
+ const path=origin+'/api/admin/prelaunch-summary?campaignId='+campaignId;
+ expect((await handler(new Request(path))).status).toBe(401);
+ expect((await handler(new Request(path+'&campaignId='+campaignId,{headers:{cookie}}))).status).toBe(400);
+ expect(calls).toBe(0);
+ const result=await handler(new Request(path,{headers:{cookie}}));
+ expect(result.status).toBe(200);
+ expect(await result.json()).toEqual(summary);
+ const invalid=await handler(new Request(path,{headers:{cookie}}));
+ expect(invalid.status).toBe(503);
+ expect(await invalid.text()).not.toContain('private@example.invalid');
+});
