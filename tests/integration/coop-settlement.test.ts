@@ -188,7 +188,7 @@ function publishRecruitment(recruitmentPetIds:string[]){
  }]);
 }
 
-async function publishSettlementFixture(bosses:readonly Record<string,unknown>[],schemaVersion:2|3|4=2,engineCapability='arena8-coop-v'+(schemaVersion-1)):Promise<FixtureBinding>{
+async function publishSettlementFixture(bosses:readonly Record<string,unknown>[],schemaVersion:2|3|4|5=2,engineCapability='arena8-coop-v'+(schemaVersion-1)):Promise<FixtureBinding>{
  const store=new GameplayConfigStore(),tx=await pool.connect(),actor='system:test-installation';
  const bundle={schemaVersion,rewards:baseBundle.rewards,bosses};
  // Match-terminal fixtures isolate Nest settlement; engine tests validate real bundles.
@@ -495,7 +495,7 @@ describe('cooperative settlement',()=>{
    if(next)expect(next.prerequisite).toMatchObject({mapId:map.id,cleared:true});
   }
  });
- it.each([3,4] as const)('settles schema %s once and rejects mismatched cooperative versions',async(schemaVersion)=>{
+ it.each([3,4,5] as const)('settles schema %s once and rejects mismatched cooperative versions',async(schemaVersion)=>{
   const accounts=await Promise.all(pets.map((pet,index)=>guest('Versioned seat '+index,pet)));
   const pinned=await publishSettlementFixture([{...baseBundle.boss,mapId:'cinder-terraces'}],schemaVersion);
   const coopVersion=schemaVersion-1;
@@ -508,7 +508,7 @@ describe('cooperative settlement',()=>{
 
   for(const [binding,versions] of [
    [pinned,{native:coopVersion,proposal:1}],
-   [pinned,{native:coopVersion===3?2:3,proposal:coopVersion===3?2:3}],
+   [pinned,{native:coopVersion===2?3:coopVersion-1,proposal:coopVersion===2?3:coopVersion-1}],
    [{version:1,digest,contentHash},{native:2,proposal:2}],
   ] as const){
    const mismatched=await fixture(accounts,'lost',binding,[],undefined,versions);
@@ -519,16 +519,16 @@ describe('cooperative settlement',()=>{
    await pool.query("UPDATE game_native_outbox SET available_at=clock_timestamp()+interval '1 hour' WHERE settlement_id=$1",[mismatched.settlementId]);
   }
  });
- it.each([[3,'arena8-coop-v3'],[4,'arena8-coop-v2']] as const)('rejects a solo pin against schema %s published as %s',async(schemaVersion,capability)=>{
+ it.each([[3,'arena8-coop-v3'],[4,'arena8-coop-v2'],[4,'arena8-coop-v4'],[5,'arena8-coop-v3']] as const)('rejects a solo pin against schema %s published as %s',async(schemaVersion,capability)=>{
   const account=await guest('Crossed pin','fire-coalwhisk');
   const published=await publishSettlementFixture([{...baseBundle.boss,mapId:'cinder-terraces'}],schemaVersion,capability);
   await expect(functionalSoloWin(account,'cinder-terraces','regular',published)).rejects.toMatchObject({code:'23514'});
   expect((await pool.query('SELECT 1 FROM platform_native_arena8_matches WHERE account_id=$1',[account.accountId])).rowCount).toBe(0);
  });
- it('requires both the native solo version and its committed proposal to match the schema 4 pin',async()=>{
+ it.each([4,5] as const)('requires both the native solo version and its committed proposal to match the schema %s pin',async(schemaVersion)=>{
   const {bosses}=JSON.parse(readFileSync(new URL('../../config/gameplay/arena8-coop-functional-v2.candidate.json',import.meta.url),'utf8'));
-  const pinned=await publishSettlementFixture(bosses,4);
-  for(const versions of [{native:1,proposal:1},{native:1,proposal:2},{native:2,proposal:1}]){
+  const pinned=await publishSettlementFixture(bosses,schemaVersion),soloVersion=schemaVersion-2,staleVersion=soloVersion-1;
+  for(const versions of [{native:staleVersion,proposal:staleVersion},{native:staleVersion,proposal:soloVersion},{native:soloVersion,proposal:staleVersion}]){
    const account=await guest('Mismatched solo',pets[0]!);
    const settle=await functionalSoloWin(account,'cinder-terraces','regular',pinned,versions);
    const rejected=await settle();
@@ -536,7 +536,10 @@ describe('cooperative settlement',()=>{
    expect((await pool.query('SELECT 1 FROM pet_wave_one_requests WHERE account_id=$1 AND request_id IN (SELECT match_id FROM platform_native_arena8_matches WHERE account_id=$1)',[account.accountId])).rowCount).toBe(0);
   }
   const account=await guest('Timed solo','fire-coalwhisk');
-  const settle=await functionalSoloWin(account,'cinder-terraces','regular',pinned,{native:2,proposal:2});
+  const settle=await functionalSoloWin(account,'cinder-terraces','regular',pinned,{native:soloVersion,proposal:soloVersion});
+  await expect(pool.query(`UPDATE platform_native_arena8_matches
+    SET functional_allocation=jsonb_set(functional_allocation,'{bossId}',to_jsonb('wrong-encounter'::text))
+    WHERE account_id=$1`,[account.accountId])).rejects.toMatchObject({code:'23514'});
   const first=await settle(),retry=await settle();
   expect(first.statusCode,first.body).toBe(200);
   expect(retry.json()).toEqual(first.json());

@@ -1,5 +1,5 @@
 import type {PoolClient} from 'pg';
-import type {CoopRoomStatus} from '@aetheria/contracts';
+import {gameplayEngineBinding,type CoopRoomStatus} from '@aetheria/contracts';
 
 type Queryable=Pick<PoolClient,'query'>;
 const ROOM_COLUMNS='id,ruleset,boss_id AS "bossId",host_account_id AS "hostAccountId",config_version AS "configVersion",config_digest AS "configDigest",required_points AS "requiredPoints",status,revision,created_at AS "createdAt"';
@@ -43,9 +43,10 @@ export class CoopRoomStore{
   return row?.map_id??null;
  }
  async activeConfiguration(tx:Queryable):Promise<Readonly<{version:number;digest:string;bundle:Record<string,unknown>}>>{
-  const result=await tx.query<{version:unknown;digest:string;bundle:Record<string,unknown>}>('SELECT v.version,v.content_digest AS digest,v.bundle FROM gameplay_config_active a JOIN gameplay_config_versions v ON v.ruleset=a.ruleset AND v.version=a.version WHERE a.ruleset=$1',['arena8-coop-pve']);
+  const result=await tx.query<{version:unknown;digest:string;bundle:Record<string,unknown>;engine_capability:string}>('SELECT v.version,v.content_digest AS digest,v.bundle,v.engine_capability FROM gameplay_config_active a JOIN gameplay_config_versions v ON v.ruleset=a.ruleset AND v.version=a.version WHERE a.ruleset=$1',['arena8-coop-pve']);
   const row=result.rows[0];
-  if(!row)throw new Error('No published cooperative configuration');
+  if(!row||gameplayEngineBinding(row.bundle.schemaVersion)?.capability!==row.engine_capability)
+   throw new Error('No published cooperative configuration');
   return Object.freeze({version:numeric(row.version),digest:String(row.digest),bundle:row.bundle});
  }
  async achievementPoints(tx:Queryable,accountId:string):Promise<number>{
@@ -80,8 +81,9 @@ export class CoopRoomStore{
   return row?Object.freeze({level:numeric(row.level),instanceId:row.instance_id}):undefined;
  }
  async pinnedBundle(tx:Queryable,version:number,digest:string):Promise<Record<string,unknown>|undefined>{
-  const result=await tx.query<{bundle:Record<string,unknown>}>("SELECT bundle FROM gameplay_config_versions WHERE ruleset='arena8-coop-pve' AND version=$1 AND content_digest=$2 AND published_at IS NOT NULL",[version,digest]);
-  return result.rows[0]?.bundle;
+  const result=await tx.query<{bundle:Record<string,unknown>;engine_capability:string}>("SELECT bundle,engine_capability FROM gameplay_config_versions WHERE ruleset='arena8-coop-pve' AND version=$1 AND content_digest=$2 AND published_at IS NOT NULL",[version,digest]);
+  const row=result.rows[0];
+  return row&&gameplayEngineBinding(row.bundle.schemaVersion)?.capability===row.engine_capability?row.bundle:undefined;
  }
  async createRoom(tx:Queryable,input:Readonly<{id:string;bossId:string;hostAccountId:string;configVersion:number;configDigest:string;requiredPoints:number}>):Promise<CoopRoomRow>{
   const result=await tx.query<Record<string,unknown>>(`INSERT INTO coop_rooms(id,ruleset,boss_id,host_account_id,config_version,config_digest,required_points,status,revision) VALUES($1,'arena8-coop-pve',$2,$3,$4,$5,$6,'OPEN',1) RETURNING ${ROOM_COLUMNS}`,

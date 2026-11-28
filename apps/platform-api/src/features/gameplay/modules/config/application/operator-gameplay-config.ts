@@ -2,7 +2,8 @@ import {
  GameplayConfigAuditSchema,GameplayConfigCreateSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigPublishSchema,GameplayConfigRollbackResultSchema,
  GameplayConfigRollbackSchema,GameplayConfigUpdateSchema,GameplayConfigValidateSchema,GameplayConfigValidationSchema,
- GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationComparisonSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,type GameplayBundle,type GameplayRuleset,
+ GameplayConfigVersionSchema,GameplayConfigVersionViewSchema,GameplaySimulationComparisonSchema,GameplaySimulationReportSchema,GameplaySimulationRequestSchema,
+ gameplayEngineBinding,type GameplayBundle,type GameplayRuleset,
 } from '@aetheria/contracts';
 import type {PoolClient} from 'pg';
 import {canonicalCatalogReference} from '../../../../pets/modules/wave1/application/service';
@@ -23,7 +24,7 @@ const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
 });
 const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
- ...((row.bundle.schemaVersion===2||row.bundle.schemaVersion===3||row.bundle.schemaVersion===4)?{catalogReference:canonicalCatalogReference}:{}),
+ ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:canonicalCatalogReference}:{}),
 });
 
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,

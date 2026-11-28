@@ -48,7 +48,7 @@ const counter=z.int().nonnegative();
 const soloProposal=z.strictObject({
  configDigest:hex,contentHash:hex,encounterId:id.optional(),kind:z.literal('solo.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.tuple([z.strictObject({account:z.uuid(),petId:id,alive:z.boolean(),damage:counter,healing:counter,shielding:counter})]),
- round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.union([z.literal(1),z.literal(2)]),turn:counter.max(65535),
+ round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.union([z.literal(1),z.literal(2),z.literal(3)]),turn:counter.max(65535),
 });
 const payout=z.strictObject({achievementPoints:counter.max(1_000_000),coins:counter.max(1_000_000),exp:counter.max(1_000_000),materials:counter.max(1_000_000)});
 const policy=z.strictObject({

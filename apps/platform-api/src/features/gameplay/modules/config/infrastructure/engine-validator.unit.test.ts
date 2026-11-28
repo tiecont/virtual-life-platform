@@ -58,16 +58,25 @@ describe('engine gameplay bundle validator',()=>{
   [4,'arena8-coop-v3',3,undefined,2,false],
   [4,'arena8-coop-v3',3,undefined,undefined,true],
   [4,'arena8-coop-v3',3,contentHash,2,true],
+  [4,'arena8-coop-v4',4,contentHash,3,false],
+  [5,'arena8-coop-v3',3,contentHash,2,false],
+  [5,'arena8-coop-v4',undefined,contentHash,3,false],
+  [5,'arena8-coop-v4',3,contentHash,3,false],
+  [5,'arena8-coop-v4',4,contentHash,2,false],
+  [5,'arena8-coop-v4',4,contentHash,undefined,false],
+  [5,'arena8-coop-v4',4,undefined,3,false],
+  [5,'arena8-coop-v4',4,undefined,undefined,true],
+  [5,'arena8-coop-v4',4,contentHash,3,true],
  ] as const)('validates schema %s against %s coop %s solo hash %s version %s (%s)',async(schemaVersion,engineCapability,rulesetVersion,soloContentHash,soloRulesetVersion,accepted)=>{
   const verdict={digest,engineCapability,contentHash,rulesetVersion,soloContentHash,soloRulesetVersion};
   const binary=await executable('verdict.mjs','console.log('+JSON.stringify(JSON.stringify(verdict))+')');
   const result=new EngineGameplayBundleValidator(binary).validate('arena8-coop-pve',{schemaVersion});
-  if(accepted)await expect(result).resolves.toMatchObject({digest,engineCapability,contentHash});
+  if(accepted)await expect(result).resolves.toEqual({digest,engineCapability,contentHash,...(soloContentHash?{soloContentHash}:{})});
   else await expect(result).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);
  });
  it('rejects an undeclared schema and a candidate claiming a different capability',async()=>{
   const validator=new EngineGameplayBundleValidator(join(directory,'missing'));
-  for(const candidate of [{schemaVersion:5},{schemaVersion:3,engineCapability:'arena8-coop-v3'}])
+  for(const candidate of [{schemaVersion:6},{schemaVersion:3,engineCapability:'arena8-coop-v3'},{schemaVersion:5,engineCapability:'arena8-coop-v3'}])
    await expect(validator.validate('arena8-coop-pve',candidate)).rejects.toBeInstanceOf(InvalidGameplayBundleError);
  });
  it('fails closed when the binary is missing and rejects relative paths',async()=>{
