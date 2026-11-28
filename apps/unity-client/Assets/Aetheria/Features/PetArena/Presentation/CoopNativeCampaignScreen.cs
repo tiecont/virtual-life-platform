@@ -157,12 +157,20 @@ namespace Aetheria.PetArena.Presentation
                     var local = recruitment.routes.Where(route => route.mapId == map.Id && route.mode == "either").ToArray();
                     if (local.Length == 0)
                         root.Add(new Label(CampaignLocale.Text("map.no_recruitment", "No recruitment encounters available.")));
+                    var byId = recruitment.routes.ToDictionary(route => route.id);
+                    var routeList = new ScrollView { name = "coop-recruitment-routes" };
+                    routeList.style.flexShrink = 1;
+                    if (local.Length > 0) root.Add(routeList);
                     foreach (var route in local)
                     {
+                        var label = route.name + (route.cleared ? " ✓" : "");
+                        if (route.prerequisiteEncounterId != null &&
+                            byId.TryGetValue(route.prerequisiteEncounterId, out var prerequisite) && !prerequisite.cleared)
+                            label += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite.name;
                         var host = new Button(() => _ = RunAsync(() => CreateEncounterAsync(route.id)))
-                            { text = route.name + (route.cleared ? " ✓" : ""), enableRichText = false };
+                            { text = label, enableRichText = false };
                         host.SetEnabled(map.IsPlayable && route.canHostCoop && instanceId != null);
-                        root.Add(host);
+                        routeList.Add(host);
                     }
                 }
                 return;

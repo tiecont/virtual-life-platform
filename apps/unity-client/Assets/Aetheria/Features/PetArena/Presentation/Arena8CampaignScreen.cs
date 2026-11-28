@@ -239,14 +239,14 @@ namespace Aetheria.PetArena.Presentation
                 {
                     if (recruitmentCatalog.routes.Length == 0)
                         content.Add(Label(CampaignLocale.Text("map.no_recruitment", "No recruitment encounters available.")));
-                    var names = recruitmentCatalog.routes.ToDictionary(route => route.id, route => route.name);
+                    var byId = recruitmentCatalog.routes.ToDictionary(route => route.id);
                     foreach (var route in recruitmentCatalog.routes)
                     {
                         var mapName = CampaignLocale.Text("map." + route.mapId.Replace('-', '_'), route.mapId);
                         var routeLabel = mapName + " · " + route.name + (route.cleared ? " ✓" : "");
                         if (!route.canEnterSolo && route.prerequisiteEncounterId != null &&
-                            names.TryGetValue(route.prerequisiteEncounterId, out var prerequisite))
-                            routeLabel += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite;
+                            byId.TryGetValue(route.prerequisiteEncounterId, out var prerequisite) && !prerequisite.cleared)
+                            routeLabel += " · " + CampaignLocale.Text("map.requires_clear", "Requires clear") + " " + prerequisite.name;
                         Button(routeLabel, () => Run(() => AllocateMatch(route.mapId, route.id), route.name),
                             enabled: route.canEnterSolo && state.FindPet(selectedPet) != null);
                     }
