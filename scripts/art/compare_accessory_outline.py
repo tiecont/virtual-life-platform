@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 
-def silhouette(path):
+def foreground(path):
     with Image.open(path) as image:
         rgba = np.asarray(image.convert("RGBA")).astype(np.int16)
     alpha = rgba[:, :, 3]
@@ -26,7 +26,12 @@ def silhouette(path):
     ys, xs = np.nonzero(mask)
     if xs.size < 100 or xs.min() == 0 or xs.max() == mask.shape[1] - 1:
         raise ValueError(f"{path}: foreground is missing or touches the frame edge")
-    return Image.fromarray(mask).crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
+    box = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
+    return Image.fromarray(mask).crop(box), box
+
+
+def silhouette(path):
+    return foreground(path)[0]
 
 
 def compare(reference, render):
