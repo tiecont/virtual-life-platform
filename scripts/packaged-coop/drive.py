@@ -75,7 +75,9 @@ def start_button(image):
     button = word_button(image, {'battle'}, box, mode='7')
     if button:
         return button
-    return word_button(image, {'battle'}, center_band(screen_height - 115, screen_height - 18))
+    # Older packaged panels give Start a share of the available height.
+    # Read its actual centered label down to the footer at native 1440p/4K.
+    return word_button(image, {'battle'}, center_band(screen_height // 2, screen_height - 18, 90))
 
 
 def enter_or_start(img):

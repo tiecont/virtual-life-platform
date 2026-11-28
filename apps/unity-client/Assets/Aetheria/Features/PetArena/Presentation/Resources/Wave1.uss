@@ -309,3 +309,10 @@
     -unity-font-style: bold;
     color: rgb(255, 217, 148);
 }
+
+/* The ready action sits above the footer. Extra desktop height belongs to the board viewport. */
+#coop-battle-start {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 40px;
+}
