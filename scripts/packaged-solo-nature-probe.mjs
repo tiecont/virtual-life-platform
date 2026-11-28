@@ -256,6 +256,9 @@ export async function verifyGhostUltimateReceipt(pool,directory,published,fixtur
  assert.equal(sample.guardTurns,sample.beforeVersion-1);
  assert.equal(sample.turnTimeoutMilliseconds,15000);
  assert.equal(sample.refreshSuppressed,true);
+ assert.equal(sample.refreshedVersion,sample.version);
+ assert.ok(sample.committedDeadlineUnixMs>0);
+ assert.equal(sample.refreshedDeadlineUnixMs,sample.committedDeadlineUnixMs);
  assert.equal(sample.hudLabel,'Ultimate Skill');
  const pet=bundle.pets.find(row=>row.id===sample.pet);
  const ultimate=bundle.skills.find(row=>row.id===pet.ultimate);
@@ -283,14 +286,14 @@ export async function verifyGhostUltimateReceipt(pool,directory,published,fixtur
  assert.equal(receipt.receipt_count,sample.version);
 
  const frames=[];
- for(const name of ['ultimate-solo-01-ready.png','ultimate-solo-02-committed.png']){
+ for(const name of ['ultimate-solo-01-ready.png','ultimate-solo-02-committed.png','ultimate-solo-03-readmitted.png']){
   const image=await readFile(join(directory,name));
   assert.equal(image.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
   assert.equal(image.readUInt32BE(16),1280);
   assert.equal(image.readUInt32BE(20),720);
   frames.push({name,sha256:createHash('sha256').update(image).digest('hex')});
  }
- assert.notEqual(frames[0].sha256,frames[1].sha256);
+ assert.equal(new Set(frames.map(frame=>frame.sha256)).size,frames.length);
  await writeFile(join(directory,'solo-shared-ultimate-verification.json'),
   JSON.stringify({candidate,receipt,mapAccess:fixture.purpose,playerLevel:fixture.playerLevel,levelFixture:fixture.levelFixture,sample,frames},null,2)+'\n',{mode:0o600});
 }
