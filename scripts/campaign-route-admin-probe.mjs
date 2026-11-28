@@ -6,6 +6,7 @@ const next='recruit-fire-emberloom';
 
 export async function verifyCampaignRouteAdmin({
  page,expect,artifact,installed,dbConfig,dbActive,validator,ruleset,mark,clickMutation,button,versionRow,activeEntry,auditSection,
+ refreshOperatorVerification,
 }){
  const baseline=await dbConfig(installed.version);
  assert.equal(baseline.bundle.schemaVersion,7);
@@ -85,6 +86,10 @@ export async function verifyCampaignRouteAdmin({
  assert.equal(publication.contentDigest,verified.digest);
  assert.deepEqual(await dbActive(),{version:created.version,revision:publication.activeRevision});
 
+ // Qualification can outlast the operator's five-minute elevation. Use
+ // the same fresh MFA step an operator uses before a sensitive rollback.
+ await refreshOperatorVerification();
+ await expect(page.getByRole('heading',{name:'Version '+created.version+' · PUBLISHED',exact:true})).toBeVisible();
  const rolled=await clickMutation('Roll back','rollback',versionRow(installed.version));
  await expect(activeEntry('Digest')).toHaveAttribute('title',installed.digest);
  assert.deepEqual(await dbActive(),{version:installed.version,revision:rolled.activeRevision});

@@ -229,6 +229,15 @@ try{
  }
  await startApi();
  let operator;
+ let browserAuthCounter=-1;
+ async function freshBrowserCode(){
+  const nextWindow=(browserAuthCounter+1)*30_000;
+  const wait=nextWindow-Date.now();
+  if(wait>0)await pause(wait+100);
+  const now=Date.now();
+  browserAuthCounter=Math.floor(now/30_000);
+  return totp(operatorSecret,now);
+ }
  if(direct){
   const response=await app.http.inject({method:'POST',url:'/v1/operator/login',headers:{origin:adminOrigin},
    payload:{password:operatorPassword,code:totp(operatorSecret,Date.now())}});
@@ -261,7 +270,7 @@ try{
  assert.equal(unauthorized.status(),401);
  await page.goto(adminOrigin+'/admin');
  await page.getByLabel('Password',{exact:true}).fill(operatorPassword);
- await page.getByLabel('Authenticator code',{exact:true}).fill(totp(operatorSecret,Date.now()));
+ await page.getByLabel('Authenticator code',{exact:true}).fill(await freshBrowserCode());
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'City at a glance',exact:true})).toBeVisible({timeout:60000});
  await page.getByRole('button',{name:'Gameplay configuration',exact:true}).click();
@@ -464,8 +473,21 @@ try{
   return configurations[label];
  }
  if(routeAdmin){
+  async function refreshOperatorVerification(){
+   await button('Session & security').click();
+   await expect(page.getByRole('heading',{name:'Refresh verification',exact:true})).toBeVisible();
+   await page.getByLabel('Password',{exact:true}).fill(operatorPassword);
+   await page.getByLabel('Authenticator code',{exact:true}).fill(await freshBrowserCode());
+   const response=page.waitForResponse(value=>new URL(value.url()).pathname==='/api/admin/step-up'
+    &&value.request().method()==='POST');
+   await button('Verify again').click();
+   assert.equal((await response).status(),200);
+   await expect(page.getByText('Verification refreshed.',{exact:true})).toBeVisible();
+   await button('Gameplay configuration').click();
+  }
   await verifyCampaignRouteAdmin({
    page,expect,artifact,installed,dbConfig,dbActive,validator,ruleset,mark,clickMutation,button,versionRow,activeEntry,auditSection,
+   refreshOperatorVerification,
   });
  }else if(sharedAdmin){
   const nature=page.getByLabel('Nature spawn weight',{exact:true});
