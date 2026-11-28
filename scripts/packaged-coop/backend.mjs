@@ -537,11 +537,13 @@ try{
    const frost=advancedWater?checkWaterOpening(started.state,waterBundle):null;
    await json('water-started.json',{...started,move:frost?.action??legalSwap(started.state.board)});
    const swapped=await readWaterVersion(2);
-   if(frost)checkWaterEffect(swapped.state,waterBundle,frost.matched);
    const receipts=(await pool.query(
      'SELECT actor_id=$2 AS "host", committed_version::int AS version FROM game_native_receipts WHERE match_id=$1 ORDER BY committed_version',
      [waterAllocation.match_id,host])).rows;
-   assert.deepEqual(receipts,[{host:true,version:1},{host:true,version:2}]);
+   await json('water-version-two-observed.json',{...swapped,receipts});
+   assert.deepEqual(receipts,[{host:true,version:1},{host:true,version:2}],
+    'Water version 2 must be the authenticated host swap before its deadline');
+   if(frost)checkWaterEffect(swapped.state,waterBundle,frost.matched);
    await json('water-swapped.json',{...swapped,receipts});
    const retained=(await pool.query('SELECT seats FROM coop_allocations WHERE match_id=$1',[waterAllocation.match_id])).rows[0].seats;
    assert.deepEqual(retained,waterAllocation.seats);

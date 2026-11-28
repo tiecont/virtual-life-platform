@@ -8,7 +8,7 @@ import {checkWaterOpening,checkWaterEffect} from '../coop-advanced-publication-p
 const root=process.argv[2];
 const read=async file=>JSON.parse(await readFile(join(root,file+'.json'),'utf8'));
 const environment=await readFile(join(root,'environment.txt'),'utf8');
-const expectedSize=environment.match(/(1024x768|1280x720|1920x1080) Gamescope/)?.[1];
+const expectedSize=environment.match(/(1024x768|1280x720|1920x1080|2560x1440|3840x2160) Gamescope/)?.[1];
 assert.ok(expectedSize,'Missing requested player size in the environment receipt');
 const before=await read('before-restart'),after=await read('after-restart'),renewed=await read('host-renewed');
 assert.equal(before.version,after.version);
