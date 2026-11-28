@@ -23,32 +23,32 @@
     }
   ],
   "fontValidation": {
-    "regularBytes": 135868,
-    "boldBytes": 136260,
-    "cjkSubsetBytes": 269756,
+    "regularBytes": 135936,
+    "boldBytes": 136332,
+    "cjkSubsetBytes": 295856,
     "languages": {
       "vi": {
-        "uniqueCodepoints": 105,
+        "uniqueCodepoints": 115,
         "missingCodepoints": [],
         "validated": true
       },
       "en": {
-        "uniqueCodepoints": 63,
+        "uniqueCodepoints": 72,
         "missingCodepoints": [],
         "validated": true
       },
       "ja": {
-        "uniqueCodepoints": 214,
+        "uniqueCodepoints": 265,
         "missingCodepoints": [],
         "validated": true
       },
       "ko": {
-        "uniqueCodepoints": 187,
+        "uniqueCodepoints": 225,
         "missingCodepoints": [],
         "validated": true
       },
       "zh": {
-        "uniqueCodepoints": 215,
+        "uniqueCodepoints": 270,
         "missingCodepoints": [],
         "validated": true
       }
@@ -264,6 +264,139 @@
       "ja": "戦闘ログ",
       "ko": "전투 기록",
       "zh": "战斗日志"
+    },
+    "battle.jewel.sword": {
+      "vi": "Tấn Công",
+      "en": "Strike",
+      "ja": "打撃",
+      "ko": "타격",
+      "zh": "打击"
+    },
+    "battle.jewel.sword.effect": {
+      "vi": "Gây sát thương đòn đánh thường.",
+      "en": "Deal normal attack damage.",
+      "ja": "通常攻撃でダメージを与える。",
+      "ko": "일반 공격으로 피해를 줍니다.",
+      "zh": "造成普通攻击伤害。"
+    },
+    "battle.jewel.mana": {
+      "vi": "Năng Lượng",
+      "en": "Mana",
+      "ja": "マナ",
+      "ko": "마나",
+      "zh": "法力"
+    },
+    "battle.jewel.mana.effect": {
+      "vi": "Hồi năng lượng cho Linh Thú đang hành động.",
+      "en": "Restore the acting Pet’s Mana.",
+      "ja": "行動中のペットのマナを回復する。",
+      "ko": "행동 중인 펫의 마나를 회복합니다.",
+      "zh": "恢复当前行动灵兽的法力。"
+    },
+    "battle.jewel.rage": {
+      "vi": "Nộ",
+      "en": "Rage",
+      "ja": "怒り",
+      "ko": "분노",
+      "zh": "怒气"
+    },
+    "battle.jewel.rage.effect": {
+      "vi": "Tăng nộ cho Linh Thú đang hành động.",
+      "en": "Generate Rage for the acting Pet.",
+      "ja": "行動中のペットの怒りを増やす。",
+      "ko": "행동 중인 펫의 분노를 늘립니다.",
+      "zh": "为当前行动的灵兽积攒怒气。"
+    },
+    "battle.jewel.heart": {
+      "vi": "Sinh Lực",
+      "en": "Vitality",
+      "ja": "活力",
+      "ko": "활력",
+      "zh": "活力"
+    },
+    "battle.jewel.heart.effect": {
+      "vi": "Hồi HP cho mục tiêu đủ điều kiện.",
+      "en": "Restore HP to an eligible target.",
+      "ja": "条件を満たす対象のHPを回復する。",
+      "ko": "조건에 맞는 대상의 HP를 회복합니다.",
+      "zh": "为符合条件的目标恢复生命值。"
+    },
+    "battle.jewel.shield": {
+      "vi": "Hộ Thuẫn",
+      "en": "Aegis",
+      "ja": "加護",
+      "ko": "수호",
+      "zh": "庇护"
+    },
+    "battle.jewel.shield.effect": {
+      "vi": "Tạo khiên bảo vệ mục tiêu đủ điều kiện.",
+      "en": "Shield an eligible target.",
+      "ja": "条件を満たす対象にシールドを付与する。",
+      "ko": "조건에 맞는 대상에게 보호막을 부여합니다.",
+      "zh": "为符合条件的目标施加护盾。"
+    },
+    "battle.jewel.special": {
+      "vi": "Linh Hồn",
+      "en": "Soul",
+      "ja": "魂",
+      "ko": "영혼",
+      "zh": "灵魂"
+    },
+    "battle.jewel.special.effect": {
+      "vi": "Vừa hồi năng lượng vừa tăng nộ.",
+      "en": "Restore Mana and generate Rage.",
+      "ja": "マナを回復し、怒りを増やす。",
+      "ko": "마나를 회복하고 분노를 늘립니다.",
+      "zh": "恢复法力并积攒怒气。"
+    },
+    "battle.jewel.nature": {
+      "vi": "Thiên Nhiên",
+      "en": "Nature",
+      "ja": "自然",
+      "ko": "자연",
+      "zh": "自然"
+    },
+    "battle.jewel.nature.effect": {
+      "vi": "Xóa hiệu ứng bất lợi có thể thanh tẩy.",
+      "en": "Cleanse eligible negative statuses.",
+      "ja": "解除可能な弱体効果を取り除く。",
+      "ko": "해제 가능한 해로운 효과를 제거합니다.",
+      "zh": "清除可净化的负面状态。"
+    },
+    "battle.jewel.frost": {
+      "vi": "Băng Giá",
+      "en": "Frost",
+      "ja": "霜",
+      "ko": "서리",
+      "zh": "冰霜"
+    },
+    "battle.jewel.frost.effect": {
+      "vi": "Giảm sát thương đòn tấn công kế tiếp của địch.",
+      "en": "Reduce damage from the next enemy attack.",
+      "ja": "次の敵の攻撃によるダメージを減らす。",
+      "ko": "적의 다음 공격으로 받는 피해를 줄입니다.",
+      "zh": "降低敌方下一次攻击造成的伤害。"
+    },
+    "battle.jewel.astral": {
+      "vi": "Tinh Tú",
+      "en": "Astral",
+      "ja": "星光",
+      "ko": "별빛",
+      "zh": "星辉"
+    },
+    "battle.jewel.astral.effect": {
+      "vi": "Tăng hệ số cho ngọc cơ bản đủ điều kiện.",
+      "en": "Increase eligible basic jewel multipliers.",
+      "ja": "条件を満たす基本ジュエルの倍率を上げる。",
+      "ko": "조건에 맞는 기본 보석의 배율을 올립니다.",
+      "zh": "提高符合条件的基础宝石倍率。"
+    },
+    "battle.jewel_chill": {
+      "vi": "Băng Giá · Đòn kế tiếp của địch giảm {0} sát thương",
+      "en": "Chill · Next enemy attack: −{0} damage",
+      "ja": "冷気 · 次の敵の攻撃ダメージ −{0}",
+      "ko": "냉기 · 적의 다음 공격 피해 −{0}",
+      "zh": "寒冷 · 敌方下一次攻击伤害降低{0}"
     },
     "battle.gem_legend": {
       "vi": "Chú thích ngọc: Công • Năng lượng • Nộ • Hồi HP • Khiên • Đặc biệt",

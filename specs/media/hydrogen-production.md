@@ -39,15 +39,21 @@ master is `artifacts/private-workspace/r04-jewels/provider-master.png` (SHA-256
 `a1d1264705632fb709bb6c95032a1676eef8f59dee229d58acd8a768c20a3ad1`).
 The first row contains gold lightning (Sword), blue droplet (Mana) and red flame
 (Rage). The second contains pink Heart, cobalt Shield and amber paw (Special).
-The UI kit packer takes that master as its only argument and preserves the six
-existing Unity sprite names, regions and GUIDs. The default atlas has SHA-256
-`9899801e283c6751746c5fa0c6e8711a65d33d737dd6aace626ff64ae97f14be`.
-The separate historical Gemini candidate matches its archived atlas at
-`76837c975680022d177265493a8f89a6b52c2c031f93687601ef740e371161ca`.
-Owner visual approval and release remain pending.
+A second ImageGen sheet derived from R04 and the six-jewel master contains the
+green leaf (Nature), blue snowflake (Frost) and purple four-point star (Astral).
+The private master is `artifacts/private-workspace/r04-jewels/reference-jewels.png`
+(SHA-256 `26fe604af853af4606216d359117dbc022cba4e59ece7a9f8f0dde858057a588`).
+The owner approved all nine designs in Master Autonomous Production Campaign V3
+section 3. Technical qualification and external asset rights remain separate.
 
-Three reserve icons use a second ImageGen sheet derived from R04 and the six-jewel
-master. Its SHA-256 is `26fe604af853af4606216d359117dbc022cba4e59ece7a9f8f0dde858057a588`.
-Pass `--reference-icons artifacts/private-workspace/r04-jewels/reference-jewels.png`
-to pack its leaf, snowflake and star into the existing reserve icon resources.
-They have no gameplay assignment on the functional board.
+Pack both unchanged masters with
+`python3 scripts/art/produce_wave_d4_ui_kit.py <provider-master.png> --reference-icons <reference-jewels.png>`.
+The packer bounds visible provider pixels at alpha 16 and resizes uniformly
+into transparent 256 × 256 icons and 128 × 128 runtime sprite regions. The
+396 × 396 R04 full-cell atlas (v2) has two extrusion pixels outside each region
+and SHA-256 `679fb26a1d43bcabe7071324aa83c43b8101d864c0de6e90e3f29bfe5dfaa162`.
+Unity retains the existing atlas asset GUID and historical sprite identifiers
+for `sword`, `mana`, `rage`, `heart`, `shield` and `special`. The last atlas
+row contains `nature`, `frost` and `astral`. The separate historical Gemini
+candidate matches its archived atlas at
+`76837c975680022d177265493a8f89a6b52c2c031f93687601ef740e371161ca`.

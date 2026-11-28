@@ -146,6 +146,45 @@ namespace Aetheria.Tests
             }
         }
 
+        [TestCase("en", "Nature", "Cleanse")]
+        [TestCase("vi", "Thiên Nhiên", "thanh tẩy")]
+        [TestCase("ja", "自然", "弱体効果")]
+        [TestCase("ko", "자연", "해로운 효과")]
+        [TestCase("zh", "自然", "负面状态")]
+        public void AllNineJewelsUseLocalizedNamesAndDescriptions(string language, string nature, string effect)
+        {
+            const string key = "aetheria.campaign.language";
+            var previous = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetString(key) : null;
+            try
+            {
+                PlayerPrefs.SetString(key, language);
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(
+                    AdvancedProjection(JewelKinds)));
+                var hud = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                for (var index = 0; index < JewelKinds.Length; index++)
+                {
+                    var tile = hud.Q<Button>("coop-cell-" + index);
+                    var parts = tile.tooltip.Split('\n');
+                    Assert.That(parts.Length, Is.EqualTo(2));
+                    Assert.That(parts[0], Is.Not.Empty);
+                    Assert.That(parts[1], Is.Not.Empty);
+                    Assert.That(tile.Q("coop-functional-icon").style.backgroundImage.value.sprite.name,
+                        Is.EqualTo(JewelKinds[index]));
+                }
+                var tooltip = hud.Q<Button>("coop-cell-6").tooltip;
+                Assert.That(tooltip, Does.StartWith(nature + "\n"));
+                Assert.That(tooltip, Does.Contain(effect));
+            }
+            finally
+            {
+                if (previous == null) PlayerPrefs.DeleteKey(key);
+                else PlayerPrefs.SetString(key, previous);
+            }
+        }
+
+        private static readonly string[] JewelKinds =
+            { "sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral" };
+
         [UnityTest]
         public IEnumerator DesktopResolutionsKeepEightRowsCenteredBetweenCombatants()
         {
@@ -162,8 +201,8 @@ namespace Aetheria.Tests
                 var hud = go.AddComponent<CoopNativeHud>();
                 hud.Attach(document);
                 hud.Bind(null, () => { });
-                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(Projection(
-                    elements: new[] { "sword", "mana", "rage", "heart", "shield", "special" }, withAbilities: true, timed: true)));
+                var jewels = Enumerable.Range(0, 64).Select(index => JewelKinds[index % JewelKinds.Length]).ToArray();
+                var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(AdvancedProjection(jewels)));
 
                 foreach (var (width, height) in new[] { (1280, 720), (1920, 1080) })
                 {
@@ -180,6 +219,33 @@ namespace Aetheria.Tests
                     Assert.That(board.childCount, Is.EqualTo(8));
                     foreach (var row in board.Children())
                         Assert.That(row.childCount, Is.EqualTo(8));
+                    for (var index = 0; index < jewels.Length; index++)
+                    {
+                        var tile = root.Q<Button>("coop-cell-" + index);
+                        var icon = tile.Q("coop-functional-icon");
+                        Assert.That(tile.worldBound.width, Is.EqualTo(tile.worldBound.height).Within(1.1f));
+                        Assert.That(icon.worldBound.width, Is.EqualTo(tile.worldBound.width).Within(1f));
+                        Assert.That(icon.worldBound.height, Is.EqualTo(tile.worldBound.height).Within(1f));
+                        Assert.That(icon.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                        Assert.That(icon.resolvedStyle.backgroundImage.sprite.name, Is.EqualTo(jewels[index]));
+                        if (index % 8 < 7)
+                        {
+                            var neighbor = root.Q<Button>("coop-cell-" + (index + 1));
+                            Assert.That(neighbor.worldBound.xMin - tile.worldBound.xMax, Is.InRange(1f, 2.1f));
+                        }
+                    }
+                    var firstTile = root.Q<Button>("coop-cell-0");
+                    var badge = firstTile.Q<Label>("coop-tile-multiplier");
+                    Assert.That(badge.worldBound.xMax, Is.LessThanOrEqualTo(firstTile.worldBound.xMax));
+                    Assert.That(badge.worldBound.yMax, Is.LessThan(firstTile.worldBound.center.y));
+                    Assert.That(badge.pickingMode, Is.EqualTo(PickingMode.Ignore));
+
+                    firstTile.Focus();
+                    yield return null;
+                    var tooltip = root.Q<Label>("coop-jewel-tooltip");
+                    Assert.That(tooltip.resolvedStyle.visibility, Is.EqualTo(Visibility.Visible));
+                    Assert.That(tooltip.text, Is.EqualTo(firstTile.tooltip));
+                    Assert.That(tooltip.pickingMode, Is.EqualTo(PickingMode.Ignore));
                     Assert.That(root.Q("coop-seats").worldBound.xMax, Is.LessThan(board.worldBound.xMin));
                     Assert.That(root.Q("coop-opponents").worldBound.xMin, Is.GreaterThan(board.worldBound.xMax));
                     var side = root.Q("coop-seats");
@@ -328,6 +394,11 @@ namespace Aetheria.Tests
                 UnityEngine.Object.DestroyImmediate(audioHost);
             }
         }
+
+        private static string AdvancedProjection(string[] jewels) =>
+            Projection(elements: jewels, withAbilities: true, timed: true)
+                .Replace("\"version\":3", "\"version\":4")
+                .Replace("\"pending\":null", "\"pending\":null,\"chillReductionPm\":0");
 
         private static string Projection(string pending = "null", int health = 400,
             int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2,

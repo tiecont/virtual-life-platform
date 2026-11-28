@@ -197,8 +197,7 @@
 .battle-telegraph-cell { border-color: rgb(250, 165, 75); border-width: 2px; }
 .coop-tile.coop-element-tile,
 .coop-tile.coop-functional-tile { color: rgba(0, 0, 0, 0); }
-.coop-functional-tile { background-color: rgb(35, 29, 47); }
-.coop-element-icon, .coop-functional-icon {
+.coop-element-icon {
     position: absolute;
     left: 11%;
     top: 11%;
@@ -214,12 +213,6 @@
 }
 .battle-compact .coop-tile-multiplied .coop-element-icon {
     width: 20%;
-}
-.coop-tile-multiplied .coop-functional-icon {
-    left: 2%;
-    top: 23%;
-    width: 74%;
-    height: 73%;
 }
 .battle-stage .coop-tile-multiplier {
     position: absolute;

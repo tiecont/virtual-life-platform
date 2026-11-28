@@ -68,7 +68,7 @@ namespace Aetheria.Tests
             Assert.That(functional.Board[0].Kind, Is.EqualTo("sword"));
             Assert.That(functional.CanSwap(0, 1), Is.True);
             var root = CoopNativePresentation.Build(functional, _ => { }, _ => { }, 0);
-            Assert.That(root.Q<Button>("coop-cell-0").tooltip, Is.EqualTo("Sword ×2"));
+            Assert.That(root.Q<Button>("coop-cell-0").tooltip, Does.Contain(" ×2\n"));
             Assert.That(root.Q("coop-cell-0").Q("coop-functional-icon"), Is.Not.Null);
             Assert.That(root.Q("coop-cell-0").Q("coop-element-icon"), Is.Null);
 
@@ -143,6 +143,46 @@ namespace Aetheria.Tests
                 .Replace("\"turnRemainingMs\":9000,", "")));
             Assert.Throws<FormatException>(() => Coop(phase: "playing", customize: json => Timed(json, false)
                 .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":12000")));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AdvancedProjectionUsesOnlyVersionedJewelKindsAndChill(bool solo)
+        {
+            var legacyVersion = solo ? CoopNativeView.SoloTimedFunctionalVersion : CoopNativeView.TimedFunctionalVersion;
+            var newVersion = solo ? CoopNativeView.SoloAdvancedFunctionalVersion : CoopNativeView.AdvancedFunctionalVersion;
+            var legacyVersionField = "\"version\":" + legacyVersion;
+            var newVersionField = "\"version\":" + newVersion;
+            const string pending = "\"pending\":null";
+            const string chill = ",\"chillReductionPm\":250";
+
+            string WithTiles(string json) => Timed(json, solo)
+                .Replace("\"kind\":\"sword\"", "\"kind\":\"nature\"")
+                .Replace("\"kind\":\"mana\"", "\"kind\":\"frost\"")
+                .Replace("\"kind\":\"frost\",\"multiplier\":1},null",
+                    "\"kind\":\"frost\",\"multiplier\":1},{\"kind\":\"astral\",\"multiplier\":8}");
+            string Advanced(string json) => WithTiles(json).Replace(legacyVersionField, newVersionField)
+                .Replace(pending, pending + chill);
+            CoopNativeView Decode(Func<string, string> map) =>
+                Coop(seats: solo ? 1 : 4, phase: "playing", customize: map);
+
+            var view = Decode(Advanced);
+            Assert.That(view.IsTimed, Is.True);
+            Assert.That(view.RulesetVersion, Is.EqualTo(newVersion));
+            Assert.That(view.ChillReductionPm, Is.EqualTo(250));
+            Assert.That(view.Board.Take(3).Select(tile => tile.Kind), Is.EqualTo(new[] { "nature", "frost", "astral" }));
+            Assert.That(view.Board[2].Multiplier, Is.EqualTo(8));
+            var hud = CoopNativePresentation.Build(view, _ => { }, _ => { });
+            Assert.That(hud.Q<Label>("coop-chill").text, Does.Contain("25%"));
+            Assert.That(hud.Q<Button>("coop-cell-0").Q("coop-functional-icon").style.backgroundImage.value.sprite,
+                Is.SameAs(FunctionalGemArt.Get("nature")));
+            Assert.That(hud.Q<Button>("coop-action-end-turn").enabledSelf, Is.True);
+            Assert.That(Decode(json => Timed(json, solo)).ChillReductionPm, Is.Zero);
+            Assert.Throws<FormatException>(() => Decode(WithTiles));
+            Assert.Throws<FormatException>(() => Decode(json => Timed(json, solo).Replace(pending, pending + chill)));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace(chill, "")));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace(chill, ",\"chillReductionPm\":1000")));
+            Assert.Throws<FormatException>(() => Decode(json => Advanced(json).Replace("\"multiplier\":8", "\"multiplier\":9")));
         }
 
         private static string Timed(string json, bool solo)

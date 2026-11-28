@@ -17,6 +17,8 @@ namespace Aetheria.PetArena.Presentation
         public const string SeatPrefix = "coop-seat-";
         public const string CellPrefix = "coop-cell-";
         public const string ActionPrefix = "coop-action-";
+        private const float JewelTooltipWidth = 232f;
+        private const float JewelTooltipGap = 4f;
 
         public static VisualElement Build(CoopNativeView view, Action<int> select, Action<string> cast, int selected = -1, bool inputAvailable = true)
         {
@@ -51,6 +53,13 @@ namespace Aetheria.PetArena.Presentation
             if (view.FireZoneActiveTurns > 0)
                 enemy.Add(Label("coop-fire-zone", "Fire Zone · " + view.FireZoneActiveTurns +
                     (view.FireZoneActiveTurns == 1 ? " turn" : " turns")));
+
+            if (view.ChillReductionPm > 0)
+            {
+                var reduction = (view.ChillReductionPm / 1000d).ToString("0.#%", CultureInfo.InvariantCulture);
+                enemy.Add(Label("coop-chill", string.Format(CultureInfo.InvariantCulture,
+                    CampaignLocale.Text("battle.jewel_chill", "Chill · Next enemy attack: −{0} damage"), reduction)));
+            }
 
             var pending = view.PendingAttack;
             if (pending != null)
@@ -102,6 +111,16 @@ namespace Aetheria.PetArena.Presentation
             var center = BattleScreenLayout.Center("coop-board");
             var board = center[0];
             stage.Insert(0, center);
+            Label jewelTooltip = null;
+            if (view.IsFunctionalBoard)
+            {
+                board.AddToClassList("functional-gem-board");
+                jewelTooltip = new Label { name = "coop-jewel-tooltip", pickingMode = PickingMode.Ignore };
+                jewelTooltip.AddToClassList("functional-gem-tooltip");
+                jewelTooltip.style.width = JewelTooltipWidth;
+                jewelTooltip.style.visibility = Visibility.Hidden;
+                stage.Add(jewelTooltip);
+            }
             var allowSwap = inputAvailable && CoopNativePresenter.CanAct(view);
             for (var index = 0; index < view.Board.Count; index += 1)
             {
@@ -148,15 +167,27 @@ namespace Aetheria.PetArena.Presentation
                         button.Add(badge);
                     }
                 }
+                if (tile?.Kind != null)
+                {
+                    var function = CampaignLocale.Text("battle.jewel." + tile.Kind + ".effect", "");
+                    button.tooltip += "\n" + function;
+                    BindJewelTooltip(stage, button, jewelTooltip);
+                }
                 if (view.FireZoneCells.Contains(cell))
                 {
                     button.AddToClassList("coop-fire-zone-tile");
-                    button.tooltip += " · Fire Zone";
+                    button.tooltip += " · " + CampaignLocale.Text("battle.fire_zone", "Fire Zone");
                 }
                 if (cell == selected)
                 {
                     button.AddToClassList("coop-selected");
-                    if (tile?.Kind != null) button.AddToClassList("functional-gem-selected");
+                    if (tile?.Kind != null)
+                    {
+                        button.AddToClassList("functional-gem-selected");
+                        var highlight = new VisualElement { pickingMode = PickingMode.Ignore };
+                        highlight.AddToClassList("functional-gem-selection");
+                        button.Insert(1, highlight);
+                    }
                 }
                 button.SetEnabled(allowSwap);
                 BattleScreenLayout.AddCell(board, button, index);
@@ -204,8 +235,29 @@ namespace Aetheria.PetArena.Presentation
         {
             if (tile == null) return "·";
             var name = tile.Kind == null ? ElementName(tile.Element) :
-                char.ToUpperInvariant(tile.Kind[0]) + tile.Kind.Substring(1);
+                CampaignLocale.Text("battle.jewel." + tile.Kind, tile.Kind);
             return name + (tile.Multiplier > 1 ? " ×" + tile.Multiplier : "");
+        }
+
+        private static void BindJewelTooltip(VisualElement stage, Button button, Label tooltip)
+        {
+            void Show()
+            {
+                var cell = stage.WorldToLocal(button.worldBound);
+                var above = cell.yMin - tooltip.layout.height - JewelTooltipGap;
+                tooltip.text = button.tooltip;
+                tooltip.style.left = Mathf.Clamp(cell.center.x - JewelTooltipWidth / 2f, 0,
+                    Mathf.Max(0, stage.layout.width - JewelTooltipWidth));
+                tooltip.style.top = above >= 0 ? above : cell.yMax + JewelTooltipGap;
+                tooltip.style.visibility = Visibility.Visible;
+            }
+            void Hide() => tooltip.style.visibility = Visibility.Hidden;
+
+            button.RegisterCallback<PointerEnterEvent>(_ => Show());
+            button.RegisterCallback<PointerLeaveEvent>(_ => Hide());
+            button.RegisterCallback<FocusInEvent>(_ => Show());
+            button.RegisterCallback<FocusOutEvent>(_ => Hide());
+            button.RegisterCallback<PointerDownEvent>(_ => Hide());
         }
 
         public static string ActionName(string kind)

@@ -18,12 +18,16 @@ namespace Aetheria.Networking
         public const int FunctionalVersion = 2;
         public const int TimedFunctionalVersion = 3;
         public const int SoloTimedFunctionalVersion = 2;
+        public const int AdvancedFunctionalVersion = 4;
+        public const int SoloAdvancedFunctionalVersion = 3;
         public const int Seats = 4;
         public const int Side = 8;
         public const int Cells = Side * Side;
         public const int MaxTurn = 4096;
         public const int MaxRound = 1000;
         private const int TechnicalMaxCounter = ushort.MaxValue;
+        private const int AdvancedMaxMultiplier = 8;
+        private const int MaxChillReductionPm = 999;
         public const uint MaxHealth = uint.MaxValue;
         public const int MaxMana = ushort.MaxValue;
         public const int MaxRage = ushort.MaxValue;
@@ -35,6 +39,8 @@ namespace Aetheria.Networking
         public const string FireZone = "fire-zone";
         private static readonly string[] Elements = { "fire", "water", "electric", "ghost", "ground", "light" };
         private static readonly string[] TileKinds = { "sword", "mana", "rage", "heart", "shield", "special" };
+        private static readonly string[] AdvancedTileKinds =
+            TileKinds.Concat(new[] { "nature", "frost", "astral" }).ToArray();
         private static readonly string[] Statuses = { "attack-buff", "defense-buff", "vulnerability" };
         private static readonly string[] AbilityKinds = { Guard, Skill, Signature, Ultimate, FireZone };
 
@@ -183,7 +189,7 @@ namespace Aetheria.Networking
         public int RulesetVersion { get; }
         public string ContentHash { get; }
         public bool IsFunctionalBoard => RulesetVersion >= FunctionalVersion || RulesetId == FunctionalSoloRuleset;
-        public bool IsTimed => RulesetVersion == (RulesetId == FunctionalSoloRuleset
+        public bool IsTimed => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
         public string ConfigDigest { get; }
         public int You { get; }
@@ -202,6 +208,7 @@ namespace Aetheria.Networking
         public int? MaxRounds { get; }
         public bool CanEndTurn { get; }
         public int FireZoneActiveTurns { get; }
+        public int ChillReductionPm { get; }
         public IReadOnlyList<int> FireZoneCells { get; }
         public bool Terminal => Phase == "won" || Phase == "lost";
         public Participant Own => Participants[You];
@@ -222,6 +229,7 @@ namespace Aetheria.Networking
             MaxRounds = fields.MaxRounds;
             CanEndTurn = fields.CanEndTurn;
             FireZoneActiveTurns = fields.FireZoneActiveTurns;
+            ChillReductionPm = fields.ChillReductionPm;
             FireZoneCells = Array.AsReadOnly(fields.FireZoneCells ?? Array.Empty<int>());
         }
 
@@ -245,23 +253,24 @@ namespace Aetheria.Networking
             fields.RulesetId = Token(ruleset.Element("id"), Ruleset, FunctionalSoloRuleset);
             var solo = fields.RulesetId == FunctionalSoloRuleset;
             var seatCount = solo ? 1 : Seats;
-            fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion,
-                solo ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
-            var isV3 = (solo && fields.RulesetVersion == SoloTimedFunctionalVersion) ||
-                (!solo && fields.RulesetVersion == TimedFunctionalVersion);
-
-            if (isV3)
+            var advancedVersion = solo ? SoloAdvancedFunctionalVersion : AdvancedFunctionalVersion;
+            fields.RulesetVersion = Bounded(ruleset.Element("version"), ElementalVersion, advancedVersion);
+            var advanced = fields.RulesetVersion == advancedVersion;
+            var timed = fields.RulesetVersion >= (solo ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
+            var allowedFields = new[]
             {
-                ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
-                    "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId",
+                "schemaVersion", "ruleset", "you", "phase", "activeSeat", "turn", "round",
+                "boss", "board", "participants", "pending", "abilities", "bossId"
+            };
+            if (timed)
+                allowedFields = allowedFields.Concat(new[]
+                {
                     "turnTimeoutMs", "turnDeadlineUnixMs", "turnRemainingMs", "serverUnixMs",
-                    "maxRounds", "canEndTurn", "fireZoneActiveTurns", "fireZoneCells");
-            }
-            else
-            {
-                ProjectionJson.ObjectFields(play, "schemaVersion", "ruleset", "you", "phase", "activeSeat",
-                    "turn", "round", "boss", "board", "participants", "pending", "abilities", "bossId");
-            }
+                    "maxRounds", "canEndTurn", "fireZoneActiveTurns", "fireZoneCells"
+                }).ToArray();
+            if (advanced)
+                allowedFields = allowedFields.Append("chillReductionPm").ToArray();
+            ProjectionJson.ObjectFields(play, allowedFields);
 
             if (ProjectionJson.Integer(play.Element("schemaVersion")) != 1) throw new FormatException("Invalid coop schema");
 
@@ -270,12 +279,12 @@ namespace Aetheria.Networking
             fields.You = Bounded(play.Element("you"), 0, seatCount - 1);
             fields.Phase = Token(play.Element("phase"), "ready", "playing", "won", "lost");
             fields.ActiveSeat = Bounded(play.Element("activeSeat"), 0, seatCount - 1);
-            var maxTurn = isV3 ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxTurn + 1 : MaxTurn);
-            var maxRound = isV3 ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxRound + 1 : MaxRound);
+            var maxTurn = timed ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxTurn + 1 : MaxTurn);
+            var maxRound = timed ? TechnicalMaxCounter : (fields.Phase == "lost" ? MaxRound + 1 : MaxRound);
             fields.Turn = Bounded(play.Element("turn"), 0, maxTurn);
             fields.Round = Bounded(play.Element("round"), 1, maxRound);
 
-            if (isV3)
+            if (timed)
             {
                 fields.TurnTimeoutMs = Bounded(play.Element("turnTimeoutMs"), 1000, 300_000);
                 fields.TurnDeadlineUnixMs = NullableUnsigned(play.Element("turnDeadlineUnixMs"));
@@ -294,7 +303,7 @@ namespace Aetheria.Networking
             if (play.Element("abilities") != null)
             {
                 var entries = ProjectionJson.Array(play.Element("abilities"), AbilityKinds.Length);
-                if (!isV3)
+                if (!timed)
                 {
                     if (entries.Length < 4) throw new FormatException("Incomplete ability projection");
                     fields.Abilities = entries.Select((value, slot) => new Ability(value, AbilityKinds[slot], false)).ToArray();
@@ -317,11 +326,13 @@ namespace Aetheria.Networking
                 }
                 fields.BossId = Text(play.Element("bossId"), 3, 64);
             }
+            if (advanced)
+                fields.ChillReductionPm = Bounded(play.Element("chillReductionPm"), 0, MaxChillReductionPm);
             fields.Boss = ReadBoss(play.Element("boss"));
-            fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion >= FunctionalVersion);
-            fields.Participants = ReadParticipants(play.Element("participants"), seatCount, isV3);
+            fields.Board = ReadBoard(play.Element("board"), solo || fields.RulesetVersion >= FunctionalVersion, advanced);
+            fields.Participants = ReadParticipants(play.Element("participants"), seatCount, timed);
             fields.Pending = ReadPending(play.Element("pending"), seatCount);
-            if (isV3) ValidateTimedFields(fields);
+            if (timed) ValidateTimedFields(fields);
             return new CoopNativeView(version, epoch, reward, fields);
         }
 
@@ -353,13 +364,13 @@ namespace Aetheria.Networking
                 ProjectionJson.Boolean(boss.Element("transformed")));
         }
 
-        private static Tile[] ReadBoard(XElement board, bool functional)
+        private static Tile[] ReadBoard(XElement board, bool functional, bool advanced)
         {
             var items = ProjectionJson.Array(board, Cells);
             if (items.Length != Cells) throw new FormatException("Invalid coop board size");
             var tiles = new Tile[Cells];
             var field = functional ? "kind" : "element";
-            var identities = functional ? TileKinds : Elements;
+            var identities = advanced ? AdvancedTileKinds : functional ? TileKinds : Elements;
             for (var index = 0; index < items.Length; index += 1)
             {
                 var item = items[index];
@@ -370,7 +381,7 @@ namespace Aetheria.Networking
                 }
                 ProjectionJson.ObjectFields(item, field, "multiplier");
                 tiles[index] = new Tile(Token(item.Element(field), identities),
-                    Bounded(item.Element("multiplier"), 1, Cells), functional);
+                    Bounded(item.Element("multiplier"), 1, advanced ? AdvancedMaxMultiplier : Cells), functional);
             }
             return tiles;
         }
@@ -540,6 +551,7 @@ namespace Aetheria.Networking
             public int? MaxRounds;
             public bool CanEndTurn;
             public int FireZoneActiveTurns;
+            public int ChillReductionPm;
             public int[] FireZoneCells;
         }
     }

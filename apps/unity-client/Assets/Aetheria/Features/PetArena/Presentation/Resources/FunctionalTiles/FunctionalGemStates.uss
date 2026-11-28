@@ -1,5 +1,46 @@
-.functional-gem-cell.functional-gem-selected {
-    border-color: rgb(243, 209, 135);
+.functional-gem-board .battle-cell {
+    margin: 1px;
+    border-width: 0;
+    background-color: transparent;
+}
+
+.functional-gem-board .battle-cell:disabled {
+    opacity: 1;
+}
+
+.functional-gem-art,
+.functional-gem-selection {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.functional-gem-art {
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.functional-gem-selection {
+    border-width: 2px;
+    border-color: rgb(255, 230, 166);
+    border-radius: 8px;
+}
+
+.battle-stage .functional-gem-tooltip,
+.coop-world .battle-stage .functional-gem-tooltip {
+    position: absolute;
+    background-color: rgb(28, 23, 42);
+    color: rgb(255, 241, 215);
+    padding: 6px 8px;
+    border-radius: 5px;
+    white-space: normal;
+    font-size: 13px;
+}
+
+.battle-stage #coop-chill {
+    color: rgb(151, 219, 255);
+    -unity-font-style: bold;
 }
 
 .functional-gem-cell.functional-gem-matched {
@@ -20,8 +61,10 @@
     opacity: 1;
 }
 
-.functional-gem-cell .functional-gem-multiplier {
+.battle-stage .functional-gem-cell .functional-gem-multiplier {
     background-color: rgb(36, 32, 57);
-    border-color: rgb(193, 167, 119);
     color: rgb(255, 240, 195);
+    border-radius: 4px;
+    font-size: 11px;
+    margin: 1px;
 }

@@ -20,6 +20,15 @@ TextureImporter:
   - first:
       213: 21300010
     second: special
+  - first:
+      213: 21300012
+    second: nature
+  - first:
+      213: 21300014
+    second: frost
+  - first:
+      213: 21300016
+    second: astral
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,8 +63,8 @@ TextureImporter:
       name: sword
       rect:
         serializedVersion: 2
-        x: 0
-        y: 128
+        x: 2
+        y: 266
         width: 128
         height: 128
       alignment: 0
@@ -76,8 +85,8 @@ TextureImporter:
       name: mana
       rect:
         serializedVersion: 2
-        x: 128
-        y: 128
+        x: 134
+        y: 266
         width: 128
         height: 128
       alignment: 0
@@ -98,8 +107,8 @@ TextureImporter:
       name: rage
       rect:
         serializedVersion: 2
-        x: 256
-        y: 128
+        x: 266
+        y: 266
         width: 128
         height: 128
       alignment: 0
@@ -120,8 +129,8 @@ TextureImporter:
       name: heart
       rect:
         serializedVersion: 2
-        x: 384
-        y: 128
+        x: 2
+        y: 134
         width: 128
         height: 128
       alignment: 0
@@ -142,8 +151,8 @@ TextureImporter:
       name: shield
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 134
+        y: 134
         width: 128
         height: 128
       alignment: 0
@@ -164,8 +173,8 @@ TextureImporter:
       name: special
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
+        x: 266
+        y: 134
         width: 128
         height: 128
       alignment: 0
@@ -178,6 +187,72 @@ TextureImporter:
       bones: []
       spriteID: ab63cd822fb64f8ba7d45840c7573d41
       internalID: 21300010
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nature
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 2
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3fa841861f0595bbe0b74787a6f157e
+      internalID: 21300012
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frost
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 2
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79aa1b02cfdb55759a6a549144e0e09a
+      internalID: 21300014
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: astral
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 2
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8fda417c9da50fe8dfa1a5c740b2769
+      internalID: 21300016
       vertices: []
       indices:
       edges: []
@@ -197,3 +272,6 @@ TextureImporter:
       heart: 21300006
       shield: 21300008
       special: 21300010
+      nature: 21300012
+      frost: 21300014
+      astral: 21300016
