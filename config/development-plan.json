@@ -11135,6 +11135,12 @@
       ],
       "remaining": "Independent native review and 278 security tests passed on 9ab5beac. Both archived migration receipts passed on 5b6aab57. Verify hosted CI on the integrated revision.",
       "implementation": {
+        "timedSoloWss": {
+          "sourceRevision": "c8698d6a3d4faf01f96dda3c69a5bc38a3ecb3c2",
+          "command": "node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --timed-solo",
+          "result": "Eight scenarios passed with disposable PostgreSQL. The active match retained its absolute deadline and digest across Nest/Rust restart after a replacement publication. A system receipt preceded stale Guard rejection. Repeated settlement granted the original 200 coins once. A new match selected the replacement publication.",
+          "evidence": "artifacts/campaign-v2/receipts/solo-timed-wss-c8698d6a.json"
+        },
         "timedSettlement": {
           "sourceRevision": "d32252c219b0056aae3ff089c5a6b7d2a516cd65",
           "integratedAt": "c8e7039d",
