@@ -23,7 +23,7 @@ def center_band(top, bottom, half_width=170):
 def capture(name):
     # A hovered jewel opens a tooltip over the board frame. Observe the HUD
     # with the pointer parked in the window margin between real clicks.
-    if stage in ('first', 'recover', 'resume', 'water', 'shared-board'):
+    if stage in ('first', 'recover', 'resume', 'water', 'shared-board', 'four-battle'):
         run(['python3', root / 'x11.py', 'move', '3', '3'], check=True)
         sleep(.15)
     run([root / 'capture.sh', name], check=True)
@@ -244,6 +244,93 @@ if stage == 'read-shared-label':
     for image in sys.argv[2:]:
         visible, heard = shared_hud_turn(image)
         print(f'{Path(image).name}: {visible} {heard}', flush=True)
+elif stage == 'four-lobby':
+    seat = int(environ['PACKAGED_QA_SEAT'])
+    shared = output.parent
+    label('01-guest-login','guest',center_band(74,116,65), tries=45)
+    click(screen_middle,96)
+    click(*label('02-plaza','collection',collection, tries=45))
+    click(*label('02b-owned-collection','back',plaza_back))
+    sleep(.45)
+    for symbol, duration in [('a',1.88),('w',3.8),('e',.14)]:
+        key(symbol,duration)
+    label('03-fire-portal','coalwhisk',pet_selection, tries=45)
+    if seat == 0:
+        click(*label('04-host-room','create',head))
+    else:
+        until = monotonic() + 100
+        while not (shared/'room-id').is_file() and monotonic() < until:
+            sleep(.25)
+        room_id = (shared/'room-id').read_text().strip()
+        assert re.fullmatch(r'[a-f0-9-]{36}', room_id)
+        room_label = label('04-join-form','room',(0,315,160,430))
+        click(max(220,screen_middle//2),room_label[1])
+        run(['python3', root/'x11.py', 'replace-text', room_id], check=True)
+        click(*label('04-join-form-filled','join',center_band(315,465)))
+    def visible_seat(img):
+        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,225,360,286),'6').lower())
+        return match.group(1) if match else None
+    assigned, _ = wait_for('05-assigned-lobby-seat', visible_seat)
+    (output/'assigned-seat').write_text(assigned + '\n')
+    click(*label('06-ready','ready',center_band(265,319)))
+elif stage == 'four-host-room-start':
+    def ready_start(img):
+        start = word_button(img, {'start'}, center_band(315,360))
+        if start and min(Image.open(img).convert('RGB').getpixel((40,start[1]))) >= 130:
+            return start
+        refresh = word_button(img, {'refresh'}, center_band(360,399))
+        if refresh:
+            click(*refresh)
+        return None
+    click(*wait_for('07-fully-ready-room',ready_start, tries=45)[0])
+elif stage == 'four-battle':
+    seat = int(environ['PACKAGED_QA_SEAT'])
+    condition = lambda name: (output.parent / name).is_file()
+    until = monotonic() + 100
+    while not condition('four-allocation.json') and monotonic() < until:
+        sleep(.25)
+    assert condition('four-allocation.json'), 'Missing actual room allocation'
+
+    def admit(img):
+        if board := populated_board(img):
+            return board
+        if start := start_button(img):
+            return start if seat == 0 else None
+        # Members must refresh the started room before their Enter button appears.
+        if enter := word_button(img, {'enter'}, center_band(375,465)):
+            click(*enter)
+        elif refresh := word_button(img, {'refresh'}, center_band(360,402)):
+            click(*refresh)
+        elif recover := status_button(img):
+            click(*recover)
+        return None
+
+    if seat == 0:
+        until = monotonic() + 100
+        while not condition('four-native-ready.json') and monotonic() < until:
+            admit(capture('08-native-admission'))
+            sleep(.4)
+        assert condition('four-native-ready.json'), 'Missing four actual player tickets'
+        start, _ = wait_for('08-native-admission', start_button, tries=40)
+        click(*start)
+
+    def board_evidence(img):
+        board = populated_board(img)
+        if board is not None:
+            turn, _ = shared_hud_turn(img)
+            if turn is not None:
+                return board, turn
+        if seat != 0:
+            admit(img)
+        return None
+
+    (board, turn), image = wait_for('09-native-jewel-board', board_evidence, tries=80)
+    (output/'board.json').write_text(json.dumps({
+        'clientSlot': seat, 'assignedSeat': int((output/'assigned-seat').read_text()),
+        'picture': image.name, 'bounds': list(board),
+        'visibleTurn': turn[0], 'visibleActiveSeat': turn[1],
+        'capturedUnixMs': time_ns() // 1_000_000,
+    }) + '\n')
 elif stage == 'fire':
     label('01-guest-login','guest',center_band(74,116,65))
     click(screen_middle,96)

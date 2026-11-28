@@ -33,6 +33,7 @@ const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
 assert.ok(['functional','elemental','advanced-water','shared-rng'].includes(boardMode),'Unknown packaged board fixture');
 const advancedWater=boardMode==='advanced-water';
 const sharedRng=boardMode==='shared-rng';
+const fourClients=process.env.PACKAGED_QA_SCOPE==='four-clients';
 const isFunctional=boardMode!=='elemental';
 function helloMessage(ticket,contentHash,build){return Buffer.concat([stringField(1,ticket),stringField(2,build??(isFunctional?'unity-native-v2':'coop-process-v1')),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
@@ -225,7 +226,7 @@ try{
  const post=(auth,url,payload)=>app.http.inject({method:'POST',url,remoteAddress:'127.214.2.1',headers:{origin,cookie:auth.cookie,'x-csrf-token':auth.csrf},payload});
  const pets=['fire-coalwhisk','water-dewskip','fire-coalwhisk','ground-clodkin'];
  const members=[null];
- for(const [index,pet] of pets.slice(1).entries())members.push(await guest('Integration seat '+(index+1),pet));
+ if(!fourClients)for(const [index,pet] of pets.slice(1).entries())members.push(await guest('Integration seat '+(index+1),pet));
  const endpoint=await app.http.listen({host:'127.0.0.1',port:0});
  await writeFile(join(root,'game-endpoint'),endpoint);
  await writeFile(join(root,'game-ca'),tls.caFile);
@@ -256,7 +257,7 @@ try{
  const hostTickets=async()=> (await pool.query(
    'SELECT count(t.nonce)::int AS n FROM coop_allocations a LEFT JOIN platform_native_ticket_uses t ON t.world_id=a.world_id AND t.account_id=$2 WHERE a.room_id=$1',
    [room.roomId,host])).rows[0].n;
- facts.accounts=[roster[0],...roster.slice(1)];
+ if(!fourClients)facts.accounts=[roster[0],...roster.slice(1)];
  console.log('player-created',room.roomId,room.bossId);
  await writeFile(join(root,'room-id'),room.roomId);
  await json('room-id-json.json',room);
@@ -265,7 +266,7 @@ try{
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/pet',{requestId:randomUUID(),petId:member.petId,ownedPetInstanceId:member.instanceId})).statusCode,200);
   assert.equal((await post(member,'/v1/coop/rooms/'+room.roomId+'/ready',{requestId:randomUUID(),ready:true})).statusCode,200);
  }
- console.log('three integrations ready');
+ if(!fourClients)console.log('three integrations ready');
  await until("SELECT match_id FROM coop_allocations WHERE status='ACTIVE'");
  const allocation=(await pool.query('SELECT match_id,world_id,boot_id,status,generation,content_hash,config_version,config_digest,jsonb_array_length(seats) AS seats FROM coop_allocations WHERE room_id=$1',[room.roomId])).rows[0];
  const hex=value=>Buffer.isBuffer(value)?value.toString('hex'):String(value);
@@ -287,6 +288,44 @@ try{
  const world=(await pool.query('SELECT world_id,enabled,capacity,generation FROM platform_native_worlds WHERE world_id=$1',[allocation.world_id])).rows[0];
  assert.equal(world.world_id,allocation.world_id);assert.equal(world.enabled,true);assert.equal(world.capacity,4);assert.equal(String(world.generation),'1');
  facts.scenarios.push('restricted-runtime-owner-and-four-seat-admission-world-enabled');
+ if(fourClients){
+  const seats=(await pool.query(
+   'SELECT seat,account_id,pet_id,owned_pet_instance_id,ready FROM coop_room_seats WHERE room_id=$1 ORDER BY seat',[room.roomId],
+  )).rows;
+  assert.deepEqual(seats.map(seat=>seat.seat),[0,1,2,3]);
+  assert.equal(new Set(seats.map(seat=>seat.account_id)).size,4);
+  assert.ok(seats.every(seat=>seat.ready&&seat.pet_id&&seat.owned_pet_instance_id));
+  assert.equal(seats[0].account_id,host);
+  await json('four-allocation.json',{roomId:room.roomId,matchId:allocation.match_id,seatCount:seats.length});
+  await until(
+   'SELECT count(DISTINCT account_id) FROM platform_native_ticket_uses WHERE world_id=$1 HAVING count(DISTINCT account_id)=4',
+   [allocation.world_id]);
+  const tickets=(await pool.query(
+   `SELECT account_id, count(DISTINCT session_id)::int AS sessions, count(DISTINCT nonce)::int AS tickets,
+      count(*) FILTER (WHERE boot_id=$2)::int AS matching_boot FROM platform_native_ticket_uses
+     WHERE world_id=$1 GROUP BY account_id ORDER BY account_id`,[allocation.world_id,allocation.boot_id],
+  )).rows;
+  const worldSessions=(await pool.query(
+   'SELECT count(DISTINCT session_id)::int AS sessions, count(DISTINCT nonce)::int AS tickets FROM platform_native_ticket_uses WHERE world_id=$1',
+   [allocation.world_id],
+  )).rows[0];
+  assert.deepEqual(tickets.map(ticket=>ticket.account_id),seats.map(seat=>seat.account_id).sort());
+  assert.ok(tickets.every(ticket=>ticket.sessions===1&&ticket.tickets>0&&ticket.tickets===ticket.matching_boot));
+  assert.equal(worldSessions.sessions,4);
+  assert.ok(worldSessions.tickets>=4);
+  await json('four-native-ready.json',{accounts:tickets.length,sessions:worldSessions.sessions});
+  const start=await until(
+   `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+      encode(payload_fingerprint,'hex') AS fingerprint FROM game_native_receipts WHERE match_id=$1 AND committed_version=1`,
+   [allocation.match_id]);
+  assert.equal(start.actor,host);
+  assert.equal(start.fingerprint,journalFingerprint(start,allocation.match_id,{kind:'start'}));
+  await Promise.all(seats.map(seat=>waitForFile('client-'+seat.seat+'/board.json')));
+  await json('four-native-run.json',{roomId:room.roomId,matchId:allocation.match_id,configVersion:created.version,
+   digest:verdict.digest,contentHash:verdict.contentHash,accounts:tickets.length,sessions:worldSessions.sessions,
+   distinctTickets:worldSessions.tickets,seats:seats.map(seat=>({seat:seat.seat,petId:seat.pet_id})),startVersion:start.version});
+  facts.scenarios.push('four-actual-packaged-clients-consumed-session-bound-tickets-and-rendered-the-shared-board');
+ }else{
  const fireTarget={room,allocation,boss};
  async function freshTicket(seat,{room,allocation,boss}=fireTarget){
   const member=members[seat];
@@ -645,6 +684,7 @@ try{
   }
  }
 
+ }
  }
  }
  facts.result='PASS';console.log('Packaged backend verified',JSON.stringify(facts));

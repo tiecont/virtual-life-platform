@@ -15,7 +15,7 @@ if [[ ${1:-} == "--inside-disposable-db" ]]; then
   export PACKAGED_QA_SCOPE="${9:?missing acceptance scope}"
 fi
 case "${PACKAGED_QA_SCOPE:-full}" in
-  full|board) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
+  full|board|four-clients) export PACKAGED_QA_SCOPE="${PACKAGED_QA_SCOPE:-full}" ;;
   *) echo "Unsupported packaged acceptance scope" >&2; exit 2 ;;
 esac
 case "${PACKAGED_QA_SIZE:-1024x768}" in
@@ -25,10 +25,14 @@ esac
 case "${PACKAGED_QA_BOARD:-functional}" in
   functional|elemental|advanced-water) ;;
   shared-rng)
-    [[ "$PACKAGED_QA_SCOPE" == board ]] || { echo "Shared RNG requires the board scope" >&2; exit 2; }
+    [[ "$PACKAGED_QA_SCOPE" == board || "$PACKAGED_QA_SCOPE" == four-clients ]] || { echo "Shared RNG requires a board scope" >&2; exit 2; }
     ;;
   *) echo "Unsupported packaged board fixture" >&2; exit 2 ;;
 esac
+if [[ "$PACKAGED_QA_SCOPE" == four-clients && "${PACKAGED_QA_BOARD:-functional}" != shared-rng ]]; then
+  echo "Four client acceptance requires shared-rng" >&2
+  exit 2
+fi
 export PACKAGED_QA_WIDTH="${PACKAGED_QA_SIZE%x*}" PACKAGED_QA_HEIGHT="${PACKAGED_QA_SIZE#*x}"
 driver_dir="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 if [[ ${1:-} != "--inside-disposable-db" ]]; then
@@ -62,7 +66,11 @@ if [[ ${1:-} != "--inside-disposable-db" ]]; then
   {
     node --version
     uname -sr
-    printf 'Unity player with three independently authenticated integration clients\n'
+    if [[ "$PACKAGED_QA_SCOPE" == four-clients ]]; then
+      printf 'Four independent Unity players, profiles and private Gamescope displays\n'
+    else
+      printf 'Unity player with three independently authenticated integration clients\n'
+    fi
     printf 'Disposable local PostgreSQL, loopback Nest and Rust WSS, %s Gamescope and XTest input\n' "$PACKAGED_QA_SIZE"
   } > "$qa_run/environment.txt"
   (cd "$(dirname "$qa_player")" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$qa_run/player-package.sha256"
@@ -105,6 +113,13 @@ for ((attempt=0; attempt<120; attempt++)); do
 done
 export AETHERIA_COOP_API="$(cat "$qa_run/game-endpoint")"
 export AETHERIA_ARENA8_NATIVE_CA="$(cat "$qa_run/game-ca")"
+if [[ "$PACKAGED_QA_SCOPE" == four-clients ]]; then
+  "$driver_dir/four-clients.sh" "$qa_player"
+  wait "$qa_backend_pid"
+  qa_backend_pid=''
+  python3 "$driver_dir/verify-four-clients.py" "$qa_run" "$PACKAGED_QA_SIZE" | tee "$qa_run/four-client-acceptance.json"
+  exit 0
+fi
 qa_xdg_dir="$(mktemp -d "${TMPDIR:-/tmp}/aetheria-x11-XXXXXXXX")"
 qa_pulse="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/pulse/native"
 if [[ -S "$qa_pulse" ]]; then export PULSE_SERVER="unix:$qa_pulse"; fi

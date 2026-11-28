@@ -80,3 +80,14 @@ effect beside each issue. Compare difficulty across parties only when their
 level, gear, seed and configuration are recorded. Label any granted AP,
 materials or reduced difficulty explicitly. Save anonymized observations under
 ignored artifacts and report the actual number of people who finished.
+
+For four packaged clients on one shared RNG board, set
+`PACKAGED_QA_SCOPE=four-clients PACKAGED_QA_BOARD=shared-rng PACKAGED_QA_SIZE=1280x720`
+and pass the matching Linux build receipt, runtime binary and Tesseract data to
+`scripts/packaged-coop/run.sh`. The four processes each use their own private
+display and Unity profile. They create guest sessions through the player UI,
+enter Cinder Terraces, join and ready in the same room, and consume separate
+session-bound Rust tickets. The host commits Start from the HUD after all four
+are admitted. Each client contributes its own rendered 8×8 board capture.
+The acceptance JSON binds the four windows and observed seats to one allocation
+and the digest published through the existing operator fixture.
