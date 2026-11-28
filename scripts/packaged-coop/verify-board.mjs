@@ -63,14 +63,16 @@ async function verifySharedRng(){
  assert.ok(startClicks.length>0);
  assert.ok(startClicks.every(click=>click.unixMs<=started.observedUnixMs));
  assert.ok(swapClicks.every(click=>click.unixMs>=started.observedUnixMs&&click.unixMs<=swapped.observedUnixMs));
+ assert.ok(swapClicks[0].sentUnixMs<=swapClicks[1].unixMs);
  assert.ok(swapClicks[1].unixMs<started.state.turnDeadlineUnixMs);
  for(const [frame,projection] of [[frames.start,started],[frames.afterHostSwap,swapped]]){
   assert.equal(frame.turn,projection.state.turn);
   assert.equal(frame.activeSeat,projection.state.activeSeat);
-  assert.ok(frame.capturedUnixMs>=projection.observedUnixMs);
+  assert.ok(frame.capturedUnixMs>=projection.state.turnDeadlineUnixMs-projection.state.turnTimeoutMs);
   assert.ok(frame.capturedUnixMs<projection.state.turnDeadlineUnixMs);
  }
  assert.ok(frames.start.capturedUnixMs<=swapClicks[0].unixMs);
+ assert.ok(frames.afterHostSwap.capturedUnixMs>=swapClicks[1].sentUnixMs);
  const kinds=['sword','mana','rage','heart','shield','special','nature','frost','astral'];
  const counts=[started,swapped].map(({state})=>{
   assert.equal(state.phase,'playing');

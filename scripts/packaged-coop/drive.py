@@ -1,6 +1,6 @@
 from pathlib import Path
 from os import environ
-from PIL import Image
+from PIL import Image, ImageOps
 from board_capture import board_bounds, cell_center, enabled_action_frames, populated_board
 from subprocess import run
 from time import monotonic, sleep, time_ns
@@ -112,6 +112,26 @@ def live_turn(image):
     match = re.search(r'turn\s+([0-9o]+).*?seat\s+([0-9o]+)', heard)
     return tuple(int(value.replace('o', '0')) for value in match.groups()) if match else None
 
+def shared_hud_turn(image):
+    with Image.open(image) as frame:
+        middle = frame.width // 2
+        hud = frame.crop((middle - 160, 7, middle + 160, 30)).convert('L')
+    # A small light-on-dark UI Toolkit label sits above a textured viewport.
+    # Isolate the light text, then give the OCR line a clean white margin.
+    hud = hud.resize((hud.width * 4, hud.height * 4), Image.Resampling.BICUBIC)
+    hud = ImageOps.expand(hud.point(lambda value: 0 if value >= 125 else 255), border=18, fill=255)
+    data = BytesIO()
+    hud.save(data, format='PNG')
+    args = ['tesseract', 'stdin', 'stdout', '--tessdata-dir', environ['PACKAGED_QA_TESSDATA'], '--psm', '7']
+    heard = run(args, input=data.getvalue(), capture_output=True, check=True).stdout.decode().strip()
+    # The centered dot may be read as punctuation or attach to the preceding
+    # glyph. Accept joined label/digit text and normalize zero-shaped glyphs.
+    match = re.search(r'\bturn\s*([0-9oq]+)[^a-z0-9]*seat\s*([0-3oq])(?=\W|$)', heard.lower())
+    if match:
+        return tuple(int(value.translate(str.maketrans('oq', '00'))) for value in match.groups()), heard
+    return None, heard
+
+
 def pending(data):
     state=data['state']
     return state['phase'] in ['won','lost'] or state['phase']=='playing' and state['activeSeat']==0
@@ -220,7 +240,11 @@ def room_ready(map_name, filename):
     raise RuntimeError(f'{map_name} Start match did not become enabled')
 
 stage = sys.argv[1]
-if stage == 'fire':
+if stage == 'read-shared-label':
+    for image in sys.argv[2:]:
+        visible, heard = shared_hud_turn(image)
+        print(f'{Path(image).name}: {visible} {heard}', flush=True)
+elif stage == 'fire':
     label('01-guest-login','guest',center_band(74,116,65))
     click(screen_middle,96)
     collection_button=label('02-plaza','collection',collection)
@@ -340,6 +364,7 @@ elif stage == 'shared-board':
         if cell is not None:
             record['cell'] = cell
         click(*position)
+        record['sentUnixMs'] = time_ns() // 1_000_000
         clicks.append(record)
         (output / 'shared-input.json').write_text(json.dumps(clicks, indent=2) + '\n')
 
@@ -359,32 +384,55 @@ elif stage == 'shared-board':
     else:
         raise RuntimeError('Shared jewel Start did not commit from the packaged HUD')
 
-    def capture_committed_board(name, projection):
+    def capture_candidate(name, attempt):
+        image = capture(f'{name}-attempt-{attempt:02d}')
+        return image, time_ns() // 1_000_000, populated_board(image)
+
+    def qualified_frame(name, captures, projection):
         state = projection['state']
         target = (state['turn'], state['activeSeat'])
-        for attempt in range(1, 13):
-            image = capture(f'{name}-attempt-{attempt:02d}')
-            captured_at = time_ns() // 1_000_000
-            visible = live_turn(image)
-            board = populated_board(image)
-            print(f'Window {name} attempt={attempt} visible={visible} populated={board is not None}', flush=True)
-            if visible == target and board is not None and captured_at < state['turnDeadlineUnixMs']:
+        began = state['turnDeadlineUnixMs'] - state['turnTimeoutMs']
+        for image, captured_at, board in captures:
+            if board is None or not began <= captured_at < state['turnDeadlineUnixMs']:
+                continue
+            visible, heard = shared_hud_turn(image)
+            print(f'Window {image.name} visible={visible} OCR={heard!r}', flush=True)
+            if visible == target:
                 copyfile(image, output / f'{name}.png')
-                return board, {'turn': visible[0], 'activeSeat': visible[1], 'capturedUnixMs': captured_at}
-            if captured_at >= state['turnDeadlineUnixMs']:
-                break
-            sleep(.2)
-        raise RuntimeError(f'Expected visible populated board {target} before the deadline for {name}')
+                return {'turn': visible[0], 'activeSeat': visible[1], 'capturedUnixMs': captured_at, 'hudText': heard}
+        raise RuntimeError(f'Expected a visible populated board {target} captured within its deadline for {name}')
 
     assert initial['state']['activeSeat'] == 0 and initial['state']['turn'] == 0
-    board, opening_frame = capture_committed_board('06-shared-board-start', initial)
+    start_name = '06-shared-board-start'
+    for attempt in range(1, 7):
+        opening = capture_candidate(start_name, attempt)
+        _, captured_at, board = opening
+        if captured_at >= initial['state']['turnDeadlineUnixMs']:
+            raise RuntimeError('Shared jewel opening expired before a populated board could be captured')
+        if board is not None:
+            break
+    else:
+        raise RuntimeError('Expected a populated shared jewel opening')
     for cell in (initial['move']['first'], initial['move']['second']):
         click_record('swap-cell', cell_center(board, cell), cell)
         sleep(.24)
 
-    swapped = expect('shared-swapped', lambda result: result['version'] == 2, timeout=10)
-    _, swapped_frame = capture_committed_board('07-shared-board-host-swap', swapped)
-    frames = {'start': opening_frame, 'afterHostSwap': swapped_frame}
+    # Capture live while the observer reads its authorized projection and
+    # verifies the durable receipt. OCR runs after both input clicks.
+    swap_name = '07-shared-board-host-swap'
+    swap_captures = []
+    observed_at_attempt = None
+    for attempt in range(1, 9):
+        swap_captures.append(capture_candidate(swap_name, attempt))
+        if observed_at_attempt is None and read('shared-swapped'):
+            observed_at_attempt = attempt
+        if observed_at_attempt is not None and attempt - observed_at_attempt >= 2:
+            break
+    swapped = expect('shared-swapped', lambda result: result['version'] == 2, timeout=3)
+    frames = {
+        'start': qualified_frame(start_name, [opening], initial),
+        'afterHostSwap': qualified_frame(swap_name, swap_captures, swapped),
+    }
     (output / 'shared-visible-frames.json').write_text(json.dumps(frames, indent=2) + '\n')
     (output / 'shared-swap-observed').touch()
 
