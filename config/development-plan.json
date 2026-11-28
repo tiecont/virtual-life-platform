@@ -948,6 +948,7 @@
     },
     {
       "id": "VL-170",
+      "campaignV4November28Qualification": {"sourceRevision": "ed93788f27355533fdec0f0b4292641d8f96f495", "verifiedScope": "Private stage/verify matched 31 local files, 6094890 bytes. No upload."},
       "mvpMilestone": "M2",
       "mvpCriticalPath": true,
       "mvpScope": "MVP",
@@ -10517,6 +10518,7 @@
     },
     {
       "id": "VL-192",
+      "campaignV4November28Qualification": {"sourceRevision": "5da701bdce8ee82b44192db8da2745c9a2a42242", "verifiedScope": "Authenticated operator UI round trip including cyclic rejection, publication, refreshed MFA and audited rollback returned 200 in disposable PostgreSQL."},
       "campaignV4ContinuationVerification": {"sourceRevision": "a97cc95a2c7a6cf699bcdfc2c9db628c6ef57497", "verifiedScope": "Chromium operator edits, invalid correction, publication, immutable digest check, rollback audit PASS."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
@@ -11333,6 +11335,7 @@
     },
     {
       "id": "VL-206",
+      "campaignV4November28Qualification": {"sourceRevision": "fbeb2b46838cfb0063ff1782e44e293833087886", "verifiedScope": "Real accessory Recorder exited 0 after 30 frames. Eight local score audition files matched their source checksums."},
       "campaignV4ContinuationVerification": {"sourceRevision": "7c1c364fc997df7c78b679bb69b068a2a3921658", "verifiedScope": "Existing model and motion recorded via Cinemachine 3.1.8 and Unity Recorder 5.1.8, 30 frames at 24 fps, 720\u00d7720, 1.25 s. Neutral face and expression inventory verified separately. Accessory and expression qualification remains."},
       "mvpMilestone": "M4",
       "mvpScope": "MVP",
@@ -11677,6 +11680,7 @@
     },
     {
       "id": "VL-211",
+      "campaignV4November28Qualification": {"sourceRevision": "93c64cf224e34b1062db5e0eed3091f079be4529", "verifiedScope": "Quarter-vitality candidate yielded seven level-cap co-op Warden wins across 96 samples, versus zero baseline. Candidate remains unpublished."},
       "campaignV4ContinuationVerification": {"sourceRevision": "7950040eae45ebc555d6d36570d78433f340c7dc", "verifiedScope": "Two paired solo regular control cohorts won all 384 samples apiece. No Warden victories. Unpublished survival candidate improved cooperative phase reach."},
       "campaignV4Verification": {
         "sourceRevision": "578944f5958d66c624255a43cd54c09ceee1324c",
@@ -11779,6 +11783,7 @@
     },
     {
       "id": "VL-212",
+      "campaignV4November28Qualification": {"sourceRevision": "1e4a6cbd0ecc699a797f391bcb32adb5bfb8ab03", "verifiedScope": "All 48 account route eligibility gates and six real authenticated two-phase WSS wins, exact replay and outsider isolation passed. Historical migrations through 0073 and actual packaged shared solo at af625941 passed."},
       "campaignV4ContinuationVerification": {"sourceRevision": "306aa09a1b7c0fdeb802008af02eb2e27c2d00cf", "verifiedScope": "New four-process harness verifies window, seat-bound ticket, room and board for each process. Exact-source packaged runtime verification pending."},
       "campaignV4Verification": {
         "sourceRevision": "f9e5b78099c45fbb4ce5a40a639ab762e8250921",
