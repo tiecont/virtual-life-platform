@@ -57,7 +57,8 @@ process.once('SIGINT',stop);
 process.once('SIGTERM',stop);
 
 try{
- if(process.platform!=='linux'||process.argv.length!==2)throw Error('Run pnpm play:linux:functional on Linux');
+ const timed=process.argv.length===3&&process.argv[2]==='--timed';
+ if(process.platform!=='linux'||(process.argv.length!==2&&!timed))throw Error('Use play:linux:functional or play:linux:timed on Linux');
  if(!/^aetheria-soulbound-test-[a-f0-9]{8}$/.test(process.env.AETHERIA_TEST_DB_PROJECT??''))
   throw Error('The launcher needs a fresh wrapper-owned Docker database');
  const playerBinary=resolve('apps/unity-client/Builds/Linux/Aetheria');
@@ -87,7 +88,8 @@ try{
 
  phase='functional gameplay publication';
  const ruleset='arena8-coop-pve';
- const bundle=JSON.parse(await readFile('config/gameplay/arena8-coop-functional-v1.candidate.json','utf8'));
+ const candidate=timed?'arena8-coop-functional-v2.candidate.json':'arena8-coop-functional-v1.candidate.json';
+ const bundle=JSON.parse(await readFile('config/gameplay/'+candidate,'utf8'));
  const validator=new EngineGameplayBundleValidator(binary);
  const published=await installGameplayConfig(pool,ruleset,bundle,validator,'system:local-functional-play');
  if(!published.created)throw Error('Expected an empty local gameplay configuration store');
