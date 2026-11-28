@@ -354,29 +354,35 @@ elif stage == 'four-battle':
     assert condition('four-allocation.json'), 'Missing actual room allocation'
 
     def admit(img):
-        # Refresh moves from y379 to y336 when the server marks the room
-        # started. Enter then occupies y379. Read complete, centered rows.
-        for top in (360, 317, 403):
-            row = center_band(top, top + 37, 170)
-            enter = word_button(img, {'enter'}, row, mode='7')
-            if enter:
-                click(*enter)
-                return
-        for top in (360, 317):
-            refresh = word_button(img, {'refresh'}, center_band(top, top + 37), mode='7')
-            if refresh:
-                click(*refresh)
-                return
+        if 'cooperative' in ocr(img, (0,0,290,34), '7').lower():
+            # Refresh moves from y379 to y336 when the server marks the room
+            # started. Enter then occupies y379. Read complete, centered rows.
+            for top in (360, 317, 403):
+                row = center_band(top, top + 37, 170)
+                enter = word_button(img, {'enter'}, row, mode='7')
+                if enter:
+                    click(*enter)
+                    return
+            for top in (360, 317):
+                refresh = word_button(img, {'refresh'}, center_band(top, top + 37), mode='7')
+                if refresh:
+                    click(*refresh)
+                    return
+            return None
         if recover := status_button(img):
             click(*recover)
+            return None
+        return start_button(img) if seat == 0 else None
 
     if seat == 0:
+        wait_for('08-native-admission', admit, tries=45)
         until = monotonic() + 100
         while not condition('four-native-ready.json') and monotonic() < until:
-            admit(capture('08-native-admission'))
+            admit(capture('08a-waiting-for-native-members'))
             sleep(.4)
         assert condition('four-native-ready.json'), 'Missing four actual player tickets'
-        start, _ = wait_for('08-native-admission', start_button, tries=40)
+        start, _ = wait_for('08b-native-start', admit, tries=40)
+        print(f'Client 0: Start battle at {start}', flush=True)
         click(*start)
 
     def board_evidence(img):
