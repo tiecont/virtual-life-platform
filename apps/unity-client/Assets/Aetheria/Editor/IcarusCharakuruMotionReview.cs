@@ -38,23 +38,30 @@ namespace Aetheria.Editor
             string sourceVrmFile = Path.Combine(Path.GetDirectoryName(Application.dataPath), VrmPath);
             Require(Hash(sourceVrmFile) == VrmSha256, "The owner-designated Icarus VRM has changed.");
             Directory.CreateDirectory(output);
+            Debug.Log("Icarus review: recover pinned VRM and accessory imports.");
             IcarusPrefabSetupEditor.RecoverReviewImports();
             var originalScene = SceneManager.GetActiveScene();
-            // Batch Editor can start with a clean untitled scene. Unlike a saved
-            // scene it cannot coexist with a new additive scene.
-            bool replaceBootstrap = SceneManager.sceneCount == 1 && string.IsNullOrEmpty(originalScene.path);
-            Require(!replaceBootstrap || !originalScene.isDirty, "The untitled scene contains unsaved changes.");
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
-                replaceBootstrap ? NewSceneMode.Single : NewSceneMode.Additive);
+            // The direct batch bootstrap is already an isolated, clean scene.
+            // Opening a replacement can block on the Editor scene-save path.
+            bool useBootstrap = SceneManager.sceneCount == 1 && string.IsNullOrEmpty(originalScene.path);
+            Require(!useBootstrap || !originalScene.isDirty, "The untitled scene contains unsaved changes.");
+            var scene = useBootstrap
+                ? originalScene
+                : EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            Debug.Log("Icarus review: temporary assets in " + (useBootstrap ? "batch bootstrap" : "additive preview") + " scene.");
             string leaf = "IcarusMotionReview-" + Guid.NewGuid().ToString("N");
             string folder = "Assets/" + leaf;
             PlayableDirector director = null;
+            GameObject reviewRoot = null;
             try
             {
+                reviewRoot = new GameObject("Icarus private motion review");
+                SceneManager.MoveGameObjectToScene(reviewRoot, scene);
                 AssetDatabase.CreateFolder("Assets", leaf);
                 string inputPath = folder + "/CharakuruWalk.vrma";
                 File.Copy(source, Path.Combine(Application.dataPath, leaf, "CharakuruWalk.vrma"));
                 AssetDatabase.ImportAsset(inputPath, ImportAssetOptions.ForceSynchronousImport);
+                Debug.Log("Icarus review: verify imported assets and the modular prefab.");
                 var importedObject = AssetDatabase.LoadAssetAtPath<GameObject>(inputPath);
                 var vrmObject = AssetDatabase.LoadAssetAtPath<GameObject>(VrmPath);
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(IcarusPrefabSetupEditor.PrefabPath);
@@ -64,6 +71,8 @@ namespace Aetheria.Editor
 
                 var motionSource = (GameObject)PrefabUtility.InstantiatePrefab(importedObject, scene);
                 var model = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
+                motionSource.transform.SetParent(reviewRoot.transform, false);
+                model.transform.SetParent(reviewRoot.transform, false);
                 var sourceAnimator = motionSource.GetComponentInChildren<Animator>(true);
                 var motion = motionSource.GetComponentInChildren<Animation>(true)?.clip;
                 var modelAnimator = model.GetComponentsInChildren<Animator>(true).Single();
@@ -88,6 +97,7 @@ namespace Aetheria.Editor
                 }
                 Require(bones.Count >= 20, "Modular Icarus is missing its VRM-mapped bones.");
                 var hips = bones.Single(bone => bone.Kind == HumanBodyBones.Hips).Joint;
+                Debug.Log("Icarus review: retarget existing walk to the mapped joints.");
                 var bound = BakeMotion(motion, sourceAnimator, modelAnimator, humanAvatar, genericAvatar,
                     bones.Select(bone => bone.Joint).ToArray(), hips);
                 AssetDatabase.CreateAsset(bound, folder + "/CharakuruWalkRetargeted.anim");
@@ -99,6 +109,7 @@ namespace Aetheria.Editor
                 Require(skins.Length > 0 && skins.All(renderer => renderer.bones.Length > 0),
                     "Imported Icarus has no active skinned mesh.");
 
+                Debug.Log("Icarus review: bind and sample the Timeline.");
                 director = CinematicStudio.CreateBoundTimeline(modelAnimator, bound,
                     CinematicStudio.Sequence.CharacterIntro, folder + "/CharakuruWalkReview.playable");
                 var track = ((TimelineAsset)director.playableAsset).GetOutputTracks().OfType<AnimationTrack>().Single();
@@ -119,7 +130,7 @@ namespace Aetheria.Editor
                 review.productionReady = false;
                 review.graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
-                    review.frames = Capture(director, take.start, bound.length, skins, output);
+                    review.frames = Capture(director, take.start, bound.length, skins, reviewRoot.transform, output);
                 File.WriteAllText(Path.Combine(output, "icarus-motion-review.json"), JsonUtility.ToJson(review, true) + "\n");
                 Debug.Log($"Charakuru Icarus motion verified on Timeline. {review.mappedHumanoidBones} mapped bones, " +
                     $"{review.maxMappedJointAngleDegrees:F2}° joint motion, {review.maxSkinnedVertexDelta:F4} m skin movement.");
@@ -130,9 +141,10 @@ namespace Aetheria.Editor
                 {
                     director.Stop();
                     Undo.ClearUndo(director.gameObject);
+                    Object.DestroyImmediate(director.gameObject);
                 }
-                if (replaceBootstrap) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                else
+                if (reviewRoot != null) Object.DestroyImmediate(reviewRoot);
+                if (!useBootstrap)
                 {
                     EditorSceneManager.CloseScene(scene, true);
                     if (originalScene.IsValid() && originalScene.isLoaded) SceneManager.SetActiveScene(originalScene);
@@ -241,12 +253,12 @@ namespace Aetheria.Editor
         }
 
         private static string[] Capture(PlayableDirector director, double lead, float length,
-            SkinnedMeshRenderer[] skins, string output)
+            SkinnedMeshRenderer[] skins, Transform reviewRoot, string output)
         {
             var camera = new GameObject("Icarus motion review camera").AddComponent<Camera>();
             var light = new GameObject("Icarus motion review key").AddComponent<Light>();
-            SceneManager.MoveGameObjectToScene(camera.gameObject, director.gameObject.scene);
-            SceneManager.MoveGameObjectToScene(light.gameObject, director.gameObject.scene);
+            camera.transform.SetParent(reviewRoot, false);
+            light.transform.SetParent(reviewRoot, false);
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(.14f, .16f, .20f);
             camera.orthographic = true;
