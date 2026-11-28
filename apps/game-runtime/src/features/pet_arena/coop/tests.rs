@@ -5,8 +5,8 @@ use aetheria_persistence::{Completion, Error, Game};
 use aetheria_pet_arena::arena8::binding::ArtifactSlot;
 use aetheria_pet_arena::arena8::coop::config::EffectKind;
 use aetheria_pet_arena::arena8::coop::{
-    ArtifactLoadout, CoopAction, CoopConfig, CoopPhase, CoopState, EquippedArtifact, SEATS,
-    SeatInput, Status, StatusKind, content_hash,
+    ArtifactLoadout, CoopAction, CoopCommand, CoopConfig, CoopPhase, CoopState, EquippedArtifact,
+    SEATS, SeatInput, Status, StatusKind, content_hash,
 };
 
 fn bundle() -> Vec<u8> {
@@ -243,7 +243,7 @@ fn intents_are_strict_and_never_carry_authority() {
                 br#"{"epoch":7,"action":{"kind":"start"}}"#
             )
             .expect("start"),
-        (7, CoopAction::Start)
+        (7, CoopCommand::new(CoopAction::Start))
     );
     assert_eq!(
         rules
@@ -254,10 +254,10 @@ fn intents_are_strict_and_never_carry_authority() {
             .expect("swap"),
         (
             8,
-            CoopAction::Swap {
+            CoopCommand::new(CoopAction::Swap {
                 first: 1,
                 second: 2
-            }
+            })
         )
     );
     assert_eq!(
@@ -267,10 +267,12 @@ fn intents_are_strict_and_never_carry_authority() {
                 br#"{"epoch":9,"action":{"kind":"fireZone"}}"#
             )
             .expect("fire zone"),
-        (9, CoopAction::FireZone)
+        (9, CoopCommand::new(CoopAction::FireZone))
     );
     for payload in [
         br#"{"epoch":1,"action":{"kind":"unknown"}}"#.as_slice(),
+        br#"{"epoch":1,"action":{"kind":"expireTurn"}}"#.as_slice(),
+        br#"{"epoch":1,"action":{"kind":"endTurn"},"serverTimestampMs":1}"#.as_slice(),
         br#"{"epoch":1,"action":{"kind":"start"},"account":"attacker"}"#.as_slice(),
         br#"{"epoch":1,"action":{"kind":"swap","first":1}}"#.as_slice(),
         br#"{"epoch":1}"#.as_slice(),
@@ -293,9 +295,21 @@ fn intents_are_strict_and_never_carry_authority() {
 fn only_the_owner_of_the_active_seat_may_command() {
     let rules = rules();
     let state = rules.initial();
-    assert!(rules.authorize(&state, "account-pet-v3-fire-icarus", &CoopAction::Start));
-    assert!(!rules.authorize(&state, "account-pet-v31-water-marivell", &CoopAction::Start));
-    assert!(!rules.authorize(&state, "account-outsider", &CoopAction::Guard));
+    assert!(rules.authorize(
+        &state,
+        "account-pet-v3-fire-icarus",
+        &CoopCommand::new(CoopAction::Start)
+    ));
+    assert!(!rules.authorize(
+        &state,
+        "account-pet-v31-water-marivell",
+        &CoopCommand::new(CoopAction::Start)
+    ));
+    assert!(!rules.authorize(
+        &state,
+        "account-outsider",
+        &CoopCommand::new(CoopAction::Guard)
+    ));
 }
 
 #[test]
@@ -539,8 +553,12 @@ fn solo_functional_runtime_projects_one_seat_and_commits_typed_completion() {
     assert_ne!(solo.content_hash(), coop.content_hash());
     assert_eq!(initial.participants.len(), 1);
     assert_eq!(initial.boss.max_hp, 1700);
-    assert!(!solo.authorize(&initial, &seats[1].account, &CoopAction::Start));
-    assert!(solo.authorize(&initial, account, &CoopAction::Start));
+    assert!(!solo.authorize(
+        &initial,
+        &seats[1].account,
+        &CoopCommand::new(CoopAction::Start)
+    ));
+    assert!(solo.authorize(&initial, account, &CoopCommand::new(CoopAction::Start)));
     assert!(coop.decode(&solo.encode(&initial).unwrap()).is_err());
     assert!(solo.decode(&coop.encode(&coop.initial()).unwrap()).is_err());
 
@@ -662,4 +680,248 @@ fn solo_regular_projection_and_settlement_bind_to_authored_encounter() {
     assert_eq!(proposal["configDigest"], view["ruleset"]["configDigest"]);
     assert_eq!(proposal["contentHash"], view["ruleset"]["contentHash"]);
     assert_eq!(proposal["participants"].as_array().unwrap().len(), 1);
+}
+
+#[test]
+fn v1_v2_functional_v1_projections_omit_v3_only_fields() {
+    let f1_bundle = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v1.candidate.json"
+    ));
+    let roster = seats();
+    let f1_rules = Rules::load(
+        f1_bundle,
+        roster.clone(),
+        "cinder-terraces-warden".into(),
+        Some(&bindings(f1_bundle, &roster)),
+    )
+    .unwrap();
+    let v2_rules = rules();
+    for (label, game) in [("v2", &v2_rules), ("functional-v1", &f1_rules)] {
+        let initial = game.initial();
+        let view: serde_json::Value = serde_json::from_slice(
+            &game
+                .project(&initial, "account-pet-v3-fire-icarus")
+                .unwrap(),
+        )
+        .unwrap();
+        let obj = view.as_object().unwrap();
+        for forbidden in [
+            "turnTimeoutMs",
+            "turnDeadlineUnixMs",
+            "turnRemainingMs",
+            "serverUnixMs",
+            "maxRounds",
+            "canEndTurn",
+            "fireZoneActiveTurns",
+            "fireZoneCells",
+        ] {
+            assert!(!obj.contains_key(forbidden), "{label} leaked {forbidden}");
+        }
+        for seat in view["participants"].as_array().unwrap() {
+            let s_obj = seat.as_object().unwrap();
+            for forbidden in ["hasUltimate", "ultimateReady", "fireZoneTurns", "passives"] {
+                assert!(
+                    !s_obj.contains_key(forbidden),
+                    "{label} seat leaked {forbidden}"
+                );
+            }
+        }
+        if let Some(abilities) = view.get("abilities").and_then(|v| v.as_array()) {
+            for ab in abilities {
+                let a_obj = ab.as_object().unwrap();
+                for forbidden in ["maxCooldown", "effectKind", "target", "powerPm"] {
+                    assert!(
+                        !a_obj.contains_key(forbidden),
+                        "{label} ability leaked {forbidden}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn v3_projection_timers_abilities_ultimate_and_fire_zone_contract() {
+    use super::domain::SYSTEM_ACTOR_ID;
+    use crate::features::runtime::application::system_expire_command_id;
+    use aetheria_pet_arena::arena8::coop::{FIRE_ZONE_CELLS, V3_RULESET_VERSION};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicU64, Ordering},
+    };
+    use uuid::Uuid;
+
+    let v3_bundle = include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../config/gameplay/arena8-coop-functional-v2.candidate.json"
+    ));
+    let roster = seats();
+    let loadouts = bindings(v3_bundle, &roster);
+    let fake_clock = Arc::new(AtomicU64::new(1_700_000_000_000));
+    let clock_clone = Arc::clone(&fake_clock);
+    let rules = Rules::load(
+        v3_bundle,
+        roster,
+        "cinder-terraces-warden".into(),
+        Some(&loadouts),
+    )
+    .unwrap()
+    .with_clock(Arc::new(move || clock_clone.load(Ordering::Acquire)));
+
+    let ready_state = rules.initial();
+    let ready_bytes = rules
+        .project(&ready_state, "account-pet-v3-fire-icarus")
+        .unwrap();
+    assert!(ready_bytes.len() <= 16_384);
+    let ready_view: serde_json::Value = serde_json::from_slice(&ready_bytes).unwrap();
+    assert_eq!(ready_view["ruleset"]["version"], V3_RULESET_VERSION);
+    assert_eq!(ready_view["turnTimeoutMs"], 15_000);
+    assert_eq!(ready_view["turnDeadlineUnixMs"], serde_json::Value::Null);
+    assert_eq!(ready_view["turnRemainingMs"], serde_json::Value::Null);
+    assert_eq!(ready_view["serverUnixMs"], 1_700_000_000_000u64);
+    assert_eq!(ready_view["maxRounds"], serde_json::Value::Null);
+    assert_eq!(ready_view["canEndTurn"], false);
+    assert_eq!(ready_view["fireZoneActiveTurns"], 0);
+    assert_eq!(ready_view["fireZoneCells"], serde_json::json!([]));
+    assert!(ready_view.get("team").is_none());
+
+    let seed = SecretSeed::from_host_entropy([9; 32]);
+    let mut rng = seed.stream(Value::Text("v3-view".into()), 0).unwrap();
+    let playing = rules
+        .engine()
+        .reduce_stamped(
+            &ready_state,
+            CoopAction::Start,
+            Some(fake_clock.load(Ordering::Acquire)),
+            &mut rng,
+        )
+        .unwrap()
+        .state;
+
+    // 6s elapsed => 9_000ms remaining, active seat canEndTurn = true, inactive seat false.
+    fake_clock.store(1_700_000_006_000, Ordering::Release);
+    let active_bytes = rules
+        .project(&playing, "account-pet-v3-fire-icarus")
+        .unwrap();
+    assert!(active_bytes.len() <= 16_384);
+    let active_view: serde_json::Value = serde_json::from_slice(&active_bytes).unwrap();
+    assert_eq!(active_view["turnDeadlineUnixMs"], 1_700_000_015_000u64);
+    assert_eq!(active_view["turnRemainingMs"], 9_000);
+    assert_eq!(active_view["serverUnixMs"], 1_700_000_006_000u64);
+    assert_eq!(active_view["canEndTurn"], true);
+    let active_abilities = active_view["abilities"].as_array().unwrap();
+    assert_eq!(active_abilities.len(), 5);
+    for ability in active_abilities {
+        assert!(ability.get("maxCooldown").is_some());
+        assert!(ability.get("effectKind").is_some());
+        assert!(ability.get("target").is_some());
+        assert!(ability.get("powerPm").is_some());
+    }
+    for (idx, seat) in active_view["participants"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
+        assert_eq!(seat["hasUltimate"], true, "seat {idx}");
+        assert_eq!(seat["ultimateReady"], false, "seat {idx}");
+        assert_eq!(seat["fireZoneTurns"], 0, "seat {idx}");
+        assert_eq!(seat["passives"], serde_json::json!([]), "seat {idx}");
+    }
+    let inactive_view: serde_json::Value = serde_json::from_slice(
+        &rules
+            .project(&playing, "account-pet-v31-water-marivell")
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(inactive_view["canEndTurn"], false);
+
+    // At or past deadline, turnRemainingMs clamps to 0 and canEndTurn becomes false.
+    fake_clock.store(1_700_000_020_000, Ordering::Release);
+    let expired_view: serde_json::Value = serde_json::from_slice(
+        &rules
+            .project(&playing, "account-pet-v3-fire-icarus")
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(expired_view["turnRemainingMs"], 0);
+    assert_eq!(expired_view["canEndTurn"], false);
+
+    // Charge Icarus ultimate & cast FireZone; inspect fireZoneCells and ultimateReady.
+    let mut charged = playing.clone();
+    charged.participants[0].mana = 100;
+    charged.participants[0].rage = 100;
+    charged.participants[1].rage = 100;
+    let charged_view: serde_json::Value = serde_json::from_slice(
+        &rules
+            .project(&charged, "account-pet-v3-fire-icarus")
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(charged_view["participants"][0]["ultimateReady"], true);
+    assert_eq!(charged_view["participants"][1]["ultimateReady"], true);
+
+    fake_clock.store(1_700_000_007_000, Ordering::Release);
+    let fired = rules
+        .engine()
+        .reduce_stamped(
+            &charged,
+            CoopAction::FireZone,
+            Some(fake_clock.load(Ordering::Acquire)),
+            &mut rng,
+        )
+        .unwrap()
+        .state;
+    let fire_bytes = rules.project(&fired, "account-pet-v3-fire-icarus").unwrap();
+    assert!(fire_bytes.len() <= 16_384);
+    let fire_view: serde_json::Value = serde_json::from_slice(&fire_bytes).unwrap();
+    assert_eq!(fire_view["participants"][0]["fireZoneTurns"], 2);
+    assert_eq!(fire_view["participants"][1]["fireZoneTurns"], 0);
+    assert_eq!(fire_view["fireZoneActiveTurns"], 2);
+    assert_eq!(
+        fire_view["fireZoneCells"],
+        serde_json::json!(FIRE_ZONE_CELLS)
+    );
+
+    // Intent parsing + authorization boundaries for EndTurn & ExpireTurn.
+    assert_eq!(
+        rules
+            .parse(
+                "arena8-coop.intent.v1",
+                br#"{"epoch":2,"action":{"kind":"endTurn"}}"#,
+            )
+            .unwrap(),
+        (2, CoopCommand::new(CoopAction::EndTurn))
+    );
+    assert!(matches!(
+        rules.parse(
+            "arena8-coop.intent.v1",
+            br#"{"epoch":2,"action":{"kind":"expireTurn","turnIndex":0}}"#,
+        ),
+        Err(Error::Invalid)
+    ));
+    let expire_cmd =
+        CoopCommand::timed(CoopAction::ExpireTurn { turn_index: 0 }, 1_700_000_016_000);
+    assert!(!rules.authorize(&playing, "account-pet-v3-fire-icarus", &expire_cmd));
+    assert!(rules.authorize(&playing, SYSTEM_ACTOR_ID, &expire_cmd));
+    assert!(!rules.authorize(
+        &playing,
+        SYSTEM_ACTOR_ID,
+        &CoopCommand::new(CoopAction::EndTurn)
+    ));
+    assert!(rules.authorize(
+        &playing,
+        "account-pet-v3-fire-icarus",
+        &CoopCommand::new(CoopAction::EndTurn)
+    ));
+
+    // Deterministic system command id per (match_id, turn_index).
+    let match_a = Uuid::from_u128(0x1111_2222_3333_4444_5555_6666_7777_8888);
+    let match_b = Uuid::from_u128(0x1111_2222_3333_4444_5555_6666_7777_8889);
+    let id0 = system_expire_command_id(match_a, 0);
+    assert_eq!(id0, system_expire_command_id(match_a, 0));
+    assert_ne!(id0, system_expire_command_id(match_a, 1));
+    assert_ne!(id0, system_expire_command_id(match_b, 0));
+    assert!(!id0.is_nil());
 }

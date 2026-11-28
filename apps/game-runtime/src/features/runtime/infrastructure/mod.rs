@@ -24,7 +24,7 @@ use std::{
     fs,
     sync::{
         Arc,
-        atomic::{AtomicBool, AtomicU64, Ordering},
+        atomic::{AtomicBool, Ordering},
     },
 };
 use tokio::{sync::Mutex, task::JoinHandle};
@@ -109,7 +109,7 @@ impl Drop for Driver {
 struct Health<G: NativeGame> {
     commands: Arc<Commands<G>>,
     ruleset: String,
-    db: Mutex<Client>,
+    db: Arc<Mutex<Client>>,
     zone_alive: Arc<AtomicBool>,
     _driver: Driver,
 }
@@ -117,6 +117,7 @@ pub struct NativeRuntime {
     pub router: Router,
     zone: ZoneHandle,
     task: JoinHandle<()>,
+    ticker: Option<JoinHandle<()>>,
 }
 impl NativeRuntime {
     /// `bundle` is the validated, published gameplay configuration supplied by
@@ -311,7 +312,7 @@ impl NativeRuntime {
         let contract = game.ruleset();
         let content = contract.content_hash;
         let required_client_build = (contract.id == FUNCTIONAL_SOLO_RULESET_ID
-            || (contract.id == COOP_RULESET_ID && contract.version == FUNCTIONAL_RULESET_VERSION))
+            || (contract.id == COOP_RULESET_ID && contract.version >= FUNCTIONAL_RULESET_VERSION))
             .then_some("unity-native-v2");
         if required_client_build.is_some() && settings.movement {
             return Err("Movement is unavailable in functional battles");
@@ -344,12 +345,7 @@ impl NativeRuntime {
             .await
             .map_err(|_| "Native database unavailable")?;
         let driver = Driver(driver);
-        let commands = Arc::new(Commands {
-            host,
-            match_id: settings.match_id,
-            committed: AtomicU64::new(0),
-            rejected: AtomicU64::new(0),
-        });
+        let commands = Arc::new(Commands::new(host, settings.match_id));
         let trust = DurableTrust::new(
             TicketVerifier::new(
                 settings
@@ -427,10 +423,28 @@ impl NativeRuntime {
             let _ = actor.run().await;
             zone_alive.store(false, Ordering::Release);
         });
+        let db = Arc::new(Mutex::new(db));
+        let ticker = if commands.host.game().timed_turns() {
+            let ticker_commands = Arc::clone(&commands);
+            let ticker_db = Arc::clone(&db);
+            Some(tokio::spawn(async move {
+                let mut interval = tokio::time::interval(std::time::Duration::from_millis(100));
+                interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+                loop {
+                    interval.tick().await;
+                    let mut client = ticker_db.lock().await;
+                    if let Ok(false) = ticker_commands.tick_expiration(&mut client).await {
+                        break;
+                    }
+                }
+            }))
+        } else {
+            None
+        };
         let health = Arc::new(Health {
             commands,
             ruleset: ruleset.clone(),
-            db: Mutex::new(db),
+            db,
             zone_alive: alive,
             _driver: driver,
         });
@@ -440,9 +454,17 @@ impl NativeRuntime {
             .with_state(health)
             .route("/health/live", get(move || { let ruleset = ruleset.clone(); async move { ([("content-type", "application/json")], serde_json::json!({"status":"live","service":"aetheria-game-runtime","gameplayEnabled":true,"ruleset":ruleset}).to_string()) } }))
             .merge(gateway);
-        Ok(Self { router, zone, task })
+        Ok(Self {
+            router,
+            zone,
+            task,
+            ticker,
+        })
     }
     pub async fn stop(mut self) {
+        if let Some(ticker) = self.ticker.take() {
+            ticker.abort();
+        }
         if let Ok(reply) = self.zone.stop() {
             let _ = reply.await;
         }
@@ -451,6 +473,9 @@ impl NativeRuntime {
 }
 impl Drop for NativeRuntime {
     fn drop(&mut self) {
+        if let Some(ticker) = &self.ticker {
+            ticker.abort();
+        }
         self.task.abort();
     }
 }

@@ -15,6 +15,7 @@ use super::{
 };
 
 const LOGICAL_ACTION_MS: u64 = 1_000;
+pub const DEFAULT_EVAL_BUDGET: u32 = 4_096;
 pub const COMPARISON_MAX_SEEDS: u32 = 25;
 pub const COMPARISON_MAX_BOSSES: usize = 2;
 pub const POLICIES: [Policy; 4] = [
@@ -394,6 +395,7 @@ fn play(
     initial: &CoopState,
     policy: Policy,
     seed: u64,
+    eval_budget: u32,
     mut diagnostics: Option<&mut Diagnostics>,
 ) -> Result<Sample, CoopError> {
     let mut entropy = [0u8; 32];
@@ -420,7 +422,7 @@ fn play(
     let mut rage_spent = 0;
     let mut first_damage_turn = None;
     let mut round_limit = false;
-    for step in 0..=super::MAX_TURNS {
+    for step in 0..eval_budget {
         if checkpoint.state.phase.terminal() {
             break;
         }
@@ -609,6 +611,16 @@ pub fn simulate(
     simulate_party(rules, policy, seeds, None)
 }
 
+/// Run the authored reducer with an explicit technical evaluation step budget.
+pub fn simulate_with_budget(
+    rules: &CoopRules,
+    policy: Policy,
+    seeds: u32,
+    eval_budget: u32,
+) -> Result<SimulationReport, CoopError> {
+    simulate_party_with_budget(rules, policy, seeds, None, eval_budget)
+}
+
 /// Hypothetical loadouts use the same binding and eligibility checks as a match.
 /// Account and instance identities are local to each simulation seat.
 #[derive(Debug, Deserialize)]
@@ -626,7 +638,17 @@ pub fn simulate_party(
     seeds: u32,
     party: Option<&[SimulationSeat; SEATS]>,
 ) -> Result<SimulationReport, CoopError> {
-    simulate_range(rules, policy, 1, seeds, party, None)
+    simulate_party_with_budget(rules, policy, seeds, party, DEFAULT_EVAL_BUDGET)
+}
+
+pub fn simulate_party_with_budget(
+    rules: &CoopRules,
+    policy: Policy,
+    seeds: u32,
+    party: Option<&[SimulationSeat; SEATS]>,
+    eval_budget: u32,
+) -> Result<SimulationReport, CoopError> {
+    simulate_range(rules, policy, 1, seeds, party, eval_budget, None)
 }
 
 /// Compare one-seat play using the same visible-information policies as co-op.
@@ -636,7 +658,17 @@ pub fn simulate_solo(
     seeds: u32,
     seat: &SimulationSeat,
 ) -> Result<SimulationReport, CoopError> {
-    if seeds == 0 || seeds > COMPARISON_MAX_SEEDS {
+    simulate_solo_with_budget(rules, policy, seeds, seat, DEFAULT_EVAL_BUDGET)
+}
+
+pub fn simulate_solo_with_budget(
+    rules: &CoopRules,
+    policy: Policy,
+    seeds: u32,
+    seat: &SimulationSeat,
+    eval_budget: u32,
+) -> Result<SimulationReport, CoopError> {
+    if seeds == 0 || seeds > COMPARISON_MAX_SEEDS || eval_budget == 0 {
         return Err(CoopError::InvalidSeat);
     }
     let input = SeatInput {
@@ -654,7 +686,7 @@ pub fn simulate_solo(
     };
     let mut initial = rules.allocate_solo(input, &loadout)?;
     rules.bind_skill_levels(&mut initial, std::slice::from_ref(&seat.skill_levels))?;
-    run_samples(rules, &initial, policy, 1, seeds, None)
+    run_samples(rules, &initial, policy, 1, seeds, eval_budget, None)
 }
 
 /// Offline-only analysis with an explicit, bounded seed range. The online
@@ -666,6 +698,17 @@ pub fn analyze_party(
     seeds: u32,
     party: Option<&[SimulationSeat; SEATS]>,
 ) -> Result<AnalysisReport, CoopError> {
+    analyze_party_with_budget(rules, policy, seed_start, seeds, party, DEFAULT_EVAL_BUDGET)
+}
+
+pub fn analyze_party_with_budget(
+    rules: &CoopRules,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    party: Option<&[SimulationSeat; SEATS]>,
+    eval_budget: u32,
+) -> Result<AnalysisReport, CoopError> {
     let mut diagnostics = Diagnostics::default();
     let report = simulate_range(
         rules,
@@ -673,6 +716,7 @@ pub fn analyze_party(
         seed_start,
         seeds,
         party,
+        eval_budget,
         Some(&mut diagnostics),
     )?;
     Ok(AnalysisReport {
@@ -688,10 +732,12 @@ fn simulate_range(
     seed_start: u32,
     seeds: u32,
     party: Option<&[SimulationSeat; SEATS]>,
+    eval_budget: u32,
     diagnostics: Option<&mut Diagnostics>,
 ) -> Result<SimulationReport, CoopError> {
     if seed_start == 0
         || seeds == 0
+        || eval_budget == 0
         || (diagnostics.is_some() && seeds > COMPARISON_MAX_SEEDS)
         || seeds > 1_000
     {
@@ -736,7 +782,15 @@ fn simulate_range(
             &party.each_ref().map(|seat| seat.skill_levels.clone()),
         )?;
     }
-    run_samples(rules, &initial, policy, seed_start, seeds, diagnostics)
+    run_samples(
+        rules,
+        &initial,
+        policy,
+        seed_start,
+        seeds,
+        eval_budget,
+        diagnostics,
+    )
 }
 
 fn run_samples(
@@ -745,6 +799,7 @@ fn run_samples(
     policy: Policy,
     seed_start: u32,
     seeds: u32,
+    eval_budget: u32,
     mut diagnostics: Option<&mut Diagnostics>,
 ) -> Result<SimulationReport, CoopError> {
     let mut report = SimulationReport {
@@ -785,7 +840,14 @@ fn run_samples(
     };
     let mut rounds = 0u64;
     for seed in u64::from(seed_start)..u64::from(seed_start) + u64::from(seeds) {
-        let sample = play(rules, initial, policy, seed, diagnostics.as_deref_mut())?;
+        let sample = play(
+            rules,
+            initial,
+            policy,
+            seed,
+            eval_budget,
+            diagnostics.as_deref_mut(),
+        )?;
         rounds += u64::from(sample.state.round_index);
         report.total_actions += sample.actions;
         report.phase_two_actions += sample.phase_two_actions;

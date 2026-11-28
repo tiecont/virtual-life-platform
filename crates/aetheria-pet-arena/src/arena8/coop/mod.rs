@@ -58,14 +58,22 @@ pub use loadout::{ArtifactLoadout, EquippedArtifact};
 pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
 pub const COOP_RULESET_VERSION: u32 = 1;
 pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
+pub const V3_RULESET_VERSION: u32 = 3;
 pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
 pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
+pub const V3_SOLO_RULESET_VERSION: u32 = 2;
 /// Structural engine capability: the board is 8x8 and the party has 4 seats.
 pub const SEATS: usize = 4;
 pub const SIDE: usize = 8;
 pub const CELLS: usize = SIDE * SIDE;
-/// Structural ceiling on a single match. Authored limits must not exceed it.
+/// Deterministic centered 4x4 board cells covered by Icarus's FIRE_ZONE.
+pub const FIRE_ZONE_CELLS: [u8; 16] = [
+    18, 19, 20, 21, 26, 27, 28, 29, 34, 35, 36, 37, 42, 43, 44, 45,
+];
+/// Structural ceiling on a single match for historical versions.
 pub const MAX_TURNS: u16 = 4_096;
+/// Technical safety ceiling on v3 uncapped combat turns.
+pub const TECHNICAL_MAX_TURNS_V3: u16 = u16::MAX;
 pub const MAX_SUBMISSIONS: u16 = 8_192;
 
 /// Adapter contract text bound into the native content hash.
@@ -171,6 +179,10 @@ pub struct Status {
 
 const NO_STATUS: Option<Status> = None;
 
+fn is_zero_u8(value: &u8) -> bool {
+    *value == 0
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Participant {
     pub account: String,
@@ -193,6 +205,8 @@ pub struct Participant {
     pub shield: u32,
     /// Remaining authored turns before the shield expires. Zero when unshielded.
     pub shield_turns: u8,
+    #[serde(default, skip_serializing_if = "is_zero_u8")]
+    pub fire_zone_turns: u8,
     pub cooldowns: [u8; 5],
     pub statuses: [Option<Status>; 4],
     pub contribution_damage: u64,
@@ -252,6 +266,10 @@ pub struct CoopState {
     pub turn_index: u16,
     pub round_index: u16,
     pub pending: Option<PendingAttack>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_started_ms: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_deadline_ms: Option<u64>,
 }
 
 // Historical records remain arrays of four participants on the wire. Only the
@@ -275,6 +293,8 @@ pub enum CoopAction {
     Signature,
     Ultimate,
     FireZone,
+    EndTurn,
+    ExpireTurn { turn_index: u16 },
 }
 
 impl Canonical for CoopAction {
@@ -291,7 +311,42 @@ impl Canonical for CoopAction {
             Self::Signature => Value::Uint(4),
             Self::Ultimate => Value::Uint(5),
             Self::FireZone => Value::Uint(6),
+            Self::EndTurn => Value::Uint(7),
+            Self::ExpireTurn { turn_index } => {
+                list([Value::Uint(8), Value::Uint(u64::from(*turn_index))])
+            }
         }
+    }
+}
+
+/// Runtime command envelope carrying an authoritative server timestamp.
+/// Clients never construct this directly; canonical hashing binds the action
+/// so idempotent receipt retries remain invariant across timestamp skew.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CoopCommand {
+    pub action: CoopAction,
+    pub server_timestamp_ms: Option<u64>,
+}
+
+impl CoopCommand {
+    pub const fn new(action: CoopAction) -> Self {
+        Self {
+            action,
+            server_timestamp_ms: None,
+        }
+    }
+
+    pub const fn timed(action: CoopAction, server_timestamp_ms: u64) -> Self {
+        Self {
+            action,
+            server_timestamp_ms: Some(server_timestamp_ms),
+        }
+    }
+}
+
+impl Canonical for CoopCommand {
+    fn canonical(&self) -> Value {
+        self.action.canonical()
     }
 }
 
@@ -307,13 +362,19 @@ pub enum CoopError {
     Cooldown,
     InsufficientResources,
     UnsupportedAction,
+    TurnExpired,
+    ExecutionBoundExceeded,
     Arithmetic,
     Config(ConfigError),
 }
 
 impl From<CoreError> for CoopError {
-    fn from(_: CoreError) -> Self {
-        Self::Arithmetic
+    fn from(error: CoreError) -> Self {
+        match error {
+            CoreError::Capacity => Self::ExecutionBoundExceeded,
+            CoreError::VersionConflict => Self::TurnExpired,
+            _ => Self::Arithmetic,
+        }
     }
 }
 
@@ -330,6 +391,8 @@ impl CoopError {
             Self::Cooldown => "action is on cooldown",
             Self::InsufficientResources => "insufficient mana or rage",
             Self::UnsupportedAction => "action is not supported by this engine",
+            Self::TurnExpired => "turn deadline has expired",
+            Self::ExecutionBoundExceeded => "match exceeded technical turn execution bound",
             Self::Arithmetic => "gameplay arithmetic is out of bounds",
             Self::Config(_) => "gameplay configuration is invalid",
         }
@@ -348,6 +411,7 @@ pub struct CoopRules {
     effectiveness: [[u16; 6]; 6],
     boss_profile: BossConfig,
     regular_profile: Option<RegularEncounterConfig>,
+    solo: bool,
     solo_round_limit: Option<u16>,
 }
 
@@ -457,10 +521,10 @@ impl CoopRules {
             .filter(|profile| profile.id == encounter_id)
             .cloned();
         let (boss_profile, solo_round_limit) = match (solo, &regular_profile) {
-            (true, Some(profile)) => (selected.clone(), Some(profile.max_rounds)),
+            (true, Some(profile)) => (selected.clone(), profile.max_rounds),
             (true, None) => {
                 let profile = selected.solo.as_ref().ok_or(ConfigError::Boss)?;
-                (selected.solo_profile(profile), Some(profile.max_rounds))
+                (selected.solo_profile(profile), profile.max_rounds)
             }
             (false, _) => (selected.clone(), None),
         };
@@ -487,6 +551,7 @@ impl CoopRules {
             effectiveness,
             boss_profile,
             regular_profile,
+            solo,
             solo_round_limit,
         })
     }
@@ -542,12 +607,38 @@ impl CoopRules {
         self.digest
     }
 
+    pub fn is_v3(&self) -> bool {
+        self.config.is_v3()
+    }
+
     pub fn ruleset(&self) -> Ruleset {
-        if self.solo_round_limit.is_some() {
+        if self.solo {
+            if self.is_v3() {
+                return Ruleset {
+                    id: FUNCTIONAL_SOLO_RULESET_ID.into(),
+                    version: V3_SOLO_RULESET_VERSION,
+                    content_hash: solo_v2_content_hash(self.digest),
+                    rng_version: RNG_VERSION,
+                };
+            }
             return Ruleset {
                 id: FUNCTIONAL_SOLO_RULESET_ID.into(),
                 version: FUNCTIONAL_SOLO_RULESET_VERSION,
                 content_hash: solo_content_hash(self.digest),
+                rng_version: RNG_VERSION,
+            };
+        }
+        if self.is_v3() {
+            return Ruleset {
+                id: COOP_RULESET_ID.into(),
+                version: V3_RULESET_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    V3_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v3",
+                    "functional-board-v1;independent-tile-effects;timed-turns-v1",
+                    SEATS,
+                ),
                 rng_version: RNG_VERSION,
             };
         }
@@ -574,16 +665,15 @@ impl CoopRules {
     }
 
     fn seat_count(&self) -> usize {
-        if self.solo_round_limit.is_some() {
-            1
-        } else {
-            SEATS
-        }
+        if self.solo { 1 } else { SEATS }
     }
 
-    fn max_rounds(&self) -> u16 {
-        self.solo_round_limit
-            .unwrap_or(self.config.party.max_rounds)
+    pub fn max_rounds(&self) -> Option<u16> {
+        if self.solo {
+            self.solo_round_limit
+        } else {
+            self.config.party.max_rounds
+        }
     }
 
     pub fn functional_board(&self) -> bool {
@@ -627,10 +717,7 @@ impl CoopRules {
         seat: SeatInput,
         loadout: &ArtifactLoadout,
     ) -> Result<CoopState, CoopError> {
-        if self.solo_round_limit.is_none()
-            || !self.config.has_artifact_catalog()
-            || seat.artifact_power_pm != 0
-        {
+        if !self.solo || !self.config.has_artifact_catalog() || seat.artifact_power_pm != 0 {
             return Err(CoopError::InvalidSeat);
         }
         self.allocate_bound([seat], Some(std::slice::from_ref(loadout)))
@@ -685,6 +772,8 @@ impl CoopRules {
             turn_index: 0,
             round_index: 1,
             pending: None,
+            turn_started_ms: None,
+            turn_deadline_ms: None,
         };
         // The board is generated by `Start` from host-owned entropy. Allocating
         // must not derive a stream from the public configuration digest.
@@ -838,6 +927,7 @@ impl CoopRules {
             rage: 0,
             shield: 0,
             shield_turns: 0,
+            fire_zone_turns: 0,
             cooldowns: [0; 5],
             statuses: [NO_STATUS; 4],
             contribution_damage: 0,
@@ -935,18 +1025,66 @@ impl CoopRules {
         {
             return Err(CoreError::InvalidState);
         }
-        if u32::from(state.round_index) > u32::from(self.max_rounds()) && !state.phase.terminal() {
+        if let Some(max_rounds) = self.max_rounds()
+            && u32::from(state.round_index) > u32::from(max_rounds)
+            && !state.phase.terminal()
+        {
             return Err(CoreError::InvalidState);
+        }
+        if !self.is_v3()
+            && (state.turn_started_ms.is_some()
+                || state.turn_deadline_ms.is_some()
+                || state
+                    .participants
+                    .iter()
+                    .any(|participant| participant.fire_zone_turns > 0))
+        {
+            return Err(CoreError::InvalidState);
+        }
+        if self.is_v3() {
+            if state.phase == CoopPhase::Ready
+                && (state.turn_started_ms.is_some() || state.turn_deadline_ms.is_some())
+            {
+                return Err(CoreError::InvalidState);
+            }
+            if state.phase.terminal()
+                && (state.turn_deadline_ms.is_some()
+                    || state
+                        .participants
+                        .iter()
+                        .any(|participant| participant.fire_zone_turns > 0))
+            {
+                return Err(CoreError::InvalidState);
+            }
+            if state.turn_deadline_ms.is_some() && state.turn_started_ms.is_none() {
+                return Err(CoreError::InvalidState);
+            }
+            if let (Some(started), Some(deadline)) = (state.turn_started_ms, state.turn_deadline_ms)
+                && deadline != started.saturating_add(u64::from(self.config.party.turn_timeout_ms))
+            {
+                return Err(CoreError::InvalidState);
+            }
         }
         Ok(())
     }
 
-    /// Deterministic reduction of one command. Failed commands consume no
-    /// entropy: every roll happens only after the command is accepted.
+    /// Deterministic reduction of one command without an external wall-clock timestamp.
+    /// Failed commands consume no entropy: every roll happens only after the command is accepted.
     pub fn reduce(
         &self,
         state: &CoopState,
         action: CoopAction,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<CoopState>, CoreError> {
+        self.reduce_stamped(state, action, None, rng)
+    }
+
+    /// Deterministic reduction of a command stamped with an authoritative server timestamp.
+    pub fn reduce_stamped(
+        &self,
+        state: &CoopState,
+        action: CoopAction,
+        server_timestamp_ms: Option<u64>,
         rng: &mut TurnRng,
     ) -> Result<Decision<CoopState>, CoreError> {
         if self.functional_board()
@@ -954,6 +1092,22 @@ impl CoopRules {
             || state.participants.len() != self.seat_count()
         {
             self.validate(state)?;
+        }
+        if !self.is_v3() && matches!(action, CoopAction::EndTurn | CoopAction::ExpireTurn { .. }) {
+            return Err(CoreError::InvalidAction);
+        }
+        if self.is_v3()
+            && !matches!(action, CoopAction::Start)
+            && state.turn_index == TECHNICAL_MAX_TURNS_V3
+        {
+            return Err(CoreError::Capacity);
+        }
+        if self.is_v3()
+            && !matches!(action, CoopAction::Start | CoopAction::ExpireTurn { .. })
+            && let (Some(ts), Some(deadline)) = (server_timestamp_ms, state.turn_deadline_ms)
+            && ts >= deadline
+        {
+            return Err(CoreError::VersionConflict);
         }
         let mut next = state.clone();
         let mut events = Vec::new();
@@ -993,9 +1147,50 @@ impl CoopRules {
                 self.resolve_cascades(&mut next, rng, &mut events)?;
                 self.complete_turn(&mut next, rng, &mut events);
             }
+            CoopAction::EndTurn => {
+                self.require_turn(&next)?;
+                events.push(event(
+                    "end-turn",
+                    Some(next.active_seat as u8),
+                    u64::from(next.turn_index),
+                ));
+                self.complete_turn(&mut next, rng, &mut events);
+            }
+            CoopAction::ExpireTurn { turn_index } => {
+                self.require_turn(&next)?;
+                if next.turn_index != turn_index {
+                    return Err(CoreError::InvalidAction);
+                }
+                if let (Some(ts), Some(deadline)) = (server_timestamp_ms, next.turn_deadline_ms)
+                    && ts < deadline
+                {
+                    return Err(CoreError::InvalidAction);
+                }
+                events.push(event(
+                    "turn-expired",
+                    Some(next.active_seat as u8),
+                    u64::from(next.turn_index),
+                ));
+                self.complete_turn(&mut next, rng, &mut events);
+            }
             ability => {
                 self.act_ability(&mut next, ability, rng, &mut events)?;
                 self.complete_turn(&mut next, rng, &mut events);
+            }
+        }
+        if self.is_v3() {
+            if next.phase.terminal() {
+                next.turn_deadline_ms = None;
+                for participant in &mut next.participants {
+                    participant.fire_zone_turns = 0;
+                }
+            } else if next.phase == CoopPhase::Playing
+                && let Some(ts) = server_timestamp_ms
+            {
+                let clamped = ts.max(next.turn_started_ms.unwrap_or(0));
+                next.turn_started_ms = Some(clamped);
+                next.turn_deadline_ms =
+                    Some(clamped.saturating_add(u64::from(self.config.party.turn_timeout_ms)));
             }
         }
         self.validate(&next)?;
@@ -1017,6 +1212,22 @@ impl CoopRules {
         })
     }
 
+    /// Typed convenience wrapper over `reduce_stamped` exposing `CoopError`.
+    pub fn reduce_checked(
+        &self,
+        state: &CoopState,
+        command: CoopCommand,
+        rng: &mut TurnRng,
+    ) -> Result<Decision<CoopState>, CoopError> {
+        self.reduce_stamped(state, command.action, command.server_timestamp_ms, rng)
+            .map_err(|err| match err {
+                CoreError::Capacity => CoopError::ExecutionBoundExceeded,
+                CoreError::VersionConflict => CoopError::TurnExpired,
+                CoreError::InvalidAction => CoopError::UnsupportedAction,
+                _ => CoopError::from(err),
+            })
+    }
+
     fn require_turn(&self, state: &CoopState) -> Result<(), CoreError> {
         if state.phase != CoopPhase::Playing {
             return Err(CoreError::InvalidAction);
@@ -1030,6 +1241,35 @@ impl CoopRules {
     /// Checks turn ownership, cast costs, cooldown and required utility targets.
     pub fn ability_ready(&self, state: &CoopState, seat: usize, action: CoopAction) -> bool {
         seat == state.active_seat && self.prepare_ability(state, action).is_ok()
+    }
+
+    /// Checks whether `seat`'s Ultimate is currently charged and usable (independent of active turn).
+    pub fn ultimate_charged(&self, state: &CoopState, seat_index: usize) -> bool {
+        if state.phase != CoopPhase::Playing {
+            return false;
+        }
+        let Some(seat) = state.participants.get(seat_index) else {
+            return false;
+        };
+        if !seat.alive {
+            return false;
+        }
+        let Some(pet) = self.config.pet(&seat.pet_id) else {
+            return false;
+        };
+        let Some(skill) = self.config.skill(&pet.ultimate) else {
+            return false;
+        };
+        let level = seat.skill_levels()[3];
+        let Some(power_pm) = skill.power_at(level) else {
+            return false;
+        };
+        if seat.cooldowns[3] > 0 || seat.mana < skill.mana_cost || seat.rage < skill.rage_cost {
+            return false;
+        }
+        let remaining_rage = seat.rage - skill.rage_cost;
+        self.prepare_utility(state, seat_index, skill, power_pm, remaining_rage)
+            .is_ok()
     }
 
     fn prepare_ability(
@@ -1052,7 +1292,10 @@ impl CoopRules {
             CoopAction::Signature => 2,
             CoopAction::Ultimate => 3,
             CoopAction::FireZone => 4,
-            CoopAction::Start | CoopAction::Swap { .. } => return Err(CoreError::InvalidAction),
+            CoopAction::Start
+            | CoopAction::Swap { .. }
+            | CoopAction::EndTurn
+            | CoopAction::ExpireTurn { .. } => return Err(CoreError::InvalidAction),
         };
         let skill_id = pet.skill_ids()[slot].ok_or(CoreError::InvalidAction)?;
         let skill = self.config.skill(skill_id).ok_or(CoreError::InvalidState)?;
@@ -1260,6 +1503,10 @@ impl CoopRules {
                     config::EffectKind::DamageOverTime => {
                         state.boss.dot_damage = state.boss.dot_damage.saturating_add(damage);
                         state.boss.dot_turns = effect.duration_turns.max(1);
+                        if self.is_v3() && skill.kind == config::SkillKind::FireZone {
+                            state.participants[actor].fire_zone_turns =
+                                effect.duration_turns.max(1);
+                        }
                     }
                     _ => {
                         // A chain uses one critical roll for the cast. Resolve each
@@ -1920,12 +2167,13 @@ impl CoopRules {
             None => state.phase = CoopPhase::Lost,
         }
         if state.phase == CoopPhase::Playing
-            && u32::from(state.round_index) > u32::from(self.max_rounds())
+            && let Some(max_rounds) = self.max_rounds()
+            && u32::from(state.round_index) > u32::from(max_rounds)
         {
             state.phase = CoopPhase::Lost;
             events.push(event("round-limit", None, u64::from(state.round_index)));
         }
-        if state.turn_index > MAX_TURNS {
+        if !self.is_v3() && state.turn_index > MAX_TURNS {
             state.phase = CoopPhase::Lost;
         }
     }
@@ -1960,6 +2208,14 @@ impl CoopRules {
         state.boss.dot_turns = state.boss.dot_turns.saturating_sub(1);
         if state.boss.dot_turns == 0 {
             state.boss.dot_damage = 0;
+        }
+        if self.is_v3() {
+            for participant in &mut state.participants {
+                participant.fire_zone_turns = participant.fire_zone_turns.saturating_sub(1);
+                if state.boss.dot_turns == 0 {
+                    participant.fire_zone_turns = 0;
+                }
+            }
         }
     }
 
@@ -2166,6 +2422,16 @@ pub fn solo_content_hash(config_digest: [u8; 32]) -> [u8; 32] {
     )
 }
 
+pub fn solo_v2_content_hash(config_digest: [u8; 32]) -> [u8; 32] {
+    native_content_hash(
+        config_digest,
+        V3_SOLO_RULESET_VERSION,
+        "aetheria.arena8-functional-native.v2",
+        "solo;functional-board-v1;independent-tile-effects;timed-turns-v1",
+        1,
+    )
+}
+
 fn native_content_hash(
     config_digest: [u8; 32],
     version: u32,
@@ -2290,6 +2556,12 @@ fn participant_value(seat: &Participant) -> Value {
                 .map(|level| Value::Uint(u64::from(level))),
         ));
     }
+    if seat.fire_zone_turns > 0 {
+        fields.push(list([
+            Value::Text("fire-zone".into()),
+            Value::Uint(u64::from(seat.fire_zone_turns)),
+        ]));
+    }
     Value::List(fields)
 }
 
@@ -2349,6 +2621,13 @@ impl Canonical for CoopState {
         }
         if let Some(id) = &self.boss_id {
             fields.push(Value::Text(id.clone()));
+        }
+        if self.turn_started_ms.is_some() || self.turn_deadline_ms.is_some() {
+            fields.push(list([
+                Value::Text("turn-clock".into()),
+                self.turn_started_ms.map_or(Value::Null, Value::Uint),
+                self.turn_deadline_ms.map_or(Value::Null, Value::Uint),
+            ]));
         }
         Value::List(fields)
     }

@@ -1,18 +1,28 @@
 //! Configuration-bound cooperative domain adapter.
 use aetheria_game_core::{Decision, Error, LogicalClock, Reducer, Ruleset, TurnRng};
 use aetheria_pet_arena::arena8::coop::{
-    ArtifactLoadout, ConfigError, CoopAction, CoopError, CoopRules, CoopState, SEATS, SeatInput,
+    ArtifactLoadout, ConfigError, CoopCommand, CoopError, CoopRules, CoopState, SEATS, SeatInput,
     SkillLevelBinding,
 };
 use std::sync::Arc;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub const RULESET_ID: &str = "arena8-coop-pve";
 pub const RULESET_VERSION: u32 = 1;
 pub const MAX_SEAT_POWER_PM: u16 = 5_000;
+pub const SYSTEM_ACTOR_ID: &str = "00000000-0000-0000-0000-000000000000";
+
+pub fn server_unix_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| u64::try_from(duration.as_millis()).unwrap_or(u64::MAX))
+        .unwrap_or(0)
+}
 
 pub struct Rules {
     engine: Arc<CoopRules>,
     initial: CoopState,
+    clock: Arc<dyn Fn() -> u64 + Send + Sync>,
 }
 
 impl Rules {
@@ -70,6 +80,7 @@ impl Rules {
         Ok(Self {
             engine: Arc::new(engine),
             initial,
+            clock: Arc::new(server_unix_ms),
         })
     }
 
@@ -100,7 +111,21 @@ impl Rules {
         Ok(Self {
             engine: Arc::new(engine),
             initial,
+            clock: Arc::new(server_unix_ms),
         })
+    }
+
+    pub fn with_clock(mut self, clock: Arc<dyn Fn() -> u64 + Send + Sync>) -> Self {
+        self.clock = clock;
+        self
+    }
+
+    pub fn now_ms(&self) -> u64 {
+        (self.clock)()
+    }
+
+    pub fn clock(&self) -> Arc<dyn Fn() -> u64 + Send + Sync> {
+        Arc::clone(&self.clock)
     }
 
     pub fn initial(&self) -> CoopState {
@@ -155,7 +180,7 @@ impl Rules {
 
 impl Reducer for Rules {
     type State = CoopState;
-    type Action = CoopAction;
+    type Action = CoopCommand;
 
     fn ruleset(&self) -> Ruleset {
         self.engine.ruleset()
@@ -172,6 +197,7 @@ impl Reducer for Rules {
         _clock: LogicalClock,
         rng: &mut TurnRng,
     ) -> Result<Decision<Self::State>, Error> {
-        self.engine.reduce(state, *action, rng)
+        self.engine
+            .reduce_stamped(state, action.action, action.server_timestamp_ms, rng)
     }
 }

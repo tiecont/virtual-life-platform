@@ -3,7 +3,9 @@ use aetheria_pet_arena::arena8::coop::simulation::{
     COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
     simulate_solo,
 };
-use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules, solo_content_hash};
+use aetheria_pet_arena::arena8::coop::{
+    CoopConfig, CoopRules, solo_content_hash, solo_v2_content_hash,
+};
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -54,7 +56,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .iter()
             .any(|boss| boss.solo.is_some() || boss.regular.is_some())
         {
-            receipt["soloContentHash"] = hex(&solo_content_hash(digest)).into();
+            let solo_hash = if config.is_v3() {
+                solo_v2_content_hash(digest)
+            } else {
+                solo_content_hash(digest)
+            };
+            receipt["soloContentHash"] = hex(&solo_hash).into();
         }
         println!("{receipt}");
         return Ok(());
