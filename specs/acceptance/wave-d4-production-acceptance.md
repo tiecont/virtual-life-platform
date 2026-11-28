@@ -373,9 +373,9 @@ Rows use the same condition model as above. Previously passed rows tied to eleme
 | O-B05 | VL-211 | No maximum-turn or maximum-round combat defeat. | IN_PROGRESS | 6402dd7d · v3 tests | v1/v2/functional-v1 unchanged. |
 | O-B12 | VL-211 | x2 through x8 supported. | IN_PROGRESS | 6402dd7d · candidate bundle | x7/x8 thresholds are an unapproved candidate. |
 | O-B18 | VL-203 | Historical rulesets remain recoverable. | IN_PROGRESS | 6402dd7d · digests unchanged | Hosted CI pending. |
-| O-B19 | VL-211 | New balance simulations executed. | IN_PROGRESS | 6402dd7d · 3,456 matches | 0 wins, 3,456 losses under unmodified boss values; 0 unresolved. Tuning and owner approval open. |
+| O-B19 | VL-211 | New balance simulations executed. | IN_PROGRESS | 6402dd7d · initial 3,456 matches and 5213a1c7 follow-up | The unchanged baseline also lost all 2,592 composition holdout matches. Quartering both Warden HP and attack produced 1,635 wins on those seeds. Level-20 tactical starters still lost six of six Water battles in the two separate confirmation sets. Candidate publication and human balance review remain open. |
 | O-J01 | VL-203 | PR90 aggregate failure resolved. | IN_PROGRESS | 6402dd7d · ci-capacity 898→902 | Four added tests identified; hosted CI pending. |
-| O-F04 | VL-204 | Representative starter Pet assets advanced. | IN_PROGRESS | Blender 5.3 candidates: Coalwhisk, Dewskip, Clodkin | Primitive-built; art review required; 0 Meshy credits. |
+| O-F04 | VL-204 | Representative starter Pet assets advanced. | IN_PROGRESS | Blender 5.3 candidates: Coalwhisk, Dewskip, Clodkin | Coalwhisk and Cinder Warden each have four joints, four named clips and zero textures in the actual GLB. The private local stage verified both Blender/GLB/portrait sets. Reference-faithful production meshes and art approval remain open. |
 | O-F09 | VL-206 | Fire background production candidate. | IN_PROGRESS | Gemini Neon High master 2730×1536 | Runtime JPG swapped; Unity render pending. |
 | FLOW-01 | VL-184 | Account entitlement and credit costs verified. | PASS | Flow showed 1,050 credits, reset Dec 26. 720p 8s video: 24 credits (x1) | Watermark required in region. |
 | FLOW-03 | VL-184 | Icarus introduction produced. | IN_PROGRESS | 8 s 720p h264 clip, 24 credits | Wings drift from folded to spread; face consistent in mid frames. Review pending; not accepted. |

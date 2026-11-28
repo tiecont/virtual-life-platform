@@ -11209,6 +11209,11 @@
       ],
       "remaining": "Owner reviews the pending Icarus H1 R3 review.jpg and expressions.jpg under artifacts/character-production/icarus-h1-r3/gates/H1 before dependent character production.",
       "implementation": {
+        "reviewCandidateStorage": {
+          "sourceRevision": "c7c7ea9fc03204009abe70a118306a843f34f906",
+          "evidence": "artifacts/campaign-v2/receipts/asset-inspection.json",
+          "result": "All 17 Icarus H1 R3 files matched the receipt. Six procedural GLBs had skins and zero embedded textures. Coalwhisk and Cinder Warden each had four joints and four named animation clips. Their GLBs, compressed Blender sources and portraits passed local private staging and independent byte verification. No provider calls, art approval, private cloud transfer or rights acceptance."
+        },
         "localIntegrationReview": {
           "sourceRevision": "310a524ce8b9348b17b36bd1d086b1ac7e1d37fe",
           "command": "H1 receipt validation and Blender expression audit",
@@ -11606,6 +11611,13 @@
         "VL-208"
       ],
       "implementation": {
+        "timedWardenStudy": {
+          "sourceRevision": "5213a1c7d3b294cd65b07ae0c141b13158f22ec2",
+          "command": "scripts/coop-balance-study.py --baseline config/gameplay/arena8-coop-functional-v2.candidate.json with confirmation seeds 1001–1003 and 2001–2003 and composition seeds 3011–3022",
+          "result": "Across the two confirmation sets, baseline won 0/864, quarter HP won 36/864, quarter attack won 56/864 and both changes won 467/864. All baseline defeats were team wipes. The independent composition study recorded 0/2592 baseline wins and 1635/2592 with both changes. Level-20 starter tactical Water remained 0/6 in confirmation. Offline experiment only.",
+          "candidateDigest": "50bb237788a8bafc8f1dd1ef7ed9c35c544d737942025f542fa33b4843f3521f",
+          "evidence": "artifacts/campaign-v2/receipts/balance-3011.json"
+        },
         "functionalWaterHoldout": {
           "sourceRevision": "44bc7fab",
           "command": "scripts/coop-balance-study.py --stage confirmation --bundles functional-b tideglass-endurance tideglass-vitality (functional candidate, seeds 801-812). Rust arena8_coop_balance Water-only repeat on seeds 1001-1024.",
