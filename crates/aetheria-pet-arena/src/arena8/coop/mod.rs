@@ -2164,6 +2164,9 @@ impl CoopRules {
                 self.fill_board(state, rng)?;
                 Ok(())
             }
+            config::DeadBoardPolicy::Shuffle if self.config.shared_jewel_rng() => {
+                self.shuffle_or_construct_board(state, rng)
+            }
             config::DeadBoardPolicy::Shuffle => {
                 let attempts = u32::from(self.config.board.generation_attempts).max(1);
                 for _ in 0..attempts {
@@ -2184,6 +2187,32 @@ impl CoopRules {
                 }
             }
         }
+    }
+
+    fn shuffle_or_construct_board(
+        &self,
+        state: &mut CoopState,
+        rng: &mut TurnRng,
+    ) -> Result<(), CoreError> {
+        // A constructive board consumes 65 successful draws. Leave extra
+        // words for unbiased rejection sampling when optional shuffles fail.
+        const CONSTRUCTION_WORD_RESERVE: u64 = 512;
+        let mut candidate = state.board;
+        for _ in 0..self.config.board.generation_attempts {
+            match rng.shuffle_reserving(&mut candidate, CONSTRUCTION_WORD_RESERVE) {
+                Ok(()) => {}
+                Err(CoreError::EntropyExhausted) => break,
+                Err(error) => return Err(error),
+            }
+            if !matched_cells(&candidate).into_iter().any(|matched| matched) {
+                state.board = candidate;
+                if self.legal_swap(state).is_some() {
+                    return Ok(());
+                }
+            }
+        }
+        state.board = self.construct_board(rng)?;
+        Ok(())
     }
 
     fn construct_board(&self, rng: &mut TurnRng) -> Result<[Option<Tile>; CELLS], CoreError> {

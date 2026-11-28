@@ -334,3 +334,49 @@ fn single_seat_warden_final_blow_proposes_the_ordinary_win_settlement() {
     assert_eq!(fields[5], Value::Text(FIRE.into()));
     assert!(matches!(&fields[6], Value::List(participants) if participants.len() == 1));
 }
+
+#[test]
+fn difficult_shuffle_preserves_entropy_for_constructive_recovery() {
+    let mut bundle: Json = serde_json::from_slice(BUNDLE).unwrap();
+    bundle["board"]["deadBoardPolicy"] = json!("shuffle");
+    bundle["board"]["generationAttempts"] = json!(256);
+    for (index, weight) in bundle["board"]["functionalTiles"]["spawnWeights"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .enumerate()
+    {
+        weight["weight"] = if index == 0 {
+            json!(1_000_000)
+        } else {
+            json!(1)
+        };
+    }
+    let rules = CoopRules::from_config(parse(&bundle).unwrap(), FIRE.into()).unwrap();
+    let mut state = rules.allocate(seats()).unwrap();
+    state.board = [Some(Tile {
+        identity: TileIdentity::Kind(TileKind::Sword),
+        multiplier: 1,
+    }); CELLS];
+    let mut entropy = rng(0);
+    rules.dead_board(&mut state, &mut entropy).unwrap();
+    assert!(entropy.cursor() > 15_000);
+    assert!(state.board.iter().all(Option::is_some));
+    assert!(
+        !matched_cells(&state.board)
+            .into_iter()
+            .any(|matched| matched)
+    );
+    assert!(rules.legal_swap(&state).is_some());
+}
+
+#[test]
+fn bounds_shared_multiplier_weights_without_changing_historical_validation() {
+    let mut shared: Json = serde_json::from_slice(BUNDLE).unwrap();
+    let mut historical: Json = serde_json::from_slice(V3_BUNDLE).unwrap();
+    for bundle in [&mut shared, &mut historical] {
+        bundle["multiplier"]["schedule"][0]["tiers"][0]["weight"] = json!(8_000_001);
+    }
+    assert_eq!(parse(&shared), Err(ConfigError::MultiplierSchedule));
+    assert!(parse(&historical).is_ok());
+}

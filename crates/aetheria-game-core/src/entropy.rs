@@ -95,11 +95,21 @@ impl TurnRng {
         Ok(word)
     }
     pub fn below(&mut self, upper: u32) -> Result<u32, Error> {
+        self.below_reserving(upper, 0)
+    }
+
+    fn below_reserving(&mut self, upper: u32, reserve: u64) -> Result<u32, Error> {
         if upper == 0 {
             return Err(Error::InvalidAction);
         }
         let limit = (1_u64 << 32) - (1_u64 << 32) % u64::from(upper);
         loop {
+            if reserve > 0
+                && (MAX_WORDS_PER_TURN - (self.cursor - self.start)).min(u64::MAX - self.cursor)
+                    <= reserve
+            {
+                return Err(Error::EntropyExhausted);
+            }
             let word = self.next_word()?;
             if u64::from(word) < limit {
                 return Ok(word % upper);
@@ -107,11 +117,17 @@ impl TurnRng {
         }
     }
     pub fn shuffle<T>(&mut self, items: &mut [T]) -> Result<(), Error> {
+        self.shuffle_reserving(items, 0)
+    }
+
+    /// Shuffle a speculative candidate while leaving words for a fallback.
+    /// An error may leave the supplied slice partially shuffled.
+    pub fn shuffle_reserving<T>(&mut self, items: &mut [T], reserve: u64) -> Result<(), Error> {
         if items.len() > 512 {
             return Err(Error::Capacity);
         }
         for index in (1..items.len()).rev() {
-            let target = self.below((index + 1) as u32)? as usize;
+            let target = self.below_reserving((index + 1) as u32, reserve)? as usize;
             items.swap(index, target);
         }
         Ok(())

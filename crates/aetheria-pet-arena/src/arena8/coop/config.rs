@@ -787,7 +787,8 @@ impl CoopConfig {
         }
         self.multiplier.validate()?;
         if self.board.functional_tiles.is_some() {
-            self.multiplier.validate_functional()?;
+            self.multiplier
+                .validate_functional(self.shared_jewel_rng())?;
         }
         let bosses = match (self.schema_version, &self.boss, &self.bosses) {
             (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
@@ -1415,7 +1416,10 @@ impl MultiplierConfig {
         Ok(())
     }
 
-    fn validate_functional(&self) -> Result<(), ConfigError> {
+    fn validate_functional(&self, shared_jewel_rng: bool) -> Result<(), ConfigError> {
+        // Bound the integer precision of shared-board sampling. Historical
+        // schedules retain their original accepted range and encoding.
+        const MAX_SHARED_MULTIPLIER_BUDGET: u32 = 8_000_000;
         let mut previous = (0, 0);
         for (tier, weights) in self.weights() {
             if (tier == 1 && weights != (1_000, 1_000))
@@ -1428,7 +1432,10 @@ impl MultiplierConfig {
             previous = weights;
         }
         for stage in &self.schedule {
-            self.weight_budget(stage.from)?;
+            let budget = self.weight_budget(stage.from)?;
+            if shared_jewel_rng && budget > MAX_SHARED_MULTIPLIER_BUDGET {
+                return Err(ConfigError::MultiplierSchedule);
+            }
         }
         Ok(())
     }
