@@ -4,9 +4,9 @@
   "activation": "DISABLED",
   "qualification": "Disposable restricted TLS PostgreSQL host proof; no production provisioning, takeover, legacy or ledger privileges",
   "admissionSelectProfile": "config/native-runtime-db-privileges.json",
-  "select": ["game_native_matches", "game_native_receipts", "game_native_events"],
-  "rewardStatusSelect": {"game_native_outbox": ["match_id", "delivery_outcome"]},
-  "insert": ["platform_native_ticket_uses", "game_native_matches", "game_native_receipts", "game_native_events", "game_native_settlements", "game_native_outbox"],
+  "select": ["game_native_matches", "game_native_receipts", "game_native_events", "game_native_pet_participants", "game_native_pet_replay", "game_native_pet_database_guard", "game_native_settlements"],
+  "rewardStatusSelect": {"game_native_outbox": ["match_id", "settlement_id", "delivery_outcome"]},
+  "insert": ["platform_native_ticket_uses", "game_native_matches", "game_native_receipts", "game_native_events", "game_native_settlements", "game_native_outbox", "game_native_pet_participants", "game_native_pet_replay"],
   "update": {
     "game_native_matches": ["state_version", "server_tick", "logical_time_ms", "rng_cursor", "status", "audit_hash", "snapshot_key_id", "snapshot_nonce", "snapshot_tag", "sealed_snapshot", "updated_at"]
   }

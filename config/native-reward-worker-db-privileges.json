@@ -6,6 +6,7 @@
     "engine_hospitality_outbox", "engine_hospitality_completions", "engine_hospitality_orders",
     "engine_hospitality_deliveries", "engine_hospitality_delivery_retries",
     "game_native_outbox", "game_native_settlements", "game_native_receipts", "game_native_matches",
+    "game_native_pet_participants", "game_native_pet_database_guard",
     "platform_native_reward_inbox", "platform_native_reward_ledger",
     "identity_accounts", "safety_incident_controls", "safety_sanctions"
   ],

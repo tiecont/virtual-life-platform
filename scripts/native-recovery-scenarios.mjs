@@ -7,7 +7,7 @@ export async function nativeRecoveryScenarios({pool,matchId,rejectHost,record}){
  const original=(await pool.query('SELECT audit_hash,sealed_snapshot FROM game_native_matches WHERE id=$1',[matchId])).rows[0];
  const fingerprint=async()=>{
   const hash=createHash('sha256');
-  for(const table of ['game_native_matches','game_native_events','game_native_receipts','game_native_settlements','game_native_outbox','platform_native_reward_inbox','platform_native_reward_ledger']){
+  for(const table of ['game_native_matches','game_native_pet_participants','game_native_pet_replay','game_native_events','game_native_receipts','game_native_settlements','game_native_outbox','platform_native_reward_inbox','platform_native_reward_ledger']){
    const rows=(await pool.query(`SELECT row_to_json(t) AS row FROM ${table} t ORDER BY row_to_json(t)::text`)).rows;
    hash.update(table);hash.update(JSON.stringify(rows));
   }
@@ -52,6 +52,16 @@ export async function nativeRecoveryScenarios({pool,matchId,rejectHost,record}){
   }
  }
  record('recovery-authenticates-historical-receipt-and-event-hashes-ciphertexts-and-required-keys');
+ // Removing the entire event set leaves no gap in per-turn indexes.
+ const eventDb=await pool.connect();
+ try{
+  await eventDb.query('CREATE TEMP TABLE saved_replay_events AS SELECT * FROM game_native_events WHERE match_id=$1 AND state_version=1',[matchId]);
+  try{
+   assert((await eventDb.query('DELETE FROM game_native_events WHERE match_id=$1 AND state_version=1',[matchId])).rowCount>0);
+   await denied();
+  }finally{await eventDb.query('INSERT INTO game_native_events SELECT * FROM saved_replay_events');}
+ }finally{await eventDb.query('DROP TABLE IF EXISTS saved_replay_events');eventDb.release();}
+ record('reducer-replay-detects-a-whole-missing-turn-event-set');
  // Simulate a backup missing the latest receipt and its cascading events. Keep
  // exact rows in connection-local temporary tables for fixture-only restoration.
  const db=await pool.connect();

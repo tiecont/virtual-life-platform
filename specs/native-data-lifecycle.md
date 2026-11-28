@@ -4,7 +4,35 @@ Status: DRAFT_ONLY / OFFLINE_ONLY / NO_GO_PUBLIC. This is the maintained VL-055
 privacy and recovery design. It records source behavior and required decisions;
 it is not retention approval or authorization to delete production data.
 
-## Current Ownership
+## Historical draft baseline
+
+This draft preserves the offline single-account implementation on the merged
+`d4232328` baseline. Later main revisions assigned journal entry 0055 to Wave 1
+state. A forward port requires a new additive migration, compatibility checks
+against the current journal, and review of the current cooperative account
+erasure and settlement contracts. Keep this migration confined to the
+historical baseline.
+
+## Offline implementation since migration 0055
+
+The single-account Pet path records its participant and sealed genesis in the
+allocation transaction. It retains sealed reducer inputs and replays accepted
+commands on recovery. The identity privacy port discovers indexed matches even
+with login features disabled. Offline export returns an account's match metadata
+and settlement/reward summary; it never exports the RNG, keys or replay inputs.
+Erasure fences admission and coordinates with native turns and reward delivery
+using the canonical account lock. Unreconciled old Pet rows block the affected
+privacy path; this migration cannot reconstruct missing historical inputs.
+
+The supported logical restore target is an empty, isolated disposable database.
+Before Pet serving resumes, the recovery adapter reconciles it against the
+original authoritative database and invalidates restored admission and leases.
+The original must still exist and be current. This is not an independently
+custodied deletion register: it does not qualify source loss, physical clones,
+in-place rollback, or production recovery. The offline path establishes no
+retention period, production export policy, or key custodian.
+
+## Ownership before migration 0055
 
 Nest owns the SQL migration journal, identity account locks, privacy requests and
 platform reward ledger. Rust owns new gameplay commands and encrypted match
@@ -28,7 +56,7 @@ native device metadata only. Native gameplay journals and native completion
 ledger exports do not yet have those handlers. Login flags must not hide data
 from a future privacy handler.
 
-## Backup And Recovery Boundary
+## Baseline backup and recovery boundary (before 0055)
 
 The Pet Arena win/loss process suites stop their source host, create an AES-GCM
 PostgreSQL archive and restore it into a separate empty disposable database.
@@ -48,7 +76,7 @@ offsite custody, PITR, recovery time targets, production key rotation or retenti
 periods. Authenticated envelopes and contiguous recorded event indices do not
 prove reducer replay from genesis or detect deletion of every event for a turn.
 
-## Required Privacy Implementation
+## Privacy requirements
 
 1. Add a journaled participant ownership index covering a match at version zero.
    An additive migration and the Rust allocator must populate it consistently;
@@ -82,6 +110,6 @@ prove reducer replay from genesis or detect deletion of every event for a turn.
 - Backup key custody, rotation, expiry and how deletion survives archive restore.
 
 No values are inferred from source implementation or a green CI run. Until the
-handlers, race tests and decisions are complete, VL-055 remains IN_PROGRESS and
+owner decisions and recovery qualification are complete, VL-055 remains IN_PROGRESS and
 native public rollout remains closed. Unrelated offline source work may proceed
 under the repository's implementation/qualification separation.

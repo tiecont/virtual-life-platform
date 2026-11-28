@@ -12,6 +12,29 @@ fn fixture_rules() -> Rules {
     }
 }
 #[test]
+fn replay_codec_round_trips_the_four_action_forms_and_rejects_unknown_bytes() {
+    let rules = fixture_rules();
+    for action in [
+        Action::Start,
+        Action::Swap {
+            first: 0,
+            second: 35,
+        },
+        Action::Skill,
+        Action::Pass,
+    ] {
+        assert_eq!(
+            rules
+                .decode_replay_action(&rules.encode_replay_action(&action).unwrap())
+                .unwrap(),
+            action
+        );
+    }
+    for bytes in [&[][..], &[4], &[1, 0], &[1, 0, 2, 3], &[3, 0]] {
+        assert!(rules.decode_replay_action(bytes).is_err());
+    }
+}
+#[test]
 fn adapter_contract_rejects_forgery_and_cross_account_projection() {
     let rules = fixture_rules();
     assert_eq!(rules.interaction("pet.intent.v1"), Some("pet-arena"));

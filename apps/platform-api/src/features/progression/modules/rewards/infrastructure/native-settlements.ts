@@ -31,7 +31,7 @@ export class NativeSettlements {
       await db.query('BEGIN');
       await db.query("SET LOCAL statement_timeout='2000ms'; SET LOCAL lock_timeout='1000ms'");
       const {world, ruleset, rulesetVersion, contentHash} = this.policy;
-      const {rows: [event]} = await db.query<Settlement>(`
+      const eventQuery=`
         SELECT o.event_id, o.settlement_id, s.proposal, s.proposal_hash, r.actor_id
         FROM game_native_outbox o
         JOIN game_native_settlements s USING (match_id, settlement_id)
@@ -41,8 +41,24 @@ export class NativeSettlements {
           AND o.effect_type='game.settlement.v1'
           AND m.world_id=$1 AND m.ruleset_id=$2 AND m.ruleset_version=$3 AND m.content_hash=decode($4,'hex')
           AND m.status='SETTLING' AND m.state_version=s.state_version AND m.epoch=s.epoch
-        ORDER BY o.available_at,o.event_id LIMIT 1 FOR UPDATE OF o SKIP LOCKED
-      `, [world, ruleset, rulesetVersion, contentHash]);
+          AND (m.ruleset_id<>'pet-arena-pve' OR (
+            EXISTS (SELECT 1 FROM game_native_pet_participants p WHERE p.match_id=m.id AND p.account_id=r.actor_id)
+            AND EXISTS (SELECT 1 FROM game_native_pet_database_guard WHERE singleton
+              AND database_identity=game_native_pet_database_identity())
+          ))`;
+      const scope=[world,ruleset,rulesetVersion,contentHash];
+      // Discover only; never wait for an account while holding an outbox row.
+      const {rows:[candidate]}=await db.query<Settlement>(
+        eventQuery+' ORDER BY o.available_at,o.event_id LIMIT 1',scope);
+      if(!candidate){
+        await db.query('COMMIT');
+        return false;
+      }
+      await lockAccounts(db,[candidate.actor_id]);
+      const {rows:[event]}=await db.query<Settlement>(
+        eventQuery+' AND o.event_id=$5 AND r.actor_id=$6 FOR UPDATE OF o',
+        [...scope,candidate.event_id,candidate.actor_id],
+      );
 
       if (event) {
         const prior = (await db.query<{outcome: Outcome}>(
@@ -55,7 +71,7 @@ export class NativeSettlements {
         );
       }
       await db.query('COMMIT');
-      return event !== undefined;
+      return true;
     } catch (error) {
       await db.query('ROLLBACK');
       throw error;
@@ -69,7 +85,6 @@ export class NativeSettlements {
     const valid = validNativeCompletion(this.policy, event.proposal, event.proposal_hash);
     let outcome: Outcome = 'declined';
     if (valid) {
-      await lockAccounts(db, [event.actor_id]);
       const active = await db.query("SELECT 1 FROM identity_accounts WHERE id=$1 AND status='active'", [event.actor_id]);
       if (active.rowCount && await this.eligible(db, event.actor_id, world)) outcome = 'granted';
     }

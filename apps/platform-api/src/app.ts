@@ -95,6 +95,7 @@ import { LibraryStudyService } from './features/library/modules/study/applicatio
 import {GameLobbyService} from './features/games/modules/sessions/application/lobby';
 import {registerGameLobby} from './features/games/modules/sessions/presentation/http';
 import {GameJournal} from './features/games/modules/persistence/infrastructure/journal';
+import {registerNativePetPrivacy} from './features/games/modules/persistence/infrastructure/native-pet-privacy';
 import {GameJournalCrypto} from './features/games/modules/persistence/infrastructure/journal-crypto';
 import {createGameJournalHost} from './features/games/modules/sessions/application/room-host';
 import type {GameInitialFactory} from './features/games/modules/persistence/infrastructure/journal-host';
@@ -149,6 +150,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
   const nativeIdentity=config.NATIVE_AUTH_ENABLED==='1'?new NativeIdentityService(identity,config.NATIVE_AUTH_KEY!,options.now):undefined;
   http.addHook('onClose',async()=>{nativeIdentity?.close();});
   registerNativePrivacy(identity,options.now);
+  registerNativePetPrivacy(identity,config.NODE_ENV!=='production');
   const operator=config.OPERATOR_AUTH_KEY?new OperatorService(db,config.OPERATOR_AUTH_KEY,options.now):undefined;
   const privacyRequests=new PrivacyRequestService(identity,config.SESSION_SECRET,operator,options.now);
   const accountControls=operator?new AccountControlService(identity,operator,options.now):undefined;

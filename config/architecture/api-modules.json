@@ -33,6 +33,7 @@
         "features/games/modules/sessions/application/lobby",
         "features/games/modules/sessions/presentation/http",
         "features/games/modules/persistence/infrastructure/journal",
+        "features/games/modules/persistence/infrastructure/native-pet-privacy",
         "features/games/modules/persistence/infrastructure/journal-crypto",
         "features/games/modules/persistence/infrastructure/journal-host",
         "features/games/modules/sessions/application/room-host"

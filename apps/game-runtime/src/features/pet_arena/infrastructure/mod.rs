@@ -1,5 +1,6 @@
 use super::domain::{Rules, State};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 use vl_game_core::Reducer;
 use vl_persistence::{Completion, Error, Game};
 use vl_pet_arena::combat::{Action, Phase, State as CombatState};
@@ -11,6 +12,31 @@ struct Snapshot {
     combat: Vec<u8>,
 }
 impl Game for Rules {
+    fn pet_participant(&self, state: &State) -> Option<Uuid> {
+        Uuid::parse_str(&state.player)
+            .ok()
+            .filter(|_| state.player == self.player)
+    }
+    fn encode_replay_action(&self, action: &Action) -> vl_persistence::Result<Vec<u8>> {
+        Ok(match action {
+            Action::Start => vec![0],
+            Action::Swap { first, second } => vec![1, *first, *second],
+            Action::Skill => vec![2],
+            Action::Pass => vec![3],
+        })
+    }
+    fn decode_replay_action(&self, bytes: &[u8]) -> vl_persistence::Result<Action> {
+        match bytes {
+            [0] => Ok(Action::Start),
+            [1, first, second] => Ok(Action::Swap {
+                first: *first,
+                second: *second,
+            }),
+            [2] => Ok(Action::Skill),
+            [3] => Ok(Action::Pass),
+            _ => Err(Error::Integrity),
+        }
+    }
     fn completion(&self, state: &State) -> vl_persistence::Result<Completion> {
         self.validate(state).map_err(|_| Error::Integrity)?;
         match state.combat.phase() {

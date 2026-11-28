@@ -14,10 +14,10 @@ beforeAll(async()=>{
  await Promise.all([migrate(pool),migrate(pool)]);
 });
 afterAll(async()=>{await pool?.end();if(admin){await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);await admin.end();}});
-async function match(){
+async function match(db:Pick<PoolClient,'query'>=pool,rules='fixture-only'){
  const id=randomUUID(),boot=randomUUID();
- await pool.query(`INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,owner_boot_id,epoch,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot,protocol_version,canonical_version,rng_version)
- VALUES($1,'native:fixture','fixture-only',1,$2,$3,$4,1,0,1000,0,'ACTIVE',$5,$6,'fixture-key',$7,$8,$9,1,1,1)`,[id,hash(),hash(),boot,hash(),hash(),nonce(),tag(),randomBytes(32)]);
+ await db.query(`INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,owner_boot_id,epoch,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot,protocol_version,canonical_version,rng_version)
+ VALUES($1,'native:fixture',$10,1,$2,$3,$4,1,0,1000,0,'ACTIVE',$5,$6,'fixture-key',$7,$8,$9,1,1,1)`,[id,hash(),hash(),boot,hash(),hash(),nonce(),tag(),randomBytes(32),rules]);
  return {id,boot};
 }
 async function receipt(db:Pick<PoolClient,'query'>,id:string,version:number,epoch=1,actor=randomUUID(),command=randomUUID()){
@@ -32,7 +32,42 @@ it('two real concurrent migrators preserve the current manifest and native stora
  const manifest=await migrationManifest(),rows=(await pool.query('SELECT name,checksum FROM city_schema_migrations ORDER BY name')).rows;
  expect(rows).toHaveLength(Object.keys(manifest).length);expect(Object.fromEntries(rows.map(r=>[r.name,r.checksum]))).toEqual(manifest);
  expect(manifest['0048_native_game_storage.sql']).toBe('8c54c14ba85ed9278b0f5239d9fa0c2a20b2e5ea029913047c78b3dafc8d964a');
- expect((await pool.query("SELECT count(*) AS n FROM information_schema.tables WHERE table_schema=$1 AND table_name LIKE 'game_native_%'",[schema])).rows[0].n).toBe('5');
+ expect((await pool.query("SELECT count(*) AS n FROM information_schema.tables WHERE table_schema=$1 AND table_name LIKE 'game_native_%'",[schema])).rows[0].n).toBe('8');
+});
+
+it('restricted native allocation requires an existing owner and genesis before committing version zero',async()=>{
+ const role='pet_role_'+randomUUID().replaceAll('-',''),account=randomUUID();
+ await admin.query(`CREATE ROLE "${role}" NOLOGIN`);
+ try{
+  await pool.query(`GRANT USAGE ON SCHEMA "${schema}" TO "${role}"`);
+  await pool.query(`GRANT SELECT,INSERT ON game_native_matches,game_native_pet_participants,game_native_pet_replay TO "${role}"`);
+  await pool.query('INSERT INTO identity_accounts(id,created_at) VALUES($1,clock_timestamp())',[account]);
+  const asNative=<T>(work:(db:PoolClient)=>Promise<T>)=>transaction(async db=>{
+   await db.query(`SET LOCAL ROLE "${role}"`);return work(db);
+  });
+  await expect(asNative(db=>match(db,'pet-arena-pve'))).rejects.toMatchObject({code:'23514'});
+  await expect(asNative(async db=>{
+   const {id}=await match(db,'pet-arena-pve');
+   await db.query('INSERT INTO game_native_pet_participants VALUES($1,$2)',[id,randomUUID()]);
+  })).rejects.toMatchObject({code:'23503'});
+  const {id}=await asNative(async db=>{
+   const m=await match(db,'pet-arena-pve');
+   await db.query('INSERT INTO game_native_pet_participants VALUES($1,$2)',[m.id,account]);
+   await db.query("INSERT INTO game_native_pet_replay VALUES($1,0,1,'fixture',$2,$3,$4)",[m.id,nonce(),tag(),hash()]);
+   return m;
+  });
+  expect((await pool.query('SELECT p.account_id,m.state_version FROM game_native_pet_participants p JOIN game_native_matches m ON m.id=p.match_id WHERE m.id=$1',[id])).rows).toEqual([{account_id:account,state_version:'0'}]);
+  await expect(asNative(db=>db.query('SELECT game_native_pet_erase($1)',[account]))).rejects.toMatchObject({code:'42501'});
+  await expect(asNative(db=>db.query('DELETE FROM game_native_pet_replay WHERE match_id=$1',[id]))).rejects.toMatchObject({code:'42501'});
+  await expect(pool.query('DELETE FROM identity_accounts WHERE id=$1',[account])).rejects.toMatchObject({code:'23503'});
+  await pool.query('SELECT game_native_pet_erase($1)',[account]);
+  expect((await pool.query('DELETE FROM identity_accounts WHERE id=$1',[account])).rowCount).toBe(1);
+  expect((await pool.query('SELECT 1 FROM game_native_pet_replay WHERE match_id=$1',[id])).rowCount).toBe(0);
+ }finally{
+  await pool.query(`REVOKE ALL ON game_native_matches,game_native_pet_participants,game_native_pet_replay FROM "${role}"`);
+  await pool.query(`REVOKE USAGE ON SCHEMA "${schema}" FROM "${role}"`);
+  await admin.query(`DROP ROLE "${role}"`);
+ }
 });
 
 it('eight competing finalizations commit exactly one checkpoint receipt event settlement and outbox',async()=>{
@@ -92,7 +127,7 @@ it('orphan effects and mismatched epochs fail while new storage stays outside le
  const m=await match();await pool.query('UPDATE game_native_matches SET state_version=1 WHERE id=$1',[m.id]);await receipt(pool,m.id,1);
  await expect(pool.query(`INSERT INTO game_native_events VALUES($1,1,2,0,$2,'fixture-key',$3,$4,$5)`,[m.id,hash(),nonce(),tag(),randomBytes(20)])).rejects.toMatchObject({code:'23503'});
  await expect(pool.query(`INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1,$2,$3,'game.settlement.v1')`,[randomUUID(),m.id,randomUUID()])).rejects.toMatchObject({code:'23503'});
- const foreign=(await pool.query(`SELECT confrelid::regclass::text AS target FROM pg_constraint WHERE connamespace=$1::regnamespace AND contype='f' AND conrelid::regclass::text LIKE 'game_native_%'`,[schema])).rows;
- expect(foreign.length).toBeGreaterThan(0);expect(foreign.every(r=>r.target.startsWith('game_native_'))).toBe(true);
+ const foreign=(await pool.query(`SELECT conrelid::regclass::text AS source,confrelid::regclass::text AS target FROM pg_constraint WHERE connamespace=$1::regnamespace AND contype='f' AND conrelid::regclass::text LIKE 'game_native_%'`,[schema])).rows;
+ expect(foreign.filter(r=>!r.target.startsWith('game_native_'))).toEqual([{source:'game_native_pet_participants',target:'identity_accounts'}]);
  expect((await pool.query('SELECT count(*) AS n FROM engine_game_matches')).rows[0].n).toBe('0');
 });
