@@ -11,6 +11,7 @@
     "Aetheria.PetArena.Vfx",
     "Aetheria.Pets",
     "Aetheria.RemoteContent",
+    "Unity.Timeline",
     "Unity.Addressables",
     "Unity.Addressables.Editor",
     "Aetheria.World.Domain",

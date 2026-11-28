@@ -459,9 +459,9 @@ V3 identifiers below retain the owner's numbering. The prefix distinguishes them
 | V3-P03 | VL-204 | Icarus production advanced through the next authorized gate. | OWNER_REVIEW_REQUIRED | Icarus H1 face and hair review is open. |
 | V3-P04 | VL-205 | Representative starter Pet and Fire Boss production advanced. | IN_PROGRESS | Existing Coalwhisk and Cinder Warden candidates are private. Reference-faithful models await admission. |
 | V3-P05 | VL-206 | Production battle UI and environment improvements verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
-| V3-P06 | VL-170 | Cinematic infrastructure advanced using canonical assets or labeled test fixtures. | IN_PROGRESS | Unity lock resolves Timeline 1.8.12. Cinemachine and Recorder are absent from the lock; canonical production model remains gated. |
+| V3-P06 | VL-171 | Cinematic infrastructure advanced using canonical assets or labeled test fixtures. | IN_PROGRESS | Unity lock resolves Timeline 1.8.12. Cinemachine and Recorder are absent from the lock; canonical production model remains gated. |
 | V3-P07 | VL-208 | Wallet, progression and Admin work advanced. | PASS | 2f208d0c · combined operator build, 16 focused tests, 12 DB proxy cases and four desktop/mobile browser journeys. |
-| V3-P08 | VL-198 | Private asset delivery and retrieval advanced where authorized. | BLOCKED | Private staging receipts exist; authorized remote target and independent retrieval receipt remain open. |
+| V3-P08 | VL-170 | Private asset delivery and retrieval advanced where authorized. | BLOCKED | Private staging receipts exist; authorized remote target and independent retrieval receipt remain open. |
 | V3-P09 | VL-106 | Audio and localization improvements verified. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-P10 | VL-210 | Additional eligible campaign work completed without duplicating earlier work. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
 | V3-Q01 | VL-212 | Focused Rust and TypeScript regression suites pass. | NOT_RUN | Await scoped verification on the integrated V3 candidate. |
