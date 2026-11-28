@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import {
  GameplayConfigAuditSchema,GameplayConfigMutationSchema,GameplayConfigOverviewSchema,
  GameplayConfigPublishResultSchema,GameplayConfigRollbackResultSchema,GameplayConfigValidationSchema,GameplayConfigVersionViewSchema,
- GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
+ gameplayEngineBinding,GameplaySimulationPolicySchema,GameplaySimulationResultSchema,type EngineGameplaySimulationReport,type GameplayBundle,type GameplaySimulationPolicy,type GameplaySimulationParty,
 } from '@aetheria/contracts';
 import {SkillTrainingEditor} from './skill-training-editor';
 import {initialParty,SimulationParty} from './simulation-party';
@@ -43,7 +43,7 @@ function Num({label,value,onChange,step=1,min=0,max}:{label:string;value:unknown
 }
 
 const functionalTileLabels={
- sword:'Sword',mana:'Mana',rage:'Rage',heart:'Heart',shield:'Shield',special:'Special',
+ sword:'Strike',mana:'Mana',rage:'Rage',heart:'Vitality',shield:'Aegis',special:'Soul',
 };
 const functionalTargets=[
  ['self','Acting Pet'],
@@ -76,7 +76,7 @@ function FunctionalBoardEditor({bundle,editable,change}:{
  };
  return <section>
   <h3>Functional board tiles</h3>
-  <p className="small muted">All Pets use the same six gem kinds. Sword uses the acting Pet’s elemental attack. Utility gems apply their configured effect.</p>
+  <p className="small muted">Six basic jewel types spawn naturally. Strike uses the acting Pet’s elemental attack. Utility jewels apply their configured effects.</p>
   <fieldset disabled={!editable}>
    <legend>Spawn weights</legend>
    <p className="small muted">Each kind’s base spawn chance is its weight divided by the sum of the six weights.</p>
@@ -94,18 +94,18 @@ function FunctionalBoardEditor({bundle,editable,change}:{
   <fieldset disabled={!editable}>
    <legend>Yield per matched tile</legend>
    <div className="fields">
-    {number('Sword attack contribution (‰)',['swordContributionPm'],{min:1,max:10000})}
+    {number('Strike attack contribution (‰)',['swordContributionPm'],{min:1,max:10000})}
     {number('Mana from Mana',['manaPerTile'],manaBound)}
     {number('Rage from Rage',['ragePerTile'],rageBound)}
-    {number('HP from Heart',['heart','amount'],{min:1,max:100000})}
+    {number('HP from Vitality',['heart','amount'],{min:1,max:100000})}
     {target('heart')}
-    {number('Barrier from Shield',['shield','amount'],{min:1,max:100000})}
+    {number('Barrier from Aegis',['shield','amount'],{min:1,max:100000})}
     {target('shield')}
     {number('Barrier cap relative to target max HP (‰)',['shield','shieldCapPm'],{min:1,max:1000})}
     {number('Barrier duration (turns)',['shield','durationTurns'],{min:1,max:32})}
     {read(bundle,[...path,'special','kind'])==='resource-combo'&&<>
-     {number('Mana from Special',['special','mana'],manaBound)}
-     {number('Rage from Special',['special','rage'],rageBound)}
+     {number('Mana from Soul',['special','mana'],manaBound)}
+     {number('Rage from Soul',['special','rage'],rageBound)}
     </>}
    </div>
   </fieldset>
@@ -336,7 +336,9 @@ export default function GameplayConfig({request}:{request:Request}){
   catch(error){setMessage(error instanceof Error?error.message:'Invalid JSON bundle');}
  }
  const editable=selected?.state==='DRAFT',activatable=selected?.state==='VALIDATED';
- const functional=bundle?.schemaVersion===3;
+ const binding=gameplayEngineBinding(bundle?.schemaVersion);
+ const functional=binding?.soloVersion!==undefined;
+ const timed=functional && binding.coopVersion>=3;
  const expanded=functional||bundle?.schemaVersion===2;
  const schedule=read(bundle,['multiplier','schedule']);
  const artifactCatalog=Array.isArray(bundle?.artifacts)?bundle.artifacts:[];
@@ -440,7 +442,7 @@ export default function GameplayConfig({request}:{request:Request}){
    <option value="constructive">Build a stable board with a legal swap</option>
   </select>
  </label>}
- <div className="fields"><Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/><Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
+ <div className="fields">{timed?<p>Unlimited rounds · Turn duration {display(bundle,'party','turnTimeoutMs')} ms</p>:<Num label="Max rounds" value={read(bundle,['party','maxRounds'])} onChange={value=>change(['party','maxRounds'],value)}/>}<Num label="Max cascades" value={read(bundle,['party','maxCascades'])} onChange={value=>change(['party','maxCascades'],value)}/><Num label="Board generation attempts" value={read(bundle,['board','generationAttempts'])} onChange={value=>change(['board','generationAttempts'],value)}/></div>
  {functional&&bundle&&<FunctionalBoardEditor bundle={bundle} editable={editable} change={change}/>}
  <h3>Boss phase configuration</h3>{bossCatalog.length?<label>Boss<select className="aetheria-field" value={bossPath[1]} onChange={event=>setBossIndex(Number(event.target.value))}>{bossCatalog.map((value,index)=>{
   const id=display(value,'id'),name=display(value,'name'),map=display(value,'mapId');
@@ -476,7 +478,7 @@ export default function GameplayConfig({request}:{request:Request}){
  })}
  <h3>Multiplier schedule</h3>
  <p className="small muted">Each refill rolls from the current stage. A tier’s probability is its weight divided by the total weight for that stage.</p>
- {functional&&<p className="small muted">Sword uses the attack factor. Mana, Rage, Heart, Shield and Special use the utility factor. A factor applies to the same tier wherever it appears.</p>}
+ {functional&&<p className="small muted">Strike uses the attack factor. Mana, Rage, Vitality, Aegis and Soul use the utility factor. A factor applies to the same tier wherever it appears.</p>}
  <div className="audit"><table><thead><tr><th>From turn</th><th>Tier weights</th></tr></thead>
  <tbody>{Array.isArray(schedule)&&schedule.map((stage,index)=>{
   const path=['multiplier','schedule',String(index)],tiers=read(stage,['tiers']);
