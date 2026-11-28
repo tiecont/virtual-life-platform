@@ -360,7 +360,7 @@ export async function createApp(config: Config, db: Pick<Pool, 'query' | 'connec
       ownedProvisioner=true;
     }
     if(provisioner)await provisioner.recover();
-    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner,options.petArena8Native?.enabled===true);
+    const coopRooms=new CoopRoomService(db,new CoopRoomStore(),coopSkills,provisioner,options.petArena8Native?.enabled===true&&!!gameplayValidator);
     registerCoopRooms(http,config,identity,coopRooms,coopSkills,options.now);
     if(ownedProvisioner&&provisioner){
       const owned=provisioner;
