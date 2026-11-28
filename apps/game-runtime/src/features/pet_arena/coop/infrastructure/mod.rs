@@ -235,6 +235,9 @@ impl Game for Rules {
                 "damage": pending.damage,
             })),
         });
+        if config.advanced_jewels.is_some() {
+            projection["chillReductionPm"] = state.chill_reduction_pm.unwrap_or(0).into();
+        }
         // Older bundles retain the historical projection exactly. New local
         // catalog matches present the caller's own published abilities.
         if config.has_artifact_catalog() {

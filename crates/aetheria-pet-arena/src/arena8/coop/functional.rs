@@ -14,6 +14,9 @@ pub enum TileKind {
     Heart,
     Shield,
     Special,
+    Nature,
+    Frost,
+    Astral,
 }
 
 impl TileKind {
@@ -25,6 +28,10 @@ impl TileKind {
         Self::Shield,
         Self::Special,
     ];
+
+    pub const fn advanced(self) -> bool {
+        matches!(self, Self::Nature | Self::Frost | Self::Astral)
+    }
 
     pub const fn index(self) -> usize {
         self as usize
@@ -38,6 +45,9 @@ impl TileKind {
             Self::Heart => "heart",
             Self::Shield => "shield",
             Self::Special => "special",
+            Self::Nature => "nature",
+            Self::Frost => "frost",
+            Self::Astral => "astral",
         }
     }
 }
@@ -136,7 +146,7 @@ impl FunctionalTiles {
         let mut table = [0u32; 6];
         let mut total = 0u32;
         for weight in &self.spawn_weights {
-            if weight.weight == 0 || table[weight.kind.index()] != 0 {
+            if weight.kind.advanced() || weight.weight == 0 || table[weight.kind.index()] != 0 {
                 return Err(ConfigError::SpawnWeights);
             }
             table[weight.kind.index()] = weight.weight;
@@ -206,6 +216,9 @@ impl CoopRules {
             let TileIdentity::Kind(kind) = tile.identity else {
                 return Err(Error::InvalidState);
             };
+            if kind.advanced() {
+                continue; // Match-length effects resolve once per intersecting run group.
+            }
             let multiplier = &self.config.multiplier;
             let scale = match kind {
                 TileKind::Sword => multiplier.damage_weight(tile.multiplier),
@@ -218,6 +231,7 @@ impl CoopRules {
                     has_sword = true;
                     yields[kind.index()] += scaled(policy.sword_contribution_pm);
                 }
+                TileKind::Nature | TileKind::Frost | TileKind::Astral => unreachable!(),
                 TileKind::Mana => mana_yield += scaled(policy.mana_per_tile.into()),
                 TileKind::Rage => rage_yield += scaled(policy.rage_per_tile.into()),
                 TileKind::Heart => yields[kind.index()] += scaled(policy.heart.amount),

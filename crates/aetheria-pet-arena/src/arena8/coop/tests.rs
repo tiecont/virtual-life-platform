@@ -304,7 +304,7 @@ fn gravity_preserves_order_and_refills_only_empty_cells() {
     }
     state.board = board;
     rules
-        .gravity_and_refill(&mut state, &mut stream)
+        .gravity_and_refill(&mut state, &mut stream, &mut 0)
         .expect("gravity");
     let filled: Vec<u8> = (0..SIDE)
         .map(|row| state.board[row * SIDE].unwrap().multiplier)
@@ -321,7 +321,7 @@ fn gravity_preserves_order_and_refills_only_empty_cells() {
         .map(|row| state.board[row * SIDE + 7].unwrap())
         .collect();
     rules
-        .gravity_and_refill(&mut state, &mut stream)
+        .gravity_and_refill(&mut state, &mut stream, &mut 0)
         .expect("gravity");
     let after: Vec<Tile> = (0..SIDE)
         .map(|row| state.board[row * SIDE + 7].unwrap())
@@ -1976,7 +1976,8 @@ fn v3_uncapped_combat_crosses_round_40_uses_x7_x8_and_exceeds_4096_turns() {
     let mut spawned8_at_37 = false;
     for _ in 0..40 {
         s37.board = [None; CELLS];
-        v3.gravity_and_refill(&mut s37, &mut stream).unwrap();
+        v3.gravity_and_refill(&mut s37, &mut stream, &mut 0)
+            .unwrap();
         spawned7 |= s37.board.iter().flatten().any(|t| t.multiplier == 7);
         spawned8_at_37 |= s37.board.iter().flatten().any(|t| t.multiplier == 8);
     }
@@ -1988,7 +1989,8 @@ fn v3_uncapped_combat_crosses_round_40_uses_x7_x8_and_exceeds_4096_turns() {
     let mut spawned8 = false;
     for _ in 0..40 {
         s42.board = [None; CELLS];
-        v3.gravity_and_refill(&mut s42, &mut stream).unwrap();
+        v3.gravity_and_refill(&mut s42, &mut stream, &mut 0)
+            .unwrap();
         spawned8 |= s42.board.iter().flatten().any(|t| t.multiplier == 8);
     }
     assert!(spawned8);

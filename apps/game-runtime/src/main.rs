@@ -3,10 +3,7 @@ use aetheria_pet_arena::arena8::coop::simulation::{
     COMPARISON_MAX_BOSSES, COMPARISON_MAX_SEEDS, POLICIES, Policy, SimulationSeat, simulate_party,
     simulate_solo,
 };
-use aetheria_pet_arena::arena8::coop::{
-    CoopConfig, CoopRules, FUNCTIONAL_SOLO_RULESET_VERSION, V3_SOLO_RULESET_VERSION,
-    solo_content_hash, solo_v2_content_hash,
-};
+use aetheria_pet_arena::arena8::coop::{CoopConfig, CoopRules};
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -52,18 +49,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if rules.functional_board() {
             receipt["rulesetVersion"] = ruleset.version.into();
         }
-        if config
-            .bosses()
-            .iter()
-            .any(|boss| boss.solo.is_some() || boss.regular.is_some())
-        {
-            let (version, solo_hash) = if config.is_v3() {
-                (V3_SOLO_RULESET_VERSION, solo_v2_content_hash(digest))
-            } else {
-                (FUNCTIONAL_SOLO_RULESET_VERSION, solo_content_hash(digest))
-            };
-            receipt["soloContentHash"] = hex(&solo_hash).into();
-            receipt["soloRulesetVersion"] = version.into();
+        if let Some(encounter_id) = config.bosses().iter().find_map(|boss| {
+            boss.solo
+                .as_ref()
+                .map(|_| &boss.id)
+                .or_else(|| boss.regular.as_ref().map(|r| &r.id))
+        }) {
+            let solo = CoopRules::load_solo(&bytes, encounter_id.clone())?.ruleset();
+            receipt["soloContentHash"] = hex(&solo.content_hash).into();
+            receipt["soloRulesetVersion"] = solo.version.into();
         }
         println!("{receipt}");
         return Ok(());

@@ -29,6 +29,8 @@ pub const FUNCTIONAL_SCHEMA_VERSION: u32 = 3;
 pub const FUNCTIONAL_ENGINE_CAPABILITY: &str = "arena8-coop-v2";
 pub const V3_SCHEMA_VERSION: u32 = 4;
 pub const V3_ENGINE_CAPABILITY: &str = "arena8-coop-v3";
+pub const ADVANCED_SCHEMA_VERSION: u32 = 5;
+pub const ADVANCED_ENGINE_CAPABILITY: &str = "arena8-coop-v4";
 const HISTORICAL_SCHEMA_VERSION: u32 = 1;
 /// Structural ceiling on cascade depth. The authored value may be lower.
 pub const MAX_CASCADE_LIMIT: u8 = 64;
@@ -45,6 +47,8 @@ pub struct CoopConfig {
     pub config_id: String,
     pub content_revision: u32,
     pub board: BoardConfig,
+    #[serde(default, deserialize_with = "super::advanced::present_policy")]
+    pub advanced_jewels: Option<super::advanced::AdvancedJewels>,
     pub party: PartyConfig,
     pub resources: ResourceConfig,
     pub damage: DamageConfig,
@@ -333,12 +337,11 @@ pub struct SoloBossConfig {
 impl SoloBossConfig {
     fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
         match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION, None) => Ok(()),
-            (FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION, Some(rounds))
-                if (1..=super::MAX_TURNS).contains(&rounds) =>
-            {
-                Ok(())
-            }
+            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION, None) => Ok(()),
+            (
+                FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION,
+                Some(rounds),
+            ) if (1..=super::MAX_TURNS).contains(&rounds) => Ok(()),
             _ => Err(ConfigError::Boss),
         }
     }
@@ -385,10 +388,11 @@ impl RegularEncounterConfig {
     fn validate(&self, parent: &BossConfig, schema_version: u32) -> Result<(), ConfigError> {
         let map = parent.map_id.as_deref().ok_or(ConfigError::Boss)?;
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION, None) => true,
-            (FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION, Some(rounds)) => {
-                (1..=super::MAX_TURNS).contains(&rounds)
-            }
+            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION, None) => true,
+            (
+                FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION,
+                Some(rounds),
+            ) => (1..=super::MAX_TURNS).contains(&rounds),
             _ => false,
         };
         if !stable_id(&self.id)
@@ -705,9 +709,14 @@ impl CoopConfig {
                 self.engine_capability == V3_ENGINE_CAPABILITY
                     && self.board.functional_tiles.is_some()
             }
+            ADVANCED_SCHEMA_VERSION => {
+                self.engine_capability == ADVANCED_ENGINE_CAPABILITY
+                    && self.board.functional_tiles.is_some()
+            }
             _ => false,
         };
         if !capability_matches
+            || self.advanced_jewels.is_some() != (self.schema_version == ADVANCED_SCHEMA_VERSION)
             || self.config_id.is_empty()
             || self.config_id.len() > 64
             || !self
@@ -767,7 +776,10 @@ impl CoopConfig {
         let bosses = match (self.schema_version, &self.boss, &self.bosses) {
             (HISTORICAL_SCHEMA_VERSION, Some(boss), None) => std::slice::from_ref(boss),
             (
-                CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                CONFIG_SCHEMA_VERSION
+                | FUNCTIONAL_SCHEMA_VERSION
+                | V3_SCHEMA_VERSION
+                | ADVANCED_SCHEMA_VERSION,
                 None,
                 Some(bosses),
             ) if !bosses.is_empty() && bosses.len() <= 6 => bosses,
@@ -780,7 +792,10 @@ impl CoopConfig {
             match (self.schema_version, boss.map_id.as_deref()) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
                 (
-                    CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                    CONFIG_SCHEMA_VERSION
+                    | FUNCTIONAL_SCHEMA_VERSION
+                    | V3_SCHEMA_VERSION
+                    | ADVANCED_SCHEMA_VERSION,
                     Some(map),
                 ) if stable_id(map) && map_ids.insert(map) => {}
                 _ => return Err(ConfigError::Boss),
@@ -802,7 +817,7 @@ impl CoopConfig {
             if let Some(solo) = &boss.solo {
                 if !matches!(
                     self.schema_version,
-                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION
+                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION
                 ) || !self.has_artifact_catalog()
                 {
                     return Err(ConfigError::Boss);
@@ -813,7 +828,7 @@ impl CoopConfig {
             if let Some(regular) = &boss.regular {
                 if !matches!(
                     self.schema_version,
-                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION
+                    FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION
                 ) || !self.has_artifact_catalog()
                     || !boss_ids.insert(&regular.id)
                 {
@@ -841,6 +856,9 @@ impl CoopConfig {
         }
         let skills = self.skill_index()?;
         self.pets_validate(elements, &skills)?;
+        if let Some(advanced) = &self.advanced_jewels {
+            advanced.validate(self)?;
+        }
         self.rewards.validate()?;
         Ok(())
     }
@@ -877,6 +895,9 @@ impl CoopConfig {
         if let Some(TerminalOutcomePolicy::BossDefeatFirst) = self.terminal_outcome_policy {
             fields.push(Value::Text("boss-defeat-first".into()));
         }
+        if let Some(advanced) = &self.advanced_jewels {
+            fields.push(advanced.to_value());
+        }
         Value::List(fields)
     }
 
@@ -885,7 +906,10 @@ impl CoopConfig {
     }
 
     pub fn is_v3(&self) -> bool {
-        self.schema_version == V3_SCHEMA_VERSION
+        matches!(
+            self.schema_version,
+            V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION
+        )
     }
 
     pub fn has_artifact_catalog(&self) -> bool {
@@ -1053,7 +1077,10 @@ impl CoopConfig {
             match (self.schema_version, &pet.catalog) {
                 (HISTORICAL_SCHEMA_VERSION, None) => (),
                 (
-                    CONFIG_SCHEMA_VERSION | FUNCTIONAL_SCHEMA_VERSION | V3_SCHEMA_VERSION,
+                    CONFIG_SCHEMA_VERSION
+                    | FUNCTIONAL_SCHEMA_VERSION
+                    | V3_SCHEMA_VERSION
+                    | ADVANCED_SCHEMA_VERSION,
                     Some(catalog),
                 ) if catalog.name.trim() == catalog.name
                     && !catalog.name.is_empty()
@@ -1192,7 +1219,7 @@ impl BoardConfig {
 impl PartyConfig {
     fn validate(&self, schema_version: u32) -> Result<(), ConfigError> {
         let valid_rounds = match (schema_version, self.max_rounds) {
-            (V3_SCHEMA_VERSION, None) => true,
+            (V3_SCHEMA_VERSION | ADVANCED_SCHEMA_VERSION, None) => true,
             (_, Some(rounds)) => (1..=1_000).contains(&rounds),
             _ => false,
         };

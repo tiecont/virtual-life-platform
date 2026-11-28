@@ -13,6 +13,7 @@
 //! [`aetheria_game_core::TurnRng`] and a command envelope carrying only an
 //! intent. A command never names a seed, target, damage, outcome or reward.
 
+pub mod advanced;
 pub mod config;
 mod functional;
 mod loadout;
@@ -59,6 +60,8 @@ pub const COOP_RULESET_ID: &str = "arena8-coop-pve";
 pub const COOP_RULESET_VERSION: u32 = 1;
 pub const FUNCTIONAL_RULESET_VERSION: u32 = 2;
 pub const V3_RULESET_VERSION: u32 = 3;
+pub const ADVANCED_RULESET_VERSION: u32 = 4;
+pub const ADVANCED_SOLO_RULESET_VERSION: u32 = 3;
 pub const FUNCTIONAL_SOLO_RULESET_ID: &str = "arena8-functional-pve";
 pub const FUNCTIONAL_SOLO_RULESET_VERSION: u32 = 1;
 pub const V3_SOLO_RULESET_VERSION: u32 = 2;
@@ -266,6 +269,8 @@ pub struct CoopState {
     pub turn_index: u16,
     pub round_index: u16,
     pub pending: Option<PendingAttack>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chill_reduction_pm: Option<u16>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub turn_started_ms: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -612,6 +617,33 @@ impl CoopRules {
     }
 
     pub fn ruleset(&self) -> Ruleset {
+        if self.config.advanced_jewels.is_some() {
+            let (id, version, domain) = if self.solo {
+                (
+                    FUNCTIONAL_SOLO_RULESET_ID,
+                    ADVANCED_SOLO_RULESET_VERSION,
+                    "aetheria.arena8-functional-native.v3",
+                )
+            } else {
+                (
+                    COOP_RULESET_ID,
+                    ADVANCED_RULESET_VERSION,
+                    "aetheria.arena8-coop-native.v4",
+                )
+            };
+            return Ruleset {
+                id: id.into(),
+                version,
+                rng_version: RNG_VERSION,
+                content_hash: native_content_hash(
+                    self.digest,
+                    version,
+                    domain,
+                    "timed-turns-v1;advanced-jewels-v1",
+                    self.seat_count(),
+                ),
+            };
+        }
         if self.solo {
             if self.is_v3() {
                 return Ruleset {
@@ -772,6 +804,7 @@ impl CoopRules {
             turn_index: 0,
             round_index: 1,
             pending: None,
+            chill_reduction_pm: None,
             turn_started_ms: None,
             turn_deadline_ms: None,
         };
@@ -940,7 +973,8 @@ impl CoopRules {
     pub fn validate(&self, state: &CoopState) -> Result<(), CoreError> {
         let versioned = self.config.versioned_roster();
         let expected_boss = versioned.then_some(self.encounter_id());
-        if state.config_digest != self.digest
+        if !self.valid_advanced_state(state)
+            || state.config_digest != self.digest
             || state.boss.curse.is_some_and(|curse| {
                 !(1..=32).contains(&curse.turns)
                     || !(1..=9000).contains(&curse.bonus_pm)
@@ -1123,6 +1157,12 @@ impl CoopRules {
                         next.board = self.construct_board(rng)?;
                     }
                 }
+                if let Some(opening) = self
+                    .advanced_encounter()
+                    .and_then(|encounter| encounter.opening)
+                {
+                    self.convert_group(&mut next, opening, &mut events);
+                }
                 next.phase = CoopPhase::Playing;
                 next.active_seat = next.next_alive(0).ok_or(CoreError::InvalidState)?;
                 events.push(event("started", None, u64::from(next.boss.hp)));
@@ -1181,6 +1221,7 @@ impl CoopRules {
         if self.is_v3() {
             if next.phase.terminal() {
                 next.turn_deadline_ms = None;
+                next.chill_reduction_pm = None;
                 for participant in &mut next.participants {
                     participant.fire_zone_turns = 0;
                 }
@@ -1443,6 +1484,7 @@ impl CoopRules {
                     }
                 }
             }
+            self.convert_skill(state, &skill.id, events);
             return Ok(());
         }
         let actor_attack = seat.attack;
@@ -1460,6 +1502,7 @@ impl CoopRules {
             crit_damage,
             events,
         )?;
+        self.convert_skill(state, &skill.id, events);
         Ok(())
     }
 
@@ -1767,11 +1810,14 @@ impl CoopRules {
     ) -> Result<(), CoreError> {
         let max = u32::from(self.config.party.max_cascades);
         let seat = state.active_seat;
+        let mut survivors = u64::MAX;
+        let mut upgrades = 0;
         for cascade in 0..max {
             let matched = matched_cells(&state.board);
             if !matched.iter().any(|matched| *matched) {
-                return Ok(());
+                break;
             }
+            upgrades += self.advanced_matches(state, events);
             let outcome = if self.functional_board() {
                 self.score_functional_match(state, seat, &matched, rng, events)?
             } else {
@@ -1784,7 +1830,7 @@ impl CoopRules {
             if state.phase.terminal() {
                 return Ok(());
             }
-            self.gravity_and_refill(state, rng)?;
+            self.gravity_and_refill(state, rng, &mut survivors)?;
             if cascade + 1 == max {
                 // Bounded execution: the authored cascade cap is reached, so any
                 // still-resolving matches are cleared without further scoring and
@@ -1795,7 +1841,7 @@ impl CoopRules {
                     matched
                 };
                 if self.functional_board() && !remaining.iter().any(|marked| *marked) {
-                    return Ok(());
+                    break;
                 }
                 events.push(event("cascade-cap", Some(seat as u8), u64::from(max)));
                 for (index, is_matched) in remaining.iter().enumerate() {
@@ -1803,13 +1849,15 @@ impl CoopRules {
                         state.board[index] = None;
                     }
                 }
-                self.gravity_and_refill(state, rng)?;
+                self.gravity_and_refill(state, rng, &mut survivors)?;
                 if matched_cells(&state.board).iter().any(|matched| *matched) {
                     self.dead_board(state, rng)?;
+                    survivors = 0;
                 }
-                return Ok(());
+                break;
             }
         }
+        self.amplify(state, survivors, upgrades, events);
         Ok(())
     }
 
@@ -1964,19 +2012,23 @@ impl CoopRules {
         &self,
         state: &mut CoopState,
         rng: &mut TurnRng,
+        surviving_cells: &mut u64,
     ) -> Result<(), CoreError> {
         let mut next = [None; CELLS];
+        let mut moved_survivors = 0;
         for column in 0..SIDE {
             let mut survivors = Vec::with_capacity(SIDE);
             for row in (0..SIDE).rev() {
                 if let Some(tile) = state.board[row * SIDE + column] {
-                    survivors.push(tile);
+                    survivors.push((tile, row * SIDE + column));
                 }
             }
             let mut row = SIDE;
-            for tile in survivors {
+            for (tile, from) in survivors {
                 row -= 1;
-                next[row * SIDE + column] = Some(tile);
+                let to = row * SIDE + column;
+                next[to] = Some(tile);
+                moved_survivors |= ((*surviving_cells >> from) & 1) << to;
             }
             // Fill every genuinely empty cell above the surviving run.
             let empty = (0..SIDE)
@@ -1987,10 +2039,12 @@ impl CoopRules {
             }
         }
         state.board = next;
+        *surviving_cells = moved_survivors;
         let still_matching =
             self.functional_board() && matched_cells(&state.board).iter().any(|matched| *matched);
         if !still_matching && self.legal_swap(state).is_none() {
             self.dead_board(state, rng)?;
+            *surviving_cells = 0;
         }
         Ok(())
     }
@@ -2305,6 +2359,10 @@ impl CoopRules {
             };
             (priority, *index)
         });
+        let chill = state.chill_reduction_pm.take();
+        if let Some(reduction) = chill {
+            events.push(event("chill-consumed", None, reduction.into()));
+        }
         for target in order.into_iter().take(usize::from(targets)) {
             let seat = &state.participants[target];
             let defense_buff = self.status_permille(seat, StatusKind::DefenseBuff);
@@ -2321,6 +2379,16 @@ impl CoopRules {
             taken = u32::try_from(u64::from(taken) * u64::from(vulnerability) / 1_000)
                 .unwrap_or(u32::MAX)
                 .max(model.minimum_damage);
+            if let Some(reduction) = chill {
+                let reduced = (u64::from(taken) * u64::from(1000 - reduction) / 1000) as u32;
+                let mitigated = reduced.max(model.minimum_damage);
+                events.push(event(
+                    "chill-prevented",
+                    Some(target as u8),
+                    (taken - mitigated).into(),
+                ));
+                taken = mitigated;
+            }
             let seat = &mut state.participants[target];
             if seat.shield > 0 {
                 let absorbed = seat.shield.min(taken);
@@ -2612,6 +2680,12 @@ impl Canonical for CoopState {
                 None => Value::Null,
             },
         ];
+        if let Some(chill) = self.chill_reduction_pm {
+            fields.push(list([
+                Value::Text("chill".into()),
+                Value::Uint(chill.into()),
+            ]));
+        }
         if let Some(curse) = self.boss.curse {
             fields.push(list([
                 Value::Text("curse".into()),
@@ -2711,7 +2785,7 @@ pub mod test_support {
             state: &mut CoopState,
             rng: &mut TurnRng,
         ) -> Result<(), aetheria_game_core::Error> {
-            self.gravity_and_refill(state, rng)
+            self.gravity_and_refill(state, rng, &mut 0)
         }
 
         /// Apply raw damage to the Boss through the authored phase policy.
