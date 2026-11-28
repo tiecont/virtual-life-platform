@@ -175,6 +175,14 @@ def all_region_warden_vitality(bundle):
         boss["maxHp"] //= 4
 
 
+def deliberate_warden_telegraph(bundle):
+    """Allow one more response turn between the existing fixed-strength impacts."""
+    all_region_warden_vitality(bundle)
+    bundle["configId"] = "arena8-six-warden-telegraph-candidate"
+    for boss in bundle["bosses"]:
+        boss["telegraphTurns"] += 1
+
+
 def veteran_artifacts(bundle):
     """Test the leverage of rank-five equipment without altering natural boards or enemies."""
     bundle["configId"] = "arena8-veteran-artifacts-candidate"
@@ -193,6 +201,7 @@ SHARED_VARIANTS = {
     "veteran-artifacts": veteran_artifacts,
     "fixed-warden-vitality": fixed_warden_vitality,
     "six-warden-vitality": all_region_warden_vitality,
+    "six-warden-telegraph": deliberate_warden_telegraph,
     "shared-even": lambda bundle: shared_weights(bundle, dict.fromkeys(
         ("sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral"), 1000)),
     "shared-basic-heavy": lambda bundle: shared_weights(bundle, {
