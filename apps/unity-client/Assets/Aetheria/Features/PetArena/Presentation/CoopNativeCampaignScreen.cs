@@ -26,6 +26,7 @@ namespace Aetheria.PetArena.Presentation
         private string petId, instanceId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
         private Action returnToHub;
+        private WaveD4BattlePreview.Actor previewPet, previewEnemy;
         private Arena8NativeTrust trust;
         private bool busy, loadingCatalog;
         private TextField joinField;
@@ -283,30 +284,42 @@ namespace Aetheria.PetArena.Presentation
         private async Task AdmitAsync()
         {
             var roomId = Guid.Parse(room.roomId);
-            var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid());
+            var cancellation = lifetime.Token;
+            var admission = await lobby.AdmissionAsync(roomId, Guid.NewGuid(), cancellation);
             if (admission.BossId != room.bossId || admission.Seat != room.you.seat) throw new FormatException("Admission does not match the room.");
             var connection = admission.CreateConnection(ct => lobby.AdmissionAsync(roomId, Guid.NewGuid(), ct));
             var transportPlatform = new PlatformSession(admission.HttpsOrigin);
             trust = Arena8NativeTrust.FromEnvironment(admission.HttpsOrigin);
             var admitted = new CoopNativePlaySession(transportPlatform, connection, admission.MatchId);
+            CoopNativeHud hud = null;
             try
             {
-                await admitted.ConnectAsync();
+                var connected = await admitted.ConnectAsync(cancellation);
+                var arena = FindFirstObjectByType<ArenaWorldSceneController>();
+                if (arena != null)
+                {
+                    ClearBattlePreview();
+                    var view = connected.Coop;
+                    previewPet = WaveD4BattlePreview.Place(arena.PetActor, view.Own.PetId, baseOffset: .16f);
+                    previewEnemy = WaveD4BattlePreview.Place(arena.EnemyActor, view.BossId, baseOffset: .16f, opponent: true);
+                }
+                hud = GetComponent<CoopNativeHud>();
+                if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
+                hud.Attach(document);
+                hud.Bind(admitted, returnToHub);
+                if (lobby.CanRefreshRoom) hud.SetRewardLoader(() => lobby.RewardAsync(roomId, admission.MatchId));
+                arena?.EnterBattlePresentation();
+                session = admitted;
             }
             catch
             {
+                hud?.Bind(null);
+                ClearBattlePreview();
                 admitted.Dispose();
                 trust?.Dispose();
                 trust = null;
                 throw;
             }
-            session = admitted;
-            FindFirstObjectByType<ArenaWorldSceneController>()?.EnterBattlePresentation();
-            var hud = GetComponent<CoopNativeHud>();
-            if (hud == null) hud = gameObject.AddComponent<CoopNativeHud>();
-            hud.Attach(document);
-            hud.Bind(session, returnToHub);
-            if (lobby.CanRefreshRoom) hud.SetRewardLoader(() => lobby.RewardAsync(roomId, admission.MatchId));
         }
 
         private async Task RunAsync(Func<Task> action)
@@ -322,8 +335,17 @@ namespace Aetheria.PetArena.Presentation
             finally { busy = false; }
         }
 
+        private void ClearBattlePreview()
+        {
+            previewPet?.Dispose();
+            previewEnemy?.Dispose();
+            previewPet = null;
+            previewEnemy = null;
+        }
+
         private void OnDestroy()
         {
+            ClearBattlePreview();
             lifetime.Cancel();
             lifetime.Dispose();
             session?.Dispose();

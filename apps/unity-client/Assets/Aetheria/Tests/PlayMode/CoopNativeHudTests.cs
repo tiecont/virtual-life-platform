@@ -47,6 +47,38 @@ namespace Aetheria.Tests
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
 
+        [TestCase("fire-coalwhisk", "cinder-terraces-warden", "ember-lance", "ember-solar-flare", "blazing-descent")]
+        [TestCase("water-dewskip", "tideglass-lagoon-warden", "tide-lance", "springwell", "tide-deep-current")]
+        public void BattlePreviewUsesCanonicalPortraitsOnlyWhenOptedIn(string petId, string bossId,
+            string skillId, string signatureId, string ultimateId)
+        {
+            const string variable = "AETHERIA_WAVED4_BATTLE_PREVIEW";
+            const string portrait = "battle-preview-portrait";
+            var previous = Environment.GetEnvironmentVariable(variable);
+            var json = Projection(withAbilities: true, ownPetId: petId, bossId: bossId,
+                abilityIds: new[] { "guard", skillId, signatureId, ultimateId });
+            var view = CoopNativeView.Decode(3, System.Text.Encoding.UTF8.GetBytes(json));
+            try
+            {
+                Environment.SetEnvironmentVariable(variable, null);
+                var standard = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(standard.Q(portrait), Is.Null);
+
+                Environment.SetEnvironmentVariable(variable, "1");
+                var preview = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                var player = preview.Q("coop-seat-0").Q<Image>(portrait);
+                var enemy = preview.Q("coop-opponents").Q<Image>(portrait);
+                Assert.That(player?.image?.name, Is.EqualTo(petId));
+                Assert.That(enemy?.image?.name, Is.EqualTo(bossId));
+                Assert.That(player.pickingMode, Is.EqualTo(PickingMode.Ignore));
+                Assert.That(preview.Q("coop-seat-1").Q(portrait), Is.Null);
+                Assert.That(preview.Q<Label>("coop-seat-label-1"), Is.Not.Null);
+                Assert.That(preview.Q<Label>("coop-seat-label-0").text,
+                    Is.EqualTo(standard.Q<Label>("coop-seat-label-0").text));
+            }
+            finally { Environment.SetEnvironmentVariable(variable, previous); }
+        }
+
         [UnityTest]
         public IEnumerator CompactHudKeepsRowsReachableAndTheFooterVisible()
         {
@@ -331,7 +363,8 @@ namespace Aetheria.Tests
 
         private static string Projection(string pending = "null", int health = 400,
             int shield = 0, int shieldTurns = 0, int round = 1, string[] elements = null, int firstMultiplier = 2,
-            bool withAbilities = false, bool timed = false)
+            bool withAbilities = false, bool timed = false, string ownPetId = "icarus",
+            string bossId = "cinder-terraces-warden", string[] abilityIds = null)
         {
             elements ??= new[] { "fire" };
             var board = new System.Text.StringBuilder();
@@ -343,7 +376,7 @@ namespace Aetheria.Tests
                     : "null");
             }
             var seats = new System.Text.StringBuilder();
-            var pets = new[] { "icarus", "coralline", "volt", "terran" };
+            var pets = new[] { ownPetId, "coralline", "volt", "terran" };
             for (var index = 0; index < 4; index += 1)
             {
                 if (index > 0) seats.Append(',');
@@ -364,11 +397,11 @@ namespace Aetheria.Tests
             if (withAbilities)
             {
                 var kinds = new[] { "guard", "skill", "signature", "ultimate" };
-                var ids = new[] { "guard", "ember-lance", "ember-solar-flare", "blazing-descent" };
+                var ids = abilityIds ?? new[] { "guard", "ember-lance", "ember-solar-flare", "blazing-descent" };
                 var fields = timed ? ",\"maxCooldown\":5,\"effectKind\":\"damage\",\"target\":\"boss\",\"powerPm\":1000" : "";
-                abilities = ",\"bossId\":\"cinder-terraces-warden\",\"abilities\":[" +
+                abilities = ",\"bossId\":\"" + bossId + "\",\"abilities\":[" +
                     string.Join(",", kinds.Select((kind, position) =>
-                        "{\"kind\":\"" + kind + "\",\"id\":\"icarus-" + ids[position] +
+                        "{\"kind\":\"" + kind + "\",\"id\":\"" + ownPetId + "-" + ids[position] +
                         "\",\"mana\":180,\"rage\":160,\"cooldown\":5,\"ready\":false" + fields + "}")) + "]";
             }
             var timer = timed ? ",\"turnTimeoutMs\":15000,\"turnDeadlineUnixMs\":1015000,\"turnRemainingMs\":15000," +

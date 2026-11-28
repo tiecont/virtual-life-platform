@@ -42,7 +42,8 @@ namespace Aetheria.PetArena.Presentation
                 name = BossName + "-meter", lowValue = 0,
                 highValue = view.BossState.MaxHealth, value = view.BossState.Health
             };
-            enemy.Add(Label(BossName, CoopNativePresenter.BossLabel(view)));
+            WaveD4BattlePreview.AddIdentity(enemy, Label(BossName, CoopNativePresenter.BossLabel(view)),
+                view.BossId, opponent: true);
             enemy.Add(bossMeter);
             if (view.BossState.ArmorBreakPm > 1000)
                 enemy.Add(Label("coop-boss-vulnerability", "Boss damage taken ×" + (view.BossState.ArmorBreakPm / 1000f).ToString("0.###")));
@@ -71,7 +72,7 @@ namespace Aetheria.PetArena.Presentation
                 var own = view.Participants[seat];
                 var seatLabel = "Seat " + seat.ToString(CultureInfo.InvariantCulture) + " · " +
                     CoopNativePresenter.SeatLabel(view, seat);
-                panel.Add(Label("coop-seat-label-" + seat, seatLabel));
+                WaveD4BattlePreview.AddIdentity(panel, Label("coop-seat-label-" + seat, seatLabel), own.PetId);
                 var healthLabel = string.Format(CultureInfo.InvariantCulture,
                     "Seat {0} · {1} health · {2}/{3} HP", seat, own.PetId, own.Health, own.MaxHealth);
                 var health = new ProgressBar
