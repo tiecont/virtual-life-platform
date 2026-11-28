@@ -201,6 +201,7 @@ namespace Aetheria.PetArena.Presentation
             {
                 nativeFacts.status = "failed";
                 nativeFacts.error = exception.Message;
+                Debug.LogWarning(exception.GetType().Name + "\n" + exception.StackTrace);
                 try { await CaptureNative("native-99-failed.png"); } catch { }
             }
             finally

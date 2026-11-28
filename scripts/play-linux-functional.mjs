@@ -151,7 +151,7 @@ try{
    phase='disposable Ghost map access fixture';
    try{
     mapAccess=await Promise.race([
-     prepareGhostNatureMap(pool,directory,()=>stopping||player.exitCode!==null),
+     prepareGhostNatureMap(pool,directory,()=>stopping||player.exitCode!==null,captureNature?1:60),
      exited.then(()=>{throw Error('The player exited before starting the Ghost fixture');}),
     ]);
    }catch(error){stop();await exited.catch(()=>{});throw error;}

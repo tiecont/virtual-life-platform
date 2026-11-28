@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Aetheria.Networking;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Aetheria.PetArena.Presentation
 {
@@ -15,13 +16,14 @@ namespace Aetheria.PetArena.Presentation
         {
             public int version, turn, vulnerability, turns, pending;
             public uint health;
+            public string phase;
             public string[] board;
         }
 
         [Serializable]
         private sealed class NatureCapture
         {
-            public string matchId, receiptId, eventKind, configDigest, contentHash;
+            public string matchId, receiptId, eventKind, configDigest, contentHash, hudLabel;
             public int rulesetVersion, first, second, firstWaveNature, eventSeat;
             public long eventValue;
             public NatureFrame before, after;
@@ -45,6 +47,8 @@ namespace Aetheria.PetArena.Presentation
                     if (functionalSession.RequiresReconnect) view = (await functionalSession.ReconnectAsync(token)).Coop;
                     var before = SnapshotNature(view);
                     timeline.Add(before);
+                    if (before.board.Any(kind => kind == null))
+                        throw new InvalidOperationException("An active Ghost board has an empty cell.");
                     var identities = before.board.Distinct().ToList();
                     var board = before.board.Select(kind => identities.IndexOf(kind)).ToArray();
                     var moves = FindNativeSwaps(board).Where(move => board[move.first] != board[move.second])
@@ -57,7 +61,7 @@ namespace Aetheria.PetArena.Presentation
                     if (moves.Length == 0)
                         throw new InvalidOperationException("The committed Ghost board has no legal swap.");
 
-                    var canCleanse = before.vulnerability > 0 && before.pending != 1;
+                    var canCleanse = before.vulnerability > 0;
                     var move = canCleanse && moves.Any(candidate => candidate.nature > 0)
                         ? moves.First(candidate => candidate.nature > 0) : moves[0];
                     bool guard = !canCleanse && moves.Any(candidate => candidate.nature > 0);
@@ -70,16 +74,19 @@ namespace Aetheria.PetArena.Presentation
                     var after = SnapshotNature(view);
                     var cleanse = view.JewelFeedback.FirstOrDefault(effect => effect.Kind == "nature-cleanse");
                     functionalHud.Refresh();
-                    if (guard || move.nature < 3 || cleanse == null || before.vulnerability == 0 || after.vulnerability != 0)
+                    if (guard || move.nature < 3 || cleanse == null || before.vulnerability == 0)
                         continue;
 
-                    if (string.IsNullOrEmpty(result.ReceiptId) || after.version != before.version + 1)
+                    const string label = "−1";
+                    var overlay = GetComponent<UIDocument>().rootVisualElement.Q("coop-jewel-feedback");
+                    if (string.IsNullOrEmpty(result.ReceiptId) || after.version != before.version + 1 ||
+                        overlay == null || !overlay.Query<Label>().ToList().Any(candidate => candidate.text == label))
                         throw new InvalidOperationException("Expected the exact committed Nature swap receipt.");
                     var details = new NatureCapture {
                         matchId = matchId, receiptId = result.ReceiptId, eventKind = cleanse.Kind, eventValue = cleanse.Value,
                         eventSeat = cleanse.Seat ?? -1, configDigest = view.ConfigDigest, contentHash = view.ContentHash,
                         rulesetVersion = view.RulesetVersion, first = move.first, second = move.second,
-                        firstWaveNature = move.nature, before = before, after = after,
+                        firstWaveNature = move.nature, before = before, after = after, hudLabel = label,
                     };
                     timeline.Add(after);
                     functionalHud.enabled = true;
@@ -95,7 +102,7 @@ namespace Aetheria.PetArena.Presentation
                     return;
                 }
                 timeline.Add(SnapshotNature(view));
-                throw new InvalidOperationException("No durable Nature cleanse was observed in the bounded natural Ghost battle.");
+                throw new InvalidOperationException("No Nature cleanse was observed in the bounded natural Ghost battle.");
             }
             finally
             {
@@ -128,7 +135,7 @@ namespace Aetheria.PetArena.Presentation
             return new NatureFrame {
                 version = checked((int)view.Version), turn = view.Turn, health = view.Own.Health,
                 vulnerability = status?.Value ?? 0, turns = status?.Turns ?? 0, pending = view.PendingAttack?.Remaining ?? 0,
-                board = view.Board.Select(tile => tile.Kind).ToArray(),
+                phase = view.Phase, board = view.Board.Select(tile => tile?.Kind).ToArray(),
             };
         }
 
