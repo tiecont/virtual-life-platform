@@ -52,7 +52,7 @@ namespace Aetheria.PetArena.Presentation
 
             // Keep the grid square and reserve dedicated width for matching left and right sides.
             // Short editor windows retain a readable tile size and can scroll to the action row.
-            var widthLimit = viewport.x * .55f;
+            var widthLimit = viewport.x * .53f;
             var heightLimit = Mathf.Max(400f, viewport.y - 114f);
             var boardEdge = Mathf.Floor(Mathf.Min(704f, widthLimit, heightLimit) / 8f) * 8f;
             center.style.width = boardEdge;

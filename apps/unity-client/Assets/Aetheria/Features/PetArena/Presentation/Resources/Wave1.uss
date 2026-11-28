@@ -76,7 +76,22 @@
     white-space: normal;
 }
 .coop-panel { flex-grow: 1; }
-.coop-hud-scroll { flex-grow: 1; min-height: 0; }
+.coop-hud-scroll {
+    --battle-scroll-gutter: 24px;
+    flex-grow: 1;
+    min-height: 0;
+}
+.coop-hud-scroll .unity-scroll-view__content-viewport {
+    margin-left: var(--battle-scroll-gutter);
+    margin-right: var(--battle-scroll-gutter);
+}
+.coop-hud-scroll .unity-scroll-view__vertical-scroller {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--battle-scroll-gutter);
+}
 #coop-network, #coop-feedback, #coop-reward, #coop-reward-pending {
     flex-shrink: 0;
     padding: 4px 6px;
