@@ -4,6 +4,8 @@ Shared identity, social safety and activities across virtual worlds. The primary
 client direction is Windows Unity/URP, with Rust for new gameplay and NestJS for
 the control plane and existing room authority. New native routes are default-off.
 
+[Production roadmap and complete campaign scope](specs/acceptance/production-roadmap.md)
+
 ## Development
 
 Use Node 26.9.x, pnpm 11.28.5 and the Rust toolchain pinned in rust-toolchain.toml.
