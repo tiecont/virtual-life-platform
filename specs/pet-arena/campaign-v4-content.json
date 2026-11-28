@@ -7,6 +7,42 @@
     "enabled": false,
     "ratesAuthored": false
   },
+  "meshCandidates": {
+    "dragon-fire-ignivar": {
+      "provider": "Tripo Studio",
+      "mode": "Smart Mesh P2.0",
+      "privacy": "Sharing Only",
+      "jobId": "b6c5ecd7-1e38-4fdf-b410-25df2fdc5886",
+      "credits": 100,
+      "referenceSha256": "a8f7f1bcb16bfd7bfa8c441f3ec3fa3af18c0056f2e57a2fcd3080abf3b7af9a",
+      "glbSha256": "26827aaeaab6e42dcca29b4ff8d338e106a496e5073584799c5ac66cac5cf9b0",
+      "glbBytes": 201384,
+      "providerFaces": 6633,
+      "providerVertices": 5568,
+      "triangles": 11016,
+      "hasUv": false,
+      "textures": 0,
+      "skins": 0,
+      "animations": 0
+    },
+    "bird-fire-cinderquill": {
+      "provider": "Tripo Studio",
+      "mode": "Smart Mesh P2.0",
+      "privacy": "Sharing Only",
+      "jobId": "8da4fae5-9f09-49ca-a5cc-378cbdf0bd00",
+      "credits": 100,
+      "referenceSha256": "b2f4fd8489d0a520ee2d6d09543246cccfd6183ed7d9653ed24c4ca32a8af674",
+      "glbSha256": "996adc3d827591a4cf533ad5c5d41c57c8ebdeb618c5c253168c3a0df8b4af34",
+      "glbBytes": 182652,
+      "providerFaces": 4876,
+      "providerVertices": 5259,
+      "triangles": 8386,
+      "hasUv": false,
+      "textures": 0,
+      "skins": 0,
+      "animations": 0
+    }
+  },
   "maps": [
     {
       "id": "cinder-terraces",

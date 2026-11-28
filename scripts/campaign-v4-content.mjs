@@ -151,6 +151,8 @@ export function prepareCampaignV4Content(bundle, content, canonical, historical)
 
   const inventory = canonical.pets.map(pet => {
     const route = routeBySpecies.get(pet.id);
+    const meshCandidate = content.meshCandidates?.[pet.id];
+    if (meshCandidate) assert.equal(meshCandidate.referenceSha256, pet.concept.sha256, `Mesh source for ${pet.id}`);
     const candidate = gated.get(pet.id);
     return {
       id: pet.id,
@@ -161,7 +163,8 @@ export function prepareCampaignV4Content(bundle, content, canonical, historical)
       route: route ? {encounterId: route.encounterId, tier: route.tier, acquisition: 'draft-only'} : null,
       standardSCandidate: candidate ? {acquisition: candidate.acquisition, nameByLocale: candidate.nameByLocale} : null,
       concept: pet.concept,
-      modelState: candidate?.modelState ?? pet.runtime.modelStatus,
+      modelState: meshCandidate ? 'untextured-mesh-candidate' : candidate?.modelState ?? pet.runtime.modelStatus,
+      ...(meshCandidate ? {meshCandidate} : {}),
       rigProfile: candidate?.rigProfile ?? pet.rigProfile,
       animationState: pet.runtime.animationStatus,
       vfxState: candidate?.vfxState ?? pet.runtime.vfxStatus,

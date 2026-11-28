@@ -38,6 +38,14 @@ test('prepares all 61 canonical identities and preserves the 221 historical abil
     assert.equal(pet.route.acquisition, 'draft-only');
   }
 
+  const generated = result.inventory.filter(pet => pet.meshCandidate);
+  assert.deepEqual(generated.map(pet => pet.id).sort(), ['bird-fire-cinderquill', 'dragon-fire-ignivar']);
+  for (const pet of generated) {
+    assert.equal(pet.modelState, 'untextured-mesh-candidate');
+    assert.equal(pet.meshCandidate.referenceSha256, pet.concept.sha256);
+    assert.equal(pet.meshCandidate.skins, 0);
+  }
+
   const candidates = result.inventory.filter(pet => pet.standardSCandidate);
   assert.equal(candidates.length, 6);
   for (const pet of candidates) {
