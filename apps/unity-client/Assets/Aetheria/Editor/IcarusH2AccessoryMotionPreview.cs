@@ -412,7 +412,7 @@ namespace Aetheria.Editor
         // Edit-mode GPU skins can stay on their bind pose even after a new
         // morph or clip has been sampled. Draw the actual CPU-sampled vertices
         // with the source mesh's materials and discard the draw copies on exit.
-        private sealed class SampledSurfaceDraw : IDisposable
+        internal sealed class SampledSurfaceDraw : IDisposable
         {
             private readonly (SkinnedMeshRenderer skin, MeshFilter filter, Mesh sample)[] surfaces;
 
@@ -452,7 +452,7 @@ namespace Aetheria.Editor
             }
         }
 
-        private static Bounds BoundsFor(GameObject model)
+        internal static Bounds BoundsFor(GameObject model)
         {
             var renderer = model.GetComponentsInChildren<Renderer>(false).Where(value => value.enabled).ToArray();
             Require(renderer.Length > 0, "Preview has no visible renderers.");
@@ -498,7 +498,7 @@ namespace Aetheria.Editor
             return camera;
         }
 
-        private static void Capture(Camera camera, RenderTexture target, Texture2D pixels, Bounds frame,
+        internal static void Capture(Camera camera, RenderTexture target, Texture2D pixels, Bounds frame,
             Vector3 direction, string path)
         {
             camera.transform.position = frame.center + direction.normalized * (frame.size.magnitude + 1);
