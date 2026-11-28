@@ -4,14 +4,14 @@
 //! order and lets the reducer reject illegal, unaffordable or out-of-turn ones,
 //! so no cost, cooldown or balance rule is duplicated here.
 use super::{ArtifactLoadout, EquippedArtifact, SkillLevelBinding};
-use aetheria_game_core::{Command, LogicalClock, SecretSeed, apply, begin};
+use aetheria_game_core::{Command, LogicalClock, SecretSeed, Value, apply, begin};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 use super::config::EffectKind;
 use super::{
-    CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput, TileIdentity,
-    TileKind,
+    CELLS, CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput, Tile,
+    TileIdentity, TileKind,
 };
 
 const LOGICAL_ACTION_MS: u64 = 1_000;
@@ -105,6 +105,52 @@ pub struct Diagnostics {
     pub mana_at_defeat: u64,
     pub rage_at_defeat: u64,
     pub survivals_by_seat: [u32; SEATS],
+    pub board: BoardDiagnostics,
+    pub combat: CombatDiagnostics,
+    pub advanced_jewels: AdvancedDiagnostics,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoardDiagnostics {
+    /// One observation per committed playing turn, including the opening.
+    pub legal_swaps_per_turn: BTreeMap<usize, u64>,
+    /// Committed scoring waves per accepted swap, including the initiating clear.
+    pub match_waves_per_swap: BTreeMap<usize, u64>,
+    pub cascade_cap_events: u64,
+    pub advanced_tiles_per_turn: BTreeMap<usize, u64>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CombatDiagnostics {
+    pub player_turns: u64,
+    pub boss_hp_damage: u64,
+    pub mana_generated: u64,
+    pub rage_generated: u64,
+    pub healing_effective: u64,
+    pub skill_healing_effective: u64,
+    pub shielding_granted: u64,
+    pub first_skill_turns_sum: u64,
+    pub matches_with_skill: u32,
+    pub first_ultimate_turns_sum: u64,
+    pub matches_with_ultimate: u32,
+    pub budget_exhausted: u32,
+    pub no_accepted_action: u32,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AdvancedDiagnostics {
+    pub tiles_generated_by_kind: BTreeMap<String, u64>,
+    pub generation_no_ops_by_kind: BTreeMap<String, u64>,
+    pub matched_groups_by_kind: BTreeMap<String, u64>,
+    pub matched_group_sizes_by_kind: BTreeMap<String, BTreeMap<u64, u64>>,
+    pub statuses_cleansed: u64,
+    pub chilled_attacks: u64,
+    pub chilled_damage_prevented_before_shield: u64,
+    pub amplified_tiers: BTreeMap<u64, u64>,
+    pub matches_using_advanced_jewels: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -222,6 +268,9 @@ fn visible_swap(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, boo
                                             rage.min(config.resources.rage_cap - actor.rage),
                                         ))
                                 }
+                                // The policy will still take an advanced match
+                                // that is its best legal visible move.
+                                TileKind::Nature | TileKind::Frost | TileKind::Astral => 0,
                             }
                         }
                     };
@@ -242,6 +291,134 @@ fn visible_swap(rules: &CoopRules, state: &CoopState) -> Option<(CoopAction, boo
         }
     }
     best
+}
+
+fn legal_swap_count(rules: &CoopRules, state: &CoopState) -> usize {
+    (0..CELLS)
+        .flat_map(|first| [(first, first + 1), (first, first + super::SIDE)])
+        .filter(|&(first, second)| rules.swap_matches(state, first, second))
+        .count()
+}
+
+fn advanced_tile_count(board: &[Option<Tile>; CELLS]) -> usize {
+    board
+        .iter()
+        .flatten()
+        .filter(|tile| match tile.identity {
+            TileIdentity::Kind(kind) => kind.advanced(),
+            TileIdentity::Element(_) => false,
+        })
+        .count()
+}
+
+fn party_resources(state: &CoopState) -> (u64, u64) {
+    state
+        .participants
+        .iter()
+        .fold((0, 0), |(mana, rage), seat| {
+            (mana + u64::from(seat.mana), rage + u64::from(seat.rage))
+        })
+}
+
+fn record_action(
+    diagnostics: &mut Diagnostics,
+    state: &CoopState,
+    next: &CoopState,
+    action: CoopAction,
+    costs: (u64, u64),
+    events: &[Value],
+) -> bool {
+    use Value::{List, Text, Uint};
+    let mut waves = 0;
+    let mut used_advanced = false;
+    for event in events {
+        let List(fields) = event else { continue };
+        let [Text(kind), seat, Uint(value)] = fields.as_slice() else {
+            continue;
+        };
+        match kind.as_str() {
+            "match" => {
+                waves += 1;
+                diagnostics.combat.boss_hp_damage += value;
+            }
+            "boss-damage" => diagnostics.combat.boss_hp_damage += value,
+            "boss-dot" if matches!(seat, Value::Null) => diagnostics.combat.boss_hp_damage += value,
+            "heal" => {
+                diagnostics.combat.healing_effective += value;
+                if !matches!(action, CoopAction::Swap { .. }) {
+                    diagnostics.combat.skill_healing_effective += value;
+                }
+            }
+            "cascade-cap" => diagnostics.board.cascade_cap_events += 1,
+            "nature-cleanse" => diagnostics.advanced_jewels.statuses_cleansed += value,
+            "chill-consumed" => diagnostics.advanced_jewels.chilled_attacks += 1,
+            "chill-prevented" => {
+                diagnostics
+                    .advanced_jewels
+                    .chilled_damage_prevented_before_shield += value;
+            }
+            "astral-upgrade" => {
+                *diagnostics
+                    .advanced_jewels
+                    .amplified_tiers
+                    .entry(*value)
+                    .or_default() += 1;
+            }
+            "generated-nature" | "generated-frost" | "generated-astral" => {
+                let jewel = kind.trim_start_matches("generated-");
+                let (counts, count) = if *value == 0 {
+                    (
+                        &mut diagnostics.advanced_jewels.generation_no_ops_by_kind,
+                        1,
+                    )
+                } else {
+                    (
+                        &mut diagnostics.advanced_jewels.tiles_generated_by_kind,
+                        *value,
+                    )
+                };
+                *counts.entry(jewel.into()).or_default() += count;
+            }
+            "matched-nature" | "matched-frost" | "matched-astral" => {
+                used_advanced = true;
+                let jewel = kind.trim_start_matches("matched-");
+                let metrics = &mut diagnostics.advanced_jewels;
+                *metrics
+                    .matched_groups_by_kind
+                    .entry(jewel.into())
+                    .or_default() += 1;
+                *metrics
+                    .matched_group_sizes_by_kind
+                    .entry(jewel.into())
+                    .or_default()
+                    .entry(*value)
+                    .or_default() += 1;
+            }
+            _ => {}
+        }
+    }
+    if matches!(action, CoopAction::Swap { .. }) {
+        *diagnostics
+            .board
+            .match_waves_per_swap
+            .entry(waves)
+            .or_default() += 1;
+    }
+    diagnostics.combat.player_turns += u64::from(next.turn_index - state.turn_index);
+    let (before_mana, before_rage) = party_resources(state);
+    let (after_mana, after_rage) = party_resources(next);
+    // Summing all seats keeps Rage transfers neutral. The committed delta plus
+    // paid costs measures usable generation after caps.
+    diagnostics.combat.mana_generated += (after_mana + costs.0).saturating_sub(before_mana);
+    diagnostics.combat.rage_generated += (after_rage + costs.1).saturating_sub(before_rage);
+    // Ability contribution may be credited to recipients on legacy bundles.
+    diagnostics.combat.shielding_granted += state
+        .participants
+        .iter()
+        .zip(&next.participants)
+        .map(|(before, after)| after.contribution_shielding - before.contribution_shielding)
+        .sum::<u64>();
+    used_advanced
 }
 
 // Sample a legal move from the visible board independently of the private
@@ -421,7 +598,12 @@ fn play(
     let mut mana_spent = 0;
     let mut rage_spent = 0;
     let mut first_damage_turn = None;
+    let mut first_skill_turn = None;
+    let mut first_ultimate_turn = None;
     let mut round_limit = false;
+    let mut stalled = false;
+    let mut used_advanced = false;
+    let mut previous_board = None;
     for step in 0..eval_budget {
         if checkpoint.state.phase.terminal() {
             break;
@@ -430,6 +612,24 @@ fn play(
         if state.phase == CoopPhase::Playing
             && let Some(diagnostics) = diagnostics.as_deref_mut()
         {
+            let legal_swaps = match previous_board {
+                Some((board, count)) if board == state.board => count,
+                _ => {
+                    let count = legal_swap_count(rules, state);
+                    previous_board = Some((state.board, count));
+                    count
+                }
+            };
+            *diagnostics
+                .board
+                .legal_swaps_per_turn
+                .entry(legal_swaps)
+                .or_default() += 1;
+            *diagnostics
+                .board
+                .advanced_tiles_per_turn
+                .entry(advanced_tile_count(&state.board))
+                .or_default() += 1;
             let seat = &state.participants[state.active_seat];
             let pet = rules
                 .config()
@@ -494,6 +694,7 @@ fn play(
                 .iter()
                 .flatten()
                 .any(|tile| tile.multiplier > 1);
+            let mut costs = (0, 0);
             if let CoopAction::Swap { first, second } = action {
                 let mut board = checkpoint.state.board;
                 board.swap(usize::from(first), usize::from(second));
@@ -503,8 +704,12 @@ fn play(
                     ));
             } else if let Ok(cast) = rules.prepare_ability(&checkpoint.state, action) {
                 *casts_by_skill.entry(cast.skill.id.clone()).or_default() += 1;
-                mana_spent += u64::from(cast.skill.mana_cost);
-                rage_spent += u64::from(cast.skill.rage_cost);
+                costs = (
+                    u64::from(cast.skill.mana_cost),
+                    u64::from(cast.skill.rage_cost),
+                );
+                mana_spent += costs.0;
+                rage_spent += costs.1;
                 if cast.skill.effect.kind == EffectKind::Heal
                     && let Some(diagnostics) = diagnostics.as_deref_mut()
                 {
@@ -517,6 +722,14 @@ fn play(
                 aetheria_game_core::Value::List(fields) if matches!(fields.first(),Some(aetheria_game_core::Value::Text(kind)) if kind=="critical"))).count() as u64;
             if let Some(diagnostics) = diagnostics.as_deref_mut() {
                 let next = &transition.next.state;
+                used_advanced |=
+                    record_action(diagnostics, state, next, action, costs, &transition.events);
+                if matches!(action, CoopAction::Skill) {
+                    first_skill_turn.get_or_insert(next.turn_index);
+                }
+                if matches!(action, CoopAction::Ultimate) {
+                    first_ultimate_turn.get_or_insert(next.turn_index);
+                }
                 if first_damage_turn.is_none()
                     && next
                         .participants
@@ -551,6 +764,7 @@ fn play(
             break;
         }
         if !accepted {
+            stalled = true;
             break;
         }
     }
@@ -560,6 +774,19 @@ fn play(
             diagnostics.first_damage_turns_sum += u64::from(turn);
         }
         let final_state = &checkpoint.state;
+        if let Some(turn) = first_skill_turn {
+            diagnostics.combat.matches_with_skill += 1;
+            diagnostics.combat.first_skill_turns_sum += u64::from(turn);
+        }
+        if let Some(turn) = first_ultimate_turn {
+            diagnostics.combat.matches_with_ultimate += 1;
+            diagnostics.combat.first_ultimate_turns_sum += u64::from(turn);
+        }
+        if !final_state.phase.terminal() {
+            diagnostics.combat.no_accepted_action += u32::from(stalled);
+            diagnostics.combat.budget_exhausted += u32::from(!stalled);
+        }
+        diagnostics.advanced_jewels.matches_using_advanced_jewels += u32::from(used_advanced);
         if final_state.phase == CoopPhase::Lost {
             if round_limit {
                 diagnostics.round_limit_defeats += 1;
@@ -668,7 +895,43 @@ pub fn simulate_solo_with_budget(
     seat: &SimulationSeat,
     eval_budget: u32,
 ) -> Result<SimulationReport, CoopError> {
-    if seeds == 0 || seeds > COMPARISON_MAX_SEEDS || eval_budget == 0 {
+    simulate_solo_range(rules, policy, 1, seeds, seat, eval_budget, None)
+}
+
+pub fn analyze_solo(
+    rules: &CoopRules,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    seat: &SimulationSeat,
+) -> Result<AnalysisReport, CoopError> {
+    let mut diagnostics = Diagnostics::default();
+    let report = simulate_solo_range(
+        rules,
+        policy,
+        seed_start,
+        seeds,
+        seat,
+        DEFAULT_EVAL_BUDGET,
+        Some(&mut diagnostics),
+    )?;
+    Ok(AnalysisReport {
+        seed_start,
+        report,
+        diagnostics,
+    })
+}
+
+fn simulate_solo_range(
+    rules: &CoopRules,
+    policy: Policy,
+    seed_start: u32,
+    seeds: u32,
+    seat: &SimulationSeat,
+    eval_budget: u32,
+    diagnostics: Option<&mut Diagnostics>,
+) -> Result<SimulationReport, CoopError> {
+    if seed_start == 0 || seeds == 0 || seeds > COMPARISON_MAX_SEEDS || eval_budget == 0 {
         return Err(CoopError::InvalidSeat);
     }
     let input = SeatInput {
@@ -686,7 +949,15 @@ pub fn simulate_solo_with_budget(
     };
     let mut initial = rules.allocate_solo(input, &loadout)?;
     rules.bind_skill_levels(&mut initial, std::slice::from_ref(&seat.skill_levels))?;
-    run_samples(rules, &initial, policy, 1, seeds, eval_budget, None)
+    run_samples(
+        rules,
+        &initial,
+        policy,
+        seed_start,
+        seeds,
+        eval_budget,
+        diagnostics,
+    )
 }
 
 /// Offline-only analysis with an explicit, bounded seed range. The online

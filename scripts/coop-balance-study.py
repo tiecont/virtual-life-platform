@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare Fire and Water against unpublished bundles using the Rust example.
+"""Compare unpublished bundles with the authoritative Rust reducer.
 
 From the repository root:
   cargo build --locked --release -p aetheria-pet-arena --example arena8_coop_balance
@@ -27,7 +27,20 @@ PARTIES = {
     "sustain": (DEWSKIP, "pet-v31-light-aurelune", "pet-v31-water-marivell", CLODKIN),
     "offense": (COALWHISK, "pet-v31-electric-quorion", "pet-v31-fire-cindrelis", "pet-v31-ghost-vesperyn"),
     "icarus": ("pet-v3-fire-icarus", "pet-v31-electric-quorion", CLODKIN, DEWSKIP),
+    "jewel-support": ("pet-v31-light-aurelune", "pet-v31-water-marivell", "light-dawnarchon", CLODKIN),
 }
+JEWEL_CASES = (
+    ("starters", 10, "none"),
+    ("starters", 20, "starter-core"),
+    ("same-species", 20, "trained-core"),
+    ("ground", 40, "starter-core"),
+    ("offense", 40, "stormcoil-loadout"),
+    ("icarus", 40, "starter-core"),
+    ("jewel-support", 20, "none"),
+    ("jewel-support", 40, "stormcoil-loadout"),
+)
+HISTORICAL_COMPOSITIONS = tuple(name for name in PARTIES if name != "jewel-support")
+
 
 def dump(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n")
@@ -145,6 +158,89 @@ def party(name, level, gear):
         result.append({"petId": pet, "level": level, "artifacts": artifacts, "skillLevels": skills})
     return result
 
+
+def jewel_bundles(advanced_path, output):
+    """Hold the advanced ruleset and balance constant while isolating each source."""
+    authored = json.loads(advanced_path.read_text())
+    editions = {"advanced-control": None, "advanced-skill": "skills", "advanced-encounter": "opening"}
+    results = {}
+    for label, source in editions.items():
+        bundle = copy.deepcopy(authored)
+        config = bundle["advancedJewels"]
+        if source is None:
+            config["encounters"] = []
+        else:
+            encounters = config["encounters"]
+            config["encounters"] = []
+            for encounter in encounters:
+                if not encounter.get(source):
+                    continue
+                entry = {"encounterId": encounter["encounterId"], "skills": []}
+                entry[source] = encounter[source]
+                config["encounters"].append(entry)
+            if not config["encounters"]:
+                raise ValueError(f"advanced candidate has no {source} to measure")
+        results[label] = output / f"{label}.json"
+        dump(results[label], bundle)
+    return results
+
+
+def summarize_row(item, row):
+    diagnostics = row.get("diagnostics", {})
+    board = diagnostics.get("board")
+    combat = diagnostics.get("combat")
+    row_summary = {
+        "bundle": item["bundle"],
+        "contentDigest": row["contentDigest"],
+        "party": item["party"],
+        "level": item["level"],
+        "gear": item["gear"],
+        "mode": item["mode"],
+        "bossId": row["bossId"],
+        "policy": row["policy"],
+        "seeds": row["seeds"],
+        "wins": row["wins"],
+        "losses": row["losses"],
+        "unresolved": row["unresolved"],
+        "roundLimitDefeats": diagnostics.get("roundLimitDefeats", 0),
+        "teamWipes": diagnostics.get("teamWipes", 0),
+        "averageRounds": row["averageRoundsMilli"] / 1000,
+        "averageActions": row["averageActionsMilli"] / 1000,
+        "averageSimulatedDurationMs": row["averageLogicalDurationMs"],
+        "matchesWithMultiplier": row["matchesWithMultiplier"],
+        "contributions": row["contributions"],
+        "castsBySkill": row["castsBySkill"],
+        "advancedJewels": diagnostics.get("advancedJewels"),
+    }
+
+    def rate(total, count):
+        return round(total / count, 4) if count else None
+
+    if board is not None:
+        distribution = board["legalSwapsPerTurn"]
+        observed = sum(distribution.values())
+        row_summary["board"] = {
+            **board,
+            "observedTurns": observed,
+            "averageLegalSwaps": rate(sum(int(count) * turns for count, turns in distribution.items()), observed),
+            "committedSwaplessRate": rate(distribution.get("0", 0), observed),
+        }
+    if combat is not None:
+        turns = combat["playerTurns"]
+        row_summary["combat"] = {
+            **combat,
+            "averagePlayerTurns": rate(turns, row["seeds"]),
+            "damagePerPlayerTurn": rate(combat["bossHpDamage"], turns),
+            "manaPerPlayerTurn": rate(combat["manaGenerated"], turns),
+            "ragePerPlayerTurn": rate(combat["rageGenerated"], turns),
+            "averageSurvivors": rate(diagnostics["survivingSeatsSum"], row["seeds"]),
+            "averageFirstSkillTurnWhenCast": rate(combat["firstSkillTurnsSum"], combat["matchesWithSkill"]),
+            "averageFirstUltimateTurnWhenCast": rate(combat["firstUltimateTurnsSum"], combat["matchesWithUltimate"]),
+            "skillHealingEfficiency": rate(combat["skillHealingEffective"], diagnostics["healingCapacity"]),
+        }
+    return row_summary
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--binary", type=Path, default=ROOT / "artifacts/rust/target/release/examples/arena8_coop_balance")
@@ -154,12 +250,18 @@ def main():
     parser.add_argument("--seed-start", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--bundles", nargs="+", choices=["baseline", *ELEMENTAL_VARIANTS, *FUNCTIONAL_VARIANTS, *TIMED_VARIANTS])
-    parser.add_argument("--stage", choices=["progression", "composition", "confirmation"], default="progression")
+    parser.add_argument("--stage", choices=["progression", "composition", "confirmation", "jewels"], default="progression")
+    parser.add_argument("--mode", choices=["coop", "solo", "both"], default="coop")
+    parser.add_argument("--include-regular", action="store_true", help="Include regular opponents for solo play")
+    parser.add_argument("--advanced-candidate", type=Path, help="Split one authored bundle into control, skill-only and encounter-only studies")
+    parser.add_argument("--parties", nargs="+", choices=tuple(PARTIES), help="Limit the selected stage to these compositions")
     parser.add_argument("--bosses", nargs="+", help="Explicit boss IDs, or 'all' for all bosses in the bundle")
     parser.add_argument("--summary-file", type=Path, help="Optional compact JSON summary path")
     args = parser.parse_args()
-    if not 1 <= args.seed_count <= 25 or not 1 <= args.seed_start <= 2**32 - 1 or args.jobs < 1:
+    if not 1 <= args.seed_count <= 25 or not 1 <= args.seed_start <= 2**32 - args.seed_count or args.jobs < 1:
         parser.error("use 1–25 seeds per row, a nonzero u32 first seed and at least one worker")
+    if args.include_regular and args.mode == "coop":
+        parser.error("regular encounters require --mode solo or --mode both")
     prefix = args.output.resolve()
     prefix.mkdir(parents=True, exist_ok=True)
     binary = args.binary.resolve()
@@ -170,13 +272,15 @@ def main():
     if capability not in ("arena8-coop-v1", "arena8-coop-v2", "arena8-coop-v3"):
         parser.error("unsupported engine capability in study input")
     functional = capability in ("arena8-coop-v2", "arena8-coop-v3")
+    base_bosses = {row["id"]: row for row in base["bosses"]}
     if args.bosses == ["all"] or (args.bosses is None and capability == "arena8-coop-v3"):
-        boss_ids = tuple(row["id"] for row in base["bosses"])
+        boss_ids = tuple(base_bosses)
     elif args.bosses:
         boss_ids = tuple(args.bosses)
     else:
         boss_ids = BOSSES
-    boss_chunks = [boss_ids[i:i + 2] for i in range(0, len(boss_ids), 2)]
+    if len(set(boss_ids)) != len(boss_ids) or any(boss not in base_bosses for boss in boss_ids):
+        parser.error("use distinct Boss IDs from the base bundle")
     variants = FUNCTIONAL_VARIANTS if functional else ELEMENTAL_VARIANTS
     if capability == "arena8-coop-v3":
         variants = {**variants, **TIMED_VARIANTS}
@@ -192,75 +296,93 @@ def main():
         bundles[name] = prefix / f"{name}.json"
         dump(bundles[name], bundle)
     bundles = {name: path for name, path in bundles.items() if name in selected}
+    if args.advanced_candidate:
+        try:
+            bundles.update(jewel_bundles(args.advanced_candidate, prefix))
+        except (KeyError, ValueError) as error:
+            parser.error(f"invalid advanced study input: {error}")
+    bundle_capabilities = {name: json.loads(path.read_text())["engineCapability"] for name, path in bundles.items()}
     if args.stage == "progression":
         scenarios = [("starters", level, gear)
                      for level in (1, 5, 10, 20, 40, 60)
                      for gear in ("none", "starter-core")]
     elif args.stage == "composition":
         scenarios = [(name, 20 if name in ("starters", "same-species", "ground") else 40, "starter-core")
-                     for name in PARTIES]
+                     for name in HISTORICAL_COMPOSITIONS]
         scenarios += [
             ("same-species", 20, "trained-core"),
             ("starters", 20, "cinder-core"),
             ("starters", 40, "stormcoil-loadout"),
         ]
-    else:
+    elif args.stage == "confirmation":
         scenarios = [("starters", 10, "starter-core"), ("starters", 20, "starter-core"),
                      ("starters", 40, "starter-core"), ("starters", 60, "starter-core"),
                      ("ground", 40, "starter-core"), ("icarus", 40, "starter-core")]
+    else:
+        scenarios = JEWEL_CASES
+    if args.parties:
+        scenarios = [scenario for scenario in scenarios if scenario[0] in args.parties]
+        if {scenario[0] for scenario in scenarios} != set(args.parties):
+            parser.error("the selected stage has no case for one or more requested parties")
+
+    seat_inputs = {}
+    for name, level, gear in scenarios:
+        seats = party(name, level, gear)
+        if args.mode in ("coop", "both"):
+            seat_inputs["coop", name, level, gear] = seats
+        if args.mode in ("solo", "both"):
+            for seat in seats:
+                seat_inputs.setdefault(("solo", seat["petId"], level, gear), seat)
 
     def run(case):
-        bundle, (name, level, gear) = case
-        stem = f"{args.stage}-{name}-{level}-{gear}"
+        bundle, (mode, name, level, gear) = case
+        stem = stem_for(mode, name, level, gear)
         party_path = prefix / "parties" / f"{stem}.json"
+        encounters = list(boss_ids)
+        if mode == "solo" and args.include_regular:
+            encounters.extend(base_bosses[boss]["regular"]["id"] for boss in boss_ids if base_bosses[boss].get("regular"))
         rows = []
         commands = []
-        for chunk in boss_chunks:
-            command = [binary, bundles[bundle], party_path, str(args.seed_start), str(args.seed_count), *chunk]
+        mode_flags = ["--solo"] if mode == "solo" else []
+        for index in range(0, len(encounters), 2):
+            command = [
+                binary, *mode_flags, bundles[bundle], party_path, str(args.seed_start),
+                str(args.seed_count), *encounters[index:index + 2]
+            ]
             commands.append(list(map(str, command)))
             rows.extend(json.loads(subprocess.check_output(command)))
-        value = {"bundle": bundle, "engineCapability": capability, "party": name, "level": level, "gear": gear,
+        value = {"bundle": bundle, "engineCapability": bundle_capabilities[bundle],
+                 "mode": mode, "party": name, "level": level, "gear": gear,
                  "seedStart": args.seed_start, "seedCount": args.seed_count,
-                 "bosses": list(boss_ids),
+                 "bosses": list(boss_ids), "encounters": encounters,
                  "command": commands[0], "commands": commands, "rows": rows}
         dump(prefix / f"{stem}-{bundle}.json", value)
         return value
 
+    def stem_for(mode, name, level, gear):
+        mode_prefix = "solo-" if mode == "solo" else ""
+        return f"{args.stage}-{mode_prefix}{name}-{level}-{gear}"
+
     (prefix / "parties").mkdir(exist_ok=True)
-    for name, level, gear in scenarios:
-        dump(prefix / "parties" / f"{args.stage}-{name}-{level}-{gear}.json", party(name, level, gear))
+    for scenario, seats in seat_inputs.items():
+        dump(prefix / "parties" / f"{stem_for(*scenario)}.json", seats)
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as executor:
-        results = list(executor.map(run, ((bundle, case) for case in scenarios for bundle in bundles)))
+        results = list(executor.map(run, ((bundle, case) for case in seat_inputs for bundle in bundles)))
     dump(prefix / f"{args.stage}-results.json", results)
     dump(prefix / f"{args.stage}-digests.json", {item["bundle"]: item["rows"][0]["contentDigest"] for item in results})
     if args.summary_file:
         rows = [
-            {
-                "bundle": item["bundle"],
-                "party": item["party"],
-                "level": item["level"],
-                "gear": item["gear"],
-                "bossId": row["bossId"],
-                "policy": row["policy"],
-                "seeds": row["seeds"],
-                "wins": row["wins"],
-                "losses": row["losses"],
-                "unresolved": row["unresolved"],
-                "roundLimitDefeats": row.get("diagnostics", {}).get("roundLimitDefeats", 0),
-                "teamWipes": row.get("diagnostics", {}).get("teamWipes", 0),
-                "averageRounds": round(row["averageRoundsMilli"] / 1000.0, 3),
-                "averageActions": round(row["averageActionsMilli"] / 1000.0, 3),
-                "matchesWithMultiplier": row["matchesWithMultiplier"],
-            }
+            summarize_row(item, row)
             for item in results
             for row in item["rows"]
         ]
         summary = {
             "engineCapability": capability,
+            "bundleCapabilities": bundle_capabilities,
             "seedStart": args.seed_start,
             "seedCount": args.seed_count,
             "bossCount": len(boss_ids),
-            "scenarioCount": len(scenarios),
+            "scenarioCount": len(seat_inputs),
             "totalRowCount": len(rows),
             "totalMatches": sum(r["seeds"] for r in rows),
             "totalWins": sum(r["wins"] for r in rows),
