@@ -3,7 +3,7 @@ from os import environ
 from PIL import Image
 from board_capture import board_bounds, cell_center, enabled_action_frames, populated_board
 from subprocess import run
-from time import monotonic, sleep
+from time import monotonic, sleep, time_ns
 import json
 import sys
 from io import BytesIO
@@ -331,6 +331,45 @@ elif stage == 'water':
     else:
         wait_for('21-water-equipped-native-hud', enter_or_start, tries=28)
         (output/'water-hud-observed').touch()
+
+elif stage == 'shared-board':
+    clicks = []
+
+    def click_record(action, position, cell=None):
+        record = {'action': action, 'position': list(position), 'unixMs': time_ns() // 1_000_000}
+        if cell is not None:
+            record['cell'] = cell
+        click(*position)
+        clicks.append(record)
+        (output / 'shared-input.json').write_text(json.dumps(clicks, indent=2) + '\n')
+
+    for attempt in range(14):
+        image = capture('05-shared-native-admission')
+        if recover := status_button(image):
+            click_record('reconnect', recover)
+            sleep(.7)
+            continue
+        if start := enter_or_start(image):
+            click_record('start', start)
+            try:
+                initial = expect('shared-started', lambda result: result['version'] == 1, timeout=2)
+                break
+            except RuntimeError:
+                sleep(.3)
+    else:
+        raise RuntimeError('Shared jewel Start did not commit from the packaged HUD')
+
+    assert initial['state']['activeSeat'] == 0 and initial['state']['turn'] == 0
+    board, _ = wait_for('06-shared-board-start', populated_board, tries=12)
+    for cell in (initial['move']['first'], initial['move']['second']):
+        click_record('swap-cell', cell_center(board, cell), cell)
+        sleep(.24)
+
+    swapped = expect('shared-swapped', lambda result: result['version'] == 2, timeout=10)
+    target = (swapped['state']['turn'], swapped['state']['activeSeat'])
+    wait_for('07-shared-board-host-swap',
+             lambda image: live_turn(image) == target and populated_board(image), tries=14)
+    (output / 'shared-swap-observed').touch()
 
 elif stage=='first':
     for attempt in range(14):

@@ -22,6 +22,13 @@ case "${PACKAGED_QA_SIZE:-1024x768}" in
   1024x768|1280x720|1920x1080|2560x1440|3840x2160) export PACKAGED_QA_SIZE="${PACKAGED_QA_SIZE:-1024x768}" ;;
   *) echo "Unsupported packaged player resolution" >&2; exit 2 ;;
 esac
+case "${PACKAGED_QA_BOARD:-functional}" in
+  functional|elemental|advanced-water) ;;
+  shared-rng)
+    [[ "$PACKAGED_QA_SCOPE" == board ]] || { echo "Shared RNG requires the board scope" >&2; exit 2; }
+    ;;
+  *) echo "Unsupported packaged board fixture" >&2; exit 2 ;;
+esac
 export PACKAGED_QA_WIDTH="${PACKAGED_QA_SIZE%x*}" PACKAGED_QA_HEIGHT="${PACKAGED_QA_SIZE#*x}"
 driver_dir="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 if [[ ${1:-} != "--inside-disposable-db" ]]; then
@@ -124,6 +131,7 @@ done
 
 phases=(fire first recover)
 if [[ "$PACKAGED_QA_SCOPE" == full ]]; then phases+=(resume water); fi
+if [[ "$PACKAGED_QA_BOARD" == shared-rng ]]; then phases=(fire shared-board); fi
 for phase in "${phases[@]}"; do
   printf 'Running %s\n' "$phase" | tee -a "$qa_run/ui.log"
   # The full battle includes multiple button captures, OCR passes and a
@@ -134,6 +142,15 @@ for phase in "${phases[@]}"; do
   esac
   timeout "$phase_timeout" python3 "$driver_dir/drive.py" "$phase" 2>&1 | tee -a "$qa_run/ui.log"
 done
+if [[ "$PACKAGED_QA_BOARD" == shared-rng ]]; then
+  touch "$qa_run/player-sampling-stop"
+  wait "$qa_sampler_pid"
+  qa_sampler_pid=''
+  wait "$qa_backend_pid"
+  qa_backend_pid=''
+  node "$driver_dir/verify-board.mjs" "$qa_run" "$PACKAGED_QA_SIZE" shared-rng | tee "$qa_run/board-acceptance.json"
+  exit 0
+fi
 if [[ "$PACKAGED_QA_SCOPE" == board ]]; then
   # The recovery driver releases the backend after observing the packaged HUD.
   # Wait for proof that the authenticated host consumed a new ticket first.

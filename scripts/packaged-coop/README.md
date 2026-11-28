@@ -35,6 +35,23 @@ To qualify the unmodified schema 5 candidate through Nest, PostgreSQL and authen
 node scripts/with-test-db.mjs node --import tsx scripts/admin-gameplay-publication.mjs --advanced-coop
 ```
 
+## Shared nine-jewel board
+
+```sh
+PACKAGED_QA_SCOPE=board PACKAGED_QA_BOARD=shared-rng PACKAGED_QA_SIZE=1280x720 \
+  bash scripts/packaged-coop/run.sh "$BUILD_RECEIPT" "$RUNTIME_BINARY" "$TESSDATA_DIR"
+```
+
+This publishes the schema 6 nine-jewel candidate in the disposable database
+with only the Fire room hosting threshold set to zero. Start and the first
+legal swap are sent through the packaged HUD. Three authenticated protocol
+peers join and observe. The verifier matches the two exact actions against
+the host's durable journal fingerprints and saves time-stamped clicks, the
+published digest, two screenshots with 64 rendered cells and the tile kind
+counts actually observed. An individual board can have fewer than nine
+distinct kinds. The scope ends after the first swap. Timed restart, full
+combat, settlement and four-human play remain separate qualifications.
+
 ## Four-person offline playtest
 
 Use the Linux development player and local cooperative server setup in

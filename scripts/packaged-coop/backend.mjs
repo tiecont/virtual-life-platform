@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {access,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {Pool} from 'pg';
 import {validateTestDatabaseURL} from '../../scripts/test-environment.mjs';
 import {createServer} from 'node:net';
@@ -29,8 +29,9 @@ const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
 const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
-assert.ok(['functional','elemental','advanced-water'].includes(boardMode),'Unknown packaged board fixture');
+assert.ok(['functional','elemental','advanced-water','shared-rng'].includes(boardMode),'Unknown packaged board fixture');
 const advancedWater=boardMode==='advanced-water';
+const sharedRng=boardMode==='shared-rng';
 const isFunctional=boardMode!=='elemental';
 function helloMessage(ticket,contentHash,build){return Buffer.concat([stringField(1,ticket),stringField(2,build??(isFunctional?'unity-native-v2':'coop-process-v1')),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
@@ -73,6 +74,34 @@ function legalSwap(board, preferOffense=false){
  throw Error('Committed board has no legal swap');
 }
 
+// Recompute the host's durable native receipt fingerprints for these two
+// inputs. View receipts and automatic timeout cannot satisfy this proof.
+function journalFingerprint(row,matchId,action){
+ const sized=(tag,bytes)=>{
+  const header=Buffer.alloc(5);
+  header.writeUInt8(tag);
+  header.writeUInt32BE(bytes.length,1);
+  return Buffer.concat([header,bytes]);
+ };
+ const text=value=>sized(5,Buffer.from(value));
+ const uuid=value=>sized(4,Buffer.from(value.replaceAll('-',''),'hex'));
+ const number=(tag,value)=>{
+  const bytes=Buffer.alloc(9);
+  bytes.writeUInt8(tag);
+  bytes.writeBigInt64BE(BigInt(value),1);
+  return bytes;
+ };
+ const list=values=>{
+  const header=Buffer.alloc(5);
+  header.writeUInt8(6);
+  header.writeUInt32BE(values.length,1);
+  return Buffer.concat([header,...values]);
+ };
+ const canonicalAction=action.kind==='start'?text('start'):list([1,action.first,action.second].map(cell=>number(3,cell)));
+ const payload=list([text(row.actor),uuid(matchId),uuid(row.command),number(2,row.epoch),number(2,row.version-1),canonicalAction]);
+ return createHash('sha256').update(Buffer.from('VL-CANON\x01')).update(list([text('vl.command.v1'),payload])).digest('hex');
+}
+
 const origin='http://127.0.0.1:3300',adminOrigin='http://127.0.0.1:3301',binary=resolve(process.env.PACKAGED_QA_ENGINE);
 const facts={result:'FAIL',scenarios:[], backendSource:process.env.PACKAGED_QA_REVISION, unitySource:process.env.PACKAGED_QA_REVISION};
 const nativeFailures=new WeakMap();
@@ -110,31 +139,38 @@ try{
  const validator=new EngineGameplayBundleValidator(binary);
  const installation=await installGameplayConfig(pool,'arena8-coop-pve',seed,validator,'system:process-test');
  console.log('Installed seed configuration',installation.version,installation.digest);
- const bundle=JSON.parse(await readFile(isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json','utf8'));
- // Historical captures use the elemental QA publication at content revision 4.
- bundle.contentRevision=isFunctional?bundle.contentRevision+1:4;
+ const sourceBundlePath=sharedRng?'config/gameplay/arena8-coop-shared-rng-v1.candidate.json'
+  :isFunctional?'config/gameplay/arena8-coop-functional-v1.candidate.json':'config/gameplay/arena8-coop-v2.seed.json';
+ const bundle=JSON.parse(await readFile(sourceBundlePath,'utf8'));
  const fire=bundle.bosses.find(boss=>boss.mapId==='cinder-terraces');
  const water=bundle.bosses.find(boss=>boss.mapId==='tideglass-lagoon');
- for(const boss of [fire,water]){
-  boss.attackModel.baseDamage=1;
-  boss.attackModel.perRoundDamage=0;
-  boss.attackModel.minimumDamage=1;
-  boss.requiredRoomPoints=0;
- }
- // A test-only publication makes the Fire match winnable with legal swaps.
- fire.maxHp=7000;
- water.requiredRoomPoints=333;
- fire.phase.maxGrowthBp=5000;
- fire.phase.currentBp=1500;
- fire.rewardPolicy.firstClear={achievementPoints:333,coins:144,exp:105,materials:7};
- bundle.multiplier.schedule[0].tiers[0].weight=1;
- bundle.multiplier.schedule[0].tiers.push({...bundle.multiplier.schedule[1].tiers[1],weight:10000});
- fire.defense=1;
- bundle.party.maxRounds=32;
- for(const skill of bundle.skills){
-  if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=isFunctional?0:1;
-  if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=isFunctional?0:1;
-  if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=isFunctional?0:1;
+ if(sharedRng){
+  assert.equal(bundle.schemaVersion,6);
+  fire.requiredRoomPoints=0;
+ }else{
+  // Historical captures use the elemental QA publication at content revision 4.
+  bundle.contentRevision=isFunctional?bundle.contentRevision+1:4;
+  for(const boss of [fire,water]){
+   boss.attackModel.baseDamage=1;
+   boss.attackModel.perRoundDamage=0;
+   boss.attackModel.minimumDamage=1;
+   boss.requiredRoomPoints=0;
+  }
+  // A test-only publication makes the Fire match winnable with legal swaps.
+  fire.maxHp=7000;
+  water.requiredRoomPoints=333;
+  fire.phase.maxGrowthBp=5000;
+  fire.phase.currentBp=1500;
+  fire.rewardPolicy.firstClear={achievementPoints:333,coins:144,exp:105,materials:7};
+  bundle.multiplier.schedule[0].tiers[0].weight=1;
+  bundle.multiplier.schedule[0].tiers.push({...bundle.multiplier.schedule[1].tiers[1],weight:10000});
+  fire.defense=1;
+  bundle.party.maxRounds=32;
+  for(const skill of bundle.skills){
+   if(skill.id==='fire-coalwhisk-ember-lance')skill.manaCost=isFunctional?0:1;
+   if(skill.id==='fire-coalwhisk-ember-solar-flare')skill.rageCost=isFunctional?0:1;
+   if(skill.id==='fire-coalwhisk-blazing-descent')skill.rageCost=isFunctional?0:1;
+  }
  }
  const verdict=await validator.validate('arena8-coop-pve',bundle);
  await writeFile(join(root,'test-publication.json'),JSON.stringify(bundle,null,2)+'\n');
@@ -262,7 +298,7 @@ try{
   assert.equal(view.accountId,member.accountId);
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,allocation.content_hash);
-  assert.equal(view.clientBuild,advancedWater&&boss.id===water.id?'unity-native-v3':undefined);
+  assert.equal(view.clientBuild,sharedRng?'unity-native-v4':advancedWater&&boss.id===water.id?'unity-native-v3':undefined);
   return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
@@ -361,6 +397,56 @@ try{
   if(!stopping)reportNativeFailure(error,'receipt',seat,connection);
   throw error;
  }
+ if(sharedRng){
+  try{
+   await Promise.all([1,2,3].map(async seat=>{connections[seat]=await openConnection(seat);}));
+   await until('SELECT nonce FROM platform_native_ticket_uses WHERE world_id=$1 AND account_id=$2',[allocation.world_id,host]);
+   const authenticated=(await pool.query(
+    'SELECT count(DISTINCT account_id)::int AS count FROM platform_native_ticket_uses WHERE world_id=$1',
+    [allocation.world_id])).rows[0].count;
+   assert.equal(authenticated,4);
+   async function observeVersion(version){
+    for(let attempt=0;attempt<150&&!stopping;attempt++){
+     const view=await intent(connections[1],0,'','arena8-coop.view.v1');
+     assert.equal(view.body.case,'receipt');
+     const observed=Number(view.canonicalVersion);
+     assert.ok(observed<=version,'Timed board advanced past the requested version');
+     if(observed===version){
+      const state=JSON.parse(Buffer.from(view.body.value.authorizedProjection)).state;
+      assert.equal(state.ruleset.configDigest,verdict.digest);
+      assert.equal(state.ruleset.contentHash,verdict.contentHash);
+      return {version,state,observedUnixMs:Date.now()};
+     }
+     await new Promise(resolve=>setTimeout(resolve,100));
+    }
+    throw Error('Timed out observing shared RNG version '+version);
+   }
+   const started=await observeVersion(1);
+   const move=legalSwap(started.state.board);
+   await json('shared-started.json',{...started,move});
+   const swapped=await observeVersion(2);
+   const rows=(await pool.query(
+    `SELECT actor_id::text AS actor,command_id::text AS command,epoch::int,committed_version::int AS version,
+        encode(payload_fingerprint,'hex') AS fingerprint,encode(receipt_hash,'hex') AS receipt_hash
+     FROM game_native_receipts WHERE match_id=$1 AND committed_version IN (1,2) ORDER BY committed_version`,
+    [allocation.match_id])).rows;
+   assert.deepEqual(rows.map(row=>row.version),[1,2]);
+   const receipts=rows.map((row,index)=>{
+    const action=index===0?{kind:'start'}:move;
+    assert.equal(row.actor,host);
+    assert.equal(row.fingerprint,journalFingerprint(row,allocation.match_id,action),
+     'The authenticated host command must match the exact packaged input');
+    return {version:row.version,epoch:row.epoch,actor:'host',action,fingerprint:row.fingerprint,receiptHash:row.receipt_hash};
+   });
+   await json('shared-swapped.json',{...swapped,receipts});
+   await waitForFile('shared-swap-observed');
+   await json('shared-board-run.json',{
+    configVersion:created.version,digest:verdict.digest,contentHash:verdict.contentHash,
+    candidate:sourceBundlePath,adjustments:{fireRequiredRoomPoints:0},authenticated,packagedClients:1,protocolPeers:3,
+   });
+   facts.scenarios.push('four-authenticated-clients-and-exact-packaged-host-start-and-swap');
+  }finally{for(const connection of connections)connection?.ws.close();}
+ }else{
  try{
   async function connectTeammates(){
    for(const seat of [1,2,3]){
@@ -556,7 +642,8 @@ try{
  }
 
  }
- facts.result='PASS';console.log('reward rows verified',JSON.stringify(facts));
+ }
+ facts.result='PASS';console.log('Packaged backend verified',JSON.stringify(facts));
 
 }catch(error){
  if(stopping){
