@@ -51,6 +51,7 @@ export function registerCoopRooms(http:FastifyInstance,config:Config,identity:Id
    return rooms.eligibility(account(req),bossId,mapId);
   });
   api.get('/coop/encounters',req=>rooms.encounters(account(req)));
+  api.get('/coop/campaign-routes',req=>rooms.campaignRoutes(account(req)));
   api.post('/coop/rooms',req=>{
    write(req);
    const body=CoopCreateRoomSchema.parse(req.body);

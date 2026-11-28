@@ -10,6 +10,8 @@ import {initializeArtifactInventory} from '../../wave-a-artifacts/infrastructure
 import {PVE_ARTIFACT_REWARDS} from '../../wave-a-artifacts/domain/catalog';
 import {levelIncrement} from '../../wave1/domain/progression';
 import {recordArena8MapClear} from '../../wave1/infrastructure/store';
+import {campaignRoute,isCampaignRoute} from '../../campaign-routes/domain/published-route';
+import {hasCampaignRouteClear,recordCampaignRouteClear,type RouteSettlementPin} from '../../campaign-routes/infrastructure/progress-store';
 import {
   assertUuid,conflict,encounterPairComplete,forbidden,
   readOwnedArena8Allocation,type AllocateInput,
@@ -58,6 +60,7 @@ const policy=z.strictObject({
 });
 type FunctionalSettlement={
  ownedPetInstanceId:string;settlementId:string;stateVersion:string;qualified:boolean;rewards:z.infer<typeof policy>;
+ routePin?:RouteSettlementPin;
 };
 
 // Authenticated local Arena8 allocation/settlement coordinator. It is default-off
@@ -125,8 +128,9 @@ export class Arena8Service {
     const projection=match.view;
     if(!match.terminal&&!projection.terminal)throw conflict('Match is not terminal');
     if(projection.phase!=='won'&&projection.phase!=='lost')throw runtime('Match terminal phase is invalid');
-    const mapId=projection.encounter.id.endsWith('-regular')||projection.encounter.id.endsWith('-boss')
+    const historicalMap=projection.encounter.id.endsWith('-regular')||projection.encounter.id.endsWith('-boss')
       ?projection.encounter.id.slice(0,projection.encounter.id.lastIndexOf('-')):'';
+    const mapId=functional?.routePin?.route.mapId??historicalMap;
     const mapIndex=MAPS.findIndex(map=>map.id===mapId);
     if(!mapId||mapIndex<0)throw runtime('Match map is unknown');
     const client=await this.db.connect();
@@ -147,10 +151,12 @@ export class Arena8Service {
       )).rows[0];
       if(!owned)throw forbidden('Pet is no longer owned');
       const encounterId=projection.encounter.id;
-      const encounterCompleted=(await client.query(
-        'SELECT 1 FROM pet_wave_one_encounters WHERE account_id=$1 AND map_id=$2 AND encounter_id=$3',
-        [accountId,mapId,encounterId],
-      )).rowCount===1;
+      const routePin=functional?.routePin;
+      const encounterCompleted=routePin?await hasCampaignRouteClear(client,accountId,routePin.route.id):
+        (await client.query(
+          'SELECT 1 FROM pet_wave_one_encounters WHERE account_id=$1 AND map_id=$2 AND encounter_id=$3',
+          [accountId,mapId,encounterId],
+        )).rowCount===1;
       const won=projection.phase==='won';
       const qualified=functional?.qualified??true;
       const firstClear=won&&qualified&&!encounterCompleted;
@@ -163,6 +169,9 @@ export class Arena8Service {
         if(qualified){
           exp=awarded.exp;coins=awarded.coins;materials=awarded.materials;
           ({level:petLevel,exp:petExp}=levelIncrement(owned.level,owned.exp+exp));
+          if(routePin&&awarded.achievementPoints>0)
+            await client.query("INSERT INTO coop_achievement_ledger(account_id,points,source,source_ref) "+
+              "VALUES($1,$2,'settlement',$3) ON CONFLICT DO NOTHING",[accountId,awarded.achievementPoints,settlementId]);
           if(coins>0)await client.query('UPDATE pet_wave_one_players SET coins=coins+$2,revision=revision+1,updated_at=clock_timestamp() WHERE account_id=$1',[accountId,coins]);
           if(exp>0)await client.query('UPDATE pet_wave_one_owned SET level=$3,exp=$4 WHERE account_id=$1 AND pet_id=$2 AND owned_pet_instance_id=$5',[accountId,projection.pet.id,petLevel,petExp,functional.ownedPetInstanceId]);
           if(materials>0){
@@ -171,9 +180,15 @@ export class Arena8Service {
           }
         }
         if(firstClear){
-          await client.query(`INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id,coop_recruitment_pet_ids)
-            VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,[accountId,mapId,encounterId,rewards.recruitmentPetIds??null]);
-          recruitedPetId=await recordArena8MapClear(client,accountId,mapId);
+          if(routePin){
+            const clear=await recordCampaignRouteClear(client,accountId,routePin,rewards.recruitmentPetIds);
+            if(!clear.firstClear)throw conflict('Campaign first clear changed');
+            recruitedPetId=clear.recruitedPetId;
+          }else{
+            await client.query(`INSERT INTO pet_wave_one_encounters(account_id,map_id,encounter_id,coop_recruitment_pet_ids)
+              VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,[accountId,mapId,encounterId,rewards.recruitmentPetIds??null]);
+            recruitedPetId=await recordArena8MapClear(client,accountId,mapId);
+          }
         }
         const outbox=await client.query(`UPDATE game_native_outbox SET delivered_at=clock_timestamp(),delivery_outcome='granted'
           WHERE match_id=$1 AND settlement_id=$2 AND effect_type='game.settlement.v1' AND delivered_at IS NULL`,[matchId,settlementId]);
@@ -270,13 +285,13 @@ export class Arena8Service {
     assertUuid(accountId,'account');assertUuid(requestId,'requestId');assertUuid(matchId,'matchId');
     const row=(await this.db.query<{
       account_id:string;pet_id:string;encounter_id:string;map_id:string;
-      proposal:Record<string,unknown>;content_hash:string;functional_config_digest:string|null;
+      proposal:Record<string,unknown>;content_hash:string;functional_config_digest:string|null;functional_config_version:string|null;
       functional_allocation:{bossId:string;seat:{ownedPetInstanceId:string}}|null;
       proposal_hash:Buffer;settlement_id:string;state_version:string;
       ruleset_id:string|null;ruleset_version:number|null;runtime_content_hash:string|null;status:string|null;
       bundle:Record<string,unknown>|null;engine_capability:string|null;
     }>(
-      `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,m.content_hash,m.functional_config_digest,m.functional_allocation,
+      `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,m.content_hash,m.functional_config_digest,m.functional_config_version,m.functional_allocation,
           s.proposal,s.proposal_hash,s.settlement_id,s.state_version,n.ruleset_id,n.ruleset_version,n.status,
           encode(n.content_hash,'hex') AS runtime_content_hash,v.bundle,v.engine_capability
          FROM platform_native_arena8_matches m
@@ -305,20 +320,27 @@ export class Arena8Service {
         throw runtime('Functional solo completion does not match the allocated match');
       const bosses=Array.isArray(row.bundle.bosses)?row.bundle.bosses:[];
       const map=bosses.find(candidate=>candidate?.mapId===row.map_id);
+      const route=isCampaignRoute(row.encounter_id)?campaignRoute(row.bundle,row.encounter_id,'solo',row.map_id):undefined;
       const regular=row.encounter_id===row.map_id+'-regular';
-      const expectedEncounter=regular?row.encounter_id:undefined;
-      if(parsed.data.encounterId!==expectedEncounter||
-        (regular?map?.regular?.id!==pin.bossId||pin.bossId!==row.encounter_id:map?.id!==pin.bossId))
+      const expectedEncounter=route?.id??(regular?row.encounter_id:undefined);
+      const expectedProfile=route?.profile.id??(regular?map?.regular?.id:map?.id);
+      if(parsed.data.encounterId!==expectedEncounter||expectedProfile!==pin.bossId||
+        (regular&&pin.bossId!==row.encounter_id))
         throw runtime('Functional solo completion does not match the pinned encounter');
-      const rewards=policy.safeParse(regular?map?.regular?.rewardPolicy:map?.rewardPolicy);
+      const rewards=policy.safeParse(route?.profile.rewardPolicy??(regular?map?.regular?.rewardPolicy:map?.rewardPolicy));
       if(!rewards.success)throw runtime('Functional solo reward policy is unavailable');
       const minimum=rewards.data.minimumActions?.[parsed.data.outcome==='won'?'victory':'defeat']??0;
       const receipts=minimum===0?undefined:await this.db.query(
         'SELECT 1 FROM game_native_receipts WHERE match_id=$1 AND actor_id=$2 AND committed_version>1 AND committed_version<=$3 LIMIT $4',
         [matchId,accountId,row.state_version,minimum],
       );
+      const routePin=route?{route,configVersion:Number(row.functional_config_version),configDigest:row.functional_config_digest,
+        settlementId:row.settlement_id,matchId}:undefined;
+      if(routePin&&(!Number.isSafeInteger(routePin.configVersion)||routePin.configVersion<1))
+        throw runtime('Campaign route completion has no published version');
       functional={ownedPetInstanceId:pin.seat.ownedPetInstanceId,settlementId:row.settlement_id,
-        stateVersion:row.state_version,qualified:minimum===0||receipts?.rowCount===minimum,rewards:rewards.data};
+        stateVersion:row.state_version,qualified:minimum===0||receipts?.rowCount===minimum,rewards:rewards.data,
+        ...(routePin?{routePin}:{})};
     }else if(proposal?.ruleset!=='arena8-pve'||(proposal.outcome!=='won'&&proposal.outcome!=='lost')){
       throw runtime('Native completion proposal is invalid');
     }

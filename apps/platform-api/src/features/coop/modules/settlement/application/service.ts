@@ -6,6 +6,8 @@ import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore} from '../../rooms/infrastructure/store';
 import {lockAccounts,tryLockAccounts} from '../../../../identity/modules/accounts/application/account-locks';
 import {levelIncrement} from '../../../../pets/modules/wave1/domain/progression';
+import {campaignRoute,isCampaignRoute} from '../../../../pets/modules/campaign-routes/domain/published-route';
+import {recordCampaignRouteClear} from '../../../../pets/modules/campaign-routes/infrastructure/progress-store';
 import {CoopSettlementStore,type CoopSettlementEvent} from '../infrastructure/store';
 
 const hash=z.string().regex(/^[a-f0-9]{64}$/),pet=z.string().regex(/^[a-z][a-z0-9-]{2,63}$/),count=z.number().int().min(0).max(1000000);
@@ -13,7 +15,7 @@ const hash=z.string().regex(/^[a-f0-9]{64}$/),pet=z.string().regex(/^[a-z][a-z0-
 const contribution=z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 const ParticipantSchema=z.strictObject({account:z.uuid(),petId:pet,alive:z.boolean(),damage:contribution,healing:contribution,shielding:contribution});
 export const CoopSettlementProposalSchema=z.strictObject({
- configDigest:hash,contentHash:hash,kind:z.literal('coop.completed.v1'),outcome:z.enum(['won','lost']),
+ configDigest:hash,contentHash:hash,encounterId:pet.optional(),kind:z.literal('coop.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.array(ParticipantSchema).length(4),round:z.number().int().min(0).max(65535),
  ruleset:z.literal('arena8-coop-pve'),rulesetVersion:CoopRulesetVersionSchema,turn:z.number().int().min(0).max(65535),
 });
@@ -127,7 +129,11 @@ export class CoopSettlement{
   const bundle=await this.store.bundle(db,allocation.configVersion,allocation.configDigest);
   if(!bundle)throw new Error('Cooperative settlement rewards unavailable');
   const rewards=RewardsSchema.parse(bundle.rewards);
-  const encounter=encounterFor(bundle,allocation.bossId);
+  const route=isCampaignRoute(allocation.bossId)?campaignRoute(bundle,allocation.bossId,'coop'):undefined;
+  if(proposal.encounterId!==route?.id)throw new Error('Cooperative settlement encounter mismatch');
+  const encounter=route?EncounterSchema.parse({
+   id:route.id,mapId:route.mapId,rewardPolicy:route.profile.rewardPolicy,
+  }):encounterFor(bundle,allocation.bossId);
   const policy=encounter?.rewardPolicy;
   const outcome=proposal.outcome;
   const defaultPayout=outcome==='won'?policy?.repeatClear:policy?.defeat;
@@ -146,7 +152,12 @@ export class CoopSettlement{
    const active=(!qualified||qualified.has(seat.account))&&await this.store.accountActive(db,seat.account);
    let firstClear=false;
    if(active&&policy&&encounter&&outcome==='won'){
-    firstClear=await this.store.clearBoss(db,seat.account,encounter.mapId,policy.recruitmentPetIds);
+    if(route){
+     await db.query('SELECT 1 FROM pet_wave_one_players WHERE account_id=$1 FOR UPDATE',[seat.account]);
+     const clear=await recordCampaignRouteClear(db,seat.account,{route,configVersion:allocation.configVersion,
+      configDigest:allocation.configDigest,settlementId:event.settlementId,matchId:event.matchId},policy.recruitmentPetIds);
+     firstClear=clear.firstClear;
+    }else firstClear=await this.store.clearBoss(db,seat.account,encounter.mapId,policy.recruitmentPetIds);
    }
    const payout=firstClear?policy?.firstClear:defaultPayout;
    const awardPoints=active?(payout?.achievementPoints??points):0;

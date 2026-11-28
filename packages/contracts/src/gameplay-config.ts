@@ -10,6 +10,7 @@ export const CoopEngineCapability={
  timedFunctional:'arena8-coop-v3',
  advancedTimedFunctional:'arena8-coop-v4',
  sharedJewelRng:'arena8-coop-v5',
+ campaignRoutes:'arena8-coop-v6',
 } as const;
 export const CoopRulesetVersionSchema=z.union([z.literal(1),z.literal(2),z.literal(3),z.literal(4),z.literal(5)]);
 export type CoopRulesetVersion=z.infer<typeof CoopRulesetVersionSchema>;
@@ -19,7 +20,8 @@ export function coopRulesetVersionForCapability(value:unknown):CoopRulesetVersio
   case CoopEngineCapability.functional:return 2;
   case CoopEngineCapability.timedFunctional:return 3;
   case CoopEngineCapability.advancedTimedFunctional:return 4;
-  case CoopEngineCapability.sharedJewelRng:return 5;
+  case CoopEngineCapability.sharedJewelRng:
+  case CoopEngineCapability.campaignRoutes:return 5;
   default:return undefined;
  }
 }
@@ -32,12 +34,13 @@ export function gameplayEngineBinding(schemaVersion:unknown){
   case 4:return {capability:CoopEngineCapability.timedFunctional,coopVersion:3,soloVersion:2} as const;
   case 5:return {capability:CoopEngineCapability.advancedTimedFunctional,coopVersion:4,soloVersion:3} as const;
   case 6:return {capability:CoopEngineCapability.sharedJewelRng,coopVersion:5,soloVersion:4} as const;
+  case 7:return {capability:CoopEngineCapability.campaignRoutes,coopVersion:5,soloVersion:4} as const;
   default:return undefined;
  }
 }
 // An absent hint keeps the hello compatible with archived native runtimes.
 export function nativeClientBuildForBundle(schemaVersion:unknown){
- if(schemaVersion===6)return 'unity-native-v4' as const;
+ if(schemaVersion===6||schemaVersion===7)return 'unity-native-v4' as const;
  return gameplayEngineBinding(schemaVersion)?.capability===CoopEngineCapability.advancedTimedFunctional
   ? 'unity-native-v3' as const : undefined;
 }

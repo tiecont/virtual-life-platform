@@ -24,7 +24,7 @@ const summary=(row:GameplayVersionSummary)=>GameplayConfigVersionSchema.parse({
 });
 const view=(row:GameplayVersion)=>GameplayConfigVersionViewSchema.parse({
  ...row,createdAt:row.createdAt.toISOString(),validatedAt:iso(row.validatedAt),publishedAt:iso(row.publishedAt),
- ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:row.bundle.schemaVersion===6?developmentCatalogReference:canonicalCatalogReference}:{}),
+ ...(row.bundle.schemaVersion!==1&&gameplayEngineBinding(row.bundle.schemaVersion)?{catalogReference:(row.bundle.schemaVersion===6||row.bundle.schemaVersion===7)?developmentCatalogReference:canonicalCatalogReference}:{}),
 });
 
 // Operator-facing gameplay configuration lifecycle. Drafts, engine validation,

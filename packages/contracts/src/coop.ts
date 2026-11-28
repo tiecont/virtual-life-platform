@@ -34,6 +34,15 @@ const coopEncounter=coopHosting.extend({
  recruitment:z.strictObject({regularPetIds:z.array(CoopPetIdSchema),legendaryPetId:CoopPetIdSchema.nullable()}).nullable(),
 });
 export const CoopEncounterCatalogSchema=z.strictObject({ruleset:CoopRulesetSchema,configVersion,points:accumulatedPoints,encounters:z.array(coopEncounter).max(6)});
+export const CampaignRouteCatalogSchema=z.strictObject({
+ ruleset:CoopRulesetSchema,configVersion,
+ routes:z.array(z.strictObject({
+  id:CoopBossIdSchema,mapId:CoopPetIdSchema,opponentPetId:CoopPetIdSchema,
+  tier:z.enum(['entry','advanced','boss']),name:displayName,mode:z.enum(['solo','either']),
+  prerequisiteEncounterId:CoopBossIdSchema.nullable(),cleared:z.boolean(),
+  canEnterSolo:z.boolean(),canHostCoop:z.boolean(),
+ })).max(48),
+});
 export const CoopCreateRoomSchema=z.strictObject({requestId,bossId:CoopBossIdSchema.optional(),mapId:CoopBossIdSchema.optional(),petId:CoopPetIdSchema.optional(),ownedPetInstanceId:z.uuid().optional()});
 export const CoopJoinRoomSchema=z.strictObject({requestId,mapId:CoopPetIdSchema.optional()});
 export const CoopSelectPetSchema=z.strictObject({requestId,petId:CoopPetIdSchema,ownedPetInstanceId:z.uuid().optional()});

@@ -71,6 +71,8 @@ describe('engine gameplay bundle validator',()=>{
   [6,'arena8-coop-v5',4,contentHash,4,false],
   [6,'arena8-coop-v5',5,contentHash,3,false],
   [6,'arena8-coop-v4',4,contentHash,3,false],
+  [7,'arena8-coop-v6',5,contentHash,4,true],
+  [7,'arena8-coop-v6',6,contentHash,5,false],
  ] as const)('validates schema %s against %s coop %s solo hash %s version %s (%s)',async(schemaVersion,engineCapability,rulesetVersion,soloContentHash,soloRulesetVersion,accepted)=>{
   const verdict={digest,engineCapability,contentHash,rulesetVersion,soloContentHash,soloRulesetVersion};
   const binary=await executable('verdict.mjs','console.log('+JSON.stringify(JSON.stringify(verdict))+')');
@@ -80,7 +82,7 @@ describe('engine gameplay bundle validator',()=>{
  });
  it('rejects an undeclared schema and a candidate claiming a different capability',async()=>{
   const validator=new EngineGameplayBundleValidator(join(directory,'missing'));
-  for(const candidate of [{schemaVersion:7},{schemaVersion:6,engineCapability:'arena8-coop-v4'},{schemaVersion:3,engineCapability:'arena8-coop-v3'},{schemaVersion:5,engineCapability:'arena8-coop-v3'}])
+  for(const candidate of [{schemaVersion:8},{schemaVersion:7,engineCapability:'arena8-coop-v5'},{schemaVersion:6,engineCapability:'arena8-coop-v4'},{schemaVersion:3,engineCapability:'arena8-coop-v3'},{schemaVersion:5,engineCapability:'arena8-coop-v3'}])
    await expect(validator.validate('arena8-coop-pve',candidate)).rejects.toBeInstanceOf(InvalidGameplayBundleError);
  });
  it('fails closed when the binary is missing and rejects relative paths',async()=>{

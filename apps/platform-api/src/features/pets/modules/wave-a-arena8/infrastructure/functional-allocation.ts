@@ -8,15 +8,19 @@ import {readOwnedArtifactLoadouts} from '../../wave-a-artifacts/infrastructure/s
 import type {NativeArena8MatchRecord} from '../application/native-provisioner';
 import {forbidden,invalid,readOwnedArena8Allocation,unavailable,type AllocateInput} from '../application/allocation';
 
+import {campaignRoute,isCampaignRoute} from '../../campaign-routes/domain/published-route';
+import {assertCampaignPrerequisite} from '../../campaign-routes/infrastructure/progress-store';
+
 const RULESET='arena8-coop-pve';
 const stableId=/^[a-z][a-z0-9-]{2,63}$/;
 
 function soloEncounter(bundle:Record<string,unknown>,mapId:string,encounterId:string):string{
+  if(isCampaignRoute(encounterId))return campaignRoute(bundle,encounterId,'solo',mapId).id;
   const catalog=Array.isArray(bundle.bosses)?bundle.bosses:[];
   const selected=catalog.find(candidate=>candidate?.mapId===mapId);
   if(encounterId===mapId+'-regular'&&selected?.regular?.id===encounterId&&selected.regular.rewardPolicy)
     return encounterId;
-  if(encounterId===mapId+'-boss'&&selected?.rewardPolicy&&(bundle.schemaVersion===6||selected.solo)&&
+  if(encounterId===mapId+'-boss'&&selected?.rewardPolicy&&(bundle.schemaVersion===6||bundle.schemaVersion===7||selected.solo)&&
     typeof selected.id==='string'&&stableId.test(selected.id))
     return selected.id;
   throw unavailable('This encounter has no published functional solo profile');
@@ -43,16 +47,19 @@ export class FunctionalSoloAllocation {
   }
 
   async allocate(accountId:string,input:AllocateInput){
-    if(input.encounterId!==input.mapId+'-boss'&&input.encounterId!==input.mapId+'-regular')
+    const routeRequested=isCampaignRoute(input.encounterId);
+    if(!routeRequested&&input.encounterId!==input.mapId+'-boss'&&input.encounterId!==input.mapId+'-regular')
       throw invalid('Encounter does not belong to the functional solo map');
     const tx=await this.db.connect();
     let published:GameplayVersion|undefined,seat:Awaited<ReturnType<typeof readOwnedArtifactLoadouts>>[number],skillLevels;
     try{
       await tx.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
-      await readOwnedArena8Allocation(tx,accountId,input);
+      if(!routeRequested)await readOwnedArena8Allocation(tx,accountId,input);
       const selection=await this.store.active(tx,RULESET);
       published=selection?await this.store.read(tx,RULESET,selection.version):undefined;
       if(!published||!gameplayEngineBinding(published.bundle.schemaVersion)?.soloVersion)throw unavailable('Published functional solo configuration is unavailable');
+      if(routeRequested)
+        await assertCampaignPrerequisite(tx,accountId,campaignRoute(published.bundle,input.encounterId,'solo',input.mapId));
       const owner=(await tx.query<{id:string}>(
         'SELECT owned_pet_instance_id AS id FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',
         [accountId,input.petId],
