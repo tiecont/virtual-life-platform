@@ -461,33 +461,51 @@ async fn unauthenticated_idle_socket_is_closed_and_traffic_budget_is_bounded() {
 
 #[tokio::test]
 async fn incompatible_client_build_is_rejected_before_consuming_a_ticket() {
-    let options = Options {
-        required_client_build: Some("unity-native-v2"),
-        ..options()
-    };
-    let server = Server::open_with(options).await;
-    let mut previous = server.client().await;
-    previous
-        .send(tungstenite::Message::Binary(hello("first", 1, 1).into()))
-        .await
-        .unwrap();
-    closed_without_data(&mut previous).await;
+    for (required, older) in [
+        ("unity-native-v2", "transport-fixture-v1"),
+        ("unity-native-v3", "unity-native-v2"),
+    ] {
+        let options = Options {
+            required_client_build: Some(required),
+            ..options()
+        };
+        let server = Server::open_with(options).await;
+        let mut previous = server.client().await;
+        previous
+            .send(tungstenite::Message::Binary(
+                frame(
+                    1,
+                    1,
+                    client_envelope::Body::Hello(public::Hello {
+                        ticket: "first".into(),
+                        client_build: older.into(),
+                        content_hash: vec![0x22; 32],
+                        platform_label: None,
+                    }),
+                )
+                .into(),
+            ))
+            .await
+            .unwrap();
+        closed_without_data(&mut previous).await;
 
-    let mut current = server.client().await;
-    let message = frame(
-        1,
-        1,
-        client_envelope::Body::Hello(public::Hello {
-            ticket: "first".into(),
-            client_build: "unity-native-v2".into(),
-            content_hash: vec![0x22; 32],
-            platform_label: None,
-        }),
-    );
-    let reply =
-        public::ServerEnvelope::decode(exchange(&mut current, message).await.as_slice()).unwrap();
-    assert!(matches!(reply.body, Some(server_envelope::Body::Hello(_))));
-    current.close(None).await.unwrap();
-    drop(current);
-    server.close().await;
+        let mut current = server.client().await;
+        let message = frame(
+            1,
+            1,
+            client_envelope::Body::Hello(public::Hello {
+                ticket: "first".into(),
+                client_build: required.into(),
+                content_hash: vec![0x22; 32],
+                platform_label: None,
+            }),
+        );
+        let reply =
+            public::ServerEnvelope::decode(exchange(&mut current, message).await.as_slice())
+                .unwrap();
+        assert!(matches!(reply.body, Some(server_envelope::Body::Hello(_))));
+        current.close(None).await.unwrap();
+        drop(current);
+        server.close().await;
+    }
 }

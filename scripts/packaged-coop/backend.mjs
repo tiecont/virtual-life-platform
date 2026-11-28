@@ -32,7 +32,7 @@ const boardMode=process.env.PACKAGED_QA_BOARD??'functional';
 assert.ok(['functional','elemental','advanced-water'].includes(boardMode),'Unknown packaged board fixture');
 const advancedWater=boardMode==='advanced-water';
 const isFunctional=boardMode!=='elemental';
-function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,isFunctional?'unity-native-v2':'coop-process-v1'),bytesField(3,contentHash)]);}
+function helloMessage(ticket,contentHash,build){return Buffer.concat([stringField(1,ticket),stringField(2,build??(isFunctional?'unity-native-v2':'coop-process-v1')),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
 // Search only the committed board. A stable board has no existing matches, so
@@ -262,7 +262,8 @@ try{
   assert.equal(view.accountId,member.accountId);
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,allocation.content_hash);
-  return {value:view.ticket,expiresAt:Date.parse(view.expiresAt)};
+  assert.equal(view.clientBuild,advancedWater&&boss.id===water.id?'unity-native-v3':undefined);
+  return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt)};
  }
  const caPem=await readFile(tls.caFile,'utf8');
  function reportNativeFailure(error,phase,seat,connection,ticket=connection?.ticket){
@@ -316,7 +317,7 @@ try{
    await connection.opened;
    phase='hello';
    const id=randomBytes(16);
-   connection.ws.send(envelope(10,helloMessage(ticket.value,contentBytes),id,connection.sequence++));
+   connection.ws.send(envelope(10,helloMessage(ticket.value,contentBytes,ticket.build),id,connection.sequence++));
    const hello=await connection.next();
    assert.equal(hello.body.case,'hello');
    return connection;

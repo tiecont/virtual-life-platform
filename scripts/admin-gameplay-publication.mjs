@@ -38,7 +38,7 @@ const bytesField=(field,bytes)=>Buffer.concat([tag(field,2),varint(bytes.length)
 const stringField=(field,text)=>bytesField(field,Buffer.from(text,'utf8'));
 const messageField=(field,bytes)=>bytesField(field,bytes);
 function envelope(bodyField,body,commandId,sequence){return Buffer.concat([uintField(1,1),bytesField(2,commandId),uintField(3,BigInt(sequence)),messageField(bodyField,body)]);}
-function helloMessage(ticket,contentHash){return Buffer.concat([stringField(1,ticket),stringField(2,functional?'unity-native-v2':'coop-process-v1'),bytesField(3,contentHash)]);}
+function helloMessage(ticket,contentHash,build){return Buffer.concat([stringField(1,ticket),stringField(2,build??(functional?'unity-native-v2':'coop-process-v1')),bytesField(3,contentHash)]);}
 function intentMessage(sessionId,expectedVersion,action,kind='arena8-coop.intent.v1'){return Buffer.concat([bytesField(1,sessionId),uintField(2,BigInt(expectedVersion)),stringField(3,kind),bytesField(4,Buffer.from(action,'utf8'))]);}
 
 // Search only the committed board. A stable board has no existing matches, so
@@ -529,7 +529,7 @@ try{
    const ticket=match.admission??await soloAdmission(match.input);
    match.admission=undefined;
    assert.equal(ticket.matchId,match.row.match_id);
-   return {value:ticket.ticket,expiresAt:Date.parse(ticket.expiresAt),url:ticket.wssUrl};
+   return {value:ticket.ticket,build:ticket.clientBuild,expiresAt:Date.parse(ticket.expiresAt),url:ticket.wssUrl};
   }
   const member=members[seat];
   const response=await post(member,'/v1/coop/rooms/'+match.room.roomId+'/admission',{});
@@ -542,7 +542,8 @@ try{
   assert.equal(view.seat,seat);
   assert.equal(view.contentHash,match.row.content_hash);
   assert.equal(view.wssUrl,nativeOrigin.replace('https:','wss:')+'/rt/v1');
-  return {value:view.ticket,expiresAt:Date.parse(view.expiresAt),url:view.wssUrl};
+  assert.equal(view.clientBuild,advancedCoop?'unity-native-v3':undefined);
+  return {value:view.ticket,build:view.clientBuild,expiresAt:Date.parse(view.expiresAt),url:view.wssUrl};
  }
  async function openConnection(match,seat){
   const ticket=await freshTicket(match,seat);
@@ -568,7 +569,7 @@ try{
   try{
    await once(ws,'open');
    const id=randomBytes(16),content=Buffer.from(match.row.content_hash,'hex');
-   ws.send(envelope(10,helloMessage(ticket.value,content),id,1));
+   ws.send(envelope(10,helloMessage(ticket.value,content,ticket.build),id,1));
    const hello=await next();
    assert.equal(hello.body.case,'hello');
    return {ws,next,sequence:2,expiresAt:ticket.expiresAt};

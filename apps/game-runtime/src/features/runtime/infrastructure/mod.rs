@@ -9,8 +9,8 @@ use aetheria_gateway::{Options, durable::PgAdmission};
 use aetheria_persistence::{Host, Keys, Owner, Scope};
 use aetheria_pet_arena::arena8::binding::{self, Allocation, ArtifactSelection};
 use aetheria_pet_arena::arena8::coop::{
-    ArtifactLoadout, COOP_RULESET_ID, FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID,
-    SEATS, SeatInput, SkillLevelBinding,
+    ADVANCED_RULESET_VERSION, ADVANCED_SOLO_RULESET_VERSION, ArtifactLoadout, COOP_RULESET_ID,
+    FUNCTIONAL_RULESET_VERSION, FUNCTIONAL_SOLO_RULESET_ID, SEATS, SeatInput, SkillLevelBinding,
 };
 use aetheria_security::{
     RuntimeScope, TicketVerifier, durable::DurableTrust, transport::connect_runtime_postgres,
@@ -311,9 +311,17 @@ impl NativeRuntime {
     {
         let contract = game.ruleset();
         let content = contract.content_hash;
-        let required_client_build = (contract.id == FUNCTIONAL_SOLO_RULESET_ID
-            || (contract.id == COOP_RULESET_ID && contract.version >= FUNCTIONAL_RULESET_VERSION))
-            .then_some("unity-native-v2");
+        let required_client_build = match (contract.id.as_str(), contract.version) {
+            (COOP_RULESET_ID, ADVANCED_RULESET_VERSION)
+            | (FUNCTIONAL_SOLO_RULESET_ID, ADVANCED_SOLO_RULESET_VERSION) => {
+                Some("unity-native-v3")
+            }
+            (FUNCTIONAL_SOLO_RULESET_ID, _) => Some("unity-native-v2"),
+            (COOP_RULESET_ID, version) if version >= FUNCTIONAL_RULESET_VERSION => {
+                Some("unity-native-v2")
+            }
+            _ => None,
+        };
         if required_client_build.is_some() && settings.movement {
             return Err("Movement is unavailable in functional battles");
         }
