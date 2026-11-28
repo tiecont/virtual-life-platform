@@ -35,13 +35,40 @@ describe('engine gameplay bundle validator',()=>{
   const validator=new EngineGameplayBundleValidator(binary);
   await expect(validator.validate('arena8-coop-pve',{schemaVersion:3})).resolves.toEqual({digest,engineCapability:'arena8-coop-v2',contentHash});
   await expect(validator.validate('arena8-coop-pve',{schemaVersion:2})).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);
-  await expect(validator.validate('arena8-coop-pve',{schemaVersion:4})).rejects.toBeInstanceOf(InvalidGameplayBundleError);
+  await expect(validator.validate('arena8-coop-pve',{schemaVersion:4})).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);
  });
  it('rejects an older engine verdict or a missing version for a functional bundle',async()=>{
   for(const capability of ['arena8-coop-v1','arena8-coop-v2']){
    const binary=await executable(capability+'.mjs',"console.log(JSON.stringify({engineCapability:'"+capability+"',digest:'"+digest+"',contentHash:'"+contentHash+"'}))");
    await expect(new EngineGameplayBundleValidator(binary).validate('arena8-coop-pve',{schemaVersion:3})).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);
   }
+ });
+ it.each([
+  [1,'arena8-coop-v1',undefined,undefined,undefined,true],
+  [2,'arena8-coop-v1',1,undefined,undefined,true],
+  [2,'arena8-coop-v1',1,contentHash,1,false],
+  [3,'arena8-coop-v2',2,contentHash,undefined,true],
+  [3,'arena8-coop-v2',2,contentHash,1,true],
+  [3,'arena8-coop-v2',2,contentHash,2,false],
+  [3,'arena8-coop-v3',3,contentHash,2,false],
+  [4,'arena8-coop-v2',2,contentHash,1,false],
+  [4,'arena8-coop-v3',2,contentHash,2,false],
+  [4,'arena8-coop-v3',3,contentHash,1,false],
+  [4,'arena8-coop-v3',3,contentHash,undefined,false],
+  [4,'arena8-coop-v3',3,undefined,2,false],
+  [4,'arena8-coop-v3',3,undefined,undefined,true],
+  [4,'arena8-coop-v3',3,contentHash,2,true],
+ ] as const)('validates schema %s against %s coop %s solo hash %s version %s (%s)',async(schemaVersion,engineCapability,rulesetVersion,soloContentHash,soloRulesetVersion,accepted)=>{
+  const verdict={digest,engineCapability,contentHash,rulesetVersion,soloContentHash,soloRulesetVersion};
+  const binary=await executable('verdict.mjs','console.log('+JSON.stringify(JSON.stringify(verdict))+')');
+  const result=new EngineGameplayBundleValidator(binary).validate('arena8-coop-pve',{schemaVersion});
+  if(accepted)await expect(result).resolves.toMatchObject({digest,engineCapability,contentHash});
+  else await expect(result).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);
+ });
+ it('rejects an undeclared schema and a candidate claiming a different capability',async()=>{
+  const validator=new EngineGameplayBundleValidator(join(directory,'missing'));
+  for(const candidate of [{schemaVersion:5},{schemaVersion:3,engineCapability:'arena8-coop-v3'}])
+   await expect(validator.validate('arena8-coop-pve',candidate)).rejects.toBeInstanceOf(InvalidGameplayBundleError);
  });
  it('fails closed when the binary is missing and rejects relative paths',async()=>{
   await expect(new EngineGameplayBundleValidator(join(directory,'missing')).validate('arena8-coop-pve',bundle)).rejects.toBeInstanceOf(GameplayValidatorUnavailableError);

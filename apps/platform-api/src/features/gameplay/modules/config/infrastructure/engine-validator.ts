@@ -3,7 +3,7 @@ import {mkdtemp,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
-import {CoopEngineCapability,type GameplayBundle,type GameplayRuleset} from '@aetheria/contracts';
+import {gameplayEngineBinding,type GameplayBundle,type GameplayRuleset} from '@aetheria/contracts';
 
 const execute=promisify(execFile);
 const HEX=/^[a-f0-9]{64}$/,LIMIT=1048576,TIMEOUT_MS=10000,OUTPUT_LIMIT=16384;
@@ -24,9 +24,9 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
  }
  async validate(ruleset:GameplayRuleset,bundle:GameplayBundle):Promise<GameplayBundleValidation>{
   if(ruleset!=='arena8-coop-pve')throw new InvalidGameplayBundleError();
-  const schema=bundle.schemaVersion;
-  if(schema!==1&&schema!==2&&schema!==3)throw new InvalidGameplayBundleError();
-  const expectedCapability=schema===3?CoopEngineCapability.functional:CoopEngineCapability.elemental;
+  const binding=gameplayEngineBinding(bundle.schemaVersion);
+  if(!binding||(bundle.engineCapability!==undefined&&bundle.engineCapability!==binding.capability))
+   throw new InvalidGameplayBundleError();
   const bytes=JSON.stringify(bundle);
   if(typeof bytes!=='string'||Buffer.byteLength(bytes)<2||Buffer.byteLength(bytes)>LIMIT)throw new InvalidGameplayBundleError('Gameplay bundle size is outside the supported bound');
   const directory=await mkdtemp(join(tmpdir(),'aetheria-gameplay-config-'));
@@ -46,8 +46,8 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
    try{parsed=JSON.parse(stdout);}catch{throw new GameplayValidatorUnavailableError('Engine validator returned an invalid verdict');}
    if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid verdict');
    const verdict=parsed as Record<string,unknown>,digest=verdict.digest,capability=verdict.engineCapability,contentHash=verdict.contentHash;
-   if(typeof capability!=='string'||capability!==expectedCapability)throw new GameplayValidatorUnavailableError('Engine validator capability does not match the ruleset');
-   const expectedRulesetVersion=schema===3?2:1;
+   if(typeof capability!=='string'||capability!==binding.capability)throw new GameplayValidatorUnavailableError('Engine validator capability does not match the ruleset');
+   const expectedRulesetVersion=binding.coopVersion;
    const version=verdict.rulesetVersion;
    // Older validators emit no version for their v1 capability.
    if(version!==expectedRulesetVersion&&!(expectedRulesetVersion===1&&version===undefined))
@@ -55,8 +55,13 @@ export class EngineGameplayBundleValidator implements GameplayBundleValidator{
    if(typeof digest!=='string'||!HEX.test(digest))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid digest');
    if(typeof contentHash!=='string'||!HEX.test(contentHash))throw new GameplayValidatorUnavailableError('Engine validator returned an invalid content hash');
    const soloContentHash=verdict.soloContentHash;
-   if(soloContentHash!==undefined&&(schema!==3||typeof soloContentHash!=='string'||!HEX.test(soloContentHash)))
+   if(soloContentHash!==undefined&&(binding.soloVersion===undefined||typeof soloContentHash!=='string'||!HEX.test(soloContentHash)))
     throw new GameplayValidatorUnavailableError('Engine validator returned an invalid solo content hash');
+   const soloVersion=verdict.soloRulesetVersion;
+   // Historical functional validators implicitly bind solo hashes to version one.
+   if(soloContentHash===undefined ? soloVersion!==undefined :
+      soloVersion!==binding.soloVersion&&!(binding.soloVersion===1&&soloVersion===undefined))
+    throw new GameplayValidatorUnavailableError('Engine validator solo version does not match the bundle schema');
    return Object.freeze({digest,engineCapability:capability,contentHash,...(soloContentHash===undefined?{}:{soloContentHash})});
   }finally{await rm(directory,{recursive:true,force:true}).catch(()=>{/* Private candidate cleanup is best effort after an error. */});}
  }

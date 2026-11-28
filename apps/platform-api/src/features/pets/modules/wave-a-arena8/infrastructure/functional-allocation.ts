@@ -1,5 +1,5 @@
 import type {Pool} from 'pg';
-import {CoopEngineCapability} from '@aetheria/contracts';
+import {gameplayEngineBinding} from '@aetheria/contracts';
 import {bindArtifactLoadout,readArtifactSeat} from '../../../../coop/modules/match/domain/loadout';
 import type {CoopSkillService} from '../../../../coop/modules/skills/application/service';
 import type {GameplayBundleValidator} from '../../../../gameplay/modules/config/infrastructure/engine-validator';
@@ -31,8 +31,8 @@ export class FunctionalSoloAllocation {
   ){}
 
   private async verify(published:GameplayVersion|undefined){
-    if(!published?.publishedAt||published.engineCapability!==CoopEngineCapability.functional||
-      published.bundle.schemaVersion!==3||!published.contentDigest)
+    const binding=gameplayEngineBinding(published?.bundle.schemaVersion);
+    if(!published?.publishedAt||!binding?.soloVersion||published.engineCapability!==binding.capability||!published.contentDigest)
       throw unavailable('Published functional solo configuration is unavailable');
     const verdict=await this.validator.validate(RULESET,published.bundle).catch(()=>{
       throw unavailable('Published functional solo configuration is invalid');
@@ -52,7 +52,7 @@ export class FunctionalSoloAllocation {
       await readOwnedArena8Allocation(tx,accountId,input);
       const selection=await this.store.active(tx,RULESET);
       published=selection?await this.store.read(tx,RULESET,selection.version):undefined;
-      if(!published||published.bundle.schemaVersion!==3)throw unavailable('Published functional solo configuration is unavailable');
+      if(!published||!gameplayEngineBinding(published.bundle.schemaVersion)?.soloVersion)throw unavailable('Published functional solo configuration is unavailable');
       const owner=(await tx.query<{id:string}>(
         'SELECT owned_pet_instance_id AS id FROM pet_wave_one_owned WHERE account_id=$1 AND pet_id=$2',
         [accountId,input.petId],

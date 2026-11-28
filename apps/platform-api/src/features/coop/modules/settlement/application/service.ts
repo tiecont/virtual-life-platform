@@ -1,7 +1,7 @@
 import {createHash,timingSafeEqual} from 'node:crypto';
 import type {Pool,PoolClient} from 'pg';
 import {z} from 'zod';
-import {CoopRulesetVersionSchema,coopRulesetVersionForCapability} from '@aetheria/contracts';
+import {CoopRulesetVersionSchema,gameplayEngineBinding} from '@aetheria/contracts';
 import {DomainError} from '../../../../../shared/common/errors';
 import {CoopRoomStore} from '../../rooms/infrastructure/store';
 import {lockAccounts,tryLockAccounts} from '../../../../identity/modules/accounts/application/account-locks';
@@ -106,8 +106,9 @@ export class CoopSettlement{
   const parsed=CoopSettlementProposalSchema.safeParse(event.proposal);
   if(!parsed.success)throw new Error('Cooperative settlement proposal invalid');
   const proposal=parsed.data;
-  if(proposal.rulesetVersion!==allocation.rulesetVersion||
-     proposal.rulesetVersion!==coopRulesetVersionForCapability(allocation.engineCapability))
+  const binding=gameplayEngineBinding(allocation.bundleSchema);
+  if(!binding||binding.capability!==allocation.engineCapability||proposal.rulesetVersion!==allocation.rulesetVersion||
+     proposal.rulesetVersion!==binding.coopVersion)
    throw new Error('Cooperative settlement ruleset version mismatch');
   if(proposal.contentHash!==allocation.contentHash||proposal.configDigest!==allocation.configDigest)
    throw new Error('Cooperative settlement configuration mismatch');

@@ -7,13 +7,25 @@ export type GameplayRuleset=z.infer<typeof GameplayRulesetSchema>;
 export const CoopEngineCapability={
  elemental:'arena8-coop-v1',
  functional:'arena8-coop-v2',
+ timedFunctional:'arena8-coop-v3',
 } as const;
-export const CoopRulesetVersionSchema=z.union([z.literal(1),z.literal(2)]);
+export const CoopRulesetVersionSchema=z.union([z.literal(1),z.literal(2),z.literal(3)]);
 export type CoopRulesetVersion=z.infer<typeof CoopRulesetVersionSchema>;
 export function coopRulesetVersionForCapability(value:unknown):CoopRulesetVersion|undefined{
  switch(value){
   case CoopEngineCapability.elemental:return 1;
   case CoopEngineCapability.functional:return 2;
+  case CoopEngineCapability.timedFunctional:return 3;
+  default:return undefined;
+ }
+}
+/** Engine identities supported by each published bundle format. */
+export function gameplayEngineBinding(schemaVersion:unknown){
+ switch(schemaVersion){
+  case 1:
+  case 2:return {capability:CoopEngineCapability.elemental,coopVersion:1,soloVersion:undefined} as const;
+  case 3:return {capability:CoopEngineCapability.functional,coopVersion:2,soloVersion:1} as const;
+  case 4:return {capability:CoopEngineCapability.timedFunctional,coopVersion:3,soloVersion:2} as const;
   default:return undefined;
  }
 }

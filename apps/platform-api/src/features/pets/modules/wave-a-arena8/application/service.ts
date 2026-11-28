@@ -1,6 +1,7 @@
 import {createHash,randomUUID,timingSafeEqual} from 'node:crypto';
 import type {Pool} from 'pg';
 import {z} from 'zod';
+import {gameplayEngineBinding} from '@aetheria/contracts';
 import {canonicalProposalHash} from '../../../../coop/modules/settlement/application/service';
 import {DomainError} from '../../../../../shared/common/errors';
 import {MAPS} from '../../wave1/domain/manifest';
@@ -47,7 +48,7 @@ const counter=z.int().nonnegative();
 const soloProposal=z.strictObject({
  configDigest:hex,contentHash:hex,encounterId:id.optional(),kind:z.literal('solo.completed.v1'),outcome:z.enum(['won','lost']),
  participants:z.tuple([z.strictObject({account:z.uuid(),petId:id,alive:z.boolean(),damage:counter,healing:counter,shielding:counter})]),
- round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.literal(1),turn:counter.max(65535),
+ round:counter.max(65535),ruleset:z.literal('arena8-functional-pve'),rulesetVersion:z.union([z.literal(1),z.literal(2)]),turn:counter.max(65535),
 });
 const payout=z.strictObject({achievementPoints:counter.max(1_000_000),coins:counter.max(1_000_000),exp:counter.max(1_000_000),materials:counter.max(1_000_000)});
 const policy=z.strictObject({
@@ -273,16 +274,16 @@ export class Arena8Service {
       functional_allocation:{bossId:string;seat:{ownedPetInstanceId:string}}|null;
       proposal_hash:Buffer;settlement_id:string;state_version:string;
       ruleset_id:string|null;ruleset_version:number|null;runtime_content_hash:string|null;status:string|null;
-      bundle:Record<string,unknown>|null;
+      bundle:Record<string,unknown>|null;engine_capability:string|null;
     }>(
       `SELECT m.account_id,m.pet_id,m.encounter_id,m.map_id,m.content_hash,m.functional_config_digest,m.functional_allocation,
           s.proposal,s.proposal_hash,s.settlement_id,s.state_version,n.ruleset_id,n.ruleset_version,n.status,
-          encode(n.content_hash,'hex') AS runtime_content_hash,v.bundle
+          encode(n.content_hash,'hex') AS runtime_content_hash,v.bundle,v.engine_capability
          FROM platform_native_arena8_matches m
          JOIN game_native_settlements s ON s.match_id=m.match_id
          LEFT JOIN game_native_matches n ON n.id=s.match_id AND n.state_version=s.state_version AND n.epoch=s.epoch
          LEFT JOIN gameplay_config_versions v ON v.ruleset=m.functional_config_ruleset AND v.version=m.functional_config_version
-          AND v.content_digest=m.functional_config_digest AND v.engine_capability='arena8-coop-v2' AND v.published_at IS NOT NULL
+          AND v.content_digest=m.functional_config_digest AND v.published_at IS NOT NULL
         WHERE m.match_id=$1`,
       [matchId],
     )).rows[0];
@@ -293,8 +294,9 @@ export class Arena8Service {
     if(row.functional_config_digest){
       const parsed=soloProposal.safeParse(proposal);
       const pin=row.functional_allocation;
-      if(!parsed.success||!pin||!row.bundle||
-        row.ruleset_id!=='arena8-functional-pve'||row.ruleset_version!==1||
+      const binding=gameplayEngineBinding(row.bundle?.schemaVersion);
+      if(!parsed.success||!pin||!row.bundle||!binding?.soloVersion||row.engine_capability!==binding.capability||
+        row.ruleset_id!=='arena8-functional-pve'||row.ruleset_version!==binding.soloVersion||parsed.data.rulesetVersion!==binding.soloVersion||
         (row.status!=='SETTLING'&&row.status!=='FINISHED')||
         parsed.data.contentHash!==row.content_hash||row.runtime_content_hash!==row.content_hash||
         parsed.data.configDigest!==row.functional_config_digest||
