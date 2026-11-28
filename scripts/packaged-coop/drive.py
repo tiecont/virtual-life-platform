@@ -78,6 +78,19 @@ def start_button(image):
     return word_button(image, {'battle'}, center_band(screen_height - 115, screen_height - 18))
 
 
+def enter_or_start(img):
+    start = start_button(img)
+    if start:
+        return start
+    # A started room can remain in the lobby after a refresh or re-admission.
+    # Follow its normal Enter button before looking for the in-match Start.
+    enter = word_button(img, {'enter'}, center_band(375, 445), mode='6')
+    if enter:
+        click(*enter)
+        sleep(.4)
+    return None
+
+
 def action_button(image, word, board):
     for left, top, right, bottom in enabled_action_frames(image, board):
         label = ocr(image, (left, top, right, bottom), '6').lower()
@@ -254,7 +267,7 @@ elif stage == 'water':
     facts=expect('water-allocation-facts',lambda facts:facts['seats']==4,timeout=30)
     print('Water allocation', facts, flush=True)
     if environ.get('PACKAGED_QA_BOARD', 'functional') in ('functional', 'advanced-water'):
-        start, _ = wait_for('21-water-equipped-native-hud', start_button, tries=28)
+        start, _ = wait_for('21-water-equipped-native-hud', enter_or_start, tries=28)
         (output/'water-hud-observed').touch()
         for attempt in range(5):
             if attempt:
@@ -307,7 +320,7 @@ elif stage == 'water':
                  lambda img: not status_button(img) and playing_board(img, swapped['state']))
         (output/'water-swap-observed').touch()
     else:
-        wait_for('21-water-equipped-native-hud', start_button, tries=28)
+        wait_for('21-water-equipped-native-hud', enter_or_start, tries=28)
         (output/'water-hud-observed').touch()
 
 elif stage=='first':
@@ -320,7 +333,7 @@ elif stage=='first':
             click(*recover)
             sleep(1.1)
             continue
-        started=start_button(image)
+        started=enter_or_start(image)
         if started:
             click(*started)
             try:
