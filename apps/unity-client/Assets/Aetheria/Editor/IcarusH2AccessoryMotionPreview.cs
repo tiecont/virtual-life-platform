@@ -1,0 +1,337 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using UniVRM10;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
+
+namespace Aetheria.Editor
+{
+    public static class IcarusH2AccessoryMotionPreview
+    {
+        private const string Intake = "Assets/AetheriaH2AccessoryReview";
+        private const string Vrm = "Assets/Aetheria/ArtStudies/Icarus/Source/Icarus.vrm";
+        private const string VrmSha = "f1d2b65daca064e5e04af5c12235b5ea2bc6cb6a246399ec621723c575e0286a";
+        private const string Walk = Intake + "/Walk.vrma";
+        private const string WalkSha = "50b27c7363ff844ccb0b71373794326583a601128e90f14de0c3df7bfefe9161";
+        private const string Wings = Intake + "/Wings.glb";
+        private const string WingsSha = "06556f265d8e1a660412d670477b3b64c3e844a3ec105c3016c66f78bdef2c57";
+        private const string Bow = Intake + "/Bow.glb";
+        private const string BowSha = "86f0251d47103295d66878759f2cb2b14a757d0207f3034cd26d0e96680def3c";
+        private const int Size = 960;
+
+        [Serializable]
+        private sealed class Facts
+        {
+            public string classification = "PRIVATE_H2_ASSEMBLY_REVIEW";
+            public string unityVersion = Application.unityVersion, graphicsDevice = SystemInfo.graphicsDeviceType.ToString();
+            public string modelSha256 = VrmSha, walkSha256 = WalkSha, bowSha256 = BowSha, wingsSha256 = WingsSha;
+            public string prefabSha256, wingsSocketParent, bowSocketParent;
+            public int wingsTriangles, bowTriangles, assembledTriangles, frameCount, mappedWalkJoints;
+            public float wingFoldDeltaMeters, bowDrawDeltaMeters, releaseRestResidualMeters;
+            public float walkWingSocketTravelMeters, walkBowSocketTravelMeters;
+            public string[] frames;
+            public string bowReviewScope = "Provider mesh morph at the pinned right-hand socket, with a fixed hand pose for bow draw and release.";
+            public string movementReviewScope = "Existing retargeted Charakuru walk with sampled accessory morph weights.";
+        }
+
+        public static void Render()
+        {
+            string output = Environment.GetEnvironmentVariable("AETHERIA_ICARUS_H2_MOTION_OUTPUT");
+            Require(Application.isBatchMode && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null &&
+                Path.IsPathRooted(output ?? "") && !Directory.Exists(output) && !File.Exists(output),
+                "Use a private graphics-enabled batch Editor and a fresh absolute AETHERIA_ICARUS_H2_MOTION_OUTPUT directory.");
+            Require(Hash(Vrm) == VrmSha && Hash(Walk) == WalkSha && Hash(Wings) == WingsSha && Hash(Bow) == BowSha,
+                "The private H2 intake differs from its pinned source files.");
+            var path = IcarusPrefabSetupEditor.PrefabPath;
+            string prefabHash = Hash(path);
+            var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/Aetheria/Settings/BlockoutURP.asset");
+            Require(pipeline != null, "Pinned URP pipeline missing.");
+            var previousPipeline = GraphicsSettings.defaultRenderPipeline;
+            var previousQualityPipeline = QualitySettings.renderPipeline;
+            GraphicsSettings.defaultRenderPipeline = pipeline;
+            QualitySettings.renderPipeline = pipeline;
+            var scene = SceneManager.GetActiveScene();
+            if (SceneManager.sceneCount != 1 || !string.IsNullOrEmpty(scene.path) || scene.isDirty)
+                throw new InvalidOperationException("Launch the isolated H2 review with an empty batch scene.");
+
+            var stage = new GameObject("Private H2 review");
+            var target = new RenderTexture(Size, Size, 24) { antiAliasing = 4 };
+            var pixels = new Texture2D(Size, Size, TextureFormat.RGB24, false);
+            AnimationClip retargeted = null;
+            try
+            {
+                Directory.CreateDirectory(output);
+                IcarusPrefabSetupEditor.RecoverReviewImports();
+                Require(AssetDatabase.GetDependencies(path).Contains(Vrm), "The modular prefab no longer binds the owner VRM.");
+                var sourceVrm = Import(Vrm);
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Require(prefab != null, "Missing modular Icarus prefab.");
+                var model = Object.Instantiate(prefab, stage.transform);
+                var vrm = model.GetComponentInChildren<Vrm10Instance>(true);
+                Require(vrm != null, "The prefab lost its imported VRM instance.");
+                var wingSocket = Socket(model, vrm, "Socket_Wings", HumanBodyBones.UpperChest);
+                var bowSocket = Socket(model, vrm, "Socket_Bow", HumanBodyBones.RightHand);
+                foreach (var stringLine in model.GetComponentsInChildren<LineRenderer>(true))
+                    Object.DestroyImmediate(stringLine);
+                foreach (var stringController in model.GetComponentsInChildren<Aetheria.Icarus.IcarusBowString>(true))
+                    stringController.enabled = false;
+
+                var wing = Attach(wingSocket, "Icarus_Wings", Wings, "WingFold");
+                var bow = Attach(bowSocket, "Icarus_Bow", Bow, "BowDraw");
+                var (animator, clip, joints) = Retarget(model, vrm, sourceVrm, stage.transform);
+                retargeted = clip;
+
+                Vector3[] wingSpread = Measure(wing, 0), wingFolded = Measure(wing, 1);
+                Vector3[] bowRest = Measure(bow, 0), bowDrawn = Measure(bow, 1), bowReleased = Measure(bow, 0);
+                float wingDelta = Delta(wingSpread, wingFolded), drawDelta = Delta(bowRest, bowDrawn);
+                float releaseDelta = Delta(bowRest, bowReleased);
+                Require(wingDelta > .001f && drawDelta > .001f && releaseDelta < .00001f,
+                    "The imported fold, draw and return must deform and restore the provider geometry.");
+                Require(!model.GetComponentsInChildren<LineRenderer>(true).Any(),
+                    "The review must use the actual imported bowstring geometry.");
+
+                var camera = Studio(stage.transform, target);
+                var whole = BoundsFor(model);
+                Measure(wing, 0);
+                whole.Encapsulate(BoundsFor(model));
+                Measure(bow, 1);
+                var bowFrame = BoundsFor(bow.Root);
+                Measure(bow, 0);
+                bowFrame.Encapsulate(BoundsFor(bow.Root));
+                var shots = new System.Collections.Generic.List<string>();
+                void Shot(string name, Bounds frame, Vector3 direction, float fold, float draw)
+                {
+                    wing.Set(fold);
+                    bow.Set(draw);
+                    Capture(camera, target, pixels, frame, direction, Path.Combine(output, name));
+                    shots.Add(name);
+                }
+                var front = new Vector3(0, .10f, 1);
+                var back = new Vector3(0, .12f, -1);
+                var quarter = new Vector3(-.68f, .17f, 1);
+                Shot("01-front-folded.png", whole, front, 1, 0);
+                Shot("02-right-folded.png", whole, new Vector3(1, .08f, 0), 1, 0);
+                Shot("03-back-spread.png", whole, back, 0, 0);
+                Shot("04-three-quarter-spread.png", whole, quarter, 0, 0);
+                Shot("05-back-folded.png", whole, back, 1, 0);
+                Shot("06-bow-rest.png", bowFrame, quarter, 1, 0);
+                Shot("07-bow-draw.png", bowFrame, quarter, 1, 1);
+                Shot("08-bow-release-mid.png", bowFrame, quarter, 1, .4f);
+                Shot("09-bow-released.png", bowFrame, quarter, 1, 0);
+
+                Vector3 wingStart = wingSocket.position, bowStart = bowSocket.position;
+                float wingTravel = 0, bowTravel = 0;
+                foreach (var pose in new[] { (time: .15f, fold: .75f), (time: .50f, fold: .3f), (time: .85f, fold: .65f) })
+                {
+                    clip.SampleAnimation(animator.gameObject, pose.time * clip.length);
+                    wingTravel = Mathf.Max(wingTravel, Vector3.Distance(wingStart, wingSocket.position));
+                    bowTravel = Mathf.Max(bowTravel, Vector3.Distance(bowStart, bowSocket.position));
+                    var movementFrame = whole;
+                    movementFrame.Encapsulate(BoundsFor(model));
+                    Shot($"{10 + shots.Count - 9:D2}-walk.png", movementFrame, quarter, pose.fold, 0);
+                }
+                Require(wingTravel > .001f && bowTravel > .001f, "The actual retargeted walk did not move both sockets.");
+                Require(Hash(path) == prefabHash, "The canonical prefab changed during private evidence capture.");
+                var facts = new Facts {
+                    prefabSha256 = prefabHash, wingsSocketParent = wingSocket.parent.name, bowSocketParent = bowSocket.parent.name,
+                    wingsTriangles = Triangles(wing.Root), bowTriangles = Triangles(bow.Root), assembledTriangles = Triangles(model),
+                    wingFoldDeltaMeters = wingDelta, bowDrawDeltaMeters = drawDelta, releaseRestResidualMeters = releaseDelta,
+                    walkWingSocketTravelMeters = wingTravel, walkBowSocketTravelMeters = bowTravel, mappedWalkJoints = joints,
+                    frameCount = shots.Count, frames = shots.ToArray(),
+                };
+                File.WriteAllText(Path.Combine(output, "icarus-h2-accessory-motion.json"), JsonUtility.ToJson(facts, true) + "\n");
+                Debug.Log("Private Icarus H2 morph assembly and motion preview completed.");
+            }
+            finally
+            {
+                GraphicsSettings.defaultRenderPipeline = previousPipeline;
+                QualitySettings.renderPipeline = previousQualityPipeline;
+                Object.DestroyImmediate(retargeted);
+                Object.DestroyImmediate(stage);
+                target.Release();
+                Object.DestroyImmediate(target);
+                Object.DestroyImmediate(pixels);
+            }
+        }
+
+        private static GameObject Import(string path)
+        {
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            var root = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            Require(root != null, $"Failed to import {path}.");
+            return root;
+        }
+
+        private static Transform Socket(GameObject root, Vrm10Instance vrm, string name, HumanBodyBones parent)
+        {
+            var socket = root.GetComponentsInChildren<Transform>(true).Single(node => node.name == name);
+            Require(vrm.TryGetBoneTransform(parent, out var joint) && socket.parent == joint, $"{name} is not on mapped {parent}.");
+            return socket;
+        }
+
+        private sealed class Morph
+        {
+            public readonly GameObject Root;
+            public readonly (SkinnedMeshRenderer renderer, int index)[] Skins;
+
+            public Morph(GameObject root, string shape)
+            {
+                Root = root;
+                Skins = root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(renderer => renderer.sharedMesh != null)
+                    .Select(renderer => (renderer, index: renderer.sharedMesh.GetBlendShapeIndex(shape)))
+                    .Where(entry => entry.index >= 0).ToArray();
+                Require(Skins.Length > 0, $"The imported candidate has no {shape} morph.");
+            }
+
+            public void Set(float normalized)
+            {
+                foreach (var (renderer, index) in Skins) renderer.SetBlendShapeWeight(index, normalized * 100);
+            }
+        }
+
+        private static Morph Attach(Transform socket, string oldName, string path, string shape)
+        {
+            var old = socket.Find(oldName);
+            Require(old != null, $"The reference prefab is missing its {oldName} attachment.");
+            Object.DestroyImmediate(old.gameObject);
+            socket.gameObject.SetActive(true);
+            var candidate = Object.Instantiate(Import(path), socket, false);
+            candidate.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            candidate.transform.localScale = Vector3.one;
+            return new Morph(candidate, shape);
+        }
+
+        private static (Animator animator, AnimationClip clip, int joints) Retarget(GameObject model, Vrm10Instance vrm,
+            GameObject sourceVrm, Transform stage)
+        {
+            var motion = Object.Instantiate(Import(Walk), stage);
+            try
+            {
+                var source = motion.GetComponentsInChildren<Animator>(true).Single();
+                var clip = motion.GetComponentInChildren<Animation>(true)?.clip;
+                var avatar = sourceVrm.GetComponentsInChildren<Animator>(true).Single().avatar;
+                var animator = model.GetComponentsInChildren<Animator>(true).Single();
+                Require(clip != null && clip.length > 0 && source.avatar != null && source.avatar.isHuman &&
+                    avatar != null && avatar.isHuman && animator.avatar != null && !animator.avatar.isHuman,
+                    "Expected the private VRMA, owner Humanoid avatar and existing Generic review prefab.");
+                animator.runtimeAnimatorController = null;
+                var joints = Enumerable.Range(0, (int)HumanBodyBones.LastBone)
+                    .Select(index => vrm.TryGetBoneTransform((HumanBodyBones)index, out var joint) ? joint : null)
+                    .Where(joint => joint != null).ToArray();
+                Require(joints.Length >= 20 && vrm.TryGetBoneTransform(HumanBodyBones.Hips, out _), "Incomplete owner VRM mapping.");
+                vrm.TryGetBoneTransform(HumanBodyBones.Hips, out var hips);
+                return (animator, IcarusCharakuruMotionReview.BakeMotion(clip, source, animator, avatar, animator.avatar, joints, hips),
+                    joints.Length);
+            }
+            finally { Object.DestroyImmediate(motion); }
+        }
+
+        private static Vector3[] Measure(Morph shape, float weight)
+        {
+            shape.Set(weight);
+            var scratch = new Mesh();
+            try
+            {
+                return shape.Skins.SelectMany(entry => {
+                    entry.renderer.BakeMesh(scratch);
+                    return scratch.vertices.Select(entry.renderer.transform.TransformPoint).ToArray();
+                }).ToArray();
+            }
+            finally { Object.DestroyImmediate(scratch); }
+        }
+
+        private static float Delta(Vector3[] a, Vector3[] b)
+        {
+            Require(a.Length > 0 && a.Length == b.Length, "Imported shape vertex topology changed.");
+            float peak = a.Zip(b, (rest, moved) => Vector3.Distance(rest, moved)).Max();
+            Require(float.IsFinite(peak), "Non-finite imported accessory displacement.");
+            return peak;
+        }
+
+        private static Bounds BoundsFor(GameObject model)
+        {
+            var renderer = model.GetComponentsInChildren<Renderer>(false).Where(value => value.enabled).ToArray();
+            Require(renderer.Length > 0, "Preview has no visible renderers.");
+            var bounds = renderer[0].bounds;
+            foreach (var part in renderer.Skip(1)) bounds.Encapsulate(part.bounds);
+            return bounds;
+        }
+
+        private static int Triangles(GameObject model) =>
+            model.GetComponentsInChildren<MeshFilter>(false).Where(filter => filter.sharedMesh != null)
+                .Sum(filter => filter.sharedMesh.triangles.Length / 3) +
+            model.GetComponentsInChildren<SkinnedMeshRenderer>(false).Where(renderer => renderer.sharedMesh != null)
+                .Sum(renderer => renderer.sharedMesh.triangles.Length / 3);
+
+        private static Camera Studio(Transform stage, RenderTexture target)
+        {
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(.53f, .55f, .63f);
+            RenderSettings.ambientEquatorColor = new Color(.26f, .26f, .30f);
+            RenderSettings.ambientGroundColor = new Color(.12f, .12f, .14f);
+            foreach (var source in new[] {
+                (new Vector3(28, -32, 0), 1.15f, new Color(1, .93f, .82f)),
+                (new Vector3(24, 147, 0), .52f, new Color(.72f, .81f, 1)),
+            })
+            {
+                var light = new GameObject("Studio light").AddComponent<Light>();
+                light.transform.SetParent(stage, false);
+                light.type = LightType.Directional;
+                light.transform.rotation = Quaternion.Euler(source.Item1);
+                light.intensity = source.Item2;
+                light.color = source.Item3;
+            }
+            var camera = new GameObject("H2 review camera").AddComponent<Camera>();
+            camera.transform.SetParent(stage, false);
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(.11f, .12f, .17f);
+            camera.orthographic = true;
+            camera.nearClipPlane = .01f;
+            camera.farClipPlane = 50;
+            camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
+            target.Create();
+            return camera;
+        }
+
+        private static void Capture(Camera camera, RenderTexture target, Texture2D pixels, Bounds frame,
+            Vector3 direction, string path)
+        {
+            camera.transform.position = frame.center + direction.normalized * (frame.size.magnitude + 1);
+            camera.transform.LookAt(frame.center);
+            camera.orthographicSize = frame.size.magnitude * .57f;
+            RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+            var previous = RenderTexture.active;
+            try
+            {
+                RenderTexture.active = target;
+                pixels.ReadPixels(new Rect(0, 0, Size, Size), 0, 0);
+                pixels.Apply();
+                byte[] png = pixels.EncodeToPNG();
+                Require(png != null && png.Length > 1000, "The Unity URP render produced no usable image.");
+                File.WriteAllBytes(path, png);
+            }
+            finally { RenderTexture.active = previous; }
+        }
+
+        private static string Hash(string file)
+        {
+            string path = Path.Combine(Path.GetDirectoryName(Application.dataPath), file);
+            using var sha = SHA256.Create();
+            using var source = File.OpenRead(path);
+            return BitConverter.ToString(sha.ComputeHash(source)).Replace("-", "").ToLowerInvariant();
+        }
+
+        private static void Require(bool condition, string message)
+        {
+            if (!condition) throw new InvalidOperationException(message);
+        }
+    }
+}

@@ -198,7 +198,7 @@ namespace Aetheria.Editor
             }
         }
 
-        private static AnimationClip BakeMotion(AnimationClip source, Animator sourceAnimator, Animator targetAnimator,
+        internal static AnimationClip BakeMotion(AnimationClip source, Animator sourceAnimator, Animator targetAnimator,
             Avatar human, Avatar generic, Transform[] joints, Transform hips)
         {
             const int sampleRate = 30;
