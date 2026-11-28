@@ -307,11 +307,28 @@ elif stage == 'water':
     print('Water allocation', facts, flush=True)
     start_box = center_band(screen_height - 115, screen_height - 18)
     if environ.get('PACKAGED_QA_BOARD', 'functional') == 'functional':
-        start, _ = wait_for('21-water-equipped-native-hud',
-                            lambda img: word_button(img, {'battle'}, start_box, mode='6'), tries=28)
+        def water_start_button(image):
+            if 'start battle' in ocr(image, start_box, '6').lower():
+                return word_button(image, {'battle'}, start_box, mode='6')
+
+        start, _ = wait_for('21-water-equipped-native-hud', water_start_button, tries=28)
         (output/'water-hud-observed').touch()
-        click(*start)
-        started = expect('water-started', lambda result: result['version'] == 1, timeout=25)
+        for attempt in range(5):
+            if attempt:
+                start = water_start_button(capture(f'water-start-retry-{attempt}'))
+            started = read('water-started')
+            if started:
+                break
+            if start:
+                print(f'Water Start click {attempt + 1} at {start}', flush=True)
+                click(*start)
+            try:
+                started = expect('water-started', lambda result: result['version'] == 1,
+                                 timeout=8 if attempt == 4 else 4)
+                break
+            except RuntimeError:
+                if attempt == 4:
+                    raise
 
         def playing_board(img, state):
             if status_button(img) or live_turn(img) != (state['turn'], state['activeSeat']):
