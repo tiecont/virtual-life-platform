@@ -156,7 +156,7 @@ export class PrelaunchRegistrationService {
       await this.lock(db,'request:'+value.campaignId+':'+value.requestId);
       const prior=await this.priorRequest(db,value.campaignId,value.requestId);
       if(prior){if(prior.fingerprint!==fingerprint)throw stale();return accepted;}
-      const campaign=await this.campaignRow(db,value.campaignId);
+      const campaign=await this.campaignRow(db,value.campaignId,true);
       await this.rate(db,[['ip-register:'+this.seal('ip',clientKey),30,HOUR],['email-register:'+emailHash,5,HOUR]]);
       if(this.state(campaign)==='OPEN'){
         await this.lock(db,'email:'+value.campaignId+':'+emailHash);
@@ -187,11 +187,11 @@ export class PrelaunchRegistrationService {
       await this.lock(db,'request:'+value.campaignId+':'+value.requestId);
       const prior=await this.priorRequest(db,value.campaignId,value.requestId);
       if(prior){if(prior.fingerprint!==fingerprint)throw stale();return accepted;}
-      await this.campaignRow(db,value.campaignId);
+      const campaign=await this.campaignRow(db,value.campaignId,true);
       await this.rate(db,[['ip-resend:'+this.seal('ip',clientKey),15,HOUR],['email-resend:'+emailHash,3,HOUR]]);
       await this.lock(db,'email:'+value.campaignId+':'+emailHash);
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE campaign_id=$1 AND email_hash=$2 FOR UPDATE',[value.campaignId,emailHash])).rows[0];
-      if(registration?.state==='PENDING'&&!((await db.query('SELECT 1 FROM prelaunch_suppressions WHERE email_hash=$1',[emailHash])).rowCount))await this.issueChallenge(db,registration);
+      if(this.state(campaign)==='OPEN'&&registration?.state==='PENDING'&&!((await db.query('SELECT 1 FROM prelaunch_suppressions WHERE email_hash=$1',[emailHash])).rowCount))await this.issueChallenge(db,registration);
       await this.rememberRequest(db,value.campaignId,value.requestId,'resend',null,emailHash,fingerprint);
       return accepted;
     });
@@ -205,10 +205,12 @@ export class PrelaunchRegistrationService {
     if(!initial)throw confirmationUnavailable();
     return this.tx(async db=>{
       const campaign=await this.campaignRow(db,initial.campaign_id,true);
-      const challenge=(await db.query<ChallengeRow>('SELECT * FROM prelaunch_challenges WHERE token_hash=$1 FOR UPDATE',[tokenHash])).rows[0];
       const registration=(await db.query<RegistrationRow>('SELECT * FROM prelaunch_registrations WHERE id=$1 FOR UPDATE',[initial.registration_id])).rows[0];
+      const challenge=(await db.query<ChallengeRow>('SELECT * FROM prelaunch_challenges WHERE token_hash=$1 FOR UPDATE',[tokenHash])).rows[0];
       if(!challenge||!registration||challenge.registration_id!==registration.id)throw confirmationUnavailable();
       if(challenge.expires_at.getTime()<=this.now())throw confirmationUnavailable();
+      const suppression=await db.query('SELECT 1 FROM prelaunch_suppressions WHERE email_hash=$1',[registration.email_hash]);
+      if(suppression.rowCount)throw confirmationUnavailable();
       if(registration.state==='CONFIRMED'&&challenge.confirmed)return PrelaunchConfirmationSchema.parse({...this.view(registration),managementToken:this.managementToken(registration.id,registration.management_nonce)});
       if(registration.state!=='PENDING'||challenge.used_at)throw confirmationUnavailable();
       if(campaign.admissions>=campaign.capacity)throw new DomainError('NOT_AVAILABLE',409,'This campaign is full');
@@ -300,7 +302,7 @@ export class PrelaunchRegistrationService {
           idempotencyKey:delivery.id,
           to:email,
           subject:delivery.kind==='confirmation'?'Confirm your Aetheria preregistration':'Aetheria preregistration confirmed',
-          text:delivery.kind==='confirmation'?'Enter this single-use code in the private confirmation page: '+confirmationToken:'Your preregistration is confirmed. Keep this message for your private management code.',
+          text:delivery.kind==='confirmation'?'Enter this single-use code in the private confirmation page: '+confirmationToken:'Your preregistration is confirmed. Use the private management code from the confirmation page to manage your registration.',
         });
         const sent=new Date(this.now());
         await this.identity.pool.query("UPDATE prelaunch_outbox SET state='SENT',sent_at=$2,locked_until=NULL WHERE id=$1 AND state='SENDING'",[delivery.id,sent]);
