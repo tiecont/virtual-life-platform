@@ -10,8 +10,8 @@ namespace Aetheria.PetArena.Infrastructure
 
     [Serializable] public sealed class Arena8RecruitmentRoute
     {
-        public string id, mapId, name, opponentPetId, prerequisiteEncounterId;
-        public bool cleared, canEnterSolo;
+        public string id, mapId, name, opponentPetId, prerequisiteEncounterId, mode;
+        public bool cleared, canEnterSolo, canHostCoop;
     }
 
     [Serializable] public sealed class Arena8AllocateRequest

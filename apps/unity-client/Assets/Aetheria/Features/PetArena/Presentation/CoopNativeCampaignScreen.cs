@@ -22,6 +22,7 @@ namespace Aetheria.PetArena.Presentation
         private CoopNativePlaySession session;
         private CoopLobbyClient.Room room;
         private CoopCampaignCatalog catalog;
+        private Arena8RecruitmentCatalog recruitment;
         private WorldMapDefinition map;
         private string petId, instanceId;
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
@@ -44,6 +45,7 @@ namespace Aetheria.PetArena.Presentation
                 Guid.TryParseExact(pet.ownedPetInstanceId, "D", out var id) && id != Guid.Empty).ToArray();
             SetPet(pets.FirstOrDefault());
             catalog = publishedCatalog;
+            recruitment = null;
             returnToHub = returnAction;
             room = null;
             notice = "";
@@ -143,6 +145,25 @@ namespace Aetheria.PetArena.Presentation
                 root.Add(join);
                 if (lobby?.CanRefreshRoom == true)
                     root.Add(new Button(() => _ = RunAsync(ResumeAsync)) { text = "Resume room", name = "coop-resume" });
+                var recruit = new Button(() => _ = RunAsync(async () =>
+                {
+                    recruitment = await api.GetRecruitmentCatalog(lifetime.Token);
+                    RenderLobby();
+                })) { text = CampaignLocale.Text("map.recruitment", "Recruitment encounters") };
+                root.Add(recruit);
+                if (recruitment?.routes != null)
+                {
+                    var local = recruitment.routes.Where(route => route.mapId == map.Id && route.mode == "either").ToArray();
+                    if (local.Length == 0)
+                        root.Add(new Label(CampaignLocale.Text("map.no_recruitment", "No recruitment encounters available.")));
+                    foreach (var route in local)
+                    {
+                        var host = new Button(() => _ = RunAsync(() => CreateEncounterAsync(route.id)))
+                            { text = route.name + (route.cleared ? " ✓" : ""), enableRichText = false };
+                        host.SetEnabled(map.IsPlayable && route.canHostCoop && instanceId != null);
+                        root.Add(host);
+                    }
+                }
                 return;
             }
             root.Add(new Label("Room " + room.roomId + " · " + room.status) { name = "coop-room-status" });
@@ -169,10 +190,14 @@ namespace Aetheria.PetArena.Presentation
 
         private async Task CreateAsync()
         {
-            if (!CanCreate) return;
+            if (CanCreate) await CreateEncounterAsync(Encounter.bossId);
+        }
+
+        private async Task CreateEncounterAsync(string encounterId)
+        {
             try
             {
-                room = await lobby.CreateAsync(petId, instanceId, map.Id, Guid.NewGuid(), lifetime.Token, Encounter.bossId);
+                room = await lobby.CreateAsync(petId, instanceId, map.Id, Guid.NewGuid(), lifetime.Token, encounterId);
             }
             catch (Wave1ApiException error) when (error.Status == 403 || error.Status == 404 || error.Status == 503)
             {
@@ -194,6 +219,7 @@ namespace Aetheria.PetArena.Presentation
         private async Task RefreshCampaignAsync()
         {
             catalog = null;
+            recruitment = null;
             loadingCatalog = true;
             RenderLobby();
             var cancellation = lifetime.Token;
