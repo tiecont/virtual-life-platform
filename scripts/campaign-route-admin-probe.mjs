@@ -93,9 +93,12 @@ export async function verifyCampaignRouteAdmin({
  const rolled=await clickMutation('Roll back','rollback',versionRow(installed.version));
  await expect(activeEntry('Digest')).toHaveAttribute('title',installed.digest);
  assert.deepEqual(await dbActive(),{version:installed.version,revision:rolled.activeRevision});
- assert.deepEqual((await dbConfig(installed.version)).bundle,baseline.bundle);
+ const restored=await dbConfig(installed.version);
+ assert.deepEqual(restored.bundle,baseline.bundle);
+ // Rollback moves the active pointer to an immutable published version.
+ assert.equal(restored.state,'SUPERSEDED');
  const historical=await dbConfig(created.version);
- assert.equal(historical.state,'SUPERSEDED');
+ assert.equal(historical.state,'PUBLISHED');
  assert.equal(historical.content_digest,verified.digest);
  assert.deepEqual(historical.bundle,expected);
 
