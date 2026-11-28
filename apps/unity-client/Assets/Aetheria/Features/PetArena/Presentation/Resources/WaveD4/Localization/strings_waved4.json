@@ -25,30 +25,30 @@
   "fontValidation": {
     "regularBytes": 135936,
     "boldBytes": 136332,
-    "cjkSubsetBytes": 327120,
+    "cjkSubsetBytes": 347180,
     "languages": {
       "vi": {
-        "uniqueCodepoints": 121,
+        "uniqueCodepoints": 122,
         "missingCodepoints": [],
         "validated": true
       },
       "en": {
-        "uniqueCodepoints": 77,
+        "uniqueCodepoints": 78,
         "missingCodepoints": [],
         "validated": true
       },
       "ja": {
-        "uniqueCodepoints": 317,
+        "uniqueCodepoints": 346,
         "missingCodepoints": [],
         "validated": true
       },
       "ko": {
-        "uniqueCodepoints": 259,
+        "uniqueCodepoints": 276,
         "missingCodepoints": [],
         "validated": true
       },
       "zh": {
-        "uniqueCodepoints": 324,
+        "uniqueCodepoints": 353,
         "missingCodepoints": [],
         "validated": true
       }
@@ -852,6 +852,153 @@
       "ja": "終了",
       "ko": "종료",
       "zh": "已关闭"
+    },
+    "battle.action.guard": {
+      "vi": "Phòng thủ",
+      "en": "Guard",
+      "ja": "防御",
+      "ko": "방어",
+      "zh": "防御"
+    },
+    "battle.action.skill": {
+      "vi": "Kỹ năng",
+      "en": "Skill",
+      "ja": "スキル",
+      "ko": "스킬",
+      "zh": "技能"
+    },
+    "battle.action.signature": {
+      "vi": "Tuyệt kỹ",
+      "en": "Signature",
+      "ja": "固有技",
+      "ko": "고유기",
+      "zh": "招牌技"
+    },
+    "battle.action.ultimate": {
+      "vi": "Tối thượng",
+      "en": "Ultimate",
+      "ja": "必殺技",
+      "ko": "궁극기",
+      "zh": "终极技"
+    },
+    "battle.action.fire-zone": {
+      "vi": "Vùng Lửa",
+      "en": "Fire Zone",
+      "ja": "炎獄ゾーン",
+      "ko": "화염 지대",
+      "zh": "烈焰领域"
+    },
+    "battle.action.cost": {
+      "vi": "Cấp {0} · {1} NL / {2} nộ",
+      "en": "Lv {0} · {1} MP / {2} rage",
+      "ja": "Lv {0} · MP {1} / 怒り {2}",
+      "ko": "Lv {0} · MP {1} / 분노 {2}",
+      "zh": "等级 {0} · {1} 法力 / {2} 怒气"
+    },
+    "battle.action.cooldown": {
+      "vi": "Hồi chiêu {0}",
+      "en": "Cooldown {0}",
+      "ja": "再使用まで {0}",
+      "ko": "재사용 대기 {0}",
+      "zh": "冷却 {0}"
+    },
+    "training.title": {
+      "vi": "Kỹ năng của {0}",
+      "en": "{0} skills",
+      "ja": "{0}のスキル",
+      "ko": "{0} 스킬",
+      "zh": "{0}的技能"
+    },
+    "training.materials": {
+      "vi": "{0} nguyên liệu Thánh Vật",
+      "en": "{0} Artifact materials",
+      "ja": "聖遺物素材 {0}",
+      "ko": "성유물 재료 {0}",
+      "zh": "圣遗物材料 {0}"
+    },
+    "training.level": {
+      "vi": "Cấp {0} / {1}",
+      "en": "Level {0} / {1}",
+      "ja": "レベル {0} / {1}",
+      "ko": "레벨 {0} / {1}",
+      "zh": "等级 {0} / {1}"
+    },
+    "training.level_active": {
+      "vi": "Cấp đã học {0} · cấp hiện tại {1}",
+      "en": "Owned Lv {0} · Active Lv {1}",
+      "ja": "習得 Lv {0} · 適用 Lv {1}",
+      "ko": "습득 Lv {0} · 적용 Lv {1}",
+      "zh": "已学等级 {0} · 生效等级 {1}"
+    },
+    "training.upgrade": {
+      "vi": "Lên cấp {0} · {1} nguyên liệu",
+      "en": "Upgrade to Lv {0} · {1} materials",
+      "ja": "Lv {0} に強化 · 素材 {1}",
+      "ko": "Lv {0} 강화 · 재료 {1}",
+      "zh": "升至等级 {0} · 材料 {1}"
+    },
+    "training.materials_needed": {
+      "vi": "Còn thiếu {0} nguyên liệu",
+      "en": "{0} more materials needed",
+      "ja": "素材があと {0} 必要",
+      "ko": "재료 {0}개 더 필요",
+      "zh": "还需 {0} 个材料"
+    },
+    "training.retry": {
+      "vi": "Kiểm tra lại lần nâng cấp",
+      "en": "Retry pending upgrade",
+      "ja": "保留中の強化を再確認",
+      "ko": "대기 중인 강화 다시 확인",
+      "zh": "重新确认待处理的升级"
+    },
+    "training.refresh": {
+      "vi": "Cập nhật kỹ năng",
+      "en": "Refresh skills",
+      "ja": "スキルを更新",
+      "ko": "스킬 새로고침",
+      "zh": "刷新技能"
+    },
+    "training.back": {
+      "vi": "Về bộ sưu tập Linh Thú",
+      "en": "Back to Pet collection",
+      "ja": "ペット一覧に戻る",
+      "ko": "펫 목록으로 돌아가기",
+      "zh": "返回灵宠收藏"
+    },
+    "training.loading": {
+      "vi": "Đang tải kỹ năng…",
+      "en": "Loading skills…",
+      "ja": "スキルを読み込み中…",
+      "ko": "스킬 불러오는 중…",
+      "zh": "正在加载技能…"
+    },
+    "training.load_failed": {
+      "vi": "Không tải được kỹ năng.",
+      "en": "Skills could not be loaded.",
+      "ja": "スキルを読み込めませんでした。",
+      "ko": "스킬을 불러올 수 없습니다.",
+      "zh": "无法加载技能。"
+    },
+    "training.checking": {
+      "vi": "Đang kiểm tra nâng cấp…",
+      "en": "Checking upgrade…",
+      "ja": "強化を確認中…",
+      "ko": "강화 확인 중…",
+      "zh": "正在确认升级…"
+    },
+    "training.upgraded": {
+      "vi": "{0} đạt cấp {1} · dùng {2} nguyên liệu · còn {3}",
+      "en": "{0} reached Lv {1} · {2} materials spent · {3} remaining",
+      "ja": "{0} が Lv {1} に強化 · 素材 {2} 消費 · 残り {3}",
+      "ko": "{0} Lv {1} 달성 · 재료 {2}개 사용 · {3}개 남음",
+      "zh": "{0} 升至等级 {1} · 消耗 {2} 个材料 · 剩余 {3} 个"
+    },
+    "training.upgrade_unknown": {
+      "vi": "Chưa có kết quả nâng cấp. Thử lại để kiểm tra cùng yêu cầu.",
+      "en": "Upgrade result unavailable. Retry to check the same request.",
+      "ja": "強化結果を確認できません。同じ操作を再確認してください。",
+      "ko": "강화 결과를 확인할 수 없습니다. 다시 시도해 같은 요청을 확인하세요.",
+      "zh": "暂时无法确认升级结果。请重试以查询同一请求。"
     }
   }
 }

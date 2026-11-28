@@ -186,6 +186,33 @@ namespace Aetheria.Tests
             }
         }
 
+        [TestCase("en", "Guard", "Lv 1 · 180 MP / 160 rage", "Cooldown 5")]
+        [TestCase("vi", "Phòng thủ", "Cấp 1 · 180 NL / 160 nộ", "Hồi chiêu 5")]
+        [TestCase("ja", "防御", "Lv 1 · MP 180 / 怒り 160", "再使用まで 5")]
+        [TestCase("ko", "방어", "Lv 1 · MP 180 / 분노 160", "재사용 대기 5")]
+        [TestCase("zh", "防御", "等级 1 · 180 法力 / 160 怒气", "冷却 5")]
+        public void AbilityControlsLocalizeTheirCommittedCostsAndCooldown(string language, string guard, string cost, string cooldown)
+        {
+            const string key = "aetheria.campaign.language";
+            var previous = PlayerPrefs.HasKey(key) ? PlayerPrefs.GetString(key) : null;
+            try
+            {
+                PlayerPrefs.SetString(key, language);
+                var view = CoopNativeView.Decode(3, Encoding.UTF8.GetBytes(AdvancedProjection(JewelKinds)));
+                var hud = CoopNativePresentation.Build(view, _ => { }, _ => { });
+                Assert.That(hud.Q<Button>("coop-action-guard").text, Is.EqualTo(guard + "\n" + cost + "\n" + cooldown));
+                var skill = hud.Q<Button>("coop-action-skill");
+                Assert.That(skill.text, Is.EqualTo("Ember lance\n" + cost + "\n" + cooldown));
+                Assert.That(skill.tooltip, Is.EqualTo(skill.text));
+                Assert.That(skill.enabledSelf, Is.False);
+            }
+            finally
+            {
+                if (previous == null) PlayerPrefs.DeleteKey(key);
+                else PlayerPrefs.SetString(key, previous);
+            }
+        }
+
         private static readonly string[] JewelKinds =
             { "sword", "mana", "rage", "heart", "shield", "special", "nature", "frost", "astral" };
 

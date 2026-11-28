@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Xml;
@@ -32,6 +33,9 @@ namespace Aetheria.PetArena.Presentation
             return entry?.Elements().FirstOrDefault(value => value.Name.LocalName == language)?.Value
                 ?? entry?.Element("en")?.Value ?? fallback;
         }
+
+        public static string Format(string key, string fallback, params object[] values) =>
+            string.Format(CultureInfo.InvariantCulture, Text(key, fallback), values);
 
         public static void ApplyFont(VisualElement element)
         {
