@@ -235,14 +235,14 @@ pet_selection = (165, 67, 430, 101)
 pet_options = (165, 106, 430, 220)
 
 def room_ready(map_name, filename):
-    box = (2, 215, 140, 242)
+    box = (2, 226, 320, 262)
     for _ in range(20):
         img = capture(filename)
         if re.search(r'4\s*/\s*4', ocr(img, box, '7')):
             break
         # The native lobby uses fixed-height rows at all supported resolutions.
         # Read only the Refresh row so the labels on adjacent rows cannot win OCR.
-        refresh = word_button(img, {'refresh'}, center_band(362, 396, 90), mode='7')
+        refresh = word_button(img, {'refresh'}, center_band(382, 448, 90), mode='7')
         if refresh is None:
             refresh = word_button(img, {'refresh'}, lobby_buttons)
         if refresh:
@@ -250,10 +250,10 @@ def room_ready(map_name, filename):
         sleep(.4)
     else:
         raise RuntimeError(f'{map_name} room did not render four seats')
-    click(*label(filename, 'ready', center_band(265, 319)))
+    click(*label(filename, 'ready', center_band(285, 355)))
     for attempt in range(18):
         img = capture(map_name + '-room-ready')
-        start = word_button(img, {'start'}, center_band(315, 360))
+        start = word_button(img, {'start'}, center_band(335, 402))
         if start and min(Image.open(img).convert('RGB').getpixel((40, start[1]))) >= 130:
             click(*start)
             return
@@ -361,17 +361,17 @@ elif stage == 'four-lobby':
         print(f'Join room recognized at x={position[0]} y={position[1]} ({method}, field_y={room_label[1]})', flush=True)
         click(*position)
     def visible_seat(img):
-        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,225,360,286),'6').lower())
+        match = re.search(r'you\s+are\s+seat\s*([0-3])', ocr(img,(0,250,360,312),'6').lower())
         return match.group(1) if match else None
     assigned, _ = wait_for('05-assigned-lobby-seat', visible_seat)
     (output/'assigned-seat').write_text(assigned + '\n')
-    click(*label('06-ready','ready',center_band(265,319)))
+    click(*label('06-ready','ready',center_band(285,355)))
 elif stage == 'four-host-room-start':
     def ready_start(img):
-        start = word_button(img, {'start'}, center_band(315,360))
+        start = word_button(img, {'start'}, center_band(335,402))
         if start and min(Image.open(img).convert('RGB').getpixel((40,start[1]))) >= 130:
             return start
-        refresh = word_button(img, {'refresh'}, center_band(360,399))
+        refresh = word_button(img, {'refresh'}, center_band(382,448))
         if refresh:
             click(*refresh)
         return None
