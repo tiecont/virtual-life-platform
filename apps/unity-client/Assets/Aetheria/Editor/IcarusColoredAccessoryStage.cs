@@ -146,14 +146,14 @@ namespace Aetheria.Editor
                 AssetDatabase.CreateAsset(clip, folder + "/Walk.anim");
                 var camera = IcarusH2AccessoryMotionPreview.Studio(stage.transform, target);
                 RenderSettings.ambientMode = AmbientMode.Flat;
-                RenderSettings.ambientLight = new Color(.76f, .76f, .76f);
+                RenderSettings.ambientLight = new Color(.19f, .19f, .19f);
                 var ambient = new SphericalHarmonicsL2();
                 ambient.AddAmbientLight(RenderSettings.ambientLight);
                 RenderSettings.ambientProbe = ambient;
                 foreach (var light in stage.GetComponentsInChildren<Light>())
                 {
                     light.color = Color.white;
-                    light.intensity = .55f;
+                    light.intensity = .34f;
                 }
                 clip.SampleAnimation(animator.gameObject, clip.length * .10f);
                 var wing = StageFile(folder, "AETHERIA_COLORED_WING", "Wings.glb", report.wingSha256);
@@ -177,6 +177,19 @@ namespace Aetheria.Editor
                 }
                 Inspect("front", actor.transform.forward);
                 Inspect("back", -actor.transform.forward);
+                if (!string.IsNullOrEmpty(report.bowSha256))
+                {
+                    var grip = actor.GetComponentsInChildren<Transform>().Single(t => t.name == "BowGrip");
+                    var outside = grip.position - actor.transform.position;
+                    outside = Vector3.ProjectOnPlane(outside, Vector3.up).normalized;
+                    // BowGrip is an empty anchor. Frame its contact, then the whole bow from the same side.
+                    var contact = new Bounds(grip.position, Vector3.one * .28f);
+                    IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, contact, outside,
+                        Path.Combine(output, "hand-grip.png"));
+                    var model = actor.GetComponentsInChildren<Transform>().Single(t => t.name == "Color-reviewed bow");
+                    IcarusH2AccessoryMotionPreview.Capture(camera, target, pixels, VisibleBounds(model.gameObject),
+                        outside, Path.Combine(output, "bow-side.png"));
+                }
                 Inspect("rear-quarter", -actor.transform.forward + actor.transform.right * .65f + Vector3.up * .12f);
                 clip.SampleAnimation(animator.gameObject, clip.length * .55f);
                 draw.Refresh();
