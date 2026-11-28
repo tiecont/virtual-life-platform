@@ -145,12 +145,15 @@ namespace Aetheria.Tests
                 .Replace("\"turnRemainingMs\":9000", "\"turnRemainingMs\":12000")));
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void AdvancedProjectionUsesOnlyVersionedJewelKindsAndChill(bool solo)
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(false, true)]
+        [TestCase(true, true)]
+        public void AdvancedProjectionUsesOnlyVersionedJewelKindsAndChill(bool solo, bool shared)
         {
             var legacyVersion = solo ? CoopNativeView.SoloTimedFunctionalVersion : CoopNativeView.TimedFunctionalVersion;
             var newVersion = solo ? CoopNativeView.SoloAdvancedFunctionalVersion : CoopNativeView.AdvancedFunctionalVersion;
+            if (shared) newVersion = solo ? CoopNativeView.SoloSharedJewelVersion : CoopNativeView.SharedJewelVersion;
             var legacyVersionField = "\"version\":" + legacyVersion;
             var newVersionField = "\"version\":" + newVersion;
             const string pending = "\"pending\":null";
@@ -168,6 +171,7 @@ namespace Aetheria.Tests
 
             var view = Decode(Advanced);
             Assert.That(view.IsTimed, Is.True);
+            Assert.That(view.HasAdvancedJewels, Is.True);
             Assert.That(view.RulesetVersion, Is.EqualTo(newVersion));
             Assert.That(view.ChillReductionPm, Is.EqualTo(250));
             Assert.That(view.Board.Take(3).Select(tile => tile.Kind), Is.EqualTo(new[] { "nature", "frost", "astral" }));

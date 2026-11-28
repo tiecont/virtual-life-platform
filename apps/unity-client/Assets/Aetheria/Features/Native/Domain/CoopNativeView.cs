@@ -205,7 +205,7 @@ namespace Aetheria.Networking
         public bool IsFunctionalBoard => RulesetVersion >= FunctionalVersion || RulesetId == FunctionalSoloRuleset;
         public bool IsTimed => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloTimedFunctionalVersion : TimedFunctionalVersion);
-        public bool HasAdvancedJewels => RulesetVersion == (RulesetId == FunctionalSoloRuleset
+        public bool HasAdvancedJewels => RulesetVersion >= (RulesetId == FunctionalSoloRuleset
             ? SoloAdvancedFunctionalVersion : AdvancedFunctionalVersion);
         public string ConfigDigest { get; }
         public int You { get; }
