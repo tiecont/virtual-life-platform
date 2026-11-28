@@ -417,23 +417,39 @@ elif stage == 'four-battle':
             return None
         return start_button(img) if seat == 0 else None
 
-    if seat == 0:
-        wait_for('08-native-admission', admit, tries=45)
-        until = monotonic() + 100
-        while not condition('four-native-ready.json') and monotonic() < until:
-            admit(capture('08a-waiting-for-native-members'))
-            sleep(.4)
-        assert condition('four-native-ready.json'), 'Missing four actual player tickets'
-        start, _ = wait_for('08b-native-start', admit, tries=40)
-        print(f'Client 0: Start battle at {start}', flush=True)
-        click(*start)
+    # Ticket consumption precedes the first readable native HUD. Wait for all
+    # four real windows to finish transitioning from the lobby before Start.
+    started = output.parent/'four-host-starting'
+    until = monotonic() + 100
+    while not started.exists() and monotonic() < until:
+        image = capture('08-native-admission')
+        start = admit(image)
+        now = time_ns() / 1_000_000_000
+        ready = output/'native-hud-ready'
+        if status_button(image) is None and shared_hud_turn(image)[0] == (0, 0):
+            ready.touch()
+        else:
+            ready.unlink(missing_ok=True)
+        if seat == 0 and start and condition('four-native-ready.json'):
+            markers = [output.parent/f'client-{slot}'/'native-hud-ready' for slot in range(4)]
+            try:
+                fresh = all(0 <= now - marker.stat().st_mtime < 5 for marker in markers)
+            except FileNotFoundError:
+                fresh = False
+            if fresh:
+                copyfile(image, output/'08b-native-start.png')
+                started.touch()
+                click(*start)
+                break
+        sleep(.15)
+    assert started.exists(), 'Four native HUDs and live game tickets did not become ready together'
 
     def board_evidence(img):
         captured_at = time_ns() // 1_000_000
         board = populated_board(img)
         if board is not None:
-            turn, _ = shared_hud_turn(img)
-            if turn == (0, 0):
+            turn, heard = shared_hud_turn(img)
+            if turn == (0, 0) and "awaiting" not in heard.lower() and status_button(img) is None:
                 return board, turn, captured_at
             if turn is not None and turn[0] > 0:
                 raise RuntimeError(f'The packaged client missed the shared opening: visible turn and seat {turn}')
