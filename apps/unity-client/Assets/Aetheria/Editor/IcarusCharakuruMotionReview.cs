@@ -25,11 +25,12 @@ namespace Aetheria.Editor
         // Runs only against temporary scene objects and assets. The checked-in
         // prefab keeps its existing Generic Icarus review import contract.
         public static void Verify() => Verify(false);
+        public static void VerifyLayers() => Verify(false, reviewLayers: true);
         public static void VerifyDeformation() => Verify(false, reviewDeformation: true);
         public static void PrepareRecorder() => Verify(true);
         public static void PrepareAccessoryRecorder() => Verify(true, true);
 
-        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false)
+        private static void Verify(bool prepareRecorder, bool showcaseAccessories = false, bool reviewDeformation = false, bool reviewLayers = false)
         {
             const string motionVariable = "AETHERIA_ICARUS_REVIEW_MOTION";
             const string outputVariable = "AETHERIA_ICARUS_REVIEW_OUTPUT";
@@ -122,6 +123,8 @@ namespace Aetheria.Editor
                 var take = track.GetClips().Single();
                 Require(director.GetGenericBinding(track) == modelAnimator && take.animationClip == bound && !director.playOnAwake,
                     "Cinematic Studio did not bind the retargeted motion to the actual Icarus instance.");
+                if (reviewLayers)
+                    IcarusLayerSurfaceExport.Write(Path.Combine(output, "original-layers.bin"), skins, director, take.start, bound.length);
                 IcarusWalkDeformationReview.Result deformation = null;
                 AnimationClip garmentCorrection = null;
                 if (reviewDeformation)
