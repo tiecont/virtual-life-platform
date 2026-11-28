@@ -3,6 +3,7 @@ import { closeSync, constants, lstatSync, mkdirSync, openSync } from 'node:fs'
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { checkOwnership, isActive, MAX_STATE_BYTES, StateError, validateState } from './state-contract.mjs'
+import { workspaceReference } from './state-portable.mjs'
 
 function checkMetadata(path, directory, privateOnly) {
   const metadata = lstatSync(path, { throwIfNoEntry: false })
@@ -78,9 +79,13 @@ function writeCheckpoint(db, state) {
   return { state, stateSha256 }
 }
 
-function checkOtherRuns(db, state) {
-  const activeWriters = state.tasks.filter((task) => isActive(task) && task.writePaths.length)
+function checkWriteOwnership(db, state, root) {
+  const withWorkspace = (task) => ({ ...task, workspace: workspaceReference(root, task.workspace) })
+  const activeWriters = state.tasks.filter((task) => isActive(task) && task.writePaths.length).map(withWorkspace)
   if (!activeWriters.length) return
+  for (const [index, task] of activeWriters.entries()) {
+    for (const other of activeWriters.slice(index + 1)) checkOwnership(task, other)
+  }
   const otherRuns = db.prepare(`
     SELECT run_id, version, state, sha256 FROM checkpoints
     WHERE (run_id, version) IN (
@@ -88,7 +93,7 @@ function checkOtherRuns(db, state) {
     )
   `)
   for (const row of otherRuns.iterate(state.id)) {
-    const others = decode(row).state.tasks
+    const others = decode(row).state.tasks.map(withWorkspace)
     for (const task of activeWriters) {
       for (const other of others) checkOwnership(task, other)
     }
@@ -131,6 +136,7 @@ function inWriteTransaction(db, operation) {
 export function createCheckpoint(repoRoot, state) {
   return withDatabase(repoRoot, true, (db) => inWriteTransaction(db, () => {
     if (loadLatest(db, state.id)) throw new StateError('CONFLICT', 'run ID already exists')
+    checkWriteOwnership(db, state, repoRoot)
     return writeCheckpoint(db, state)
   }))
 }
@@ -146,7 +152,7 @@ export function advanceCheckpoint(repoRoot, id, version, advance) {
     const { state } = decode(loadLatest(db, id))
     if (state.version !== version) throw new StateError('CONFLICT', 'checkpoint version changed, recover before retrying')
     const next = advance(state)
-    checkOtherRuns(db, next)
+    checkWriteOwnership(db, next, repoRoot)
     return writeCheckpoint(db, next)
   }))
 }

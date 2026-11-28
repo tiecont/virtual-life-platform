@@ -1,16 +1,20 @@
-import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { checkId, initializeState, MAX_STATE_BYTES, StateError, summarizeState, updateState } from './state-contract.mjs'
 import { advanceCheckpoint, createCheckpoint, listIncompleteCheckpoints, readCheckpoint } from './state-store.mjs'
+import { currentRevision, exportPortable, inspectPortable, MAX_PORTABLE_BYTES, validatePortable } from './state-portable.mjs'
 
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
 const help = {
   commands: [
     'list',
     'init RUN_ID JSON|-',
+    'start RUN_ID JSON|-',
     'show RUN_ID [VERSION]',
     'recover RUN_ID [TASK_ID]',
     'update RUN_ID EXPECTED_VERSION TASK_ID JSON|-',
+    'export RUN_ID [VERSION]',
+    'verify JSON|- [TASK_ID]',
+    'import JSON|-',
   ],
   storage: 'artifacts/harness-state/checkpoints.sqlite',
 }
@@ -23,19 +27,20 @@ function version(value) {
   return number
 }
 
-async function readInput(value) {
+async function readInput(value, limit = MAX_STATE_BYTES) {
   let input = value
+  const tooLarge = () => new StateError('INVALID_STATE', `JSON input exceeds the ${limit / 1024} KiB limit`)
   if (value === '-') {
     const chunks = []
     let size = 0
     for await (const chunk of process.stdin) {
       size += chunk.length
-      if (size > MAX_STATE_BYTES) throw new StateError('INVALID_STATE', 'JSON input exceeds the 64 KiB limit')
+      if (size > limit) throw tooLarge()
       chunks.push(chunk)
     }
     input = Buffer.concat(chunks).toString('utf8')
   }
-  if (Buffer.byteLength(input) > MAX_STATE_BYTES) throw new StateError('INVALID_STATE', 'JSON input exceeds the 64 KiB limit')
+  if (Buffer.byteLength(input) > limit) throw tooLarge()
   try {
     return JSON.parse(input)
   } catch {
@@ -43,14 +48,8 @@ async function readInput(value) {
   }
 }
 
-function baseRevision() {
-  try {
-    return execFileSync('git', ['rev-parse', '--verify', 'HEAD'], {
-      cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 5000, maxBuffer: 256,
-    }).trim()
-  } catch {
-    throw new StateError('STORAGE_ERROR', 'could not determine the current Git revision')
-  }
+async function executionSupport() {
+  return import('./state-execution.mjs')
 }
 
 async function main([command, id, ...args]) {
@@ -61,8 +60,10 @@ async function main([command, id, ...args]) {
       return { id, version, baseRevision, active, ready, blocked: blocked.map(({ id }) => id) }
     }) }
   }
-  if (command === 'init' && args.length === 1) {
-    const plan = initializeState(checkId(id, 'run ID'), await readInput(args[0]), baseRevision())
+  if ((command === 'init' || command === 'start') && id !== undefined && args.length === 1) {
+    const base = currentRevision(repoRoot)
+    const loadPolicy = command === 'start' ? (await executionSupport()).executionPolicy(repoRoot, base) : undefined
+    const plan = initializeState(checkId(id, 'run ID'), await readInput(args[0]), base, loadPolicy)
     const { state, stateSha256 } = createCheckpoint(repoRoot, plan)
     return summarizeState(state, stateSha256)
   }
@@ -74,12 +75,44 @@ async function main([command, id, ...args]) {
     const { state, stateSha256 } = readCheckpoint(repoRoot, checkId(id, 'run ID'))
     return summarizeState(state, stateSha256, taskId)
   }
+  if (command === 'export' && id !== undefined && args.length < 2) {
+    const { state } = readCheckpoint(repoRoot, checkId(id, 'run ID'), args.length ? version(args[0]) : undefined)
+    return exportPortable(repoRoot, state)
+  }
+  if ((command === 'verify' || command === 'import') && id !== undefined && args.length <= Number(command === 'verify')) {
+    const portable = validatePortable(await readInput(id, MAX_PORTABLE_BYTES))
+    const taskId = args.length ? checkId(args[0], 'task ID') : undefined
+    const summary = inspectPortable(repoRoot, portable, taskId)
+    if (command === 'verify') {
+      if (portable.state.schemaVersion === 2 && !summary.missingRevisions.includes(portable.state.baseRevision)) {
+        const { validateExecution } = await executionSupport()
+        validateExecution(repoRoot, portable.state, { proofs: false })
+      }
+      return summary
+    }
+    if (['DIVERGED', 'MISSING_SOURCE'].includes(summary.target.relation) || summary.missingRevisions.length) {
+      throw new StateError('INVALID_STATE', 'import requires the source history and recorded revisions in the destination checkout')
+    }
+    if (portable.state.schemaVersion === 2) {
+      const { validateExecution } = await executionSupport()
+      validateExecution(repoRoot, portable.state, { allowMissingEvidence: true })
+    }
+    const { state, stateSha256 } = createCheckpoint(repoRoot, portable.state)
+    return { ...summary, ...summarizeState(state, stateSha256) }
+  }
   if (command === 'update' && args.length === 3) {
     const runId = checkId(id, 'run ID')
     const expectedVersion = version(args[0])
     const taskId = checkId(args[1], 'task ID')
     const patch = await readInput(args[2])
-    const { state, stateSha256 } = advanceCheckpoint(repoRoot, runId, expectedVersion, (current) => updateState(current, taskId, patch))
+    const snapshot = readCheckpoint(repoRoot, runId)
+    if (snapshot.state.version !== expectedVersion) throw new StateError('CONFLICT', 'checkpoint version changed, recover before retrying')
+    const next = updateState(snapshot.state, taskId, patch)
+    if (next.schemaVersion === 2) {
+      const { validateExecution } = await executionSupport()
+      validateExecution(repoRoot, next, { taskId, allowMissingEvidence: !Object.hasOwn(patch, 'execution') })
+    }
+    const { state, stateSha256 } = advanceCheckpoint(repoRoot, runId, expectedVersion, () => next)
     return summarizeState(state, stateSha256, taskId)
   }
   throw new StateError('INVALID_STATE', 'invalid state command or argument count, use --help')
