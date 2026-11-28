@@ -8,6 +8,7 @@ import sys
 
 import bpy
 import numpy as np
+from mathutils.kdtree import KDTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blender_pose_reviewed_pet_wings import SOURCES
@@ -47,10 +48,41 @@ def faces(obj, points):
     for poly in mesh.polygons:
         if poly.loop_total != 3:
             raise ValueError("Expected triangulated source")
-        corners = [tuple(np.round([*points[mesh.loops[i].vertex_index], *uv[i].uv], 5))
-                   for i in poly.loop_indices]
-        result.append(min(tuple(corners[i:] + corners[:i]) for i in range(3)))
-    return sorted(result)
+        result.append([[*points[mesh.loops[i].vertex_index], *uv[i].uv] for i in poly.loop_indices])
+    return np.asarray(result)
+
+
+def compare_rest(name, original, decoded):
+    if original.shape != decoded.shape:
+        raise ValueError(f"{name}: source and exported triangle counts differ")
+    centers = original[:, :, :3].mean(axis=1)
+    index = KDTree(len(original))
+    for i, center in enumerate(centers):
+        index.insert(center, i)
+    index.balance()
+    unused = set(range(len(original)))
+    worst_position, worst_uv = 0., 0.
+    for triangle in decoded:
+        center = triangle[:, :3].mean(axis=0)
+        nearby = [i for _, i, _ in index.find_range(center, .000003) if i in unused]
+        if not nearby:
+            raise ValueError(f"{name}: no matching directed triangle near {center}")
+        # Check all cyclic rotations, keeping winding and UVs tied to each
+        # corner. A fixed decimal-rounding grid can split two nearly equal
+        # coordinates that happen to lie on opposite sides of its midpoint.
+        results = []
+        for i in nearby:
+            for shift in range(3):
+                errors = original[i] - np.roll(triangle, shift, axis=0)
+                position = float(np.linalg.norm(errors[:, :3], axis=1).max())
+                uv = float(np.linalg.norm(errors[:, 3:], axis=1).max())
+                results.append((max(position, uv), position, uv, i))
+        distance, position, uv, match = min(results)
+        if distance > .000003:
+            raise ValueError(f"{name}: directed rest triangle differs (position {position:g}, UV {uv:g})")
+        unused.remove(match)
+        worst_position, worst_uv = max(worst_position, position), max(worst_uv, uv)
+    return worst_position, worst_uv
 
 
 def verify(asset, source, target):
@@ -65,9 +97,7 @@ def verify(asset, source, target):
     scene = bpy.context.scene
     scene.frame_set(1)
     neutral = {name: positions(obj) for name, obj in model.items()}
-    for name, obj in model.items():
-        if faces(obj, neutral[name]) != original[name]:
-            raise ValueError(f"{name}: textured rest triangles differ from the reviewed mesh")
+    rest_errors = [compare_rest(name, original[name], faces(obj, neutral[name])) for name, obj in model.items()]
     groups = defaultdict(list)
     offset = 0
     for points in neutral.values():
@@ -97,7 +127,8 @@ def verify(asset, source, target):
         raise ValueError(f"Private wing animation failed: seam={gaps}, return={rest}, body={body}, peak={max(peaks.values())}")
     return {"identity": asset, "sourceSha256": digest, "outputSha256": sha256_file(target),
             "meshParts": len(model), "texturedRestTriangles": sum(map(len, original.values())),
-            "framesMeasured": 49, "maxCoincidentVertexGap": gaps, "maxReturnDelta": rest,
+            "maxRestPositionError": max(e[0] for e in rest_errors),
+            "maxRestUvError": max(e[1] for e in rest_errors), "framesMeasured": 49, "maxCoincidentVertexGap": gaps, "maxReturnDelta": rest,
             "maxStaticBodyDelta": body, "wingPeakDisplacement": peaks, "scope": "private two-wing loop"}
 
 
