@@ -4,6 +4,17 @@ import {join} from 'node:path';
 
 const root=process.argv[2];
 const read=async file=>JSON.parse(await readFile(join(root,file+'.json'),'utf8'));
+const environment=await readFile(join(root,'environment.txt'),'utf8');
+const expectedSize=environment.match(/(1024x768|1280x720|1920x1080) Gamescope/)?.[1];
+assert.ok(expectedSize,'Missing requested player size in the environment receipt');
+const screenshots=['07-multiplier-board-before-restart','09-same-multiplier-board-after-reconnect',
+ '12-visible-four-seat-reward','21-water-equipped-native-hud'];
+for(const name of screenshots){
+ const png=await readFile(join(root,name+'.png'));
+ assert.ok(png.length>32&&png.subarray(0,8).toString('hex')==='89504e470d0a1a0a'&&
+  png.toString('ascii',12,16)==='IHDR'&&png.toString('ascii',png.length-8,png.length-4)==='IEND',name);
+ assert.equal(png.readUInt32BE(16)+'x'+png.readUInt32BE(20),expectedSize,name+' dimensions');
+}
 const states=(await Promise.all((await readdir(root)).filter(name=>/^state-\d{3}\.json$/.test(name)).map(name=>read(name.slice(0,-5))))).sort((a,b)=>a.version-b.version);
 const stateAt=version=>states.find(s=>s.version===version)?.state;
 const before=await read('before-restart'),after=await read('after-restart'),renewed=await read('host-renewed');
@@ -60,6 +71,6 @@ assert.ok(outcome);
 const report=JSON.parse(outcome.slice('reward rows verified '.length));
 assert.equal(report.result,'PASS');
 assert.ok(report.scenarios.includes('packaged-player-consumed-a-native-admission-in-the-equipped-water-allocation'));
-console.log(JSON.stringify({result:'PASS',boardContract:version===2?'functional':'elemental',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
+console.log(JSON.stringify({result:'PASS',playerSize:expectedSize,screenshots,boardContract:version===2?'functional':'elemental',boardTiles:64,multiplierTiles:multipliers,fireVersionBeforeRestart:before.version,
  resumedGeneration:after.generation,extraHostAdmissions:renewed.hostTickets-after.hostTickets,actions:need,
  transformedVersion:transformed.version,fireWonVersion:states.at(-1).version,rewardRows:rewards.count,water},null,2));
