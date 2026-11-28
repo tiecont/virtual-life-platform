@@ -15,6 +15,7 @@ namespace Aetheria.PetArena.Presentation
     [RequireComponent(typeof(UIDocument))]
     public sealed class CoopNativeCampaignScreen : MonoBehaviour
     {
+        private const double RoomRefreshSeconds = 3;
         [SerializeField] private UIDocument document;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private Wave1LocalApi api;
@@ -28,7 +29,8 @@ namespace Aetheria.PetArena.Presentation
         private Wave1Pet[] pets = Array.Empty<Wave1Pet>();
         private Action returnToHub;
         private Arena8NativeTrust trust;
-        private bool busy, loadingCatalog;
+        private bool busy, loadingCatalog, refreshingRoom;
+        private double nextRoomRefresh;
         private TextField joinField;
         private string notice = "";
 
@@ -291,8 +293,37 @@ namespace Aetheria.PetArena.Presentation
         private async Task RefreshRoomAsync()
         {
             if (room == null) return;
-            room = await lobby.ReadAsync(Guid.Parse(room.roomId));
+            room = await lobby.ReadAsync(Guid.Parse(room.roomId), lifetime.Token);
             RenderLobby();
+        }
+
+        private void Update()
+        {
+            if (busy || refreshingRoom || session != null || lobby?.CanRefreshRoom != true ||
+                (room?.status != "OPEN" && room?.status != "LOCKED") || Time.unscaledTimeAsDouble < nextRoomRefresh)
+                return;
+            nextRoomRefresh = Time.unscaledTimeAsDouble + RoomRefreshSeconds;
+            _ = RefreshWaitingRoomAsync(room);
+        }
+
+        private async Task RefreshWaitingRoomAsync(CoopLobbyClient.Room waiting)
+        {
+            refreshingRoom = true;
+            var cancellation = lifetime.Token;
+            try
+            {
+                var updated = await lobby.ReadAsync(Guid.Parse(waiting.roomId), cancellation);
+                if (cancellation.IsCancellationRequested || !isActiveAndEnabled || busy || session != null ||
+                    room != waiting || updated.revision <= waiting.revision)
+                    return;
+                room = updated;
+                RenderLobby();
+            }
+            catch (OperationCanceledException) { }
+            catch (System.Net.Http.HttpRequestException) { }
+            catch (Wave1ApiException) { }
+            catch (FormatException) { }
+            finally { refreshingRoom = false; }
         }
 
         private async Task SelectAsync()
