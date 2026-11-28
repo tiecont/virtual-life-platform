@@ -1,0 +1,676 @@
+{
+  "encounters": [
+    {
+      "id": "recruit-fire-coalwhisk",
+      "maxHp": 189,
+      "attack": 5,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-fire-emberloom",
+      "maxHp": 252,
+      "attack": 6,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-fire-kilnback",
+      "maxHp": 336,
+      "attack": 8,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-fire-flarequill",
+      "maxHp": 483,
+      "attack": 10,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-fire-scorchveil",
+      "maxHp": 588,
+      "attack": 12,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-fire-cinderquill",
+      "maxHp": 735,
+      "attack": 14,
+      "defense": 8,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-fire-pyrecrown",
+      "maxHp": 7200,
+      "attack": 72,
+      "defense": 60,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-fire-ignivar",
+      "maxHp": 9600,
+      "attack": 96,
+      "defense": 60,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-water-dewskip",
+      "maxHp": 216,
+      "attack": 6,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-water-ripplefin",
+      "maxHp": 288,
+      "attack": 7,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-water-foamcurl",
+      "maxHp": 384,
+      "attack": 9,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-water-tideweft",
+      "maxHp": 552,
+      "attack": 11,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-water-abyssail",
+      "maxHp": 672,
+      "attack": 14,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-water-tidewren",
+      "maxHp": 840,
+      "attack": 17,
+      "defense": 10,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-water-lagoonarch",
+      "maxHp": 8100,
+      "attack": 66,
+      "defense": 70,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1200,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-water-tidecoil",
+      "maxHp": 10800,
+      "attack": 88,
+      "defense": 70,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1200,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-electric-zipspool",
+      "maxHp": 243,
+      "attack": 6,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-electric-copperkip",
+      "maxHp": 324,
+      "attack": 8,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-electric-arcshell",
+      "maxHp": 432,
+      "attack": 10,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-electric-pulsecrest",
+      "maxHp": 621,
+      "attack": 13,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-electric-thundrel",
+      "maxHp": 756,
+      "attack": 16,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-electric-arcswift",
+      "maxHp": 945,
+      "attack": 19,
+      "defense": 12,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-electric-stormdiadem",
+      "maxHp": 6600,
+      "attack": 81,
+      "defense": 50,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 8000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1300,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-electric-voltrazik",
+      "maxHp": 8800,
+      "attack": 108,
+      "defense": 50,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 8000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1300,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-ghost-wickrift",
+      "maxHp": 279,
+      "attack": 7,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ghost-shroudlet",
+      "maxHp": 372,
+      "attack": 8,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ghost-bellshade",
+      "maxHp": 496,
+      "attack": 11,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ghost-echowisp",
+      "maxHp": 713,
+      "attack": 14,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ghost-veilrelic",
+      "maxHp": 868,
+      "attack": 17,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-ghost-pallidrone",
+      "maxHp": 1085,
+      "attack": 20,
+      "defense": 14,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ghost-lanternwake",
+      "maxHp": 7500,
+      "attack": 69,
+      "defense": 65,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-ghost-hollowmaw",
+      "maxHp": 10000,
+      "attack": 92,
+      "defense": 65,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-ground-clodkin",
+      "maxHp": 338,
+      "attack": 6,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ground-burrowick",
+      "maxHp": 450,
+      "attack": 8,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ground-dunebraid",
+      "maxHp": 600,
+      "attack": 10,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ground-siltmaw",
+      "maxHp": 862,
+      "attack": 13,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ground-terracrest",
+      "maxHp": 1050,
+      "attack": 16,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-ground-dustrunner",
+      "maxHp": 1312,
+      "attack": 19,
+      "defense": 22,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-ground-faultwarden",
+      "maxHp": 9000,
+      "attack": 60,
+      "defense": 85,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1150,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-ground-terradrake",
+      "maxHp": 12000,
+      "attack": 80,
+      "defense": 85,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7000,
+        "currentBp": 8000,
+        "phase2AttackPm": 1150,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-light-gleamlet",
+      "maxHp": 396,
+      "attack": 8,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-light-dawnpurl",
+      "maxHp": 528,
+      "attack": 10,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-light-raymantle",
+      "maxHp": 704,
+      "attack": 12,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-light-solweft",
+      "maxHp": 1012,
+      "attack": 15,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-light-prismhalo",
+      "maxHp": 1232,
+      "attack": 19,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-bird-light-prismkite",
+      "maxHp": 1540,
+      "attack": 23,
+      "defense": 19,
+      "phase": {
+        "thresholdBp": 2000,
+        "maxGrowthBp": 1000,
+        "currentBp": 2500,
+        "phase2AttackPm": 1100,
+        "excessDamage": "discard",
+        "attackTargets": 1
+      }
+    },
+    {
+      "id": "recruit-light-dawnarchon",
+      "maxHp": 7800,
+      "attack": 75,
+      "defense": 75,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    },
+    {
+      "id": "recruit-dragon-light-auroryx",
+      "maxHp": 10400,
+      "attack": 100,
+      "defense": 75,
+      "phase": {
+        "thresholdBp": 2500,
+        "maxGrowthBp": 7500,
+        "currentBp": 8000,
+        "phase2AttackPm": 1250,
+        "excessDamage": "discard",
+        "attackTargets": 2
+      }
+    }
+  ]
+}
