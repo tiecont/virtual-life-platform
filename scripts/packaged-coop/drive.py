@@ -291,20 +291,19 @@ elif stage == 'water':
                 return None
             return populated_board(img)
 
-        board, _ = wait_for('22-water-started-board',
-                            populated_board)
-        # The observer has already verified active seat, version and opening.
-        # Click the visible populated board before OCR of an expiring timer.
-        for attempt in range(5):
-            recover = None
-            if attempt and not read('water-swapped'):
-                img = capture(f'water-swap-retry-{attempt}')
-                recover = status_button(img)
-                board = None if recover else playing_board(img, started['state'])
-            # The observer may publish the receipt while OCR reads the HUD.
+        board, img = wait_for('22-water-started-board', populated_board)
+        for attempt in range(6):
             swapped = read('water-swapped')
             if swapped:
                 break
+            if read('water-version-two-observed'):
+                raise RuntimeError('Water observer saw version 2 without verifying a host swap')
+            if attempt:
+                img = capture(f'water-swap-retry-{attempt}')
+                board = populated_board(img)
+            # An expired admission can leave a populated but disabled board.
+            # Follow its visible recovery control even on the very first frame.
+            recover = status_button(img)
             if recover:
                 print('Water recovery click', recover, flush=True)
                 click(*recover)
@@ -313,10 +312,10 @@ elif stage == 'water':
                     click(*cell_center(board, tile))
                     sleep(.42)
             try:
-                swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=3)
+                swapped = expect('water-swapped', lambda result: result['version'] == 2, timeout=1.2)
                 break
             except RuntimeError:
-                if attempt == 4:
+                if attempt == 5:
                     raise
         wait_for('23-water-after-host-swap',
                  lambda img: not status_button(img) and playing_board(img, swapped['state']))
