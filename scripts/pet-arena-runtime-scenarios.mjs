@@ -34,6 +34,8 @@ export async function petArenaScenarios(c){
  };
  try{
   const health=await (await fetch('http://127.0.0.1:'+c.upstream()+'/health/ready')).json();assert.equal(health.ruleset,'pet-arena-pve');
+  const privacyAtZero=await identity.export(credential);
+  assert.deepEqual(privacyAtZero.domains.nativePetGameplay.matches.map(({matchId:id,stateVersion})=>[id,stateVersion]),[[matchId,'0']]);
   const initial=await view();assert.equal(initial.receipt.committed,false);assert.equal(initial.receipt.projection.state.phase,'ready');
   const before=await checkpoint();
   for(const value of [intent(0,{kind:'reward',amount:999999}),{...intent(0,{kind:'start'}),gameSessionId:Array(16).fill(9)},intent(0,{kind:'start',outcome:'won'}),intent(0,{kind:'swap',first:0,second:35})]){
@@ -42,7 +44,46 @@ export async function petArenaScenarios(c){
   assert.equal(await receiptCount(),0);assert.equal(await grantCount(),0);record('forged-reward-client-result-wrong-match-and-invalid-action-have-zero-effects');
   if(ticketExpiry-Date.now()<2000)await reconnect();
   const startId=id++,startIntent=intent(0,{kind:'start'}),startSequence=link.sequence++;
-  await call('send',link.index,startId,startSequence,'gameIntent',startIntent);const start=await call('next',link.index);
+  let start;
+  if(c.loss){
+   await call('send',link.index,startId,startSequence,'gameIntent',startIntent);
+   start=await call('next',link.index);
+  }else{
+   const block=await pool.connect();
+   const waitForLock=async(sql,values)=>{
+    const deadline=Date.now()+800;
+    for(;;){
+     if((await pool.query(sql,values)).rowCount)return;
+     assert(Date.now()<deadline,'Expected database lock wait was not observed');
+     await new Promise(ok=>setTimeout(ok,10));
+    }
+   };
+   const rollbackError=Error('Fixture rolls back deletion after testing the transaction');
+   let probe=true,deletion;
+   identity.registerDeletionOwner('native-pet-committed-turn-race',async(account,db)=>{
+    if(!probe)return;
+    assert.equal(account,player);
+    assert.equal((await db.query('SELECT 1 FROM game_native_matches WHERE id=$1',[matchId])).rowCount,0);
+    throw rollbackError;
+   });
+   try{
+    await block.query('BEGIN');
+    await block.query('SELECT id FROM game_native_matches WHERE id=$1 FOR UPDATE',[matchId]);
+    await call('send',link.index,startId,startSequence,'gameIntent',startIntent);
+    await waitForLock(`SELECT 1 FROM pg_stat_activity WHERE usename=$1 AND wait_event_type='Lock'
+        AND query LIKE '%game_native_matches%'`,[c.role]);
+    deletion=identity.delete(credential,randomUUID());deletion.catch(()=>{});
+    await waitForLock(`SELECT 1 FROM pg_stat_activity WHERE pid<>pg_backend_pid() AND wait_event_type='Lock'
+       AND query='SELECT pg_advisory_xact_lock(hashtextextended($1,0))'`,[]);
+    await block.query('COMMIT');
+    start=await call('next',link.index);
+    await assert.rejects(deletion,error=>error===rollbackError);
+   }finally{
+    await block.query('ROLLBACK');block.release();
+    await deletion?.catch(()=>{});probe=false;
+   }
+   record('canonical-account-lock-orders-committed-rust-turn-before-atomic-account-erasure');
+  }
   assert.equal(start.kind,'receipt');assert.equal(start.version,'1');assert.equal(start.receipt.projection.state.phase,'playing');
   await call('send',link.index,startId,startSequence,'gameIntent',startIntent);assert.equal((await call('next',link.index)).hex,start.hex);
   const active=await checkpoint();
@@ -51,6 +92,7 @@ export async function petArenaScenarios(c){
   }
   assert.equal(await receiptCount(),1);record('start-duplicate-intent-invalid-swap-and-stale-version-are-fenced');
   const stranger=await identity.guest({requestId:randomUUID(),displayName:'Pet outsider',avatarKey:'mint'});
+  assert.equal((await identity.export(stranger.token)).domains.nativePetGameplay,undefined);
   await store.allocate(stranger.token,scope);
   for(const value of [intent(1,{kind:'pass'}),intent(0,undefined,'pet.view.v1')]){
    const ticket=await issuer.issue(stranger.token,scope);const index=await call('open',origin.replace('https:','wss:')+'/rt/v1');
@@ -152,7 +194,41 @@ export async function petArenaScenarios(c){
   record('terminal-runtime-restart-reconciles-reward-and-rejects-further-turns');
   await store.release(credential);await call('send',link.index,id++,link.sequence++,'gameIntent',intent(0,undefined,'pet.view.v1'));assert(await call('closed',link.index));
   record('revoked-session-cannot-replay-terminal-private-projection');
-  return {receipts:finalVersion,nonces:baseNonces+extraNonces};
+  if(c.loss)return {matches:1,receipts:finalVersion,nonces:baseNonces+extraNonces};
+  const own=(await identity.export(credential)).domains.nativePetGameplay;
+  assert.deepEqual(own.matches.map(row=>[row.matchId,row.stateVersion,row.settlement.outcome,row.settlement.delivery,row.settlement.rewardKey]),[[matchId,String(finalVersion),'won','granted',policy.rewardKey]]);
+  assert(!/seed|nonce|cipher|token|projection|snapshot|rng/i.test(JSON.stringify(own)));
+  record('identity-privacy-exports-version-zero-and-own-terminal-reward-no-secrets-or-stranger-data');
+  await pool.query('UPDATE game_native_outbox SET delivered_at=NULL,delivery_outcome=NULL');
+  await stopHost();
+  await nativeBackupRestoreScenarios(c,{erasedAccount:player,rewardPolicy:policy,afterArchive:async()=>{
+   const {promise:held,resolve:lockReached}=Promise.withResolvers();
+   const {promise:leave,resolve:finishDeletion}=Promise.withResolvers();
+   identity.registerDeletionOwner('native-pet-race-proof',async account=>{
+    assert.equal(account,player);lockReached();await leave;
+   });
+   const deletion=identity.delete(credential,randomUUID());deletion.catch(()=>{});
+   let racing;
+   try{
+    await Promise.race([held,deletion]);
+    racing=worker();
+    const deadline=Date.now()+5000;
+    for(;;){
+     const waiting=(await pool.query(`SELECT 1 FROM pg_stat_activity WHERE usename=$1 AND wait_event_type='Lock'
+      AND query LIKE '%pg_advisory_xact_lock%'`,[rewardRole])).rowCount;
+     if(waiting)break;
+     assert(Date.now()<deadline,'Reward worker did not wait for the canonical deletion account lock');
+     await new Promise(ok=>setTimeout(ok,15));
+    }
+   }finally{finishDeletion();}
+   await deletion;
+   assert.equal(await racing.done,0,racing.log());
+   await runWorker();
+   assert.equal(await grantCount(),0);assert.equal(await receiptCount(),0);
+   await c.rejectHost({},c.runtime.toString(),'Native match allocation unavailable');
+   record('account-deletion-wins-against-pending-outbox-worker-retry-and-runtime-restart');
+  }});
+  return {matches:0,receipts:0,nonces:(await pool.query('SELECT count(*)::int AS n FROM platform_native_ticket_uses')).rows[0].n};
  }finally{
   for(const process of workers){process.kill('SIGKILL');await new Promise(ok=>process.once('close',ok));}
  }

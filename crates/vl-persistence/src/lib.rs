@@ -62,6 +62,16 @@ pub trait Game: Reducer + Send + Sync + 'static {
     fn member(&self, state: &Self::State, account: &str) -> bool;
     fn authorize(&self, state: &Self::State, account: &str, action: &Self::Action) -> bool;
     fn project(&self, state: &Self::State, account: &str) -> Result<Vec<u8>>;
+    // Only the reviewed, single-participant Pet rules use the privacy path.
+    fn pet_participant(&self, _state: &Self::State) -> Option<Uuid> {
+        None
+    }
+    fn encode_replay_action(&self, _action: &Self::Action) -> Result<Vec<u8>> {
+        Err(Error::Invalid)
+    }
+    fn decode_replay_action(&self, _bytes: &[u8]) -> Result<Self::Action> {
+        Err(Error::Integrity)
+    }
     fn can_spectate(&self, _state: &Self::State, _account: &str) -> bool {
         false
     }
@@ -399,9 +409,17 @@ where
         if row.get::<_, String>("boot_text") != self.owner.scope.boot.to_string() {
             return Err(Error::Conflict);
         }
+        let pet = self.game.ruleset().id == "pet-arena-pve";
+        if pet {
+            self.check_pet_database(&tx).await?;
+        }
         let stored = self.restore(id, &row)?;
-        self.verify_journal(&tx, id, stored.epoch, stored.checkpoint.version)
-            .await?;
+        if pet {
+            self.verify_pet_replay(&tx, id, &stored).await?;
+        } else {
+            self.verify_journal(&tx, id, stored.epoch, stored.checkpoint.version)
+                .await?;
+        }
         self.owner.check(&tx).await?;
         tx.commit().await?;
         Ok(())
@@ -425,8 +443,23 @@ where
         )?;
         let sealed = self.snapshot(&cp, &seed, 1)?;
         let rules = self.game.ruleset();
+        let participant = if rules.id == "pet-arena-pve" {
+            Some(self.game.pet_participant(&cp.state).ok_or(Error::Invalid)?)
+        } else {
+            None
+        };
         let tx = db.transaction().await?;
-        tx.batch_execute("SET LOCAL statement_timeout='2000ms';SET LOCAL lock_timeout='1000ms';SELECT pg_advisory_xact_lock(hashtextextended('native-admission-v1',0))").await?;
+        tx.batch_execute("SET LOCAL statement_timeout='2000ms';SET LOCAL lock_timeout='1000ms'")
+            .await?;
+        if let Some(account) = participant {
+            tx.query_one(
+                "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+                &[&format!("account:{account}")],
+            )
+            .await?;
+        }
+        tx.batch_execute("SELECT pg_advisory_xact_lock(hashtextextended('native-admission-v1',0))")
+            .await?;
         self.owner.check(&tx).await?;
         let world = tx
             .query_opt(
@@ -437,7 +470,31 @@ where
         if world.is_none() {
             return Err(Error::Unauthorized);
         }
+        if let Some(account) = participant {
+            self.check_pet_database(&tx).await?;
+            let active = tx
+                .query_opt(
+                    "SELECT 1 FROM identity_accounts WHERE id=$1::text::uuid AND status='active'",
+                    &[&account.to_string()],
+                )
+                .await?;
+            if active.is_none() {
+                return Err(Error::Unauthorized);
+            }
+        }
         tx.execute("INSERT INTO game_native_matches(id,world_id,ruleset_id,ruleset_version,content_hash,engine_hash,protocol_version,canonical_version,rng_version,owner_boot_id,epoch,state_version,server_tick,logical_time_ms,rng_cursor,status,seed_commitment,audit_hash,snapshot_key_id,snapshot_nonce,snapshot_tag,sealed_snapshot) VALUES($1::text::uuid,$2,$3,$4,$5,$6,1,1,1,$7::text::uuid,1,0,0,0,0,'ACTIVE',$8,$9,$10,$11,$12,$13)",&[&id.to_string(),&self.owner.scope.world,&rules.id,&(rules.version as i32),&&rules.content_hash[..],&&self.owner.scope.engine[..],&self.owner.scope.boot.to_string(),&&cp.seed_commitment[..],&&cp.audit_hash[..],&sealed.key,&sealed.nonce,&sealed.tag,&sealed.bytes]).await?;
+        if let Some(account) = participant {
+            tx.execute("INSERT INTO game_native_pet_participants(match_id,account_id) VALUES($1::text::uuid,$2::text::uuid)", &[&id.to_string(),&account.to_string()]).await?;
+            self.store_pet_input(
+                &tx,
+                id,
+                1,
+                0,
+                &account.to_string(),
+                &Zeroizing::new(self.game.encode(&cp.state)?),
+            )
+            .await?;
+        }
         self.owner.check(&tx).await?;
         tx.commit().await?;
         Ok(())
@@ -607,6 +664,15 @@ where
         if !effect_allowed {
             return Err(Error::EffectDenied);
         }
+        let replay_action = if self.game.ruleset().id == "pet-arena-pve" {
+            let participant = self.pet_owner(tx, r.match_id).await?;
+            if participant != actor.account {
+                return Err(Error::Integrity);
+            }
+            Some(Zeroizing::new(self.game.encode_replay_action(&r.action)?))
+        } else {
+            None
+        };
         let clock = LogicalClock {
             server_tick: stored
                 .checkpoint
@@ -670,6 +736,11 @@ where
             return Err(Error::Conflict);
         }
         tx.execute("INSERT INTO game_native_receipts(match_id,actor_id,command_id,payload_fingerprint,committed_version,epoch,receipt_hash,key_id,nonce,tag,sealed_receipt) VALUES($1::text::uuid,$2::text::uuid,$3::text::uuid,$4,$5,$6,$7,$8,$9,$10,$11)",&[&r.match_id.to_string(),&actor.account,&r.command_id.to_string(),&&fingerprint[..],&version,&stored.epoch,&&Sha256::digest(&projection)[..],&receipt.key,&receipt.nonce,&receipt.tag,&receipt.bytes]).await?;
+        if let Some(bytes) = replay_action {
+            let binding = format!("{}:{}", actor.account, r.command_id);
+            self.store_pet_input(tx, r.match_id, stored.epoch, version, &binding, &bytes)
+                .await?;
+        }
         for (index, event) in transition.events.iter().enumerate() {
             let bytes = Zeroizing::new(canonical::encode(event)?);
             let sealed = self.keys.seal(
@@ -686,15 +757,7 @@ where
         }
         if transition.settlement.is_some() {
             let id = Uuid::new_v4().to_string();
-            let rules = self.game.ruleset();
-            let proposal = match self.game.completion(&transition.next.state)? {
-                Completion::Game => {
-                    serde_json::json!({"kind":"game.completed.v1","ruleset":rules.id,"rulesetVersion":rules.version})
-                }
-                Completion::PetArena { won } => {
-                    serde_json::json!({"kind":"pet-arena.completed.v1","outcome":if won { "won" } else { "lost" },"ruleset":rules.id,"rulesetVersion":rules.version})
-                }
-            };
+            let proposal = self.completion_proposal(&transition.next.state)?;
             let proposal = serde_json::to_string(&proposal).map_err(|_| Error::Invalid)?;
             tx.execute("INSERT INTO game_native_settlements(match_id,state_version,epoch,settlement_id,proposal_hash,proposal) VALUES($1::text::uuid,$2,$3,$4::text::uuid,$5,$6::text::jsonb)",&[&r.match_id.to_string(),&version,&stored.epoch,&id,&&Sha256::digest(proposal.as_bytes())[..],&proposal]).await?;
             tx.execute("INSERT INTO game_native_outbox(event_id,match_id,settlement_id,effect_type) VALUES($1::text::uuid,$2::text::uuid,$3::text::uuid,'game.settlement.v1')",&[&Uuid::new_v4().to_string(),&r.match_id.to_string(),&id]).await?;
@@ -708,6 +771,18 @@ where
                 .settlement
                 .as_ref()
                 .map(|_| RewardStatus::Pending),
+        })
+    }
+
+    fn completion_proposal(&self, state: &G::State) -> Result<serde_json::Value> {
+        let rules = self.game.ruleset();
+        Ok(match self.game.completion(state)? {
+            Completion::Game => {
+                serde_json::json!({"kind":"game.completed.v1","ruleset":rules.id,"rulesetVersion":rules.version})
+            }
+            Completion::PetArena { won } => {
+                serde_json::json!({"kind":"pet-arena.completed.v1","outcome":if won { "won" } else { "lost" },"ruleset":rules.id,"rulesetVersion":rules.version})
+            }
         })
     }
 }

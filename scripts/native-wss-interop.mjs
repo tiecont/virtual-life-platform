@@ -235,7 +235,7 @@ try{
 
  // Probe recovery with the same restricted role and real runtime executable.
  // Diagnostics are checked for the fixed redacted error, never archived raw.
- async function rejectHost(overrides={},databaseUrl=runtime.toString()){
+ async function rejectHost(overrides={},databaseUrl=runtime.toString(),diagnostic='Native checkpoint unavailable or incompatible'){
   const original=await readFile(privateFile);
   let probe;
   try{
@@ -247,7 +247,7 @@ try{
    try{code=await new Promise((ok,no)=>{probe.once('error',no);probe.once('close',ok);});}finally{clearTimeout(timer);}
    assert.equal(code,1,'Invalid recovery must exit with failure');
    assert.equal(stdout.length,0,'Invalid recovery must not open a listener or publish state');
-   assert.equal(stderr.trim(),'Error: "Native checkpoint unavailable or incompatible"','Recovery diagnostics must be redacted');
+   assert.equal(stderr.trim(),`Error: "${diagnostic}"`,'Recovery diagnostics must be redacted');
   }finally{
    if(probe&&probe.exitCode===null&&probe.signalCode===null){probe.kill('SIGKILL');await new Promise(ok=>probe.once('close',ok));}
    await writeFile(privateFile,original,{mode:0o600});
@@ -377,7 +377,10 @@ try{
  let petEffects;
  if(pet){
   const {petArenaScenarios}=await import('./pet-arena-runtime-scenarios.mjs');
-  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,runtime,tls,createAdmissionStore:target=>new RuntimeAdmissionStore(target,identity),rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{if(child){child.kill('SIGKILL');await childClosed;child=undefined;}},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
+  const {registerNativePetPrivacy}=require('../apps/platform-api/src/features/games/modules/persistence/infrastructure/native-pet-privacy.ts');
+  const {NativeSettlements}=require('../apps/platform-api/src/features/progression/modules/rewards/infrastructure/native-settlements.ts');
+  registerNativePetPrivacy(identity,true);
+  petEffects=await petArenaScenarios({loss,pool,admin,schema,role,runtime,tls,createAdmissionStore:target=>new RuntimeAdmissionStore(target,identity),createRewardWorker:(target,policy)=>new NativeSettlements(target,policy,async()=>true),rewardRole,rewardPassword,markRewardRoleCreated:()=>{rewardRoleCreated=true;},address,directory,scope,identity,store,issuer,credential,csrf:guest.me.csrfToken,call,fresh,origin,hello,startHost,rejectHost,stopHost:async()=>{if(child){child.kill('SIGKILL');await childClosed;child=undefined;}},upstream:()=>upstream,matchId,player:guest.me.profile.id,record});
  }
  if(playable&&!pet){
   const readyStarted=Date.now(),ready=await fetch('http://127.0.0.1:'+upstream+'/health/ready');
@@ -488,7 +491,7 @@ try{
  const text=await call('open',origin.replace('https:','wss:')+'/rt/v1');await call('text',text);assert(await call('closed',text));record('text-frame-denied');
  await call('close',fresh);await context.close();await browser.close();browser=undefined;
  const effects=(await pool.query('SELECT (SELECT count(*)::int FROM game_native_matches) AS matches,(SELECT count(*)::int FROM game_native_receipts) AS receipts,(SELECT count(*)::int FROM platform_native_ticket_uses) AS nonces')).rows[0];
- assert.equal(effects.matches,playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?12:4):2);facts.effects=effects;record(pet?'full-pet-match-commits-one-native-match':playable?'three-game-commits-one-native-match':'zero-game-writes');
+ assert.equal(effects.matches,pet?petEffects.matches:playable?1:0);assert.equal(effects.receipts,pet?petEffects.receipts:playable?3:0);assert.equal(effects.nonces,pet?petEffects.nonces:playable?(csharp||unity?12:4):2);facts.effects=effects;record(pet?'pet-match-final-storage-invariants':playable?'three-game-commits-one-native-match':'zero-game-writes');
  }
  }
  assert.equal(heartbeatError,undefined);facts.result='PASS';

@@ -6,9 +6,10 @@ import {mkdir,writeFile,readFile,rm} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {Pool} from 'pg';
 import {backupPostgres,restorePostgres} from './postgres-backup.mjs';
+import {reconcileNativePetRestore} from './native-pet-restore-privacy.mjs';
 
 const execute=promisify(execFile);
-const tables=['game_native_matches','game_native_events','game_native_receipts','game_native_settlements','game_native_outbox','platform_native_reward_inbox','platform_native_reward_ledger','city_schema_migrations'];
+const tables=['game_native_matches','game_native_pet_participants','game_native_pet_replay','game_native_events','game_native_receipts','game_native_settlements','game_native_outbox','platform_native_reward_inbox','platform_native_reward_ledger','city_schema_migrations'];
 const identifier=value=>{assert.match(value,/^[a-z][a-z0-9_]*$/);return '"'+value+'"';};
 async function fingerprint(pool){
  const hash=createHash('sha256');
@@ -21,7 +22,7 @@ async function fingerprint(pool){
 
 // Restore only to an owned, empty disposable database. The source runtime is
 // stopped by the caller; this never repairs or replaces its database.
-export async function nativeBackupRestoreScenarios(c){
+export async function nativeBackupRestoreScenarios(c,{afterArchive,erasedAccount,rewardPolicy}={}){
  const {pool,schema,role,runtime,tls,directory,startHost,stopHost,rejectHost,record}=c;
  assert.match(runtime.password,/^[a-f0-9]{64}$/);
  const sourceProject=process.env.CITY_TEST_DB_PROJECT;
@@ -42,6 +43,7 @@ export async function nativeBackupRestoreScenarios(c){
   const backup=await backupPostgres({project:sourceProject,service:'db',keyPath,output:archive});
   const bytes=await readFile(archive);assert.equal(createHash('sha256').update(bytes).digest('hex'),backup.sha256);
   assert(!bytes.subarray(0,5).equals(Buffer.from('PGDMP')));
+  if(afterArchive)await afterArchive();
   started=true;await compose(['up','-d','--wait','--wait-timeout','60']);
   const mapping=await compose(['port','restore','5432']),port=/^127\.0\.0\.1:(\d+)$/.exec(mapping)?.[1];assert(port);
   const address=new URL('postgresql://127.0.0.1:'+port+'/virtual_city_restore_test');
@@ -77,11 +79,46 @@ export async function nativeBackupRestoreScenarios(c){
   for(const sql of ["ALTER SYSTEM SET ssl_cert_file='/tmp/restore-server.pem'","ALTER SYSTEM SET ssl_key_file='/tmp/restore-server.key'","ALTER SYSTEM SET ssl_min_protocol_version='TLSv1.2'","ALTER SYSTEM SET ssl='on'",'SELECT pg_reload_conf()'])await target.query(sql);
   assert(tls.caFile);
   const restored=new URL(address);restored.username=role;restored.password=runtime.password;
-  // Archived leases are not permission to serve. The fixture's trusted
-  // allocator explicitly reacquires the restored scope before any key probes.
+  const reconcile=()=>reconcileNativePetRestore({
+   source:pool,sourceUrl:process.env.TEST_DATABASE_URL,target,targetUrl:address.toString(),
+  });
   const allocator=c.createAdmissionStore(target);
   const prior=(await target.query('SELECT generation FROM platform_native_worlds WHERE world_id=$1',[c.scope.worldId])).rows[0];
-  const generation=await allocator.configure(c.scope,Number(prior.generation),true,8);
+  const unreconciledGeneration=await allocator.configure(c.scope,Number(prior.generation),true,8);
+  await rejectHost({},restored.toString());
+  await assert.rejects(reconcileNativePetRestore({
+   source:target,sourceUrl:process.env.TEST_DATABASE_URL,target,targetUrl:address.toString(),
+  }));
+  assert.equal(await fingerprint(target),before);
+  if(erasedAccount){
+   const worker=c.createRewardWorker(target,rewardPolicy);
+   await worker.drain();
+   assert.equal(await fingerprint(target),before,'Unreconciled backup must not redeliver a reward');
+   await reconcile();
+   const erased=async()=>assert.deepEqual((await target.query(`SELECT
+    (SELECT count(*)::int FROM identity_accounts WHERE id=$1) AS accounts,
+    (SELECT count(*)::int FROM game_native_matches WHERE id=$2) AS matches,
+    (SELECT count(*)::int FROM game_native_pet_participants WHERE account_id=$1) AS participants,
+    (SELECT count(*)::int FROM game_native_pet_replay WHERE match_id=$2) AS replay,
+    (SELECT count(*)::int FROM game_native_receipts WHERE match_id=$2) AS receipts,
+    (SELECT count(*)::int FROM game_native_events WHERE match_id=$2) AS events,
+    (SELECT count(*)::int FROM game_native_settlements WHERE match_id=$2) AS settlements,
+    (SELECT count(*)::int FROM game_native_outbox WHERE match_id=$2) AS outbox,
+    (SELECT count(*)::int FROM platform_native_reward_inbox) AS inbox,
+    (SELECT count(*)::int FROM platform_native_reward_ledger WHERE account_id=$1) AS grants`,
+    [erasedAccount,c.matchId])).rows[0],{accounts:0,matches:0,participants:0,replay:0,receipts:0,events:0,settlements:0,outbox:0,inbox:0,grants:0});
+   await erased();
+   await allocator.configure(c.scope,unreconciledGeneration,true,8);
+   await worker.drain();
+   await rejectHost({},restored.toString(),'Native match allocation unavailable');
+   await erased();
+   record('stale-encrypted-backup-reconciles-deleted-account-before-serve-with-no-reward-or-reallocation');
+   return;
+  }
+  await reconcile();
+  // Archived leases are not permission to serve. The fixture's trusted
+  // allocator explicitly reacquires the restored scope before any key probes.
+  const generation=await allocator.configure(c.scope,unreconciledGeneration,true,8);
   heartbeat=setInterval(()=>{heartbeatWork=heartbeatWork.then(()=>allocator.heartbeat(c.scope,generation));heartbeatWork.catch(()=>{});},500);
   for(const overrides of [{activeStorageKey:'replacement',storageKeys:{replacement:Array.from(randomBytes(32))}},{storageKeys:{current:Array.from(randomBytes(32))}},{engineHash:Array(32).fill(0x65)}]){
    await rejectHost(overrides,restored.toString());assert.equal(await fingerprint(target),before);
