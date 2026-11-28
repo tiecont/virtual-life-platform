@@ -293,7 +293,36 @@ impl CoopRules {
                 events.push(event(name, Some(actor as u8), gain.into()));
             }
         }
-        let heart = yields[TileKind::Heart.index()];
+        self.apply_jewel_support(
+            state,
+            policy,
+            actor,
+            yields[TileKind::Heart.index()],
+            yields[TileKind::Shield.index()],
+            events,
+        );
+        let mut outcome = if has_sword {
+            self.resolve_normal_attack(state, actor, yields[TileKind::Sword.index()], rng)?
+        } else {
+            MatchOutcome {
+                damage: 0,
+                critical: false,
+                jewel_resources: [0; 4],
+            }
+        };
+        outcome.jewel_resources = [mana, rage, special_mana, special_rage];
+        Ok(outcome)
+    }
+
+    pub(super) fn apply_jewel_support(
+        &self,
+        state: &mut CoopState,
+        policy: &FunctionalTiles,
+        actor: usize,
+        heart: u64,
+        shield: u64,
+        events: &mut Vec<Value>,
+    ) {
         if heart > 0 {
             let amount = u32::try_from(heart).unwrap_or(u32::MAX);
             for target in self.targets(state, actor, policy.heart.target.effect_target()) {
@@ -307,7 +336,6 @@ impl CoopRules {
                 events.push(event("heal", Some(target as u8), healed));
             }
         }
-        let shield = yields[TileKind::Shield.index()];
         if shield > 0 {
             let amount = u32::try_from(shield).unwrap_or(u32::MAX);
             for target in self.targets(state, actor, policy.shield.target.effect_target()) {
@@ -324,17 +352,6 @@ impl CoopRules {
                 }
             }
         }
-        let mut outcome = if has_sword {
-            self.resolve_normal_attack(state, actor, yields[TileKind::Sword.index()], rng)?
-        } else {
-            MatchOutcome {
-                damage: 0,
-                critical: false,
-                jewel_resources: [0; 4],
-            }
-        };
-        outcome.jewel_resources = [mana, rage, special_mana, special_rage];
-        Ok(outcome)
     }
 }
 

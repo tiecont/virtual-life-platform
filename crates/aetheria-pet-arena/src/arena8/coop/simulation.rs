@@ -14,8 +14,8 @@ use std::collections::BTreeMap;
 
 use super::config::EffectKind;
 use super::{
-    CELLS, CoopAction, CoopError, CoopPhase, CoopRules, CoopState, SEATS, SeatInput, Tile,
-    TileIdentity, TileKind, TurnObservation,
+    CELLS, CoopAction, CoopError, CoopPhase, CoopRules, CoopState, PendingAttack, SEATS, SeatInput,
+    Tile, TileIdentity, TileKind, TurnObservation,
 };
 
 const LOGICAL_ACTION_MS: u64 = 1_000;
@@ -582,9 +582,15 @@ fn candidates(
         }
         Policy::Tactical | Policy::Coordinated => {
             if policy == Policy::Coordinated {
-                prioritize_support(rules, state, &mut out);
+                if rules.config.shared_jewel_rng() {
+                    if let Some(action) = visible_telegraph_response(rules, state) {
+                        out.push(action);
+                    }
+                } else {
+                    prioritize_support(rules, state, &mut out);
+                }
             }
-            if let Some(action) = swap.filter(|_| priority_swap) {
+            if let Some(action) = swap.filter(|action| priority_swap && !out.contains(action)) {
                 out.push(action);
             }
             for action in [
@@ -626,6 +632,141 @@ fn candidates(
     }
     out
 }
+/// A telegraph reveals its assigned damage and target count. Evaluate only the
+/// first visible support effect and the already committed impact, never a refill
+/// or future roll. Prefer a rescue, otherwise require appreciable mitigation.
+fn visible_telegraph_response(rules: &CoopRules, state: &CoopState) -> Option<CoopAction> {
+    let pending = state.pending.filter(|attack| attack.remaining == 1)?;
+    let before = known_impact(rules, state.clone(), pending);
+    let mut best = None;
+    let mut consider = |action, preview| {
+        let after = known_impact(rules, preview, pending);
+        let preserves_life = after.0 > before.0;
+        let saves_health =
+            after.0 == before.0 && after.1.saturating_sub(before.1) > u64::from(pending.damage / 5);
+        if (preserves_life || saves_health) && best.is_none_or(|(_, score)| after > score) {
+            best = Some((action, after));
+        }
+    };
+
+    // Authored support casts in this whitelist are deterministic. The dummy
+    // stream has no match entropy. Exclude any preview that consumed a draw.
+    let seed = SecretSeed::from_host_entropy([0; 32]);
+    let mut dummy = seed.stream(Value::Text("visible-support".into()), 0).ok()?;
+    for action in [
+        CoopAction::Guard,
+        CoopAction::Skill,
+        CoopAction::Signature,
+        CoopAction::Ultimate,
+    ] {
+        let Ok(cast) = rules.prepare_ability(state, action) else {
+            continue;
+        };
+        let kind = cast.skill.effect.kind;
+        if !matches!(
+            kind,
+            EffectKind::Heal | EffectKind::Shield | EffectKind::Cleanse
+        ) && !(action == CoopAction::Guard && kind == EffectKind::Buff)
+        {
+            continue;
+        }
+        let mut preview = state.clone();
+        let cursor = dummy.cursor();
+        if rules
+            .act_ability(&mut preview, action, &mut dummy, &mut Vec::new())
+            .is_ok()
+            && dummy.cursor() == cursor
+        {
+            consider(action, preview);
+        }
+    }
+
+    for first in 0..CELLS {
+        for second in [first + 1, first + super::SIDE] {
+            if second < CELLS
+                && super::adjacent(first, second)
+                && let Some(preview) = preview_jewel_support(rules, state, first, second)
+            {
+                consider(
+                    CoopAction::Swap {
+                        first: first as u8,
+                        second: second as u8,
+                    },
+                    preview,
+                );
+            }
+        }
+    }
+    best.map(|(action, _)| action)
+}
+
+fn known_impact(rules: &CoopRules, mut state: CoopState, attack: PendingAttack) -> (usize, u64) {
+    rules.apply_boss_attack(&mut state, attack.targets, attack.damage, &mut Vec::new());
+    state
+        .participants
+        .into_iter()
+        .fold((0, 0), |(alive, hp), seat| {
+            (alive + usize::from(seat.alive), hp + u64::from(seat.hp))
+        })
+}
+
+fn preview_jewel_support(
+    rules: &CoopRules,
+    state: &CoopState,
+    first: usize,
+    second: usize,
+) -> Option<CoopState> {
+    let policy = rules.config.board.functional_tiles.as_ref()?;
+    let mut board = state.board;
+    if board[first]?.identity == board[second]?.identity {
+        return None;
+    }
+    board.swap(first, second);
+    let matched = super::matched_cells(&board);
+    if !matched[first] && !matched[second] {
+        return None;
+    }
+    let mut visible_support = false;
+    let (mut heart, mut shield) = (0, 0);
+    for (marked, tile) in matched.into_iter().zip(board) {
+        let Some(tile) = tile.filter(|_| marked) else {
+            continue;
+        };
+        let (amount, total) = match tile.identity {
+            TileIdentity::Kind(TileKind::Heart) => (policy.heart.amount, &mut heart),
+            TileIdentity::Kind(TileKind::Shield) => (policy.shield.amount, &mut shield),
+            TileIdentity::Kind(TileKind::Nature | TileKind::Frost) => {
+                visible_support = true;
+                continue;
+            }
+            _ => continue,
+        };
+        visible_support = true;
+        let scale = rules
+            .config
+            .multiplier
+            .resource_weight(tile.multiplier)
+            .ok()?;
+        *total += u64::from(amount) * u64::from(scale) / 1_000;
+    }
+    if !visible_support {
+        return None;
+    }
+    let mut preview = state.clone();
+    preview.board = board;
+    let mut events = Vec::new();
+    rules.advanced_matches(&mut preview, &mut events);
+    rules.apply_jewel_support(
+        &mut preview,
+        policy,
+        state.active_seat,
+        heart,
+        shield,
+        &mut events,
+    );
+    Some(preview)
+}
+
 fn prioritize_support(rules: &CoopRules, state: &CoopState, out: &mut Vec<CoopAction>) {
     let active = &state.participants[state.active_seat];
     let low_health = |seat: &super::Participant| u64::from(seat.hp) * 2 < u64::from(seat.max_hp);
@@ -1267,6 +1408,60 @@ fn run_samples(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn shared_policy_values_visible_frost_when_it_prevents_a_knockout() {
+        let bundle = include_bytes!(
+            "../../../../../config/gameplay/arena8-coop-shared-rng-v1.candidate.json"
+        );
+        let rules = CoopRules::load(bundle, "cinder-terraces-warden".into()).unwrap();
+        let ready = rules
+            .allocate(std::array::from_fn(|index| SeatInput {
+                account: format!("sample-account-{index}"),
+                pet_id: "fire-coalwhisk".into(),
+                owned_pet_instance_id: format!("sample-pet-{index}"),
+                level: 20,
+                artifact_power_pm: 0,
+            }))
+            .unwrap();
+        let entropy = SecretSeed::from_host_entropy([7; 32]);
+        let mut stream = entropy.stream(Value::Text("fixture".into()), 0).unwrap();
+        let mut state = rules
+            .reduce(&ready, CoopAction::Start, &mut stream)
+            .unwrap()
+            .state;
+        state.board = std::array::from_fn(|index| {
+            let kind = if [0, 1, 10].contains(&index) {
+                TileKind::Frost
+            } else {
+                TileKind::ALL[(index / super::super::SIDE + 2 * (index % super::super::SIDE)) % 6]
+            };
+            Some(Tile {
+                identity: TileIdentity::Kind(kind),
+                multiplier: 1,
+            })
+        });
+        state.participants[0].hp = 100;
+        state.participants[0].defense = 8;
+        state.pending = Some(PendingAttack {
+            targets: 1,
+            remaining: 1,
+            damage: 110,
+        });
+        let before = state.clone();
+        assert_eq!(
+            visible_telegraph_response(&rules, &state),
+            Some(CoopAction::Swap {
+                first: 2,
+                second: 10,
+            })
+        );
+        assert_eq!(state, before);
+
+        // Exclude a nominal mitigation when the committed hit is still fatal.
+        state.pending.as_mut().unwrap().damage = 400;
+        assert_eq!(visible_telegraph_response(&rules, &state), None);
+    }
 
     #[test]
     fn observations_preserve_committed_decisions_and_distinguish_budget_exhaustion() {
